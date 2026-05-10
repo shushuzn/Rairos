@@ -4,14 +4,12 @@ from __future__ import annotations
 
 import json
 import logging
-import time
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from llm.events import process_event
-from llm.scout import scout
 from llm.mcp_jin10 import Jin10Client
 from llm.insight.tracker import EvolutionTracker
 

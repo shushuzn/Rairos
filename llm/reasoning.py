@@ -24,12 +24,11 @@ Usage:
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable, Iterator, List, Optional
 
 # Reuse SSE parsing from client; import the raw stream so we can reparse
 # with thinking-field awareness.
-from llm.client import stream_llm_chat_completions
 
 
 # ---------------------------------------------------------------------------
@@ -312,10 +311,7 @@ class StreamingReasoner:
         import requests
         from llm.client import (
             _get_session,
-            _generate_cache_key,
-            _cache_read,
         )
-        import orjson
 
         base_url = kwargs.pop(
             "base_url",

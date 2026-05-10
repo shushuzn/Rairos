@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from llm.client import get_client
 

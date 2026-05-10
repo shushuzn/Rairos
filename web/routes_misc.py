@@ -537,9 +537,6 @@ async def submit_verdict(request: Request):
     capsule_id = body.get("capsule_id", "")
     verdict = body.get("verdict", "")
 
-    score_map = {"match": 1.0, "partial": 0.5, "not_relevant": 0.0}
-    score = score_map.get(verdict, 0.5)
-
     capsules = _load_capsules()
     for cap in capsules:
         if cap.get("capsule_id", "") == capsule_id:

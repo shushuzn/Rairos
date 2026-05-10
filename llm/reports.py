@@ -1,8 +1,7 @@
 """Theme-based research reports — written analysis, not lists."""
 
 from __future__ import annotations
-from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 
 from llm.insight.tracker import EvolutionTracker
 

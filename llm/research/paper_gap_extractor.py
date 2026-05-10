@@ -18,13 +18,10 @@ from typing import Any, Dict, List, Optional
 
 # Re-export configs and core functions
 from llm.research.gap_configs import GAP_ANALYZER_CONFIGS
-from llm.research.gap_extract import extract_gap_from_paper, _extract_keywords
+from llm.research.gap_extract import _extract_keywords
 from llm.research.gene_pool_writer import save_gap_to_gene_pool
 from llm.research.contradiction_detector import (
     detect_field_contradiction,
-    detect_polarity_contradiction,
-    detect_evidence_contradiction,
-    detect_contradictions,
 )
 
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 def compute_impact(db: Any) -> List[Dict[str, Any]]:

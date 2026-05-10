@@ -1706,7 +1706,7 @@ class TUIChatApp(App):
         """Stream response with paper context."""
         from llm.client import stream_llm_chat_completions
         from llm.chat import _RAG_SYSTEM_PROMPT
-        from llm.reasoning import StreamingReasoner, ReasoningBlock
+        from llm.reasoning import StreamingReasoner
 
         self._update_status("🤖 生成回答中...", "typing")
 

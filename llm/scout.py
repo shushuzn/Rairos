@@ -3,11 +3,8 @@
 from __future__ import annotations
 
 import logging
-import sys
 import time
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from pathlib import Path
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
@@ -65,7 +62,7 @@ def _search_arxiv(query: str, max_results: int = 10) -> List[Dict]:
             return results
 
     try:
-        from parsers.arxiv_search import search_arxiv, search_arxiv_cached
+        from parsers.arxiv_search import search_arxiv_cached
 
         raw = search_arxiv_cached(query, max_results=max_results)
         results = []

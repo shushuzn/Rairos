@@ -13,9 +13,8 @@ Workflow:
 
 from __future__ import annotations
 
-import json
 import uuid
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -109,7 +108,6 @@ class LitReviewGenerator:
             LitReviewResult with the generated review
         """
         import os
-        import datetime
 
         # Step 1: Collect papers
         papers = self._collect_papers(topic, limit)

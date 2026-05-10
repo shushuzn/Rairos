@@ -927,7 +927,7 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
 
     Returns dict with triggered gap_types and subscription actions taken.
     """
-    from llm.gene_pool_watcher import GenePoolWatcher, FAMILY_ARXIV_CONFIG
+    from llm.gene_pool_watcher import FAMILY_ARXIV_CONFIG
 
     state = _load_decay_state()
 

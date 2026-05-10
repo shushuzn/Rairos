@@ -11,7 +11,6 @@ Given a paper, extracts GitHub/GitLab links and attempts to:
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import re
-import urllib.parse
 
 
 @dataclass

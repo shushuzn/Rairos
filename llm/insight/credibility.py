@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-import json
 import math
-from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from llm.insight.gene import CapsuleGene
@@ -236,7 +233,6 @@ class CredibilityScorer:
 
     def render_html(self) -> str:
         """Render credibility scores as HTML fragment for the web UI."""
-        from llm.insight.storage import CapsuleStorageMixin
 
         # Get capsules from EvolutionTracker's storage
         try:

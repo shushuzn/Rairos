@@ -9,11 +9,9 @@ from llm.research.hypothesis_generator import (
 )
 from llm.research.paper_analyzer import PaperAnalyzer, PaperAnalysisResult
 from llm.research.paper_gap_extractor import (
-    extract_gap_from_paper,
     analyze_gap,
     analyze_embodied_planning,
     batch_analyze_embodied_planning,
-    detect_contradictions,
     analyze_multi_paper_gaps,
     semantic_search_papers,
     gaps_to_research_questions,
@@ -51,11 +49,9 @@ __all__ = [
     "PaperAnalyzer",
     "PaperAnalysisResult",
     # paper_gap_extractor
-    "extract_gap_from_paper",
     "analyze_gap",
     "analyze_embodied_planning",
     "batch_analyze_embodied_planning",
-    "detect_contradictions",
     "analyze_multi_paper_gaps",
     "semantic_search_papers",
     "gaps_to_research_questions",

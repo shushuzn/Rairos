@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, List, Optional
+from typing import List, Optional
 
 
 def _extract_keywords(text: str) -> List[str]:

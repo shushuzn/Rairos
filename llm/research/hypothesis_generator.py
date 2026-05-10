@@ -16,7 +16,7 @@ import re
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional, List, cast
+from typing import Optional, List, cast
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 

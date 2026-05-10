@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, cast
 from llm.insight.preferences import ExplorationAction, PreferenceTag, EvolutionEvent
 from llm.insight.storage import CapsuleStorageMixin
 from llm.text_utils import extract_keywords
-from llm.insight.profile import UserPreferenceProfile, GapExplorationState
+from llm.insight.profile import UserPreferenceProfile
 
 
 class EvolutionTracker(CapsuleStorageMixin):

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, List, Dict, Any, cast
+from typing import Optional, List, Dict, Any
 
 # 可选依赖：python-pptx
 try:

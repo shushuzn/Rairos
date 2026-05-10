@@ -6,9 +6,8 @@ Tracks AI policy/regulation developments and maps their impact to research domai
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 POLICY_FILE = Path.home() / ".ai_research_os" / "policy_impact.json"
 

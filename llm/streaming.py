@@ -12,11 +12,9 @@ Usage:
 
 from __future__ import annotations
 
-import sys
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List
 
 from llm.client import stream_llm_chat_completions
 from config import MODEL_PRICES

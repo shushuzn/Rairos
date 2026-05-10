@@ -8,7 +8,7 @@ import tempfile
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 PAPERS_DIR = Path.home() / ".ai_research_os"
 CAPSULES_PATH = PAPERS_DIR / "gene_pool" / "capsules.json"

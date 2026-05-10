@@ -122,7 +122,6 @@ def _capsule_from_row(row: sqlite3.Row) -> CapsuleGene:
 
 def _capsule_to_row(c: CapsuleGene) -> Dict[str, Any]:
     """Convert a CapsuleGene to a SQLite row dict."""
-    import base64
 
     embedding_blob = None
     archetype = c.archetype or {}
@@ -263,7 +262,6 @@ def _compute_title_embedding(text: str) -> Optional[List[float]]:
         return None
     try:
         from sentence_transformers import SentenceTransformer
-        import numpy as np
 
         model = SentenceTransformer("all-MiniLM-L6-v2")
         vec = model.encode(text, normalize_embeddings=True)

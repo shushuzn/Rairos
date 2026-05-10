@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 GP_DIR = Path.home() / ".ai_research_os" / "gene_pool"
 CAPSULES_PATH = GP_DIR / "capsules.json"

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 PAPERS_DB = Path.home() / ".ai_research_os" / "papers.json"
 

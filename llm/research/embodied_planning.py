@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
-from llm.research.gap_configs import GAP_ANALYZER_CONFIGS
 from llm.research.gene_pool_writer import save_gap_to_gene_pool
-from llm.research.contradiction_detector import detect_field_contradiction
 
 
 def track_embodied_evolution(

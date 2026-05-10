@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import time
 import uuid
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path

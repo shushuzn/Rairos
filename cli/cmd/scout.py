@@ -128,7 +128,7 @@ def _run_daemon(
     sources: str = "arxiv",
 ) -> None:
     """Run scout in a continuous loop."""
-    from llm.scout import scout, render_scout_results
+    from llm.scout import scout
 
     print(f"  Scout daemon started (interval={interval_minutes}min)")
     print("  Ctrl+C to stop\n")

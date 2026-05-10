@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, AsyncIterator, Dict, List
 
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 
 router = APIRouter()
 

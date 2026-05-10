@@ -17,13 +17,11 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from llm.insight.gene import CapsuleGene
-from llm.insight.preferences import ExplorationAction
 from llm.insight.tracker import EvolutionTracker
 
 
