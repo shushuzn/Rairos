@@ -44,7 +44,7 @@ uv run pytest tests/ -q --tb=short -n auto --timeout=60
 ## Architecture
 
 - **core/**: Utilities — rate_limiter, retry, cache, notifications, observability, profiler
-- **db/**: SQLite via database.py (922 lines, primary key is `id`)
+- **db/**: SQLite via database.py (2282 lines, primary key is `id`)
 - **llm/**: LLM clients, citation chains, gap detection, evolution, briefings
 - **parsers/**: arxiv, cross_search
 - **research_loop/**: Deep research, orchestrator, benchmark_runner, claim_graph, paper_parser
@@ -76,7 +76,6 @@ GIT_ASKPASS=echo timeout 55 git push
 
 - `test_deep_research.py` ignored in pytest (pytest.ini_options addopts)
 - `core/basics.py` 95% covered (2 missing lines)
-- `db/database.py` 16% covered (922-line file with many branches)
-- `core/rate_limiter.py` 22%, `core/retry.py` 24% — need targeted tests
+- `db/database.py` low coverage (2282-line file with many branches)
 - `mypy 1.20.1 CRLF line-number bug` — filtered by `disable_error_code = ["assignment", "union-attr"]`
 - Bandit B608/B310/B311 false positives — acknowledged in pyproject.toml
