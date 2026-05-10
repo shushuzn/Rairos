@@ -6,6 +6,7 @@ use anyhow::{Context, Result};
 use chrono::Utc;
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
+use rairos_llm::{GenePool, Capsule, CapsuleStatus, GenePoolDiversityCalculator};
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
@@ -222,6 +223,82 @@ enum Commands {
     GapDelete {
         /// Gap ID
         id: String,
+    },
+
+    /// Add a gene/capsule to the Gene Pool
+    GeneAdd {
+        /// Approach summary
+        #[arg(short, long)]
+        approach: String,
+
+        /// Gap type
+        #[arg(short, long)]
+        gap_type: String,
+
+        /// Trigger keywords (comma-separated)
+        #[arg(short, long)]
+        keywords: String,
+
+        /// Source paper ID (optional)
+        #[arg(short, long)]
+        paper_id: Option<String>,
+    },
+
+    /// List genes in the Gene Pool
+    GeneList {
+        /// Filter by gap type
+        #[arg(short, long)]
+        gap_type: Option<String>,
+
+        /// Filter by status (active/dormant/archived)
+        #[arg(short, long)]
+        status: Option<String>,
+
+        /// Maximum number to show
+        #[arg(short, long, default_value = "50")]
+        limit: usize,
+
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Show gene details
+    GeneShow {
+        /// Gene/Capsule ID
+        id: String,
+
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Record feedback for a gene
+    GeneFeedback {
+        /// Gene/Capsule ID
+        id: String,
+
+        /// Positive or negative feedback
+        #[arg(short, long)]
+        positive: bool,
+    },
+
+    /// Calculate Gene Pool diversity metrics
+    GeneDiversity {
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Run evolution cycle on Gene Pool
+    GeneEvolve {
+        /// Maximum number of crossovers to suggest
+        #[arg(short, long, default_value = "10")]
+        max_crossovers: usize,
+
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
     },
 
     /// Run rate limiter benchmark
@@ -1251,6 +1328,201 @@ fn handle_gap_show(db: &Database, id: &str) -> Result<()> {
 fn handle_gap_delete(db: &Database, id: &str) -> Result<()> {
     db.delete_gap(id)?;
     println!("Deleted gap: {}", id);
+    Ok(())
+}
+
+fn handle_gene_add(approach: &str, gap_type: &str, keywords: &str, paper_id: Option<String>) -> Result<()> {
+    let keywords: Vec<String> = keywords.split(',').map(|s| s.trim().to_string()).collect();
+    let mut capsule = Capsule::new(approach, gap_type, keywords);
+    if let Some(pid) = paper_id {
+        capsule = capsule.with_paper(&pid);
+    }
+
+    let mut pool = GenePool::new();
+    pool.add_capsule(capsule);
+
+    let json = pool.to_jsonl();
+    println!("[OK] Gene added to pool");
+    println!("Capsule ID: {}", pool.capsules().first().map(|c| c.capsule_id.as_str()).unwrap_or("N/A"));
+    println!("JSONL:\n{}", json);
+    Ok(())
+}
+
+fn handle_gene_list(gap_type: Option<String>, status: Option<String>, limit: usize, format: &str) -> Result<()> {
+    let pool = GenePool::new();
+    let all_capsules = pool.capsules();
+
+    let filtered: Vec<&Capsule> = all_capsules.iter()
+        .filter(|c| {
+            if let Some(ref gt) = gap_type {
+                if &c.action_gap_type != gt {
+                    return false;
+                }
+            }
+            if let Some(ref s) = status {
+                let status_match = match s.to_lowercase().as_str() {
+                    "active" => c.status == CapsuleStatus::Active && !c.archived,
+                    "dormant" => c.status == CapsuleStatus::Dormant,
+                    "archived" => c.archived,
+                    _ => true,
+                };
+                if !status_match {
+                    return false;
+                }
+            }
+            true
+        })
+        .take(limit)
+        .collect();
+
+    if format == "json" {
+        let out: Vec<serde_json::Value> = filtered.iter().map(|c| {
+            let status = if c.archived { "archived".to_string() } else { c.status.to_string() };
+            serde_json::json!({
+                "capsule_id": c.capsule_id,
+                "gap_type": c.action_gap_type,
+                "approach": c.archetype.approach_summary,
+                "status": status,
+                "impact_score": c.impact_score,
+                "success_count": c.success_count,
+                "failure_count": c.failure_count,
+                "created_at": c.created_at,
+            })
+        }).collect();
+        println!("{}", serde_json::to_string_pretty(&out)?);
+        return Ok(());
+    }
+
+    let count = filtered.len();
+    println!("=== Gene Pool ({} capsules) ===\n", count);
+    println!("{:<38} {:<15} {:<12} {:>8} {:>8} {:>8}", "ID", "GAP_TYPE", "STATUS", "IMPACT", "SUCCESS", "FAILED");
+    println!("{}", "-".repeat(95));
+    for cap in &filtered {
+        let id_short = if cap.capsule_id.len() > 8 { &cap.capsule_id[..8] } else { &cap.capsule_id };
+        let status_str = if cap.archived { "archived".to_string() } else { cap.status.to_string() };
+        println!("{:<38} {:<15} {:<12} {:>8.3} {:>8} {:>8}",
+            id_short, cap.action_gap_type, status_str, cap.impact_score, cap.success_count, cap.failure_count);
+    }
+    println!("\n{} capsules shown", count);
+    Ok(())
+}
+
+fn handle_gene_show(id: &str, format: &str) -> Result<()> {
+    let pool = GenePool::new();
+    if let Some(cap) = pool.capsules().iter().find(|c| c.capsule_id == id || c.capsule_id.starts_with(id)) {
+        if format == "json" {
+            println!("{}", serde_json::to_string_pretty(cap)?);
+            return Ok(());
+        }
+
+        println!("=== Gene Details ===\n");
+        println!("ID:           {}", cap.capsule_id);
+        println!("Gap Type:     {}", cap.action_gap_type);
+        println!("Approach:     {}", cap.archetype.approach_summary);
+        println!("Status:       {}", if cap.archived { "archived".to_string() } else { cap.status.to_string() });
+        println!("Impact Score: {:.4}", cap.impact_score);
+        println!("Success:      {}", cap.success_count);
+        println!("Failure:      {}", cap.failure_count);
+        println!("Created:      {}", cap.created_at);
+        println!("Updated:      {}", cap.updated_at);
+        println!("Keywords:     {:?}", cap.trigger_keywords);
+        if let Some(ref fp) = cap.archetype.algorithm_fingerprint {
+            println!("Fingerprint:  {}", fp);
+        }
+        if let Some(ref pid) = cap.archetype.source_paper_id {
+            println!("Source Paper: {}", pid);
+        }
+    } else {
+        anyhow::bail!("Gene not found: {}", id);
+    }
+    Ok(())
+}
+
+fn handle_gene_feedback(id: &str, positive: bool) -> Result<()> {
+    let mut pool = GenePool::new();
+    if let Some(cap) = pool.capsules_mut().iter_mut().find(|c| c.capsule_id == id || c.capsule_id.starts_with(id)) {
+        if positive {
+            cap.record_success();
+            println!("[OK] Recorded positive feedback for {}", id);
+        } else {
+            cap.record_failure();
+            println!("[OK] Recorded negative feedback for {}", id);
+        }
+        println!("  Success count: {}", cap.success_count);
+        println!("  Failure count: {}", cap.failure_count);
+        println!("  New impact score: {:.4}", cap.impact_score);
+    } else {
+        anyhow::bail!("Gene not found: {}", id);
+    }
+    Ok(())
+}
+
+fn handle_gene_diversity(format: &str) -> Result<()> {
+    let pool = GenePool::new();
+    let diversity = GenePoolDiversityCalculator::calculate(pool.capsules());
+
+    if format == "json" {
+        println!("{}", serde_json::to_string_pretty(&diversity)?);
+        return Ok(());
+    }
+
+    println!("=== Gene Pool Diversity ===\n");
+    println!("Total Capsules:     {}", diversity.capsule_count);
+    println!("Shannon Index:      {:.4}", diversity.shannon_index);
+    println!("Shannon Normalized:  {:.4}", diversity.shannon_normalized);
+    println!("Diversity Score:    {} / 100", diversity.diversity_score);
+    println!("Family Coverage:     {:.1}%", diversity.family_coverage * 100.0);
+    println!();
+
+    println!("Family Distribution:");
+    let mut families: Vec<_> = diversity.family_counts.iter().collect();
+    families.sort_by(|a, b| b.1.cmp(a.1));
+    for (fam, count) in families {
+        println!("  {:20} {:>4}", fam, count);
+    }
+    println!();
+
+    if !diversity.underrepresented_families.is_empty() {
+        println!("Underrepresented: {:?}", diversity.underrepresented_families);
+    }
+    if !diversity.overrepresented_families.is_empty() {
+        println!("Overrepresented:  {:?}", diversity.overrepresented_families);
+    }
+    Ok(())
+}
+
+fn handle_gene_evolve(max_crossovers: usize, format: &str) -> Result<()> {
+    let pool = GenePool::new();
+    let gaps = vec!["capability", "improvement", "reasoning"];
+    let mut suggestions = Vec::new();
+    for gap_type in &gaps {
+        let pairs = pool.suggest_crossover(gap_type, max_crossovers / gaps.len());
+        for (id1, id2) in pairs {
+            suggestions.push((gap_type.clone(), id1, id2));
+        }
+    }
+
+    if format == "json" {
+        let out: Vec<serde_json::Value> = suggestions.iter().map(|(gt, id1, id2)| {
+            serde_json::json!({
+                "gap_type": gt,
+                "parent_1": id1,
+                "parent_2": id2,
+            })
+        }).collect();
+        println!("{}", serde_json::to_string_pretty(&out)?);
+        return Ok(());
+    }
+
+    println!("=== Evolution Suggestions ({} crossovers) ===\n", suggestions.len());
+    for (i, (gap_type, id1, id2)) in suggestions.iter().enumerate() {
+        println!("{}. {} × {} -> {}",
+            i + 1,
+            &id1[..8.min(id1.len())],
+            &id2[..8.min(id2.len())],
+            gap_type
+        );
+    }
     Ok(())
 }
 
@@ -2540,6 +2812,24 @@ fn main() -> Result<()> {
         Commands::GapDelete { id } => {
             let db = open_db(&cli.db)?;
             handle_gap_delete(&db, id)?;
+        }
+        Commands::GeneAdd { approach, gap_type, keywords, paper_id } => {
+            handle_gene_add(approach, gap_type, keywords, paper_id.clone())?;
+        }
+        Commands::GeneList { gap_type, status, limit, format } => {
+            handle_gene_list(gap_type.clone(), status.clone(), *limit, format)?;
+        }
+        Commands::GeneShow { id, format } => {
+            handle_gene_show(id, format)?;
+        }
+        Commands::GeneFeedback { id, positive } => {
+            handle_gene_feedback(id, *positive)?;
+        }
+        Commands::GeneDiversity { format } => {
+            handle_gene_diversity(format)?;
+        }
+        Commands::GeneEvolve { max_crossovers, format } => {
+            handle_gene_evolve(*max_crossovers, format)?;
         }
         Commands::RateLimitBenchmark { count } => {
             handle_rate_limit_benchmark(*count)?;

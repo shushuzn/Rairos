@@ -962,6 +962,10 @@ impl GenePool {
         &self.capsules
     }
 
+    pub fn capsules_mut(&mut self) -> &mut Vec<Capsule> {
+        &mut self.capsules
+    }
+
     pub fn active_capsules(&self) -> Vec<&Capsule> {
         self.capsules.iter()
             .filter(|c| c.status == CapsuleStatus::Active && !c.archived)
