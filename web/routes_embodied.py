@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict
 from fastapi import APIRouter, Request
 from web.shared import get_db, templates
-from web.app import _notification_store
+from web.shared import _notification_store
 
 
 # ── Global representation type counts ──────────────────────────────────────

@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-from web.shared import templates, get_db
-from web.app import _render_gap_analysis_html, _render_rq_html
+from web.shared import templates, get_db, _render_gap_analysis_html, _render_rq_html
 
 router = APIRouter()
 
