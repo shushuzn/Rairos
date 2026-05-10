@@ -1,9 +1,11 @@
 """Tests for core/observability.py — structured logging, correlation, events, metrics."""
 
 import logging
-import pytest
+import sys
 import threading
 import time
+
+import pytest
 
 from core.observability import (
     EventType,
@@ -205,3 +207,79 @@ class TestLogLevel:
         assert LogLevel.WARNING.value == "warning"
         assert LogLevel.ERROR.value == "error"
         assert LogLevel.CRITICAL.value == "critical"
+
+
+class TestSetupObservability:
+    """Tests for setup_observability()."""
+
+    def test_setup_configures_root_logger(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        import core.observability as obs
+
+        # Patch the global flag to allow re-configuration in tests
+        monkeypatch.setattr(obs, "_observability_configured", False)
+        # Capture log output
+        records: list[logging.LogRecord] = []
+        handler = logging.Handler()
+        handler.emit = records.append  # type: ignore[method-assign]
+
+        root = logging.getLogger()
+        original_handlers = root.handlers[:]
+        try:
+            obs.setup_observability(level="DEBUG", json_logs=False)
+            assert root.level == logging.DEBUG
+            # Should have console handler
+            assert any(
+                isinstance(h, logging.StreamHandler) and h.stream == sys.stdout
+                for h in root.handlers
+            )
+        finally:
+            # Restore original handlers to avoid polluting other tests
+            root.handlers[:] = original_handlers
+            obs._observability_configured = False
+
+    def test_setup_idempotent(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        import core.observability as obs
+
+        monkeypatch.setattr(obs, "_observability_configured", False)
+        root = logging.getLogger()
+        original_handlers = root.handlers[:]
+        try:
+            obs.setup_observability(level="WARNING")
+            first_handler_count = len(root.handlers)
+            obs.setup_observability(level="INFO")
+            # Should not add more handlers on second call
+            assert len(root.handlers) == first_handler_count
+        finally:
+            root.handlers[:] = original_handlers
+            obs._observability_configured = False
+
+    def test_setup_with_log_file(self, monkeypatch: pytest.MonkeyPatch, tmp_path: pytest.TempPathFactory) -> None:
+        import core.observability as obs
+
+        monkeypatch.setattr(obs, "_observability_configured", False)
+        log_path = tmp_path / "test.log"
+        root = logging.getLogger()
+        original_handlers = root.handlers[:]
+        try:
+            obs.setup_observability(level="INFO", log_file=str(log_path))
+            assert log_path.exists()
+        finally:
+            root.handlers[:] = original_handlers
+            obs._observability_configured = False
+
+
+class TestGetMetrics:
+    """Tests for get_metrics()."""
+
+    def test_get_metrics_returns_collector(self) -> None:
+        from core.observability import get_metrics
+
+        m = get_metrics()
+        assert isinstance(m, MetricsCollector)
+
+    def test_get_metrics_is_singleton(self) -> None:
+        from core.observability import get_metrics
+
+        m1 = get_metrics()
+        m2 = get_metrics()
+        assert m1 is m2

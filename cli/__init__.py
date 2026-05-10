@@ -112,7 +112,7 @@ _LAZY_EXPORTS = {
     "_build_ask_parser": ("cli.cmd.ask", "_build_ask_parser"),
     "_build_session_parser": ("cli.cmd.session", "_build_session_parser"),
     "_run_session": ("cli.cmd.session", "_run_session"),
-    "_run_doctor": ("cli.cmd.doctor", "_run_docto"),
+    "_run_doctor": ("cli.cmd.doctor", "_run_doctor"),
     "_build_doctor_parser": ("cli.cmd.doctor", "_build_doctor_parser"),
     "_build_argue_parser": ("cli.cmd.argue", "_build_argue_parser"),
     "_run_argue": ("cli.cmd.argue", "_run_argue"),

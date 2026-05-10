@@ -572,4 +572,4 @@ def setup_observability(
     for noisy in ("urllib3", "requests", "httpx", "aiohttp", "asyncio"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    get_logger("observability").info("observability_configured", level=level, json_logs=json_logs)
+    get_logger("observability").info("observability_configured", log_level=level, json_logs=json_logs)
