@@ -29,7 +29,6 @@ def _section(title: str) -> str:
 def _run_docto(args) -> int:
     """Run environment diagnostics."""
     from rich.console import Console
-    from rich.panel import Panel
     from rich.table import Table
 
     console = Console()
