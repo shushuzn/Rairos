@@ -140,8 +140,17 @@ enum Commands {
 
     /// Import papers from a JSON file
     Import {
-        /// Path to JSON file
-        path: PathBuf,
+        /// Path to JSON file OR arXiv ID(s) to fetch
+        #[arg(conflicts_with = "ids")]
+        path: Option<PathBuf>,
+
+        /// arXiv IDs or DOIs to import (fetches metadata from arXiv/CrossRef)
+        #[arg(short, long, conflicts_with = "path")]
+        ids: Vec<String>,
+
+        /// Skip IDs already in database
+        #[arg(short, long)]
+        skip_existing: bool,
     },
 
     /// Export papers to JSON or CSV
@@ -801,16 +810,56 @@ fn handle_parse(db: &Database, id: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_import(db: &Database, path: &PathBuf) -> Result<()> {
-    let content = std::fs::read_to_string(path)?;
-    let papers: Vec<Paper> = serde_json::from_str(&content)
-        .context("Failed to parse JSON — expected array of Paper objects")?;
+fn handle_import(db: &Database, path: &Option<PathBuf>, ids: &[String], skip_existing: bool) -> Result<()> {
+    if let Some(p) = path {
+        // JSON file import
+        let content = std::fs::read_to_string(p)?;
+        let papers: Vec<Paper> = serde_json::from_str(&content)
+            .context("Failed to parse JSON — expected array of Paper objects")?;
 
-    let count = papers.len();
-    for paper in &papers {
-        db.insert_paper(paper)?;
+        let count = papers.len();
+        for paper in &papers {
+            db.insert_paper(paper)?;
+        }
+        println!("Imported {} papers from {}", count, p.display());
+    } else if !ids.is_empty() {
+        // Batch import from arXiv IDs
+        let mut added = 0;
+        let mut skipped = 0;
+        let mut failed = 0;
+
+        for arxiv_id in ids {
+            let arxiv_id = arxiv_id.trim();
+            if arxiv_id.is_empty() {
+                continue;
+            }
+
+            // Check if already exists
+            if skip_existing {
+                if let Ok(Some(_)) = db.get_paper_by_arxiv(arxiv_id) {
+                    println!("Skipped (exists): {}", arxiv_id);
+                    skipped += 1;
+                    continue;
+                }
+            }
+
+            println!("Fetching {}...", arxiv_id);
+            match add_paper_from_arxiv(db, arxiv_id) {
+                Ok(_) => {
+                    println!("Added: {}", arxiv_id);
+                    added += 1;
+                }
+                Err(e) => {
+                    eprintln!("Failed {}: {}", arxiv_id, e);
+                    failed += 1;
+                }
+            }
+        }
+
+        println!("\nImport complete: {} added, {} skipped, {} failed", added, skipped, failed);
+    } else {
+        println!("Nothing to import. Use positional arXiv IDs or --ids flag, or provide a JSON file path.");
     }
-    println!("Imported {} papers from {}", count, path.display());
     Ok(())
 }
 
@@ -2396,9 +2445,9 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_parse(&db, id)?;
         }
-        Commands::Import { path } => {
+        Commands::Import { path, ids, skip_existing } => {
             let db = open_db(&cli.db)?;
-            handle_import(&db, path)?;
+            handle_import(&db, path, &ids, *skip_existing)?;
         }
         Commands::Export { path, status, format } => {
             let db = open_db(&cli.db)?;
