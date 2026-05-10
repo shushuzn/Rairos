@@ -458,6 +458,11 @@ fn handle_add(db: &Database, arxiv_id: &str) -> Result<()> {
         return Ok(());
     }
 
+    add_paper_from_arxiv(db, arxiv_id)
+}
+
+/// Add a paper from arXiv by ID, returning Ok(()) on success
+fn add_paper_from_arxiv(db: &Database, arxiv_id: &str) -> Result<()> {
     // Fetch from arXiv API
     println!("Fetching metadata from arXiv for {}...", arxiv_id);
 
@@ -1132,7 +1137,7 @@ fn handle_daemon(port: u16, _log_level: &str, foreground: bool) -> Result<()> {
     Ok(())
 }
 
-fn handle_subscribe(_db: &Database, query: &str, interval_minutes: u64, max_papers: usize, auto_add: bool) -> Result<()> {
+fn handle_subscribe(db: &Database, query: &str, interval_minutes: u64, max_papers: usize, auto_add: bool) -> Result<()> {
     println!("=== Subscribing to arXiv: {} ===", query);
     println!("Check interval: {} minutes", interval_minutes);
     println!("Max papers per check: {}", max_papers);
@@ -1160,38 +1165,71 @@ fn handle_subscribe(_db: &Database, query: &str, interval_minutes: u64, max_pape
     println!("[OK] Found {} papers from arXiv for query '{}'", entry_count, query);
 
     if entry_count == 0 {
-        println!("No new papers found. Try a different query.");
+        println!("No papers found. Try a different query.");
         return Ok(());
     }
 
-    // Extract first few papers
-    let mut titles: Vec<String> = Vec::new();
+    // Extract all papers (id, title)
+    let mut papers_info: Vec<(String, String)> = Vec::new();
     let mut search_pos = 0;
-    while titles.len() < entry_count.min(5) {
-        if let Some(rel_entry_start) = body[search_pos..].find("<entry>") {
-            let entry_abs_start = search_pos + rel_entry_start;
-            let entry_block = &body[entry_abs_start..];
-            if let Some(rel_end) = entry_block.find("</entry>") {
-                let entry = &entry_block[..rel_end];
-                if let Some(title) = extract_xml_field(entry, "<title>") {
-                    titles.push(title.trim().to_string());
-                }
-                search_pos = entry_abs_start + rel_end + 9; // skip past </entry>
-            } else {
-                break;
+    while let Some(rel_entry_start) = body[search_pos..].find("<entry>") {
+        let entry_abs_start = search_pos + rel_entry_start;
+        let entry_block = &body[entry_abs_start..];
+        if let Some(rel_end) = entry_block.find("</entry>") {
+            let entry = &entry_block[..rel_end];
+            let title = extract_xml_field(entry, "<title>")
+                .map(|t| t.trim().to_string())
+                .unwrap_or_default();
+            // Extract arXiv ID from id tag (e.g. http://arxiv.org/abs/2301.00001v1)
+            let id_full = extract_xml_field(entry, "<id>").unwrap_or_default();
+            let arxiv_id = id_full
+                .trim()
+                .strip_prefix("http://arxiv.org/abs/")
+                .or_else(|| id_full.trim().strip_prefix("https://arxiv.org/abs/"))
+                .unwrap_or(&id_full)
+                .trim()
+                .to_string();
+            if !arxiv_id.is_empty() {
+                papers_info.push((arxiv_id, title));
             }
+            search_pos = entry_abs_start + rel_end + 9;
         } else {
             break;
         }
     }
 
     println!("\nTop papers found:");
-    for (i, title) in titles.iter().enumerate() {
+    for (i, (_, title)) in papers_info.iter().enumerate().take(5) {
         println!("  {}. {}", i + 1, title.chars().take(70).collect::<String>());
     }
 
-    if auto_add && entry_count > 0 {
-        println!("\nAuto-add enabled: add papers with 'rairos add <arxiv_id>'");
+    if auto_add && !papers_info.is_empty() {
+        println!("\nAuto-adding papers to database...");
+        let mut added = 0;
+        let mut skipped = 0;
+        let mut failed = 0;
+        for (arxiv_id, _title) in &papers_info {
+            match db.get_paper_by_arxiv(arxiv_id) {
+                Ok(Some(_)) => {
+                    println!("  - {}: already exists", arxiv_id);
+                    skipped += 1;
+                }
+                _ => {
+                    // Add paper via arXiv API
+                    match add_paper_from_arxiv(db, arxiv_id) {
+                        Ok(_) => {
+                            println!("  + {}: added", arxiv_id);
+                            added += 1;
+                        }
+                        Err(e) => {
+                            println!("  ! {}: failed ({})", arxiv_id, e);
+                            failed += 1;
+                        }
+                    }
+                }
+            }
+        }
+        println!("\nAuto-add complete: {} added, {} skipped, {} failed", added, skipped, failed);
     }
 
     println!("\nNote: Background monitoring requires daemon process. Subscription saved.");
