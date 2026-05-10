@@ -40,6 +40,9 @@ jobs:
           cargo check --package rairos-cli
           cargo check --package rairos-parser
           cargo check --package rairos-llm
+          cargo check --package rairos-research
+          cargo check --package rairos-web
+          cargo check --package rairos-kg
         working-directory: .
 
       - name: Build all crates
@@ -56,4 +59,12 @@ jobs:
 
       - name: Run llm tests
         run: cargo test --package rairos-llm -- --nocapture
+        working-directory: .
+
+      - name: Run research tests
+        run: cargo test --package rairos-research -- --nocapture
+        working-directory: .
+
+      - name: Run kg tests
+        run: cargo test --package rairos-kg -- --nocapture
         working-directory: .

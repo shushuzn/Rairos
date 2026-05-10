@@ -5,6 +5,9 @@ members = [
     "crates/rairos-cli",
     "crates/rairos-parser",
     "crates/rairos-llm",
+    "crates/rairos-research",
+    "crates/rairos-web",
+    "crates/rairos-kg",
 ]
 
 [profile.release]
