@@ -18,7 +18,7 @@ import argparse
 
 import sys
 
-from cli._shared import Colors, print_error, print_success
+from cli._shared import Colors, print_error
 
 
 def _build_jin10_parser(subparsers) -> argparse.ArgumentParser:
