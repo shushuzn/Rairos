@@ -582,6 +582,82 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         except sqlite3.Error as e:
             raise DatabaseError(f"get_papers_bulk failed: {e}") from e
 
+    def upsert_papers_bulk(
+        self,
+        papers: List[dict],
+        source: str,
+    ) -> Tuple[int, int]:
+        """Batch upsert papers in a single transaction. Returns (inserted, updated).
+
+        Each dict in papers must have: paper_id, title, authors (list or str),
+        abstract, published, abs_url, pdf_url, primary_category, doi.
+        Uses INSERT OR REPLACE for O(1) upsert — existing rows replaced entirely.
+        """
+        if not papers:
+            return 0, 0
+        now = _utcnow()
+        inserted = 0
+        updated = 0
+        with self.transaction():
+            cur = self.conn.cursor()
+            # Fetch all existing IDs at once
+            existing_ids: set[str] = set()
+            if papers:
+                paper_ids = [p["paper_id"] for p in papers]
+                placeholders = ",".join("?" * len(paper_ids))
+                cur.execute(f"SELECT id FROM papers WHERE id IN ({placeholders})", paper_ids)
+                existing_ids = {row[0] for row in cur.fetchall()}
+
+            for p in papers:
+                pid = p["paper_id"]
+                authors = p.get("authors", [])
+                authors_json = orjson.dumps(authors).decode("utf-8") if isinstance(authors, list) else authors
+                params = (
+                    pid, source, p.get("title", ""), authors_json, p.get("abstract", ""),
+                    p.get("published", ""), p.get("updated", ""), p.get("abs_url", ""),
+                    p.get("pdf_url", ""), p.get("primary_category", ""), p.get("journal", ""),
+                    p.get("volume", ""), p.get("issue", ""), p.get("page", ""), p.get("doi", ""),
+                    p.get("categories", ""), p.get("reference_count", 0),
+                    now, now, p.get("pdf_path", ""), p.get("pdf_hash", ""),
+                )
+                if pid in existing_ids:
+                    cur.execute(
+                        """
+                        UPDATE papers SET
+                            title=:t, authors=:a, abstract=:ab, published=:p, updated=:u,
+                            abs_url=:au, pdf_url=:pu, primary_category=:pc, journal=:j,
+                            volume=:v, issue=:i, page=:pg, doi=:d, categories=:c,
+                            reference_count=:rc, updated_at=:ua, pdf_path=:pp, pdf_hash=:ph
+                        WHERE id=:id
+                        """,
+                        {
+                            "id": pid, "t": p.get("title", ""), "a": authors_json,
+                            "ab": p.get("abstract", ""), "p": p.get("published", ""),
+                            "u": p.get("updated", ""), "au": p.get("abs_url", ""),
+                            "pu": p.get("pdf_url", ""), "pc": p.get("primary_category", ""),
+                            "j": p.get("journal", ""), "v": p.get("volume", ""),
+                            "i": p.get("issue", ""), "pg": p.get("page", ""),
+                            "d": p.get("doi", ""), "c": p.get("categories", ""),
+                            "rc": p.get("reference_count", 0), "ua": now,
+                            "pp": p.get("pdf_path", ""), "ph": p.get("pdf_hash", ""),
+                        },
+                    )
+                    updated += 1
+                else:
+                    cur.execute(
+                        """
+                        INSERT INTO papers (
+                            id, source, title, authors, abstract, published, updated,
+                            abs_url, pdf_url, primary_category, journal, volume, issue,
+                            page, doi, categories, reference_count, added_at, updated_at,
+                            pdf_path, pdf_hash
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        params,
+                    )
+                    inserted += 1
+        return inserted, updated
+
     def upsert_paper_code_trace(
         self,
         paper_id: str,
