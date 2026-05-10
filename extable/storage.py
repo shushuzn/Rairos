@@ -5,7 +5,7 @@ import sqlite3
 import orjson
 import uuid
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -58,7 +58,7 @@ class ExperimentDB:
             self._conn_cache = None
 
     def _now(self) -> str:
-        return datetime.utcnow().isoformat()
+        return datetime.now(timezone.utc).isoformat()
 
     def add_paper(self, paper_uid: str, title: str):
         conn = self._conn()

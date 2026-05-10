@@ -4,7 +4,7 @@ import sqlite3
 import uuid
 
 import orjson
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -74,7 +74,7 @@ class KGManager:
         return sqlite3.connect(self.db_path, check_same_thread=False)
 
     def _now(self) -> str:
-        return datetime.utcnow().isoformat()
+        return datetime.now(timezone.utc).isoformat()
 
     # ─── Node Operations ──────────────────────────────────────────────
 
