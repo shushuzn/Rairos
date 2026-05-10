@@ -68,7 +68,15 @@ enum Commands {
     },
 
     /// Show database statistics
-    Stats,
+    Stats {
+        /// Output as JSON
+        #[arg(long)]
+        json: bool,
+
+        /// Output format (table/json)
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
 
     /// Search papers by title/abstract
     Search {
@@ -501,8 +509,22 @@ fn handle_list(db: &Database, status: Option<String>, limit: usize, offset: usiz
     Ok(())
 }
 
-fn handle_stats(db: &Database) -> Result<()> {
+fn handle_stats(db: &Database, json: bool, format: &str) -> Result<()> {
     let stats = db.stats()?;
+
+    if json || format == "json" {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&serde_json::json!({
+                "total_papers": stats.total,
+                "pending": stats.pending,
+                "done": stats.done,
+                "research_gaps": stats.gaps,
+            }))?
+        );
+        return Ok(());
+    }
+
     println!("=== Rairos Database Statistics ===");
     println!("Total papers:  {}", stats.total);
     println!("  Pending:     {}", stats.pending);
@@ -1899,9 +1921,9 @@ fn main() -> Result<()> {
         Commands::Init => {
             handle_init(&cli.db)?;
         }
-        Commands::Stats => {
+        Commands::Stats { json, format } => {
             let db = open_db(&cli.db)?;
-            handle_stats(&db)?;
+            handle_stats(&db, *json, format)?;
         }
         Commands::Add { arxiv_id } => {
             let db = open_db(&cli.db)?;
