@@ -1,138 +1,82 @@
-# Claude Code Configuration - RuFlo V3
+# Claude Code Configuration - Rairos
 
 ## Behavioral Rules (Always Enforced)
 
 - Do what has been asked; nothing more, nothing less
-- NEVER create files unless they're absolutely necessary for achieving your goal
+- NEVER create files unless they're absolutely necessary
 - ALWAYS prefer editing an existing file to creating a new one
-- NEVER proactively create documentation files (*.md) or README files unless explicitly requested
+- NEVER proactively create documentation files (*.md) unless explicitly requested
 - NEVER save working files, text/mds, or tests to the root folder
-- Never continuously check status after spawning a swarm — wait for results
 - ALWAYS read a file before editing it
 - NEVER commit secrets, credentials, or .env files
-- Never skip tasks because their value appears low — if requested, do it; if it belongs in the codebase (e.g. cleanup, small fixes, docs), add it to CLAUDE.md as a directive
 
-## File Organization
+## Project: Rairos (ai-research-os)
 
-- NEVER save to root folder — use the directories below
-- Use `/src` for source code files
-- Use `/tests` for test files
-- Use `/docs` for documentation and markdown files
-- Use `/config` for configuration files
-- Use `/scripts` for utility scripts
-- Use `/examples` for example code
+**Self-Evolving Research OS** — manages papers, detects research gaps, generates insights.
 
-## Project Architecture
-
-- Follow Domain-Driven Design with bounded contexts
-- Keep files under 500 lines
-- Use typed interfaces for all public APIs
-- Prefer TDD London School (mock-first) for new code
-- Use event sourcing for state changes
-- Ensure input validation at system boundaries
-
-### Project Config
-
-- **Topology**: mesh
-- **Max Agents**: 5
-- **Memory**: memory
-- **HNSW**: Disabled
-- **Neural**: Disabled
+- **Python**: >=3.10, tested on 3.11/3.12/3.13
+- **CLI**: 77 commands via `rairos <cmd>`
+- **Entry**: `cli:main` (pyproject.toml scripts.rairos)
+- **Test**: 5156 tests, pytest with timeout=60s
+- **Linter**: ruff (E4/E7/F/W/B/I), mypy (strict=false)
+- **CI gate**: 40% coverage
 
 ## Build & Test
 
 ```bash
-# Build
-npm run build
-
-# Test
-npm test
+# Install dev dependencies
+uv sync --all-extras
 
 # Lint
-npm run lint
+uv run ruff check .
+uv run ruff format --check .
+
+# Type check (CI scope: core parsers db llm research_loop cli)
+uv run mypy core parsers db llm research_loop cli scripts notifications
+
+# Tests (fast subset)
+uv run pytest tests/test_workflow.py tests/test_cli_dispatch.py tests/test_briefing_daemon.py -v --timeout=15
+
+# Full test suite (slow — uses pytest-split 4-way sharding)
+uv run pytest tests/ -q --tb=short -n auto --timeout=60
 ```
 
-- ALWAYS run tests after making code changes
-- ALWAYS verify build succeeds before committing
+## Architecture
 
-## Security Rules
+- **core/**: Utilities — rate_limiter, retry, cache, notifications, observability, profiler
+- **db/**: SQLite via database.py (922 lines, primary key is `id`)
+- **llm/**: LLM clients, citation chains, gap detection, evolution, briefings
+- **parsers/**: arxiv, cross_search
+- **research_loop/**: Deep research, orchestrator, benchmark_runner, claim_graph, paper_parser
+- **cli/**: 77 commands in `cli/cmd/`, dispatch registry in `cli/_registry.py`
+- **kg/**: Knowledge graph manager
+- **web/**: FastAPI routes (web/routes_*.py)
 
-- NEVER hardcode API keys, secrets, or credentials in source files
-- NEVER commit .env files or any file containing secrets
-- Always validate user input at system boundaries
-- Always sanitize file paths to prevent directory traversal
-- Run `npx @claude-flow/cli@latest security scan` after security-related changes
+## Key Patterns
 
-## Concurrency: 1 MESSAGE = ALL RELATED OPERATIONS
+- `db.database.Database` is the main DB interface
+- `Paper` dataclass: `id`, `arxiv_id`, `title`, `authors`, `published`, `abstract`, `categories`
+- `papers` table PK is `id` (NOT arxiv_id)
+- MCP tools registered in `mcp/tools_defs.py`
+- CLI dispatch: `cli/_registry.py` `_SUBCOMMAND_TABLE` + `_run_<cmd>` in `cli/__init__.py`
 
-- All operations MUST be concurrent/parallel in a single message
-- Use Claude Code's Task tool for spawning agents, not just MCP
-- ALWAYS batch ALL todos in ONE TodoWrite call (5-10+ minimum)
-- ALWAYS spawn ALL agents in ONE message with full instructions via Task tool
-- ALWAYS batch ALL file reads/writes/edits in ONE message
-- ALWAYS batch ALL Bash commands in ONE message
+## Windows / MSYS2 Notes
 
-## Swarm Configuration & Anti-Drift
+- Git push: `GIT_ASKPASS=echo timeout 55 git push` (works 15-55s)
+- Python 3.13.12, UV managed
+- CRLF: patch tool handles it; mypy CRLF bug on Windows is filtered in pyproject.toml
 
-- ALWAYS use hierarchical topology for coding swarms
-- Keep maxAgents at 6-8 for tight coordination
-- Use specialized strategy for clear role boundaries
-- Use `raft` consensus for hive-mind (leader maintains authoritative state)
-- Run frequent checkpoints via `post-task` hooks
-- Keep shared memory namespace for all agents
+## GitHub Push
 
 ```bash
-npx @claude-flow/cli@latest swarm init --topology hierarchical --max-agents 8 --strategy specialized
+GIT_ASKPASS=echo timeout 55 git push
 ```
 
-## Swarm Execution Rules
+## Known Issues
 
-- ALWAYS use `run_in_background: true` for all agent Task calls
-- ALWAYS put ALL agent Task calls in ONE message for parallel execution
-- After spawning, STOP — do NOT add more tool calls or check status
-- Never poll TaskOutput or check swarm status — trust agents to return
-- When agent results arrive, review ALL results before proceeding
-
-## V3 CLI Commands
-
-### Core Commands
-
-| Command | Subcommands | Description |
-|---------|-------------|-------------|
-| `init` | 4 | Project initialization |
-| `agent` | 8 | Agent lifecycle management |
-| `swarm` | 6 | Multi-agent swarm coordination |
-| `memory` | 11 | AgentDB memory with HNSW search |
-| `task` | 6 | Task creation and lifecycle |
-| `session` | 7 | Session state management |
-| `hooks` | 17 | Self-learning hooks + 12 workers |
-| `hive-mind` | 6 | Byzantine fault-tolerant consensus |
-
-### Quick CLI Examples
-
-```bash
-npx @claude-flow/cli@latest init --wizard
-npx @claude-flow/cli@latest agent spawn -t coder --name my-coder
-npx @claude-flow/cli@latest swarm init --v3-mode
-npx @claude-flow/cli@latest memory search --query "authentication patterns"
-npx @claude-flow/cli@latest doctor --fix
-```
-
-## Quick Setup
-
-```bash
-claude mcp add claude-flow -- npx -y @claude-flow/cli@latest
-npx @claude-flow/cli@latest daemon start
-npx @claude-flow/cli@latest doctor --fix
-```
-
-## Claude Code vs CLI Tools
-
-- Claude Code's Task tool handles ALL execution: agents, file ops, code generation, git
-- CLI tools handle coordination via Bash: swarm init, memory, hooks, routing
-- NEVER use CLI tools as a substitute for Task tool agents
-
-## Support
-
-- Documentation: https://github.com/ruvnet/claude-flow
-- Issues: https://github.com/ruvnet/claude-flow/issues
+- `test_deep_research.py` ignored in pytest (pytest.ini_options addopts)
+- `core/basics.py` 95% covered (2 missing lines)
+- `db/database.py` 16% covered (922-line file with many branches)
+- `core/rate_limiter.py` 22%, `core/retry.py` 24% — need targeted tests
+- `mypy 1.20.1 CRLF line-number bug` — filtered by `disable_error_code = ["assignment", "union-attr"]`
+- Bandit B608/B310/B311 false positives — acknowledged in pyproject.toml

@@ -125,7 +125,7 @@ class DiscordRenderer:
         color = cls._color_for(payload.gap_type, payload.severity)
         novelty_pct = int(payload.novelty * 100)
 
-        fields = [
+        fields: list[Dict[str, Any]] = [
             {
                 "name": "Gap Type",
                 "value": payload.gap_type.replace("_", " ").title(),
@@ -162,7 +162,7 @@ class DiscordRenderer:
                 "inline": False,
             })
 
-        embed = {
+        embed: Dict[str, Any] = {
             "title": f"🔬 {payload.title[:256]}",
             "description": f"**{payload.severity.upper()}** novelty gap discovered via **{payload.source}**",
             "color": color,
@@ -180,22 +180,24 @@ class DiscordRenderer:
         icon = "⚠️" if payload.alert_type == "contradiction_cluster" else "🔄"
         color = 0xFF0000 if payload.severity == "high" else 0xFF8800
 
-        embed = {
+        fields: list[Dict[str, Any]] = [
+            {
+                "name": "Alert Type",
+                "value": payload.alert_type.replace("_", " ").title(),
+                "inline": True,
+            },
+            {
+                "name": "Severity",
+                "value": payload.severity.upper(),
+                "inline": True,
+            },
+        ]
+
+        embed: Dict[str, Any] = {
             "title": f"{icon} Paradigm Shift Signal: {payload.gap_type}",
             "description": payload.message[:2048],
             "color": color,
-            "fields": [
-                {
-                    "name": "Alert Type",
-                    "value": payload.alert_type.replace("_", " ").title(),
-                    "inline": True,
-                },
-                {
-                    "name": "Severity",
-                    "value": payload.severity.upper(),
-                    "inline": True,
-                },
-            ],
+            "fields": fields,
             "footer": {
                 "text": f"Rairos Paradigm Watch • {DT.now().strftime('%Y-%m-%d %H:%M')}",
             },
@@ -214,7 +216,7 @@ class DiscordRenderer:
     @classmethod
     def render_paper_ingested(cls, paper_title: str, arxiv_id: str, tags: List[str]) -> Dict[str, Any]:
         """Render a paper ingestion notification."""
-        embed = {
+        embed: Dict[str, Any] = {
             "title": f"📄 {paper_title[:256]}",
             "description": f"**arXiv:** `{arxiv_id}`",
             "color": 0x88CCFF,
@@ -250,7 +252,7 @@ class FeishuRenderer:
         """Render a gap alert as a Feishu card."""
         novelty_pct = int(payload.novelty * 100)
 
-        elements = [
+        elements: list[dict[str, Any]] = [
             {
                 "tag": "markdown",
                 "content": f"**Gap Type:** {payload.gap_type.replace('_', ' ').title()}",

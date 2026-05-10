@@ -47,7 +47,7 @@ _LAZY_SUBMODULES = {
     "renderers.cnote": ["render_cnote"],
     "renderers.mnote": ["render_mnote"],
 }
-_lazy_cache = {}
+_lazy_cache: dict = {}
 
 
 def __getattr__(name: str):

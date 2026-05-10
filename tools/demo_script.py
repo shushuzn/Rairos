@@ -56,7 +56,7 @@ def run_demo(url: str, output: str, headless: bool = True):
         page = browser.new_page(viewport={"width": 1400, "height": 900})
 
         for step in DEMO_STEPS:
-            step_url = url.rstrip("/") + step["url"]
+            step_url = url.rstrip("/") + str(step["url"])
             ts = time.time() - start_time
             print(f"[{ts:.1f}s] → {step['name']}: {step_url}")
             try:

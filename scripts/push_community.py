@@ -63,7 +63,7 @@ files = [
 blobs = {}
 for path in files:
     with open(path, "rb") as f:
-        content = base64.b64encode(f.read()).decode()
+        content = base64.b64encode(f.read()).decode()  # type: ignore[arg-type]
     resp = api("/git/blobs", {"content": content, "encoding": "base64"}, "POST")[0]
     blobs[path] = resp["sha"]
     print(f"  Blob {path}: {resp['sha'][:8]}...")

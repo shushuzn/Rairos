@@ -535,7 +535,6 @@ async def submit_verdict(request: Request):
 
     body = await request.json()
     capsule_id = body.get("capsule_id", "")
-    verdict = body.get("verdict", "")
 
     capsules = _load_capsules()
     for cap in capsules:

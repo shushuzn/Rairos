@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from typing import Any
 
 
 # ─── Thresholds ────────────────────────────────────────────────────────────────
@@ -77,7 +78,7 @@ def run_cold_start_research(db, topic: str | None = None) -> dict:
 
     Uses the most recent subscription or a default topic.
     """
-    from research_loop.orchestrator import Orchestrator
+    from research_loop.orchestrator import AutonomousOrchestrator
 
     # Pick topic: use most-recently-active subscription
     if topic is None:
@@ -90,8 +91,8 @@ def run_cold_start_research(db, topic: str | None = None) -> dict:
 
     print(f"[Scheduler] Cold-start research triggered for: {topic}")
 
-    orch = Orchestrator()
-    result = orch.run_deep_research(topic, papers=[])
+    orch = AutonomousOrchestrator()
+    result: dict[str, Any] = orch.run_deep_research(topic, new_papers=[])
     gaps = result.get("gaps", [])
     print(f"[Scheduler] Cold-start complete: {len(gaps)} gaps filled")
     return result
