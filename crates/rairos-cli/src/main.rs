@@ -103,6 +103,10 @@ enum Commands {
         #[arg(short, long, default_value = "20")]
         limit: usize,
 
+        /// Field to search in (title, abstract, authors, all)
+        #[arg(long, default_value = "all")]
+        field: String,
+
         /// Output format
         #[arg(short, long, default_value = "table")]
         format: String,
@@ -695,12 +699,28 @@ fn handle_stats(db: &Database, json: bool, format: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_search(db: &Database, query: &str, limit: usize, format: &str) -> Result<()> {
+fn handle_search(db: &Database, query: &str, limit: usize, field: &str, format: &str) -> Result<()> {
     // Use search_papers for real keyword matching in title/abstract
     let papers = db.search_papers(query, limit)?;
 
+    let filtered: Vec<&Paper> = if field == "all" {
+        papers.iter().collect()
+    } else {
+        papers.iter().filter(|p| {
+            match field {
+                "title" => p.title.to_lowercase().contains(&query.to_lowercase()),
+                "abstract" => p.abstract_text.to_lowercase().contains(&query.to_lowercase()),
+                "authors" => p.authors.iter().any(|a| a.to_lowercase().contains(&query.to_lowercase())),
+                "categories" => p.categories.iter().any(|c| c.to_lowercase().contains(&query.to_lowercase())),
+                _ => true,
+            }
+        }).collect()
+    };
+
+    let papers_vec: Vec<Paper> = filtered.into_iter().cloned().collect();
+
     if format == "json" {
-        let out: Vec<serde_json::Value> = papers.iter().map(|p| {
+        let out: Vec<serde_json::Value> = papers_vec.iter().map(|p| {
             serde_json::json!({
                 "id": p.id,
                 "arxiv_id": p.arxiv_id,
@@ -715,14 +735,14 @@ fn handle_search(db: &Database, query: &str, limit: usize, format: &str) -> Resu
         return Ok(());
     }
 
-    if papers.is_empty() {
-        println!("No papers found for query: {}", query);
+    if papers_vec.is_empty() {
+        println!("No papers found for query: {} (field: {})", query, field);
         return Ok(());
     }
 
-    println!("Found {} papers for '{}':", papers.len(), query);
+    println!("Found {} papers for '{}' (field: {}):", papers_vec.len(), query, field);
     println!();
-    for (i, paper) in papers.iter().enumerate() {
+    for (i, paper) in papers_vec.iter().enumerate() {
         println!("{}. {}", i + 1, paper.title);
         if let Some(ref arxiv) = paper.arxiv_id {
             println!("   arXiv: {}", arxiv);
@@ -2481,9 +2501,9 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_show(&db, id, format)?;
         }
-        Commands::Search { query, limit, format } => {
+        Commands::Search { query, limit, field, format } => {
             let db = open_db(&cli.db)?;
-            handle_search(&db, query, *limit, format)?;
+            handle_search(&db, query, *limit, field, format)?;
         }
         Commands::Delete { id, force } => {
             let db = open_db(&cli.db)?;
