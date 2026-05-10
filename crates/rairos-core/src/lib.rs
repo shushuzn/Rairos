@@ -220,6 +220,7 @@ impl Database {
             params![
                 paper.id,
                 paper.arxiv_id,
+                &paper.title,
                 serde_json::to_string(&paper.authors)?,
                 paper.published.to_rfc3339(),
                 &paper.abstract_text,

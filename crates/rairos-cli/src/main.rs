@@ -458,16 +458,101 @@ fn handle_add(db: &Database, arxiv_id: &str) -> Result<()> {
         return Ok(());
     }
 
-    // Fetch from arXiv
+    // Fetch from arXiv API
     println!("Fetching metadata from arXiv for {}...", arxiv_id);
 
-    // Build paper — in production would call rairos_parser::fetch_arxiv
-    // For now create a placeholder with arXiv metadata structure
-    let paper = Paper::new(Some(arxiv_id.to_string()), format!("arXiv:{}", arxiv_id), "Abstract pending fetch".to_string());
+    let url = format!("http://export.arxiv.org/api/query?id_list={}", arxiv_id);
+    let resp = reqwest::blocking::get(&url)
+        .context("Failed to connect to arXiv API")?;
+
+    if !resp.status().is_success() {
+        anyhow::bail!("arXiv API returned error: {}", resp.status());
+    }
+
+    let body = resp.text().context("Failed to read arXiv response")?;
+
+    // arXiv ATOM feed has feed-level <title> and <summary> BEFORE <entry>
+    // We need the entry-level fields, so extract entry block first
+    let entry_start = body.find("<entry>").unwrap_or(0);
+    let entry_end = body.find("</entry>").unwrap_or(body.len());
+    let entry = &body[entry_start..entry_end];
+
+    // Parse entry-level fields
+    let title = extract_xml_field(entry, "<title>")
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|| format!("arXiv:{}", arxiv_id));
+    let abstract_text = extract_xml_field(entry, "<summary>")
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|| "Abstract not available".to_string());
+
+    let authors: Vec<String> = extract_all_xml_fields(entry, "<name>")
+        .into_iter()
+        .map(|s| s.trim().to_string())
+        .collect();
+
+    let published = extract_xml_field(entry, "<published>")
+        .and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok())
+        .map(|dt| dt.with_timezone(&chrono::Utc))
+        .unwrap_or_else(chrono::Utc::now);
+
+    let categories: Vec<String> = extract_all_xml_fields(entry, "<category term=")
+        .into_iter()
+        .filter(|s| s.contains('"'))
+        .map(|s| s.split('"').nth(1).unwrap_or(&s).to_string())
+        .collect();
+
+    let _primary_category = extract_xml_field(entry, "arxiv:primary_category term=")
+        .map(|s| s.split('"').nth(1).unwrap_or(&s).to_string())
+        .unwrap_or_else(|| categories.first().cloned().unwrap_or_default());
+
+    println!("  Title: {}", title.chars().take(60).collect::<String>());
+    println!("  Authors: {}", authors.iter().take(3).cloned().collect::<Vec<_>>().join(", "));
+    println!("  Published: {}", published.format("%Y-%m-%d"));
+    println!("  Categories: {}", categories.iter().take(5).cloned().collect::<Vec<_>>().join(", "));
+
+    // Build paper with fetched metadata
+    let mut paper = Paper::new(
+        Some(arxiv_id.to_string()),
+        title,
+        abstract_text,
+    );
+    paper.authors = authors;
+    paper.categories = categories;
+    paper.published = published;
 
     db.insert_paper(&paper)?;
-    println!("Added: {} ({})", paper.title, paper.id);
+    println!("\n[OK] Added: {} ({})", paper.id, arxiv_id);
     Ok(())
+}
+
+// Extract text content from first XML field occurrence
+fn extract_xml_field(xml: &str, tag: &str) -> Option<String> {
+    if let Some(start) = xml.find(tag) {
+        let content_start = start + tag.len();
+        if let Some(end) = xml[content_start..].find("</") {
+            return Some(xml[content_start..content_start + end].to_string());
+        }
+    }
+    None
+}
+
+// Extract all occurrences of an XML tag's text content
+fn extract_all_xml_fields(xml: &str, tag: &str) -> Vec<String> {
+    let mut results = Vec::new();
+    let mut search_pos = 0;
+
+    while let Some(tag_start) = xml[search_pos..].find(tag) {
+        let content_start = tag_start + tag.len();
+        let rest = &xml[search_pos..];
+        let after_tag = &rest[content_start..];
+        if let Some(end_offset) = after_tag.find("</") {
+            results.push(after_tag[..end_offset].to_string());
+            search_pos += content_start + end_offset + 3; // Skip past </tag>
+        } else {
+            break;
+        }
+    }
+    results
 }
 
 fn handle_list(db: &Database, status: Option<String>, limit: usize, offset: usize, format: &str) -> Result<()> {
