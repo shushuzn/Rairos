@@ -6,6 +6,7 @@ Research family clustering and silent citation detection.
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional, Dict, Set, Tuple, Any, cast
 from collections import deque
+from pathlib import Path
 import json
 import re
 import uuid
