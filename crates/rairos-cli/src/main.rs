@@ -763,7 +763,7 @@ fn handle_show(db: &Database, id: &str, format: &str) -> Result<()> {
     println!("arXiv:       {:?}", paper.arxiv_id);
     println!("Title:       {}", paper.title);
     println!("Authors:     {:?}", paper.authors.iter().take(5).collect::<Vec<_>>());
-    if !paper.authors.len() > 5 {
+    if paper.authors.len() > 5 {
         println!("             ... and {} more", paper.authors.len() - 5);
     }
     println!("Published:   {}", paper.published);
