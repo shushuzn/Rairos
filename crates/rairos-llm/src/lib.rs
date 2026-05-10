@@ -200,7 +200,6 @@ impl LlmClient for OpenAiClient {
         struct Usage {
             prompt_tokens: u32,
             completion_tokens: u32,
-            total_tokens: u32,
         }
 
         let data: Response = resp.json().await?;

@@ -58,6 +58,17 @@ pub struct PaperMetadata {
     pub pdf_url: Option<String>,
 }
 
+impl Default for PaperMetadata {
+    fn default() -> Self {
+        Self {
+            cited_by: 0,
+            references: 0,
+            doi: None,
+            pdf_url: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ParseStatus {
@@ -80,21 +91,27 @@ impl std::fmt::Display for ParseStatus {
 
 impl Paper {
     pub fn new(arxiv_id: Option<String>, title: String, abstract_text: String) -> Self {
+        Self::with_metadata(arxiv_id, title, abstract_text, Vec::new(), Vec::new(), PaperMetadata::default())
+    }
+
+    pub fn with_metadata(
+        arxiv_id: Option<String>,
+        title: String,
+        abstract_text: String,
+        authors: Vec<String>,
+        categories: Vec<String>,
+        metadata: PaperMetadata,
+    ) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
             arxiv_id,
             title,
-            authors: Vec::new(),
+            authors,
             published: Utc::now(),
             abstract_text,
-            categories: Vec::new(),
+            categories,
             parse_status: ParseStatus::Pending,
-            metadata: PaperMetadata {
-                cited_by: 0,
-                references: 0,
-                doi: None,
-                pdf_url: None,
-            },
+            metadata,
         }
     }
 }

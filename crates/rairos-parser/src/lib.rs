@@ -3,8 +3,8 @@
 //! Supported sources: arXiv, CrossRef, Semantic Scholar
 //! Replaces: parsers/arxiv.py, parsers/cross_search.py
 
-use rairos_core::{Paper, ParseStatus};
-use serde::{Deserialize, Serialize};
+use rairos_core::{Paper, PaperMetadata};
+use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
 
@@ -38,6 +38,8 @@ const ARXIV_API: &str = "http://export.arxiv.org/api/query";
 
 /// ArXiv entry response fields we care about
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct ArXivEntry {
     #[serde(rename = "id")]
     entry_id: String,
@@ -54,18 +56,24 @@ struct ArXivEntry {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct ArXivAuthor {
     #[serde(rename = "name")]
     name: String,
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct ArXivCategory {
     #[serde(rename = "term")]
     term: String,
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct ArXivFeed {
     #[serde(rename = "entry")]
     entry: Option<ArXivEntry>,
@@ -87,8 +95,8 @@ pub async fn fetch_arxiv(arxiv_id: &str) -> Result<Paper, ParseError> {
     // Parse Atom feed manually since serde_xml doesn't handle namespaced elements well
     let title = extract_tag(&text, "title").unwrap_or_default();
     let summary = extract_tag(&text, "summary").unwrap_or_default();
-    let published = extract_tag(&text, "published").unwrap_or_default();
-    let entry_id = extract_tag(&text, "id").unwrap_or_default();
+    let _published = extract_tag(&text, "published").unwrap_or_default();
+    let _entry_id = extract_tag(&text, "id").unwrap_or_default();
 
     let authors: Vec<String> = extract_authors(&text);
     let categories: Vec<String> = extract_categories(&text);
@@ -97,10 +105,13 @@ pub async fn fetch_arxiv(arxiv_id: &str) -> Result<Paper, ParseError> {
         return Err(ParseError::NotFound(arxiv_id.to_string()));
     }
 
-    let paper = Paper::new(
+    let paper = Paper::with_metadata(
         Some(arxiv_id.to_string()),
         clean_arxiv_title(&title),
         clean_text(&summary),
+        authors,
+        categories,
+        PaperMetadata::default(),
     );
 
     // Note: in full impl, would update fields via Database
@@ -183,6 +194,8 @@ struct CrossRefResponse {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct CrossRefMessage {
     #[serde(rename = "DOI")]
     doi: Option<String>,
@@ -203,6 +216,8 @@ struct CrossRefMessage {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct CrossRefAuthor {
     #[serde(rename = "given")]
     given: Option<String>,
@@ -211,12 +226,16 @@ struct CrossRefAuthor {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct CrossRefDate {
     #[serde(rename = "date-parts")]
     date_parts: Option<Vec<Vec<u16>>>,
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct CrossRefError {
     #[serde(rename = "message")]
     message: Option<String>,
@@ -272,10 +291,13 @@ pub async fn fetch_crossref(doi: &str) -> Result<Paper, ParseError> {
 
     let categories = msg.categories.unwrap_or_default();
 
-    let paper = Paper::new(
+    let paper = Paper::with_metadata(
         None, // arXiv ID not available from CrossRef
         title,
         clean_text(&abstract_text),
+        authors,
+        categories,
+        PaperMetadata::default(),
     );
 
     Ok(paper)
@@ -289,6 +311,8 @@ const SEMANTIC_API: &str = "https://api.semanticscholar.org/graph/v1";
 
 /// Semantic Scholar paper response
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct SemanticPaper {
     #[serde(rename = "paperId")]
     paper_id: Option<String>,
@@ -309,6 +333,8 @@ struct SemanticPaper {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct SemanticExternalIds {
     #[serde(rename = "DOI")]
     doi: Option<String>,
@@ -319,6 +345,8 @@ struct SemanticExternalIds {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+
 struct SemanticAuthor {
     #[serde(rename = "authorId")]
     id: Option<String>,
@@ -362,10 +390,21 @@ pub async fn fetch_semantic(paper_id: &str) -> Result<Paper, ParseError> {
         .filter_map(|a| a.name)
         .collect();
 
-    let paper = Paper::new(
+    let cited_by = data.citation_count.unwrap_or(0) as usize;
+    let metadata = PaperMetadata {
+        cited_by,
+        references: 0,
+        doi: data.external_ids.as_ref().and_then(|ids| ids.doi.clone()),
+        pdf_url: None,
+    };
+
+    let paper = Paper::with_metadata(
         arxiv_id,
         title,
         clean_text(&abstract_text),
+        authors,
+        data.fields.unwrap_or_default(),
+        metadata,
     );
 
     Ok(paper)

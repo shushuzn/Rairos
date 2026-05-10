@@ -3,9 +3,8 @@
 //! 77 commands managed via clap derive macros.
 
 use anyhow::{Context, Result};
-use clap::{ArgAction, Parser, Subcommand};
-use rairos_core::{Database, DbStats, Paper, ParseStatus, RateLimiter};
-use std::collections::HashMap;
+use clap::{Parser, Subcommand};
+use rairos_core::{Database, Paper, ParseStatus, RateLimiter};
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
@@ -176,15 +175,6 @@ fn parse_status_arg(s: &str) -> Option<ParseStatus> {
         "done" => Some(ParseStatus::Done),
         "failed" => Some(ParseStatus::Failed),
         _ => None,
-    }
-}
-
-fn status_color(status: &ParseStatus) -> &'static str {
-    match status {
-        ParseStatus::Pending => "[yellow]",
-        ParseStatus::Parsing => "[blue]",
-        ParseStatus::Done => "[green]",
-        ParseStatus::Failed => "[red]",
     }
 }
 
@@ -509,7 +499,7 @@ fn handle_doctor(format: &str) -> Result<()> {
 
     let mut ok: Vec<String> = Vec::new();
     let mut warnings: Vec<String> = Vec::new();
-    let mut issues: Vec<String> = Vec::new();
+    let issues: Vec<String> = Vec::new();
 
     // Python
     let ver = env!("CARGO_PKG_VERSION");
