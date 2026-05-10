@@ -120,14 +120,21 @@ enum Commands {
 
     /// Delete a paper
     Delete {
-        /// Paper ID
-        id: String,
+        /// Paper ID(s) to delete
+        #[arg(required = true)]
+        id: Vec<String>,
+
+        /// Skip confirmation prompt
+        #[arg(short, long)]
+        force: bool,
     },
 
     /// Update paper status
     UpdateStatus {
-        /// Paper ID
-        id: String,
+        /// Paper ID(s) — supports multiple IDs
+        #[arg(required = true)]
+        id: Vec<String>,
+
         /// New status (pending/parsing/done/failed)
         status: String,
     },
@@ -781,17 +788,62 @@ fn handle_show(db: &Database, id: &str, format: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_delete(db: &Database, id: &str) -> Result<()> {
-    db.delete_paper(id)?;
-    println!("Deleted paper: {}", id);
+fn handle_delete(db: &Database, ids: &[String], force: bool) -> Result<()> {
+    if ids.len() > 1 && !force {
+        print!("Delete {} papers? [y/N] ", ids.len());
+        std::io::Write::flush(&mut std::io::stdout()).ok();
+        let mut confirm = String::new();
+        if std::io::stdin().read_line(&mut confirm).is_err() || !confirm.trim().eq_ignore_ascii_case("y") {
+            println!("Cancelled.");
+            return Ok(());
+        }
+    } else if ids.len() == 1 && !force {
+        print!("Delete paper '{}'? [y/N] ", ids[0]);
+        std::io::Write::flush(&mut std::io::stdout()).ok();
+        let mut confirm = String::new();
+        if std::io::stdin().read_line(&mut confirm).is_err() || !confirm.trim().eq_ignore_ascii_case("y") {
+            println!("Cancelled.");
+            return Ok(());
+        }
+    }
+
+    let mut deleted = 0;
+    let mut failed = 0;
+    for id in ids {
+        match db.delete_paper(id) {
+            Ok(_) => {
+                println!("Deleted: {}", id);
+                deleted += 1;
+            }
+            Err(e) => {
+                eprintln!("Failed: {} ({})", id, e);
+                failed += 1;
+            }
+        }
+    }
+    println!("\nDelete complete: {} deleted, {} failed", deleted, failed);
     Ok(())
 }
 
-fn handle_update_status(db: &Database, id: &str, status: &str) -> Result<()> {
+fn handle_update_status(db: &Database, ids: &[String], status: &str) -> Result<()> {
     let parse_status = parse_status_arg(status)
         .ok_or_else(|| anyhow::anyhow!("Invalid status '{}'. Use: pending, parsing, done, failed", status))?;
-    db.update_paper_status(id, parse_status)?;
-    println!("Updated paper {} -> {}", id, status);
+
+    let mut updated = 0;
+    let mut failed = 0;
+    for id in ids {
+        match db.update_paper_status(id, parse_status) {
+            Ok(_) => {
+                println!("Updated: {} -> {}", id, status);
+                updated += 1;
+            }
+            Err(e) => {
+                eprintln!("Failed: {} ({})", id, e);
+                failed += 1;
+            }
+        }
+    }
+    println!("\nStatus update complete: {} updated, {} failed", updated, failed);
     Ok(())
 }
 
@@ -2433,13 +2485,13 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_search(&db, query, *limit, format)?;
         }
-        Commands::Delete { id } => {
+        Commands::Delete { id, force } => {
             let db = open_db(&cli.db)?;
-            handle_delete(&db, id)?;
+            handle_delete(&db, &id, *force)?;
         }
         Commands::UpdateStatus { id, status } => {
             let db = open_db(&cli.db)?;
-            handle_update_status(&db, id, status)?;
+            handle_update_status(&db, &id, status)?;
         }
         Commands::Parse { id } => {
             let db = open_db(&cli.db)?;
