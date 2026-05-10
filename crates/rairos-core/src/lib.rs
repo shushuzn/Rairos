@@ -112,6 +112,18 @@ pub struct ResearchGap {
     pub paper_ids: Vec<String>,
 }
 
+impl ResearchGap {
+    pub fn new(category: &str, description: &str, severity: &str) -> Self {
+        Self {
+            id: uuid::Uuid::new_v4().to_string(),
+            category: category.to_string(),
+            description: description.to_string(),
+            severity: severity.to_string(),
+            paper_ids: Vec::new(),
+        }
+    }
+}
+
 // ============================================================================
 // Database
 // ============================================================================
@@ -212,7 +224,7 @@ impl Database {
                     parse_status, cited_by, references_cnt, doi, pdf_url
              FROM papers WHERE id = ?1",
         )?;
-        let paper = stmt.query_row([id], |row| Ok(Self::row_to_paper(row)))?;
+        let paper = stmt.query_row([id], |row| Self::row_to_paper(row))?;
         Ok(paper)
     }
 
@@ -223,8 +235,9 @@ impl Database {
                     parse_status, cited_by, references_cnt, doi, pdf_url
              FROM papers WHERE arxiv_id = ?1",
         )?;
-        let result =
-            stmt.query_row([arxiv_id], |row| Ok(Some(Self::row_to_paper(row))));
+        let result = stmt.query_row([arxiv_id], |row| {
+            Ok(Some(Self::row_to_paper(row)?))
+        });
         match result {
             Ok(p) => Ok(p),
             Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
@@ -255,7 +268,7 @@ impl Database {
                     |row| Ok(Self::row_to_paper(row)),
                 )?;
                 for paper in rows {
-                    papers_vec.push(paper?);
+                    papers_vec.push(paper??);
                 }
             }
             None => {
@@ -265,7 +278,7 @@ impl Database {
                     |row| Ok(Self::row_to_paper(row)),
                 )?;
                 for paper in rows {
-                    papers_vec.push(paper?);
+                    papers_vec.push(paper??);
                 }
             }
         }

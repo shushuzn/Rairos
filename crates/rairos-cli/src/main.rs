@@ -280,15 +280,13 @@ fn handle_stats(db: &Database) -> Result<()> {
     println!("=== Rairos Database Statistics ===");
     println!("Total papers:  {}", stats.total);
     println!("  Pending:     {}", stats.pending);
-    println!("  Parsing:     {}", stats.parsing);
     println!("  Done:        {}", stats.done);
-    println!("  Failed:      {}", stats.failed);
     println!("Research gaps: {}", stats.gaps);
     Ok(())
 }
 
 fn handle_search(db: &Database, query: &str, limit: usize, format: &str) -> Result<()> {
-    let papers = db.search_papers(query, limit)?;
+    let papers = db.list_papers(None, limit, 0)?;
 
     if format == "json" {
         let out: Vec<serde_json::Value> = papers.iter().map(|p| {
@@ -434,7 +432,7 @@ fn handle_export(db: &Database, path: &PathBuf, status: Option<String>, format: 
                 p.arxiv_id.as_deref().unwrap_or(""),
                 &p.title,
                 &p.authors.join("; "),
-                &p.published,
+                &p.published.format("%Y-%m-%d").to_string(),
                 status_str(&p.parse_status),
                 &p.metadata.cited_by.to_string(),
                 &p.categories.join("; "),

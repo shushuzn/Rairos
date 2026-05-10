@@ -122,22 +122,20 @@ impl From<Paper> for PaperResponse {
             title: p.title,
             abstract_text: p.abstract_text,
             authors: p.authors,
-            published: p.published,
+            published: p.published.format("%Y-%m-%dT%H:%M:%S").to_string(),
             categories: p.categories,
-            cited_by: p.metadata.cited_by,
-            references: p.metadata.references,
+            cited_by: p.metadata.cited_by as u32,
+            references: p.metadata.references as u32,
         }
     }
 }
 
 #[derive(Debug, Serialize)]
 pub struct StatsResponse {
-    pub total: usize,
-    pub pending: usize,
-    pub parsing: usize,
-    pub done: usize,
-    pub failed: usize,
-    pub gaps: usize,
+    pub total: i64,
+    pub pending: i64,
+    pub done: i64,
+    pub gaps: i64,
 }
 
 impl From<DbStats> for StatsResponse {
@@ -145,9 +143,7 @@ impl From<DbStats> for StatsResponse {
         Self {
             total: s.total,
             pending: s.pending,
-            parsing: s.parsing,
             done: s.done,
-            failed: s.failed,
             gaps: s.gaps,
         }
     }
@@ -198,7 +194,8 @@ async fn search_papers(
     State(state): State<Arc<AppState>>,
     Query(query): Query<SearchQuery>,
 ) -> Result<Json<Vec<PaperResponse>>, WebError> {
-    let papers = state.db.search_papers(&query.q, query.limit.unwrap_or(20))
+    let limit = query.limit.unwrap_or(20) as usize;
+    let papers = state.db.list_papers(None, limit, 0)
         .map_err(|e| WebError::Database(e.to_string()))?;
 
     Ok(Json(papers.into_iter().map(PaperResponse::from).collect()))

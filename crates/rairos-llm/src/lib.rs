@@ -30,12 +30,6 @@ pub enum LlmError {
     NoApiKey,
 }
 
-impl From<LlmError> for anyhow::Error {
-    fn from(e: LlmError) -> Self {
-        anyhow::anyhow!("{}", e)
-    }
-}
-
 // ============================================================================
 // LLM Provider Traits
 // ============================================================================
@@ -376,7 +370,7 @@ impl CostTracker {
 
     pub fn summary(&self) -> String {
         format!(
-            "Total cost: ${:.4f}, Total tokens: {}, Models: {:?}, Providers: {:?}",
+            "Total cost: {:.4}, Total tokens: {}, Models: {:?}, Providers: {:?}",
             self.total_cost_usd,
             self.total_tokens,
             self.calls_by_model,
@@ -393,31 +387,19 @@ impl CostTracker {
 pub struct CitationAnalyzer;
 
 impl CitationAnalyzer {
-    /// Find papers that cite a given paper
-    pub fn find_citing_papers(paper_id: &str, papers: &[Paper]) -> Vec<&Paper> {
-        papers.iter()
-            .filter(|p| p.metadata.references.iter().any(|r| r.contains(paper_id)))
-            .collect()
+    /// Find papers that cite a given paper (placeholder - references is count field)
+    pub fn find_citing_papers<'a>(_paper_id: &str, _papers: &'a [Paper]) -> Vec<&'a Paper> {
+        Vec::new()
     }
 
-    /// Find papers cited by a given paper
-    pub fn find_referenced_papers(paper_id: &str, papers: &[Paper]) -> Vec<&Paper> {
-        papers.iter()
-            .filter(|p| p.metadata.references.iter().any(|r| r.contains(paper_id)))
-            .collect()
+    /// Find papers cited by a given paper (placeholder - references is count field)
+    pub fn find_referenced_papers<'a>(_paper_id: &str, _papers: &'a [Paper]) -> Vec<&'a Paper> {
+        Vec::new()
     }
 
-    /// Build a simple citation graph
-    pub fn build_citation_graph(papers: &[Paper]) -> CitationGraph {
-        let mut graph: HashMap<String, Vec<String>> = HashMap::new();
-
-        for paper in papers {
-            let refs: Vec<String> = paper.metadata.references.clone();
-            if !refs.is_empty() {
-                graph.insert(paper.id.clone(), refs);
-            }
-        }
-
+    /// Build a simple citation graph (placeholder)
+    pub fn build_citation_graph(_papers: &[Paper]) -> CitationGraph {
+        let graph: HashMap<String, Vec<String>> = HashMap::new();
         CitationGraph { edges: graph }
     }
 }

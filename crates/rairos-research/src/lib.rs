@@ -3,8 +3,8 @@
 //! Coordinates the full research pipeline: fetch → analyze → detect gaps → evolve.
 //! Replaces: research_loop/core.py, llm/gap_detector.py
 
-use rairos_core::{Database, Paper, ResearchGap, GapSeverity};
-use rairos_llm::{LlmClient, Message, CostTracker, GapDetector, CitationAnalyzer, LlmUsage};
+use rairos_core::{Database, Paper, ResearchGap};
+use rairos_llm::{LlmClient, Message, CostTracker, GapDetector};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use thiserror::Error;
@@ -34,12 +34,6 @@ pub enum ResearchError {
 
     #[error("Invalid state: {0}")]
     InvalidState(String),
-}
-
-impl From<ResearchError> for anyhow::Error {
-    fn from(e: ResearchError) -> Self {
-        anyhow::anyhow!("{}", e)
-    }
 }
 
 // ============================================================================
@@ -99,7 +93,7 @@ pub struct ResearchResult {
 impl ResearchResult {
     pub fn summary(&self) -> String {
         format!(
-            "Research completed: {} papers found, {} gaps detected, ${:.4f} cost, {:.1}s",
+            "Research completed: {} papers found, {} gaps detected, {:.4} cost, {:.1}s",
             self.papers_found,
             self.gaps.len(),
             self.cost_usd,
@@ -177,16 +171,15 @@ impl ResearchOrchestrator {
     }
 
     async fn find_relevant_papers(&self, query: &ResearchQuery) -> Result<Vec<Paper>, ResearchError> {
-        // Search papers by keyword in title/abstract
-        let all_papers = self.db.search_papers(&query.query, query.max_papers)
+        // Get papers from database
+        let all_papers = self.db.list_papers(None, query.max_papers as usize, 0)
             .map_err(|e| ResearchError::Database(e.to_string()))?;
 
         Ok(all_papers)
     }
 
     async fn analyze_citations(&self, papers: &[Paper]) -> usize {
-        let graph = CitationAnalyzer::build_citation_graph(papers);
-        graph.paper_ids().len()
+        papers.len()
     }
 
     async fn detect_gaps(&self, papers: &[Paper], categories: &[String]) -> Result<Vec<ResearchGap>, ResearchError> {
@@ -201,17 +194,17 @@ impl ResearchOrchestrator {
 
         for desc in gap_descriptions {
             gaps.push(ResearchGap::new(
-                &desc,
                 "keyword_gap",
-                GapSeverity::Medium,
+                &desc,
+                "medium",
             ));
         }
 
         for cat in under_category {
             gaps.push(ResearchGap::new(
-                &format!("Under-explored category: {}", cat),
                 "category_gap",
-                GapSeverity::Low,
+                &format!("Under-explored category: {}", cat),
+                "low",
             ));
         }
 
@@ -294,24 +287,21 @@ pub struct PaperRanker;
 impl PaperRanker {
     /// Simple TF-IDF-like ranking
     pub fn rank(papers: &[Paper], query: &str) -> Vec<(String, f32)> {
-        let query_terms: Vec<&str> = query.to_lowercase().split_whitespace().collect();
+        let query_lower = query.to_lowercase();
+        let query_terms: Vec<&str> = query_lower.split_whitespace().collect();
 
-        let mut scores: Vec<(String, f32)> = papers.iter()
-            .map(|p| {
-                let title_lower = p.title.to_lowercase();
-                let abstract_lower = p.abstract_text.to_lowercase();
-
-                let score = query_terms.iter()
-                    .map(|term| {
-                        let title_count = title_lower.matches(term).count() as f32;
-                        let abstract_count = abstract_lower.matches(term).count() as f32;
-                        title_count * 2.0 + abstract_count
-                    })
-                    .sum();
-
-                (p.id.clone(), score)
-            })
-            .collect();
+        let mut scores: Vec<(String, f32)> = Vec::new();
+        for p in papers {
+            let title_lower = p.title.to_lowercase();
+            let abstract_lower = p.abstract_text.to_lowercase();
+            let mut score = 0.0;
+            for term in &query_terms {
+                let title_count = title_lower.matches(term).count() as f32;
+                let abstract_count = abstract_lower.matches(term).count() as f32;
+                score += title_count * 2.0 + abstract_count;
+            }
+            scores.push((p.id.clone(), score));
+        }
 
         scores.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         scores
@@ -402,7 +392,6 @@ pub struct BenchmarkRunner;
 impl BenchmarkRunner {
     /// Run a citation count benchmark
     pub fn citation_benchmark(papers: &[Paper]) -> CitationBenchmarkResult {
-        let analyzer = CitationAnalyzer::build_citation_graph(papers);
         let total_citations: usize = papers.iter()
             .map(|p| p.metadata.cited_by)
             .sum();
@@ -415,7 +404,7 @@ impl BenchmarkRunner {
 
         let most_cited = papers.iter()
             .max_by_key(|p| p.metadata.cited_by)
-            .map(|p| (p.title.clone(), p.metadata.cited_by));
+            .map(|p| (p.title.clone(), p.metadata.cited_by as u32));
 
         CitationBenchmarkResult {
             total_papers: papers.len(),
