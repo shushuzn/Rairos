@@ -1213,22 +1213,88 @@ fn handle_dedup(db: &Database, action: &DedupAction) -> Result<()> {
 
             let papers = db.list_papers(None, 1000, 0)?;
             println!("Checking {} papers for duplicates...", papers.len());
-            println!("(Full semantic dedup requires embedding comparison)");
-            println!("\n[OK] Found 0 duplicate pairs (placeholder)");
+
+            // Build Jaccard similarity for all pairs
+            let mut dup_groups: Vec<Vec<usize>> = Vec::new();
+            let mut used: Vec<bool> = vec![false; papers.len()];
+
+            for i in 0..papers.len() {
+                if used[i] { continue; }
+                let mut group: Vec<usize> = vec![i];
+                used[i] = true;
+
+                for j in (i + 1)..papers.len() {
+                    if used[j] { continue; }
+                    let sim = title_similarity(&papers[i].title, &papers[j].title);
+                    if sim >= *threshold as f64 {
+                        group.push(j);
+                        used[j] = true;
+                    }
+                }
+
+                if group.len() > 1 {
+                    dup_groups.push(group);
+                }
+            }
+
+            if dup_groups.is_empty() {
+                println!("\n[OK] Found 0 duplicate groups");
+            } else {
+                println!("\n[OK] Found {} duplicate group(s):", dup_groups.len());
+                for (gi, group) in dup_groups.iter().enumerate() {
+                    println!("\n--- Group {} ({} papers) ---", gi + 1, group.len());
+                    for &idx in group {
+                        let p = &papers[idx];
+                        let arxiv = p.arxiv_id.as_deref().unwrap_or("-");
+                        let title_short = if p.title.len() > 70 {
+                            format!("{}...", &p.title[..70])
+                        } else {
+                            p.title.clone()
+                        };
+                        println!("  [{:>3}] {}  [{}]", idx + 1, title_short, arxiv);
+                    }
+                }
+            }
         }
-        DedupAction::Remove { papers } => {
+        DedupAction::Remove { papers: _ids } => {
             println!("=== Removing Duplicates ===");
-            println!("Papers to remove: {}", papers);
-            println!("(Full removal requires confirmation)");
+            // In production would remove selected IDs from database
+            println!("(Full removal requires --confirm flag and careful ID selection)");
+            println!("To remove, run: rairos dedup find --threshold 0.85, then manually remove");
         }
         DedupAction::Groups => {
             println!("=== Duplicate Groups ===");
-            println!("No duplicate groups found.");
-            println!("(Full dedup requires prior 'rairos dedup find' run)");
+            println!("Run 'rairos dedup find --threshold <0.0-1.0>' first to detect duplicates");
         }
     }
 
     Ok(())
+}
+
+// Compute Jaccard similarity between two titles (word-level)
+fn title_similarity(a: &str, b: &str) -> f64 {
+    let words_a: std::collections::HashSet<&str> =
+        a.split_whitespace()
+         .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
+         .filter(|w| !w.is_empty())
+         .collect();
+    let words_b: std::collections::HashSet<&str> =
+        b.split_whitespace()
+         .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
+         .filter(|w| !w.is_empty())
+         .collect();
+
+    if words_a.is_empty() && words_b.is_empty() {
+        return 0.0;
+    }
+
+    let intersection = words_a.intersection(&words_b).count();
+    let union = words_a.union(&words_b).count();
+    if union == 0 {
+        0.0
+    } else {
+        intersection as f64 / union as f64
+    }
 }
 
 fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
