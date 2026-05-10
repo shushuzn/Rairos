@@ -1510,32 +1510,86 @@ fn title_similarity(a: &str, b: &str) -> f64 {
 }
 
 fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
-    println!("=== Similar Papers ===");
-    println!("Paper: {}", paper_id);
-    println!("Max results: {}", limit);
-    println!();
-
     let paper = db.get_paper(paper_id).ok().or_else(|| {
         db.get_paper_by_arxiv(paper_id).ok().flatten()
     }).ok_or_else(|| anyhow::anyhow!("Paper not found: {}", paper_id))?;
 
+    println!("=== Similar Papers ===\n");
     println!("Finding papers similar to:");
-    println!("  {}", paper.title);
+    println!("  {} ({})", paper.title, paper.published.format("%Y-%m-%d"));
     println!();
 
-    let all_papers = db.list_papers(None, 100, 0)?;
-    let similar: Vec<_> = all_papers.into_iter().filter(|p| p.id != paper.id).take(limit).collect();
+    let all_papers = db.list_papers(None, 1000, 0)?;
+    let target_title = paper.title.to_lowercase();
+    let target_abstract = paper.abstract_text.to_lowercase();
+    let target_text = format!("{} {}", target_title, target_abstract);
 
-    if similar.is_empty() {
-        println!("No similar papers found in database.");
-    } else {
-        println!("Similar papers:");
-        for (i, p) in similar.iter().enumerate() {
-            println!("  {}. {} ({})", i + 1, p.title, p.published);
+    // Compute similarity for each paper using word overlap
+    let stop_words: std::collections::HashSet<&str> = [
+        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
+        "do", "does", "did", "will", "would", "could", "should", "may", "might", "must", "shall",
+        "can", "need", "to", "of", "in", "for", "on", "with", "at", "by", "from", "as", "into",
+        "through", "during", "before", "after", "above", "below", "between", "under", "again",
+        "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "each",
+        "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same",
+        "so", "than", "too", "very", "just", "but", "and", "or", "if", "because", "until", "while",
+        "this", "that", "these", "those", "what", "which", "who", "whom",
+    ].into();
+
+    let target_words: std::collections::HashSet<String> = target_text
+        .split(|c: char| !c.is_alphanumeric())
+        .filter(|w| w.len() > 3 && !stop_words.contains(w))
+        .map(|w| w.to_lowercase())
+        .collect();
+
+    if target_words.is_empty() {
+        println!("No similar papers found (target paper has no extractable content).");
+        return Ok(());
+    }
+
+    // Score all papers by similarity
+    let mut scored: Vec<(&Paper, f64)> = Vec::new();
+    for p in &all_papers {
+        if p.id == paper.id {
+            continue;
+        }
+        let p_text = format!("{} {}", p.title.to_lowercase(), p.abstract_text.to_lowercase());
+        let p_words: std::collections::HashSet<String> = p_text
+            .split(|c: char| !c.is_alphanumeric())
+            .filter(|w| w.len() > 3 && !stop_words.contains(w))
+            .map(|w| w.to_lowercase())
+            .collect();
+
+        if p_words.is_empty() {
+            continue;
+        }
+
+        // Jaccard similarity
+        let intersection: std::collections::HashSet<_> = target_words.intersection(&p_words).collect();
+        let union: std::collections::HashSet<_> = target_words.union(&p_words).collect();
+        let sim = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
+
+        if sim > 0.05 {
+            scored.push((p, sim));
         }
     }
 
-    println!("\n(Note: True similarity uses semantic embeddings, not just title match)");
+    // Sort by similarity descending
+    scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+
+    let top: Vec<_> = scored.into_iter().take(limit).collect();
+    if top.is_empty() {
+        println!("No similar papers found in database.");
+    } else {
+        println!("Similar papers ({} found):\n", top.len());
+        println!("{:<6} {:<8} {}", "SIM", "YEAR", "TITLE");
+        println!("{}", "-".repeat(80));
+        for (p, sim) in &top {
+            let year = p.published.format("%Y");
+            let title = if p.title.len() > 60 { format!("{}...", &p.title[..60]) } else { p.title.clone() };
+            println!("{:<6.3} {:<8} {}", sim, year, title);
+        }
+    }
 
     Ok(())
 }
