@@ -175,7 +175,8 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
     db = _get_cache_db()
     qhash = _query_hash(query)
     ttl = timedelta(hours=ttl_hours)
-    now = _dt.utcnow()
+    now_str = _dt.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    now_dt = _dt.now(timezone.utc)
 
     # Check cache
     row = db.conn.execute(
@@ -186,7 +187,7 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
     if row:
         results_json, created_at_str, hit_count = row
         created_at = _dt.fromisoformat(created_at_str)
-        age = now - created_at
+        age = now_dt - created_at
         if age < ttl:
             # Fresh cache hit
             db.conn.execute(
@@ -205,7 +206,7 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
             """INSERT OR REPLACE INTO arxiv_search_cache
                (query_hash, query, results_json, created_at, hit_count)
                VALUES (?, ?, ?, ?, 1)""",
-            (qhash, query, json.dumps(results_dicts), now.isoformat()),
+            (qhash, query, json.dumps(results_dicts), now_str),
         )
         db.conn.commit()
         return papers

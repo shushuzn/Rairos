@@ -716,7 +716,9 @@ def _build_node_items(nodes: List[dict]) -> str:
 
 
 def _now_iso() -> str:
-    return datetime.utcnow().isoformat()
+    from datetime import timezone
+
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 
 # ─── MCP tool actions ─────────────────────────────────────────────────────────

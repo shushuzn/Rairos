@@ -469,9 +469,9 @@ def _extract_keywords(text: str) -> list[str]:
 
 def _timestamp() -> str:
     """Return ISO timestamp."""
-    from datetime import datetime
+    from datetime import datetime, timezone
 
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 
 # ─── Test run utilities ───────────────────────────────────────────────────────

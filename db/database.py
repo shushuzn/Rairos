@@ -756,10 +756,10 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         Returns number of gaps recorded.
         """
         import hashlib
-        from datetime import datetime
+        from datetime import datetime, timezone
 
         count = 0
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
         conn = self.conn
         for gap in gaps:
             if not getattr(gap, 'accepted', False):

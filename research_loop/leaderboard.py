@@ -357,7 +357,9 @@ def render_leaderboard_html(
 
 
 def _now_iso() -> str:
-    return datetime.utcnow().isoformat()
+    from datetime import timezone
+
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 
 # ─── MCP tool actions ───────────────────────────────────────────────────────────
