@@ -1,4 +1,4 @@
-# Contributing to AI Research OS
+# Contributing to Rairos
 
 Thank you for your interest in contributing! This project is a self-evolving research operating system for AI researchers. Here's how you can help.
 
@@ -9,11 +9,11 @@ Thank you for your interest in contributing! This project is a self-evolving res
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
 
-# Install dependencies
-pip install -e ".[all]"
+# Install dependencies (requires Python 3.10+)
+uv sync --all-extras
 
 # Run tests
-python -B -m pytest tests/ -q
+uv run pytest tests/ -q --tb=short -n auto --timeout=60
 ```
 
 ## Development Workflow

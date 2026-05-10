@@ -2,16 +2,25 @@
 
 ## Requirements
 
-- Python 3.9+
-- pip
+- Python 3.10+ (tested on 3.11/3.12/3.13)
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip
 
-## Install
+## Install with uv (recommended)
+
+```bash
+git clone https://github.com/shushuzn/Rairos.git
+cd Rairos
+uv sync --all-extras
+rairos --help
+```
+
+## Install with pip
 
 ```bash
 pip install -e ".[all]"
 ```
 
-This installs the `ai_research_os` package and the `rairos` CLI entry point.
+Both install the `rairos` CLI entry point.
 
 ## Initialize Database
 
