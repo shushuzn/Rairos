@@ -3,6 +3,8 @@ resolver = "2"
 members = [
     "crates/rairos-core",
     "crates/rairos-cli",
+    "crates/rairos-parser",
+    "crates/rairos-llm",
 ]
 
 [profile.release]

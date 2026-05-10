@@ -19,27 +19,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust
+      - name: Setup Rust
         uses: dtolnay/rust-action@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
         with:
-          targets: x86_64-pc-windows-msvc
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
-      - name: Check rairos-core
-        run: cargo check --package rairos-core
+      - name: Check all crates
+        run: |
+          cargo check --package rairos-core
+          cargo check --package rairos-cli
+          cargo check --package rairos-parser
+          cargo check --package rairos-llm
         working-directory: .
 
-      - name: Check rairos-cli
-        run: cargo check --package rairos-cli
-        working-directory: .
-
-      - name: Build rairos-core
-        run: cargo build --package rairos-core
-        working-directory: .
-
-      - name: Build rairos-cli
-        run: cargo build --package rairos-cli --release
+      - name: Build all crates
+        run: cargo build --workspace
         working-directory: .
 
       - name: Run core tests
-        run: cargo test --package rairos-core
+        run: cargo test --package rairos-core -- --nocapture
+        working-directory: .
+
+      - name: Run parser tests
+        run: cargo test --package rairos-parser -- --nocapture
+        working-directory: .
+
+      - name: Run llm tests
+        run: cargo test --package rairos-llm -- --nocapture
         working-directory: .
