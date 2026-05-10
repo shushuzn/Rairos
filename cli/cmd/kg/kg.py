@@ -5,7 +5,7 @@ import argparse
 
 import json
 
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, Optional
 
 from cli.warp import WarpBlocks
 from kg.manager import KGManager
