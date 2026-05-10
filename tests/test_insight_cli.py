@@ -396,8 +396,9 @@ class TestInsightCliEvalRetrieval:
         rc = _run_insight(ns)
         # May return 0 or 1 depending on whether there are real events
         assert rc in (0, 1)
-        out = capsys.readouterr().out
-        assert "recall" in out or "error" in out or "n=" in out
+        captured = capsys.readouterr()
+        out = captured.out + captured.err
+        assert "recall" in out or "accepted events" in out or "n=" in out
 
 
 class TestInsightCliAlert:
