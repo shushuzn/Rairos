@@ -11,11 +11,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import threading
 import time
 from pathlib import Path
 
-from cli._shared import Colors, print_error, print_success
+from cli._shared import print_error, print_success
 
 
 def _build_scout_parser(subparsers) -> argparse.ArgumentParser:
