@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-from fastapi.responses import RedirectResponse
 from datetime import datetime as _datetime
 from typing import Any, Dict, List
 from web.shared import templates, get_db, p2c_progress, _notification_store, _save_paper2code_result

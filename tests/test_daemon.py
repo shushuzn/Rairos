@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import tempfile
-from pathlib import Path
 
-import pytest
 
 from llm.insight.gene import CapsuleGene
 

@@ -4,13 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
-from llm.insight_cards import InsightCard, InsightManager
+from llm.insight_cards import InsightManager
 
 
 # ---------------------------------------------------------------------------

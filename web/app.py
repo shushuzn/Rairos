@@ -5,7 +5,6 @@ Run: uvicorn web.app:app --reload --port 8501
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -13,15 +12,13 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from typing import Any, Dict, List, Optional
-from fastapi import FastAPI, Request, Form
+from typing import Any, Dict, List
+from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 
-from web.shared import templates as _templates, get_db, get_tracker, p2c_progress
-from web.renderer import render_gene_pool_graph_html
 
 app: FastAPI = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
 from web import routes_insights
@@ -63,7 +60,6 @@ app.include_router(routes_news.router)  # type: ignore[has-type]
 
 # Graceful error handler — catches ALL exceptions in route handlers
 from starlette.exceptions import HTTPException as _HTTPExc
-from starlette.responses import HTMLResponse
 
 
 @app.exception_handler(Exception)
@@ -265,7 +261,6 @@ async def delete_paper(paper_id: str):
 @app.delete("/papers")
 async def delete_papers_bulk(request: Request):
     """Bulk delete papers. Accepts JSON body with list of paper_ids."""
-    from starlette.datastructures import URL
 
     try:
         body = await request.json()

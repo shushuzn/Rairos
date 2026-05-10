@@ -1,16 +1,10 @@
 """Tests for llm/gene_pool_io.py — Gene Pool I/O operations."""
 
-import pytest
 from unittest.mock import patch, MagicMock
-import json
-import tempfile
-from pathlib import Path
 
 from llm.gene_pool_io import (
     get_capsule_by_paper,
     paper_exists_in_pool,
-    export_pool,
-    import_pool,
     _backup_name,
     _list_backups,
     get_backup_info,

@@ -4,7 +4,6 @@ Run with: uv run --with requests,feedparser,pyyaml pytest tests/ -v
 """
 
 import pytest
-import os
 import re
 import sys
 from pathlib import Path

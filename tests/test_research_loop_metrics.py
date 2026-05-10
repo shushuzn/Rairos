@@ -1,5 +1,4 @@
 """Tests for research_loop/core.py Metrics class."""
-import pytest
 
 
 class TestMetrics:

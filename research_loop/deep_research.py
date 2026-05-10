@@ -27,7 +27,6 @@ Architecture inspired by:
 from __future__ import annotations
 
 
-import asyncio
 import signal
 
 
@@ -330,7 +329,7 @@ class DeepResearchAgent:
         self._mcp_tool_map: Dict[str, Dict[str, Any]] = {t["name"]: t for t in self.mcp_tools}
 
         # Skill discovery — dynamically discover Claude Code skill packs
-        from research_loop.skill_discovery import discover_skills, match_skills
+        from research_loop.skill_discovery import discover_skills
 
         self._skills = discover_skills()
         self._skill_map = {s.name: s for s in self._skills}

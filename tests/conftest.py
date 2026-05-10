@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib
 import json
 import sqlite3
 import sys
@@ -75,7 +74,7 @@ def pytest_configure(config: pytest.Config) -> None:
     # Pre-import sklearn early to avoid C stack overflow when many modules are loaded
     # This must happen before any mock registration
     try:
-        import sklearn.utils._array_api  # type: ignore
+        pass  # type: ignore
     except Exception:
         pass
     # Create mock fitz/pymupdf that satisfy basic type checks

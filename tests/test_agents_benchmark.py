@@ -1,8 +1,7 @@
 """Tests for research_loop agents and benchmark_runner."""
 
-import pytest
 from enum import Enum
-from research_loop.agents.base import AgentStatus, MessageBus, AgentMessage, BaseAgent
+from research_loop.agents.base import AgentStatus, MessageBus, AgentMessage
 from research_loop.agents.squad import SquadCoordinator, _state_path, _load_state, _save_state
 from research_loop.benchmark_runner import BenchmarkResult, BenchmarkConfig, run_benchmark
 

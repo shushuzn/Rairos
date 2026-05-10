@@ -12,7 +12,6 @@ import sys
 import time
 import types
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
 from unittest.mock import MagicMock, patch
 import pytest
 
@@ -59,16 +58,6 @@ from research_loop.deep_research import (
     AgentThought,
     DeepResearchResult,
 )
-from research_loop.snapstate import (
-    Snapstate,
-    ResearchSession,
-    PaperSnapshot,
-    GapSnapshot,
-)
-from research_loop.core import search_arxiv, extract_pdf_text, Paper
-from llm.gap_analyzer import GapAnalyzerV2
-from llm.insight_evolution import get_evolution_tracker
-from db.database import Database
 
 
 # ---------------------------------------------------------------------------

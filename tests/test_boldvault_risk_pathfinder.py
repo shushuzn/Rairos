@@ -1,7 +1,6 @@
 """Tests for bold_vault, at_risk_scanner, citation_pathfinder_web."""
 
 import json
-import pytest
 from llm.bold_vault import _jaccard, BoldCapsule, get_bold_capsules, render_html as bold_html
 from llm.at_risk_scanner import (
     AtRiskCapsule,

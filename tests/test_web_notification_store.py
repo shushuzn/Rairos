@@ -3,7 +3,6 @@
 The notification store was moved to web/shared.py to break a circular import
 that prevented web/app.py from loading. These tests verify the store works.
 """
-import pytest
 
 
 class TestNotificationStore:

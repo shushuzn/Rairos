@@ -1,6 +1,5 @@
 """Tests for cross_search, provenance, watch_papers."""
 
-import pytest
 from parsers.cross_search import search_papers_multi
 from research_loop.provenance import PaperLocation, EquationSource, ClaimSource, AlgorithmSource
 from core.watch_papers import Watcher, watch_and_rebuild

@@ -1,7 +1,6 @@
 """Tests for rairos_mcp handle_call_tool routing and protocol handlers."""
 
 import json
-import pytest
 import sys
 from pathlib import Path
 

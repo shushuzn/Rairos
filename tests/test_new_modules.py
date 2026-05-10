@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import json
-import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -76,7 +73,7 @@ class TestScout:
 
 class TestEvents:
     def test_process_event_no_keyword(self):
-        from llm.events import _fetch_event_news, _build_summary, _infer_gap_type
+        from llm.events import _fetch_event_news
 
         # Test internal functions without live MCP calls
         news = _fetch_event_news.__doc__  # just verify the function exists

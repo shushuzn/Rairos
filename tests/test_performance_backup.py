@@ -1,6 +1,5 @@
 """Tests for core/performance_guarantee.py and core/backup.py."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 from core.performance_guarantee import (
     PerformanceGuarantee,

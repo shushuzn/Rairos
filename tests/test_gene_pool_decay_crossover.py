@@ -1,6 +1,5 @@
 """Tests for gene_pool_decay and crossover core functions."""
 
-import math
 import pytest
 from llm.gene_pool_decay import (
     CapsuleImpact,

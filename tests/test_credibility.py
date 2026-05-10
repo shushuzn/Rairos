@@ -2,18 +2,15 @@
 
 from __future__ import annotations
 
-import json
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
-import pytest
 
 from llm.insight.gene import CapsuleGene
 from llm.insight.credibility import (
     CredibilityScorer,
     CredibilityScore,
-    TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD,
 )
 from llm.insight.trust_tracker import SourceTrustTracker, SourceTrustEntry
 

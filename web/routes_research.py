@@ -305,7 +305,6 @@ async def squad_stream():
     import asyncio
 
     async def event_generator():
-        import time as _time
 
         _last_len = 0
         try:

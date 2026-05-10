@@ -1,10 +1,8 @@
 """Tests for llm/client.py — LLM API client core logic (no I/O)."""
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import os
-import tempfile
-from pathlib import Path
 
 from llm.client import (
     _is_ollama_model,

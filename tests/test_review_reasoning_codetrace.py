@@ -1,6 +1,5 @@
 """Tests for review_simulator, reasoning, code_trace."""
 
-import pytest
 from llm.review_simulator import (
     ReviewDimension,
     Severity,

@@ -1,6 +1,5 @@
 """Tests for research_loop/orchestrator methods."""
 
-import pytest
 from research_loop.orchestrator import (
     ResearchAlert,
     OrchestratorConfig,

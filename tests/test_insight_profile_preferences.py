@@ -1,6 +1,5 @@
 """Tests for llm/insight/preferences.py and llm/insight/profile.py."""
 
-import pytest
 from llm.insight.preferences import ExplorationAction, PreferenceTag, EvolutionEvent
 from llm.insight.profile import UserPreferenceProfile, GapExplorationState
 

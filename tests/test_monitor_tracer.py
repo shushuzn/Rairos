@@ -1,6 +1,5 @@
 """Tests for subscription_monitor, climate_ai_monitor, policy_impact_tracer."""
 
-import pytest
 from llm.subscription_monitor import SubscriptionMonitor, search_arxiv
 from llm.climate_ai_monitor import (
     is_climate_related,

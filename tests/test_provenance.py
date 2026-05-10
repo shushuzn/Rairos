@@ -1,6 +1,5 @@
 """Tests for research_loop/provenance.py."""
 
-import pytest
 from research_loop.provenance import (
     PaperLocation,
     EquationSource,

@@ -1,6 +1,5 @@
 """Tests for llm/replication_checker.py — paper replication checking."""
 
-import pytest
 from llm.replication_checker import (
     CodeLink,
     DependencyInfo,

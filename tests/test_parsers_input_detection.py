@@ -1,6 +1,5 @@
 """Tests for parsers/input_detection.py — DOI and arXiv ID normalization."""
 
-import pytest
 from parsers.input_detection import is_probably_doi, normalize_doi, normalize_arxiv_id
 
 

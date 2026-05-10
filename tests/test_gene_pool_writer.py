@@ -1,6 +1,5 @@
 """Tests for llm/research/gene_pool_writer.py — Gene Pool persistence."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 
 from llm.research.gene_pool_writer import save_gap_to_gene_pool

@@ -1,6 +1,5 @@
 """Tests for research_loop/claim_graph.py."""
 
-import pytest
 from research_loop.claim_graph import (
     ClaimType,
     ComparisonOp,

@@ -13,11 +13,9 @@ PaperContent feeds into:
 from __future__ import annotations
 
 import re
-import subprocess
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional, Dict, TYPE_CHECKING
+from typing import List, Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from research_loop.provenance import EquationSource, ClaimSource, AlgorithmSource

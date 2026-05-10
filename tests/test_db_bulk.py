@@ -1,7 +1,6 @@
 """Tests for db/database.py bulk operations."""
 
 import pytest
-import time
 from pathlib import Path
 
 from db.database import Database

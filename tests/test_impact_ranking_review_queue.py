@@ -1,6 +1,5 @@
 """Tests for impact_ranking, research_log, review_queue."""
 
-import pytest
 from llm.impact_ranking import compute_impact, render_impact_html
 from llm.research_log import add_note, get_notes, render_log
 from llm.review_queue import QueuedCapsule, get_review_queue, render_review_queue_html, _days_ago

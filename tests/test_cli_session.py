@@ -1,6 +1,5 @@
 """Tests for session command — parser and subcommand functions."""
 import argparse
-from pathlib import Path
 from unittest.mock import MagicMock
 
 from llm.research_session import ResearchSessionTracker

@@ -1,6 +1,5 @@
 """Tests for rairos_mcp utility functions."""
 
-import pytest
 from rairos_mcp import error_response, success_response, _ensure_data_dir
 
 

@@ -13,7 +13,6 @@ import os
 import sqlite3
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -44,7 +43,6 @@ def _seed_search_db(db_path: Path, papers: list[dict]) -> None:
     conn.execute("PRAGMA foreign_keys=ON")
 
     # Import actual schema from database.py to ensure consistency
-    import importlib
     import sys
     from pathlib import Path as P
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 from fastapi import APIRouter, Request
 from web.shared import templates
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 router = APIRouter()
 

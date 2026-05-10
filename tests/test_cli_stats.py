@@ -1,6 +1,5 @@
 """Tier 1 tests — CLI stats command."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 from cli import _run_stats, _build_stats_parser
 import argparse

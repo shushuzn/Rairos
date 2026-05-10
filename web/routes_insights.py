@@ -24,8 +24,6 @@ async def insights(request: Request):
     events_display: List[str] = []
     exp_stats = {}
     try:
-        from pathlib import Path
-        import json
         from llm.insight.tracker import EvolutionTracker
 
         tracker = EvolutionTracker()

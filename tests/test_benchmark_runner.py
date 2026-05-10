@@ -1,9 +1,7 @@
 """Tests for research_loop/benchmark_runner.py — benchmark execution and Gene Pool encoding."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 import json
-import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -15,9 +13,7 @@ from research_loop.benchmark_runner import (
     _parse_pytest_output,
     _parse_json_report,
     _extract_keywords,
-    _log_diagnostics,
     summarize_result,
-    run_tests_locally,
 )
 
 

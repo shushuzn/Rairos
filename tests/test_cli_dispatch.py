@@ -55,7 +55,6 @@ class TestCLIDispatchComplete:
 
     def test_all_dispatch_entries_point_to_valid_function(self, subcmd_table, dispatch_dict):
         """Every dispatch value must be a valid _run_ function in cli module."""
-        import cli as cli_module
 
         for subcmd, handler in dispatch_dict.items():
             # Handler should be a string like "_run_xxx"

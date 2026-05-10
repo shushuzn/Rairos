@@ -5,15 +5,14 @@ from __future__ import annotations
 import json
 import time
 import threading
-import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from research_loop.agents.base import BaseAgent, AgentMessage, AgentStatus, MessageBus
-from research_loop.agents.scout import ScoutAgent, TOPIC_PAPER_DISCOVERED
-from research_loop.agents.analyzer import AnalyzerAgent, TOPIC_GAP_FOUND
+from research_loop.agents.base import BaseAgent, MessageBus
+from research_loop.agents.scout import ScoutAgent
+from research_loop.agents.analyzer import AnalyzerAgent
 from research_loop.agents.curator import CuratorAgent, TOPIC_ALERT_READY
-from research_loop.agents.citation_hunter import CitationHunterAgent, TOPIC_CITATION_FOUND
+from research_loop.agents.citation_hunter import CitationHunterAgent
 
 TOPIC_SUBSCRIPTION_CHECK = "subscription.check"
 

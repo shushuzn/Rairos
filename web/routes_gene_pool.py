@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from web.shared import templates, get_db, get_tracker
+from web.shared import templates, get_db
 
 router = APIRouter()
 
@@ -243,7 +243,7 @@ async def gene_pool_bold(request: Request):
 @router.get("/gene-pool/backup")
 async def gene_pool_backup(request: Request):
     """Gene Pool Backup — create and restore snapshots."""
-    from llm.gene_pool_io import get_backup_info, create_backup
+    from llm.gene_pool_io import get_backup_info
 
     info = get_backup_info()
     stamps = info.get("stamps", []) if isinstance(info, dict) else []

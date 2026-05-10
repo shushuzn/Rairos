@@ -1,6 +1,5 @@
 """Tests for citation_chain, research_memory, litreview_generator dataclasses."""
 
-import pytest
 from llm.citation_chain import CitationNode, CitationChain, ResearchFamily
 from llm.research_memory import (
     StanceType,

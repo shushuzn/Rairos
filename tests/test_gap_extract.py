@@ -1,6 +1,5 @@
 """Tests for llm/research/gap_extract.py."""
 
-import pytest
 from llm.research.gap_extract import _extract_keywords, extract_gap_from_paper
 
 

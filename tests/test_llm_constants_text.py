@@ -1,6 +1,5 @@
 """Tests for llm/constants.py and llm/text_utils.py."""
 
-import pytest
 from llm.constants import (
     LLM_BASE_URL,
     LLM_MODEL,

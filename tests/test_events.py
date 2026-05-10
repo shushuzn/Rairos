@@ -1,8 +1,6 @@
 """Tests for llm/events.py — event processing pipeline."""
 
-import pytest
 from unittest.mock import patch, MagicMock
-from datetime import datetime
 
 from llm.events import (
     HIGH_IMPACT_KEYWORDS,

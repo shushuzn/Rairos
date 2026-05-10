@@ -9,7 +9,6 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import shutil
 
 
 @dataclass

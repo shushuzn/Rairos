@@ -1,6 +1,5 @@
 """Tests for embodied_planning, labor_displacement_tracker, vector_store."""
 
-import pytest
 from llm.research.embodied_planning import (
     track_embodied_evolution,
     render_embodied_planning_dashboard,
@@ -13,7 +12,7 @@ from llm.labor_displacement_tracker import (
     get_labor_papers,
     render_labor_tracker_html,
 )
-from core.vector_store import SearchResult, ZillizStore, is_zilliz_configured
+from core.vector_store import SearchResult, is_zilliz_configured
 
 
 class TestEmbodiedPlanning:

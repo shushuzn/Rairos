@@ -1,7 +1,6 @@
 """Tests for auth, briefing_distributor, eval_gap_monitor."""
 
 import json
-import pytest
 from llm.auth import (
     _hash_password,
     _generate_salt,

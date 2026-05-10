@@ -1,6 +1,5 @@
 """Tests for cli/cmd/kg.py."""
 
-import pytest
 from cli.cmd.kg import _build_kg_parser
 
 

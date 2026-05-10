@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from core.observability import get_metrics
 from llm.generate import estimate_cost, get_model_price

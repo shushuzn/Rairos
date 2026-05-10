@@ -1,5 +1,4 @@
 """Tests for research_loop/paper_parser.py PaperContent dataclass."""
-import pytest
 
 
 class TestPaperContent:
@@ -30,7 +29,6 @@ class TestPaperContent:
 
     def test_all_fields(self):
         PC = self._paper_content()
-        from dataclasses import replace
         pc = PC(
             arxiv_id="2301.00001",
             title="Test Paper",

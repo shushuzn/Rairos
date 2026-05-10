@@ -1,7 +1,6 @@
 """Tests for llm/cross_referencer.py — contradiction/synergy detection."""
 
 import pytest
-import re
 from unittest.mock import patch, MagicMock
 
 from llm.cross_referencer import (

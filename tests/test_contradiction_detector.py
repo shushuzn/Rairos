@@ -1,6 +1,5 @@
 """Tests for llm/research/contradiction_detector.py — research gap contradiction detection."""
 
-import pytest
 
 from llm.research.contradiction_detector import (
     detect_field_contradiction,

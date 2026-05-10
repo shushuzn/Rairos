@@ -1,10 +1,9 @@
 """Tests for semantic_scholar parser, skill_discovery, and agent base/squad."""
 
-import pytest
 from pathlib import Path
 from datetime import datetime
 from parsers.semantic_scholar import S2Paper
-from research_loop.skill_discovery import Skill, _is_skill_dir
+from research_loop.skill_discovery import Skill
 from research_loop.agents.base import AgentStatus, MessageBus, AgentMessage, BaseAgent
 from research_loop.agents.squad import SquadCoordinator
 

@@ -5,7 +5,7 @@ import sqlite3
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from db.migrate import CURRENT_VERSION, Migration
+from db.migrate import CURRENT_VERSION
 
 
 class TestCurrentVersion:

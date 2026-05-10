@@ -1,6 +1,5 @@
 """Tests for llm/report.py — research report generation."""
 
-import pytest
 from llm.report import _find, generate, save
 
 

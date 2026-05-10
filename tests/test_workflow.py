@@ -1,6 +1,5 @@
 """Tests for core/workflow.py — Workflow automation."""
 
-import pytest
 from core.workflow import Workflow, register_workflow, get_workflow
 
 

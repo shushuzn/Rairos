@@ -1,6 +1,5 @@
 """Tests for impact_scorer, trust_scorer, rigor_scorer."""
 
-import pytest
 from llm.impact_scorer import ImpactScore
 from llm.trust_scorer import CategoryTrust
 from llm.rigor_scorer import RigorScore, _fast_scan, _compute_badge

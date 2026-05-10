@@ -78,7 +78,6 @@ def _write_mp4(frames, output_path: Path, fps: int):
     """Save frames as MP4 using ffmpeg via subprocess."""
     import subprocess
     import tempfile
-    import os
 
     tmp_dir = Path(tempfile.mkdtemp())
     tmp_pattern = tmp_dir / "frame_%04d.png"

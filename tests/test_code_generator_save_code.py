@@ -8,11 +8,7 @@ Covers:
 """
 
 import ast
-import re
-import tempfile
-from pathlib import Path
 
-import pytest
 
 
 class TestSaveCodePlainTextPreamble:

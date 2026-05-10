@@ -303,7 +303,6 @@ async def embodied_planning_search(request: Request):
     Query: "latent reasoning" OR "physical reasoning" OR "embodied planning" site:arxiv.org
     """
     from fastapi.responses import JSONResponse
-    from pathlib import Path as _Path
 
     try:
         body = await request.json()

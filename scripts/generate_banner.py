@@ -1,7 +1,6 @@
 """Generate banner.png and favicon.png from SVG."""
 
 import subprocess
-import sys
 import os
 
 # Check if cairosvg is available

@@ -1,6 +1,5 @@
 """Tests for streaming and voice_to_capsule."""
 
-import pytest
 from llm.streaming import UsageSnapshot, StreamingCostTracker, stream_with_cost
 from llm.voice_to_capsule import transcribe_audio, extract_gap_from_text, render_voice_upload_html
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from fastapi import APIRouter, Form, Request
-from web.shared import templates, get_db
+from web.shared import templates
 
 router = APIRouter()
 

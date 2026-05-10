@@ -1,10 +1,7 @@
 """Tests for llm/lean_verifier.py — Lean 4 theorem prover integration."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 import json
-import tempfile
-from pathlib import Path
 
 from llm.lean_verifier import (
     LeanInstallStatus,
@@ -108,7 +105,6 @@ class TestCheckLeanInstalled:
 
     def test_returns_not_found_on_file_not_found(self):
         """Should return NOT_FOUND when lean executable not found (OSError)."""
-        import subprocess
 
         with (
             patch("llm.lean_verifier.shutil.which", return_value="/usr/bin/lean"),

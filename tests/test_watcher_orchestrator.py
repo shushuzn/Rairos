@@ -1,6 +1,5 @@
 """Tests for gene_pool_watcher and orchestrator dataclasses."""
 
-import pytest
 from llm.gene_pool_watcher import (
     GapSubscription,
     WatcherState,

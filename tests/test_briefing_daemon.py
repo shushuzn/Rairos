@@ -1,6 +1,5 @@
 """Tests for briefing_generator and daemon."""
 
-import pytest
 from datetime import datetime
 from llm.briefing_generator import (
     BriefingSection,

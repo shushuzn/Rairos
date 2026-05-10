@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from typing import List, Dict, Any, Optional
+from typing import List
 from research_loop.agents.base import BaseAgent, AgentMessage, AgentStatus
 
 

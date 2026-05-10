@@ -30,11 +30,8 @@ Usage:
 
 from __future__ import annotations
 
-import shutil
 import subprocess
 import sys
-import time
-from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Optional
 
@@ -425,8 +422,6 @@ class PaperPipeline:
 
     def _find_existing_pdf(self, arxiv_id: str) -> Optional[Path]:
         """Search common locations for existing PDF."""
-        import os
-
         candidates = [
             Path("data") / f"{arxiv_id}.pdf",
             Path("data/arxiv") / f"{arxiv_id}.pdf",
@@ -505,9 +500,6 @@ def _infer_benchmark_domain(arxiv_id: str, content: Any) -> str:
 
     Domain determines cross-domain transfer detection grouping.
     """
-    import re
-
-    # Try arxiv prefix (first chars of arxiv ID encode category)
     prefix_map = {
         "2303": "nlp",  # LLM era
         "2212": "nlp",

@@ -1,6 +1,5 @@
 """Tests for arxiv_alert_channels, claude_cli, multi_researcher."""
 
-import pytest
 from llm.arxiv_alert_channels import (
     ChannelConfig,
     get_channels,

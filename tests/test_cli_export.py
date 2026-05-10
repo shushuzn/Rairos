@@ -1,6 +1,5 @@
 """Tier 1 tests — CLI export command."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 from cli import _run_export, _build_export_parser
 import argparse

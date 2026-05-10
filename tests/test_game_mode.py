@@ -1,17 +1,15 @@
 """Tests for llm/game_mode.py — badges and progression system."""
 
-import pytest
 import json
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from llm.game_mode import (
     Badge,
     _load_capsules,
     _load_badges,
     _save_badges,
-    _check_contradiction_hunter,
     _check_gap_extractor,
     _check_evolution_master,
     _check_bold_explorer,
@@ -19,8 +17,6 @@ from llm.game_mode import (
     _check_paradigm_sentinel,
     compute_badges,
     render_game_mode_html,
-    CAPSULES_PATH,
-    BADGES_PATH,
 )
 
 

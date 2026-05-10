@@ -9,11 +9,10 @@ Usage:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
-from pathlib import Path
+from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-from pdf.visual import VisualExtractor, VisualContent, ExtractedFigure, TableAsMarkdown
+from pdf.visual import VisualExtractor, ExtractedFigure, TableAsMarkdown
 from llm.client import call_llm_chat_completions
 
 logger = logging.getLogger(__name__)

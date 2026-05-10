@@ -1,6 +1,5 @@
 """Tests for core/_constants.py — canonical constants."""
 
-import pytest
 from core._constants import (
     ARXIV_API,
     CROSSREF_WORKS,

@@ -1,6 +1,5 @@
 """Tests for core/__init__.py — Paper dataclass and today_iso."""
 
-import pytest
 from core import Paper, today_iso
 from core._constants import ARXIV_API, CROSSREF_WORKS
 

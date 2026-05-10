@@ -1,6 +1,5 @@
 """Tests for sections/segment.py and llm/story_weaver.py."""
 
-import pytest
 from sections.segment import looks_like_heading, _section_priority
 from llm.story_weaver import (
     NarrativeRole,

@@ -1,6 +1,5 @@
 """Tier 1 tests — CLI cache command."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 from cli import _run_cache, _build_cache_parser
 import argparse

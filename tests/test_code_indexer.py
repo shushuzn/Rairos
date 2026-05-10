@@ -1,6 +1,5 @@
 """Tests for core/code_indexer.py."""
 
-import pytest
 from core.code_indexer import CodeChunk, _get_zilliz_config
 
 

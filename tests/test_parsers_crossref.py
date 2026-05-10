@@ -1,6 +1,5 @@
 """Tests for parsers/crossref.py — CrossRef API metadata fetcher."""
 
-import pytest
 
 from parsers.crossref import (
     _best_effort_date_from_crossref,
