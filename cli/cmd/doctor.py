@@ -1,10 +1,12 @@
 """doctor command — diagnose environment and report issues."""
 from __future__ import annotations
 
+import argparse
 import os
 import shutil
 import sqlite3
 import sys
+import typing
 from pathlib import Path
 
 
@@ -59,10 +61,8 @@ def _run_docto(args) -> int:
 
     # ── Directories ─────────────────────────────────────────────────────────
     console.print(_section("Directories"))
-    for name, path in [
-        ("HOME", Path.home()),
-        ("CWD", Path.cwd()),
-    ]:
+    _dirs: typing.List[typing.Tuple[str, Path]] = [("HOME", Path.home()), ("CWD", Path.cwd())]
+    for name, path in _dirs:
         if path.exists():
             ok.append(f"{name}: {path}")
         else:
@@ -70,8 +70,8 @@ def _run_docto(args) -> int:
 
     # ── Database ────────────────────────────────────────────────────────────
     console.print(_section("Database"))
-    db_paths = [
-        Path(os.environ.get("AIROS_DB", "")),
+    db_paths: list[Path] = [
+        Path(os.environ.get("AIROS_DB", "") or ""),
         Path.home() / ".ai_research_os" / "research.db",
         Path("~/.ai_research_os/research.db").expanduser(),
     ]
@@ -145,7 +145,7 @@ def _run_docto(args) -> int:
     # ── Rairos version ──────────────────────────────────────────────────────
     console.print(_section("Rairos"))
     try:
-        from core import __version__
+        from core import __version__  # type: ignore[attr-defined]
 
         ok.append(f"Version: {__version__}")
     except ImportError:
@@ -175,7 +175,7 @@ def _run_docto(args) -> int:
     return 1 if issues else 0
 
 
-def _build_doctor_parser(subparsers) -> argparse.ArgumentParser:
+def _build_doctor_parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
     """Build doctor subcommand parser."""
     p = subparsers.add_parser("doctor", help="Diagnose environment and report issues")
     p.set_defaults(func=_run_docto)

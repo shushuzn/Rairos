@@ -180,9 +180,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     """Main CLI entry point."""
 
     # Opt-in structured JSON logs via environment variable
+    import os  # noqa: F401 - used in this function
     if os.getenv("RAIROS_JSON_LOGS", "").lower() in ("1", "true", "yes"):
-        from core.observability import configure_logging
-        configure_logging(
+        from core.observability import setup_observability
+        setup_observability(
             level=os.getenv("RAIROS_LOG_LEVEL", "INFO").upper(),
             json_logs=True,
         )

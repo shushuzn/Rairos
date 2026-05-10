@@ -2,8 +2,22 @@
 
 from __future__ import annotations
 
+from typing import Dict
 from fastapi import APIRouter, Request
 from web.shared import get_db, templates
+from web.app import _notification_store
+
+
+# ── Global representation type counts ──────────────────────────────────────
+def _get_global_rep_type_counts() -> Dict[str, int]:
+    """Return aggregate representation type counts from the Gene Pool."""
+    from llm.gene_pool_io import load_capsules
+    capsules = load_capsules(gap_type="embodied_planning")
+    counts: Dict[str, int] = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
+    for c in capsules:
+        rt = c.get("representation_type", c.get("action_gap_type", "unknown"))
+        counts[rt] = counts.get(rt, 0) + 1
+    return counts
 
 router = APIRouter()
 
@@ -138,7 +152,7 @@ async def embodied_planning_auto_scan(request: Request):
         all_counts = _get_global_rep_type_counts()
         for rt in ["discrete", "continuous", "hybrid"]:
             all_counts[rt] = all_counts.get(rt, 0) + type_counts.get(rt, 0)
-        underrep = min(all_counts, key=all_counts.get) if all_counts else "hybrid"
+        underrep = min(all_counts, key=lambda k: all_counts[k]) if all_counts else "hybrid"
         recommend_msg = ""
         if total_analyzed > 0:
             recommend_msg = (

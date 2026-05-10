@@ -13,7 +13,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from typing import Optional
+from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -23,42 +23,42 @@ from fastapi.templating import Jinja2Templates
 from web.shared import templates as _templates, get_db, get_tracker, p2c_progress
 from web.renderer import render_gene_pool_graph_html
 
-app = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
+app: FastAPI = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
 from web import routes_insights
 
-app.include_router(routes_insights.router)
+app.include_router(routes_insights.router)  # type: ignore[has-type]
 
 from web import routes_misc
 
-app.include_router(routes_misc.router)
+app.include_router(routes_misc.router)  # type: ignore[has-type]
 
 from web import routes_embodied
 
-app.include_router(routes_embodied.router)
+app.include_router(routes_embodied.router)  # type: ignore[has-type]
 
 from web import routes_briefing
 
-app.include_router(routes_briefing.router)
+app.include_router(routes_briefing.router)  # type: ignore[has-type]
 
 from web import routes_papers
 
-app.include_router(routes_papers.router)
+app.include_router(routes_papers.router)  # type: ignore[has-type]
 
 from web import routes_daemon
 
-app.include_router(routes_daemon.router)
+app.include_router(routes_daemon.router)  # type: ignore[has-type]
 
 from web import routes_research
 
-app.include_router(routes_research.router)
+app.include_router(routes_research.router)  # type: ignore[has-type]
 
 from web import routes_gene_pool
 
-app.include_router(routes_gene_pool.router)
+app.include_router(routes_gene_pool.router)  # type: ignore[has-type]
 
 from web import routes_news
 
-app.include_router(routes_news.router)
+app.include_router(routes_news.router)  # type: ignore[has-type]
 
 
 # Graceful error handler — catches ALL exceptions in route handlers

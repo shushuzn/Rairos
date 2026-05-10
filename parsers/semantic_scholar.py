@@ -239,6 +239,6 @@ class S2Paper:
             categories="",
             comment="",
             journal_ref="",
-            reference_count=self.citationCount,
+            reference_count=self.citation_count,
             doi=ext.get("DOI", ""),
         )

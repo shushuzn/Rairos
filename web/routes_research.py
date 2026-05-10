@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 
@@ -71,7 +72,7 @@ async def daemon_dashboard(request: Request):
 
     alerts = []
     for a in alerts_raw:
-        created = a.created_at if hasattr(a, "created_at") else a.get("created_at", "")
+        created = a.created_at if hasattr(a, "created_at") else a.get("created_at", "")  # type: ignore[attr-defined]
         alerts.append(
             (
                 a.alert_id,
@@ -123,7 +124,7 @@ async def research_loop(request: Request):
 
     alerts = []
     for a in alerts_raw:
-        created = a.created_at if hasattr(a, "created_at") else a.get("created_at", "")
+        created = a.created_at if hasattr(a, "created_at") else a.get("created_at", "")  # type: ignore[attr-defined]
         alerts.append(
             (
                 a.alert_id,

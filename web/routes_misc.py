@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
-from web.shared import templates, get_db
+from datetime import datetime as _datetime
+from typing import Any, Dict, List
+from web.shared import templates, get_db, p2c_progress
+from web.app import _notification_store, _save_paper2code_result
 
 router = APIRouter()
 
@@ -145,7 +148,7 @@ async def paper2code_run(request: Request):
         "failed": 0,
         "skipped": 0,
         "gene_pool_encoded": False,
-        "created_at": datetime.now().isoformat(),
+        "created_at": _datetime.now().isoformat(),
     }
     _save_paper2code_result(record)
 
@@ -272,7 +275,7 @@ async def citation_chain_graph(request: Request, paper_id: str = "", title: str 
     from llm.citation_pathfinder_web import render_citation_chain_html
 
     cited_paper_ids = ["p1", "p2", "p3"]  # placeholders; real impl reads from DB
-    cited_capsule_ids = []
+    cited_capsule_ids: List[str] = []
     html = render_citation_chain_html(paper_id, title, cited_paper_ids, cited_capsule_ids)
     return templates.TemplateResponse(
         request,
@@ -410,7 +413,7 @@ async def voice_transcribe(request: Request):
         audio_file = form.get("audio")
         if not audio_file:
             return JSONResponse({"error": "No audio file"}, status_code=400)
-        audio_bytes = await audio_file.read()
+        audio_bytes = await audio_file.read()  # type: ignore[union-attr]
         text = transcribe_audio(audio_bytes)
         if text.startswith("[Transcription error"):
             return JSONResponse({"error": text})
@@ -527,7 +530,7 @@ async def review_queue(request: Request):
 @router.post("/insights/queue/verdict")
 async def submit_verdict(request: Request):
     """Record a user's verdict on a queued capsule."""
-    from llm.insight.tracker import record_gap_accept
+    from llm.insight.tracker import EvolutionTracker
     from llm.review_queue import _load_capsules
 
     body = await request.json()
@@ -540,7 +543,8 @@ async def submit_verdict(request: Request):
     capsules = _load_capsules()
     for cap in capsules:
         if cap.get("capsule_id", "") == capsule_id:
-            record_gap_accept(capsule_id, score=score)
+            tracker = EvolutionTracker()
+            tracker.record_gap_accept(topic=capsule_id, gap_type="queued_capsule", gap_title=capsule_id)
             break
 
     return {"success": True}

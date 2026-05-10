@@ -3,6 +3,7 @@
 from __future__ import annotations
 from fastapi import APIRouter, Request
 from web.shared import templates
+from typing import Any, Dict, List
 
 router = APIRouter()
 
@@ -21,10 +22,11 @@ async def news_list(request: Request, keyword: str = ""):
         else:
             raw = client.list_flash()
 
-        inner = raw.get("data", raw) if isinstance(raw, dict) else {}
-        items = inner.get("items", []) if isinstance(inner, dict) else inner
-        if not isinstance(items, list):
-            items = []
+        inner: Dict[str, Any] = raw.get("data", raw) if isinstance(raw, dict) else {}
+        raw_items: list[Any] = inner.get("items", []) if isinstance(inner, dict) else []
+        if not isinstance(raw_items, list):
+            raw_items = []
+        items = raw_items
 
         cards = []
         for item in items[:30]:

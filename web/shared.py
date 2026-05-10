@@ -20,12 +20,12 @@ templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 
 
 # Jinja filters
-def _jinja_truncate(value, length=80):
+def _jinja_truncate(value: Any, length: int = 80) -> str:
     s = str(value)
     return s[:length] + "…" if len(s) > length else s
 
 
-def _jinja_timestamp(value):
+def _jinja_timestamp(value: Any) -> str:
     try:
         return datetime.fromtimestamp(float(value)).strftime("%H:%M:%S")
     except Exception:

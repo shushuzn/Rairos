@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 import warnings
 
 warnings.filterwarnings("ignore", message="pkg_resources is deprecated")
-import jieba
 
 # Ollama embedding model
 DEFAULT_EMBED_MODEL = "nomic-embed-text"
@@ -363,6 +362,7 @@ class CodeIndexer:
 
     def _keyword_search(self, query: str, limit: int) -> List[CodeChunk]:
         """Fallback keyword search using jieba."""
+        import jieba
         query_tokens = set(jieba.cut(query.lower()))
         query_tokens = {t for t in query_tokens if len(t) >= 2 and t not in _STOPWORDS}
 

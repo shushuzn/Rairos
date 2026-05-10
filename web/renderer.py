@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 
 # ─── Gene Pool Force-Directed Graph ─────────────────────────────────────────────
@@ -164,7 +164,7 @@ def render_gene_pool_family_tree_html() -> str:
     PAD_TOP = 80
     PAD_LEFT = 30
 
-    nodes = []
+    nodes: List[Dict[str, Any]] = []
     id_to_node = {}
 
     for (topic, gap_type), members in clusters.items():

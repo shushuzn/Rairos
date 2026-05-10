@@ -20,9 +20,9 @@ async def report_index(request: Request):
 
 @router.get("/report/vla")
 async def report_vla(request: Request):
-    from llm.reports import report_vla as _fn
+    from llm.reports import _report_vla as _fn
 
-    content = _fn()
+    content = _fn(caps=None)  # type: ignore[arg-type]
     html = (
         "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>"
         + content
@@ -37,9 +37,9 @@ async def report_vla(request: Request):
 
 @router.get("/report/geopolitics")
 async def report_geopolitics(request: Request):
-    from llm.reports import report_geopolitics as _fn
+    from llm.reports import _report_geopolitics as _fn
 
-    content = _fn()
+    content = _fn(caps=None)  # type: ignore[arg-type]
     html = (
         "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>"
         + content
@@ -54,9 +54,9 @@ async def report_geopolitics(request: Request):
 
 @router.get("/report/economy")
 async def report_economy(request: Request):
-    from llm.reports import report_economy as _fn
+    from llm.reports import _report_economy as _fn
 
-    content = _fn()
+    content = _fn(caps=None)  # type: ignore[arg-type]
     html = (
         "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>"
         + content
@@ -71,9 +71,9 @@ async def report_economy(request: Request):
 
 @router.get("/report/theory")
 async def report_theory(request: Request):
-    from llm.reports import report_theory as _fn
+    from llm.reports import _report_theory as _fn
 
-    content = _fn()
+    content = _fn(caps=None)  # type: ignore[arg-type]
     html = (
         "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>"
         + content
@@ -88,9 +88,9 @@ async def report_theory(request: Request):
 
 @router.get("/report/safety")
 async def report_safety(request: Request):
-    from llm.reports import report_safety as _fn
+    from llm.reports import _report_safety as _fn
 
-    content = _fn()
+    content = _fn(caps=None)  # type: ignore[arg-type]
     html = (
         "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>"
         + content

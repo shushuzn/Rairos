@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
+from web.suggestions import _mark_suggestion_consumed, mark_capsule_consumed, get_experiment_queue, render_experiments_html, save_experiment as _save_experiment
+from datetime import datetime as _datetime
+from typing import Any, Dict, List
 from web.shared import templates, get_db
 
 router = APIRouter()
@@ -11,14 +14,14 @@ router = APIRouter()
 @router.get("/insights")
 async def insights(request: Request):
     """Research Insights board."""
-    suggestions = []
+    suggestions: List[Any] = []
     prefetched_ids = set()
     capsules = []
     stats = {}
-    archetype = {}
+    archetype: Dict[str, Any] = {}
     gap_prefs = {}
     topic_freq = {}
-    events_display = []
+    events_display: List[str] = []
     exp_stats = {}
     try:
         from pathlib import Path
@@ -264,9 +267,9 @@ async def generate_experiment(request: Request):
             "method": q.get("question", ""),
             "keywords": keywords,
             "status": "pending",
-            "created_at": datetime.now().isoformat(),
+            "created_at": _datetime.now().isoformat(),
         }
-        save_experiment(exp)
+        _save_experiment(exp)
         return {"success": True, "experiment": exp}
     except Exception as e:
         import logging
@@ -287,7 +290,7 @@ async def run_experiment(request: Request):
 
     # Update status
     exp["status"] = "running"
-    exp["started_at"] = datetime.now().isoformat()
+    exp["started_at"] = _datetime.now().isoformat()
     _save_experiment(exp)
 
     # Run in background thread
@@ -318,7 +321,7 @@ async def run_experiment(request: Request):
             exp["status"] = "failed"
             exp["error"] = str(e)
         finally:
-            save_experiment(exp)
+            _save_experiment(exp)
 
     t = threading.Thread(target=_run, daemon=True)
     t.start()
