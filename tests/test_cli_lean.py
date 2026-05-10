@@ -15,7 +15,7 @@ class FakeArgs:
 
 
 class TestLeanParser:
-    def test_parser_help_text(self, monkeypatch):
+    def test_parser_creates_lean_subparser(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.lean import _build_lean_parser
@@ -23,10 +23,13 @@ class TestLeanParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_lean_parser(sub)
-        assert True  # smoke
+        result = _build_lean_parser(sub)
+        # Verify returned object is the subparser
+        assert result is not None
+        # Verify the parser has the expected description
+        assert "Lean" in result.description
 
-    def test_parser_accepts_all_options(self, monkeypatch):
+    def test_parser_has_all_expected_arguments(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.lean import _build_lean_parser
@@ -34,8 +37,17 @@ class TestLeanParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_lean_parser(sub)
-        assert True  # smoke
+        result = _build_lean_parser(sub)
+        # Get all actions (positional + optional)
+        actions = {a.dest: a for a in result._actions}
+        # Verify expected arguments exist
+        assert "hypothesis_text" in actions  # positional
+        assert "check_install" in actions  # --check-install
+        assert "no_llm" in actions  # --no-llm
+        assert "code_only" in actions  # --code-only
+        assert "json" in actions  # --json/-j
+        assert "model" in actions  # --model/-M
+        assert "hypothesis_id" in actions  # --hypothesis-id
 
 
 # ─────────────────────────────────────────────────────────────────────────────

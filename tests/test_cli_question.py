@@ -15,7 +15,7 @@ class FakeArgs:
 
 
 class TestQuestionParser:
-    def test_parser_help_text(self, monkeypatch):
+    def test_parser_creates_question_subparser(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.question import _build_question_parser
@@ -23,10 +23,11 @@ class TestQuestionParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_question_parser(sub)
-        assert True  # smoke
+        result = _build_question_parser(sub)
+        assert result is not None
+        assert "research questions" in result.description.lower()
 
-    def test_parser_accepts_all_actions(self, monkeypatch):
+    def test_parser_has_all_subcommand_actions(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.question import _build_question_parser
@@ -34,8 +35,27 @@ class TestQuestionParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_question_parser(sub)
-        assert True  # smoke
+        result = _build_question_parser(sub)
+        # The question parser has a nested subparsers for actions (dest="action")
+        # Find the action subparser
+        action_sub = None
+        for a in result._actions:
+            if hasattr(a, "choices") and a.choices and "list" in a.choices:
+                action_sub = a.choices
+                break
+        assert action_sub is not None, "No action subparser found"
+        # Verify all 9 expected actions exist
+        expected_actions = {"list", "add", "get", "update", "link", "unlink", "delete", "sync", "stats"}
+        assert expected_actions == set(action_sub.keys()), f"Missing actions: {expected_actions - set(action_sub.keys())}"
+        # Verify list subparser has expected arguments
+        list_parser = action_sub["list"]
+        list_actions = {a.dest: a for a in list_parser._actions}
+        assert "status" in list_actions
+        assert "topic" in list_actions
+        # Verify add subparser has expected arguments
+        add_parser = action_sub["add"]
+        add_actions = {a.dest: a for a in add_parser._actions}
+        assert "question" in add_actions  # positional
 
 
 # ─────────────────────────────────────────────────────────────────────────────

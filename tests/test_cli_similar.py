@@ -40,7 +40,7 @@ class FakeDB:
 
 
 class TestSimilarParser:
-    def test_parser_help_text(self, monkeypatch):
+    def test_parser_creates_similar_subparser(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.similar import _build_similar_parser
@@ -48,10 +48,12 @@ class TestSimilarParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_similar_parser(sub)
-        assert True  # smoke
+        result = _build_similar_parser(sub)
+        assert result is not None
+        # description may be None if not set; check help instead
+        assert result.format_usage() is not None
 
-    def test_parser_accepts_threshold_and_limit(self, monkeypatch):
+    def test_parser_has_run_and_view_subcommands(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.similar import _build_similar_parser
@@ -59,8 +61,29 @@ class TestSimilarParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_similar_parser(sub)
-        assert True  # smoke
+        result = _build_similar_parser(sub)
+        # Find the nested subparser (similar_subcmd)
+        action_sub = None
+        for a in result._actions:
+            if hasattr(a, "choices") and a.choices and "run" in a.choices:
+                action_sub = a.choices
+                break
+        assert action_sub is not None
+        assert set(action_sub.keys()) == {"run", "view"}
+        # Verify run subparser has expected args
+        run_actions = {a.dest: a for a in action_sub["run"]._actions}
+        assert "paper_id" in run_actions  # positional
+        assert "threshold" in run_actions  # --threshold
+        assert "limit" in run_actions  # --limit
+        assert "format" in run_actions  # --format
+        # Verify --format choices
+        fmt = run_actions["format"]
+        assert fmt.choices == ["table", "json", "warp"]
+        # Verify view subparser has expected args
+        view_actions = {a.dest: a for a in action_sub["view"]._actions}
+        assert "paper_id" in view_actions  # positional
+        assert "threshold" in view_actions
+        assert "limit" in view_actions
 
 
 # ─────────────────────────────────────────────────────────────────────────────

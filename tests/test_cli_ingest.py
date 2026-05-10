@@ -61,7 +61,7 @@ class FakeDB:
 
 
 class TestIngestParser:
-    def test_parser_help_text(self, monkeypatch):
+    def test_parser_creates_ingest_subparser(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _build_ingest_parser
@@ -69,11 +69,11 @@ class TestIngestParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_ingest_parser(sub)
-        # smoke — parser built without error
-        assert True
+        result = _build_ingest_parser(sub)
+        assert result is not None
+        assert "import" in result.description.lower() or "pipeline" in result.description.lower()
 
-    def test_skip_flags_are_mutually_exclusive(self, monkeypatch):
+    def test_parser_has_all_expected_arguments(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _build_ingest_parser
@@ -81,9 +81,24 @@ class TestIngestParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_ingest_parser(sub)
-        # Just verify no crash on construction
-        assert True
+        result = _build_ingest_parser(sub)
+        actions = {a.dest: a for a in result._actions}
+        # Verify key arguments
+        assert "ids" in actions  # positional (nargs="*")
+        assert "file" in actions  # --file
+        assert "root" in actions  # --root
+        assert "tags" in actions  # --tags
+        assert "skip_embed" in actions  # --skip-embed
+        assert "skip_kg" in actions  # --skip-kg
+        assert "skip_pdf" in actions  # --skip-pdf
+        assert "skip_llm" in actions  # --skip-llm
+        assert "format" in actions  # --format
+        # Verify --format choices
+        fmt = actions["format"]
+        assert fmt.choices == ["text", "warp"]
+        # Verify --stages choices
+        stages = actions["stages"]
+        assert stages.choices == ["paper_analysis", "benchmark", "cross_reference", "insight", "kg_sync", "pnote_update"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

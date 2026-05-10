@@ -52,7 +52,7 @@ class FakeDB:
 
 
 class TestReadQueueParser:
-    def test_parser_help_text(self, monkeypatch):
+    def test_parser_creates_read_queue_subparser(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.read_queue import _build_read_queue_parser
@@ -60,10 +60,12 @@ class TestReadQueueParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_read_queue_parser(sub)
-        assert True  # smoke
+        result = _build_read_queue_parser(sub)
+        assert result is not None
+        # Verify the subparser was added and is usable (help attribute exists)
+        assert hasattr(result, "format_help")
 
-    def test_parser_accepts_all_options(self, monkeypatch):
+    def test_parser_has_all_expected_arguments(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.read_queue import _build_read_queue_parser
@@ -71,8 +73,23 @@ class TestReadQueueParser:
 
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
-        _build_read_queue_parser(sub)
-        assert True  # smoke
+        result = _build_read_queue_parser(sub)
+        actions = {a.dest: a for a in result._actions}
+        # Verify expected arguments
+        assert "limit" in actions  # --limit
+        assert "tag" in actions  # --tag (action=append)
+        assert "year" in actions  # --year
+        assert "min_similarity" in actions  # --min-similarity
+        assert "format" in actions  # --format with choices
+        assert "explain" in actions  # --explain
+        assert "explain_model" in actions  # --explain-model
+        assert "start" in actions  # --start
+        assert "done" in actions  # --done
+        assert "status" in actions  # --status
+        assert "reset" in actions  # --reset
+        # Verify --format has correct choices
+        fmt_action = actions["format"]
+        assert fmt_action.choices == ["table", "json", "score-breakdown", "warp"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
