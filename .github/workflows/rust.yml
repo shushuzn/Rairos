@@ -1,0 +1,45 @@
+name: Rust Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'Cargo.toml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'Cargo.toml'
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Check rairos-core
+        run: cargo check --package rairos-core
+        working-directory: .
+
+      - name: Check rairos-cli
+        run: cargo check --package rairos-cli
+        working-directory: .
+
+      - name: Build rairos-core
+        run: cargo build --package rairos-core
+        working-directory: .
+
+      - name: Build rairos-cli
+        run: cargo build --package rairos-cli --release
+        working-directory: .
+
+      - name: Run core tests
+        run: cargo test --package rairos-core
+        working-directory: .
