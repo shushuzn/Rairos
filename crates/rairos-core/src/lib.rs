@@ -5,7 +5,7 @@
 
 use chrono::{DateTime, Utc};
 use parking_lot::Mutex;
-use rusqlite::{params, Connection, Result as SqlResult};
+use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
