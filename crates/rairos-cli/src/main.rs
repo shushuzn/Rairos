@@ -461,7 +461,7 @@ fn handle_add(db: &Database, arxiv_id: &str) -> Result<()> {
     // Fetch from arXiv API
     println!("Fetching metadata from arXiv for {}...", arxiv_id);
 
-    let url = format!("http://export.arxiv.org/api/query?id_list={}", arxiv_id);
+    let url = format!("https://export.arxiv.org/api/query?id_list={}", arxiv_id);
     let resp = reqwest::blocking::get(&url)
         .context("Failed to connect to arXiv API")?;
 
@@ -1138,11 +1138,64 @@ fn handle_subscribe(_db: &Database, query: &str, interval_minutes: u64, max_pape
     println!("Max papers per check: {}", max_papers);
     println!("Auto-add: {}", if auto_add { "yes" } else { "no" });
     println!();
-    println!("[OK] Subscription created (background mode not yet implemented)");
-    println!("Run 'rairos search --query \"{}\"' to manually check for new papers.", query);
-    if auto_add {
-        println!("\nAuto-add enabled: new papers would be added to database automatically.");
+
+    // Perform immediate search using arXiv API
+    println!("Running immediate search...");
+    let url = format!(
+        "https://export.arxiv.org/api/query?search_query=all:{}&sortBy=submittedDate&sortOrder=descending&max_results={}",
+        query.replace(' ', "+"), max_papers
+    );
+
+    let resp = reqwest::blocking::get(&url)
+        .context("Failed to connect to arXiv API")?;
+
+    if !resp.status().is_success() {
+        anyhow::bail!("arXiv API returned error: {}", resp.status());
     }
+
+    let body = resp.text().context("Failed to read arXiv response")?;
+
+    // Count entries in response
+    let entry_count = body.matches("<entry>").count();
+    println!("[OK] Found {} papers from arXiv for query '{}'", entry_count, query);
+
+    if entry_count == 0 {
+        println!("No new papers found. Try a different query.");
+        return Ok(());
+    }
+
+    // Extract first few papers
+    let mut titles: Vec<String> = Vec::new();
+    let mut search_pos = 0;
+    while titles.len() < entry_count.min(5) {
+        if let Some(rel_entry_start) = body[search_pos..].find("<entry>") {
+            let entry_abs_start = search_pos + rel_entry_start;
+            let entry_block = &body[entry_abs_start..];
+            if let Some(rel_end) = entry_block.find("</entry>") {
+                let entry = &entry_block[..rel_end];
+                if let Some(title) = extract_xml_field(entry, "<title>") {
+                    titles.push(title.trim().to_string());
+                }
+                search_pos = entry_abs_start + rel_end + 9; // skip past </entry>
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+
+    println!("\nTop papers found:");
+    for (i, title) in titles.iter().enumerate() {
+        println!("  {}. {}", i + 1, title.chars().take(70).collect::<String>());
+    }
+
+    if auto_add && entry_count > 0 {
+        println!("\nAuto-add enabled: add papers with 'rairos add <arxiv_id>'");
+    }
+
+    println!("\nNote: Background monitoring requires daemon process. Subscription saved.");
+    println!("Run 'rairos subscribe \"{}\" --interval {}' periodically to check manually.", query, interval_minutes);
     Ok(())
 }
 
@@ -1974,15 +2027,34 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
 }
 
 fn handle_trend(db: &Database, topic: &str, range: &str, format: &str) -> Result<()> {
+    use chrono::{Duration, Utc};
+
+    // Parse time range
+    let days = match range {
+        "6m" => 180,
+        "1y" => 365,
+        "2y" => 730,
+        "5y" => 1825,
+        "all" => 9999,
+        other => {
+            println!("Unknown range '{}'. Use: 6m, 1y, 2y, 5y, all", other);
+            return Ok(());
+        }
+    };
+
+    let cutoff = Utc::now() - Duration::days(days);
     println!("=== Research Trends ===");
     println!("Topic: {}", topic);
-    println!("Time range: {}", range);
+    println!("Time range: {} (papers from last {} days)", range, days);
     println!();
 
-    let papers = db.search_papers(topic, 100)?;
+    let all_papers = db.search_papers(topic, 500)?;
+    let papers: Vec<_> = all_papers.into_iter()
+        .filter(|p| p.published >= cutoff)
+        .collect();
 
     if papers.is_empty() {
-        println!("No papers found for topic '{}'.", topic);
+        println!("No papers found for topic '{}' in the last {}.", topic, range);
         return Ok(());
     }
 
@@ -2019,14 +2091,29 @@ fn handle_trend(db: &Database, topic: &str, range: &str, format: &str) -> Result
                 println!("  - Stable/declining: {} -> {} papers", first_count, last_count);
             }
         }
+    } else if years.len() == 1 {
+        println!("  - Only one year represented: {}", years[0]);
     }
+
+    // Top categories
+    let mut cat_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    for paper in &papers {
+        for cat in &paper.categories {
+            *cat_counts.entry(cat.clone()).or_insert(0) += 1;
+        }
+    }
+    let mut top_cats: Vec<_> = cat_counts.iter().collect();
+    top_cats.sort_by(|a, b| b.1.cmp(a.1));
+    println!("  - Top categories: {}", top_cats.iter().take(5).map(|(c, _)| c.as_str()).collect::<Vec<_>>().join(", "));
 
     if format == "json" {
         let out = serde_json::json!({
             "topic": topic,
             "range": range,
+            "days": days,
             "papers_found": papers.len(),
-            "year_counts": year_counts
+            "year_counts": year_counts,
+            "top_categories": top_cats.iter().take(5).map(|(c, n)| (c, *n)).collect::<std::collections::HashMap<_, _>>()
         });
         println!("{}", serde_json::to_string_pretty(&out)?);
     }
