@@ -362,6 +362,80 @@ impl Database {
         Ok(())
     }
 
+    pub fn list_gaps(&self, limit: usize, offset: usize) -> Result<Vec<ResearchGap>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT id, category, description, severity, paper_ids FROM research_gaps ORDER BY created_at DESC LIMIT ?1 OFFSET ?2",
+        )?;
+        let rows = stmt.query_map(params![limit as i64, offset as i64], |row| {
+            Ok(ResearchGap {
+                id: row.get(0)?,
+                category: row.get(1)?,
+                description: row.get(2)?,
+                severity: row.get(3)?,
+                paper_ids: serde_json::from_str(&row.get::<_, String>(4)?).unwrap_or_default(),
+            })
+        })?;
+        let mut gaps = Vec::new();
+        for gap in rows {
+            gaps.push(gap?);
+        }
+        Ok(gaps)
+    }
+
+    pub fn get_gap(&self, id: &str) -> Result<Option<ResearchGap>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT id, category, description, severity, paper_ids FROM research_gaps WHERE id = ?1",
+        )?;
+        let result = stmt.query_row([id], |row| {
+            Ok(Some(ResearchGap {
+                id: row.get(0)?,
+                category: row.get(1)?,
+                description: row.get(2)?,
+                severity: row.get(3)?,
+                paper_ids: serde_json::from_str(&row.get::<_, String>(4)?).unwrap_or_default(),
+            }))
+        });
+        match result {
+            Ok(g) => Ok(g),
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(e.into()),
+        }
+    }
+
+    pub fn delete_gap(&self, id: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute("DELETE FROM research_gaps WHERE id = ?1", [id])?;
+        Ok(())
+    }
+
+    pub fn search_papers(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
+        let conn = self.conn.lock();
+        let pattern = format!("%{}%", query);
+        let mut stmt = conn.prepare(
+            "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
+                    parse_status, cited_by, references_cnt, doi, pdf_url
+             FROM papers
+             WHERE title LIKE ?1 OR abstract_text LIKE ?1
+             ORDER BY published DESC LIMIT ?2",
+        )?;
+        let rows = stmt.query_map(params![pattern, limit as i64], |row| {
+            Ok(Self::row_to_paper(row))
+        })?;
+        let mut papers: Vec<Paper> = Vec::new();
+        for paper in rows {
+            papers.push(paper??);
+        }
+        Ok(papers)
+    }
+
+    pub fn count_papers(&self) -> Result<i64> {
+        let conn = self.conn.lock();
+        let count: i64 = conn.query_row("SELECT COUNT(*) FROM papers", [], |r| r.get(0))?;
+        Ok(count)
+    }
+
     pub fn stats(&self) -> Result<DbStats> {
         let conn = self.conn.lock();
         let total: i64 =
