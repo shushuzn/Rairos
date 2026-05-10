@@ -16,7 +16,6 @@ import os
 import sqlite3
 
 import orjson
-import struct
 import threading
 import warnings
 from contextlib import contextmanager
