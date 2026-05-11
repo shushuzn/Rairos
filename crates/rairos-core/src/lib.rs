@@ -473,6 +473,40 @@ impl Database {
         Ok(())
     }
 
+    /// Get embedding vector for a paper (bytes as f32 array).
+    pub fn get_embedding(&self, paper_id: &str) -> Result<Option<Vec<f32>>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn
+            .prepare("SELECT embed_vector FROM papers WHERE id = ?1 AND embed_vector IS NOT NULL")?;
+        let result = stmt.query_row([paper_id], |row| {
+            let blob: Vec<u8> = row.get(0)?;
+            Ok(blob)
+        });
+        match result {
+            Ok(blob) => {
+                let vec: Vec<f32> = blob
+                    .chunks_exact(4)
+                    .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+                    .collect();
+                Ok(Some(vec))
+            }
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(CoreError::Database(e)),
+        }
+    }
+
+    /// List all paper IDs that have embeddings.
+    pub fn list_papers_with_embeddings(&self) -> Result<Vec<String>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare("SELECT id FROM papers WHERE embed_vector IS NOT NULL")?;
+        let rows = stmt.query_map([], |row| row.get(0))?;
+        let mut ids = Vec::new();
+        for row in rows {
+            ids.push(row?);
+        }
+        Ok(ids)
+    }
+
     fn row_to_paper(row: &rusqlite::Row<'_>) -> rusqlite::Result<Paper> {
         let authors_str: String = row.get(3)?;
         let categories_str: String = row.get(6)?;

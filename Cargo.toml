@@ -8,6 +8,15 @@ members = [
     "crates/rairos-research",
     "crates/rairos-web",
     "crates/rairos-kg",
+    "crates/rairos-rankers",
+    "crates/rairos-notify",
+    "crates/rairos-updaters",
+    "crates/rairos-notes",
+    "crates/rairos-pdf",
+    "crates/rairos-viz",
+    "crates/rairos-trends",
+    "crates/rairos-render",
+    "crates/rairos-mcp",
     "crates/rairos-memory",
 ]
 
