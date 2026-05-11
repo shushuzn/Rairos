@@ -1,7 +1,7 @@
 //! Rairos Parser — Paper metadata fetching from multiple sources
 //!
-//! Supported sources: arXiv, CrossRef, Semantic Scholar
-//! Replaces: parsers/arxiv.py, parsers/cross_search.py
+//! Supported sources: arXiv, CrossRef, Semantic Scholar, PDF extraction
+//! Replaces: parsers/arxiv.py, parsers/cross_search.py, pdf/parser.py
 
 use rairos_core::{Paper, PaperMetadata};
 use serde::Deserialize;
@@ -28,6 +28,9 @@ pub enum ParseError {
 
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
+
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
 }
 
 // ============================================================================
@@ -453,6 +456,59 @@ pub async fn fetch_paper(id: &str) -> Result<Paper, ParseError> {
         Some(Source::SemanticScholar) => fetch_semantic(id).await,
         None => Err(ParseError::NotFound(format!("Unknown ID format: {}", id))),
     }
+}
+
+// ============================================================================
+// PDF Extraction
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct PdfContent {
+    pub text: String,
+    pub page_count: usize,
+    pub word_count: usize,
+}
+
+pub fn extract_pdf_text(path: &std::path::Path) -> Result<PdfContent, ParseError> {
+    let doc = lopdf::Document::load(path)
+        .map_err(|e| ParseError::ParseFailed(format!("Failed to load PDF: {}", e)))?;
+
+    let page_count = doc.get_pages().len();
+
+    let mut text = String::new();
+    let mut total_words = 0;
+
+    for (page_num, _) in doc.get_pages() {
+        if let Ok(page_text) = doc.extract_text(&[page_num]) {
+            total_words += page_text.split_whitespace().count();
+            text.push_str(&page_text);
+            text.push('\n');
+        }
+    }
+
+    Ok(PdfContent {
+        text: text.trim().to_string(),
+        page_count,
+        word_count: total_words,
+    })
+}
+
+pub async fn download_pdf(url: &str, output_path: &std::path::Path) -> Result<(), ParseError> {
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(120))
+        .build()
+        .map_err(|e| ParseError::ParseFailed(format!("Client error: {}", e)))?;
+
+    let resp = client.get(url).send().await?;
+
+    if !resp.status().is_success() {
+        return Err(ParseError::ParseFailed(format!("Download failed: {}", resp.status())));
+    }
+
+    let bytes = resp.bytes().await?;
+    tokio::fs::write(output_path, bytes).await?;
+
+    Ok(())
 }
 
 #[cfg(test)]
