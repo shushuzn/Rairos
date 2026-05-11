@@ -47,6 +47,7 @@
                 <a href="#" onclick="showView('dashboard')" class="active" id="nav-dashboard">Dashboard</a>
                 <a href="#" onclick="showView('papers')" id="nav-papers">Papers</a>
                 <a href="#" onclick="showView('genes')" id="nav-genes">Gene Pool</a>
+                <a href="#" onclick="showView('memory')" id="nav-memory">Memory</a>
             </nav>
         </header>
 
@@ -106,6 +107,38 @@
                 <div id="genes-list"></div>
             </div>
         </div>
+
+        <div id="memory" class="hidden">
+            <div class="card">
+                <h2>Add Research Stance</h2>
+                <div class="form-group">
+                    <label>Topic</label>
+                    <input type="text" id="stance-topic" placeholder="e.g., RAG vs Fine-tuning">
+                </div>
+                <div class="form-group">
+                    <label>Claim</label>
+                    <input type="text" id="stance-claim" placeholder="e.g., Fine-tuning is better for domain knowledge">
+                </div>
+                <div class="form-group">
+                    <label>Stance</label>
+                    <select id="stance-type">
+                        <option value="supported">Supported</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="deferred">Deferred</option>
+                        <option value="qualified">Qualified</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Reasoning</label>
+                    <input type="text" id="stance-reasoning" placeholder="Why do you hold this stance?">
+                </div>
+                <button class="btn" onclick="addStance()">Add Stance</button>
+            </div>
+            <div class="card">
+                <h2>Research Stances</h2>
+                <div id="stances-list"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -119,7 +152,7 @@
         }
 
         function showView(view) {
-            document.querySelectorAll('#dashboard, #papers, #genes').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('#dashboard, #papers, #genes, #memory').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav a').forEach(el => el.classList.remove('active'));
             document.getElementById(view).classList.remove('hidden');
             document.getElementById('nav-' + view).classList.add('active');
@@ -127,6 +160,7 @@
             if (view === 'dashboard') loadDashboard();
             if (view === 'papers') loadPapers();
             if (view === 'genes') loadGenes();
+            if (view === 'memory') loadStances();
         }
 
         async function loadDashboard() {
@@ -214,6 +248,39 @@
                     </td>
                 </tr>`).join('')}
             </tbody></table>`;
+        }
+
+        async function loadStances() {
+            try {
+                const stances = await api('/memory/stances');
+                document.getElementById('stances-list').innerHTML = stances.length ? renderStancesTable(stances) : '<p>No stances yet</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        function renderStancesTable(stances) {
+            return `<table><thead><tr><th>Topic</th><th>Claim</th><th>Stance</th><th>Confidence</th></tr></thead><tbody>
+                ${stances.map(s => `<tr>
+                    <td>${s.topic}</td>
+                    <td>${s.claim}</td>
+                    <td><span class="tag">${s.stance}</span></td>
+                    <td>${(s.confidence || 0.5).toFixed(2)}</td>
+                </tr>`).join('')}
+            </tbody></table>`;
+        }
+
+        async function addStance() {
+            const topic = document.getElementById('stance-topic').value;
+            const claim = document.getElementById('stance-claim').value;
+            const stance = document.getElementById('stance-type').value;
+            const reasoning = document.getElementById('stance-reasoning').value;
+            if (!topic || !claim || !reasoning) return alert('Please fill all fields');
+            try {
+                await api('/memory/stances', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ topic, claim, stance, reasoning }) });
+                document.getElementById('stance-topic').value = '';
+                document.getElementById('stance-claim').value = '';
+                document.getElementById('stance-reasoning').value = '';
+                loadStances();
+            } catch (e) { alert('Error: ' + e.message); }
         }
 
         loadDashboard();
