@@ -4,7 +4,7 @@
 
 Self-Evolving Research OS — two codebases coexist:
 - **Python** (~90k lines, primary): `core/`, `llm/`, `cli/`, `db/`, `research_loop/`, `parsers/`, `kg/`, `web/`
-- **Rust** (~16k lines, rewrite): `crates/` with 17 crates
+- **Rust** (~50k+ lines, rewrite): `crates/` with **120 crates**
 
 ## Critical: Rust Build
 
@@ -102,7 +102,7 @@ GIT_ASKPASS=echo timeout 55 git push
 
 ## Stats
 
-- Rust: 17 crates, ~16k lines, 48 CLI commands
+- Rust: **120 crates**, ~50k+ lines, 48 CLI commands
 - Python: ~90k lines, 5156 tests
 
 ## Web UI
