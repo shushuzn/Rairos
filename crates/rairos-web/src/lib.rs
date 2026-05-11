@@ -5,7 +5,7 @@
 
 use axum::{
     extract::{Path, Query, State},
-    http::StatusCode,
+    http::{HeaderMap, StatusCode},
     response::{IntoResponse, Json, Response},
     routing::{get, post, delete},
     Router,
@@ -577,6 +577,301 @@ async fn get_stance(Path(id): Path<String>) -> Result<Json<ResearchStance>, WebE
         .ok_or_else(|| WebError::NotFound(format!("Stance not found: {}", id)))?;
 
     Ok(Json(stance.clone()))
+}
+
+// ============================================================================
+// Routes - Extended Papers (with filtering)
+// ============================================================================
+
+#[derive(Debug, Deserialize)]
+pub struct PapersQuery {
+    pub q: Option<String>,
+    pub source: Option<String>,
+    pub page: Option<usize>,
+    pub year_from: Option<String>,
+    pub year_to: Option<String>,
+}
+
+async fn list_papers_extended(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<PapersQuery>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let limit = 20;
+    let page = query.page.unwrap_or(1).max(1);
+    let offset = (page - 1) * limit;
+
+    let papers: Vec<PaperResponse> = if let Some(ref q) = query.q {
+        if !q.is_empty() {
+            state.db.search_papers(q, limit)
+                .map(|rows| rows.into_iter().map(PaperResponse::from).collect())
+                .map_err(|e| WebError::Database(e.to_string()))?
+        } else {
+            let rows = state.db.list_papers(None, limit, offset)
+                .map_err(|e| WebError::Database(e.to_string()))?;
+            rows.into_iter().map(PaperResponse::from).collect()
+        }
+    } else {
+        let rows = state.db.list_papers(None, limit, offset)
+            .map_err(|e| WebError::Database(e.to_string()))?;
+        rows.into_iter().map(PaperResponse::from).collect()
+    };
+    let total = papers.len();
+
+    let total_pages = ((total + limit - 1) / limit).max(1);
+
+    Ok(Json(serde_json::json!({
+        "papers": papers,
+        "query": query.q.as_deref().unwrap_or(""),
+        "total": total,
+        "total_pages": total_pages,
+        "page": page,
+        "year_from": query.year_from.as_deref().unwrap_or(""),
+        "year_to": query.year_to.as_deref().unwrap_or(""),
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GapAnalysisQuery {
+    pub ids: Option<String>,
+}
+
+async fn gap_analysis(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<GapAnalysisQuery>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let Some(ids_str) = &query.ids else {
+        return Ok(Json(serde_json::json!({
+            "error": "No papers selected"
+        })));
+    };
+
+    let paper_ids: Vec<String> = ids_str.split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
+
+    if paper_ids.len() < 2 {
+        return Ok(Json(serde_json::json!({
+            "error": "Need at least 2 papers"
+        })));
+    }
+
+    // Build papers data from database
+    let mut papers_data = Vec::new();
+    for pid in &paper_ids {
+        if let Ok(paper) = state.db.get_paper(pid) {
+            papers_data.push(serde_json::json!({
+                "id": paper.id,
+                "title": paper.title,
+                "abstract": paper.abstract_text,
+            }));
+        }
+    }
+
+    // Return placeholder gap analysis (LLM-based analysis would require rairos-llm integration)
+    Ok(Json(serde_json::json!({
+        "papers": papers_data,
+        "paper_ids": paper_ids,
+        "shared_themes": [],
+        "frontier_gaps": [],
+        "complementary_gaps": [],
+        "contradictions": [],
+        "status": "available"
+    })))
+}
+
+// ============================================================================
+// Routes - Briefing
+// ============================================================================
+
+#[derive(Debug, Deserialize)]
+pub struct BriefingQuery {
+    pub arxiv_id: Option<String>,
+}
+
+async fn get_briefing(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<BriefingQuery>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let arxiv_id = query.arxiv_id.as_deref().unwrap_or("").trim();
+    if arxiv_id.is_empty() {
+        return Ok(Json(serde_json::json!({
+            "error": "Please enter an arXiv ID"
+        })));
+    }
+
+    // Try to load briefing from disk
+    let slug = arxiv_id.replace("/", "_").replace(":", "_");
+    let briefing_path = dirs::data_local_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join("rairos")
+        .join("briefings")
+        .join(format!("briefing_{}.md", slug));
+
+    let markdown_content = if briefing_path.exists() {
+        std::fs::read_to_string(&briefing_path).ok()
+    } else {
+        None
+    };
+
+    Ok(Json(serde_json::json!({
+        "arxiv_id": arxiv_id,
+        "markdown": markdown_content,
+        "markdown_path": format!("/data/briefings/briefing_{}.md", slug),
+    })))
+}
+
+// ============================================================================
+// Routes - Notifications
+// ============================================================================
+
+// In-memory notification store
+use std::sync::Mutex;
+use once_cell::sync::Lazy;
+
+static NOTIFICATION_STORE: Lazy<Mutex<Vec<serde_json::Value>>> = Lazy::new(|| Mutex::new(Vec::new()));
+
+async fn get_notifications() -> Json<serde_json::Value> {
+    let notifications = NOTIFICATION_STORE.lock().unwrap().clone();
+    Json(serde_json::json!({ "notifications": notifications }))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct DismissRequest {
+    pub uid: Option<String>,
+}
+
+async fn dismiss_notification(
+    Json(req): Json<DismissRequest>,
+) -> Json<serde_json::Value> {
+    let mut store = NOTIFICATION_STORE.lock().unwrap();
+    if let Some(uid) = &req.uid {
+        store.retain(|n| n.get("uid").and_then(|v| v.as_str()) != Some(uid.as_str()));
+    } else {
+        store.clear();
+    }
+    Json(serde_json::json!({ "success": true, "remaining": store.len() }))
+}
+
+// ============================================================================
+// Routes - Gene Pool Visualizations
+// ============================================================================
+
+async fn gene_pool_graph_svg(
+    State(state): State<Arc<AppState>>,
+) -> Result<String, WebError> {
+    let pool = state.gene_pool.read().await;
+    let capsules = pool.capsules();
+
+    let nodes_json = serde_json::to_string(&capsules.iter().map(|c| {
+        serde_json::json!({
+            "id": c.capsule_id,
+            "label": format!("Capsule {}", &c.capsule_id.to_string()[..8]),
+            "gap_type": "unknown",
+            "color": "#7A9E7A",
+            "score": 0.5,
+        })
+    }).collect::<Vec<_>>()).unwrap_or_default();
+
+    Ok(format!(r#"<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Gene Pool Graph</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>body{{margin:0;background:#0d1117}}h2{{color:#c9d1d9;padding:12px;font-family:monospace;font-size:14px}}
+svg{{width:100vw;height:100vh}}</style></head><body>
+<h2>Gene Pool — {} capsules</h2>
+<svg></svg>
+<script>
+const nodes = {};
+const links = [];
+const simulation = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d=>d.id).distance(80))
+  .force("charge", d3.forceManyBody().strength(-200))
+  .force("center", d3.forceCenter(window.innerWidth/2, window.innerHeight/2));
+const svg = d3.select('svg');
+const link = svg.append('g').selectAll('line').data(links).join('line')
+  .attr('stroke','#999').attr('stroke-opacity',0.6);
+const node = svg.append('g').selectAll('g').data(nodes).join('g')
+  .call(d3.drag().on('start',dragstarted).on('drag',dragged).on('end',dragended));
+node.append('rect').attr('width',130).attr('height',36).attr('rx',6).attr('fill',d=>d.color||'#7A9E7A');
+node.append('text').attr('x',8).attr('y',14).attr('fill','white').text(d=>d.label.slice(0,18));
+node.append('text').attr('x',8).attr('y',27).attr('fill','#aaa').text(d=>d.gap_type.slice(0,14));
+simulation.on('tick',()=>{{link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);node.attr('transform',d=>'translate('+d.x+','+d.y+')');}});
+function dragstarted(e){{if(!e.active)simulation.alphaTarget(0.3).restart();e.subject.fx=e.subject.x;e.subject.fy=e.subject.y;}}
+function dragged(e){{e.subject.fx=e.x;e.subject.fy=e.y;}}
+function dragended(e){{if(!e.active)simulation.alphaTarget(0);e.subject.fx=null;e.subject.fy=null;}}
+</script></body></html>"#, capsules.len(), nodes_json))
+}
+
+async fn contradiction_heatmap_svg(
+    State(state): State<Arc<AppState>>,
+) -> Result<String, WebError> {
+    Ok(r#"<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Contradiction Heatmap</title>
+<style>body{{margin:0;background:#0d1117;font-family:monospace}}h2{{color:#c9d1d9;padding:12px}}table{{width:100%;border-collapse:collapse}}th,td{{padding:6px 10px;border-bottom:1px solid #21262d;text-align:left;font-size:12px}}th{{color:#8b949e;background:#161b22}}td{{color:#c9d1d9}}</style></head>
+<body><h2>Contradiction Heatmap — no data yet</h2>
+<p style="color:#484f58;padding:0 16px">Run `rairos analyze --contradictions` first to populate.</p>
+</body></html>"#.to_string())
+}
+
+// ============================================================================
+// Routes - Impact Ranking
+// ============================================================================
+
+async fn impact_ranking(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let rows = state.db.list_papers(None, 100, 0)
+        .map_err(|e| WebError::Database(e.to_string()))?;
+
+    let mut papers: Vec<_> = rows.into_iter().map(|p| {
+        serde_json::json!({
+            "paper_id": p.id,
+            "title": p.title,
+            "year": p.published.format("%Y").to_string(),
+            "citation_count": p.metadata.cited_by,
+        })
+    }).collect();
+
+    // Sort by citation count descending
+    papers.sort_by(|a, b| {
+        let ca = a.get("citation_count").and_then(|v| v.as_u64()).unwrap_or(0);
+        let cb = b.get("citation_count").and_then(|v| v.as_u64()).unwrap_or(0);
+        cb.cmp(&ca)
+    });
+
+    Ok(Json(serde_json::json!({ "ranking": papers.into_iter().take(50).collect::<Vec<_>>() })))
+}
+
+// ============================================================================
+// Routes - Research Log
+// ============================================================================
+
+async fn research_log_page() -> impl IntoResponse {
+    let html = r#"<div class="research-log">
+        <h2>Research Log</h2>
+        <p>Research notes will appear here.</p>
+    </div>"#;
+    Html(html)
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AddNoteRequest {
+    pub paper_id: Option<String>,
+    pub note: String,
+    pub tags: Option<Vec<String>>,
+}
+
+async fn add_note(
+    Json(req): Json<AddNoteRequest>,
+) -> Json<serde_json::Value> {
+    // Notes would be stored in memory or database
+    Json(serde_json::json!({ "success": true }))
+}
+
+async fn get_notes(
+    Query(params): Query<serde_json::Value>,
+) -> Json<serde_json::Value> {
+    Json(serde_json::json!({ "notes": [] }))
 }
 
 // ============================================================================

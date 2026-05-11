@@ -50,6 +50,22 @@ pub struct Paper {
     pub metadata: PaperMetadata,
 }
 
+impl Default for Paper {
+    fn default() -> Self {
+        Self {
+            id: String::new(),
+            arxiv_id: None,
+            title: String::new(),
+            authors: Vec::new(),
+            published: DateTime::default(),
+            abstract_text: String::new(),
+            categories: Vec::new(),
+            parse_status: ParseStatus::Pending,
+            metadata: PaperMetadata::default(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PaperMetadata {
     pub cited_by: usize,
