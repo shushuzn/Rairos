@@ -13,6 +13,7 @@ use axum::{
 use rairos_core::{Database, Paper, DbStats, ResearchGap};
 use rairos_kg::{KnowledgeGraph, GraphAlgorithms, KgStats};
 use rairos_llm::{GenePool, Capsule, GenePoolDiversityCalculator};
+use rairos_memory::{ResearchMemory, ResearchStance, StanceType, MemoryStats};
 use rairos_parser::{self, detect_source, Source};
 use rairos_research::{ResearchQuery, ResearchOrchestrator};
 use serde::{Deserialize, Serialize};
@@ -531,6 +532,54 @@ async fn kg_rank(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::
 }
 
 // ============================================================================
+// Routes - Memory
+// ============================================================================
+
+async fn memory_stats() -> Result<Json<MemoryStats>, WebError> {
+    let memory = ResearchMemory::load().map_err(|e| WebError::Internal(e.to_string()))?;
+    Ok(Json(memory.stats()))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StanceAddRequest {
+    pub topic: String,
+    pub claim: String,
+    pub stance: String,
+    pub reasoning: String,
+}
+
+async fn list_stances() -> Result<Json<Vec<ResearchStance>>, WebError> {
+    let memory = ResearchMemory::load().map_err(|e| WebError::Internal(e.to_string()))?;
+    Ok(Json(memory.stances().to_vec()))
+}
+
+async fn add_stance(Json(req): Json<StanceAddRequest>) -> Result<Json<ResearchStance>, WebError> {
+    let stance_type = match req.stance.to_lowercase().as_str() {
+        "supported" => StanceType::Supported,
+        "rejected" => StanceType::Rejected,
+        "deferred" => StanceType::Deferred,
+        "qualified" => StanceType::Qualified,
+        _ => return Err(WebError::BadRequest(format!("Invalid stance: {}", req.stance))),
+    };
+
+    let mut memory = ResearchMemory::load().map_err(|e| WebError::Internal(e.to_string()))?;
+    let stance = ResearchStance::new(&req.topic, &req.claim, stance_type, &req.reasoning);
+    memory.add_stance(stance.clone());
+    memory.save().map_err(|e| WebError::Internal(e.to_string()))?;
+
+    Ok(Json(stance))
+}
+
+async fn get_stance(Path(id): Path<String>) -> Result<Json<ResearchStance>, WebError> {
+    let memory = ResearchMemory::load().map_err(|e| WebError::Internal(e.to_string()))?;
+    let stance = memory.get_stance(&id)
+        .or_else(|| memory.stances().iter().find(|s| s.stance_id.starts_with(&id)))
+        .ok_or_else(|| WebError::NotFound(format!("Stance not found: {}", id)))?;
+
+    Ok(Json(stance.clone()))
+}
+
+// ============================================================================
 // Server
 // ============================================================================
 
@@ -565,6 +614,10 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/kg/papers/:id/references", get(kg_references))
         .route("/kg/papers/:source/path/:target", get(kg_path))
         .route("/kg/rank", get(kg_rank))
+        .route("/memory/stats", get(memory_stats))
+        .route("/memory/stances", get(list_stances))
+        .route("/memory/stances", post(add_stance))
+        .route("/memory/stances/:id", get(get_stance))
         .with_state(state)
 }
 
