@@ -25,6 +25,7 @@ pub struct ToolInputSchema {
 }
 
 impl ToolInputSchema {
+    #[allow(dead_code)]
     fn object(properties: HashMap<String, ToolProperty>, required: Vec<String>) -> Self {
         let props: HashMap<String, Value> = properties
             .into_iter()
@@ -50,6 +51,7 @@ impl ToolInputSchema {
         }
     }
 
+    #[allow(dead_code)]
     fn string_enum(values: Vec<String>) -> Self {
         Self {
             ty: "string".into(),
@@ -61,6 +63,7 @@ impl ToolInputSchema {
         }
     }
 
+    #[allow(dead_code)]
     fn integer() -> Self {
         Self {
             ty: "integer".into(),
@@ -72,6 +75,7 @@ impl ToolInputSchema {
         }
     }
 
+    #[allow(dead_code)]
     fn number() -> Self {
         Self {
             ty: "number".into(),
@@ -83,6 +87,7 @@ impl ToolInputSchema {
         }
     }
 
+    #[allow(dead_code)]
     fn boolean() -> Self {
         Self {
             ty: "boolean".into(),
@@ -94,6 +99,7 @@ impl ToolInputSchema {
         }
     }
 
+    #[allow(dead_code)]
     fn array(item_ty: ToolInputSchema) -> Self {
         Self {
             ty: "array".into(),
@@ -342,7 +348,7 @@ pub fn number_prop(desc: &str) -> ToolProperty {
     }
 }
 
-pub fn array_prop(item: ToolInputSchema, desc: &str) -> ToolProperty {
+pub fn array_prop(_item: ToolInputSchema, desc: &str) -> ToolProperty {
     ToolProperty {
         type_: "array".into(),
         description: Some(desc.into()),

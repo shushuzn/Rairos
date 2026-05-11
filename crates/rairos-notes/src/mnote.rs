@@ -35,10 +35,10 @@ impl Hash64 for str {
 }
 
 pub fn mnote_filename(tag: &str, a: &Path, b: &Path, c: &Path) -> String {
-    let A = short(a.file_stem().unwrap().to_string_lossy().as_ref(), 19);
-    let B = short(b.file_stem().unwrap().to_string_lossy().as_ref(), 19);
-    let C = short(c.file_stem().unwrap().to_string_lossy().as_ref(), 19);
-    format!("M - {tag} - {A} vs {B} vs {C}.md")
+    let a_short = short(a.file_stem().unwrap().to_string_lossy().as_ref(), 19);
+    let b_short = short(b.file_stem().unwrap().to_string_lossy().as_ref(), 19);
+    let c_short = short(c.file_stem().unwrap().to_string_lossy().as_ref(), 19);
+    format!("M - {tag} - {a_short} vs {b_short} vs {c_short}.md")
 }
 
 fn parse_current_abc(md: &str) -> (Option<String>, Option<String>, Option<String>) {
@@ -116,54 +116,54 @@ pub fn ensure_or_update_mnote(
     let a = &top3[0];
     let b = &top3[1];
     let c = &top3[2];
-    let newA = a.file_stem().unwrap().to_string_lossy();
-    let newB = b.file_stem().unwrap().to_string_lossy();
-    let newC = c.file_stem().unwrap().to_string_lossy();
+    let new_a = a.file_stem().unwrap().to_string_lossy();
+    let new_b = b.file_stem().unwrap().to_string_lossy();
+    let new_c = c.file_stem().unwrap().to_string_lossy();
 
     if existing.is_empty() {
         let fname = mnote_filename(tag, a, b, c);
         let path = mnote_dir.join(&fname);
-        let title = format!("{tag}: {newA} vs {newB} vs {newC}");
-        let _ = std::fs::write(&path, render_mnote(&title, &newA, &newB, &newC));
+        let title = format!("{tag}: {new_a} vs {new_b} vs {new_c}");
+        let _ = std::fs::write(&path, render_mnote(&title, &new_a, &new_b, &new_c));
         return Some(path);
     }
 
     let path = &existing[0];
     let md = std::fs::read_to_string(path).unwrap_or_default();
-    let (curA, curB, curC) = parse_current_abc(&md);
+    let (cur_a, cur_b, cur_c) = parse_current_abc(&md);
 
-    if curA.is_none() || curB.is_none() || curC.is_none() {
+    if cur_a.is_none() || cur_b.is_none() || cur_c.is_none() {
         let md2 = format!(
             "{}\n\n---\n\n## 当前 A/B/C（自动补齐）\n\n- A: {}\n- B: {}\n- C: {}\n",
             md.trim_end(),
-            newA,
-            newB,
-            newC
+            new_a,
+            new_b,
+            new_c
         );
         let _ = std::fs::write(path, md2);
         return Some(path.clone());
     }
 
-    if (curA.as_deref(), curB.as_deref(), curC.as_deref())
+    if (cur_a.as_deref(), cur_b.as_deref(), cur_c.as_deref())
         != (
-            Some(newA.as_ref()),
-            Some(newB.as_ref()),
-            Some(newC.as_ref()),
+            Some(new_a.as_ref()),
+            Some(new_b.as_ref()),
+            Some(new_c.as_ref()),
         )
     {
         let re_a = Regex::new(&format!(r"^\-\s*A:\s*.*$")).unwrap();
         let re_b = Regex::new(&format!(r"^\-\s*B:\s*.*$")).unwrap();
         let re_c = Regex::new(&format!(r"^\-\s*C:\s*.*$")).unwrap();
-        let mut md2 = re_a.replace(&md, format!("- A: {newA}")).to_string();
-        md2 = re_b.replace(&md2, format!("- B: {newB}")).to_string();
-        md2 = re_c.replace(&md2, format!("- C: {newC}")).to_string();
+        let mut md2 = re_a.replace(&md, format!("- A: {new_a}")).to_string();
+        md2 = re_b.replace(&md2, format!("- B: {new_b}")).to_string();
+        md2 = re_c.replace(&md2, format!("- C: {new_c}")).to_string();
         md2 = append_view_evolution_log(
             &md2,
-            (curA, curB, curC),
+            (cur_a, cur_b, cur_c),
             (
-                Some(newA.to_string()),
-                Some(newB.to_string()),
-                Some(newC.to_string()),
+                Some(new_a.to_string()),
+                Some(new_b.to_string()),
+                Some(new_c.to_string()),
             ),
         );
         let _ = std::fs::write(path, md2);

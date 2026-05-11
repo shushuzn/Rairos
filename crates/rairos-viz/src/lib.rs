@@ -137,7 +137,7 @@ impl D3ForceGraph {
         };
 
         let mut nodes: Vec<D3Node> = Vec::new();
-        let mut links: Vec<D3Link> = Vec::new();
+        let links: Vec<D3Link> = Vec::new();
 
         for paper in papers.iter().take(max_nodes) {
             let nid = paper.arxiv_id.clone().unwrap_or_else(|| paper.id.clone());
@@ -170,8 +170,8 @@ impl D3ForceGraph {
     pub fn to_citation_json(
         &self,
         paper_id: &str,
-        depth: usize,
-        max_nodes: usize,
+        _depth: usize,
+        _max_nodes: usize,
     ) -> Result<D3Graph> {
         let db = self.db.as_ref().ok_or_else(|| VizError::Database("No database configured".into()))?;
 
@@ -186,7 +186,7 @@ impl D3ForceGraph {
             .ok_or_else(|| VizError::NotFound(paper_id.to_string()))?;
 
         let mut nodes: Vec<D3Node> = Vec::new();
-        let mut links: Vec<D3Link> = Vec::new();
+        let links: Vec<D3Link> = Vec::new();
 
         let root_nid = root_paper
             .arxiv_id
@@ -221,8 +221,8 @@ impl D3ForceGraph {
     pub fn to_similar_json(
         &self,
         paper_id: &str,
-        threshold: f32,
-        max_nodes: usize,
+        _threshold: f32,
+        _max_nodes: usize,
     ) -> Result<D3Graph> {
         let db = self.db.as_ref().ok_or_else(|| VizError::Database("No database configured".into()))?;
 
@@ -236,7 +236,7 @@ impl D3ForceGraph {
             .clone()
             .unwrap_or_else(|| root_paper.id.clone());
 
-        let mut nodes: Vec<D3Node> = vec![D3Node {
+        let nodes: Vec<D3Node> = vec![D3Node {
             id: root_nid.clone(),
             label: root_paper.title.chars().take(60).collect(),
             node_type: "Paper".to_string(),
@@ -247,7 +247,7 @@ impl D3ForceGraph {
             similarity: None,
         }];
 
-        let mut links: Vec<D3Link> = Vec::new();
+        let links: Vec<D3Link> = Vec::new();
 
         // Note: Similarity search requires embedding storage and search.
         // The Database type in core has `get_embedding` and `list_papers_with_embeddings`

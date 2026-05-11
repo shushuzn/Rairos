@@ -252,10 +252,12 @@ pub fn compute_pdf_hash(pdf_path: &Path) -> Result<String> {
 // Regex Helpers
 // ============================================================================
 
+#[allow(dead_code)]
+#[allow(dead_code)]
 fn make_display_math_patterns() -> Vec<Regex> {
     vec![
         Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").unwrap(),
-        Regex::new(r"^\s*\\\[\s*[\s\S]+?\s*\\\]\s*$").unwrap(),
+        Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").unwrap(),
         // Use separate patterns for each environment (no backreferences)
         Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").unwrap(),
         Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").unwrap(),
@@ -264,10 +266,12 @@ fn make_display_math_patterns() -> Vec<Regex> {
     ]
 }
 
+#[allow(dead_code)]
 fn make_inline_math_pat() -> Regex {
     Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").unwrap()
 }
 
+#[allow(dead_code)]
 fn is_display_math(line: &str) -> bool {
     let s = line.trim();
     for pat in make_display_math_patterns() {
@@ -278,6 +282,7 @@ fn is_display_math(line: &str) -> bool {
     false
 }
 
+#[allow(dead_code)]
 fn extract_inline_math(line: &str) -> Vec<MathBlock> {
     let pat = make_inline_math_pat();
     pat.captures_iter(line)
@@ -433,6 +438,43 @@ impl ParsedPaper {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // Helpers for math detection — only needed by tests
+    fn make_display_math_patterns() -> Vec<Regex> {
+        vec![
+            Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").unwrap(),
+        Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").unwrap(),
+            Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").unwrap(),
+            Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").unwrap(),
+            Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").unwrap(),
+            Regex::new(r"^\s*\\begin\{multline\*?\}[\s\S]+?\\end\{multline\*?\}\s*$").unwrap(),
+        ]
+    }
+
+    fn make_inline_math_pat() -> Regex {
+        Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").unwrap()
+    }
+
+    fn is_display_math(line: &str) -> bool {
+        let s = line.trim();
+        for pat in make_display_math_patterns() {
+            if pat.is_match(s) {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn extract_inline_math(line: &str) -> Vec<MathBlock> {
+        let pat = make_inline_math_pat();
+        pat.captures_iter(line)
+            .map(|m| MathBlock {
+                text: m.get(0).map(|x| x.as_str().to_string()).unwrap_or_default(),
+                is_display: false,
+                page: 0,
+            })
+            .collect()
+    }
 
     #[test]
     fn test_detect_block_type_heading() {
