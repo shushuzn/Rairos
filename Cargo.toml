@@ -24,6 +24,7 @@ members = [
     "crates/rairos-credibility",
     "crates/rairos-impact",
     "crates/rairos-climate",
+    "crates/rairos-rigor",
 ]
 
 [profile.dev]
