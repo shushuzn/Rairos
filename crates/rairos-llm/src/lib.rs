@@ -1471,3 +1471,216 @@ pub fn contains_research_keyword(text: &str) -> bool {
     let text_lower = text.to_lowercase();
     AI_RESEARCH_KEYWORDS.iter().any(|kw| text_lower.contains(&kw.to_lowercase()))
 }
+
+// ============================================================================
+// At-Risk Capsule Scanner
+// ============================================================================
+
+const STREAK_THRESHOLD: usize = 2;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AtRiskCapsule {
+    pub capsule_id: String,
+    pub gap_title: String,
+    pub gap_type: String,
+    pub outcome_score: f64,
+    pub low_score_streak: usize,
+    pub status: String,
+    pub pinned_ttl: usize,
+    pub trigger_keywords: Vec<String>,
+}
+
+fn capsule_path() -> std::path::PathBuf {
+    dirs::home_dir()
+        .map(|p| p.join(".ai_research_os").join("gene_pool").join("capsules.json"))
+        .unwrap_or_else(|| std::path::PathBuf::from("capsules.json"))
+}
+
+#[derive(Debug, Deserialize)]
+struct CapsuleFile {
+    capsules: Vec<CapsuleEntry>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct CapsuleEntry {
+    #[serde(rename = "capsule_id")]
+    capsule_id: Option<String>,
+    #[serde(rename = "action_gap_title")]
+    action_gap_title: Option<String>,
+    #[serde(rename = "action_gap_type")]
+    action_gap_type: Option<String>,
+    #[serde(rename = "outcome_success_score")]
+    outcome_success_score: Option<f64>,
+    #[serde(rename = "low_score_streak")]
+    low_score_streak: Option<usize>,
+    status: Option<String>,
+    #[serde(rename = "pinned_ttl")]
+    pinned_ttl: Option<usize>,
+    #[serde(rename = "trigger_keywords")]
+    trigger_keywords: Option<Vec<String>>,
+}
+
+fn load_capsules() -> Vec<CapsuleEntry> {
+    let path = capsule_path();
+    if !path.exists() {
+        return Vec::new();
+    }
+    match std::fs::read_to_string(&path) {
+        Ok(contents) => serde_json::from_str::<CapsuleFile>(&contents)
+            .map(|f| f.capsules)
+            .unwrap_or_default(),
+        Err(_) => Vec::new(),
+    }
+}
+
+fn save_capsules(capsules: &[serde_json::Value]) -> std::io::Result<()> {
+    let path = capsule_path();
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let data = serde_json::json!({ "capsules": capsules });
+    std::fs::write(&path, serde_json::to_string_pretty(&data)?)?;
+    Ok(())
+}
+
+/// Return active capsules with low_score_streak >= threshold.
+pub fn get_at_risk_capsules(threshold: usize) -> Vec<AtRiskCapsule> {
+    let all_caps = load_capsules();
+    let mut results: Vec<AtRiskCapsule> = Vec::new();
+
+    for cap in all_caps {
+        let status = cap.status.as_deref().unwrap_or("");
+        if status != "active" && status != "" {
+            continue;
+        }
+        let streak = cap.low_score_streak.unwrap_or(0);
+        if streak < threshold {
+            continue;
+        }
+        results.push(AtRiskCapsule {
+            capsule_id: cap.capsule_id.unwrap_or_default(),
+            gap_title: cap.action_gap_title.unwrap_or_default(),
+            gap_type: cap.action_gap_type.unwrap_or_default(),
+            outcome_score: cap.outcome_success_score.unwrap_or(0.0),
+            low_score_streak: streak,
+            status: cap.status.unwrap_or_else(|| "active".to_string()),
+            pinned_ttl: cap.pinned_ttl.unwrap_or(0),
+            trigger_keywords: cap.trigger_keywords.unwrap_or_default(),
+        });
+    }
+
+    results.sort_by(|a, b| b.low_score_streak.cmp(&a.low_score_streak));
+    results
+}
+
+/// Reset low_score_streak to 0 for a capsule.
+pub fn keep_active(capsule_id: &str) -> bool {
+    let all_caps = load_capsules();
+    let mut found = false;
+    let updated: Vec<serde_json::Value> = all_caps
+        .into_iter()
+        .map(|mut cap| {
+            if cap.capsule_id.as_deref() == Some(capsule_id) {
+                cap.low_score_streak = Some(0);
+                cap.pinned_ttl = Some(0);
+                found = true;
+            }
+            serde_json::to_value(&cap).unwrap_or_default()
+        })
+        .collect();
+
+    if found {
+        let _ = save_capsules(&updated);
+    }
+    found
+}
+
+/// Pin a capsule to TTL cycles (resets streak, sets pinned_ttl).
+pub fn pin_to_ttl(capsule_id: &str, ttl: usize) -> bool {
+    let all_caps = load_capsules();
+    let mut found = false;
+    let updated: Vec<serde_json::Value> = all_caps
+        .into_iter()
+        .map(|mut cap| {
+            if cap.capsule_id.as_deref() == Some(capsule_id) {
+                cap.pinned_ttl = Some(ttl);
+                cap.low_score_streak = Some(0);
+                found = true;
+            }
+            serde_json::to_value(&cap).unwrap_or_default()
+        })
+        .collect();
+
+    if found {
+        let _ = save_capsules(&updated);
+    }
+    found
+}
+
+/// Render at-risk capsules as HTML table.
+pub fn render_at_risk_html() -> String {
+    let capsules = get_at_risk_capsules(STREAK_THRESHOLD);
+
+    if capsules.is_empty() {
+        return "<p>No at-risk capsules. All capsules are healthy.</p>".to_string();
+    }
+
+    let mut html = String::new();
+    html.push_str("<div class=\"at-risk-panel\">");
+    html.push_str(&format!(
+        "<h3>🚨 At-Risk Capsules <small style='color:#888'>({} need attention)</small></h3>",
+        capsules.len()
+    ));
+    html.push_str("<table class=\"at-risk-table\">");
+    html.push_str("<thead><tr><th>Gap Title</th><th>Type</th><th>Score</th><th>Streak</th><th>Pinned</th><th>Action</th></tr></thead>");
+    html.push_str("<tbody>");
+
+    for cap in &capsules {
+        let streak_bar = "🔴".repeat(cap.low_score_streak);
+        let pinned = if cap.pinned_ttl > 0 {
+            format!("TTL {}", cap.pinned_ttl)
+        } else {
+            "—".to_string()
+        };
+        let title_short = if cap.gap_title.len() > 35 {
+            format!("{}...", &cap.gap_title[..35])
+        } else {
+            cap.gap_title.clone()
+        };
+
+        html.push_str("<tr>");
+        html.push_str(&format!(
+            "<td style='max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{}'>{}</code></td>",
+            cap.gap_title, title_short
+        ));
+        html.push_str(&format!("<td><code>{}</code></td>", cap.gap_type));
+        html.push_str(&format!("<td>{:.2}</td>", cap.outcome_score));
+        html.push_str(&format!("<td>{} <small>{}</small></td>", streak_bar, cap.low_score_streak));
+        html.push_str(&format!("<td>{}</td>", pinned));
+        html.push_str("<td>");
+        html.push_str(&format!(
+            "<button class=\"btn btn-small btn-keep\" onclick=\"keepActive('{}')\">✓ Keep Active</button>",
+            cap.capsule_id
+        ));
+        html.push_str(&format!(
+            "<button class=\"btn btn-small btn-pin\" onclick=\"pinToTTL('{}')\">📌 Pin TTL</button>",
+            cap.capsule_id
+        ));
+        html.push_str("</td>");
+        html.push_str("</tr>");
+    }
+
+    html.push_str("</tbody></table>");
+    html.push_str("<style>");
+    html.push_str(".at-risk-panel { font-family: Georgia, serif; }");
+    html.push_str(".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }");
+    html.push_str(".at-risk-table th, .at-risk-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }");
+    html.push_str(".at-risk-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }");
+    html.push_str(".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }");
+    html.push_str(".btn-keep { background: #7A9E7A; color: white; border: none; }");
+    html.push_str(".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }");
+    html.push_str("</style>");
+    html.push_str("</div>");
+
+    html
+}
