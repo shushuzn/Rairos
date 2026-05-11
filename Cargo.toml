@@ -47,6 +47,9 @@ members = [
     "crates/rairos-exceptions",
     "crates/rairos-retry",
     "crates/rairos-observability",
+    "crates/rairos-text-utils",
+    "crates/rairos-research-log",
+    "crates/rairos-tracker-base",
 ]
 
 [profile.dev]
