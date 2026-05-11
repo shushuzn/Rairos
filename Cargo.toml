@@ -51,6 +51,7 @@ members = [
     "crates/rairos-research-log",
     "crates/rairos-tracker-base",
     "crates/rairos-insight-types",
+    "crates/rairos-logging-utils",
 ]
 
 [profile.dev]
