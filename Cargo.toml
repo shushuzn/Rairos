@@ -121,6 +121,9 @@ members = [
     "crates/rairos-extable",
     "crates/rairos-topic-discovery",
     "crates/rairos-daemon",
+    "crates/rairos-paper-parser",
+    "crates/rairos-deep-research",
+    "crates/rairos-orchestrator",
 ]
 
 [profile.dev]
