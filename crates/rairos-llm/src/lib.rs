@@ -1255,4 +1255,162 @@ mod tests {
         assert_eq!(SignalType::ChatSuccess.to_string(), "chat_success");
         assert_eq!(SignalType::RetrievalHit.to_string(), "retrieval_hit");
     }
+
+    #[test]
+    fn test_contains_research_keyword() {
+        assert!(super::contains_research_keyword("The transformer model uses attention"));
+        assert!(super::contains_research_keyword("RLHF training"));
+        assert!(super::contains_research_keyword(" diffusion model"));
+        assert!(!super::contains_research_keyword("xyz abcdef")); // no keywords
+    }
+
+    #[test]
+    fn test_research_keywords_defined() {
+        assert!(super::AI_RESEARCH_KEYWORDS.contains(&"transformer"));
+        assert!(super::AI_RESEARCH_KEYWORDS.contains(&"attention"));
+        assert!(super::SMART_FOLLOWUP_BASE.contains(&"vs"));
+    }
+}
+
+// ============================================================================
+// Research Keywords
+// ============================================================================
+
+pub const AI_RESEARCH_KEYWORDS: &[&str] = &[
+    "transformer",
+    "attention",
+    "bert",
+    "gpt",
+    "llm",
+    "language model",
+    "neural",
+    "network",
+    "embedding",
+    "fine-tuning",
+    "rlhf",
+    "rag",
+    "retrieval",
+    "generative",
+    "diffusion",
+    "gan",
+    "clip",
+    "vit",
+    "reinforcement",
+    "policy",
+    "reward",
+    "rl",
+    "dpo",
+    "ppo",
+    "reward model",
+    "training",
+    "optimization",
+    "pre-training",
+    "instruction",
+    "alignment",
+    "multimodal",
+    "vision",
+    "language",
+    "speech",
+    "audio",
+    "constitutional",
+    "reasoning",
+    "chain-of-thought",
+    "cot",
+    "synthetic data",
+    "model",
+    "learning",
+];
+
+pub const SMART_FOLLOWUP_BASE: &[&str] = &[
+    "attention",
+    "transformer",
+    "bert",
+    "gpt",
+    "llm",
+    "language model",
+    "neural",
+    "network",
+    "embedding",
+    "fine-tuning",
+    "rlhf",
+    "rag",
+    "retrieval",
+    "generative",
+    "diffusion",
+    "gan",
+    "clip",
+    "vit",
+    "weight",
+    "layer",
+    "parameter",
+    "gradient",
+    "loss",
+    "optimize",
+    "softmax",
+    "matrix",
+    "dot",
+    "product",
+    "mechanism",
+    "reinforcement",
+    "policy",
+    "reward",
+    "rl",
+    "dpo",
+    "ppo",
+    "training",
+    "pre-training",
+    "instruction",
+    "alignment",
+    "multimodal",
+    "vision",
+    "language",
+    "speech",
+    "audio",
+    "constitutional",
+    "reasoning",
+    "chain-of-thought",
+    "cot",
+    "implement",
+    "code",
+    "function",
+    "class",
+    "api",
+    "library",
+    "pytorch",
+    "tensorflow",
+    "module",
+    "algorithm",
+    "vs",
+    "versus",
+    "better",
+    "worse",
+    "compare",
+    "advantage",
+    "disadvantage",
+    "based on",
+    "follow",
+    "extend",
+    "improve",
+    "build upon",
+    "later",
+    "previous",
+    "next",
+    "evolution",
+    "derived",
+    "succeed",
+    "apply",
+    "use",
+    "application",
+    "industry",
+    "practical",
+    "deploy",
+    "production",
+    "real-world",
+    "benchmark",
+];
+
+/// Check if a text contains any AI research keywords.
+pub fn contains_research_keyword(text: &str) -> bool {
+    let text_lower = text.to_lowercase();
+    AI_RESEARCH_KEYWORDS.iter().any(|kw| text_lower.contains(&kw.to_lowercase()))
 }
