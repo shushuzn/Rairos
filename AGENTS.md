@@ -14,6 +14,24 @@ CARGO_BUILD_JOBS=1 cargo build
 CARGO_BUILD_JOBS=1 cargo test
 ```
 
+## sccache (Compilation Cache)
+
+sccache speeds up Rust builds by caching compilation results.
+
+```bash
+# Install (or use prebuilt from /tmp/sccache-v0.11.0-x86_64-unknown-linux-musl/sccache)
+cp /tmp/sccache-v0.11.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/
+
+# Start server
+sccache --start-server
+
+# Build (sccache is configured in ~/.cargo/config.toml)
+CARGO_BUILD_JOBS=1 cargo build
+
+# Check cache stats
+sccache --show-stats
+```
+
 ## Rust Crates
 
 | Crate | Purpose |
