@@ -43,24 +43,24 @@
     <div class="container">
         <header>
             <h1>Rairos Research OS</h1>
-            <nav class="nav">
-                <a href="#" onclick="showView('dashboard')" class="active" id="nav-dashboard">Dashboard</a>
-                <a href="#" onclick="showView('papers')" id="nav-papers">Papers</a>
-                <a href="#" onclick="showView('genes')" id="nav-genes">Gene Pool</a>
-                <a href="#" onclick="showView('kg')" id="nav-kg">Knowledge Graph</a>
-                <a href="#" onclick="showView('memory')" id="nav-memory">Memory</a>
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="#" onclick="showView('dashboard');return false;" class="active" id="nav-dashboard" role="menuitem" tabindex="0">Dashboard</a>
+                <a href="#" onclick="showView('papers');return false;" id="nav-papers" role="menuitem" tabindex="0">Papers</a>
+                <a href="#" onclick="showView('genes');return false;" id="nav-genes" role="menuitem" tabindex="0">Gene Pool</a>
+                <a href="#" onclick="showView('kg');return false;" id="nav-kg" role="menuitem" tabindex="0">Knowledge Graph</a>
+                <a href="#" onclick="showView('memory');return false;" id="nav-memory" role="menuitem" tabindex="0">Memory</a>
             </nav>
         </header>
 
         <div id="dashboard">
-            <div class="stats" id="stats"></div>
+            <div class="stats" id="stats" aria-live="polite"></div>
             <div class="card">
                 <h2>Recent Papers</h2>
-                <div id="recent-papers"></div>
+                <div id="recent-papers" aria-live="polite"></div>
             </div>
             <div class="card">
                 <h2>Gene Pool Diversity</h2>
-                <div id="diversity"></div>
+                <div id="diversity" aria-live="polite"></div>
             </div>
         </div>
 
@@ -185,6 +185,15 @@
             if (view === 'kg') loadKG();
             if (view === 'memory') loadStances();
         }
+
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    link.click();
+                }
+            });
+        });
 
         function showLoading(el) { el.innerHTML = '<p style="color:#94a3b8">Loading...</p>'; }
         function showError(el, msg) { el.innerHTML = `<p style="color:#ef4444">Error: ${msg}</p>`; }
