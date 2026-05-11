@@ -12,6 +12,7 @@ members = [
     "crates/rairos-research",
     "crates/rairos-web",
     "crates/rairos-kg",
+    "crates/rairos-leaderboard",
     "crates/rairos-rankers",
     "crates/rairos-notify",
     "crates/rairos-updaters",
