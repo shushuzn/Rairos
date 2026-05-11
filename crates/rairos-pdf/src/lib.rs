@@ -253,7 +253,6 @@ pub fn compute_pdf_hash(pdf_path: &Path) -> Result<String> {
 // ============================================================================
 
 #[allow(dead_code)]
-#[allow(dead_code)]
 fn make_display_math_patterns() -> Vec<Regex> {
     vec![
         Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").unwrap(),
@@ -358,6 +357,120 @@ pub fn detect_block_type(line: &str) -> BlockType {
     }
 
     BlockType::Body
+}
+
+// ============================================================================
+// Section Segmentation
+// ============================================================================
+
+const SECTION_KEYWORDS: &[&str] = &[
+    "abstract",
+    "introduction",
+    "background",
+    "related work",
+    "method",
+    "approach",
+    "preliminaries",
+    "experiments",
+    "evaluation",
+    "results",
+    "discussion",
+    "limitations",
+    "conclusion",
+    "future work",
+    "references",
+    "appendix",
+    "acknowledgments",
+    "ablation",
+];
+
+fn is_section_keyword(s: &str) -> bool {
+    let low = s.to_lowercase();
+    SECTION_KEYWORDS.iter().any(|k| low == *k || low.starts_with(&format!("{} ", k)))
+}
+
+/// Check if a line looks like a section heading.
+pub fn looks_like_heading(line: &str) -> bool {
+    let s = line.trim();
+    if s.len() < 3 || s.len() > 120 {
+        return false;
+    }
+
+    if Regex::new(r"^(\d+(\.\d+)*)\.?\s+[A-Za-z].{2,}$").unwrap().is_match(s) {
+        return true;
+    }
+    if Regex::new(r"^(I|II|III|IV|V|VI|VII|VIII|IX|X)\.?\s+[A-Za-z].{2,}$")
+        .unwrap()
+        .is_match(s)
+    {
+        return true;
+    }
+
+    if is_section_keyword(s) {
+        return true;
+    }
+
+    if s.chars().all(|c| c.is_uppercase()) && s.len() >= 4 && s.len() <= 40 && s.split_whitespace().count() <= 8 {
+        return true;
+    }
+
+    false
+}
+
+/// Flatten TextBlocks to raw lines for backward-compatible segmentation.
+pub fn text_blocks_to_lines(blocks: &[TextBlock]) -> Vec<String> {
+    blocks.iter().map(|b| b.text.clone()).collect()
+}
+
+/// Segment text into sections based on heading detection.
+pub fn segment_into_sections(text: &str, max_sections: usize) -> Vec<(String, String)> {
+    let lines: Vec<&str> = text.lines().collect();
+    let mut sections: Vec<(String, Vec<String>)> = Vec::new();
+    let mut cur_title = "BODY".to_string();
+    let mut cur_buf: Vec<String> = Vec::new();
+    let md_heading_pat = Regex::new(r"^(#{1,6})\s+(.+)$").unwrap();
+
+    for line in &lines {
+        let stripped = line.trim();
+        let md_heading_match = md_heading_pat.captures(stripped);
+        if let Some(caps) = md_heading_match {
+            if !cur_buf.is_empty() {
+                sections.push((cur_title.clone(), cur_buf));
+            }
+            cur_title = caps.get(2).map(|m| m.as_str().trim().to_string()).unwrap_or_default();
+            cur_buf = Vec::new();
+        } else if looks_like_heading(line) {
+            if !cur_buf.is_empty() {
+                sections.push((cur_title.clone(), cur_buf));
+            }
+            cur_title = stripped.to_string();
+            cur_buf = Vec::new();
+        } else {
+            cur_buf.push(line.to_string());
+        }
+    }
+
+    if !cur_buf.is_empty() {
+        sections.push((cur_title, cur_buf));
+    }
+
+    let mut merged: Vec<(String, String)> = Vec::new();
+    for (title, buf) in sections {
+        let content = buf.join("\n").trim().to_string();
+        if content.is_empty() {
+            continue;
+        }
+        merged.push((title, content));
+    }
+
+    if merged.len() > max_sections {
+        let truncated = merged[..max_sections].to_vec();
+        let mut result = truncated;
+        result.push(("TRUNCATED".to_string(), "...(text truncated)...".to_string()));
+        result
+    } else {
+        merged
+    }
 }
 
 // ============================================================================
@@ -578,5 +691,51 @@ $$"));
         assert_eq!(detect_block_type("This is a regular paragraph."), BlockType::Body);
         assert_eq!(detect_block_type(""), BlockType::Body);
         assert_eq!(detect_block_type("   "), BlockType::Body);
+    }
+
+    #[test]
+    fn test_looks_like_heading() {
+        assert!(looks_like_heading("INTRODUCTION"));
+        assert!(looks_like_heading("1. Introduction"));
+        assert!(looks_like_heading("1.2 Methods"));
+        assert!(looks_like_heading("III. BACKGROUND"));
+        assert!(looks_like_heading("Abstract"));
+        assert!(looks_like_heading("Related Work"));
+        assert!(looks_like_heading("CONCLUSION"));
+        assert!(!looks_like_heading("This is a regular paragraph."));
+        assert!(!looks_like_heading("a")); // too short
+        assert!(!looks_like_heading(&"x".repeat(150))); // too long
+    }
+
+    #[test]
+    fn test_segment_into_sections() {
+        let text = "Introduction\n\nSome intro text.\n\n## Methods\n\nOur method consists of...";
+        let sections = segment_into_sections(text, 18);
+        assert!(sections.len() >= 2);
+        let titles: Vec<_> = sections.iter().map(|(t, _)| t.as_str()).collect();
+        assert!(titles.contains(&"Methods"));
+    }
+
+    #[test]
+    fn test_segment_into_sections_truncation() {
+        let mut lines = Vec::new();
+        for i in 0..25 {
+            lines.push(format!("{}. Section Title {}\n\nContent for section {}.", i, i, i));
+        }
+        let text = lines.join("\n\n");
+        let sections = segment_into_sections(&text, 5);
+        assert!(sections.len() <= 6);
+        let last_title = sections.last().map(|(t, _)| t.as_str()).unwrap_or("");
+        assert_eq!(last_title, "TRUNCATED");
+    }
+
+    #[test]
+    fn test_text_blocks_to_lines() {
+        let blocks = vec![
+            TextBlock { block_type: BlockType::Heading, text: "Intro".to_string(), page: 1 },
+            TextBlock { block_type: BlockType::Body, text: "Some text".to_string(), page: 1 },
+        ];
+        let lines = text_blocks_to_lines(&blocks);
+        assert_eq!(lines, vec!["Intro", "Some text"]);
     }
 }
