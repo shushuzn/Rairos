@@ -25,6 +25,7 @@ members = [
     "crates/rairos-impact",
     "crates/rairos-climate",
     "crates/rairos-rigor",
+    "crates/rairos-citations",
 ]
 
 [profile.dev]
