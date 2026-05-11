@@ -1182,6 +1182,25 @@ pub fn safe_uid(s: &str) -> String {
 }
 
 /// Default research directory names (canonical order).
+// ============================================================================
+// API Endpoints
+// ============================================================================
+
+pub const ARXIV_API: &str = "https://export.arxiv.org/api/query?id_list={arxiv_id}";
+pub const CROSSREF_WORKS: &str = "https://api.crossref.org/works/{doi}";
+pub const DOI_RESOLVER: &str = "https://doi.org/";
+
+// ============================================================================
+// Output Files
+// ============================================================================
+
+pub const RADAR_FILE: &str = "Radar.md";
+pub const TIMELINE_FILE: &str = "Timeline.md";
+
+// ============================================================================
+// Research Tree
+// ============================================================================
+
 pub const DEFAULT_RESEARCH_DIRS: &[&str] = &[
     "00-Radar",
     "01-Foundations",
