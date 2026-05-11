@@ -44,6 +44,9 @@ members = [
     "crates/rairos-distributor",
     "crates/rairos-crossover",
     "crates/rairos-insight",
+    "crates/rairos-exceptions",
+    "crates/rairos-retry",
+    "crates/rairos-observability",
 ]
 
 [profile.dev]
