@@ -58,17 +58,14 @@ impl NotificationType {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum Platform {
     Discord,
     Feishu,
+    #[default]
     Generic,
 }
 
-impl Default for Platform {
-    fn default() -> Self {
-        Platform::Generic
-    }
-}
 
 // ============================================================================
 // Payloads

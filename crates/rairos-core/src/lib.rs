@@ -50,23 +50,12 @@ pub struct Paper {
     pub metadata: PaperMetadata,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PaperMetadata {
     pub cited_by: usize,
     pub references: usize,
     pub doi: Option<String>,
     pub pdf_url: Option<String>,
-}
-
-impl Default for PaperMetadata {
-    fn default() -> Self {
-        Self {
-            cited_by: 0,
-            references: 0,
-            doi: None,
-            pdf_url: None,
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -397,7 +386,7 @@ impl Database {
                     parse_status, cited_by, references_cnt, doi, pdf_url
              FROM papers WHERE id = ?1",
         )?;
-        let paper = stmt.query_row([id], |row| Self::row_to_paper(row))?;
+        let paper = stmt.query_row([id], Self::row_to_paper)?;
         Ok(paper)
     }
 
@@ -408,9 +397,7 @@ impl Database {
                     parse_status, cited_by, references_cnt, doi, pdf_url
              FROM papers WHERE arxiv_id = ?1",
         )?;
-        let result = stmt.query_row([arxiv_id], |row| {
-            Ok(Some(Self::row_to_paper(row)?))
-        });
+        let result = stmt.query_row([arxiv_id], Self::row_to_paper).map(Some);
         match result {
             Ok(p) => Ok(p),
             Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
@@ -692,8 +679,8 @@ impl Database {
                 serde_json::to_string(&sub.categories)?,
                 sub.max_results,
                 sub.check_interval_minutes as i32,
-                sub.last_check.as_ref().map(|s| s.as_str()),
-                sub.last_results.as_ref().map(|s| s.as_str()),
+                sub.last_check.as_deref(),
+                sub.last_results.as_deref(),
                 sub.enabled as i32,
             ],
         )?;

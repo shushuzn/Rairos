@@ -263,7 +263,7 @@ async fn search_papers(
     State(state): State<Arc<AppState>>,
     Query(query): Query<SearchQuery>,
 ) -> Result<Json<Vec<PaperResponse>>, WebError> {
-    let limit = query.limit.unwrap_or(20) as usize;
+    let limit = query.limit.unwrap_or(20);
     let papers = state.db.search_papers(&query.q, limit)
         .map_err(|e| WebError::Database(e.to_string()))?;
 

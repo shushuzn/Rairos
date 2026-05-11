@@ -6,19 +6,14 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StanceType {
+    #[default]
     Supported,
     Rejected,
     Deferred,
     Qualified,
-}
-
-impl Default for StanceType {
-    fn default() -> Self {
-        StanceType::Supported
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

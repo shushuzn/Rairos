@@ -389,7 +389,7 @@ pub fn parse_markdown_table(table_text: &str, page: usize) -> TableData {
 
         // Remove trailing empty cells (caused by trailing pipe: | A | B | C |)
         let mut cells = cells;
-        while cells.len() > 1 && cells.last().map_or(false, |s| s.is_empty()) {
+        while cells.len() > 1 && cells.last().is_some_and(|s| s.is_empty()) {
             cells.pop();
         }
 

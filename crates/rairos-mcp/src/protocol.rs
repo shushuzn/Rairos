@@ -212,12 +212,12 @@ impl McpServer {
         }
 
         // Single response or batch
-        let output = if responses.len() == 1 {
+        
+        if responses.len() == 1 {
             serde_json::to_vec(&responses[0]).unwrap_or_default()
         } else {
             serde_json::to_vec(&responses).unwrap_or_default()
-        };
-        output
+        }
     }
 
     async fn dispatch(&self, req: JsonRpcRequest) -> Vec<JsonRpcResponse> {

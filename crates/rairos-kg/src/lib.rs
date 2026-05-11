@@ -321,7 +321,7 @@ impl GraphAlgorithms {
         for _ in 0..iterations {
             let mut new_scores: HashMap<String, f32> = HashMap::new();
 
-            for (node_id, _) in &scores {
+            for node_id in scores.keys() {
                 let incoming = graph.incoming.get(node_id);
                 let mut contribution = 0.0;
 

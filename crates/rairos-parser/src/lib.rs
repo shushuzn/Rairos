@@ -42,7 +42,6 @@ const ARXIV_API: &str = "http://export.arxiv.org/api/query";
 /// ArXiv entry response fields we care about
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct ArXivEntry {
     #[serde(rename = "id")]
     entry_id: String,
@@ -60,7 +59,6 @@ struct ArXivEntry {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct ArXivAuthor {
     #[serde(rename = "name")]
     name: String,
@@ -68,7 +66,6 @@ struct ArXivAuthor {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct ArXivCategory {
     #[serde(rename = "term")]
     term: String,
@@ -76,7 +73,6 @@ struct ArXivCategory {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct ArXivFeed {
     #[serde(rename = "entry")]
     entry: Option<ArXivEntry>,
@@ -198,7 +194,6 @@ struct CrossRefResponse {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct CrossRefMessage {
     #[serde(rename = "DOI")]
     doi: Option<String>,
@@ -220,7 +215,6 @@ struct CrossRefMessage {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct CrossRefAuthor {
     #[serde(rename = "given")]
     given: Option<String>,
@@ -230,7 +224,6 @@ struct CrossRefAuthor {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct CrossRefDate {
     #[serde(rename = "date-parts")]
     date_parts: Option<Vec<Vec<u16>>>,
@@ -238,7 +231,6 @@ struct CrossRefDate {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct CrossRefError {
     #[serde(rename = "message")]
     message: Option<String>,
@@ -315,7 +307,6 @@ const SEMANTIC_API: &str = "https://api.semanticscholar.org/graph/v1";
 /// Semantic Scholar paper response
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct SemanticPaper {
     #[serde(rename = "paperId")]
     paper_id: Option<String>,
@@ -337,7 +328,6 @@ struct SemanticPaper {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct SemanticExternalIds {
     #[serde(rename = "DOI")]
     doi: Option<String>,
@@ -349,7 +339,6 @@ struct SemanticExternalIds {
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-
 struct SemanticAuthor {
     #[serde(rename = "authorId")]
     id: Option<String>,

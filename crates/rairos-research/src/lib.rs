@@ -172,7 +172,7 @@ impl ResearchOrchestrator {
 
     async fn find_relevant_papers(&self, query: &ResearchQuery) -> Result<Vec<Paper>, ResearchError> {
         // Get papers from database
-        let all_papers = self.db.list_papers(None, query.max_papers as usize, 0)
+        let all_papers = self.db.list_papers(None, query.max_papers, 0)
             .map_err(|e| ResearchError::Database(e.to_string()))?;
 
         Ok(all_papers)

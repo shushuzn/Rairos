@@ -25,7 +25,7 @@ pub fn render_litreview(
     let mut lines = Vec::new();
 
     lines.push("---".to_string());
-    lines.push(format!("type: lit-review"));
+    lines.push("type: lit-review".to_string());
     lines.push(format!("topic: {}", topic));
     lines.push(format!("created_at: \"{}\"", created));
     lines.push(format!("last_updated: \"{}\"", updated));
@@ -161,7 +161,7 @@ pub fn update_litreview(
     if let Some(all) = all_papers {
         let paper_count = all.len();
         let date_range = get_date_range(all);
-        for (_i, line) in updated_lines.iter_mut().enumerate() {
+        for line in updated_lines.iter_mut() {
             if line.starts_with("**论文数量**") {
                 *line = format!("- **论文数量**: {}", paper_count);
             } else if line.starts_with("**时间范围**") {

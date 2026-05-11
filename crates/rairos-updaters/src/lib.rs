@@ -91,7 +91,7 @@ fn parse_radar_table(contents: &str) -> (String, Vec<RadarRow>) {
     let header_start = lines
         .iter()
         .position(|l| l.trim().starts_with("| 主题 |"))
-        .unwrap_or_else(|| lines.len());
+        .unwrap_or(lines.len());
 
     let header = if header_start > 0 {
         lines[..header_start].join("\n") + "\n"
@@ -265,8 +265,7 @@ pub fn parse_timeline(contents: &str) -> TimelineState {
             current_year = Some(year);
         } else if current_year.is_some() {
             let line = line.trim();
-            if line.starts_with("- ") {
-                let body = &line[2..];
+            if let Some(body) = line.strip_prefix("- ") {
                 let entry = if let Some(at) = body.find(" — ") {
                     // " — " separator: space(1) + em-dash(3) + space(1) = 5 bytes
                     let em_dash_bytes = 3;

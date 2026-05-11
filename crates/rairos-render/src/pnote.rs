@@ -41,7 +41,7 @@ pub fn render_pnote(
     rubric_scores: Option<HashMap<String, i32>>,
     ai_overall: Option<&str>,
 ) -> String {
-    let date_for_note = p.published.clone().unwrap_or_else(|| today_iso());
+    let date_for_note = p.published.clone().unwrap_or_else(today_iso);
     let authors_line = if p.authors.is_empty() {
         "Unknown".to_string()
     } else {

@@ -508,7 +508,9 @@ pub struct CapsuleArchetype {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[derive(Default)]
 pub enum CapsuleStatus {
+    #[default]
     Active,
     Dormant,
     Archived,
@@ -524,11 +526,6 @@ impl std::fmt::Display for CapsuleStatus {
     }
 }
 
-impl Default for CapsuleStatus {
-    fn default() -> Self {
-        CapsuleStatus::Active
-    }
-}
 
 impl Capsule {
     pub fn new(approach_summary: &str, gap_type: &str, keywords: Vec<String>) -> Self {
@@ -994,7 +991,7 @@ impl GenePool {
                     return false;
                 }
                 if let Some(gt) = gap_type {
-                    if &c.action_gap_type != gt {
+                    if c.action_gap_type != gt {
                         return false;
                     }
                 }

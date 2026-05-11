@@ -51,7 +51,7 @@ pub fn render_radar_chart(scores: HashMap<String, i32>, size: usize) -> String {
         .filter_map(|(en, zh)| {
             let key = en.to_lowercase();
             let score = scores.get(&key).copied().unwrap_or(0);
-            if score >= 1 && score <= 5 {
+            if (1..=5).contains(&score) {
                 Some((en, zh, score))
             } else {
                 None
