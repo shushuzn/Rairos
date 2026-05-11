@@ -448,56 +448,62 @@ pub async fn fetch_paper(id: &str) -> Result<Paper, ParseError> {
 }
 
 // ============================================================================
-// PDF Extraction
+// Input Normalization Utilities
 // ============================================================================
 
-#[derive(Debug, Clone)]
-pub struct PdfContent {
-    pub text: String,
-    pub page_count: usize,
-    pub word_count: usize,
+/// Check if string looks like a DOI
+pub fn is_probably_doi(s: &str) -> bool {
+    let re_doi = regex::Regex::new(r"(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+").unwrap();
+    re_doi.is_match(s.trim())
 }
 
-pub fn extract_pdf_text(path: &std::path::Path) -> Result<PdfContent, ParseError> {
-    let doc = lopdf::Document::load(path)
-        .map_err(|e| ParseError::ParseFailed(format!("Failed to load PDF: {}", e)))?;
-
-    let page_count = doc.get_pages().len();
-
-    let mut text = String::new();
-    let mut total_words = 0;
-
-    for (page_num, _) in doc.get_pages() {
-        if let Ok(page_text) = doc.extract_text(&[page_num]) {
-            total_words += page_text.split_whitespace().count();
-            text.push_str(&page_text);
-            text.push('\n');
-        }
+/// Normalize a DOI string to bare DOI form
+pub fn normalize_doi(s: &str) -> Option<String> {
+    if s.is_empty() {
+        return None;
     }
-
-    Ok(PdfContent {
-        text: text.trim().to_string(),
-        page_count,
-        word_count: total_words,
-    })
+    let re_url = regex::Regex::new(r"^https?://(dx\.)?doi\.org/").unwrap();
+    let normalized = re_url.replace(s.trim(), "");
+    let result = normalized.trim().trim_end_matches('.').to_string();
+    if result.starts_with("10.") { Some(result) } else { None }
 }
 
-pub async fn download_pdf(url: &str, output_path: &std::path::Path) -> Result<(), ParseError> {
-    let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(120))
-        .build()
-        .map_err(|e| ParseError::ParseFailed(format!("Client error: {}", e)))?;
+/// Normalize an arXiv ID (handles URLs, DOIs, bare IDs)
+pub fn normalize_arxiv_id(s: &str) -> Option<String> {
+    if s.is_empty() {
+        return None;
+    }
+    let s = s.trim();
 
-    let resp = client.get(url).send().await?;
-
-    if !resp.status().is_success() {
-        return Err(ParseError::ParseFailed(format!("Download failed: {}", resp.status())));
+    // arXiv URL formats: arxiv.org/abs/2301.00001v1 or arxiv.org/pdf/2301.00001v1
+    let re_url = regex::Regex::new(r"(?:arxiv\.org/(?:abs|pdf)/)(\d{4}\.\d{4,5})(v\d+)?").unwrap();
+    if let Some(caps) = re_url.captures(s) {
+        let id = caps.get(1).map(|m| m.as_str()).unwrap_or("");
+        let version = caps.get(2).map(|m| m.as_str()).unwrap_or("");
+        return Some(format!("{}{}", id, version));
     }
 
-    let bytes = resp.bytes().await?;
-    tokio::fs::write(output_path, bytes).await?;
+    // New-style bare ID: 2301.00001 or 2301.00001v1
+    let re_new = regex::Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$").unwrap();
+    if re_new.is_match(s) {
+        return Some(s.to_string());
+    }
 
-    Ok(())
+    // Old-style bare ID: cs/1234567 or cs/1234567v1
+    let re_old = regex::Regex::new(r"^[a-zA-Z\-]+/\d{7}(v\d+)?$").unwrap();
+    if re_old.is_match(s) {
+        return Some(s.to_string());
+    }
+
+    // arXiv DOI format: 10.48550/arXiv.2301.00001
+    let re_doi = regex::Regex::new(r"10\.48550/arXiv\.(\d{4}\.\d{4,5})(v\d+)?").unwrap();
+    if let Some(caps) = re_doi.captures(s) {
+        let id = caps.get(1).map(|m| m.as_str()).unwrap_or("");
+        let version = caps.get(2).map(|m| m.as_str()).unwrap_or("");
+        return Some(format!("{}{}", id, version));
+    }
+
+    None
 }
 
 #[cfg(test)]
@@ -541,5 +547,35 @@ mod tests {
         assert_eq!(err.to_string(), "Paper not found: test");
         let err = ParseError::ParseFailed("bad".to_string());
         assert_eq!(err.to_string(), "Parse failed: bad");
+    }
+
+    #[test]
+    fn test_is_probably_doi() {
+        assert!(is_probably_doi("10.1038/nature12373"));
+        assert!(is_probably_doi("https://doi.org/10.1038/nature12373"));
+        assert!(is_probably_doi("https://dx.doi.org/10.1038/nature12373"));
+        assert!(!is_probably_doi("2301.00001"));
+        assert!(!is_probably_doi("arxiv:2301.00001"));
+    }
+
+    #[test]
+    fn test_normalize_doi() {
+        assert_eq!(normalize_doi("10.1038/nature12373"), Some("10.1038/nature12373".to_string()));
+        assert_eq!(normalize_doi("https://doi.org/10.1038/nature12373"), Some("10.1038/nature12373".to_string()));
+        assert_eq!(normalize_doi("https://dx.doi.org/10.1038/nature12373."), Some("10.1038/nature12373".to_string()));
+        assert_eq!(normalize_doi(""), None);
+        assert_eq!(normalize_doi("not-a-doi"), None);
+    }
+
+    #[test]
+    fn test_normalize_arxiv_id() {
+        assert_eq!(normalize_arxiv_id("2301.00001"), Some("2301.00001".to_string()));
+        assert_eq!(normalize_arxiv_id("2301.00001v1"), Some("2301.00001v1".to_string()));
+        assert_eq!(normalize_arxiv_id("https://arxiv.org/abs/2301.00001v1"), Some("2301.00001v1".to_string()));
+        assert_eq!(normalize_arxiv_id("https://arxiv.org/pdf/2301.00001.pdf"), Some("2301.00001".to_string()));
+        assert_eq!(normalize_arxiv_id("cs/1234567"), Some("cs/1234567".to_string()));
+        assert_eq!(normalize_arxiv_id("10.48550/arXiv.2301.00001"), Some("2301.00001".to_string()));
+        assert_eq!(normalize_arxiv_id(""), None);
+        assert_eq!(normalize_arxiv_id("not-an-arxiv-id"), None);
     }
 }
