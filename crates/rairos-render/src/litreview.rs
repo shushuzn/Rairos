@@ -326,3 +326,46 @@ fn extract_open_problems(papers: &[PaperDict]) -> Vec<String> {
     problems.truncate(5);
     problems
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    fn make_paper(id: &str, title: &str, year: u16) -> PaperDict {
+        let mut p = HashMap::new();
+        p.insert("paper_id".to_string(), serde_json::json!(id));
+        p.insert("title".to_string(), serde_json::json!(title));
+        p.insert("year".to_string(), serde_json::json!(year));
+        p
+    }
+
+    #[test]
+    fn test_render_litreview_basic() {
+        let papers = vec![make_paper("p1", "Test Paper", 2024)];
+        let result = render_litreview("AI Research", &papers, None, None);
+        assert!(result.contains("AI Research"));
+        assert!(result.contains("文献综述"));
+        assert!(result.contains("paper_count: 1"));
+    }
+
+    #[test]
+    fn test_render_litreview_empty() {
+        let papers: Vec<PaperDict> = vec![];
+        let result = render_litreview("Empty Topic", &papers, None, None);
+        assert!(result.contains("Empty Topic"));
+        assert!(result.contains("paper_count: 0"));
+    }
+
+    #[test]
+    fn test_render_litreview_multiple_papers() {
+        let papers = vec![
+            make_paper("p1", "Paper 1", 2024),
+            make_paper("p2", "Paper 2", 2023),
+        ];
+        let result = render_litreview("Multi Paper", &papers, None, None);
+        assert!(result.contains("paper_count: 2"));
+        assert!(result.contains("Paper 1"));
+        assert!(result.contains("Paper 2"));
+    }
+}

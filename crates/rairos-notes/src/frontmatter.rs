@@ -144,4 +144,82 @@ tags:
         let tags = parse_tags_from_frontmatter(&fm);
         assert_eq!(tags, vec!["LLM", "Agent"]);
     }
+
+    #[test]
+    fn test_parse_tags_comma_separated() {
+        let md = r#"title: Test
+tags: LLM, Agent, RAG
+------------------
+"#;
+        let fm = Frontmatter::parse(md);
+        let tags = parse_tags_from_frontmatter(&fm);
+        assert_eq!(tags, vec!["LLM", "Agent", "RAG"]);
+    }
+
+    #[test]
+    fn test_parse_tags_brackets() {
+        let md = r#"title: Test
+tags: [LLM, Agent]
+------------------
+"#;
+        let fm = Frontmatter::parse(md);
+        let tags = parse_tags_from_frontmatter(&fm);
+        assert_eq!(tags, vec!["LLM", "Agent"]);
+    }
+
+    #[test]
+    fn test_parse_tags_empty() {
+        let md = r#"title: Test
+tags:
+------------------
+"#;
+        let fm = Frontmatter::parse(md);
+        let tags = parse_tags_from_frontmatter(&fm);
+        assert!(tags.is_empty());
+    }
+
+    #[test]
+    fn test_parse_date() {
+        let md = r#"title: Test
+date: 2024-01-15
+------------------
+"#;
+        let fm = Frontmatter::parse(md);
+        let date = parse_date_from_frontmatter(&fm);
+        assert_eq!(date, Some("2024-01-15".to_string()));
+    }
+
+    #[test]
+    fn test_parse_date_missing() {
+        let md = r#"title: Test
+------------------
+"#;
+        let fm = Frontmatter::parse(md);
+        let date = parse_date_from_frontmatter(&fm);
+        assert_eq!(date, None);
+    }
+
+    #[test]
+    fn test_frontmatter_get_list() {
+        let md = r#"title: Test
+authors:
+  - Alice
+  - Bob
+------------------
+"#;
+        let fm = Frontmatter::parse(md);
+        let authors = fm.get_list("authors");
+        assert_eq!(authors, Some(vec!["Alice".to_string(), "Bob".to_string()]));
+    }
+
+    #[test]
+    fn test_frontmatter_get_string_as_list() {
+        let md = r#"title: Test
+author: Alice
+------------------
+"#;
+        let fm = Frontmatter::parse(md);
+        let authors = fm.get_list("author");
+        assert_eq!(authors, Some(vec!["Alice".to_string()]));
+    }
 }
