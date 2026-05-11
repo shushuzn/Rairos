@@ -21,6 +21,7 @@ members = [
     "crates/rairos-auth",
     "crates/rairos-i18n",
     "crates/rairos-replication",
+    "crates/rairos-credibility",
 ]
 
 [profile.dev]
