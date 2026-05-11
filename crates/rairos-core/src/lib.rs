@@ -1096,4 +1096,77 @@ mod tests {
         assert_eq!(ParseStatus::Pending.to_string(), "pending");
         assert_eq!(ParseStatus::Done.to_string(), "done");
     }
+
+    #[test]
+    fn test_slugify() {
+        assert_eq!(super::slugify("Hello World!", 80), "Hello-World");
+        assert_eq!(super::slugify("  Test   Title  ", 80), "Test-Title");
+        assert_eq!(super::slugify("Paper: A Study", 80), "Paper-A-Study");
+        assert_eq!(super::slugify("", 80), "Paper");
+        assert_eq!(super::slugify("Hello", 3), "Hel");
+        assert_eq!(super::slugify("Hello-World_v1.0", 80), "Hello-World_v10");
+    }
+
+    #[test]
+    fn test_safe_uid() {
+        assert_eq!(super::safe_uid("hello world"), "hello_world");
+        assert_eq!(super::safe_uid("test@123"), "test_123");
+        assert_eq!(super::safe_uid(""), "");
+    }
 }
+
+// ============================================================================
+// String Utilities
+// ============================================================================
+
+lazy_static::lazy_static! {
+    static ref RE_SPACES: regex::Regex = regex::Regex::new(r" {2,}").unwrap();
+    static ref RE_NONWORD: regex::Regex = regex::Regex::new(r"[^\w\s\-]").unwrap();
+    static ref RE_DASHES: regex::Regex = regex::Regex::new(r"-{2,}").unwrap();
+}
+
+/// Create a slug from a title. Use slugify_default for the standard 80-char limit.
+pub fn slugify(title: &str, max_len: usize) -> String {
+    if title.is_empty() {
+        return "Paper".to_string();
+    }
+    let t = title.trim();
+    let t = RE_SPACES.replace_all(t, " ");
+    let t = RE_NONWORD.replace_all(&t, "");
+    let t = t.replace(' ', "-");
+    let t = RE_DASHES.replace_all(&t, "-").trim_matches('-').to_string();
+    if t.len() > max_len {
+        t[..max_len].trim_end_matches('-').to_string()
+    } else {
+        t
+    }
+}
+
+/// Create a slug with default max_len of 80.
+pub fn slugify_default(title: &str) -> String {
+    slugify(title, 80)
+}
+
+/// Create a safe UID from a string (alphanumeric, underscore, dash, dot only).
+pub fn safe_uid(s: &str) -> String {
+    regex::Regex::new(r"[^\w\.-]+")
+        .unwrap()
+        .replace_all(s.trim(), "_")
+        .to_string()
+}
+
+/// Default research directory names (canonical order).
+pub const DEFAULT_RESEARCH_DIRS: &[&str] = &[
+    "00-Radar",
+    "01-Foundations",
+    "02-Models",
+    "03-Training",
+    "04-Scaling",
+    "05-Alignment",
+    "06-Agents",
+    "07-Infrastructure",
+    "08-Optimization",
+    "09-Evaluation",
+    "10-Applications",
+    "11-Future-Directions",
+];

@@ -37,7 +37,7 @@ pub enum ParseError {
 // ArXiv API
 // ============================================================================
 
-const ARXIV_API: &str = "http://export.arxiv.org/api/query";
+const ARXIV_API: &str = "https://export.arxiv.org/api/query";
 
 /// ArXiv entry response fields we care about
 #[derive(Debug, Deserialize)]
