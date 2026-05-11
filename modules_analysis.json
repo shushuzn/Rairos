@@ -1,0 +1,294 @@
+{
+  "modules": {
+    "notifications": {
+      "path": "notifications/",
+      "files": {
+        "dispatcher.py": {
+          "description": "Rich Webhook Notifications — Discord embeds and Feishu markdown cards for gap events",
+          "classes": [
+            {
+              "name": "NotificationType",
+              "type": "Enum",
+              "values": ["GAP_ALERT", "PARADIGM_SHIFT", "PAPER_INGESTED", "RESEARCH_COMPLETE", "CONTRADICTION_DETECTED", "TOPIC_SUGGESTION"]
+            },
+            {
+              "name": "Platform",
+              "type": "Enum",
+              "values": ["DISCORD", "FEISHU", "GENERIC"]
+            },
+            {
+              "name": "WebhookConfig",
+              "type": "Dataclass",
+              "fields": ["url", "platform", "enabled", "label", "secret"]
+            },
+            {
+              "name": "GapAlertPayload",
+              "type": "Dataclass",
+              "fields": ["gap_type", "title", "novelty", "severity", "supporting_papers", "source", "confidence", "impact_score"]
+            },
+            {
+              "name": "ParadigmShiftPayload",
+              "type": "Dataclass",
+              "fields": ["alert_type", "gap_type", "message", "severity", "contradictions"]
+            },
+            {
+              "name": "DiscordRenderer",
+              "type": "Class",
+              "methods": ["render_gap_alert", "render_paradigm_shift", "render_paper_ingested"]
+            },
+            {
+              "name": "FeishuRenderer",
+              "type": "Class",
+              "methods": ["render_gap_alert", "render_paradigm_shift"]
+            },
+            {
+              "name": "WebhookDispatcher",
+              "type": "Class",
+              "methods": ["send_gap_alert", "send_paradigm_shift", "send_paper_ingested", "test"]
+            },
+            {
+              "name": "NotificationCenter",
+              "type": "Class",
+              "methods": ["add", "remove", "send_gap_alert", "send_paradigm_shift", "send_paper_ingested", "test_all"]
+            }
+          ]
+        }
+      },
+      "core_notifications_py": {
+        "path": "core/notifications.py",
+        "description": "Notification system with in-memory manager and external webhook notifier",
+        "classes": [
+          {
+            "name": "NotificationLevel",
+            "type": "Enum",
+            "values": ["INFO", "SUCCESS", "WARNING", "ERROR"]
+          },
+          {
+            "name": "Notification",
+            "type": "Dataclass",
+            "fields": ["level", "title", "message", "timestamp"]
+          },
+          {
+            "name": "NotificationManager",
+            "type": "Class",
+            "methods": ["add", "info", "success", "warning", "error", "get_all", "get_by_level", "clear"]
+          },
+          {
+            "name": "WebhookNotifier",
+            "type": "Class",
+            "methods": ["send_discord", "send_feishu", "notify_papers_found"]
+          }
+        ]
+      }
+    },
+    "updaters": {
+      "path": "updaters/",
+      "files": {
+        "radar.py": {
+          "description": "Radar page management — tracks topics with heat scores over time",
+          "functions": [
+            "ensure_radar",
+            "parse_radar_table",
+            "render_radar",
+            "update_radar",
+            "_heat",
+            "flush_radar"
+          ],
+          "data_model": {
+            "columns": ["主题", "热度", "证据质量", "成本变化", "我的信心", "最近更新"],
+            "batch_mode": "Supports deferred updates via flush_radar()"
+          }
+        },
+        "timeline.py": {
+          "description": "Timeline page management — records key papers and technology inflection points by year",
+          "functions": [
+            "ensure_timeline",
+            "update_timeline"
+          ],
+          "data_model": {
+            "structure": "Year-based sections with paper bullet points linked via wikilink",
+            "file": "TIMELINE_FILE"
+          }
+        }
+      }
+    },
+    "rankers": {
+      "path": "rankers/",
+      "files": {
+        "base.py": {
+          "description": "Base abstractions for ranking strategies",
+          "classes": [
+            {
+              "name": "Ranker",
+              "type": "ABC",
+              "abstract_methods": ["rank"],
+              "return_type": "List[Tuple[PaperRecord, float]]"
+            }
+          ]
+        },
+        "cosine.py": {
+          "description": "Cosine similarity ranking strategy — numpy-accelerated",
+          "classes": [
+            {
+              "name": "CosineSimilarityRanker",
+              "type": "Ranker",
+              "implementation": "Uses numpy for batch vector operations",
+              "features": ["O(n) vectorized similarity computation", "Configurable threshold (default 0.85)", "Single SQL query for embeddings"]
+            }
+          ]
+        },
+        "score.py": {
+          "description": "Composite scoring combining semantic similarity + paper metadata",
+          "classes": [
+            {
+              "name": "CompositeScorer",
+              "type": "Ranker",
+              "weights": {
+                "sim_weight": 0.7,
+                "recency_weight": 0.2,
+                "parse_weight": 0.1
+              },
+              "components": ["cosine similarity", "recency bonus", "parse quality bonus"]
+            }
+          ]
+        }
+      }
+    },
+    "scoring": {
+      "path": "scoring/",
+      "files": {
+        "momentum.py": {
+          "description": "Research momentum / paper importance scoring",
+          "classes": [
+            {
+              "name": "ResearchMomentum",
+              "type": "Class",
+              "methods": ["score_paper", "score_tag", "get_top_papers", "get_tag_leaderboard", "refresh_all"],
+              "formula": {
+                "citation_score": "30% — log scale, max 100",
+                "tag_popularity": "25% — percentile within same tag",
+                "recency_boost": "20% — exponential decay from current year",
+                "novelty_factor": "15% — papers that cite很少却被大量引用(originator)",
+                "radar_heat": "10% — from radar.json"
+              },
+              "storage": "data/momentum_scores.json (orjson)"
+            }
+          ]
+        }
+      }
+    },
+    "renderers": {
+      "path": "renderers/",
+      "files": {
+        "cnote.py": {
+          "description": "C-Note (concept note) renderer",
+          "functions": ["render_cnote"],
+          "template_sections": ["核心定义", "产生背景", "技术本质", "常见实现路径", "优势", "局限", "与其他思想的关系", "代表论文", "演化时间线", "未来趋势", "关联笔记"]
+        },
+        "litreview.py": {
+          "description": "Literature Review renderer — generates incremental review documents",
+          "functions": ["render_litreview", "update_litreview"],
+          "features": ["Timeline by date", "Methodology grouping", "Top papers by score", "Open problems extraction", "Incremental update preserving annotations"],
+          "paper_grouping": ["Transformer", "CNN/卷积", "图神经网络", "强化学习", "扩散模型", "检索增强", "多模态", "大语言模型"]
+        },
+        "mnote.py": {
+          "description": "M-Note (comparison note) renderer",
+          "functions": ["render_mnote"],
+          "comparison_dimensions": ["核心思想", "成本结构", "性能", "扩展性", "适用场景"],
+          "tracks": "A/B/C comparisons with evolution log"
+        },
+        "pnote.py": {
+          "description": "P-Note (paper note) renderer — comprehensive paper analysis",
+          "functions": ["render_pnote", "render_radar_chart"],
+          "features": [
+            "6-axis radar chart SVG (Novelty, Leverage, Evidence, Cost, Moat, Adoption)",
+            "Citation verification (verified vs unverified claims)",
+            "Per-page confidence heatmap",
+            "Cross-paper comparison table",
+            "AI draft injection into template sections"
+          ],
+          "template_sections": [
+            "Research Question Card", "背景", "核心问题", "方法结构", "关键创新",
+            "实验分析", "对抗式审稿", "优势", "局限", "本质抽象",
+            "与其他方法对比", "Decision", "知识蒸馏", "认知升级", "评分量表"
+          ],
+          "dataclasses": ["LaTeXBlock", "TableData", "FigureData", "ParsedPaper"]
+        }
+      }
+    },
+    "pdf": {
+      "path": "pdf/",
+      "files": {
+        "parser.py": {
+          "description": "PDF parsing with structured extraction: LaTeX, tables, figures. Cache-aware with retry.",
+          "classes": [
+            {
+              "name": "PDFParser",
+              "type": "Class",
+              "methods": ["parse", "_extract_structured", "_pdfminer_fallback"],
+              "fallback_chain": ["PyMuPDF", "pdfminer.six", "Empty with warning"]
+            },
+            {
+              "name": "LaTeXBlock",
+              "type": "Dataclass",
+              "fields": ["source", "is_display", "page", "bbox"]
+            },
+            {
+              "name": "TableData",
+              "type": "Dataclass",
+              "fields": ["headers", "rows", "page", "bbox", "caption"]
+            },
+            {
+              "name": "FigureData",
+              "type": "Dataclass",
+              "fields": ["caption", "page", "bbox", "alt_text"]
+            },
+            {
+              "name": "ParsedPaper",
+              "type": "Dataclass",
+              "fields": ["paper_id", "text", "latex_blocks", "tables", "figures", "page_count", "word_count", "parse_version", "pdf_hash", "title", "authors", "abstract", "published", "warnings", "errors"]
+            }
+          ],
+          "features": ["SHA256 hash cache validation", "DB-based caching", "File-based caching", "Regex-based LaTeX detection (display + inline)"]
+        },
+        "extract.py": {
+          "description": "PDF download and text extraction with hybrid OCR support",
+          "functions": [
+            "download_pdf",
+            "extract_pdf_text",
+            "extract_pdf_text_hybrid",
+            "extract_pdf_structured",
+            "extract_tables"
+          ],
+          "features": [
+            "Resume support for downloads",
+            "PyMuPDF + pdfminer fallback",
+            "OCR via pytesseract (Chinese + English)",
+            "Structured extraction (text blocks, tables, math)",
+            "Block type detection (heading, body, caption, list_item, footnote)"
+          ],
+          "dataclasses": ["TextBlock", "TableBlock", "MathBlock", "StructuredPdfContent", "BlockType(Enum)"]
+        },
+        "extract_async.py": {
+          "description": "Async PDF extraction helpers"
+        },
+        "chart_kg.py": {
+          "description": "PDF knowledge graph visualization"
+        },
+        "visual.py": {
+          "description": "PDF visualization utilities"
+        }
+      }
+    }
+  },
+  "summary": {
+    "total_modules": 6,
+    "total_files": 13,
+    "key_dependencies": {
+      "notifications": ["requests"],
+      "pdf": ["fitz (PyMuPDF)", "pdfminer.six", "pytesseract", "PIL"],
+      "rankers": ["numpy"],
+      "scoring": ["orjson", "kg.manager"]
+    }
+  }
+}
