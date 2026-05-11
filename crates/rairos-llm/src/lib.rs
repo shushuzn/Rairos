@@ -31,6 +31,54 @@ pub enum LlmError {
 }
 
 // ============================================================================
+// Query Type Classification
+// ============================================================================
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum QueryType {
+    Factual,
+    Conceptual,
+    Comparative,
+    Temporal,
+    General,
+}
+
+impl QueryType {
+    #[allow(clippy::should_implement_trait)]
+    pub fn from_str(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "factual" => QueryType::Factual,
+            "conceptual" => QueryType::Conceptual,
+            "comparative" => QueryType::Comparative,
+            "temporal" => QueryType::Temporal,
+            _ => QueryType::General,
+        }
+    }
+}
+
+#[allow(dead_code)]
+pub fn bm25_weight(qt: QueryType) -> f64 {
+    match qt {
+        QueryType::Factual => 0.65,
+        QueryType::Conceptual => 0.20,
+        QueryType::Comparative => 0.50,
+        QueryType::Temporal => 0.55,
+        QueryType::General => 0.40,
+    }
+}
+
+#[allow(dead_code)]
+pub fn mmr_lambda(qt: QueryType) -> f64 {
+    match qt {
+        QueryType::Factual => 0.8,
+        QueryType::Conceptual => 0.6,
+        QueryType::Comparative => 0.5,
+        QueryType::Temporal => 0.7,
+        QueryType::General => 0.6,
+    }
+}
+
+// ============================================================================
 // LLM Provider Traits
 // ============================================================================
 
@@ -1269,6 +1317,15 @@ mod tests {
         assert!(super::AI_RESEARCH_KEYWORDS.contains(&"transformer"));
         assert!(super::AI_RESEARCH_KEYWORDS.contains(&"attention"));
         assert!(super::SMART_FOLLOWUP_BASE.contains(&"vs"));
+    }
+
+    #[test]
+    fn test_query_type() {
+        assert_eq!(super::QueryType::from_str("factual"), super::QueryType::Factual);
+        assert_eq!(super::QueryType::from_str("conceptual"), super::QueryType::Conceptual);
+        assert_eq!(super::QueryType::from_str("unknown"), super::QueryType::General);
+        assert_eq!(super::bm25_weight(super::QueryType::Factual), 0.65);
+        assert_eq!(super::mmr_lambda(super::QueryType::Factual), 0.8);
     }
 }
 
