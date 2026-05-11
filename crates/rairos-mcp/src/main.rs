@@ -1,8 +1,7 @@
 //! MCP server binary — runs the JSON-RPC 2.0 MCP server over stdio
 
-use rairos_mcp::{McpServer, protocol::ToolHandler};
-use serde_json::Value;
-use std::io::{self, Read, Write};
+use rairos_mcp::McpServer;
+use std::io::{self, Write};
 
 // Re-export tool handlers from sub-crates
 mod handlers;

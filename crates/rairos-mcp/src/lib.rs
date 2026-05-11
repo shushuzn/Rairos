@@ -4,6 +4,7 @@
 
 pub mod protocol;
 pub mod types;
+pub mod handlers;
 
 pub use protocol::{McpServer, Tool, ToolHandler, ToolInputSchema, ToolProperty};
 pub use types::{
