@@ -3068,6 +3068,19 @@ fn handle_doctor(format: &str) -> Result<()> {
         warnings.push("Not a git repository".to_string());
     }
 
+    // API health check (if daemon is running)
+    match reqwest::blocking::get("http://127.0.0.1:8080/health") {
+        Ok(resp) if resp.status().is_success() => {
+            ok.push("API daemon: reachable".to_string());
+        }
+        Ok(resp) => {
+            warnings.push(format!("API daemon: returned {}", resp.status()));
+        }
+        Err(_e) => {
+            warnings.push("API daemon: not reachable (run 'rairos daemon --foreground' to start)".to_string());
+        }
+    }
+
     // Rust toolchain
     ok.push(format!("Rust: {}", env::consts::ARCH));
 
