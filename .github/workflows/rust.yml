@@ -68,5 +68,8 @@ jobs:
       - name: Clippy lint
         run: cargo clippy --workspace -- -D warnings
 
+      - name: Security audit
+        run: cargo install cargo-audit --locked && cargo audit
+
       - name: Show sccache stats
         run: sccache --show-stats
