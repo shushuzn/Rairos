@@ -474,8 +474,10 @@ impl GapDetector {
 // Gene Pool - Core Types
 // ============================================================================
 
+#[allow(dead_code)]
 const DEFAULT_LAMBDA: f64 = 0.01;
 const DEFAULT_MIN_IMPACT: f64 = 0.1;
+#[allow(dead_code)]
 const DEFAULT_CONSECUTIVE_CYCLES: usize = 3;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -927,6 +929,7 @@ pub struct GenePool {
     capsules: Vec<Capsule>,
     feedback_events: Vec<Feedback>,
     evolution_events: Vec<EvolutionEvent>,
+    #[allow(dead_code)]
     patterns: Vec<LearnedPattern>,
 }
 

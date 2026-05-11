@@ -1500,7 +1500,7 @@ fn handle_gene_evolve(max_crossovers: usize, format: &str) -> Result<()> {
     for gap_type in &gaps {
         let pairs = pool.suggest_crossover(gap_type, max_crossovers / gaps.len());
         for (id1, id2) in pairs {
-            suggestions.push((gap_type.clone(), id1, id2));
+            suggestions.push((gap_type.to_string(), id1, id2));
         }
     }
 
