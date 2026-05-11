@@ -1,0 +1,13 @@
+[package]
+name = "rairos-trend-analyzer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rairos-constants = { path = "../rairos-constants" }
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0"
+chrono = "0.4"
+
+[dev-dependencies]
+tempfile = "3"

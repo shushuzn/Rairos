@@ -56,6 +56,20 @@ members = [
     "crates/rairos-rate-limiter",
     "crates/rairos-cache",
     "crates/rairos-insight-credibility",
+    "crates/rairos-insight-storage",
+    "crates/rairos-insight-evolution",
+    "crates/rairos-insight-tracker",
+    "crates/rairos-smart-cache",
+    "crates/rairos-profiler",
+    "crates/rairos-trend-analyzer",
+    "crates/rairos-constants",
+    "crates/rairos-claude-cli",
+    "crates/rairos-citation-chain",
+    "crates/rairos-citation-pathfinder-web",
+    "crates/rairos-client-async",
+    "crates/rairos-client",
+    "crates/rairos-climate-ai-monitor",
+    "crates/rairos-chat",
 ]
 
 [profile.dev]
