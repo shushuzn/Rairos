@@ -23,7 +23,7 @@ CARGO_BUILD_JOBS=1 cargo test
 | rairos-parser | arXiv/CrossRef/Semantic API, PDF extraction |
 | rairos-research | DeepResearchAgent, gap detection |
 | rairos-web | REST API + HTML frontend |
-| rairos-cli | 47 commands |
+| rairos-cli | 48 commands |
 | rairos-kg | Knowledge graph, PageRank, communities |
 | rairos-memory | Research stance tracking, anomaly detection |
 
@@ -33,11 +33,12 @@ CARGO_BUILD_JOBS=1 cargo test
 # Build all
 CARGO_BUILD_JOBS=1 cargo build
 
-# Run CLI (47 commands)
+# Run CLI (48 commands)
 cargo run -p rairos-cli -- help
 cargo run -p rairos-cli -- paper-list
 cargo run -p rairos-cli -- gene-list
 cargo run -p rairos-cli -- stance-list
+cargo run -p rairos-cli -- cite-stats
 cargo run -p rairos-cli -- kg-stats
 cargo run -p rairos-cli -- daemon --foreground
 
@@ -74,5 +75,13 @@ GIT_ASKPASS=echo timeout 55 git push
 
 ## Stats
 
-- Rust: 8 crates, ~8.7k lines, 49 tests, 47 CLI commands
+- Rust: 8 crates, ~8.8k lines, 49 tests, 48 CLI commands
 - Python: ~90k lines, 5156 tests
+
+## Web UI
+
+- Dashboard: stats, recent papers, gene pool diversity
+- Papers: search, list, filter
+- Gene Pool: add gene, list, feedback
+- Knowledge Graph: stats, path finding, rankings
+- Memory: research stances, anomaly detection
