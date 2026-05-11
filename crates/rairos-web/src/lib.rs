@@ -480,8 +480,16 @@ async fn research(
 // Server
 // ============================================================================
 
+async fn index() -> impl IntoResponse {
+    let html = include_str!("../static/index.html");
+    Html(html)
+}
+
+use axum::response::Html;
+
 pub fn build_router(state: Arc<AppState>) -> Router {
     Router::new()
+        .route("/", get(index))
         .route("/health", get(health))
         .route("/stats", get(stats))
         .route("/papers", get(list_papers))

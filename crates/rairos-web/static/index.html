@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rairos Research OS</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #334155; }
+        h1 { color: #38bdf8; font-size: 1.5rem; }
+        .nav { display: flex; gap: 1rem; }
+        .nav a { color: #94a3b8; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s; }
+        .nav a:hover, .nav a.active { background: #1e293b; color: #38bdf8; }
+        .card { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .card h2 { color: #38bdf8; margin-bottom: 1rem; font-size: 1.1rem; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat { background: #1e293b; border-radius: 8px; padding: 1rem; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #38bdf8; }
+        .stat-label { color: #94a3b8; font-size: 0.875rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #334155; }
+        th { color: #94a3b8; font-weight: 500; font-size: 0.875rem; }
+        tr:hover { background: #334155; }
+        .tag { display: inline-block; background: #0ea5e9; color: #0f172a; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin: 0.125rem; }
+        .btn { background: #0ea5e9; color: #0f172a; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .btn:hover { background: #38bdf8; }
+        .btn-success { background: #22c55e; }
+        .btn-danger { background: #ef4444; }
+        input, select { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; padding: 0.5rem; border-radius: 6px; width: 100%; margin-bottom: 0.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        label { color: #94a3b8; font-size: 0.875rem; display: block; margin-bottom: 0.25rem; }
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .tab { padding: 0.5rem 1rem; background: transparent; border: none; color: #94a3b8; cursor: pointer; border-radius: 6px; transition: all 0.2s; }
+        .tab.active { background: #1e293b; color: #38bdf8; }
+        .tab:hover:not(.active) { background: #1e293b; }
+        .hidden { display: none; }
+        .diversity-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Rairos Research OS</h1>
+            <nav class="nav">
+                <a href="#" onclick="showView('dashboard')" class="active" id="nav-dashboard">Dashboard</a>
+                <a href="#" onclick="showView('papers')" id="nav-papers">Papers</a>
+                <a href="#" onclick="showView('genes')" id="nav-genes">Gene Pool</a>
+            </nav>
+        </header>
+
+        <div id="dashboard">
+            <div class="stats" id="stats"></div>
+            <div class="card">
+                <h2>Recent Papers</h2>
+                <div id="recent-papers"></div>
+            </div>
+            <div class="card">
+                <h2>Gene Pool Diversity</h2>
+                <div id="diversity"></div>
+            </div>
+        </div>
+
+        <div id="papers" class="hidden">
+            <div class="card">
+                <h2>Search Papers</h2>
+                <div class="form-group">
+                    <input type="text" id="search-query" placeholder="Search papers..." onkeyup="if(event.key==='Enter')searchPapers()">
+                </div>
+                <button class="btn" onclick="searchPapers()">Search</button>
+                <div id="search-results" style="margin-top: 1rem;"></div>
+            </div>
+            <div class="card">
+                <h2>All Papers</h2>
+                <div id="papers-list"></div>
+            </div>
+        </div>
+
+        <div id="genes" class="hidden">
+            <div class="card">
+                <h2>Add Gene</h2>
+                <div class="form-group">
+                    <label>Approach</label>
+                    <input type="text" id="gene-approach" placeholder="e.g., Attention mechanism with sparse patterns">
+                </div>
+                <div class="form-group">
+                    <label>Gap Type</label>
+                    <select id="gene-gap-type">
+                        <option value="methodology">Methodology</option>
+                        <option value="reproducibility">Reproducibility</option>
+                        <option value="scale">Scale</option>
+                        <option value="theory">Theory</option>
+                        <option value="applications">Applications</option>
+                        <option value="data">Data</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Keywords (comma-separated)</label>
+                    <input type="text" id="gene-keywords" placeholder="attention, transformer, efficiency">
+                </div>
+                <button class="btn" onclick="addGene()">Add Gene</button>
+            </div>
+            <div class="card">
+                <h2>Gene Pool</h2>
+                <div id="genes-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = '';
+        let currentView = 'dashboard';
+
+        async function api(path) {
+            const res = await fetch(API + path);
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        }
+
+        function showView(view) {
+            document.querySelectorAll('#dashboard, #papers, #genes').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav a').forEach(el => el.classList.remove('active'));
+            document.getElementById(view).classList.remove('hidden');
+            document.getElementById('nav-' + view).classList.add('active');
+            currentView = view;
+            if (view === 'dashboard') loadDashboard();
+            if (view === 'papers') loadPapers();
+            if (view === 'genes') loadGenes();
+        }
+
+        async function loadDashboard() {
+            try {
+                const stats = await api('/stats');
+                document.getElementById('stats').innerHTML = `
+                    <div class="stat"><div class="stat-value">${stats.total}</div><div class="stat-label">Total Papers</div></div>
+                    <div class="stat"><div class="stat-value">${stats.pending}</div><div class="stat-label">Pending</div></div>
+                    <div class="stat"><div class="stat-value">${stats.done}</div><div class="stat-label">Done</div></div>
+                    <div class="stat"><div class="stat-value">${stats.gaps}</div><div class="stat-label">Gaps</div></div>
+                `;
+                const papers = await api('/papers?limit=5');
+                document.getElementById('recent-papers').innerHTML = papers.length ? renderPapersTable(papers) : '<p>No papers yet</p>';
+                const div = await api('/genes/diversity');
+                document.getElementById('diversity').innerHTML = `
+                    <div class="diversity-grid">
+                        <div><strong>Shannon Index:</strong> ${div.shannon_index?.toFixed(3) || 0}</div>
+                        <div><strong>Capsules:</strong> ${div.capsule_count}</div>
+                        <div><strong>Diversity Score:</strong> ${div.diversity_score}</div>
+                    </div>
+                `;
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadPapers() {
+            try {
+                const papers = await api('/papers?limit=50');
+                document.getElementById('papers-list').innerHTML = papers.length ? renderPapersTable(papers) : '<p>No papers yet</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        async function searchPapers() {
+            const q = document.getElementById('search-query').value;
+            if (!q) return;
+            try {
+                const papers = await api('/papers/search?q=' + encodeURIComponent(q));
+                document.getElementById('search-results').innerHTML = papers.length ? renderPapersTable(papers) : '<p>No results</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        function renderPapersTable(papers) {
+            return `<table><thead><tr><th>Title</th><th>Authors</th><th>Categories</th></tr></thead><tbody>
+                ${papers.map(p => `<tr><td>${p.title}</td><td>${p.authors?.join(', ') || ''}</td><td>${(p.categories||[]).map(c=>`<span class="tag">${c}</span>`).join('')}</td></tr>`).join('')}
+            </tbody></table>`;
+        }
+
+        async function loadGenes() {
+            try {
+                const genes = await api('/genes?limit=50');
+                document.getElementById('genes-list').innerHTML = genes.length ? renderGenesTable(genes) : '<p>No genes yet</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        async function addGene() {
+            const approach = document.getElementById('gene-approach').value;
+            const gapType = document.getElementById('gene-gap-type').value;
+            const keywords = document.getElementById('gene-keywords').value.split(',').map(k => k.trim()).filter(Boolean);
+            if (!approach || !keywords.length) return alert('Please fill all fields');
+            try {
+                await api('/genes', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ approach, gap_type: gapType, keywords }) });
+                document.getElementById('gene-approach').value = '';
+                document.getElementById('gene-keywords').value = '';
+                loadGenes();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        async function giveFeedback(capsuleId, positive) {
+            try {
+                await api(`/genes/${capsuleId}/feedback`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ positive }) });
+                loadGenes();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        function renderGenesTable(genes) {
+            return `<table><thead><tr><th>Approach</th><th>Gap Type</th><th>Status</th><th>Impact</th><th>Feedback</th><th>Actions</th></tr></thead><tbody>
+                ${genes.map(g => `<tr>
+                    <td>${g.approach}</td>
+                    <td><span class="tag">${g.gap_type}</span></td>
+                    <td>${g.status}</td>
+                    <td>${g.impact_score?.toFixed(2) || '-'}</td>
+                    <td>+${g.success_count} / -${g.failure_count}</td>
+                    <td>
+                        <button class="btn btn-success" onclick="giveFeedback('${g.capsule_id}', true)">+</button>
+                        <button class="btn btn-danger" onclick="giveFeedback('${g.capsule_id}', false)">-</button>
+                    </td>
+                </tr>`).join('')}
+            </tbody></table>`;
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
