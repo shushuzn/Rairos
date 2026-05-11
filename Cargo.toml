@@ -19,6 +19,7 @@ members = [
     "crates/rairos-mcp",
     "crates/rairos-memory",
     "crates/rairos-auth",
+    "crates/rairos-i18n",
 ]
 
 [profile.dev]
