@@ -7,10 +7,11 @@ use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::{IntoResponse, Json, Response},
-    routing::{get, post},
+    routing::{get, post, delete},
     Router,
 };
-use rairos_core::{Database, Paper, DbStats};
+use rairos_core::{Database, Paper, DbStats, ResearchGap};
+use rairos_llm::{GenePool, Capsule, GenePoolDiversityCalculator};
 use rairos_parser::{self, detect_source, Source};
 use rairos_research::{ResearchQuery, ResearchOrchestrator};
 use serde::{Deserialize, Serialize};
@@ -65,6 +66,7 @@ impl IntoResponse for WebError {
 
 pub struct AppState {
     pub db: Arc<Database>,
+    pub gene_pool: Arc<RwLock<GenePool>>,
     pub orchestrator: Arc<RwLock<Option<ResearchOrchestrator>>>,
 }
 
@@ -72,6 +74,7 @@ impl AppState {
     pub fn new(db: Database) -> Self {
         Self {
             db: Arc::new(db),
+            gene_pool: Arc::new(RwLock::new(GenePool::new())),
             orchestrator: Arc::new(RwLock::new(None)),
         }
     }
@@ -83,7 +86,7 @@ impl AppState {
 
 #[derive(Debug, Deserialize)]
 pub struct AddPaperRequest {
-    pub id: String, // arXiv ID, DOI, or Semantic Scholar ID
+    pub id: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -99,6 +102,19 @@ pub struct ResearchRequest {
     pub categories: Option<Vec<String>>,
     pub max_papers: Option<usize>,
     pub include_citations: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GeneAddRequest {
+    pub approach: String,
+    pub gap_type: String,
+    pub keywords: Vec<String>,
+    pub paper_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GeneFeedbackRequest {
+    pub positive: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -131,6 +147,54 @@ impl From<Paper> for PaperResponse {
 }
 
 #[derive(Debug, Serialize)]
+pub struct GapResponse {
+    pub id: String,
+    pub category: String,
+    pub description: String,
+    pub severity: String,
+    pub paper_ids: Vec<String>,
+}
+
+impl From<ResearchGap> for GapResponse {
+    fn from(g: ResearchGap) -> Self {
+        Self {
+            id: g.id,
+            category: g.category,
+            description: g.description,
+            severity: g.severity,
+            paper_ids: g.paper_ids,
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct GeneResponse {
+    pub capsule_id: String,
+    pub gap_type: String,
+    pub approach: String,
+    pub status: String,
+    pub impact_score: f64,
+    pub success_count: i32,
+    pub failure_count: i32,
+    pub created_at: String,
+}
+
+impl From<&Capsule> for GeneResponse {
+    fn from(c: &Capsule) -> Self {
+        Self {
+            capsule_id: c.capsule_id.clone(),
+            gap_type: c.action_gap_type.clone(),
+            approach: c.archetype.approach_summary.clone(),
+            status: if c.archived { "archived".to_string() } else { c.status.to_string() },
+            impact_score: c.impact_score,
+            success_count: c.success_count,
+            failure_count: c.failure_count,
+            created_at: c.created_at.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
 pub struct StatsResponse {
     pub total: i64,
     pub pending: i64,
@@ -157,10 +221,9 @@ pub struct HealthResponse {
 }
 
 // ============================================================================
-// Routes
+// Routes - Health & Stats
 // ============================================================================
 
-// Health check
 async fn health() -> Json<HealthResponse> {
     Json(HealthResponse {
         status: "ok".to_string(),
@@ -169,13 +232,15 @@ async fn health() -> Json<HealthResponse> {
     })
 }
 
-// Get database statistics
 async fn stats(State(state): State<Arc<AppState>>) -> Result<Json<StatsResponse>, WebError> {
     let stats = state.db.stats().map_err(|e| WebError::Database(e.to_string()))?;
     Ok(Json(StatsResponse::from(stats)))
 }
 
-// List papers
+// ============================================================================
+// Routes - Papers
+// ============================================================================
+
 async fn list_papers(
     State(state): State<Arc<AppState>>,
     Query(query): Query<SearchQuery>,
@@ -189,37 +254,30 @@ async fn list_papers(
     Ok(Json(papers.into_iter().map(PaperResponse::from).collect()))
 }
 
-// Search papers
 async fn search_papers(
     State(state): State<Arc<AppState>>,
     Query(query): Query<SearchQuery>,
 ) -> Result<Json<Vec<PaperResponse>>, WebError> {
     let limit = query.limit.unwrap_or(20) as usize;
-    let papers = state.db.list_papers(None, limit, 0)
+    let papers = state.db.search_papers(&query.q, limit)
         .map_err(|e| WebError::Database(e.to_string()))?;
 
     Ok(Json(papers.into_iter().map(PaperResponse::from).collect()))
 }
 
-// Get single paper
 async fn get_paper(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<Json<PaperResponse>, WebError> {
-    // Try by ID first
     if let Ok(paper) = state.db.get_paper(&id) {
         return Ok(Json(PaperResponse::from(paper)));
     }
-
-    // Try by arXiv ID
     if let Ok(Some(paper)) = state.db.get_paper_by_arxiv(&id) {
         return Ok(Json(PaperResponse::from(paper)));
     }
-
     Err(WebError::NotFound(format!("Paper not found: {}", id)))
 }
 
-// Add paper (fetch from external source)
 async fn add_paper(
     State(state): State<Arc<AppState>>,
     Json(req): Json<AddPaperRequest>,
@@ -251,7 +309,6 @@ async fn add_paper(
     Ok(Json(PaperResponse::from(paper)))
 }
 
-// Delete paper
 async fn delete_paper(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
@@ -261,7 +318,145 @@ async fn delete_paper(
     Ok(StatusCode::NO_CONTENT)
 }
 
-// Run research query
+// ============================================================================
+// Routes - Gaps
+// ============================================================================
+
+async fn list_gaps(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<ListGapsParams>,
+) -> Result<Json<Vec<GapResponse>>, WebError> {
+    let limit = params.limit.unwrap_or(20);
+    let offset = params.offset.unwrap_or(0);
+
+    let gaps = state.db.list_gaps(limit, offset)
+        .map_err(|e| WebError::Database(e.to_string()))?;
+
+    Ok(Json(gaps.into_iter().map(GapResponse::from).collect()))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ListGapsParams {
+    pub limit: Option<usize>,
+    pub offset: Option<usize>,
+}
+
+async fn get_gap(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<Json<GapResponse>, WebError> {
+    let gap = state.db.get_gap(&id)
+        .map_err(|e| WebError::Database(e.to_string()))?
+        .ok_or_else(|| WebError::NotFound(format!("Gap not found: {}", id)))?;
+
+    Ok(Json(GapResponse::from(gap)))
+}
+
+// ============================================================================
+// Routes - Gene Pool
+// ============================================================================
+
+async fn list_genes(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<ListGenesParams>,
+) -> Result<Json<Vec<GeneResponse>>, WebError> {
+    let pool = state.gene_pool.read().await;
+    let capsules: Vec<GeneResponse> = pool.capsules().iter().map(GeneResponse::from).collect();
+
+    let filtered: Vec<GeneResponse> = capsules.into_iter()
+        .filter(|g| {
+            if let Some(ref gt) = params.gap_type {
+                if &g.gap_type != gt {
+                    return false;
+                }
+            }
+            if let Some(ref status) = params.status {
+                if &g.status != status {
+                    return false;
+                }
+            }
+            true
+        })
+        .skip(params.offset.unwrap_or(0))
+        .take(params.limit.unwrap_or(50))
+        .collect();
+
+    Ok(Json(filtered))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ListGenesParams {
+    pub gap_type: Option<String>,
+    pub status: Option<String>,
+    pub limit: Option<usize>,
+    pub offset: Option<usize>,
+}
+
+async fn add_gene(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<GeneAddRequest>,
+) -> Result<Json<GeneResponse>, WebError> {
+    let mut capsule = Capsule::new(&req.approach, &req.gap_type, req.keywords);
+    if let Some(pid) = req.paper_id {
+        capsule = capsule.with_paper(&pid);
+    }
+
+    let mut pool = state.gene_pool.write().await;
+    pool.add_capsule(capsule);
+
+    let gene = pool.capsules().last().map(GeneResponse::from)
+        .ok_or_else(|| WebError::Internal("Failed to add gene".to_string()))?;
+
+    Ok(Json(gene))
+}
+
+async fn get_gene(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<Json<GeneResponse>, WebError> {
+    let pool = state.gene_pool.read().await;
+    let capsule = pool.capsules().iter()
+        .find(|c| c.capsule_id == id || c.capsule_id.starts_with(&id))
+        .map(GeneResponse::from)
+        .ok_or_else(|| WebError::NotFound(format!("Gene not found: {}", id)))?;
+
+    Ok(Json(capsule))
+}
+
+async fn gene_feedback(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+    Json(req): Json<GeneFeedbackRequest>,
+) -> Result<Json<GeneResponse>, WebError> {
+    let mut pool = state.gene_pool.write().await;
+    if let Some(cap) = pool.capsules_mut().iter_mut().find(|c| c.capsule_id == id || c.capsule_id.starts_with(&id)) {
+        if req.positive {
+            cap.record_success();
+        } else {
+            cap.record_failure();
+        }
+        return Ok(Json(GeneResponse::from(&*cap)));
+    }
+    Err(WebError::NotFound(format!("Gene not found: {}", id)))
+}
+
+async fn gene_diversity(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, WebError> {
+    let pool = state.gene_pool.read().await;
+    let diversity = GenePoolDiversityCalculator::calculate(pool.capsules());
+
+    Ok(Json(serde_json::json!({
+        "shannon_index": diversity.shannon_index,
+        "capsule_count": diversity.capsule_count,
+        "diversity_score": diversity.diversity_score,
+        "family_counts": diversity.family_counts,
+        "gap_type_counts": diversity.gap_type_counts,
+    })))
+}
+
+// ============================================================================
+// Routes - Research
+// ============================================================================
+
 async fn research(
     State(state): State<Arc<AppState>>,
     Json(req): Json<ResearchRequest>,
@@ -285,7 +480,6 @@ async fn research(
 // Server
 // ============================================================================
 
-/// Build the Axum router
 pub fn build_router(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/health", get(health))
@@ -294,12 +488,18 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/papers/search", get(search_papers))
         .route("/papers", post(add_paper))
         .route("/papers/:id", get(get_paper))
-        .route("/papers/:id", axum::routing::delete(delete_paper))
+        .route("/papers/:id", delete(delete_paper))
+        .route("/gaps", get(list_gaps))
+        .route("/gaps/:id", get(get_gap))
+        .route("/genes", get(list_genes))
+        .route("/genes", post(add_gene))
+        .route("/genes/:id", get(get_gene))
+        .route("/genes/:id/feedback", post(gene_feedback))
+        .route("/genes/diversity", get(gene_diversity))
         .route("/research", post(research))
         .with_state(state)
 }
 
-/// Start the server
 pub async fn start(addr: &str, state: Arc<AppState>) -> Result<(), WebError> {
     let listener = tokio::net::TcpListener::bind(addr)
         .await
