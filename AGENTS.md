@@ -4,7 +4,7 @@
 
 Self-Evolving Research OS — two codebases coexist:
 - **Python** (~90k lines, primary): `core/`, `llm/`, `cli/`, `db/`, `research_loop/`, `parsers/`, `kg/`, `web/`
-- **Rust** (~8.7k lines, rewrite): `crates/` with 8 crates
+- **Rust** (~16k lines, rewrite): `crates/` with 17 crates
 
 ## Critical: Rust Build
 
@@ -38,12 +38,21 @@ sccache --show-stats
 |-------|---------|
 | rairos-core | DB, FTS5, subscriptions, tags |
 | rairos-llm | GenePool, Evolution, LLM clients |
-| rairos-parser | arXiv/CrossRef/Semantic API, PDF extraction |
+| rairos-parser | arXiv/CrossRef/Semantic Scholar API, PDF extraction |
 | rairos-research | DeepResearchAgent, gap detection |
 | rairos-web | REST API + HTML frontend |
 | rairos-cli | 48 commands |
 | rairos-kg | Knowledge graph, PageRank, communities |
 | rairos-memory | Research stance tracking, anomaly detection |
+| rairos-rankers | Paper ranking and scoring |
+| rairos-notify | Desktop/system notifications |
+| rairos-updaters | Paper metadata updaters |
+| rairos-notes | Note-taking with frontmatter |
+| rairos-pdf | Advanced PDF processing |
+| rairos-viz | Chart and visualization generation |
+| rairos-trends | Research trend analysis |
+| rairos-render | Lite review, paper rendering |
+| rairos-mcp | Model Context Protocol server |
 
 ## Rust Commands
 
@@ -93,7 +102,7 @@ GIT_ASKPASS=echo timeout 55 git push
 
 ## Stats
 
-- Rust: 8 crates, ~8.8k lines, 49 tests, 48 CLI commands
+- Rust: 17 crates, ~16k lines, 48 CLI commands
 - Python: ~90k lines, 5156 tests
 
 ## Web UI
