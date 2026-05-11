@@ -8,6 +8,7 @@ members = [
     "crates/rairos-research",
     "crates/rairos-web",
     "crates/rairos-kg",
+    "crates/rairos-memory",
 ]
 
 [profile.release]
