@@ -246,11 +246,11 @@ async fn handle_events(
         match result {
             Ok(event) => {
                 let sse_data = event.to_sse();
-                Ok::<_, std::convert::Infallible>(warp::sse::Event::data(sse_data))
+                Ok::<_, std::convert::Infallible>(warp::sse::Event::default().data(sse_data))
             }
             Err(e) => {
                 tracing::warn!("broadcast error: {}", e);
-                Ok(warp::sse::Event::data("event: error\ndata: broadcast error\n\n"))
+                Ok::<_, std::convert::Infallible>(warp::sse::Event::default().data("event: error\ndata: broadcast error\n\n"))
             }
         }
     });
