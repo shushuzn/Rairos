@@ -341,4 +341,90 @@ mod tests {
         assert_eq!(stats.by_stance.get("supported"), Some(&2));
         assert_eq!(stats.by_stance.get("rejected"), Some(&1));
     }
+
+    #[test]
+    fn test_find_by_tag() {
+        let mut memory = ResearchMemory::new();
+        memory.add_stance(ResearchStance::new("T1", "c1", StanceType::Supported, "r").with_tags(vec!["nlp".to_string()]));
+        memory.add_stance(ResearchStance::new("T2", "c2", StanceType::Supported, "r").with_tags(vec!["cv".to_string()]));
+        memory.add_stance(ResearchStance::new("T3", "c3", StanceType::Supported, "r").with_tags(vec!["nlp".to_string()]));
+
+        let nlp_stances = memory.find_by_tag("nlp");
+        assert_eq!(nlp_stances.len(), 2);
+    }
+
+    #[test]
+    fn test_update_stance() {
+        let mut memory = ResearchMemory::new();
+        let stance = ResearchStance::new("T1", "c1", StanceType::Supported, "r");
+        let id = stance.stance_id.clone();
+        memory.add_stance(stance);
+
+        let result = memory.update_stance(&id, StanceType::Rejected, "Changed my mind");
+        assert!(result.is_some());
+
+        let updated = memory.get_stance(&id).unwrap();
+        assert_eq!(updated.stance, StanceType::Rejected);
+        assert_eq!(updated.reasoning, "Changed my mind");
+    }
+
+    #[test]
+    fn test_get_stance() {
+        let mut memory = ResearchMemory::new();
+        let stance = ResearchStance::new("T1", "c1", StanceType::Supported, "r");
+        let id = stance.stance_id.clone();
+        memory.add_stance(stance);
+
+        let found = memory.get_stance(&id);
+        assert!(found.is_some());
+        assert_eq!(found.unwrap().topic, "T1");
+
+        let not_found = memory.get_stance("nonexistent");
+        assert!(not_found.is_none());
+    }
+
+    #[test]
+    fn test_confidence_clamping() {
+        let stance = ResearchStance::new("T", "C", StanceType::Supported, "R").with_confidence(1.5);
+        assert_eq!(stance.confidence, 1.0);
+
+        let stance2 = ResearchStance::new("T", "C", StanceType::Supported, "R").with_confidence(-0.5);
+        assert_eq!(stance2.confidence, 0.0);
+    }
+
+    #[test]
+    fn test_anomalies_by_stance() {
+        let mut memory = ResearchMemory::new();
+        let stance = ResearchStance::new("T1", "c1", StanceType::Supported, "r");
+        let stance_id = stance.stance_id.clone();
+        memory.add_stance(stance.clone());
+
+        let anomaly = AnomalyAlert::new(
+            &stance,
+            "Paper X",
+            "2301.00001",
+            "contradiction",
+            AnomalySeverity::High,
+            "Shows opposite"
+        );
+        memory.add_anomaly(anomaly);
+
+        let anomalies = memory.get_anomalies_by_stance(&stance_id);
+        assert_eq!(anomalies.len(), 1);
+    }
+
+    #[test]
+    fn test_stance_display() {
+        assert_eq!(StanceType::Supported.to_string(), "supported");
+        assert_eq!(StanceType::Rejected.to_string(), "rejected");
+        assert_eq!(StanceType::Deferred.to_string(), "deferred");
+        assert_eq!(StanceType::Qualified.to_string(), "qualified");
+    }
+
+    #[test]
+    fn test_severity_display() {
+        assert_eq!(AnomalySeverity::High.to_string(), "high");
+        assert_eq!(AnomalySeverity::Medium.to_string(), "medium");
+        assert_eq!(AnomalySeverity::Low.to_string(), "low");
+    }
 }
