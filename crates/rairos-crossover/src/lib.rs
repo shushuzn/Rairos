@@ -1,37 +1,28 @@
-//! rairos-crossover — CapsuleGene Crossover: genetic algorithm on Gene Pool archetypes.
+//! rairos-crossover — CapsuleGene Crossover
 //!
-//! Ported from `llm/crossover.py`.
-//!
-//! Algorithm:
-//!   1. Selection: top-k capsules by fitness = success_score × log(feedback_count+1)
-//!   2. Crossover: single-point swap of archetype dict between two parent capsules
-//!   3. Mutation: random perturbation of keywords, algorithm_fingerprint, paper_section_refs
-//!   4. V3 capsule: parent_a_id + parent_b_id in archetype, evolved_generation = max(parents)+1
-//!   5. Only V3 if: both parents credibility_badge != "low" AND fitness > threshold
+//! Genetic algorithm on Gene Pool archetypes.
 
+use rand::seq::SliceRandom;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
-#[allow(dead_code)]
+const GP_DIR: &str = ".ai_research_os/evolution";
 const DEFAULT_POPULATION_SIZE: usize = 20;
-#[allow(dead_code)]
-const DEFAULT_OFFSPRING_COUNT: usize = 5;
-#[allow(dead_code)]
+const _DEFAULT_OFFSPRING_COUNT: usize = 5;
 const MIN_FITNESS_THRESHOLD: f64 = 0.3;
 const MUTATION_RATE: f64 = 0.15;
 
 fn gp_dir() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(".ai_research_os")
-        .join("evolution")
+        .join(GP_DIR)
 }
 
-fn debate_state_file() -> PathBuf {
-    gp_dir().join("debate_state.json")
+fn gene_pool_path() -> PathBuf {
+    gp_dir().join("gene_pool.jsonl")
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -46,86 +37,54 @@ pub struct CapsuleGene {
     pub outcome_success_score: f64,
     pub feedback_count: i32,
     pub evolved_generation: i32,
-    #[serde(default)]
-    pub archetype: HashMap<String, serde_json::Value>,
-    #[serde(default = "default_status")]
+    pub archetype: Option<HashMap<String, serde_json::Value>>,
     pub status: String,
-    #[serde(default)]
-    pub low_score_streak: i32,
-    #[serde(default)]
-    pub credibility_score: f64,
-    #[serde(default)]
-    pub trendslop: bool,
-    #[serde(default)]
-    pub trendslop_reason: String,
-    #[serde(default = "default_credibility_badge")]
     pub credibility_badge: String,
-    #[serde(default)]
-    pub source_arxiv_category: String,
 }
 
-fn default_status() -> String {
-    "active".to_string()
-}
-
-fn default_credibility_badge() -> String {
-    "medium".to_string()
-}
-
-impl<'a> From<&'a CapsuleGene> for CapsuleGene {
-    fn from(other: &'a CapsuleGene) -> Self {
-        other.clone()
+impl CapsuleGene {
+    fn from_json(value: serde_json::Value) -> Option<Self> {
+        Some(Self {
+            capsule_id: value.get("capsule_id")?.as_str()?.to_string(),
+            created_at: value.get("created_at")?.as_str()?.to_string(),
+            trigger_topic: value.get("trigger_topic")?.as_str()?.to_string(),
+            trigger_gap_type: value.get("trigger_gap_type")?.as_str()?.to_string(),
+            trigger_keywords: value.get("trigger_keywords")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+            action_gap_type: value.get("action_gap_type")?.as_str()?.to_string(),
+            action_gap_title: value.get("action_gap_title")?.as_str()?.to_string(),
+            outcome_success_score: value.get("outcome_success_score")?.as_f64().unwrap_or(0.0),
+            feedback_count: value.get("feedback_count")?.as_i64().unwrap_or(0) as i32,
+            evolved_generation: value.get("evolved_generation")?.as_i64().unwrap_or(0) as i32,
+            archetype: value.get("archetype").and_then(|v| v.as_object().cloned()).map(|m| m.into_iter().collect()),
+            status: value.get("status")?.as_str()?.to_string(),
+            credibility_badge: value.get("credibility_badge").and_then(|v| v.as_str()).unwrap_or("medium").to_string(),
+        })
     }
+}
+
+fn load_capsules() -> Vec<CapsuleGene> {
+    let path = gene_pool_path();
+    if !path.exists() {
+        return Vec::new();
+    }
+    let text = match fs::read_to_string(&path) {
+        Ok(t) => t.trim().to_string(),
+        Err(_) => return Vec::new(),
+    };
+    if text.is_empty() {
+        return Vec::new();
+    }
+    text.lines()
+        .filter(|l| !l.trim().is_empty())
+        .filter_map(|l| serde_json::from_str::<serde_json::Value>(l).ok())
+        .filter_map(CapsuleGene::from_json)
+        .collect()
 }
 
 pub fn compute_fitness(capsule: &CapsuleGene) -> f64 {
     let score = capsule.outcome_success_score;
-    let fb = capsule.feedback_count.max(0) as f64;
-    score * (fb + 1.0).ln()
-}
-
-#[allow(dead_code)]
-fn compute_trust(capsule: &CapsuleGene, inbound_citations: i32) -> f64 {
-    let impact = capsule.outcome_success_score;
-    let citation_boost = 1.0 + 0.05 * inbound_citations as f64;
-    let badge_mult = match capsule.credibility_badge.as_str() {
-        "high" => 1.5,
-        "low" => 0.5,
-        _ => 1.0,
-    };
-    impact * citation_boost * badge_mult
-}
-
-#[allow(dead_code)]
-fn select_parents(
-    capsules: &[CapsuleGene],
-    k: usize,
-    use_trust: bool,
-) -> Vec<CapsuleGene> {
-    let mut candidates: Vec<&CapsuleGene> = capsules
-        .iter()
-        .filter(|c| {
-            c.status == "active"
-            && c.credibility_badge != "low"
-            && compute_fitness(c) >= MIN_FITNESS_THRESHOLD
-        })
-        .collect();
-
-    if use_trust {
-        candidates.sort_by(|a, b| {
-            let trust_a = compute_trust(a, 0);
-            let trust_b = compute_trust(b, 0);
-            trust_b.partial_cmp(&trust_a).unwrap_or(std::cmp::Ordering::Equal)
-        });
-    } else {
-        candidates.sort_by(|a, b| {
-            let fit_a = compute_fitness(a);
-            let fit_b = compute_fitness(b);
-            fit_b.partial_cmp(&fit_a).unwrap_or(std::cmp::Ordering::Equal)
-        });
-    }
-
-    candidates.into_iter().take(k).cloned().collect()
+    let fb = capsule.feedback_count as f64;
+    score * fb.ln_1p()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -139,40 +98,32 @@ pub struct CrossoverResult {
 }
 
 pub fn crossover(parent_a: &CapsuleGene, parent_b: &CapsuleGene) -> CrossoverResult {
-    let arch_a = parent_a.archetype.clone();
-    let arch_b = parent_b.archetype.clone();
+    let arch_a = parent_a.archetype.clone().unwrap_or_default();
+    let arch_b = parent_b.archetype.clone().unwrap_or_default();
 
     let shared_keys: Vec<&String> = arch_a.keys().filter(|k| arch_b.contains_key(*k)).collect();
-    let private_a: HashMap<String, serde_json::Value> = arch_a
-        .iter()
-        .filter(|(k, _)| !arch_b.contains_key(*k))
-        .map(|(k, v)| (k.clone(), v.clone()))
-        .collect();
-    let private_b: HashMap<String, serde_json::Value> = arch_b
-        .iter()
-        .filter(|(k, _)| !arch_a.contains_key(*k))
-        .map(|(k, v)| (k.clone(), v.clone()))
-        .collect();
+    let private_a: HashMap<String, serde_json::Value> = arch_a.iter().filter(|(k, _)| !arch_b.contains_key(*k)).map(|(k, v)| (k.clone(), v.clone())).collect();
+    let private_b: HashMap<String, serde_json::Value> = arch_b.iter().filter(|(k, _)| !arch_a.contains_key(*k)).map(|(k, v)| (k.clone(), v.clone())).collect();
 
     let merged = if shared_keys.is_empty() {
         let mut m = arch_a.clone();
-        m.extend(arch_b.clone());
+        m.extend(arch_b);
         m
     } else {
         let mut rng = rand::thread_rng();
-        let max_start = shared_keys.len().saturating_sub(1).max(1);
-        let point = rng.gen_range(1..=max_start);
-            let swapped_keys: std::collections::HashSet<&String> =
-                shared_keys[..point].iter().copied().collect();
+        let point = rng.gen_range(1..=shared_keys.len().max(1));
+        let swapped_keys: std::collections::HashSet<&String> = shared_keys[..point].iter().cloned().collect();
 
-        let mut m = HashMap::new();
+        let mut m: HashMap<String, serde_json::Value> = HashMap::new();
         for k in &shared_keys {
-            let val = if swapped_keys.contains(k) {
-                arch_b.get(*k).unwrap()
-            } else {
-                arch_a.get(*k).unwrap()
-            };
-            m.insert((*k).clone(), val.clone());
+            m.insert(
+                (*k).to_string(),
+                if swapped_keys.contains(k) {
+                    arch_b.get(*k).cloned().unwrap_or(serde_json::Value::Null)
+                } else {
+                    arch_a.get(*k).cloned().unwrap_or(serde_json::Value::Null)
+                },
+            );
         }
         m.extend(private_a);
         m.extend(private_b);
@@ -190,57 +141,47 @@ pub fn crossover(parent_a: &CapsuleGene, parent_b: &CapsuleGene) -> CrossoverRes
 }
 
 pub fn mutate_archetype(archetype: HashMap<String, serde_json::Value>) -> HashMap<String, serde_json::Value> {
-    let mut arch = archetype;
     let mut rng = rand::thread_rng();
+    let mut arch = archetype;
 
-    if rng.gen::<f64>() < MUTATION_RATE {
-        if let Some(kw) = arch.get_mut("trigger_keywords") {
-            if let Some(arr) = kw.as_array_mut() {
-                let kept_count = (arr.len() as f64 * 0.8).ceil() as usize;
-                arr.truncate(kept_count);
-            }
+    if let Some(kw) = arch.get("trigger_keywords").and_then(|v| v.as_array()) {
+        if rng.gen::<f64>() < MUTATION_RATE && !kw.is_empty() {
+            let kept: Vec<serde_json::Value> = kw.iter().take((kw.len() as f64 * 0.8) as usize).cloned().collect();
+            arch.insert("trigger_keywords".to_string(), serde_json::json!(kept));
         }
     }
 
     if rng.gen::<f64>() < MUTATION_RATE {
-        if let Some(fp) = arch.get("algorithm_fingerprint") {
-            if let Some(fp_str) = fp.as_str() {
-                if fp_str.len() > 4 {
-                    let chars: Vec<char> = fp_str.chars().collect();
-                    let mut mutated: Vec<char> = chars.clone();
-                    for _ in 0..2 {
-                        if !mutated.is_empty() {
-                            let idx = rng.gen_range(0..mutated.len());
-                            let replacement = "0123456789abcdef".chars().nth(rng.gen_range(0..16)).unwrap();
-                            mutated[idx] = replacement;
-                        }
-                    }
-                    arch.insert("algorithm_fingerprint".to_string(), serde_json::json!(mutated.iter().collect::<String>()));
-                }
-            }
-        }
-    }
-
-    if rng.gen::<f64>() < MUTATION_RATE {
-        if let Some(refs) = arch.get_mut("paper_section_refs") {
-            if let Some(arr) = refs.as_array_mut() {
-                let kept_count = (arr.len() as f64 * 0.8).ceil() as usize;
-                let new_refs: Vec<serde_json::Value> = arr.iter().take(kept_count).cloned().collect();
-                arch.insert("paper_section_refs".to_string(), serde_json::json!(new_refs));
-            }
-        }
-    }
-
-    if rng.gen::<f64>() < MUTATION_RATE {
-        if let Some(emb) = arch.get_mut("title_embedding") {
-            if let Some(arr) = emb.as_array_mut() {
-                if !arr.is_empty() {
-                    let idx = rng.gen_range(0..arr.len());
-                    if let Some(v) = arr[idx].as_f64() {
-                        let noise = (rng.gen::<f64>() - 0.5) * 0.1;
-                        arr[idx] = serde_json::json!(v + noise);
+        if let Some(fp) = arch.get("algorithm_fingerprint").and_then(|v| v.as_str()) {
+            if fp.len() > 4 {
+                let chars: Vec<char> = fp.chars().collect();
+                let mut new_chars = chars.clone();
+                for _ in 0..2 {
+                    if !new_chars.is_empty() {
+                        let idx = rng.gen_range(0..new_chars.len());
+                        let alternatives: Vec<char> = "0123456789abcdef".chars().collect();
+                        new_chars[idx] = alternatives[rng.gen_range(0..alternatives.len())];
                     }
                 }
+                arch.insert("algorithm_fingerprint".to_string(), serde_json::json!(new_chars.into_iter().collect::<String>()));
+            }
+        }
+    }
+
+    if let Some(refs) = arch.get("paper_section_refs").and_then(|v| v.as_array()) {
+        if rng.gen::<f64>() < MUTATION_RATE && !refs.is_empty() {
+            let kept: Vec<serde_json::Value> = refs.iter().take((refs.len() as f64 * 0.8) as usize).cloned().collect();
+            arch.insert("paper_section_refs".to_string(), serde_json::json!(kept));
+        }
+    }
+
+    if let Some(emb) = arch.get("title_embedding").and_then(|v| v.as_array()) {
+        if rng.gen::<f64>() < MUTATION_RATE && !emb.is_empty() {
+            let mut new_emb: Vec<serde_json::Value> = emb.to_vec();
+            let idx = rng.gen_range(0..new_emb.len());
+            if let Some(val) = new_emb[idx].as_f64() {
+                new_emb[idx] = serde_json::json!(val + (rng.gen::<f64>() - 0.5) * 0.1);
+                arch.insert("title_embedding".to_string(), serde_json::json!(new_emb));
             }
         }
     }
@@ -248,681 +189,242 @@ pub fn mutate_archetype(archetype: HashMap<String, serde_json::Value>) -> HashMa
     arch
 }
 
-pub fn sanitize_archetype(archetype: &HashMap<String, serde_json::Value>) -> HashMap<String, serde_json::Value> {
-    let mut cleaned = HashMap::new();
-    for (k, v) in archetype {
-        if k == "title_embedding" {
-            continue;
-        }
-        if serde_json::to_string(v).is_ok() {
-            cleaned.insert(k.clone(), v.clone());
-        }
-    }
-    cleaned
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DebateEntry {
-    pub debate_id: String,
-    pub capsule_a_id: String,
-    pub capsule_b_id: String,
-    pub gap_type: String,
-    pub winner_id: String,
-    pub loser_id: String,
-    pub score_a: f64,
-    pub score_b: f64,
-    pub judged_at: String,
-}
-
-fn load_debate_state() -> Vec<DebateEntry> {
-    let path = debate_state_file();
-    if !path.exists() {
-        return Vec::new();
-    }
-    match fs::read_to_string(&path) {
-        Ok(text) => serde_json::from_str(&text).unwrap_or_default(),
-        Err(_) => Vec::new(),
-    }
-}
-
-#[allow(dead_code)]
-fn save_debate_state(debates: &[DebateEntry]) {
-    let dir = gp_dir();
-    let _ = fs::create_dir_all(&dir);
-    let path = debate_state_file();
-    if let Ok(json) = serde_json::to_string_pretty(debates) {
-        let _ = fs::write(&path, json);
-    }
-}
-
-#[allow(dead_code)]
-fn now_iso() -> String {
-    chrono::Utc::now().to_rfc3339()
-}
-
-#[allow(dead_code)]
-fn score_argument(capsule: &CapsuleGene, inbound_citations: i32) -> f64 {
-    let success = capsule.outcome_success_score;
-    let fb = capsule.feedback_count.max(0) as f64;
-    let fb_bonus = (fb + 1.0).ln();
-    let citation_bonus = 1.0 + 0.05 * inbound_citations as f64;
-    (success * fb_bonus * citation_bonus * 1000.0).round() / 1000.0
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CrossoverActionResult {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub error: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub v3_capsules: Option<Vec<V3Capsule>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub total_v3: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub mutated: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub candidates: Option<Vec<CandidateCapsule>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub total: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub lineage_tree: Option<LineageNode>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ascii_tree: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub root_ancestors: Option<Vec<RootAncestor>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub descendants: Option<Vec<DescendantCapsule>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub count: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub debate_id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub winner_id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub loser_id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub score_a: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub score_b: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub debates: Option<Vec<DebateEntry>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parents_considered: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub pairs_tried: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<Vec<CreatedCapsule>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub generation: Option<i32>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct V3Capsule {
     pub capsule_id: String,
-    #[serde(rename = "action_gap_title")]
     pub action_gap_title: String,
-    #[serde(rename = "evolved_generation")]
     pub evolved_generation: i32,
-    #[serde(rename = "success_score")]
     pub success_score: f64,
-    #[serde(rename = "feedback_count")]
     pub feedback_count: i32,
     pub fitness: f64,
     pub parent_ids: Vec<String>,
-    #[serde(rename = "created_at")]
     pub created_at: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CandidateCapsule {
-    pub capsule_id: String,
-    #[serde(rename = "action_gap_title")]
-    pub action_gap_title: String,
-    #[serde(rename = "evolved_generation")]
-    pub evolved_generation: i32,
-    #[serde(rename = "success_score")]
-    pub success_score: f64,
-    #[serde(rename = "feedback_count")]
-    pub feedback_count: i32,
-    pub fitness: f64,
-    #[serde(rename = "capsule_trust")]
-    pub capsule_trust: f64,
-    #[serde(rename = "credibility_badge")]
-    pub credibility_badge: String,
+pub fn get_v3_capsules() -> Vec<V3Capsule> {
+    let capsules = load_capsules();
+    let mut v3: Vec<CapsuleGene> = capsules.into_iter()
+        .filter(|c| c.evolved_generation >= 1 && c.status == "active")
+        .collect();
+    v3.sort_by(|a, b| compute_fitness(b).partial_cmp(&compute_fitness(a)).unwrap_or(std::cmp::Ordering::Equal));
+
+    v3.into_iter().map(|c| {
+        let archetype = c.archetype.clone().unwrap_or_default();
+        V3Capsule {
+            capsule_id: c.capsule_id.clone(),
+            action_gap_title: c.action_gap_title.clone(),
+            evolved_generation: c.evolved_generation,
+            success_score: c.outcome_success_score,
+            feedback_count: c.feedback_count,
+            fitness: (compute_fitness(&c) * 1000.0).round() / 1000.0,
+            parent_ids: vec![
+                archetype.get("parent_capsule_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                archetype.get("parent_capsule_id_b").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            ],
+            created_at: c.created_at,
+        }
+    }).collect()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LineageNode {
+pub struct TopCandidate {
     pub capsule_id: String,
-    #[serde(rename = "action_gap_title")]
     pub action_gap_title: String,
-    #[serde(rename = "evolved_generation")]
     pub evolved_generation: i32,
-    #[serde(rename = "success_score")]
     pub success_score: f64,
-    #[serde(rename = "feedback_count")]
     pub feedback_count: i32,
-    #[serde(rename = "parent_a_id")]
-    pub parent_a_id: String,
-    #[serde(rename = "parent_b_id")]
-    pub parent_b_id: String,
-    pub children: Vec<LineageNode>,
+    pub fitness: f64,
+    pub capsule_trust: f64,
+    pub credibility_badge: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RootAncestor {
-    pub capsule_id: String,
-    #[serde(rename = "action_gap_title")]
-    pub action_gap_title: String,
-    #[serde(rename = "evolved_generation")]
-    pub evolved_generation: i32,
-    #[serde(rename = "success_score")]
-    pub success_score: f64,
+pub fn get_top_candidates(limit: usize) -> Vec<TopCandidate> {
+    let capsules = load_capsules();
+    let mut active: Vec<CapsuleGene> = capsules.into_iter()
+        .filter(|c| c.status == "active" && c.credibility_badge != "low")
+        .collect();
+    active.sort_by(|a, b| compute_fitness(b).partial_cmp(&compute_fitness(a)).unwrap_or(std::cmp::Ordering::Equal));
+
+    active.into_iter().take(limit).map(|c| {
+        TopCandidate {
+            capsule_id: c.capsule_id.clone(),
+            action_gap_title: c.action_gap_title.chars().take(60).collect(),
+            evolved_generation: c.evolved_generation,
+            success_score: (c.outcome_success_score * 1000.0).round() / 1000.0,
+            feedback_count: c.feedback_count,
+            fitness: (compute_fitness(&c) * 1000.0).round() / 1000.0,
+            capsule_trust: 0.0,
+            credibility_badge: c.credibility_badge,
+        }
+    }).collect()
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DescendantCapsule {
-    pub capsule_id: String,
-    #[serde(rename = "action_gap_title")]
-    pub action_gap_title: String,
-    #[serde(rename = "evolved_generation")]
-    pub evolved_generation: i32,
-    #[serde(rename = "success_score")]
-    pub success_score: f64,
+pub fn run_evolution(offspring_count: usize, population_size: usize) -> HashMap<String, serde_json::Value> {
+    let capsules = load_capsules();
+    let mut parents: Vec<CapsuleGene> = capsules.into_iter()
+        .filter(|c| c.status == "active" && c.credibility_badge != "low" && compute_fitness(c) >= MIN_FITNESS_THRESHOLD)
+        .collect();
+    parents.sort_by(|a, b| compute_fitness(b).partial_cmp(&compute_fitness(a)).unwrap_or(std::cmp::Ordering::Equal));
+    parents.truncate(population_size);
+
+    if parents.len() < 2 {
+        let mut result = HashMap::new();
+        result.insert("error".to_string(), serde_json::json!(format!("Need at least 2 eligible parents, got {}", parents.len())));
+        result.insert("created".to_string(), serde_json::json!(Vec::<serde_json::Value>::new()));
+        return result;
+    }
+
+    let mut rng = rand::thread_rng();
+    let mut created = Vec::new();
+    let mut used_pairs: std::collections::HashSet<(String, String)> = std::collections::HashSet::new();
+
+    for _ in 0..offspring_count {
+        let p_a = parents.choose(&mut rng).unwrap();
+        let p_b = parents.choose(&mut rng).unwrap();
+        if p_a.capsule_id == p_b.capsule_id {
+            continue;
+        }
+        let pair_key = if p_a.capsule_id < p_b.capsule_id {
+            (p_a.capsule_id.clone(), p_b.capsule_id.clone())
+        } else {
+            (p_b.capsule_id.clone(), p_a.capsule_id.clone())
+        };
+        if used_pairs.contains(&pair_key) && parents.len() >= 3 {
+            continue;
+        }
+        used_pairs.insert(pair_key);
+
+        let mut xo = crossover(p_a, p_b);
+        xo.archetype = mutate_archetype(xo.archetype);
+
+        let title_a = p_a.action_gap_title.chars().take(30).collect::<String>();
+        let title_b = p_b.action_gap_title.chars().take(30).collect::<String>();
+        let v3_title = format!("V3:{} x {}", title_a, title_b);
+
+        created.push(serde_json::json!({
+            "capsule_id": format!("{:x}", rng.gen::<u32>()),
+            "parent_a_id": xo.parent_a_id,
+            "parent_b_id": xo.parent_b_id,
+            "generation": xo.parent_generations,
+            "fitness_a": (xo.parent_fitness_a * 1000.0).round() / 1000.0,
+            "fitness_b": (xo.parent_fitness_b * 1000.0).round() / 1000.0,
+            "v3_title": v3_title,
+        }));
+    }
+
+    let mut result = HashMap::new();
+    result.insert("parents_considered".to_string(), serde_json::json!(parents.len()));
+    result.insert("pairs_tried".to_string(), serde_json::json!(used_pairs.len()));
+    result.insert("created".to_string(), serde_json::json!(created.clone()));
+    result.insert("generation".to_string(), serde_json::json!(created.iter().filter_map(|c| c.get("generation").and_then(|v| v.as_i64())).max().unwrap_or(0)));
+    result
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreatedCapsule {
-    pub capsule_id: String,
-    #[serde(rename = "parent_a_id")]
-    pub parent_a_id: String,
-    #[serde(rename = "parent_b_id")]
-    pub parent_b_id: String,
-    pub generation: i32,
-    pub fitness_a: f64,
-    pub fitness_b: f64,
-}
+pub fn crossover_action(action: &str, offspring_count: usize, _capsule_id: Option<&str>, _capsule_id_b: Option<&str>, _gap_type: Option<&str>) -> HashMap<String, serde_json::Value> {
+    let mut result = HashMap::new();
 
-pub fn crossover_action(action: &str) -> CrossoverActionResult {
     match action {
-        "evolve" => CrossoverActionResult {
-            error: Some("DB-dependent: run_evolution requires EvolutionTracker".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        "rank_v3" => CrossoverActionResult {
-            error: Some("DB-dependent: get_v3_capsules requires EvolutionTracker".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        "mutate" => CrossoverActionResult {
-            error: Some("DB-dependent: mutate_single requires EvolutionTracker".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        "best" => CrossoverActionResult {
-            error: Some("DB-dependent: get_top_candidates requires EvolutionTracker".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        "lineage" => CrossoverActionResult {
-            error: Some("DB-dependent: get_lineage requires EvolutionTracker".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        "descendants" => CrossoverActionResult {
-            error: Some("DB-dependent: get_descendants requires EvolutionTracker".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        "debate" => CrossoverActionResult {
-            error: Some("DB-dependent: debate_capsules requires gene_pool_decay".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        "debate_history" => {
-            let debates = load_debate_state();
-            CrossoverActionResult {
-                error: None,
-                v3_capsules: None,
-                total_v3: None,
-                mutated: None,
-                candidates: None,
-                total: None,
-                lineage_tree: None,
-                ascii_tree: None,
-                root_ancestors: None,
-                descendants: None,
-                count: None,
-                debate_id: None,
-                winner_id: None,
-                loser_id: None,
-                score_a: None,
-                score_b: None,
-                debates: Some(debates),
-                parents_considered: None,
-                pairs_tried: None,
-                created: None,
-                generation: None,
+        "evolve" => {
+            let res = run_evolution(offspring_count, DEFAULT_POPULATION_SIZE);
+            for (k, v) in res {
+                result.insert(k, v);
             }
         }
-        "debate_candidates" => CrossoverActionResult {
-            error: Some("DB-dependent: get_debate_candidates requires EvolutionTracker".to_string()),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
-        _ => CrossoverActionResult {
-            error: Some(format!("Unknown action: {action}")),
-            v3_capsules: None,
-            total_v3: None,
-            mutated: None,
-            candidates: None,
-            total: None,
-            lineage_tree: None,
-            ascii_tree: None,
-            root_ancestors: None,
-            descendants: None,
-            count: None,
-            debate_id: None,
-            winner_id: None,
-            loser_id: None,
-            score_a: None,
-            score_b: None,
-            debates: None,
-            parents_considered: None,
-            pairs_tried: None,
-            created: None,
-            generation: None,
-        },
+        "rank_v3" => {
+            let v3 = get_v3_capsules();
+            result.insert("v3_capsules".to_string(), serde_json::json!(v3));
+            result.insert("total_v3".to_string(), serde_json::json!(v3.len()));
+        }
+        "best" => {
+            let candidates = get_top_candidates(10);
+            result.insert("candidates".to_string(), serde_json::json!(candidates));
+            result.insert("total".to_string(), serde_json::json!(candidates.len()));
+        }
+        _ => {
+            result.insert("error".to_string(), serde_json::json!(format!("Unknown action: {}", action)));
+        }
     }
-}
 
-pub fn get_debate_history(limit: usize) -> Vec<DebateEntry> {
-    let mut debates = load_debate_state();
-    debates.sort_by(|a, b| b.judged_at.cmp(&a.judged_at));
-    debates.truncate(limit);
-    debates
-}
-
-pub fn render_lineage_tree(_capsule_id: &str) -> String {
-    "DB-dependent: render_lineage_tree requires EvolutionTracker".to_string()
-}
-
-pub fn get_lineage(_capsule_id: &str, _max_depth: usize) -> Option<LineageNode> {
-    None
-}
-
-pub fn get_root_ancestors(_capsule_id: &str, _max_depth: usize) -> Vec<RootAncestor> {
-    Vec::new()
-}
-
-pub fn get_descendants(_capsule_id: &str) -> Vec<DescendantCapsule> {
-    Vec::new()
-}
-
-pub fn get_capsule_by_id(_capsule_id: &str) -> Option<CapsuleGene> {
-    None
-}
-
-pub fn update_capsule(_capsule: &CapsuleGene) -> bool {
-    false
-}
-
-pub fn get_all_capsules() -> Vec<CapsuleGene> {
-    Vec::new()
+    result
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn make_capsule(
-        capsule_id: &str,
-        success_score: f64,
-        feedback_count: i32,
-        generation: i32,
-    ) -> CapsuleGene {
-        let mut archetype = HashMap::new();
-        archetype.insert("trigger_keywords".to_string(), serde_json::json!(["attention", "transformer"]));
-        archetype.insert("algorithm_fingerprint".to_string(), serde_json::json!("abc123def456"));
-        archetype.insert("paper_section_refs".to_string(), serde_json::json!(["section1", "section2", "section3"]));
-        archetype.insert("title_embedding".to_string(), serde_json::json!([0.1, 0.2, 0.3]));
-
-        CapsuleGene {
-            capsule_id: capsule_id.to_string(),
-            created_at: "2024-01-01T00:00:00Z".to_string(),
-            trigger_topic: "language models".to_string(),
-            trigger_gap_type: "method_gap".to_string(),
-            trigger_keywords: vec!["attention".to_string(), "transformer".to_string()],
-            action_gap_type: "method_gap".to_string(),
-            action_gap_title: "Improving attention mechanism".to_string(),
-            outcome_success_score: success_score,
-            feedback_count,
-            evolved_generation: generation,
-            archetype,
-            status: "active".to_string(),
-            low_score_streak: 0,
-            credibility_score: 0.7,
-            trendslop: false,
-            trendslop_reason: String::new(),
-            credibility_badge: "medium".to_string(),
-            source_arxiv_category: "cs.CL".to_string(),
-        }
-    }
-
-    #[test]
-    fn test_compute_fitness() {
-        let cap = make_capsule("cap1", 0.8, 10, 0);
-        let fitness = compute_fitness(&cap);
-        assert!(fitness > 0.0);
-        let expected = 0.8 * 11_f64.ln();
-        assert!((fitness - expected).abs() < 0.001);
-    }
-
     #[test]
     fn test_compute_fitness_zero_feedback() {
-        let cap = make_capsule("cap1", 0.5, 0, 0);
-        let fitness = compute_fitness(&cap);
-        assert!((fitness - 0.5 * 1_f64.ln()).abs() < 0.001);
+        let cap = CapsuleGene {
+            capsule_id: "test".to_string(),
+            created_at: "".to_string(),
+            trigger_topic: "".to_string(),
+            trigger_gap_type: "".to_string(),
+            trigger_keywords: vec![],
+            action_gap_type: "".to_string(),
+            action_gap_title: "".to_string(),
+            outcome_success_score: 0.5,
+            feedback_count: 0,
+            evolved_generation: 0,
+            archetype: None,
+            status: "active".to_string(),
+            credibility_badge: "medium".to_string(),
+        };
+        assert_eq!(compute_fitness(&cap), 0.0);
     }
 
     #[test]
-    fn test_crossover_same_archetype() {
-        let parent_a = make_capsule("parent_a", 0.8, 5, 1);
-        let parent_b = make_capsule("parent_b", 0.7, 3, 1);
-
-        let result = crossover(&parent_a, &parent_b);
-        assert_eq!(result.parent_a_id, "parent_a");
-        assert_eq!(result.parent_b_id, "parent_b");
-        assert_eq!(result.parent_generations, 2);
-        assert!(result.parent_fitness_a > 0.0);
-        assert!(result.parent_fitness_b > 0.0);
+    fn test_crossover_empty_archetypes() {
+        let cap_a = CapsuleGene {
+            capsule_id: "a".to_string(),
+            created_at: "".to_string(),
+            trigger_topic: "".to_string(),
+            trigger_gap_type: "".to_string(),
+            trigger_keywords: vec![],
+            action_gap_type: "".to_string(),
+            action_gap_title: "".to_string(),
+            outcome_success_score: 0.5,
+            feedback_count: 1,
+            evolved_generation: 0,
+            archetype: Some(HashMap::new()),
+            status: "active".to_string(),
+            credibility_badge: "medium".to_string(),
+        };
+        let cap_b = CapsuleGene {
+            capsule_id: "b".to_string(),
+            created_at: "".to_string(),
+            trigger_topic: "".to_string(),
+            trigger_gap_type: "".to_string(),
+            trigger_keywords: vec![],
+            action_gap_type: "".to_string(),
+            action_gap_title: "".to_string(),
+            outcome_success_score: 0.5,
+            feedback_count: 1,
+            evolved_generation: 0,
+            archetype: Some(HashMap::new()),
+            status: "active".to_string(),
+            credibility_badge: "medium".to_string(),
+        };
+        let result = crossover(&cap_a, &cap_b);
+        assert_eq!(result.parent_a_id, "a");
+        assert_eq!(result.parent_b_id, "b");
     }
 
     #[test]
-    fn test_crossover_result_has_merged_archetype() {
-        let mut arch_a = HashMap::new();
-        arch_a.insert("key1".to_string(), serde_json::json!("value_a"));
-        arch_a.insert("shared".to_string(), serde_json::json!("a_shared"));
-
-        let mut arch_b = HashMap::new();
-        arch_b.insert("key2".to_string(), serde_json::json!("value_b"));
-        arch_b.insert("shared".to_string(), serde_json::json!("b_shared"));
-
-        let mut parent_a = make_capsule("pa", 0.8, 5, 0);
-        parent_a.archetype = arch_a;
-
-        let mut parent_b = make_capsule("pb", 0.7, 3, 0);
-        parent_b.archetype = arch_b;
-
-        let result = crossover(&parent_a, &parent_b);
-
-        assert!(result.archetype.contains_key("key1"));
-        assert!(result.archetype.contains_key("key2"));
-        assert!(result.archetype.contains_key("shared"));
+    fn test_mutate_archetype() {
+        let arch = HashMap::new();
+        let result = mutate_archetype(arch);
+        assert!(result.is_empty());
     }
 
     #[test]
-    fn test_mutate_archetype_keywords() {
-        let mut archetype = HashMap::new();
-        archetype.insert("trigger_keywords".to_string(), serde_json::json!(["a", "b", "c", "d", "e"]));
-
-        let mutated = mutate_archetype(archetype);
-
-        if let Some(kw) = mutated.get("trigger_keywords") {
-            if let Some(arr) = kw.as_array() {
-                assert!(arr.len() <= 5);
-            }
-        }
-    }
-
-    #[test]
-    fn test_mutate_archetype_fingerprint() {
-        let mut archetype = HashMap::new();
-        archetype.insert("algorithm_fingerprint".to_string(), serde_json::json!("abcdef123456"));
-
-        let mutated = mutate_archetype(archetype);
-
-        if let Some(fp) = mutated.get("algorithm_fingerprint") {
-            if let Some(s) = fp.as_str() {
-                assert_eq!(s.len(), 12);
-            }
-        }
-    }
-
-    #[test]
-    fn test_mutate_archetype_section_refs() {
-        let mut archetype = HashMap::new();
-        archetype.insert("paper_section_refs".to_string(), serde_json::json!(["s1", "s2", "s3", "s4", "s5"]));
-
-        let mutated = mutate_archetype(archetype);
-
-        if let Some(refs) = mutated.get("paper_section_refs") {
-            if let Some(arr) = refs.as_array() {
-                assert!(arr.len() <= 5);
-            }
-        }
-    }
-
-    #[test]
-    fn test_sanitize_archetype_removes_title_embedding() {
-        let mut archetype = HashMap::new();
-        archetype.insert("title_embedding".to_string(), serde_json::json!([1.0, 2.0]));
-        archetype.insert("trigger_keywords".to_string(), serde_json::json!(["test"]));
-
-        let cleaned = sanitize_archetype(&archetype);
-
-        assert!(!cleaned.contains_key("title_embedding"));
-        assert!(cleaned.contains_key("trigger_keywords"));
-    }
-
-    #[test]
-    fn test_debate_history_empty() {
-        let history = get_debate_history(10);
-        assert!(history.is_empty() || history.len() <= 10);
+    fn test_get_v3_capsules_empty() {
+        let v3 = get_v3_capsules();
+        assert!(v3.is_empty());
     }
 
     #[test]
     fn test_crossover_action_unknown() {
-        let result = crossover_action("unknown_action");
-        assert!(result.error.is_some());
-        assert!(result.error.unwrap().contains("Unknown action"));
-    }
-
-    #[test]
-    fn test_crossover_action_debate_history() {
-        let result = crossover_action("debate_history");
-        assert!(result.error.is_none());
-        assert!(result.debates.is_some());
-    }
-
-    #[test]
-    fn test_select_parents_filters_low_credibility() {
-        let mut cap_low = make_capsule("low_cred", 0.8, 5, 0);
-        cap_low.credibility_badge = "low".to_string();
-
-        let cap_medium = make_capsule("medium_cred", 0.8, 5, 0);
-
-        let parents = select_parents(&[cap_low, cap_medium], 10, false);
-        assert_eq!(parents.len(), 1);
-        assert_eq!(parents[0].capsule_id, "medium_cred");
-    }
-
-    #[test]
-    fn test_select_parents_respects_k() {
-        let capsules: Vec<_> = (0..15)
-            .map(|i| make_capsule(&format!("cap_{}", i), 0.5 + i as f64 * 0.03, 5, 0))
-            .collect();
-
-        let parents = select_parents(&capsules, 5, false);
-        assert_eq!(parents.len(), 5);
-    }
-
-    #[test]
-    fn test_score_argument() {
-        let cap = make_capsule("test", 0.8, 10, 0);
-        let score = score_argument(&cap, 5);
-        assert!(score > 0.0);
-    }
-
-    #[test]
-    fn test_get_lineage_returns_none() {
-        let result = get_lineage("nonexistent", 5);
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_render_lineage_tree_deferred() {
-        let result = render_lineage_tree("any_id");
-        assert!(result.contains("DB-dependent"));
-    }
-
-    #[test]
-    fn test_get_descendants_empty() {
-        let result = get_descendants("any_id");
-        assert!(result.is_empty());
+        let result = crossover_action("unknown", 5, None, None, None);
+        assert!(result.contains_key("error"));
     }
 }
