@@ -8,6 +8,7 @@ use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
 use rairos_llm::{GenePool, Capsule, CapsuleStatus, GenePoolDiversityCalculator};
 use rairos_memory::{ResearchMemory, ResearchStance, StanceType};
+use rairos_kg::{KnowledgeGraph, GraphAlgorithms};
 use rairos_web::{start, AppState};
 use std::collections::HashSet;
 use std::path::PathBuf;
@@ -302,6 +303,35 @@ enum Commands {
         /// Output format
         #[arg(short, long, default_value = "table")]
         format: String,
+    },
+
+    /// Show knowledge graph statistics
+    KgStats {
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Show paper rankings from knowledge graph
+    KgRank {
+        /// Maximum number to show
+        #[arg(short, long, default_value = "20")]
+        limit: usize,
+
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Find path between two papers
+    KgPath {
+        /// Source paper ID
+        #[arg(short, long)]
+        source: String,
+
+        /// Target paper ID
+        #[arg(short, long)]
+        target: String,
     },
 
     /// Run rate limiter benchmark
@@ -1577,6 +1607,65 @@ fn handle_gene_evolve(max_crossovers: usize, format: &str) -> Result<()> {
             &id2[..8.min(id2.len())],
             gap_type
         );
+    }
+    Ok(())
+}
+
+fn handle_kg_stats(format: &str) -> Result<()> {
+    let graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    let stats = graph.stats();
+
+    if format == "json" {
+        println!("{}", serde_json::to_string_pretty(&stats)?);
+        return Ok(());
+    }
+
+    println!("=== Knowledge Graph Stats ===\n");
+    println!("Total Nodes:  {}", stats.total_nodes);
+    println!("Total Edges:  {}", stats.total_edges);
+    println!("Avg Degree:   {:.2}", stats.avg_degree);
+    println!("Paper Nodes: {}", stats.paper_nodes);
+    println!("Concept Nodes: {}", stats.concept_nodes);
+    Ok(())
+}
+
+fn handle_kg_rank(limit: usize, format: &str) -> Result<()> {
+    let graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    let ranks = GraphAlgorithms::rank_papers(&graph);
+
+    let mut sorted: Vec<_> = ranks.into_iter().collect();
+    sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+
+    if format == "json" {
+        let out: Vec<serde_json::Value> = sorted.iter().take(limit).map(|(id, score)| {
+            serde_json::json!({ "paper_id": id, "score": score })
+        }).collect();
+        println!("{}", serde_json::to_string_pretty(&out)?);
+        return Ok(());
+    }
+
+    println!("=== Paper Rankings (Top {}) ===\n", limit);
+    println!("{:>6} {:<40} {:>10}", "RANK", "PAPER ID", "SCORE");
+    println!("{}", "-".repeat(60));
+    for (i, (id, score)) in sorted.iter().take(limit).enumerate() {
+        println!("{:>6} {:<40} {:>10.4}", i + 1, &id[..id.len().min(40)], score);
+    }
+    Ok(())
+}
+
+fn handle_kg_path(source: &str, target: &str) -> Result<()> {
+    let graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+
+    match graph.find_path(source, target) {
+        Some(path) => {
+            println!("=== Path Found ({} steps) ===\n", path.len() - 1);
+            for (i, node) in path.iter().enumerate() {
+                println!("{}. {}", i + 1, node);
+            }
+        }
+        None => {
+            println!("No path found between {} and {}", source, target);
+        }
     }
     Ok(())
 }
@@ -3009,6 +3098,15 @@ fn main() -> Result<()> {
         }
         Commands::GeneEvolve { max_crossovers, format } => {
             handle_gene_evolve(*max_crossovers, format)?;
+        }
+        Commands::KgStats { format } => {
+            handle_kg_stats(format)?;
+        }
+        Commands::KgRank { limit, format } => {
+            handle_kg_rank(*limit, format)?;
+        }
+        Commands::KgPath { source, target } => {
+            handle_kg_path(source, target)?;
         }
         Commands::RateLimitBenchmark { count } => {
             handle_rate_limit_benchmark(*count)?;
