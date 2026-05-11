@@ -104,6 +104,36 @@ Or with Docker: `docker compose up` → http://localhost:8501
 | Chat (TUI) | `rairos chat-tui` | Chat page |
 | Insight cards | `rairos insight` | Insights page |
 
+## Rust Rewrite (In Progress)
+
+A complete Rust rewrite is underway in `crates/`:
+
+```bash
+cd crates/rairos-cli
+cargo run -- --help          # 48 CLI commands
+cargo run -- daemon --foreground  # Start web server
+```
+
+### Rust Crates
+
+| Crate | Purpose |
+|-------|---------|
+| rairos-core | DB, FTS5, subscriptions, tags |
+| rairos-llm | GenePool, Evolution, LLM clients |
+| rairos-parser | arXiv/CrossRef/Semantic API, PDF extraction |
+| rairos-research | DeepResearchAgent, gap detection |
+| rairos-web | REST API + HTML frontend |
+| rairos-cli | 48 commands |
+| rairos-kg | Knowledge graph, PageRank, communities |
+| rairos-memory | Research stance tracking, anomaly detection |
+| rairos-notes | Note-taking with frontmatter |
+| rairos-pdf | Advanced PDF processing |
+| rairos-trends | Research trend analysis |
+| rairos-render | Lite review, paper rendering |
+| rairos-mcp | Model Context Protocol server |
+
+Build: `CARGO_BUILD_JOBS=1 cargo build`
+
 ## Architecture
 
 ```
