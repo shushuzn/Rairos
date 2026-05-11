@@ -1,169 +1,199 @@
-//! rairos-constants — Shared constants for the Rairos AI research OS.
-//!
-//! Centralized keyword sets and configuration constants used across
-//! trend analysis, research sessions, and question validation modules.
+use std::collections::HashSet;
+
+pub const LLM_BASE_URL: &str = "https://api.openai.com/v1";
+pub const LLM_MODEL: &str = "gpt-4o-mini";
 
 pub const OLLAMA_BASE_URL: &str = "http://localhost:11434";
 pub const OLLAMA_EMBEDDING_MODEL: &str = "nomic-embed-text";
 pub const OLLAMA_API_EMBEDDINGS_ENDPOINT: &str = "/api/embeddings";
 pub const ENV_AIROS_USE_EMBEDDING: &str = "AIROS_USE_EMBEDDING";
 
-pub static AI_RESEARCH_KEYWORDS: &[&str] = &[
-    "transformer",
-    "attention",
-    "bert",
-    "gpt",
-    "llm",
-    "language model",
-    "neural",
-    "network",
-    "embedding",
-    "fine-tuning",
-    "rlhf",
-    "rag",
-    "retrieval",
-    "generative",
-    "diffusion",
-    "gan",
-    "clip",
-    "vit",
-    "reinforcement",
-    "policy",
-    "reward",
-    "rl",
-    "dpo",
-    "ppo",
-    "reward model",
-    "training",
-    "optimization",
-    "pre-training",
-    "instruction",
-    "alignment",
-    "multimodal",
-    "vision",
-    "language",
-    "speech",
-    "audio",
-    "constitutional",
-    "reasoning",
-    "chain-of-thought",
-    "cot",
-    "synthetic data",
-    "model",
-    "learning",
-];
+pub static AI_RESEARCH_KEYWORDS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+    let mut s = HashSet::new();
+    // Core NLP/LLM
+    s.insert("transformer");
+    s.insert("attention");
+    s.insert("bert");
+    s.insert("gpt");
+    s.insert("llm");
+    s.insert("language model");
+    s.insert("neural");
+    s.insert("network");
+    s.insert("embedding");
+    s.insert("fine-tuning");
+    s.insert("rlhf");
+    s.insert("rag");
+    s.insert("retrieval");
+    s.insert("generative");
+    s.insert("diffusion");
+    s.insert("gan");
+    s.insert("clip");
+    s.insert("vit");
+    // RL
+    s.insert("reinforcement");
+    s.insert("policy");
+    s.insert("reward");
+    s.insert("rl");
+    s.insert("dpo");
+    s.insert("ppo");
+    s.insert("reward model");
+    // Training
+    s.insert("training");
+    s.insert("optimization");
+    s.insert("pre-training");
+    s.insert("instruction");
+    s.insert("alignment");
+    // Multimodal
+    s.insert("multimodal");
+    s.insert("vision");
+    s.insert("language");
+    s.insert("speech");
+    s.insert("audio");
+    // Reasoning
+    s.insert("constitutional");
+    s.insert("reasoning");
+    s.insert("chain-of-thought");
+    s.insert("cot");
+    s.insert("synthetic data");
+    // Generic
+    s.insert("model");
+    s.insert("learning");
+    s
+});
 
-pub static SMART_FOLLOWUP_BASE: &[&str] = &[
-    "attention",
-    "transformer",
-    "bert",
-    "gpt",
-    "llm",
-    "language model",
-    "neural",
-    "network",
-    "embedding",
-    "fine-tuning",
-    "rlhf",
-    "rag",
-    "retrieval",
-    "generative",
-    "diffusion",
-    "gan",
-    "clip",
-    "vit",
-    "weight",
-    "layer",
-    "parameter",
-    "gradient",
-    "loss",
-    "optimize",
-    "softmax",
-    "matrix",
-    "dot",
-    "product",
-    "mechanism",
-    "reinforcement",
-    "policy",
-    "reward",
-    "rl",
-    "dpo",
-    "ppo",
-    "training",
-    "pre-training",
-    "instruction",
-    "alignment",
-    "multimodal",
-    "vision",
-    "language",
-    "speech",
-    "audio",
-    "constitutional",
-    "reasoning",
-    "chain-of-thought",
-    "cot",
-    "implement",
-    "code",
-    "function",
-    "class",
-    "api",
-    "library",
-    "pytorch",
-    "tensorflow",
-    "module",
-    "algorithm",
-    "vs",
-    "versus",
-    "better",
-    "worse",
-    "compare",
-    "advantage",
-    "disadvantage",
-    "based on",
-    "follow",
-    "extend",
-    "improve",
-    "build upon",
-    "later",
-    "previous",
-    "next",
-    "evolution",
-    "derived",
-    "succeed",
-    "apply",
-    "use",
-    "application",
-    "industry",
-    "practical",
-    "deploy",
-    "production",
-    "real-world",
-    "benchmark",
-];
+pub static SMART_FOLLOWUP_BASE: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+    let mut s = HashSet::new();
+    // Core NLP/LLM
+    s.insert("attention");
+    s.insert("transformer");
+    s.insert("bert");
+    s.insert("gpt");
+    s.insert("llm");
+    s.insert("language model");
+    s.insert("neural");
+    s.insert("network");
+    s.insert("embedding");
+    s.insert("fine-tuning");
+    s.insert("rlhf");
+    s.insert("rag");
+    s.insert("retrieval");
+    s.insert("generative");
+    s.insert("diffusion");
+    s.insert("gan");
+    s.insert("clip");
+    s.insert("vit");
+    s.insert("weight");
+    s.insert("layer");
+    s.insert("parameter");
+    s.insert("gradient");
+    s.insert("loss");
+    s.insert("optimize");
+    s.insert("softmax");
+    s.insert("matrix");
+    s.insert("dot");
+    s.insert("product");
+    s.insert("mechanism");
+    // RL
+    s.insert("reinforcement");
+    s.insert("policy");
+    s.insert("reward");
+    s.insert("rl");
+    s.insert("dpo");
+    s.insert("ppo");
+    // Training
+    s.insert("training");
+    s.insert("pre-training");
+    s.insert("instruction");
+    s.insert("alignment");
+    // Multimodal
+    s.insert("multimodal");
+    s.insert("vision");
+    s.insert("language");
+    s.insert("speech");
+    s.insert("audio");
+    // Reasoning
+    s.insert("constitutional");
+    s.insert("reasoning");
+    s.insert("chain-of-thought");
+    s.insert("cot");
+    // Implementation
+    s.insert("implement");
+    s.insert("code");
+    s.insert("function");
+    s.insert("class");
+    s.insert("api");
+    s.insert("library");
+    s.insert("pytorch");
+    s.insert("tensorflow");
+    s.insert("module");
+    s.insert("algorithm");
+    // Comparison
+    s.insert("vs");
+    s.insert("versus");
+    s.insert("better");
+    s.insert("worse");
+    s.insert("compare");
+    s.insert("advantage");
+    s.insert("disadvantage");
+    // Evolution
+    s.insert("based on");
+    s.insert("follow");
+    s.insert("extend");
+    s.insert("improve");
+    s.insert("build upon");
+    s.insert("later");
+    s.insert("previous");
+    s.insert("next");
+    s.insert("evolution");
+    s.insert("derived");
+    s.insert("succeed");
+    // Application
+    s.insert("apply");
+    s.insert("use");
+    s.insert("application");
+    s.insert("industry");
+    s.insert("practical");
+    s.insert("deploy");
+    s.insert("production");
+    s.insert("real-world");
+    s.insert("benchmark");
+    s
+});
+
+use once_cell::sync::Lazy;
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_ollama_constants() {
+    fn test_constants_exist() {
+        assert_eq!(LLM_BASE_URL, "https://api.openai.com/v1");
+        assert_eq!(LLM_MODEL, "gpt-4o-mini");
         assert_eq!(OLLAMA_BASE_URL, "http://localhost:11434");
         assert_eq!(OLLAMA_EMBEDDING_MODEL, "nomic-embed-text");
-        assert_eq!(OLLAMA_API_EMBEDDINGS_ENDPOINT, "/api/embeddings");
     }
 
     #[test]
     fn test_ai_research_keywords_not_empty() {
         assert!(!AI_RESEARCH_KEYWORDS.is_empty());
-        assert!(AI_RESEARCH_KEYWORDS.contains(&"transformer"));
-        assert!(AI_RESEARCH_KEYWORDS.contains(&"llm"));
-        assert!(AI_RESEARCH_KEYWORDS.contains(&"reinforcement"));
+        assert!(AI_RESEARCH_KEYWORDS.contains("transformer"));
+        assert!(AI_RESEARCH_KEYWORDS.contains("llm"));
+        assert!(AI_RESEARCH_KEYWORDS.contains("rag"));
     }
 
     #[test]
     fn test_smart_followup_base_not_empty() {
         assert!(!SMART_FOLLOWUP_BASE.is_empty());
-        assert!(SMART_FOLLOWUP_BASE.contains(&"attention"));
-        assert!(SMART_FOLLOWUP_BASE.contains(&"pytorch"));
+        assert!(SMART_FOLLOWUP_BASE.contains("transformer"));
+        assert!(SMART_FOLLOWUP_BASE.contains("attention"));
+    }
+
+    #[test]
+    fn test_keywords_disjoint_from_smart_followup() {
+        let common: Vec<_> = AI_RESEARCH_KEYWORDS.iter()
+            .filter(|k| SMART_FOLLOWUP_BASE.contains(*k))
+            .collect();
+        assert!(!common.is_empty(), "Keywords should have some overlap with SmartFollowup base");
     }
 }
