@@ -1113,6 +1113,32 @@ mod tests {
         assert_eq!(super::safe_uid("test@123"), "test_123");
         assert_eq!(super::safe_uid(""), "");
     }
+
+    #[test]
+    fn test_achievement_system() {
+        let mut system = super::AchievementSystem::new();
+        assert_eq!(system.total_points(), 0);
+
+        // First import achievement
+        let unlocked = system.update_stats(None, None, None, None, Some(1));
+        assert_eq!(unlocked.len(), 1);
+        assert_eq!(unlocked[0].id, "first_import");
+        assert_eq!(system.total_points(), 10);
+
+        // Already unlocked, should not unlock again
+        let unlocked = system.update_stats(None, None, None, None, Some(2));
+        assert_eq!(unlocked.len(), 0);
+        assert_eq!(system.total_points(), 10);
+
+        // Paper collector at 10 papers
+        let unlocked = system.update_stats(Some(10), None, None, None, None);
+        assert_eq!(unlocked.len(), 1);
+        assert_eq!(unlocked[0].id, "paper_collector");
+        assert_eq!(system.total_points(), 60); // 10 + 50
+
+        let pending = system.get_pending_achievements();
+        assert!(pending.len() >= 6); // Most should still be pending
+    }
 }
 
 // ============================================================================
@@ -1170,3 +1196,242 @@ pub const DEFAULT_RESEARCH_DIRS: &[&str] = &[
     "10-Applications",
     "11-Future-Directions",
 ];
+
+// ============================================================================
+// Achievement System
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Achievement {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub icon: String,
+    pub points: u32,
+    pub unlocked_at: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserStats {
+    pub papers_processed: u32,
+    pub api_calls_saved: u32,
+    pub hours_saved: f64,
+    pub searches_performed: u32,
+    pub imports_performed: u32,
+}
+
+impl Default for UserStats {
+    fn default() -> Self {
+        Self {
+            papers_processed: 0,
+            api_calls_saved: 0,
+            hours_saved: 0.0,
+            searches_performed: 0,
+            imports_performed: 0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AchievementSystem {
+    achievements: HashMap<String, Achievement>,
+    total_points: u32,
+    pub user_stats: UserStats,
+}
+
+impl Default for AchievementSystem {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl AchievementSystem {
+    pub fn new() -> Self {
+        let mut achievements = HashMap::new();
+        achievements.insert(
+            "first_import".to_string(),
+            Achievement {
+                id: "first_import".to_string(),
+                name: "🚀 首次导入".to_string(),
+                description: "成功导入第一篇论文".to_string(),
+                icon: "📥".to_string(),
+                points: 10,
+                unlocked_at: None,
+            },
+        );
+        achievements.insert(
+            "paper_collector".to_string(),
+            Achievement {
+                id: "paper_collector".to_string(),
+                name: "📚 论文收集者".to_string(),
+                description: "导入10篇论文".to_string(),
+                icon: "📚".to_string(),
+                points: 50,
+                unlocked_at: None,
+            },
+        );
+        achievements.insert(
+            "researcher_100".to_string(),
+            Achievement {
+                id: "researcher_100".to_string(),
+                name: "🎓 研究达人".to_string(),
+                description: "导入100篇论文".to_string(),
+                icon: "🎓".to_string(),
+                points: 200,
+                unlocked_at: None,
+            },
+        );
+        achievements.insert(
+            "api_saver".to_string(),
+            Achievement {
+                id: "api_saver".to_string(),
+                name: "💰 API节流侠".to_string(),
+                description: "通过缓存节省100次API调用".to_string(),
+                icon: "💰".to_string(),
+                points: 100,
+                unlocked_at: None,
+            },
+        );
+        achievements.insert(
+            "time_saver".to_string(),
+            Achievement {
+                id: "time_saver".to_string(),
+                name: "⏰ 时间管理大师".to_string(),
+                description: "节省10小时研究时间".to_string(),
+                icon: "⏰".to_string(),
+                points: 150,
+                unlocked_at: None,
+            },
+        );
+        achievements.insert(
+            "speed_demon".to_string(),
+            Achievement {
+                id: "speed_demon".to_string(),
+                name: "⚡ 速度达人".to_string(),
+                description: "批量导入50篇论文".to_string(),
+                icon: "⚡".to_string(),
+                points: 100,
+                unlocked_at: None,
+            },
+        );
+        achievements.insert(
+            "cache_master".to_string(),
+            Achievement {
+                id: "cache_master".to_string(),
+                name: "🗄️ 缓存大师".to_string(),
+                description: "缓存命中率超过80%".to_string(),
+                icon: "🗄️".to_string(),
+                points: 75,
+                unlocked_at: None,
+            },
+        );
+        achievements.insert(
+            "search_expert".to_string(),
+            Achievement {
+                id: "search_expert".to_string(),
+                name: "🔍 搜索专家".to_string(),
+                description: "执行100次搜索".to_string(),
+                icon: "🔍".to_string(),
+                points: 50,
+                unlocked_at: None,
+            },
+        );
+
+        Self {
+            achievements,
+            total_points: 0,
+            user_stats: UserStats::default(),
+        }
+    }
+
+    pub fn unlock_achievement(&mut self, achievement_id: &str) -> Option<&Achievement> {
+        let achievement = self.achievements.get_mut(achievement_id)?;
+        if achievement.unlocked_at.is_none() {
+            achievement.unlocked_at = Some(chrono::Utc::now().to_rfc3339());
+            self.total_points += achievement.points;
+            Some(achievement)
+        } else {
+            None
+        }
+    }
+
+    #[allow(clippy::collapsible_if)]
+    pub fn check_and_unlock(&mut self) -> Vec<Achievement> {
+        let mut unlocked_ids: Vec<String> = Vec::new();
+
+        if self.user_stats.imports_performed >= 1 {
+            if self.unlock_achievement("first_import").is_some() {
+                unlocked_ids.push("first_import".to_string());
+            }
+        }
+        if self.user_stats.papers_processed >= 10 {
+            if self.unlock_achievement("paper_collector").is_some() {
+                unlocked_ids.push("paper_collector".to_string());
+            }
+        }
+        if self.user_stats.papers_processed >= 100 {
+            if self.unlock_achievement("researcher_100").is_some() {
+                unlocked_ids.push("researcher_100".to_string());
+            }
+        }
+        if self.user_stats.api_calls_saved >= 100 {
+            if self.unlock_achievement("api_saver").is_some() {
+                unlocked_ids.push("api_saver".to_string());
+            }
+        }
+        if self.user_stats.hours_saved >= 10.0 {
+            if self.unlock_achievement("time_saver").is_some() {
+                unlocked_ids.push("time_saver".to_string());
+            }
+        }
+        if self.user_stats.papers_processed >= 50 {
+            if self.unlock_achievement("speed_demon").is_some() {
+                unlocked_ids.push("speed_demon".to_string());
+            }
+        }
+
+        unlocked_ids
+            .into_iter()
+            .filter_map(|id| self.achievements.get(&id).cloned())
+            .collect()
+    }
+
+    pub fn update_stats(&mut self, papers_processed: Option<u32>, api_calls_saved: Option<u32>, hours_saved: Option<f64>, searches_performed: Option<u32>, imports_performed: Option<u32>) -> Vec<Achievement> {
+        if let Some(v) = papers_processed {
+            self.user_stats.papers_processed = v;
+        }
+        if let Some(v) = api_calls_saved {
+            self.user_stats.api_calls_saved = v;
+        }
+        if let Some(v) = hours_saved {
+            self.user_stats.hours_saved = v;
+        }
+        if let Some(v) = searches_performed {
+            self.user_stats.searches_performed = v;
+        }
+        if let Some(v) = imports_performed {
+            self.user_stats.imports_performed = v;
+        }
+        self.check_and_unlock()
+    }
+
+    pub fn get_unlocked_achievements(&self) -> Vec<Achievement> {
+        self.achievements
+            .values()
+            .filter(|a| a.unlocked_at.is_some())
+            .cloned()
+            .collect()
+    }
+
+    pub fn get_pending_achievements(&self) -> Vec<Achievement> {
+        self.achievements
+            .values()
+            .filter(|a| a.unlocked_at.is_none())
+            .cloned()
+            .collect()
+    }
+
+    pub fn total_points(&self) -> u32 {
+        self.total_points
+    }
+}
