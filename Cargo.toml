@@ -5,6 +5,9 @@ members = [
     "crates/rairos-cli",
     "crates/rairos-scout",
     "crates/rairos-parser",
+    "crates/rairos-parsers",
+    "crates/rairos-extable",
+    "crates/rairos-sections",
     "crates/rairos-llm",
     "crates/rairos-research",
     "crates/rairos-web",
@@ -106,6 +109,7 @@ members = [
     "crates/rairos-dashboard",
     "crates/rairos-discover",
     "crates/rairos-eval-gap-monitor",
+    "crates/rairos-extable",
 ]
 
 [profile.dev]
