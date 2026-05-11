@@ -530,5 +530,27 @@ mod tests {
     fn test_clean_text() {
         assert_eq!(clean_text("hello\n\nworld  "), "hello world");
         assert_eq!(clean_text("  test  "), "test");
+        assert_eq!(clean_text("hello\nworld"), "hello world");
+    }
+
+    #[test]
+    fn test_clean_arxiv_title() {
+        assert_eq!(clean_arxiv_title("Attention\nIs All\nYou Need"), "Attention Is All You Need");
+        assert_eq!(clean_arxiv_title("  Title  "), "Title");
+    }
+
+    #[test]
+    fn test_source_display() {
+        assert_eq!(Source::ArXiv.to_string(), "arxiv");
+        assert_eq!(Source::CrossRef.to_string(), "crossref");
+        assert_eq!(Source::SemanticScholar.to_string(), "semantic-scholar");
+    }
+
+    #[test]
+    fn test_parse_error_display() {
+        let err = ParseError::NotFound("test".to_string());
+        assert_eq!(err.to_string(), "Paper not found: test");
+        let err = ParseError::ParseFailed("bad".to_string());
+        assert_eq!(err.to_string(), "Parse failed: bad");
     }
 }

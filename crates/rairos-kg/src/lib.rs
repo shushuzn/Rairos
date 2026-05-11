@@ -480,4 +480,75 @@ mod tests {
         assert!(communities.contains_key(&p2.id));
         assert!(communities.contains_key(&p3.id));
     }
+
+    #[test]
+    fn test_graph_stats() {
+        let p1 = Paper::new(Some("1".into()), "Paper 1".into(), "A".into());
+        let p2 = Paper::new(Some("2".into()), "Paper 2".into(), "B".into());
+
+        let mut graph = KnowledgeGraph::new();
+        graph.add_paper(&p1);
+        graph.add_paper(&p2);
+        graph.add_citation(&p2.id, &p1.id);
+
+        let stats = graph.stats();
+        assert_eq!(stats.total_nodes, 2);
+        assert_eq!(stats.total_edges, 1);
+        assert_eq!(stats.paper_nodes, 2);
+    }
+
+    #[test]
+    fn test_pagerank() {
+        let p1 = Paper::new(Some("1".into()), "Paper 1".into(), "A".into());
+        let p2 = Paper::new(Some("2".into()), "Paper 2".into(), "B".into());
+
+        let mut graph = KnowledgeGraph::new();
+        graph.add_paper(&p1);
+        graph.add_paper(&p2);
+        graph.add_citation(&p2.id, &p1.id);
+
+        let ranks = GraphAlgorithms::rank_papers(&graph);
+        assert_eq!(ranks.len(), 2);
+        assert!(ranks.contains_key(&p1.id));
+        assert!(ranks.contains_key(&p2.id));
+    }
+
+    #[test]
+    fn test_most_central() {
+        let p1 = Paper::new(Some("1".into()), "Paper 1".into(), "A".into());
+        let p2 = Paper::new(Some("2".into()), "Paper 2".into(), "B".into());
+
+        let mut graph = KnowledgeGraph::new();
+        graph.add_paper(&p1);
+        graph.add_paper(&p2);
+        graph.add_citation(&p2.id, &p1.id);
+
+        let central = GraphAlgorithms::most_central(&graph);
+        assert!(central.is_some());
+    }
+
+    #[test]
+    fn test_export_json() {
+        let p1 = Paper::new(Some("1".into()), "Paper 1".into(), "A".into());
+        let mut graph = KnowledgeGraph::new();
+        graph.add_paper(&p1);
+
+        let json = graph.export_json();
+        assert!(json.get("nodes").is_some());
+        assert!(json.get("edges").is_some());
+    }
+
+    #[test]
+    fn test_get_related() {
+        let p1 = Paper::new(Some("1".into()), "Paper 1".into(), "A".into());
+        let p2 = Paper::new(Some("2".into()), "Paper 2".into(), "B".into());
+
+        let mut graph = KnowledgeGraph::new();
+        graph.add_paper(&p1);
+        graph.add_paper(&p2);
+        graph.add_edge(KgEdge::related_to(&p1.id, &p2.id, 0.5));
+
+        let related = graph.get_related(&p1.id);
+        assert_eq!(related.len(), 1);
+    }
 }

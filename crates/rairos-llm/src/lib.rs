@@ -1184,4 +1184,78 @@ mod tests {
         assert!(!pairs.is_empty());
         assert!(pairs.len() <= 3);
     }
+
+    #[test]
+    fn test_llm_usage_costs() {
+        let usage = LlmUsage::openai_gpt4o(1000, 500);
+        assert_eq!(usage.total_tokens, 1500);
+        assert!(usage.cost_usd > 0.0);
+
+        let usage2 = LlmUsage::anthropic_sonnet4(1000, 500);
+        assert_eq!(usage2.total_tokens, 1500);
+    }
+
+    #[test]
+    fn test_cost_tracker() {
+        let mut tracker = CostTracker::new();
+        let usage = LlmUsage::openai_gpt4o(1000, 500);
+        tracker.record(&usage, "gpt-4o", "openai");
+        assert_eq!(tracker.total_cost_usd, usage.cost_usd);
+        assert_eq!(tracker.calls_by_model.get("gpt-4o"), Some(&1));
+    }
+
+    #[test]
+    fn test_feedback_creation() {
+        let fb = Feedback::new(
+            FeedbackType::Positive,
+            "test_cmd",
+            "test query",
+            vec!["paper1".to_string()],
+            "good result",
+            0.8,
+        );
+        assert_eq!(fb.feedback_type, FeedbackType::Positive);
+        assert_eq!(fb.command, "test_cmd");
+    }
+
+    #[test]
+    fn test_learned_pattern() {
+        let mut pattern = LearnedPattern::new("test_pattern", SignalType::ChatSuccess);
+        assert!(!pattern.is_reliable());
+        pattern.record_success();
+        pattern.record_success();
+        pattern.record_success();
+        assert!(pattern.is_reliable());
+        assert_eq!(pattern.success_count, 3);
+    }
+
+    #[test]
+    fn test_capsule_status_display() {
+        assert_eq!(CapsuleStatus::Active.to_string(), "active");
+        assert_eq!(CapsuleStatus::Dormant.to_string(), "dormant");
+        assert_eq!(CapsuleStatus::Archived.to_string(), "archived");
+    }
+
+    #[test]
+    fn test_gene_pool_find() {
+        let mut pool = GenePool::new();
+        pool.add_capsule(Capsule::new("test1", "gap1", vec!["kw1".to_string()]));
+        pool.add_capsule(Capsule::new("test2", "gap2", vec!["kw2".to_string()]));
+
+        let found = pool.find_by_paper("nonexistent");
+        assert!(found.is_none());
+    }
+
+    #[test]
+    fn test_feedback_type_display() {
+        assert_eq!(FeedbackType::Positive.to_string(), "positive");
+        assert_eq!(FeedbackType::Negative.to_string(), "negative");
+        assert_eq!(FeedbackType::Neutral.to_string(), "neutral");
+    }
+
+    #[test]
+    fn test_signal_type_display() {
+        assert_eq!(SignalType::ChatSuccess.to_string(), "chat_success");
+        assert_eq!(SignalType::RetrievalHit.to_string(), "retrieval_hit");
+    }
 }
