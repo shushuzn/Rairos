@@ -47,6 +47,7 @@
                 <a href="#" onclick="showView('dashboard')" class="active" id="nav-dashboard">Dashboard</a>
                 <a href="#" onclick="showView('papers')" id="nav-papers">Papers</a>
                 <a href="#" onclick="showView('genes')" id="nav-genes">Gene Pool</a>
+                <a href="#" onclick="showView('kg')" id="nav-kg">Knowledge Graph</a>
                 <a href="#" onclick="showView('memory')" id="nav-memory">Memory</a>
             </nav>
         </header>
@@ -108,6 +109,27 @@
             </div>
         </div>
 
+        <div id="kg" class="hidden">
+            <div class="stats" id="kg-stats"></div>
+            <div class="card">
+                <h2>Find Path Between Papers</h2>
+                <div class="form-group">
+                    <label>Source Paper ID</label>
+                    <input type="text" id="kg-path-source" placeholder="e.g., 2301.00001">
+                </div>
+                <div class="form-group">
+                    <label>Target Paper ID</label>
+                    <input type="text" id="kg-path-target" placeholder="e.g., 2302.00001">
+                </div>
+                <button class="btn" onclick="findKgPath()">Find Path</button>
+                <div id="kg-path-result" style="margin-top: 1rem;"></div>
+            </div>
+            <div class="card">
+                <h2>Top Ranked Papers</h2>
+                <div id="kg-rank"></div>
+            </div>
+        </div>
+
         <div id="memory" class="hidden">
             <div class="card">
                 <h2>Add Research Stance</h2>
@@ -152,7 +174,7 @@
         }
 
         function showView(view) {
-            document.querySelectorAll('#dashboard, #papers, #genes, #memory').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('#dashboard, #papers, #genes, #kg, #memory').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav a').forEach(el => el.classList.remove('active'));
             document.getElementById(view).classList.remove('hidden');
             document.getElementById('nav-' + view).classList.add('active');
@@ -160,6 +182,7 @@
             if (view === 'dashboard') loadDashboard();
             if (view === 'papers') loadPapers();
             if (view === 'genes') loadGenes();
+            if (view === 'kg') loadKG();
             if (view === 'memory') loadStances();
         }
 
@@ -248,6 +271,40 @@
                     </td>
                 </tr>`).join('')}
             </tbody></table>`;
+        }
+
+        async function loadKG() {
+            try {
+                const stats = await api('/kg/stats');
+                document.getElementById('kg-stats').innerHTML = `
+                    <div class="stat"><div class="stat-value">${stats.papers || 0}</div><div class="stat-label">Papers</div></div>
+                    <div class="stat"><div class="stat-value">${stats.citations || 0}</div><div class="stat-label">Citations</div></div>
+                `;
+                const rank = await api('/kg/rank?limit=20');
+                document.getElementById('kg-rank').innerHTML = rank.length ? renderRankTable(rank) : '<p>No ranking data</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        function renderRankTable(rank) {
+            return `<table><thead><tr><th>Rank</th><th>Paper ID</th><th>Score</th></tr></thead><tbody>
+                ${rank.map((r, i) => `<tr>
+                    <td>${i + 1}</td>
+                    <td>${r.paper_id}</td>
+                    <td>${(r.score || 0).toFixed(4)}</td>
+                </tr>`).join('')}
+            </tbody></table>`;
+        }
+
+        async function findKgPath() {
+            const source = document.getElementById('kg-path-source').value;
+            const target = document.getElementById('kg-path-target').value;
+            if (!source || !target) return alert('Please enter both source and target paper IDs');
+            try {
+                const path = await api(`/kg/papers/${encodeURIComponent(source)}/path/${encodeURIComponent(target)}`);
+                document.getElementById('kg-path-result').innerHTML = path.path && path.path.length ? 
+                    `<p>Path (${path.path.length} hops): ${path.path.join(' → ')}</p>` :
+                    '<p>No path found</p>';
+            } catch (e) { document.getElementById('kg-path-result').innerHTML = '<p>Error finding path</p>'; }
         }
 
         async function loadStances() {
