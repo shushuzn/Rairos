@@ -15,6 +15,7 @@ members = [
     "crates/rairos-leaderboard",
     "crates/rairos-claimgraph",
     "crates/rairos-benchmark-runner",
+    "crates/rairos-code-generator",
     "crates/rairos-testextractor",
     "crates/rairos-provenance",
     "crates/rairos-snapstate",
