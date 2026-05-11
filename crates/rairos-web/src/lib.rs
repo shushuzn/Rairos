@@ -11,6 +11,7 @@ use axum::{
     Router,
 };
 use rairos_core::{Database, Paper, DbStats, ResearchGap};
+use rairos_kg::{KnowledgeGraph, GraphAlgorithms, KgStats};
 use rairos_llm::{GenePool, Capsule, GenePoolDiversityCalculator};
 use rairos_parser::{self, detect_source, Source};
 use rairos_research::{ResearchQuery, ResearchOrchestrator};
@@ -67,14 +68,17 @@ impl IntoResponse for WebError {
 pub struct AppState {
     pub db: Arc<Database>,
     pub gene_pool: Arc<RwLock<GenePool>>,
+    pub knowledge_graph: Arc<RwLock<KnowledgeGraph>>,
     pub orchestrator: Arc<RwLock<Option<ResearchOrchestrator>>>,
 }
 
 impl AppState {
     pub fn new(db: Database) -> Self {
+        let kg = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
         Self {
             db: Arc::new(db),
-            gene_pool: Arc::new(RwLock::new(GenePool::new())),
+            gene_pool: Arc::new(RwLock::new(GenePool::load().unwrap_or_else(|_| GenePool::new()))),
+            knowledge_graph: Arc::new(RwLock::new(kg)),
             orchestrator: Arc::new(RwLock::new(None)),
         }
     }
@@ -477,6 +481,56 @@ async fn research(
 }
 
 // ============================================================================
+// Routes - Knowledge Graph
+// ============================================================================
+
+async fn kg_stats(State(state): State<Arc<AppState>>) -> Result<Json<KgStats>, WebError> {
+    let kg = state.knowledge_graph.read().await;
+    Ok(Json(kg.stats()))
+}
+
+async fn kg_export(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, WebError> {
+    let kg = state.knowledge_graph.read().await;
+    Ok(Json(kg.export_json()))
+}
+
+async fn kg_citations(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<Json<Vec<serde_json::Value>>, WebError> {
+    let kg = state.knowledge_graph.read().await;
+    let citing = kg.get_citing(&id);
+    Ok(Json(citing.into_iter().map(|n| serde_json::to_value(n).unwrap_or_default()).collect()))
+}
+
+async fn kg_references(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<Json<Vec<serde_json::Value>>, WebError> {
+    let kg = state.knowledge_graph.read().await;
+    let refs = kg.get_references(&id);
+    Ok(Json(refs.into_iter().map(|n| serde_json::to_value(n).unwrap_or_default()).collect()))
+}
+
+async fn kg_path(
+    State(state): State<Arc<AppState>>,
+    Path((source, target)): Path<(String, String)>,
+) -> Result<Json<Option<Vec<String>>>, WebError> {
+    let kg = state.knowledge_graph.read().await;
+    Ok(Json(kg.find_path(&source, &target)))
+}
+
+async fn kg_rank(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, WebError> {
+    let kg = state.knowledge_graph.read().await;
+    let ranks = GraphAlgorithms::rank_papers(&kg);
+    let mut result: Vec<_> = ranks.into_iter().collect();
+    result.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    Ok(Json(serde_json::json!({
+        "rankings": result.into_iter().take(50).collect::<Vec<_>>()
+    })))
+}
+
+// ============================================================================
 // Server
 // ============================================================================
 
@@ -505,6 +559,12 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/genes/:id/feedback", post(gene_feedback))
         .route("/genes/diversity", get(gene_diversity))
         .route("/research", post(research))
+        .route("/kg/stats", get(kg_stats))
+        .route("/kg/export", get(kg_export))
+        .route("/kg/papers/:id/citations", get(kg_citations))
+        .route("/kg/papers/:id/references", get(kg_references))
+        .route("/kg/papers/:source/path/:target", get(kg_path))
+        .route("/kg/rank", get(kg_rank))
         .with_state(state)
 }
 

@@ -1,7 +1,7 @@
 //! Rairos KG — Knowledge Graph Manager
 //!
 //! Manages the paper knowledge graph: nodes, edges, and queries.
-//! Replaces: kg/manager.py
+//! Replaces: kg/manager.py, kg/queries.py
 
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
@@ -241,6 +241,54 @@ impl KnowledgeGraph {
             "nodes": self.nodes.values().collect::<Vec<_>>(),
             "edges": self.edges,
         })
+    }
+
+    pub fn default_path() -> std::path::PathBuf {
+        dirs::home_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join(".ai_research_os")
+            .join("kg")
+    }
+
+    pub fn graph_path() -> std::path::PathBuf {
+        Self::default_path().join("graph.json")
+    }
+
+    pub fn load() -> std::io::Result<Self> {
+        let path = Self::graph_path();
+        if !path.exists() {
+            return Ok(Self::new());
+        }
+        let text = std::fs::read_to_string(&path)?;
+        let data: serde_json::Value = serde_json::from_str(&text)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+        let nodes: Vec<KgNode> = serde_json::from_value(
+            data.get("nodes").cloned().unwrap_or_default()
+        ).unwrap_or_default();
+        let edges: Vec<KgEdge> = serde_json::from_value(
+            data.get("edges").cloned().unwrap_or_default()
+        ).unwrap_or_default();
+        let mut graph = Self::new();
+        for node in nodes {
+            graph.add_node(node);
+        }
+        for edge in edges {
+            graph.add_edge(edge);
+        }
+        Ok(graph)
+    }
+
+    pub fn save(&self) -> std::io::Result<()> {
+        let path = Self::graph_path();
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let json = serde_json::json!({
+            "nodes": self.nodes.values().collect::<Vec<_>>(),
+            "edges": self.edges,
+        });
+        std::fs::write(&path, serde_json::to_string_pretty(&json).unwrap_or_default())?;
+        Ok(())
     }
 }
 
