@@ -186,55 +186,70 @@
             if (view === 'memory') loadStances();
         }
 
+        function showLoading(el) { el.innerHTML = '<p style="color:#94a3b8">Loading...</p>'; }
+        function showError(el, msg) { el.innerHTML = `<p style="color:#ef4444">Error: ${msg}</p>`; }
+
         async function loadDashboard() {
+            const statsEl = document.getElementById('stats');
+            const papersEl = document.getElementById('recent-papers');
+            const divEl = document.getElementById('diversity');
+            showLoading(statsEl);
             try {
                 const stats = await api('/stats');
-                document.getElementById('stats').innerHTML = `
-                    <div class="stat"><div class="stat-value">${stats.total}</div><div class="stat-label">Total Papers</div></div>
-                    <div class="stat"><div class="stat-value">${stats.pending}</div><div class="stat-label">Pending</div></div>
-                    <div class="stat"><div class="stat-value">${stats.done}</div><div class="stat-label">Done</div></div>
-                    <div class="stat"><div class="stat-value">${stats.gaps}</div><div class="stat-label">Gaps</div></div>
+                statsEl.innerHTML = `
+                    <div class="stat"><div class="stat-value">${stats.total || 0}</div><div class="stat-label">Total Papers</div></div>
+                    <div class="stat"><div class="stat-value">${stats.pending || 0}</div><div class="stat-label">Pending</div></div>
+                    <div class="stat"><div class="stat-value">${stats.done || 0}</div><div class="stat-label">Done</div></div>
+                    <div class="stat"><div class="stat-value">${stats.gaps || 0}</div><div class="stat-label">Gaps</div></div>
                 `;
+                showLoading(papersEl);
                 const papers = await api('/papers?limit=5');
-                document.getElementById('recent-papers').innerHTML = papers.length ? renderPapersTable(papers) : '<p>No papers yet</p>';
+                papersEl.innerHTML = papers.length ? renderPapersTable(papers) : '<p>No papers yet</p>';
+                showLoading(divEl);
                 const div = await api('/genes/diversity');
-                document.getElementById('diversity').innerHTML = `
+                divEl.innerHTML = `
                     <div class="diversity-grid">
                         <div><strong>Shannon Index:</strong> ${div.shannon_index?.toFixed(3) || 0}</div>
-                        <div><strong>Capsules:</strong> ${div.capsule_count}</div>
-                        <div><strong>Diversity Score:</strong> ${div.diversity_score}</div>
+                        <div><strong>Capsules:</strong> ${div.capsule_count || 0}</div>
+                        <div><strong>Diversity Score:</strong> ${div.diversity_score || 0}</div>
                     </div>
                 `;
-            } catch (e) { console.error(e); }
+            } catch (e) { showError(statsEl, e.message); console.error(e); }
         }
 
         async function loadPapers() {
+            const el = document.getElementById('papers-list');
+            showLoading(el);
             try {
                 const papers = await api('/papers?limit=50');
-                document.getElementById('papers-list').innerHTML = papers.length ? renderPapersTable(papers) : '<p>No papers yet</p>';
-            } catch (e) { console.error(e); }
+                el.innerHTML = papers.length ? renderPapersTable(papers) : '<p>No papers yet</p>';
+            } catch (e) { showError(el, e.message); }
         }
 
         async function searchPapers() {
             const q = document.getElementById('search-query').value;
             if (!q) return;
+            const el = document.getElementById('search-results');
+            showLoading(el);
             try {
                 const papers = await api('/papers/search?q=' + encodeURIComponent(q));
-                document.getElementById('search-results').innerHTML = papers.length ? renderPapersTable(papers) : '<p>No results</p>';
-            } catch (e) { console.error(e); }
+                el.innerHTML = papers.length ? renderPapersTable(papers) : '<p>No results</p>';
+            } catch (e) { showError(el, e.message); }
         }
 
         function renderPapersTable(papers) {
             return `<table><thead><tr><th>Title</th><th>Authors</th><th>Categories</th></tr></thead><tbody>
-                ${papers.map(p => `<tr><td>${p.title}</td><td>${p.authors?.join(', ') || ''}</td><td>${(p.categories||[]).map(c=>`<span class="tag">${c}</span>`).join('')}</td></tr>`).join('')}
+                ${papers.map(p => `<tr><td>${p.title || ''}</td><td>${(p.authors||[]).join(', ')}</td><td>${(p.categories||[]).map(c=>`<span class="tag">${c}</span>`).join('')}</td></tr>`).join('')}
             </tbody></table>`;
         }
 
         async function loadGenes() {
+            const el = document.getElementById('genes-list');
+            showLoading(el);
             try {
                 const genes = await api('/genes?limit=50');
-                document.getElementById('genes-list').innerHTML = genes.length ? renderGenesTable(genes) : '<p>No genes yet</p>';
-            } catch (e) { console.error(e); }
+                el.innerHTML = genes.length ? renderGenesTable(genes) : '<p>No genes yet</p>';
+            } catch (e) { showError(el, e.message); }
         }
 
         async function addGene() {
@@ -274,15 +289,19 @@
         }
 
         async function loadKG() {
+            const statsEl = document.getElementById('kg-stats');
+            const rankEl = document.getElementById('kg-rank');
+            showLoading(statsEl);
+            showLoading(rankEl);
             try {
                 const stats = await api('/kg/stats');
-                document.getElementById('kg-stats').innerHTML = `
+                statsEl.innerHTML = `
                     <div class="stat"><div class="stat-value">${stats.papers || 0}</div><div class="stat-label">Papers</div></div>
                     <div class="stat"><div class="stat-value">${stats.citations || 0}</div><div class="stat-label">Citations</div></div>
                 `;
                 const rank = await api('/kg/rank?limit=20');
-                document.getElementById('kg-rank').innerHTML = rank.length ? renderRankTable(rank) : '<p>No ranking data</p>';
-            } catch (e) { console.error(e); }
+                rankEl.innerHTML = rank.length ? renderRankTable(rank) : '<p>No ranking data</p>';
+            } catch (e) { showError(statsEl, e.message); showError(rankEl, e.message); }
         }
 
         function renderRankTable(rank) {
@@ -308,10 +327,12 @@
         }
 
         async function loadStances() {
+            const el = document.getElementById('stances-list');
+            showLoading(el);
             try {
                 const stances = await api('/memory/stances');
-                document.getElementById('stances-list').innerHTML = stances.length ? renderStancesTable(stances) : '<p>No stances yet</p>';
-            } catch (e) { console.error(e); }
+                el.innerHTML = stances.length ? renderStancesTable(stances) : '<p>No stances yet</p>';
+            } catch (e) { showError(el, e.message); }
         }
 
         function renderStancesTable(stances) {
