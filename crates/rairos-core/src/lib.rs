@@ -1435,3 +1435,85 @@ impl AchievementSystem {
         self.total_points
     }
 }
+
+// ============================================================================
+// Text Utilities
+// ============================================================================
+
+const KEYWORD_STOPWORDS: &[&str] = &[
+    "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one",
+    "our", "out", "has", "have", "been", "with", "they", "this", "that", "from", "will",
+    "would", "there", "their", "what", "about", "which", "when", "make", "just", "over",
+    "such", "into", "than", "null", "none", "also", "how", "may", "does", "method", "approach",
+    "gap", "issue", "problem", "limitation", "study", "work", "paper", "research", "based",
+    "using",
+];
+
+pub fn extract_keywords(text: &str, min_len: usize) -> Vec<String> {
+    let text_lower = text.to_lowercase();
+    text_lower
+        .split(|c: char| !c.is_alphanumeric() && c != '_')
+        .filter(|w| w.len() >= min_len && !KEYWORD_STOPWORDS.contains(w))
+        .map(|w| w.to_lowercase())
+        .collect()
+}
+
+pub fn cosine_sim(a: &[f64], b: &[f64]) -> f64 {
+    if a.is_empty() || b.is_empty() {
+        return 0.0;
+    }
+    let dot: f64 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
+    let norm_a: f64 = a.iter().map(|x| x * x).sum::<f64>().sqrt();
+    let norm_b: f64 = b.iter().map(|y| y * y).sum::<f64>().sqrt();
+    if norm_a == 0.0 || norm_b == 0.0 {
+        return 0.0;
+    }
+    dot / (norm_a * norm_b)
+}
+
+pub fn jaccard(a: &[&str], b: &[&str]) -> f64 {
+    if a.is_empty() || b.is_empty() {
+        return 0.0;
+    }
+    let set_a: std::collections::HashSet<&str> = a.iter().cloned().collect();
+    let set_b: std::collections::HashSet<&str> = b.iter().cloned().collect();
+    let intersection = set_a.intersection(&set_b).count();
+    let union = set_a.union(&set_b).count();
+    if union == 0 {
+        return 0.0;
+    }
+    intersection as f64 / union as f64
+}
+
+#[cfg(test)]
+mod text_utils_tests {
+    use super::*;
+
+    #[test]
+    fn test_extract_keywords() {
+        let text = "The transformer model uses attention mechanisms for NLP tasks";
+        let kw = extract_keywords(text, 3);
+        assert!(kw.contains(&"transformer".to_string()));
+        assert!(kw.contains(&"attention".to_string()));
+        assert!(!kw.contains(&"the".to_string()));
+        assert!(!kw.contains(&"for".to_string()));
+    }
+
+    #[test]
+    fn test_cosine_sim() {
+        let a = &[1.0, 0.0, 0.0];
+        let b = &[1.0, 0.0, 0.0];
+        assert!((cosine_sim(a, b) - 1.0).abs() < 1e-6);
+
+        let c = &[1.0, 0.0, 0.0];
+        let d = &[0.0, 1.0, 0.0];
+        assert!((cosine_sim(c, d) - 0.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_jaccard() {
+        let a = vec!["transformer", "attention", "bert"];
+        let b = vec!["transformer", "bert", "gpt"];
+        assert!((jaccard(&a, &b) - 0.5).abs() < 0.01);
+    }
+}
