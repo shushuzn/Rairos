@@ -3,6 +3,8 @@
 //! Renders C-Note (concept), M-Note (comparison), P-Note (paper), and
 //! Literature Review documents from structured data.
 
+#![allow(clippy::too_many_arguments, clippy::needless_range_loop)]
+
 pub mod cnote;
 pub mod litreview;
 pub mod mnote;

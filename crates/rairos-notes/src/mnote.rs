@@ -151,9 +151,9 @@ pub fn ensure_or_update_mnote(
             Some(new_c.as_ref()),
         )
     {
-        let re_a = Regex::new(&r"^\-\s*A:\s*.*$".to_string()).unwrap();
-        let re_b = Regex::new(&r"^\-\s*B:\s*.*$".to_string()).unwrap();
-        let re_c = Regex::new(&r"^\-\s*C:\s*.*$".to_string()).unwrap();
+        let re_a = Regex::new(r"^\-\s*A:\s*.*$").unwrap();
+        let re_b = Regex::new(r"^\-\s*B:\s*.*$").unwrap();
+        let re_c = Regex::new(r"^\-\s*C:\s*.*$").unwrap();
         let mut md2 = re_a.replace(&md, format!("- A: {new_a}")).to_string();
         md2 = re_b.replace(&md2, format!("- B: {new_b}")).to_string();
         md2 = re_c.replace(&md2, format!("- C: {new_c}")).to_string();

@@ -2,6 +2,8 @@
 //!
 //! 77 commands managed via clap derive macros.
 
+#![allow(clippy::too_many_arguments, clippy::needless_borrow, clippy::print_literal, clippy::unwrap_or_default, clippy::unnecessary_sort_by, clippy::format_in_format_args, clippy::map_identity, clippy::unused_enumerate_index, clippy::needless_borrows_for_generic_args, clippy::unnecessary_to_owned, clippy::manual_range_contains)]
+
 use anyhow::{Context, Result};
 use chrono::Utc;
 use clap::{Parser, Subcommand};
@@ -3043,7 +3045,7 @@ fn handle_doctor(format: &str) -> Result<()> {
     if let Some(db_path) = found_db {
         ok.push(format!("Database: {} exists", db_path.display()));
         // Try to open it
-        if let Ok(db) = Database::open(&db_path.to_path_buf()) {
+        if let Ok(db) = Database::open(db_path) {
             if let Ok(stats) = db.stats() {
                 ok.push(format!("  {} papers, {} gaps", stats.total, stats.gaps));
             }

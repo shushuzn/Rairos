@@ -317,8 +317,8 @@ impl LlmClient for AnthropicClient {
 
         let content = data.content
             .into_iter()
-            .filter_map(|c| match c {
-                ContentBlock::Text { text } => Some(text),
+            .map(|c| match c {
+                ContentBlock::Text { text } => text,
             })
             .collect::<Vec<_>>()
             .join("\n");
@@ -581,7 +581,7 @@ impl Capsule {
         }
         let success_rate = self.success_count as f64 / total as f64;
         self.impact_score = success_rate * (1.0 + (total as f64).ln().min(5.0));
-        self.impact_score = self.impact_score.max(0.0).min(10.0);
+        self.impact_score = self.impact_score.clamp(0.0, 10.0);
     }
 
     pub fn success_rate(&self) -> f64 {
@@ -680,7 +680,7 @@ impl GenePoolDiversityCalculator {
             .map(|k| k.to_lowercase())
             .collect();
         for (fam, fam_kws) in Self::FAMILY_KEYWORDS {
-            if fam_kws.iter().any(|fk| kw_set.contains(&fk.to_string())) {
+            if fam_kws.iter().any(|fk| kw_set.contains(*fk)) {
                 return fam.to_string();
             }
         }

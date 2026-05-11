@@ -5,6 +5,8 @@
 //!
 //! Ported from `trends/forecaster.py`.
 
+#![allow(clippy::unnecessary_unwrap)]
+
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;

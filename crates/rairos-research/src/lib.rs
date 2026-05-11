@@ -622,7 +622,7 @@ impl AdaptiveQueryStrategy {
         let mut scored: Vec<(String, usize)> = self.query_gap_types.iter()
             .map(|(q, types)| (q.clone(), types.len()))
             .collect();
-        scored.sort_by(|a, b| b.1.cmp(&a.1));
+        scored.sort_by_key(|b| std::cmp::Reverse(b.1));
         scored.into_iter()
             .take(top_k)
             .map(|(q, _)| q)
@@ -842,6 +842,7 @@ pub enum GapType {
 }
 
 impl GapType {
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "capability" => GapType::Capability,
