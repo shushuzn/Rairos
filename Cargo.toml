@@ -71,6 +71,7 @@ members = [
     "crates/rairos-insight-evolution",
     "crates/rairos-insight-tracker",
     "crates/rairos-smart-cache",
+    "crates/rairos-parallel-research",
     "crates/rairos-profiler",
     "crates/rairos-argument-builder",
     "crates/rairos-arxiv-alert-channels",
@@ -118,6 +119,8 @@ members = [
     "crates/rairos-discover",
     "crates/rairos-eval-gap-monitor",
     "crates/rairos-extable",
+    "crates/rairos-topic-discovery",
+    "crates/rairos-daemon",
 ]
 
 [profile.dev]
