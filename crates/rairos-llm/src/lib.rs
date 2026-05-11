@@ -17,6 +17,9 @@ pub enum LlmError {
     #[error("HTTP error: {0}")]
     Http(#[from] reqwest::Error),
 
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+
     #[error("API error: {code} {message}")]
     Api { code: u16, message: String },
 
@@ -28,6 +31,117 @@ pub enum LlmError {
 
     #[error("No API key configured")]
     NoApiKey,
+}
+
+// ============================================================================
+// LLM Credentials Resolution
+// ============================================================================
+
+/// API key and base URL resolved from all known sources.
+/// Priority: explicit args > MINIMAX_CN_* > MINIMAX_* > OPENAI_*
+#[derive(Debug, Clone)]
+pub struct LlmCredentials {
+    pub api_key: String,
+    pub base_url: String,
+}
+
+impl LlmCredentials {
+    /// Resolve (base_url, api_key) from all known sources, in priority order.
+    ///
+    /// Priority: explicit args > MINIMAX_CN_* > MINIMAX_* > OPENAI_*
+    ///
+    /// Reads from:
+    /// - Environment variables (os env takes precedence over .env file)
+    /// - ~/.hermes/.env file
+    pub fn resolve(explicit_base_url: Option<&str>, explicit_api_key: Option<&str>) -> Self {
+        // Read credentials from ~/.hermes/.env (only MINIMAX-related keys)
+        let hermes_env = read_hermes_env();
+
+        // Resolve API key with priority: explicit > MINIMAX_CN > MINIMAX > OPENAI
+        let resolved_key = explicit_api_key
+            .map(|s| s.to_string())
+            .filter(|s| !s.is_empty())
+            .or_else(|| std::env::var("OPENAI_API_KEY").ok().filter(|s| !s.is_empty()))
+            .or_else(|| {
+                std::env::var("MINIMAX_CN_API_KEY")
+                    .ok()
+                    .filter(|s| !s.is_empty())
+                    .or_else(|| hermes_env.get("MINIMAX_CN_API_KEY").cloned())
+            })
+            .or_else(|| std::env::var("MINIMAX_API_KEY").ok().filter(|s| !s.is_empty()))
+            .unwrap_or_default();
+
+        // Resolve base URL with priority: explicit > MINIMAX_CN > MINIMAX > default
+        let default_openai = "https://api.openai.com/v1";
+        let resolved_url = explicit_base_url
+            .map(|s| s.to_string())
+            .filter(|s| !s.is_empty() && s != default_openai)
+            .or_else(|| {
+                std::env::var("MINIMAX_CN_BASE_URL")
+                    .ok()
+                    .filter(|s| !s.is_empty())
+                    .or_else(|| hermes_env.get("MINIMAX_CN_BASE_URL").cloned())
+            })
+            .or_else(|| std::env::var("MINIMAX_BASE_URL").ok().filter(|s| !s.is_empty()))
+            .or_else(|| std::env::var("OPENAI_BASE_URL").ok().filter(|s| !s.is_empty()))
+            .unwrap_or_else(|| "https://api.minimaxi.com/v1".to_string());
+
+        Self {
+            api_key: resolved_key,
+            base_url: resolved_url,
+        }
+    }
+}
+
+/// Read MINIMAX-related credentials from ~/.hermes/.env
+fn read_hermes_env() -> std::collections::HashMap<String, String> {
+    use std::collections::HashMap;
+    use std::path::PathBuf;
+
+    let mut result: HashMap<String, String> = HashMap::new();
+
+    let hermes_home: PathBuf = dirs::home_dir()
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join(".hermes");
+    let env_file = hermes_home.join(".env");
+
+    if !env_file.exists() {
+        return result;
+    }
+
+    // Read file content, replacing CRLF with LF
+    let text = match std::fs::read_to_string(&env_file) {
+        Ok(t) => t.replace("\r\n", "\n").replace("\r", "\n"),
+        Err(_) => return result,
+    };
+
+    // Only care about MINIMAX-related keys
+    let relevant_keys: std::collections::HashSet<&str> = [
+        "MINIMAX_CN_API_KEY",
+        "MINIMAX_CN_BASE_URL",
+        "MINIMAX_API_KEY",
+        "MINIMAX_BASE_URL",
+    ]
+    .iter()
+    .cloned()
+    .collect();
+
+    for line in text.split('\n') {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') || !line.contains('=') {
+            continue;
+        }
+
+        if let Some((k, v)) = line.split_once('=') {
+            let k = k.trim();
+            let v = v.trim().trim_matches('"').trim_matches('\'');
+            if relevant_keys.contains(k) && !result.contains_key(k) {
+                result.insert(k.to_string(), v.to_string());
+            }
+        }
+    }
+
+    result
 }
 
 // ============================================================================
@@ -134,19 +248,117 @@ pub struct Message {
 }
 
 /// Response from an LLM call
+#[derive(Debug, Clone)]
+pub enum LlmResponse {
+    /// Non-streaming response
+    NonStream(NonStreamResponse),
+    /// Streaming response — yields chunks as they arrive
+    Stream(StreamResponse),
+}
+
+impl LlmResponse {
+    /// Returns a reference to the content (panics if streaming).
+    pub fn content(&self) -> &str {
+        match self {
+            LlmResponse::NonStream(r) => &r.content,
+            LlmResponse::Stream(_) => panic!("content() not available on streaming response"),
+        }
+    }
+
+    /// Returns a reference to the usage (panics if streaming).
+    pub fn usage(&self) -> &LlmUsage {
+        match self {
+            LlmResponse::NonStream(r) => &r.usage,
+            LlmResponse::Stream(_) => panic!("usage() not available on streaming response"),
+        }
+    }
+
+    /// Returns a reference to the model name (panics if streaming).
+    pub fn model(&self) -> &str {
+        match self {
+            LlmResponse::NonStream(r) => &r.model,
+            LlmResponse::Stream(_) => panic!("model() not available on streaming response"),
+        }
+    }
+
+    /// Unwrap the non-streaming response (panics if streaming).
+    pub fn unwrap_nonstream(self) -> NonStreamResponse {
+        match self {
+            LlmResponse::NonStream(r) => r,
+            LlmResponse::Stream(_) => panic!("unwrap_nonstream called on streaming response"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LlmResponse {
+pub struct NonStreamResponse {
     pub content: String,
     pub usage: LlmUsage,
     pub model: String,
     pub finish_reason: String,
 }
 
+/// A single chunk in a streaming response
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StreamChunk {
+    pub content: String,
+    pub role: Option<String>,
+    pub tool_calls: Vec<StreamToolCall>,
+    pub finish_reason: Option<String>,
+}
+
+/// Tool call delta within a stream chunk
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StreamToolCall {
+    pub index: usize,
+    pub id: Option<String>,
+    pub name: Option<String>,
+    pub arguments: String,
+}
+
+/// Streaming response iterator
+pub struct StreamResponse {
+    chunks: std::pin::Pin<Box<dyn tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send>>,
+}
+
+impl std::fmt::Debug for StreamResponse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "StreamResponse {{ ... }}")
+    }
+}
+
+impl Clone for StreamResponse {
+    fn clone(&self) -> Self {
+        panic!("StreamResponse cannot be cloned")
+    }
+}
+
+impl StreamResponse {
+    pub fn new(chunks: impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send + 'static) -> Self {
+        Self {
+            chunks: Box::pin(chunks),
+        }
+    }
+
+    pub fn into_inner(self) -> impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send {
+        self.chunks
+    }
+}
+
 /// Trait for LLM providers
 #[async_trait::async_trait]
 pub trait LlmClient: Send + Sync {
-    /// Send a completion request
+    /// Send a completion request (non-streaming)
     async fn complete(
+        &self,
+        messages: Vec<Message>,
+        model: &str,
+        temperature: f32,
+        max_tokens: u32,
+    ) -> Result<LlmResponse, LlmError>;
+
+    /// Send a streaming completion request
+    async fn stream_complete(
         &self,
         messages: Vec<Message>,
         model: &str,
@@ -159,8 +371,102 @@ pub trait LlmClient: Send + Sync {
 }
 
 // ============================================================================
-// OpenAI Client
+// SSE Streaming Helpers
 // ============================================================================
+
+/// Parse a single SSE data line into a StreamChunk.
+/// Handles: data: {...} and data: [DONE]
+fn parse_sse_event(line: &str) -> Option<StreamChunk> {
+    let line = line.trim();
+    if !line.starts_with("data:") {
+        return None;
+    }
+
+    let data = line["data:".len()..].trim();
+    if data == "[DONE]" {
+        return None; // End of stream
+    }
+
+    #[derive(Deserialize)]
+    struct SseChunk {
+        choices: Vec<SseChoice>,
+    }
+
+    #[derive(Deserialize)]
+    struct SseChoice {
+        delta: SseDelta,
+        finish_reason: Option<String>,
+    }
+
+    #[derive(Deserialize, Default)]
+    struct SseDelta {
+        content: Option<String>,
+        role: Option<String>,
+        tool_calls: Option<Vec<SseToolCall>>,
+    }
+
+    #[derive(Deserialize, Default)]
+    struct SseToolCall {
+        index: Option<usize>,
+        id: Option<String>,
+        function: Option<SseFunction>,
+    }
+
+    #[derive(Deserialize, Default)]
+    struct SseFunction {
+        name: Option<String>,
+        arguments: Option<String>,
+    }
+
+    let chunk: SseChunk = match serde_json::from_str(data) {
+        Ok(c) => c,
+        Err(_) => return None,
+    };
+
+    let choice = match chunk.choices.into_iter().next() {
+        Some(c) => c,
+        None => return None,
+    };
+
+    let mut tool_calls = Vec::new();
+    if let Some(tcs) = choice.delta.tool_calls {
+        for tc in tcs {
+            tool_calls.push(StreamToolCall {
+                index: tc.index.unwrap_or(0),
+                id: tc.id,
+                name: tc.function.as_ref().and_then(|f| f.name.clone()),
+                arguments: tc.function.as_ref().and_then(|f| f.arguments.clone()).unwrap_or_default(),
+            });
+        }
+    }
+
+    Some(StreamChunk {
+        content: choice.delta.content.unwrap_or_default(),
+        role: choice.delta.role,
+        tool_calls,
+        finish_reason: choice.finish_reason,
+    })
+}
+
+/// Convert a byte stream into a stream of SSE-parsed StreamChunks
+fn streamerr(stream: impl tokio_stream::Stream<Item = Result<bytes::Bytes, reqwest::Error>> + Send + 'static)
+    -> impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send + 'static
+{
+    use futures_util::StreamExt;
+
+    let stream = stream.map(|result| {
+        let bytes = match result {
+            Ok(b) => b,
+            Err(e) => return vec![Err(LlmError::Http(e))],
+        };
+        let text = String::from_utf8_lossy(&bytes).to_string();
+        text.lines()
+            .filter_map(|line| parse_sse_event(line).map(Ok))
+            .collect::<Vec<_>>()
+    });
+
+    stream.flat_map(futures_util::stream::iter)
+}
 
 pub struct OpenAiClient {
     api_key: String,
@@ -258,14 +564,66 @@ impl LlmClient for OpenAiClient {
             LlmUsage::openai_o3_mini(data.usage.prompt_tokens, data.usage.completion_tokens)
         };
 
-        Ok(LlmResponse {
+        Ok(LlmResponse::NonStream(NonStreamResponse {
             content: data.choices.into_iter().next()
                 .map(|c| c.message.content)
                 .unwrap_or_default(),
             usage,
             model: data.model,
             finish_reason: data.finish_reason,
-        })
+        }))
+    }
+
+    async fn stream_complete(
+        &self,
+        messages: Vec<Message>,
+        model: &str,
+        temperature: f32,
+        max_tokens: u32,
+    ) -> Result<LlmResponse, LlmError> {
+        let url = format!("{}/chat/completions", self.base_url);
+
+        #[derive(Serialize)]
+        struct Request {
+            model: String,
+            messages: Vec<Message>,
+            temperature: f32,
+            max_tokens: u32,
+            stream: bool,
+        }
+
+        let resp = self
+            .client
+            .post(&url)
+            .header("Authorization", format!("Bearer {}", self.api_key))
+            .header("Content-Type", "application/json")
+            .json(&Request {
+                model: model.to_string(),
+                messages,
+                temperature,
+                max_tokens,
+                stream: true,
+            })
+            .send()
+            .await?;
+
+        let status = resp.status();
+        if status.as_u16() == 429 {
+            return Err(LlmError::RateLimited);
+        }
+        if !status.is_success() {
+            let body = resp.text().await?;
+            return Err(LlmError::Api {
+                code: status.as_u16(),
+                message: body,
+            });
+        }
+
+        // Create a stream from the SSE response
+        let stream = resp.bytes_stream();
+        let chunk_stream = streamerr(stream);
+
+        Ok(LlmResponse::Stream(StreamResponse::new(chunk_stream)))
     }
 
     fn provider_name(&self) -> &'static str {
@@ -373,12 +731,24 @@ impl LlmClient for AnthropicClient {
 
         let usage = LlmUsage::anthropic_sonnet4(data.usage.input_tokens, data.usage.output_tokens);
 
-        Ok(LlmResponse {
+        Ok(LlmResponse::NonStream(NonStreamResponse {
             content,
             usage,
             model: data.model,
             finish_reason: data.stop_reason,
-        })
+        }))
+    }
+
+    async fn stream_complete(
+        &self,
+        _messages: Vec<Message>,
+        _model: &str,
+        _temperature: f32,
+        _max_tokens: u32,
+    ) -> Result<LlmResponse, LlmError> {
+        Err(LlmError::InvalidResponse(
+            "Anthropic streaming not yet implemented".to_string(),
+        ))
     }
 
     fn provider_name(&self) -> &'static str {

@@ -199,6 +199,7 @@ mod tests {
         assert_eq!(result, 42);
         let stats = get_monitor().get_stats("timed_op").unwrap();
         assert!(stats.total > 0.0);
+        get_monitor().reset();
     }
 
     #[test]

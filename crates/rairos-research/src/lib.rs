@@ -250,11 +250,11 @@ impl ResearchOrchestrator {
         // Record cost
         {
             let mut tracker = self.cost_tracker.write().await;
-            tracker.record(&response.usage, response.model.as_str(), self.llm.provider_name());
+            tracker.record(&response.usage(), response.model(), self.llm.provider_name());
         }
 
         // Parse response into suggestions
-        let suggestions: Vec<String> = response.content
+        let suggestions: Vec<String> = response.content()
             .lines()
             .filter(|l| l.trim().starts_with('-') || l.trim().starts_with('1') || l.trim().starts_with('2') || l.trim().starts_with('3'))
             .map(|l| l.trim().to_string())
