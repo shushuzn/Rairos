@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/rairos-core",
     "crates/rairos-cli",
+    "crates/rairos-scout",
     "crates/rairos-parser",
     "crates/rairos-llm",
     "crates/rairos-research",
@@ -52,6 +53,9 @@ members = [
     "crates/rairos-tracker-base",
     "crates/rairos-insight-types",
     "crates/rairos-logging-utils",
+    "crates/rairos-rate-limiter",
+    "crates/rairos-cache",
+    "crates/rairos-insight-credibility",
 ]
 
 [profile.dev]
