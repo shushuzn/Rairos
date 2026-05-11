@@ -274,7 +274,10 @@ pub fn parse_timeline(contents: &str) -> TimelineState {
                     let title_part = &body[..at];
                     let rest = &body[at + sep_len..];
                     let (pnote_path, title) = if title_part.starts_with('[') {
-                        if let Some(close) = title_part.find("]") {
+                        if let Some(close_paren) = title_part.find("](") {
+                            let path = title_part[1..close_paren].to_string();
+                            (path, String::new())
+                        } else if let Some(close) = title_part.find(']') {
                             let path = title_part[1..close].to_string();
                             let title = title_part[close + 1..].trim().to_string();
                             (path, title)
@@ -286,7 +289,7 @@ pub fn parse_timeline(contents: &str) -> TimelineState {
                     };
                     TimelineEntry {
                         pnote_path,
-                        title: format!("{} — {}", title, rest),
+                        title: if title.is_empty() { rest.to_string() } else { format!("{} — {}", title, rest) },
                     }
                 } else {
                     TimelineEntry {
