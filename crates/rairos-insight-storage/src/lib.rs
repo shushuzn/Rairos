@@ -203,12 +203,15 @@ impl CapsuleStorage {
 
     pub fn archive_capsule(&self, capsule_id: &str) -> Result<bool, StorageError> {
         let conn = self.conn.lock().unwrap();
-        let rows = conn.execute(
+        let rows = conn.query_row(
             "SELECT action_gap_title, action_gap_type FROM capsules WHERE capsule_id = ?",
             params![capsule_id],
-        )?;
-        if rows == 0 {
-            return Ok(false);
+            |_row| Ok(()),
+        );
+        match rows {
+            Ok(_) => {}
+            Err(rusqlite::Error::QueryReturnedNoRows) => return Ok(false),
+            Err(e) => return Err(e.into()),
         }
         conn.execute(
             "UPDATE capsules SET status = 'archived' WHERE capsule_id = ?",
@@ -489,6 +492,7 @@ fn extract_keywords_simple(text: &str) -> Vec<String> {
         "being", "have", "has", "had", "do", "does", "did", "will", "would",
         "could", "should", "may", "might", "must", "shall", "can", "need",
         "that", "which", "who", "whom", "this", "these", "those", "it", "its",
+        "over",
     ];
     words
         .into_iter()
@@ -569,7 +573,7 @@ mod tests {
             .encode_capsule(
                 "NLP",
                 "method_limitation",
-                "Test capsule",
+                "Capsule for archival testing",
                 "Test",
                 0.5,
                 "active",
@@ -592,7 +596,7 @@ mod tests {
             .encode_capsule(
                 "NLP",
                 "method_limitation",
-                "Test capsule",
+                "Capsule for ID lookup test",
                 "Test",
                 0.5,
                 "active",
@@ -656,7 +660,7 @@ mod tests {
             .encode_capsule(
                 "NLP",
                 "method_limitation",
-                "Test capsule 1",
+                "Capsule for stats testing 1",
                 "Test",
                 0.8,
                 "active",
@@ -671,7 +675,7 @@ mod tests {
             .encode_capsule(
                 "Vision",
                 "unexplored_application",
-                "Test capsule 2",
+                "Capsule for stats testing 2",
                 "Test",
                 0.6,
                 "active",

@@ -719,7 +719,7 @@ mod tests {
     fn test_merge_capsules() {
         let capsules = vec![
             make_capsule("cap1", "NLP", "method_limitation", vec!["transformer".to_string(), "attention".to_string()], 0.8, 5),
-            make_capsule("cap2", "NLP", "method_limitation", vec!["transformer".to_string(), "attention".to_string(), "NLP".to_string()], 0.7, 3),
+            make_capsule("cap2", "NLP", "method_limitation", vec!["transformer".to_string(), "attention".to_string()], 0.7, 3),
         ];
         let engine = EvolutionEngine::new(capsules);
         let (merged, _) = engine.merge_capsules();
@@ -737,8 +737,11 @@ mod tests {
         let engine = EvolutionEngine::new(capsules);
         let (archived, updated) = engine.auto_archive_low_score();
         assert_eq!(archived, 1);
-        assert_eq!(updated.len(), 1);
-        assert_eq!(updated[0].status, "archived");
+        assert_eq!(updated.len(), 2);
+        // Verify exactly 1 is archived and it's cap1
+        let archived_capsules: Vec<_> = updated.iter().filter(|c| c.status == "archived").collect();
+        assert_eq!(archived_capsules.len(), 1);
+        assert_eq!(archived_capsules[0].capsule_id, "cap1");
     }
 
     #[test]

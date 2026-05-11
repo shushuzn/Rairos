@@ -465,8 +465,13 @@ mod tests {
             outcome_success_score: 0.5,
             feedback_count: 0,
             evolved_generation: 0,
-            archetype: None,
+            archetype: HashMap::new(),
             status: "active".to_string(),
+            low_score_streak: 0,
+            credibility_score: 0.5,
+            trendslop: false,
+            trendslop_reason: "".to_string(),
+            source_arxiv_category: "".to_string(),
             credibility_badge: "medium".to_string(),
         };
         assert_eq!(compute_fitness(&cap), 0.0);
@@ -485,8 +490,13 @@ mod tests {
             outcome_success_score: 0.5,
             feedback_count: 1,
             evolved_generation: 0,
-            archetype: Some(HashMap::new()),
+            archetype: HashMap::new(),
             status: "active".to_string(),
+            low_score_streak: 0,
+            credibility_score: 0.5,
+            trendslop: false,
+            trendslop_reason: "".to_string(),
+            source_arxiv_category: "".to_string(),
             credibility_badge: "medium".to_string(),
         };
         let cap_b = CapsuleGene {
@@ -500,8 +510,13 @@ mod tests {
             outcome_success_score: 0.5,
             feedback_count: 1,
             evolved_generation: 0,
-            archetype: Some(HashMap::new()),
+            archetype: HashMap::new(),
             status: "active".to_string(),
+            low_score_streak: 0,
+            credibility_score: 0.5,
+            trendslop: false,
+            trendslop_reason: "".to_string(),
+            source_arxiv_category: "".to_string(),
             credibility_badge: "medium".to_string(),
         };
         let result = crossover(&cap_a, &cap_b);
