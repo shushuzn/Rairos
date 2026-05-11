@@ -7,8 +7,10 @@ use chrono::Utc;
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
 use rairos_llm::{GenePool, Capsule, CapsuleStatus, GenePoolDiversityCalculator};
+use rairos_web::{start, AppState};
 use std::collections::HashSet;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 // ============================================================================
@@ -1569,20 +1571,30 @@ fn handle_rate_limit_check(endpoint: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_daemon(port: u16, _log_level: &str, foreground: bool) -> Result<()> {
-    println!("Starting Rairos daemon on port {}...", port);
-    if !foreground {
-        println!("Daemonizing... (use --foreground to run in terminal)");
-    }
-    println!("[OK] Daemon started (HTTP server on http://localhost:{})", port);
+fn handle_daemon(db: &Database, port: u16, _log_level: &str, _foreground: bool) -> Result<()> {
+    println!("Starting Rairos web server on port {}...", port);
+    println!();
     println!("API endpoints:");
-    println!("  GET  /papers         - List papers");
-    println!("  GET  /papers/:id    - Get paper details");
-    println!("  POST /papers/search - Search papers");
-    println!("  GET  /gaps          - List research gaps");
+    println!("  GET  /              - Web UI");
     println!("  GET  /health        - Health check");
-    println!("\nPress Ctrl+C to stop.");
-    println!("\nNote: Full daemon requires rairos-web crate. Use --foreground for testing.");
+    println!("  GET  /stats         - Database stats");
+    println!("  GET  /papers        - List papers");
+    println!("  GET  /papers/:id    - Get paper details");
+    println!("  GET  /papers/search - Search papers");
+    println!("  GET  /gaps          - List research gaps");
+    println!("  GET  /genes         - List gene pool");
+    println!("  GET  /genes/diversity - Gene diversity metrics");
+    println!("  GET  /kg/stats      - Knowledge graph stats");
+    println!("  GET  /kg/rank       - Paper rankings");
+    println!();
+    println!("Press Ctrl+C to stop.");
+    println!();
+
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(async {
+        let state = Arc::new(AppState::new(db.clone()));
+        start(&format!("127.0.0.1:{}", port), state).await
+    })?;
     Ok(())
 }
 
@@ -2838,7 +2850,8 @@ fn main() -> Result<()> {
             handle_rate_limit_check(endpoint)?;
         }
         Commands::Daemon { port, log_level, foreground } => {
-            handle_daemon(*port, log_level, *foreground)?;
+            let db = open_db(&cli.db)?;
+            handle_daemon(&db, *port, log_level, *foreground)?;
         }
         Commands::Subscribe { query, interval_minutes, max_papers, auto_add } => {
             let db = open_db(&cli.db)?;

@@ -6,6 +6,8 @@ edition = "2021"
 [dependencies]
 rairos-core = { path = "../rairos-core" }
 rairos-llm = { path = "../rairos-llm" }
+rairos-web = { path = "../rairos-web" }
+rairos-kg = { path = "../rairos-kg" }
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
 tracing = "0.1"
