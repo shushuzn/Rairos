@@ -615,26 +615,22 @@ impl Database {
 
     pub fn stats(&self) -> Result<DbStats> {
         let conn = self.conn.lock();
-        let total: i64 =
-            conn.query_row("SELECT COUNT(*) FROM papers", [], |r| r.get(0))?;
-        let pending: i64 = conn.query_row(
-            "SELECT COUNT(*) FROM papers WHERE parse_status = 'pending'",
-            [],
-            |r| r.get(0),
+        let mut stmt = conn.prepare(
+            "SELECT
+                (SELECT COUNT(*) FROM papers) as total,
+                (SELECT COUNT(*) FROM papers WHERE parse_status = 'pending') as pending,
+                (SELECT COUNT(*) FROM papers WHERE parse_status = 'done') as done,
+                (SELECT COUNT(*) FROM research_gaps) as gaps"
         )?;
-        let done: i64 = conn.query_row(
-            "SELECT COUNT(*) FROM papers WHERE parse_status = 'done'",
-            [],
-            |r| r.get(0),
-        )?;
-        let gaps: i64 =
-            conn.query_row("SELECT COUNT(*) FROM research_gaps", [], |r| r.get(0))?;
-        Ok(DbStats {
-            total,
-            pending,
-            done,
-            gaps,
-        })
+        let row = stmt.query_row([], |r| {
+            Ok(DbStats {
+                total: r.get(0)?,
+                pending: r.get(1)?,
+                done: r.get(2)?,
+                gaps: r.get(3)?,
+            })
+        })?;
+        Ok(row)
     }
 
     pub fn search_papers_fts(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
