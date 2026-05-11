@@ -334,6 +334,24 @@ enum Commands {
         target: String,
     },
 
+    /// Add a paper to the knowledge graph
+    KgAddPaper {
+        /// Paper ID or arXiv ID
+        #[arg(short, long)]
+        paper_id: String,
+    },
+
+    /// Add citation edge between two papers
+    KgAddCitation {
+        /// Source paper ID (the paper that cites)
+        #[arg(short, long)]
+        source: String,
+
+        /// Target paper ID (the paper being cited)
+        #[arg(short, long)]
+        target: String,
+    },
+
     /// Run rate limiter benchmark
     RateLimitBenchmark {
         /// Number of requests to simulate
@@ -1667,6 +1685,43 @@ fn handle_kg_path(source: &str, target: &str) -> Result<()> {
             println!("No path found between {} and {}", source, target);
         }
     }
+    Ok(())
+}
+
+fn handle_kg_add_paper(db: &Database, paper_id: &str) -> Result<()> {
+    let paper = db.get_paper(paper_id).ok().or_else(|| {
+        db.get_paper_by_arxiv(paper_id).ok().flatten()
+    }).ok_or_else(|| anyhow::anyhow!("Paper not found: {}", paper_id))?;
+
+    let mut graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    graph.add_paper(&paper);
+    graph.save().map_err(|e| anyhow::anyhow!("Failed to save knowledge graph: {}", e))?;
+
+    println!("[OK] Added paper to knowledge graph:");
+    println!("  ID: {}", paper.id);
+    println!("  Title: {}", &paper.title[..paper.title.len().min(60)]);
+    Ok(())
+}
+
+fn handle_kg_add_citation(db: &Database, source: &str, target: &str) -> Result<()> {
+    let source_paper = db.get_paper(source).ok().or_else(|| {
+        db.get_paper_by_arxiv(source).ok().flatten()
+    }).ok_or_else(|| anyhow::anyhow!("Source paper not found: {}", source))?;
+
+    let target_paper = db.get_paper(target).ok().or_else(|| {
+        db.get_paper_by_arxiv(target).ok().flatten()
+    }).ok_or_else(|| anyhow::anyhow!("Target paper not found: {}", target))?;
+
+    let mut graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+
+    // Ensure both papers are in the graph
+    graph.add_paper(&source_paper);
+    graph.add_paper(&target_paper);
+    graph.add_citation(&source_paper.id, &target_paper.id);
+    graph.save().map_err(|e| anyhow::anyhow!("Failed to save knowledge graph: {}", e))?;
+
+    println!("[OK] Added citation edge:");
+    println!("  {} -> {}", source_paper.id, target_paper.id);
     Ok(())
 }
 
@@ -3107,6 +3162,14 @@ fn main() -> Result<()> {
         }
         Commands::KgPath { source, target } => {
             handle_kg_path(source, target)?;
+        }
+        Commands::KgAddPaper { paper_id } => {
+            let db = open_db(&cli.db)?;
+            handle_kg_add_paper(&db, paper_id)?;
+        }
+        Commands::KgAddCitation { source, target } => {
+            let db = open_db(&cli.db)?;
+            handle_kg_add_citation(&db, source, target)?;
         }
         Commands::RateLimitBenchmark { count } => {
             handle_rate_limit_benchmark(*count)?;
