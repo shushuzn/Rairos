@@ -1338,18 +1338,17 @@ fn handle_gene_add(approach: &str, gap_type: &str, keywords: &str, paper_id: Opt
         capsule = capsule.with_paper(&pid);
     }
 
-    let mut pool = GenePool::new();
+    let mut pool = GenePool::load().context("Failed to load gene pool")?;
     pool.add_capsule(capsule);
+    pool.save().context("Failed to save gene pool")?;
 
-    let json = pool.to_jsonl();
     println!("[OK] Gene added to pool");
-    println!("Capsule ID: {}", pool.capsules().first().map(|c| c.capsule_id.as_str()).unwrap_or("N/A"));
-    println!("JSONL:\n{}", json);
+    println!("Capsule ID: {}", pool.capsules().last().map(|c| c.capsule_id.as_str()).unwrap_or("N/A"));
     Ok(())
 }
 
 fn handle_gene_list(gap_type: Option<String>, status: Option<String>, limit: usize, format: &str) -> Result<()> {
-    let pool = GenePool::new();
+    let pool = GenePool::load().context("Failed to load gene pool")?;
     let all_capsules = pool.capsules();
 
     let filtered: Vec<&Capsule> = all_capsules.iter()
@@ -1408,7 +1407,7 @@ fn handle_gene_list(gap_type: Option<String>, status: Option<String>, limit: usi
 }
 
 fn handle_gene_show(id: &str, format: &str) -> Result<()> {
-    let pool = GenePool::new();
+    let pool = GenePool::load().context("Failed to load gene pool")?;
     if let Some(cap) = pool.capsules().iter().find(|c| c.capsule_id == id || c.capsule_id.starts_with(id)) {
         if format == "json" {
             println!("{}", serde_json::to_string_pretty(cap)?);
@@ -1439,7 +1438,7 @@ fn handle_gene_show(id: &str, format: &str) -> Result<()> {
 }
 
 fn handle_gene_feedback(id: &str, positive: bool) -> Result<()> {
-    let mut pool = GenePool::new();
+    let mut pool = GenePool::load().context("Failed to load gene pool")?;
     if let Some(cap) = pool.capsules_mut().iter_mut().find(|c| c.capsule_id == id || c.capsule_id.starts_with(id)) {
         if positive {
             cap.record_success();
@@ -1451,6 +1450,7 @@ fn handle_gene_feedback(id: &str, positive: bool) -> Result<()> {
         println!("  Success count: {}", cap.success_count);
         println!("  Failure count: {}", cap.failure_count);
         println!("  New impact score: {:.4}", cap.impact_score);
+        pool.save().context("Failed to save gene pool")?;
     } else {
         anyhow::bail!("Gene not found: {}", id);
     }
@@ -1458,7 +1458,7 @@ fn handle_gene_feedback(id: &str, positive: bool) -> Result<()> {
 }
 
 fn handle_gene_diversity(format: &str) -> Result<()> {
-    let pool = GenePool::new();
+    let pool = GenePool::load().context("Failed to load gene pool")?;
     let diversity = GenePoolDiversityCalculator::calculate(pool.capsules());
 
     if format == "json" {
@@ -1492,7 +1492,7 @@ fn handle_gene_diversity(format: &str) -> Result<()> {
 }
 
 fn handle_gene_evolve(max_crossovers: usize, format: &str) -> Result<()> {
-    let pool = GenePool::new();
+    let pool = GenePool::load().context("Failed to load gene pool")?;
     let gaps = vec!["capability", "improvement", "reasoning"];
     let mut suggestions = Vec::new();
     for gap_type in &gaps {

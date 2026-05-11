@@ -1083,6 +1083,35 @@ impl GenePool {
             patterns: Vec::new(),
         }
     }
+
+    pub fn default_path() -> std::path::PathBuf {
+        dirs::home_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join(".ai_research_os")
+            .join("evolution")
+    }
+
+    pub fn gene_pool_path() -> std::path::PathBuf {
+        Self::default_path().join("gene_pool.jsonl")
+    }
+
+    pub fn load() -> std::io::Result<Self> {
+        let path = Self::gene_pool_path();
+        if !path.exists() {
+            return Ok(Self::new());
+        }
+        let text = std::fs::read_to_string(&path)?;
+        Ok(Self::from_jsonl(&text))
+    }
+
+    pub fn save(&self) -> std::io::Result<()> {
+        let path = Self::gene_pool_path();
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        std::fs::write(&path, self.to_jsonl())?;
+        Ok(())
+    }
 }
 
 // ============================================================================
