@@ -2,7 +2,7 @@
 //!
 //! Ported from `llm/insight/credibility.py`.
 
-use rairos_insight_types::CapsuleGene;
+pub use rairos_crossover::CapsuleGene;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 

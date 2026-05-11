@@ -2,7 +2,7 @@
 //!
 //! Ported from `llm/insight/evolution.py`.
 
-use rairos_insight_types::CapsuleGene;
+use rairos_insight_credibility::CapsuleGene;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

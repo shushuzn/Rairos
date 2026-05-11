@@ -2,7 +2,7 @@
 //!
 //! Ported from `llm/insight/storage.py`.
 
-use rairos_insight_types::CapsuleGene;
+use rairos_insight_credibility::CapsuleGene;
 use rusqlite::{params, Connection, Result as SqliteResult};
 use std::collections::HashMap;
 use std::io::Write;

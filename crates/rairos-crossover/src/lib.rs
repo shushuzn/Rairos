@@ -37,8 +37,13 @@ pub struct CapsuleGene {
     pub outcome_success_score: f64,
     pub feedback_count: i32,
     pub evolved_generation: i32,
-    pub archetype: Option<HashMap<String, serde_json::Value>>,
+    pub archetype: HashMap<String, serde_json::Value>,
     pub status: String,
+    pub low_score_streak: i32,
+    pub credibility_score: f64,
+    pub trendslop: bool,
+    pub trendslop_reason: String,
+    pub source_arxiv_category: String,
     pub credibility_badge: String,
 }
 
@@ -55,10 +60,105 @@ impl CapsuleGene {
             outcome_success_score: value.get("outcome_success_score")?.as_f64().unwrap_or(0.0),
             feedback_count: value.get("feedback_count")?.as_i64().unwrap_or(0) as i32,
             evolved_generation: value.get("evolved_generation")?.as_i64().unwrap_or(0) as i32,
-            archetype: value.get("archetype").and_then(|v| v.as_object().cloned()).map(|m| m.into_iter().collect()),
+            archetype: value.get("archetype").and_then(|v| v.as_object().cloned()).map(|m| m.into_iter().collect()).unwrap_or_default(),
             status: value.get("status")?.as_str()?.to_string(),
+            low_score_streak: value.get("low_score_streak").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
+            credibility_score: value.get("credibility_score").and_then(|v| v.as_f64()).unwrap_or(0.5),
+            trendslop: value.get("trendslop").and_then(|v| v.as_bool()).unwrap_or(false),
+            trendslop_reason: value.get("trendslop_reason").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            source_arxiv_category: value.get("source_arxiv_category").and_then(|v| v.as_str()).unwrap_or("").to_string(),
             credibility_badge: value.get("credibility_badge").and_then(|v| v.as_str()).unwrap_or("medium").to_string(),
         })
+    }
+
+    pub fn trigger_match(&self, topic: &str, gap_type: &str, keywords: &[String]) -> f64 {
+        let mut score = 0.0;
+
+        // 1. action_gap_title substring match — strongest recall signal
+        let action_title = self.action_gap_title.trim();
+        if !action_title.is_empty() && !topic.is_empty() {
+            if action_title.to_lowercase().contains(&topic.to_lowercase()) {
+                score += 0.5;
+            } else if topic.to_lowercase().contains(&action_title.to_lowercase()) {
+                score += 0.3;
+            }
+        }
+
+        // 2. trigger_topic substring match
+        if !topic.is_empty() && !self.trigger_topic.is_empty() {
+            if self.trigger_topic.to_lowercase().contains(&topic.to_lowercase()) {
+                score += 0.3;
+            } else if topic.to_lowercase().contains(&self.trigger_topic.to_lowercase()) {
+                score += 0.2;
+            }
+        }
+
+        // 3. Gap type exact match + partial category match
+        if !gap_type.is_empty() && !self.trigger_gap_type.is_empty() {
+            if gap_type == self.trigger_gap_type {
+                score += 0.3;
+            } else {
+                let category_of = |gt: &str| -> String {
+                    if ["improvement", "method_gap", "method_limitation"].contains(&gt) {
+                        "method".to_string()
+                    } else if ["application_gap", "exploration_gap", "capability"].contains(&gt) {
+                        "content".to_string()
+                    } else {
+                        gt.to_string()
+                    }
+                };
+                if category_of(gap_type) == category_of(&self.trigger_gap_type) {
+                    score += 0.1;
+                }
+            }
+        }
+
+        // 4. Keyword overlap
+        if !keywords.is_empty() && !self.trigger_keywords.is_empty() {
+            let kw_set: std::collections::HashSet<String> =
+                keywords.iter().map(|k| k.to_lowercase()).collect();
+            let trigger_set: std::collections::HashSet<String> =
+                self.trigger_keywords.iter().map(|k| k.to_lowercase()).collect();
+            let overlap: std::collections::HashSet<_> = kw_set.intersection(&trigger_set).collect();
+            if !overlap.is_empty() {
+                let denom = keywords.len().max(self.trigger_keywords.len());
+                score += 0.15 * (overlap.len() as f64 / denom as f64);
+            }
+        }
+
+        // 5. Token-level Jaccard on topic vs action_gap_title
+        if !action_title.is_empty() && !topic.is_empty() {
+            let stopwords: std::collections::HashSet<&str> = [
+                "for", "with", "and", "the", "a", "an", "of", "in", "on", "to", "is", "are",
+            ]
+            .into();
+            let topic_tokens: std::collections::HashSet<String> = topic
+                .to_lowercase()
+                .split_whitespace()
+                .filter(|w| !stopwords.contains(w))
+                .map(String::from)
+                .collect();
+            let title_tokens: std::collections::HashSet<String> = action_title
+                .to_lowercase()
+                .split_whitespace()
+                .filter(|w| !stopwords.contains(w))
+                .map(String::from)
+                .collect();
+            if !topic_tokens.is_empty() && !title_tokens.is_empty() {
+                let intersection: std::collections::HashSet<_> =
+                    topic_tokens.intersection(&title_tokens).collect();
+                let union: std::collections::HashSet<String> =
+                    topic_tokens.union(&title_tokens).cloned().collect();
+                if !union.is_empty() {
+                    let jaccard = intersection.len() as f64 / union.len() as f64;
+                    if jaccard > 0.0 {
+                        score += 0.25 * jaccard;
+                    }
+                }
+            }
+        }
+
+        score.min(1.0)
     }
 }
 
@@ -98,8 +198,8 @@ pub struct CrossoverResult {
 }
 
 pub fn crossover(parent_a: &CapsuleGene, parent_b: &CapsuleGene) -> CrossoverResult {
-    let arch_a = parent_a.archetype.clone().unwrap_or_default();
-    let arch_b = parent_b.archetype.clone().unwrap_or_default();
+    let arch_a = parent_a.archetype.clone();
+    let arch_b = parent_b.archetype.clone();
 
     let shared_keys: Vec<&String> = arch_a.keys().filter(|k| arch_b.contains_key(*k)).collect();
     let private_a: HashMap<String, serde_json::Value> = arch_a.iter().filter(|(k, _)| !arch_b.contains_key(*k)).map(|(k, v)| (k.clone(), v.clone())).collect();
@@ -209,7 +309,7 @@ pub fn get_v3_capsules() -> Vec<V3Capsule> {
     v3.sort_by(|a, b| compute_fitness(b).partial_cmp(&compute_fitness(a)).unwrap_or(std::cmp::Ordering::Equal));
 
     v3.into_iter().map(|c| {
-        let archetype = c.archetype.clone().unwrap_or_default();
+        let archetype = c.archetype.clone();
         V3Capsule {
             capsule_id: c.capsule_id.clone(),
             action_gap_title: c.action_gap_title.clone(),
