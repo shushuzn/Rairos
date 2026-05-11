@@ -137,8 +137,10 @@ impl EventBus {
         {
             let mut history = self.history.lock().await;
             history.push(event.clone());
-            if history.len() > self.max_history {
-                history.drain(0..history.len() - self.max_history);
+            let len = history.len();
+            if len > self.max_history {
+                let drain_count = len - self.max_history;
+                history.drain(0..drain_count);
             }
         }
 
@@ -200,11 +202,13 @@ impl SseServer {
 
         let events_route = warp::path("events")
             .and(warp::get())
+            .and(warp::query::<HashMap<String, String>>())
             .and(with_event_bus(event_bus.clone()))
             .and_then(handle_events);
 
         let health_route = warp::path("health")
             .and(warp::get())
+            .and(warp::query::<HashMap<String, String>>())
             .and(with_event_bus(event_bus.clone()))
             .and_then(handle_health);
 
@@ -231,8 +235,8 @@ fn with_event_bus(
 }
 
 async fn handle_events(
+    query: HashMap<String, String>,
     event_bus: Arc<EventBus>,
-    query: warp::filters::query::Query<HashMap<String, String>>,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     let filter_type = query.get("type").map(|s| s.as_str()).unwrap_or("*");
 
@@ -240,10 +244,13 @@ async fn handle_events(
 
     let stream = BroadcastStream::new(rx).map(|result| {
         match result {
-            Ok(event) => Ok::<_, std::convert::Infallible>(event.to_sse()),
+            Ok(event) => {
+                let sse_data = event.to_sse();
+                Ok::<_, std::convert::Infallible>(warp::sse::Event::data(sse_data))
+            }
             Err(e) => {
                 tracing::warn!("broadcast error: {}", e);
-                Ok("event: error\ndata: broadcast error\n\n".to_string())
+                Ok(warp::sse::Event::data("event: error\ndata: broadcast error\n\n"))
             }
         }
     });
@@ -252,8 +259,8 @@ async fn handle_events(
 }
 
 async fn handle_health(
+    _query: HashMap<String, String>,
     event_bus: Arc<EventBus>,
-    _query: warp::filters::query::Query<HashMap<String, String>>,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     let types = event_bus.event_types().await;
     Ok(warp::reply::json(&serde_json::json!({
@@ -278,7 +285,7 @@ mod tests {
     #[tokio::test]
     async fn test_event_bus_publish_subscribe() {
         let bus = Arc::new(EventBus::new(50));
-        let rx = bus.subscribe("test_event").await;
+        let mut rx = bus.subscribe("test_event").await;
 
         bus.publish("test_event", serde_json::json!({"key": "value"})).await;
 
@@ -290,7 +297,7 @@ mod tests {
     #[tokio::test]
     async fn test_event_bus_wildcard() {
         let bus = Arc::new(EventBus::new(50));
-        let rx = bus.subscribe("*").await;
+        let mut rx = bus.subscribe("*").await;
 
         bus.publish("any_event", serde_json::json!({"foo": "bar"})).await;
 

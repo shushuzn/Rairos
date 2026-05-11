@@ -508,18 +508,21 @@ mod tests {
     struct MockOrchestrator;
 
     impl Orchestrator for MockOrchestrator {
-        async fn run_deep_research(
+        fn run_deep_research(
             &self,
             topic: &str,
             _new_papers: Vec<serde_json::Value>,
-        ) -> Result<serde_json::Value, ParallelResearchError> {
-            Ok(serde_json::json!({
-                "gaps": [
-                    {"title": format!("Mock gap for {}", topic), "gap_type": "method_limitation", "novelty_score": 0.8}
-                ],
-                "papers_analyzed": 10,
-                "iterations": 2
-            }))
+        ) -> Pin<Box<dyn Future<Output = Result<serde_json::Value, ParallelResearchError>> + Send + '_>> {
+            let topic = topic.to_string();
+            Box::pin(async move {
+                Ok(serde_json::json!({
+                    "gaps": [
+                        {"title": format!("Mock gap for {}", topic), "gap_type": "method_limitation", "novelty_score": 0.8}
+                    ],
+                    "papers_analyzed": 10,
+                    "iterations": 2
+                }))
+            })
         }
     }
 
