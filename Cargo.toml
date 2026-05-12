@@ -173,6 +173,7 @@ members = [
     "crates/rairos-impact-scorer",
     "crates/rairos-progress-tracker",
     "crates/rairos-impact-ranking",
+    "crates/rairos-contradiction-heatmap",
     "crates/rairos-db",
     "benches",
 ]
