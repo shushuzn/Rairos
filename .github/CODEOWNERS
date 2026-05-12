@@ -1,44 +1,18 @@
-# CODEOWNERS — automatic reviewer assignment
+# Code owners — Rairos repository
 #
-# Rules:
-# - First matching rule wins
-# - Use glob patterns (*, **, ?, [abc])
-# - Add yourself as a owner for areas you maintain
-#
-# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# @shushuzn is the default owner for everything
 
-# Default owner for everything not matched below
-* @shushuzn
+# Core maintainer
+*   @shushuzn
 
-# Core modules
-/core/*          @shushuzn
-/db/*            @shushuzn
-/parsers/*       @shushuzn
-/pdf/*            @shushuzn
-
-# LLM layer (evolving, experimental)
-/llm/*           @shushuzn
-
-# Research pipelines
-/research_loop/*  @shushuzn
-
-# CLI and commands
-/cli/*           @shushuzn
-/cli/cmd/*       @shushuzn
-
-# Web interface
-/web/*           @shushuzn
-
-# Tests
-/tests/*         @shushuzn
-
-# Documentation
-/docs/*          @shushuzn
-/*.md             @shushuzn
+# Rust crates
+/crates/   @shushuzn
 
 # CI/CD
-/.github/workflows/*  @shushuzn
+/.github/workflows/   @shushuzn
 
-# Config
-/pyproject.toml   @shushuzn
-/config.py        @shushuzn
+# Python core modules
+/core/     @shushuzn
+/llm/      @shushuzn
+/parsers/  @shushuzn
+/db/       @shushuzn
