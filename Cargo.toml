@@ -35,6 +35,7 @@ members = [
     "crates/rairos-identifiers",
     "crates/rairos-code-trace",
     "crates/rairos-achievements",
+    "crates/rairos-value-quantifier",
     "crates/rairos-batch-optimizer",
     "crates/rairos-skill-discovery",
     "crates/rairos-user-helpers",
