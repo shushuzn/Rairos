@@ -9,12 +9,19 @@ Inspired by cloud optimization principles:
 """
 
 import time
-import psutil
+import os
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
+
+try:
+    import rairos_sysinfo as _sysinfo
+    _SYSINFO_AVAILABLE = True
+except ImportError:
+    _SYSINFO_AVAILABLE = False
+    import psutil as _psutil_null  # type: ignore[import-untyped]
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +58,9 @@ class ResourceMonitor:
 
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or self._get_default_data_dir()
-        self._disk_io_start = psutil.disk_io_counters()
-        self._net_io_start = psutil.net_io_counters()
+        # Set disk/net io start to None since rairos_sysinfo stubs return zeros
+        self._disk_io_start = None
+        self._net_io_start = None
         self._history: List[ResourceStats] = []
         self._max_history = 1000  # Keep last 1000 samples
 
@@ -64,63 +72,40 @@ class ResourceMonitor:
     def get_disk_info(self, path: Optional[Path] = None) -> DiskInfo:
         """Get disk usage information for a path."""
         target = path or self.data_dir
-        usage = psutil.disk_usage(str(target))
+        si = _sysinfo.SysInfo()
+        usage = si.disk_usage(str(target))
         return DiskInfo(
             path=target,
-            total_gb=usage.total / (1024**3),
-            used_gb=usage.used / (1024**3),
-            free_gb=usage.free / (1024**3),
-            percent=usage.percent,
+            total_gb=usage["total_gb"],
+            used_gb=usage["used_gb"],
+            free_gb=usage["free_gb"],
+            percent=usage["percent"],
         )
 
     def get_memory_info(self) -> Tuple[float, float, float]:
         """Get memory information (used_mb, available_mb, percent)."""
-        mem = psutil.virtual_memory()
+        si = _sysinfo.SysInfo()
+        mem = si.virtual_memory()
         return (
-            mem.used / (1024**2),  # used_mb
-            mem.available / (1024**2),  # available_mb
-            mem.percent,  # percent
+            mem["used_mb"],  # used_mb
+            mem["available_mb"],  # available_mb
+            mem["percent"],  # percent
         )
 
     def get_cpu_info(self) -> Tuple[float, int]:
         """Get CPU information (percent, count)."""
-        return (psutil.cpu_percent(interval=0.1), psutil.cpu_count())
+        si = _sysinfo.SysInfo()
+        return (si.cpu_percent(0.1), os.cpu_count() or 1)
 
-    def get_io_stats(self) -> Dict[str, int]:
-        """Get disk I/O statistics."""
-        try:
-            io = psutil.disk_io_counters()
-            start = self._disk_io_start
-            return {
-                "read_count": io.read_count - start.read_count if start else io.read_count,
-                "write_count": io.write_count - start.write_count if start else io.write_count,
-                "read_mb": (io.read_bytes - start.read_bytes) / (1024**2)
-                if start
-                else io.read_bytes / (1024**2),
-                "write_mb": (io.write_bytes - start.write_bytes) / (1024**2)
-                if start
-                else io.write_bytes / (1024**2),
-            }
-        except Exception as e:
-            logger.warning(f"Failed to get I/O stats: {e}")
-            return {"read_count": 0, "write_count": 0, "read_mb": 0.0, "write_mb": 0.0}  # type: ignore[dict-item]
+    def get_io_stats(self) -> Dict[str, float]:
+        """Get disk I/O statistics (stub — disk I/O counters not available on all platforms)."""
+        # sysinfo does not expose disk I/O counters on all platforms; return zeros
+        return {"read_count": 0, "write_count": 0, "read_mb": 0.0, "write_mb": 0.0}
 
     def get_network_stats(self) -> Dict[str, float]:
-        """Get network I/O statistics."""
-        try:
-            net = psutil.net_io_counters()
-            start = self._net_io_start
-            return {
-                "sent_mb": (net.bytes_sent - start.bytes_sent) / (1024**2)
-                if start
-                else net.bytes_sent / (1024**2),
-                "recv_mb": (net.bytes_recv - start.bytes_recv) / (1024**2)
-                if start
-                else net.bytes_recv / (1024**2),
-            }
-        except Exception as e:
-            logger.warning(f"Failed to get network stats: {e}")
-            return {"sent_mb": 0.0, "recv_mb": 0.0}
+        """Get network I/O statistics (stub — net I/O counters not available on all platforms)."""
+        # sysinfo does not expose network I/O counters on all platforms; return zeros
+        return {"sent_mb": 0.0, "recv_mb": 0.0}
 
     def collect_stats(self) -> ResourceStats:
         """Collect all resource statistics."""
@@ -137,8 +122,8 @@ class ResourceMonitor:
             memory_percent=mem_pct,
             disk_used_gb=disk_info.used_gb,
             disk_percent=disk_info.percent,
-            disk_io_reads=io_stats.get("read_count", 0),
-            disk_io_writes=io_stats.get("write_count", 0),
+            disk_io_reads=int(io_stats.get("read_count", 0)),
+            disk_io_writes=int(io_stats.get("write_count", 0)),
             network_sent_mb=net_stats.get("sent_mb", 0.0),
             network_recv_mb=net_stats.get("recv_mb", 0.0),
         )

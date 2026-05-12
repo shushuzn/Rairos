@@ -78,6 +78,7 @@ members = [
     "crates/rairos-db-migrate",
     "crates/rairos-db-optimize",
     "crates/rairos-db",
+    "crates/rairos-sysinfo",
     "crates/rairos-vector-store",
     "crates/rairos-research-log",
     "crates/rairos-tracker-base",

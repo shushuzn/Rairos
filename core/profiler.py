@@ -259,10 +259,10 @@ class MemoryProfiler:
     def _get_current_memory() -> float:
         """Get current memory usage in MB."""
         try:
-            import psutil
+            import rairos_sysinfo
 
-            process = psutil.Process()
-            return process.memory_info().rss / (1024 * 1024)  # type: ignore[no-any-return]
+            process = rairos_sysinfo.ProcessInfo()
+            return process.memory_rss_mb()  # type: ignore[no-any-return]
         except (ImportError, OSError):
             return 0.0
 

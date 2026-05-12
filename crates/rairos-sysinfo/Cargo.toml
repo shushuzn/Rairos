@@ -1,0 +1,16 @@
+[package]
+name = "rairos-sysinfo"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rairos_sysinfo"
+crate-type = ["cdylib"]
+
+[dependencies]
+sysinfo = "0.34"
+pyo3 = { version = "0.22", features = ["extension-module"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
