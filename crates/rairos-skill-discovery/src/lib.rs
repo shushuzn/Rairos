@@ -68,11 +68,6 @@ fn parse_frontmatter(content: &str) -> HashMap<String, String> {
     result
 }
 
-/// Return true if path is a directory containing a SKILL.md file.
-fn is_skill_dir(path: &std::path::Path) -> bool {
-    path.is_dir() && path.join(SKILL_FILENAME).exists()
-}
-
 /// Scan base directory for skill directories and parse their SKILL.md.
 fn discover_in_dir(base: &std::path::Path) -> Vec<Skill> {
     if !base.exists() {
