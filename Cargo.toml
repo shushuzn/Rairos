@@ -165,6 +165,7 @@ members = [
     "crates/rairos-policy-impact-tracer",
     "crates/rairos-review-queue",
     "crates/rairos-labor-displacement-tracker",
+    "crates/rairos-replication-checker",
     "crates/rairos-db",
     "benches",
 ]
