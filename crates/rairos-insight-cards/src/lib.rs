@@ -289,6 +289,105 @@ impl InsightManager {
         self.rate_card(card_id, 1)
     }
 
+    pub fn update_card(
+        &self,
+        card_id: &str,
+        content: Option<&str>,
+        tags: Option<Vec<String>>,
+        insight_type: Option<&str>,
+    ) -> bool {
+        let mut data = self.load_cards();
+        for item in &mut data {
+            if item.get("card_id").and_then(|v| v.as_str()) == Some(card_id) {
+                if let Some(c) = content {
+                    item.insert("content".to_string(), serde_json::json!(c));
+                }
+                if let Some(t) = tags {
+                    item.insert("tags".to_string(), serde_json::json!(t));
+                }
+                if let Some(it) = insight_type {
+                    item.insert("insight_type".to_string(), serde_json::json!(it));
+                }
+                self.save_cards(&data);
+                return true;
+            }
+        }
+        false
+    }
+
+    pub fn get_high_quality_cards(&self, min_rating: i32, min_scores: i32) -> Vec<InsightCard> {
+        let data = self.load_cards();
+        let mut results: Vec<InsightCard> = Vec::new();
+        for item in &data {
+            let rating = item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            let scores = item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            if rating >= min_rating && scores >= min_scores {
+                if let Some(card) = self._item_to_card(item) {
+                    results.push(card);
+                }
+            }
+        }
+        results.sort_by(|a, b| b.usefulness_score.partial_cmp(&a.usefulness_score).unwrap());
+        results
+    }
+
+    pub fn get_low_quality_cards(&self, max_rating: i32, min_scores: i32) -> Vec<InsightCard> {
+        let data = self.load_cards();
+        let mut results: Vec<InsightCard> = Vec::new();
+        for item in &data {
+            let rating = item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            let scores = item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            if rating > 0 && rating <= max_rating && scores >= min_scores {
+                if let Some(card) = self._item_to_card(item) {
+                    results.push(card);
+                }
+            }
+        }
+        results.sort_by(|a, b| a.usefulness_score.partial_cmp(&b.usefulness_score).unwrap());
+        results
+    }
+
+    pub fn add_reference(&self, from_card_id: &str, to_card_id: &str) -> bool {
+        let mut data = self.load_cards();
+        for item in &mut data {
+            if item.get("card_id").and_then(|v| v.as_str()) == Some(from_card_id) {
+                let refs: Vec<String> = item
+                    .get("references")
+                    .and_then(|v| serde_json::from_value(v.clone()).ok())
+                    .unwrap_or_default();
+                if !refs.contains(&to_card_id.to_string()) {
+                    let mut new_refs = refs;
+                    new_refs.push(to_card_id.to_string());
+                    item.insert("references".to_string(), serde_json::json!(new_refs));
+                    self.save_cards(&data);
+                }
+                return true;
+            }
+        }
+        false
+    }
+
+    fn _item_to_card(
+        &self,
+        item: &std::collections::HashMap<String, serde_json::Value>,
+    ) -> Option<InsightCard> {
+        Some(InsightCard {
+            card_id: item.get("card_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            paper_id: item.get("paper_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            paper_title: item.get("paper_title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            content: item.get("content").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            insight_type: item.get("insight_type").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            tags: item.get("tags").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
+            evidence: item.get("evidence").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            page_ref: item.get("page_ref").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            created_at: item.get("created_at").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            references: item.get("references").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
+            quality_rating: item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
+            usefulness_score: item.get("usefulness_score").and_then(|v| v.as_f64()).unwrap_or(0.0),
+            times_rated: item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
+        })
+    }
+
     pub fn search_cards(
         &self,
         query: Option<&str>,
