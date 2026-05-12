@@ -50,6 +50,7 @@ members = [
     "crates/rairos-rigor",
     "crates/rairos-citations",
     "crates/rairos-paradigm",
+    "crates/rairos-paradigm-monitor",
     "crates/rairos-text",
     "crates/rairos-friction",
     "crates/rairos-vault",
