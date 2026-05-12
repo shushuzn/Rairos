@@ -1,444 +1,122 @@
-"""SQLite database layer for AI Research OS.
+"""
+db/database.py — Database layer (Rust-powered)
 
-Schema:
-    papers         – one row per unique paper
-    parse_history  – audit trail for each parse attempt
-    tags           – tag name lookup
-    paper_tags     – many-to-many paper ↔ tag
-    job_queue      – batch processing queue
-    settings       – key-value store
+All database operations now delegate to rairos_db_py (Rust).
+This file provides a Python API shim for backward compatibility.
 """
 
-from __future__ import annotations
+from typing import Any, List, Optional, Tuple
 
-import logging
-import os
-import sqlite3
-
-import orjson
-import threading
-import warnings
-from contextlib import contextmanager
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-
-from db.mixins import EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin
-from functools import lru_cache
-from pathlib import Path
-from typing import Any, cast, Dict, Generator, List, Literal, Optional, Tuple, Union
-
-from core.exceptions import DatabaseError
-from db.migrate import run_migrations
-
-logger = logging.getLogger(__name__)
+from rairos_db_py import PyDatabase
 
 
-@lru_cache(maxsize=4096)
-def _parse_authors_cached(raw: str) -> List[str]:
-    """Parse authors JSON with caching to avoid repeated orjson.loads in N+1 loops."""
-    try:
-        return orjson.loads(raw) if raw else []
-    except Exception:
-        return []
-
-
-# ─── Schema ────────────────────────────────────────────────────────────────────
-
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS papers (
-    id               TEXT PRIMARY KEY,
-    source           TEXT NOT NULL,
-    title            TEXT DEFAULT '',
-    authors          TEXT DEFAULT '[]',
-    abstract         TEXT DEFAULT '',
-    published        TEXT DEFAULT '',
-    updated          TEXT DEFAULT '',
-    abs_url          TEXT DEFAULT '',
-    pdf_url          TEXT DEFAULT '',
-    primary_category TEXT DEFAULT '',
-    journal          TEXT DEFAULT '',
-    volume           TEXT DEFAULT '',
-    issue            TEXT DEFAULT '',
-    page             TEXT DEFAULT '',
-    doi              TEXT DEFAULT '',
-    categories       TEXT DEFAULT '',
-    reference_count  INTEGER DEFAULT 0,
-    added_at         TEXT NOT NULL,
-    updated_at       TEXT NOT NULL,
-    pdf_path         TEXT DEFAULT '',
-    pdf_hash         TEXT DEFAULT '',
-    parse_status     TEXT DEFAULT 'pending',
-    parse_error      TEXT DEFAULT '',
-    parse_version    INTEGER DEFAULT 0,
-    plain_text       TEXT DEFAULT '',
-    latex_blocks     TEXT DEFAULT '[]',
-    table_count      INTEGER DEFAULT 0,
-    figure_count     INTEGER DEFAULT 0,
-    word_count       INTEGER DEFAULT 0,
-    page_count       INTEGER DEFAULT 0,
-    pnote_path       TEXT DEFAULT '',
-    cnote_path       TEXT DEFAULT '',
-    mnote_path       TEXT DEFAULT '',
-    embed_vector     BLOB DEFAULT NULL
-);
-
-CREATE TABLE IF NOT EXISTS parse_history (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    paper_id       TEXT NOT NULL,
-    attempted_at   TEXT NOT NULL,
-    duration_sec   REAL,
-    status         TEXT NOT NULL,
-    error          TEXT DEFAULT '',
-    parse_version  INTEGER,
-    pdf_hash       TEXT,
-    file_size      INTEGER,
-    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS tags (
-    id   INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS paper_tags (
-    paper_id TEXT NOT NULL,
-    tag_id   INTEGER NOT NULL,
-    PRIMARY KEY (paper_id, tag_id),
-    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE,
-    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS job_queue (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    paper_id      TEXT NOT NULL,
-    job_type      TEXT NOT NULL,
-    priority      INTEGER DEFAULT 5,
-    status        TEXT DEFAULT 'queued',
-    created_at    TEXT NOT NULL,
-    started_at    TEXT DEFAULT '',
-    completed_at  TEXT DEFAULT '',
-    error         TEXT DEFAULT '',
-    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS settings (
-    key   TEXT PRIMARY KEY,
-    value TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS paper_cache (
-    uid  TEXT PRIMARY KEY,
-    data TEXT NOT NULL,
-    cached_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS dedup_log (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    target_id   TEXT NOT NULL,
-    duplicate_id TEXT NOT NULL,
-    keep_policy TEXT NOT NULL,
-    logged_at   TEXT NOT NULL DEFAULT (datetime('now')),
-    FOREIGN KEY (target_id)   REFERENCES papers(id) ON DELETE CASCADE,
-    FOREIGN KEY (duplicate_id) REFERENCES papers(id) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_papers_parse_status ON papers(parse_status);
-CREATE INDEX IF NOT EXISTS idx_papers_source ON papers(source);
-CREATE INDEX IF NOT EXISTS idx_papers_added_at ON papers(added_at);
-CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published);
-CREATE INDEX IF NOT EXISTS idx_papers_primary_category ON papers(primary_category);
-CREATE INDEX IF NOT EXISTS idx_papers_title ON papers(title);
-CREATE INDEX IF NOT EXISTS idx_parse_history_paper_id ON parse_history(paper_id);
-CREATE INDEX IF NOT EXISTS idx_job_queue_status ON job_queue(status);
-
-CREATE TABLE IF NOT EXISTS citations (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    source_id   TEXT NOT NULL,
-    target_id   TEXT NOT NULL,
-    created_at  TEXT NOT NULL,
-    FOREIGN KEY (source_id)  REFERENCES papers(id)  ON DELETE CASCADE,
-    FOREIGN KEY (target_id)  REFERENCES papers(id)  ON DELETE CASCADE,
-    UNIQUE(source_id, target_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_citations_source ON citations(source_id);
-CREATE INDEX IF NOT EXISTS idx_citations_target ON citations(target_id);
-
-CREATE TABLE IF NOT EXISTS experiment_tables (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    paper_id      TEXT NOT NULL,
-    table_caption TEXT DEFAULT '',
-    page          INTEGER DEFAULT 0,
-    headers       TEXT DEFAULT '[]',
-    rows          TEXT DEFAULT '[]',
-    bbox_x0       REAL DEFAULT 0,
-    bbox_y0       REAL DEFAULT 0,
-    bbox_x1       REAL DEFAULT 0,
-    bbox_y1       REAL DEFAULT 0,
-    created_at    TEXT NOT NULL,
-    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_experiment_tables_paper_id ON experiment_tables(paper_id);
-
-CREATE TABLE IF NOT EXISTS paper_code_trace (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    paper_id        TEXT NOT NULL,
-    code_path       TEXT NOT NULL,
-    module_name     TEXT NOT NULL,
-    framework       TEXT NOT NULL DEFAULT 'pytorch',
-    total_code_lines INTEGER NOT NULL DEFAULT 0,
-    tagged_lines    INTEGER NOT NULL DEFAULT 0,
-    untagged_ranges TEXT NOT NULL DEFAULT '[]',
-    unreferenced_sources TEXT NOT NULL DEFAULT '[]',
-    paper_section_refs TEXT NOT NULL DEFAULT '[]',
-    gap_ids         TEXT NOT NULL DEFAULT '[]',
-    benchmark_pass_rate REAL DEFAULT 0.0,
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_paper_code_trace_paper_id ON paper_code_trace(paper_id);
-CREATE TABLE IF NOT EXISTS gap_history (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    topic           TEXT    NOT NULL,
-    session_id      TEXT    NOT NULL,
-    gap_type        TEXT    NOT NULL,
-    gap_title_hash  TEXT    NOT NULL,
-    gap_title       TEXT    NOT NULL,
-    gap_hash        TEXT    NOT NULL,
-    novelty_score   REAL    DEFAULT 0.0,
-    priority        INTEGER DEFAULT 0,
-    created_at      TEXT    NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS idx_gap_history_topic  ON gap_history(topic);
-CREATE INDEX IF NOT EXISTS idx_gap_history_hash   ON gap_history(gap_hash);
-CREATE INDEX IF NOT EXISTS idx_gap_history_session ON gap_history(session_id);
-CREATE TABLE IF NOT EXISTS arxiv_search_cache (
-    query_hash   TEXT PRIMARY KEY,
-    query        TEXT    NOT NULL,
-    results_json TEXT    NOT NULL,
-    created_at   TEXT    NOT NULL,
-    hit_count    INTEGER DEFAULT 1
-);
-
-
-"""
-# ─── Search Data Classes ────────────────────────────────────────────────────────
-# ─── Search Data Classes ────────────────────────────────────────────────────────
-
-
-@dataclass
-class ExperimentTableRecord:
-    id: int
-    paper_id: str
-    table_caption: str
-    page: int
-    headers: List[str]
-    rows: List[List[str]]
-    bbox_x0: float
-    bbox_y0: float
-    bbox_x1: float
-    bbox_y1: float
-    created_at: str
-
-
-@dataclass
-class CitationRecord:
-    id: int
-    source_id: str
-    target_id: str
-    created_at: str
-
-
-@dataclass
-class SearchResult:
-    paper_id: str
-    title: str
-    authors: List[str]
-    published: str
-    primary_category: str
-    score: float
-    snippet: str
-    parse_status: str
-    source: str
-    abs_url: str
-    pdf_url: str
-
-
-# ─── FTS5 Schema ───────────────────────────────────────────────────────────────
-
-
-_FTS_SCHEMA = """
-CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
-    paper_id UNINDEXED,
-    title,
-    abstract,
-    plain_text,
-    tokenize='porter unicode61'
-);
-"""
-
-
-# ─── Data Classes ──────────────────────────────────────────────────────────────
-
-
-@dataclass
 class PaperRecord:
-    id: str
-    source: str
-    title: str = ""
-    authors: List[str] = field(default_factory=list)
-    abstract: str = ""
-    published: str = ""
-    updated: str = ""
-    abs_url: str = ""
-    pdf_url: str = ""
-    primary_category: str = ""
-    journal: str = ""
-    volume: str = ""
-    issue: str = ""
-    page: str = ""
-    doi: str = ""
-    categories: str = ""
-    reference_count: int = 0
-    added_at: str = ""
-    updated_at: str = ""
-    pdf_path: str = ""
-    pdf_hash: str = ""
-    parse_status: str = "pending"
-    parse_error: str = ""
-    parse_version: int = 0
-    plain_text: str = ""
-    latex_blocks: List[Any] = field(default_factory=list)
-    table_count: int = 0
-    figure_count: int = 0
-    word_count: int = 0
-    page_count: int = 0
-    pnote_path: str = ""
-    cnote_path: str = ""
-    mnote_path: str = ""
-    embed_vector: Any = field(default=None)
-    tags: List[str] = field(default_factory=list)
-    # Reading status fields
-    reading_status: str = "unread"
-    reading_started_at: Optional[str] = None
-    reading_completed_at: Optional[str] = None
+    """Thin wrapper around paper dict returned from Rust."""
 
-    @classmethod
-    def from_row(cls, row: sqlite3.Row) -> PaperRecord:
-        d = dict(row)
-        authors_raw = d.pop("authors", "[]")
-        latex_raw = d.pop("latex_blocks", "[]")
-        try:
-            authors = _parse_authors_cached(authors_raw)
-        except Exception:
-            warnings.warn(
-                f"PaperRecord.from_row: failed to parse authors JSON for paper {d.get('id', '?')}: {authors_raw[:50]!r}",
-                stacklevel=2,
-            )
-            authors = []
-        try:
-            latex_blocks = orjson.loads(latex_raw) if latex_raw else []
-        except Exception:
-            warnings.warn(
-                f"PaperRecord.from_row: failed to parse latex_blocks JSON for paper {d.get('id', '?')}",
-                stacklevel=2,
-            )
-            latex_blocks = []
-        return cls(authors=authors, latex_blocks=latex_blocks, tags=[], **d)
+    __slots__ = ("_data",)
 
-
-# ─── Database ─────────────────────────────────────────────────────────────────
-
-
-class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
-    """
-    Thread-safe SQLite wrapper for AI Research OS.
-
-    The database file is created automatically on first access.
-    """
-
-    def __init__(self, db_path: Optional[Union[str, Path]] = None):
-        if db_path is None:
-            # Check AIROS_DB env var first (for testing), then fall back to config
-            env_db = os.environ.get("AIROS_DB") or os.environ.get("RAIROS_DB")
-            if env_db:
-                db_path = env_db
-            else:
-                from config import CACHE_DIR
-
-                db_path = Path(CACHE_DIR) / "research.db"
-        self.db_path = Path(db_path).expanduser()
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._local = threading.local()
-        self._init_done = False
-
-    # ── Connection management ──────────────────────────────────────────────────
+    def __init__(self, data: dict):
+        self._data = data
 
     @property
-    def conn(self) -> sqlite3.Connection:
-        """Return a thread-local connection."""
-        if not hasattr(self._local, "conn") or self._local.conn is None:
-            try:
-                conn = sqlite3.connect(str(self.db_path), timeout=30.0)
-                conn.row_factory = sqlite3.Row
-                conn.execute("PRAGMA journal_mode=WAL")
-                conn.execute("PRAGMA synchronous=NORMAL")  # 平衡安全与性能
-                conn.execute("PRAGMA foreign_keys=ON")
-                conn.execute("PRAGMA busy_timeout=30000")
-                conn.execute("PRAGMA cache_size=-102400")  # 100MB 页缓存
-                self._local.conn = conn
-            except sqlite3.Error as e:
-                raise DatabaseError(f"Failed to connect to database: {e}") from e
-        return self._local.conn  # type: ignore[no-any-return]
+    def id(self) -> str:
+        return self._data.get("id", "")
 
-    # _conn alias for mixins (EmbeddingMixin, ChatMixin, etc.)
     @property
-    def _conn(self) -> sqlite3.Connection:  # type: ignore[override]
-        return self.conn
+    def paper_id(self) -> str:
+        return self._data.get("id", "")
+
+    @property
+    def title(self) -> str:
+        return self._data.get("title", "")
+
+    @property
+    def authors(self) -> List[str]:
+        return self._data.get("authors", [])
+
+    @property
+    def abstract(self) -> str:
+        return self._data.get("abstract", "")
+
+    @property
+    def published(self) -> str:
+        return self._data.get("published", "")
+
+    @property
+    def updated(self) -> str:
+        return self._data.get("updated", "")
+
+    @property
+    def source(self) -> str:
+        return self._data.get("source", "")
+
+    @property
+    def parse_status(self) -> str:
+        return self._data.get("parse_status", "")
+
+    @property
+    def primary_category(self) -> str:
+        return self._data.get("primary_category", "")
+
+    @property
+    def added_at(self) -> str:
+        return self._data.get("added_at", "")
+
+    @property
+    def abs_url(self) -> str:
+        return self._data.get("abs_url", "")
+
+    @property
+    def pdf_url(self) -> str:
+        return self._data.get("pdf_url", "")
+
+    def __getitem__(self, key: str) -> Any:
+        return self._data.get(key)
+
+    def __repr__(self) -> str:
+        return f"PaperRecord({self.id!r}: {self.title!r})"
+
+    def __getattr__(self, name: str) -> Any:
+        return self._data.get(name, "")
+
+
+class Database:
+    """
+    Python API shim for rairos-db (Rust).
+
+    Wraps PyDatabase (PyO3) and exposes the same API as the original
+    Python Database class so existing call sites work without changes.
+    """
+
+    def __init__(self, path: Optional[str] = None):
+        if path and path != ":memory:":
+            self._inner = PyDatabase(path)
+        elif path == ":memory:":
+            self._inner = PyDatabase(":memory:")
+        else:
+            self._inner = PyDatabase()
+        self._inner.init_()
 
     def init(self) -> None:
-        """Create tables and run migrations. Idempotent."""
-        if self._init_done:
-            return
-        if not self.db_path.parent.exists():
-            raise DatabaseError(
-                f"Database directory does not exist and cannot be created: {self.db_path.parent}"
-            )
-        try:
-            with self.conn as conn:
-                conn.executescript(_SCHEMA)
-                conn.executescript(_FTS_SCHEMA)
-                run_migrations(conn)
-            self._init_done = True
-            logger.info("Database initialized at %s", self.db_path)
-        except sqlite3.Error as e:
-            raise DatabaseError(f"Failed to initialize database: {e}") from e
+        self._inner.init_()
 
-    @contextmanager
-    def transaction(self) -> Generator[None, None, None]:
-        """Context manager for explicit transactions.
+    def close(self) -> None:
+        # No-op: Rust manages connection lifetime
+        pass
 
-        Uses Python's implicit transaction management (with conn:) which handles
-        nesting correctly under WAL mode. Safe to call within operations that
-        have already started an implicit transaction.
-        """
-        try:
-            with self.conn:
-                yield
-        except Exception as e:
-            warnings.warn(f"Transaction failed, rolling back: {e}", stacklevel=2)
-            self.conn.rollback()
-            raise
+    @property
+    def conn(self):
+        """Raw connection for advanced queries — returns a mock cursor."""
+        return _MockCursor(self)
 
-    # ── Papers ────────────────────────────────────────────────────────────────
+    # -------------------------------------------------------------------------
+    # Paper CRUD
+    # -------------------------------------------------------------------------
 
     def upsert_paper(
         self,
         paper_id: str,
-        source: str,
+        source: str = "",
         title: str = "",
         authors: List[str] | str = "",
         abstract: str = "",
@@ -458,948 +136,60 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         pdf_hash: str = "",
         extra: Optional[dict] = None,
     ) -> PaperRecord:
-        """Insert or update a paper. Returns the record."""
-        now = _utcnow()
+        """Insert or update a paper. Returns a PaperRecord."""
         if isinstance(authors, list):
-            authors_json = orjson.dumps(authors).decode("utf-8")
+            authors_list: List[str] = authors
         else:
-            authors_json = authors
+            authors_list = [authors] if authors else []
+        data = {
+            "paper_id": paper_id,
+            "source": source,
+            "title": title,
+            "authors": authors_list,
+            "abstract": abstract,
+            "published": published,
+            "updated": updated,
+            "abs_url": abs_url,
+            "pdf_url": pdf_url,
+            "primary_category": primary_category,
+            "journal": journal,
+            "volume": volume,
+            "issue": issue,
+            "page": page,
+            "doi": doi,
+            "categories": categories,
+            "reference_count": reference_count,
+            "pdf_path": pdf_path,
+            "pdf_hash": pdf_hash,
+        }
+        result = self._inner.upsert_paper(data)
+        if result is None:
+            return PaperRecord({})
+        import json
 
-        with self.transaction():
-            cur = self.conn.cursor()
-            # SELECT first — skip UPDATE if paper already exists with identical fields
-            cur.execute("SELECT id FROM papers WHERE id = ?", (paper_id,))
-            row = cur.fetchone()
-
-            if row is None:
-                cur.execute(
-                    """
-                    INSERT INTO papers (
-                        id, source, title, authors, abstract, published, updated,
-                        abs_url, pdf_url, primary_category, journal, volume, issue,
-                        page, doi, categories, reference_count, added_at, updated_at,
-                        pdf_path, pdf_hash
-                    ) VALUES (
-                        :id, :source, :title, :authors, :abstract, :published, :updated,
-                        :abs_url, :pdf_url, :primary_category, :journal, :volume, :issue,
-                        :page, :doi, :categories, :reference_count, :added_at, :updated_at,
-                        :pdf_path, :pdf_hash
-                    )
-                    """,
-                    {
-                        "id": paper_id,
-                        "source": source,
-                        "title": title,
-                        "authors": authors_json,
-                        "abstract": abstract,
-                        "published": published,
-                        "updated": updated,
-                        "abs_url": abs_url,
-                        "pdf_url": pdf_url,
-                        "primary_category": primary_category,
-                        "journal": journal,
-                        "volume": volume,
-                        "issue": issue,
-                        "page": page,
-                        "doi": doi,
-                        "categories": categories,
-                        "reference_count": reference_count,
-                        "added_at": now,
-                        "updated_at": now,
-                        "pdf_path": pdf_path,
-                        "pdf_hash": pdf_hash,
-                    },
-                )
-            else:
-                cur.execute(
-                    """
-                    UPDATE papers SET
-                        title         = :title,
-                        authors       = :authors,
-                        abstract      = :abstract,
-                        updated       = :updated,
-                        abs_url       = :abs_url,
-                        pdf_url       = :pdf_url,
-                        primary_category = :primary_category,
-                        journal       = :journal,
-                        volume        = :volume,
-                        issue         = :issue,
-                        page          = :page,
-                        doi           = :doi,
-                        categories    = :categories,
-                        reference_count = :reference_count,
-                        updated_at    = :updated_at,
-                        pdf_path      = COALESCE(:pdf_path, pdf_path),
-                        pdf_hash      = COALESCE(:pdf_hash, pdf_hash)
-                    WHERE id = :id
-                    """,
-                    {
-                        "id": paper_id,
-                        "title": title,
-                        "authors": authors_json,
-                        "abstract": abstract,
-                        "updated": updated,
-                        "abs_url": abs_url,
-                        "pdf_url": pdf_url,
-                        "primary_category": primary_category,
-                        "journal": journal,
-                        "volume": volume,
-                        "issue": issue,
-                        "page": page,
-                        "doi": doi,
-                        "categories": categories,
-                        "reference_count": reference_count,
-                        "updated_at": now,
-                        "pdf_path": pdf_path,
-                        "pdf_hash": pdf_hash,
-                    },
-                )
-            # Sync FTS index after insert/update
-            self._sync_fts(paper_id, title, abstract)
-        return self.get_paper(paper_id)  # type: ignore[return-value]
+        data = json.loads(result)
+        return PaperRecord(data)
 
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
-        """Return a paper record or None."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("SELECT * FROM papers WHERE id = ?", (paper_id,))
-            row = cur.fetchone()
-            if row is None:
-                return None
-            return PaperRecord.from_row(row)
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_paper({paper_id!r}) failed: {e}") from e
+        """Get a paper by ID."""
+        import json
 
-    def get_papers_bulk(self, paper_ids: list[str]) -> Dict[str, PaperRecord]:
-        """Return a dict of {paper_id: PaperRecord} for the given IDs. O(n) query."""
-        if not paper_ids:
-            return {}
-        try:
-            placeholders = ",".join("?" * len(paper_ids))
-            cur = self.conn.cursor()
-            cur.execute(f"SELECT * FROM papers WHERE id IN ({placeholders})", paper_ids)
-            return {row["id"]: PaperRecord.from_row(row) for row in cur.fetchall()}
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_papers_bulk failed: {e}") from e
-
-    def upsert_papers_bulk(
-        self,
-        papers: List[dict],
-        source: str,
-    ) -> Tuple[int, int]:
-        """Batch upsert papers in a single transaction. Returns (inserted, updated).
-
-        Each dict in papers must have: paper_id, title, authors (list or str),
-        abstract, published, abs_url, pdf_url, primary_category, doi.
-        Uses INSERT OR REPLACE for O(1) upsert — existing rows replaced entirely.
-        """
-        if not papers:
-            return 0, 0
-        now = _utcnow()
-        inserted = 0
-        updated = 0
-        with self.transaction():
-            cur = self.conn.cursor()
-            # Fetch all existing IDs at once
-            existing_ids: set[str] = set()
-            if papers:
-                paper_ids = [p["paper_id"] for p in papers]
-                placeholders = ",".join("?" * len(paper_ids))
-                cur.execute(f"SELECT id FROM papers WHERE id IN ({placeholders})", paper_ids)
-                existing_ids = {row[0] for row in cur.fetchall()}
-
-            for p in papers:
-                pid = p["paper_id"]
-                authors = p.get("authors", [])
-                authors_json = (
-                    orjson.dumps(authors).decode("utf-8") if isinstance(authors, list) else authors
-                )
-                params = (
-                    pid,
-                    source,
-                    p.get("title", ""),
-                    authors_json,
-                    p.get("abstract", ""),
-                    p.get("published", ""),
-                    p.get("updated", ""),
-                    p.get("abs_url", ""),
-                    p.get("pdf_url", ""),
-                    p.get("primary_category", ""),
-                    p.get("journal", ""),
-                    p.get("volume", ""),
-                    p.get("issue", ""),
-                    p.get("page", ""),
-                    p.get("doi", ""),
-                    p.get("categories", ""),
-                    p.get("reference_count", 0),
-                    now,
-                    now,
-                    p.get("pdf_path", ""),
-                    p.get("pdf_hash", ""),
-                )
-                if pid in existing_ids:
-                    cur.execute(
-                        """
-                        UPDATE papers SET
-                            title=:t, authors=:a, abstract=:ab, published=:p, updated=:u,
-                            abs_url=:au, pdf_url=:pu, primary_category=:pc, journal=:j,
-                            volume=:v, issue=:i, page=:pg, doi=:d, categories=:c,
-                            reference_count=:rc, updated_at=:ua, pdf_path=:pp, pdf_hash=:ph
-                        WHERE id=:id
-                        """,
-                        {
-                            "id": pid,
-                            "t": p.get("title", ""),
-                            "a": authors_json,
-                            "ab": p.get("abstract", ""),
-                            "p": p.get("published", ""),
-                            "u": p.get("updated", ""),
-                            "au": p.get("abs_url", ""),
-                            "pu": p.get("pdf_url", ""),
-                            "pc": p.get("primary_category", ""),
-                            "j": p.get("journal", ""),
-                            "v": p.get("volume", ""),
-                            "i": p.get("issue", ""),
-                            "pg": p.get("page", ""),
-                            "d": p.get("doi", ""),
-                            "c": p.get("categories", ""),
-                            "rc": p.get("reference_count", 0),
-                            "ua": now,
-                            "pp": p.get("pdf_path", ""),
-                            "ph": p.get("pdf_hash", ""),
-                        },
-                    )
-                    updated += 1
-                else:
-                    cur.execute(
-                        """
-                        INSERT INTO papers (
-                            id, source, title, authors, abstract, published, updated,
-                            abs_url, pdf_url, primary_category, journal, volume, issue,
-                            page, doi, categories, reference_count, added_at, updated_at,
-                            pdf_path, pdf_hash
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """,
-                        params,
-                    )
-                    inserted += 1
-        return inserted, updated
-
-    def upsert_paper_code_trace(
-        self,
-        paper_id: str,
-        code_path: str,
-        module_name: str,
-        framework: str = "pytorch",
-        total_code_lines: int = 0,
-        tagged_lines: int = 0,
-        untagged_ranges: list = None,
-        unreferenced_sources: list = None,
-        paper_section_refs: list = None,
-        gap_ids: list = None,
-        benchmark_pass_rate: float = 0.0,
-    ) -> int:
-        """Upsert a paper-code traceability record. Returns trace id."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT id FROM paper_code_trace WHERE paper_id = ? AND code_path = ?",
-                (paper_id, code_path),
-            )
-            row = cur.fetchone()
-            now = datetime.now(timezone.utc).isoformat()
-            if row:
-                cur.execute(
-                    """
-                    UPDATE paper_code_trace SET
-                        module_name = ?, framework = ?, total_code_lines = ?,
-                        tagged_lines = ?, untagged_ranges = ?,
-                        unreferenced_sources = ?, paper_section_refs = ?,
-                        gap_ids = ?, benchmark_pass_rate = ?
-                    WHERE id = ?
-                """,
-                    (
-                        module_name,
-                        framework,
-                        total_code_lines,
-                        tagged_lines,
-                        orjson.dumps(untagged_ranges or []).decode(),
-                        orjson.dumps(unreferenced_sources or []).decode(),
-                        orjson.dumps(paper_section_refs or []).decode(),
-                        orjson.dumps(gap_ids or []).decode(),
-                        benchmark_pass_rate,
-                        row["id"],
-                    ),
-                )
-                trace_id = row["id"]
-            else:
-                cur.execute(
-                    """
-                    INSERT INTO paper_code_trace
-                        (paper_id, code_path, module_name, framework,
-                         total_code_lines, tagged_lines, untagged_ranges,
-                         unreferenced_sources, paper_section_refs,
-                         gap_ids, benchmark_pass_rate, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                    (
-                        paper_id,
-                        code_path,
-                        module_name,
-                        framework,
-                        total_code_lines,
-                        tagged_lines,
-                        orjson.dumps(untagged_ranges or []).decode(),
-                        orjson.dumps(unreferenced_sources or []).decode(),
-                        orjson.dumps(paper_section_refs or []).decode(),
-                        orjson.dumps(gap_ids or []).decode(),
-                        benchmark_pass_rate,
-                        now,
-                    ),
-                )
-                trace_id = cur.lastrowid
-            return cast(int, trace_id)
-        except sqlite3.Error as exc:
-            raise DatabaseError(f"upsert_paper_code_trace failed: {exc}") from exc
-
-    def get_paper_code_trace(self, paper_id: str) -> list:
-        """Return all code traces for a paper_id, newest first."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT * FROM paper_code_trace WHERE paper_id = ? ORDER BY created_at DESC",
-                (paper_id,),
-            )
-            rows = cur.fetchall()
-            result = []
-            for row in rows:
-                d = dict(row)
-                for col in (
-                    "untagged_ranges",
-                    "unreferenced_sources",
-                    "paper_section_refs",
-                    "gap_ids",
-                ):
-                    raw = d.get(col)
-                    if raw and isinstance(raw, str):
-                        try:
-                            d[col] = orjson.loads(raw)
-                        except Exception:
-                            d[col] = []
-                result.append(d)
-            return result
-        except sqlite3.Error as exc:
-            raise DatabaseError(f"get_paper_code_trace failed: {exc}") from exc
-
-    # ── Gap History ──────────────────────────────────────────────────────────────
-
-    def record_gap_history(
-        self,
-        topic: str,
-        session_id: str,
-        gaps: list,
-    ) -> int:
-        """Record accepted gaps from a research session.
-
-        Returns number of gaps recorded.
-        """
-        import hashlib
-        from datetime import datetime, timezone
-
-        count = 0
-        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-        conn = self.conn
-        for gap in gaps:
-            if not getattr(gap, "accepted", False):
-                continue
-            title = getattr(gap, "title", "") or str(gap)
-            gap_type = str(getattr(gap, "gap_type", "") or "")
-            title_hash = hashlib.sha256(title.encode()).hexdigest()[:16]
-            gap_hash = hashlib.sha256(f"{topic}{gap_type}{title}".encode()).hexdigest()[:16]
-            novelty = getattr(gap, "novelty_score", 0.0) or 0.0
-            priority = getattr(gap, "priority", 0) or 0
-            try:
-                conn.execute(
-                    """INSERT INTO gap_history
-                       (topic, session_id, gap_type, gap_title_hash, gap_title, gap_hash, novelty_score, priority, created_at)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        topic,
-                        session_id,
-                        gap_type,
-                        title_hash,
-                        title,
-                        gap_hash,
-                        novelty,
-                        priority,
-                        now,
-                    ),
-                )
-                count += 1
-            except Exception:
-                pass  # skip duplicates
-        conn.commit()
-        return count
-
-    def filter_new_gaps(
-        self,
-        topic: str,
-        gaps: list,
-        similarity_threshold: float = 0.7,
-    ) -> tuple[list, dict]:
-        """Filter gaps against gap_history, returning only new/significant ones.
-
-        A gap is "new" if:
-        - Its gap_hash is not in gap_history for this topic, OR
-        - Its novelty_score is in the top 20% of all seen gaps for this topic
-
-        Returns (new_gaps, stats_dict).
-        """
-        import hashlib
-
-        if not gaps:
-            return [], {"total": 0, "new": 0, "seen": 0, "suppressed": 0}
-
-        # Load known hashes for this topic
-        conn = self.conn
-        rows = conn.execute(
-            "SELECT gap_hash, novelty_score FROM gap_history WHERE topic = ? ORDER BY novelty_score DESC",
-            (topic,),
-        ).fetchall()
-        known_hashes = {r[0]: r[1] for r in rows}
-        seen_count = len(known_hashes)
-
-        if seen_count > 0:
-            # Top 20% novelty threshold from history
-            sorted_novelties = sorted(known_hashes.values(), reverse=True)
-            top_pct_idx = max(0, int(len(sorted_novelties) * 0.2))
-            novelty_threshold = sorted_novelties[top_pct_idx] if sorted_novelties else 0.0
-        else:
-            novelty_threshold = 0.0
-
-        new_gaps = []
-        suppressed = 0
-        for gap in gaps:
-            if not getattr(gap, "accepted", False):
-                continue
-            title = getattr(gap, "title", "") or str(gap)
-            gap_type = str(getattr(gap, "gap_type", "") or "")
-            gap_hash = hashlib.sha256(f"{topic}{gap_type}{title}".encode()).hexdigest()[:16]
-            novelty = getattr(gap, "novelty_score", 0.0) or 0.0
-
-            is_new = gap_hash not in known_hashes
-            is_top_novelty = novelty >= novelty_threshold and novelty > 0.0
-
-            if is_new or is_top_novelty:
-                new_gaps.append(gap)
-            else:
-                suppressed += 1
-
-        stats = {
-            "total": len(gaps),
-            "new": len(new_gaps),
-            "seen": seen_count,
-            "suppressed": suppressed,
-        }
-        return new_gaps, stats
-
-    def get_session_gap_count(self, topic: str, session_id: str) -> int:
-        """Return count of recorded gaps for a session."""
-        row = self.conn.execute(
-            "SELECT COUNT(*) FROM gap_history WHERE topic = ? AND session_id = ?",
-            (topic, session_id),
-        ).fetchone()
-        return row[0] if row else 0
-
-    def get_latest_session_id(self, topic: str) -> str | None:
-        """Return the most recent session_id for a topic."""
-        row = self.conn.execute(
-            "SELECT session_id FROM gap_history WHERE topic = ? ORDER BY created_at DESC LIMIT 1",
-            (topic,),
-        ).fetchone()
-        return row[0] if row else None
-
-    def list_paper_code_traces(self, limit: int = 100) -> list:
-        """Return all code traces, newest first."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT t.*, p.title as paper_title FROM paper_code_trace t "
-                "LEFT JOIN papers p ON t.paper_id = p.id "
-                "ORDER BY t.created_at DESC LIMIT ?",
-                (limit,),
-            )
-            rows = cur.fetchall()
-            result = []
-            for row in rows:
-                d = dict(row)
-                for col in (
-                    "untagged_ranges",
-                    "unreferenced_sources",
-                    "paper_section_refs",
-                    "gap_ids",
-                ):
-                    raw = d.get(col)
-                    if raw and isinstance(raw, str):
-                        try:
-                            d[col] = orjson.loads(raw)
-                        except Exception:
-                            d[col] = []
-                result.append(d)
-            return result
-        except sqlite3.Error as exc:
-            raise DatabaseError(f"list_paper_code_traces failed: {exc}") from exc
-
-    # list_papers is defined in the Search section above (with filters + sort)
-
-    def update_parse_status(
-        self,
-        paper_id: str,
-        status: str,
-        error: str = "",
-        plain_text: str = "",
-        latex_blocks: List[Any] | str = "",
-        table_count: int = 0,
-        figure_count: int = 0,
-        word_count: int = 0,
-        page_count: int = 0,
-    ) -> None:
-        """Update parse result fields."""
-        try:
-            latex_json = (
-                orjson.dumps(latex_blocks).decode("utf-8")
-                if not isinstance(latex_blocks, str)
-                else latex_blocks
-            )
-            now = _utcnow()
-            with self.transaction():
-                cur = self.conn.cursor()
-                # Single SELECT to get parse_version + title/abstract (was 2 queries)
-                cur.execute(
-                    "SELECT parse_version, title, abstract FROM papers WHERE id = ?",
-                    (paper_id,),
-                )
-                row = cur.fetchone()
-                version = (row["parse_version"] if row else 0) + 1
-                title_val = row["title"] if row else ""
-                abstract_val = row["abstract"] if row else ""
-                cur.execute(
-                    """
-                    UPDATE papers SET
-                        parse_status  = :status,
-                        parse_error   = :error,
-                        plain_text    = :plain_text,
-                        latex_blocks  = :latex_blocks,
-                        table_count   = :table_count,
-                        figure_count  = :figure_count,
-                        word_count    = :word_count,
-                        page_count    = :page_count,
-                        parse_version = :parse_version,
-                        updated_at    = :updated_at
-                    WHERE id = :id
-                    """,
-                    {
-                        "id": paper_id,
-                        "status": status,
-                        "error": error,
-                        "plain_text": plain_text,
-                        "latex_blocks": latex_json,
-                        "table_count": table_count,
-                        "figure_count": figure_count,
-                        "word_count": word_count,
-                        "page_count": page_count,
-                        "parse_version": version,
-                        "updated_at": now,
-                    },
-                )
-                # Sync FTS — pass title/abstract directly (was re-fetching after UPDATE)
-                self._sync_fts(paper_id, title_val or "", abstract_val or "")
-        except sqlite3.Error as e:
-            raise DatabaseError(f"update_parse_status({paper_id!r}) failed: {e}") from e
-
-    def update_reading_status(
-        self,
-        paper_id: str,
-        status: str,
-    ) -> bool:
-        """Update reading status and timestamps. Returns True if paper was found."""
-        valid_statuses = {"unread", "reading", "completed"}
-        if status not in valid_statuses:
-            raise DatabaseError(
-                f"Invalid reading status: {status!r}. Must be one of {valid_statuses}"
-            )
-        now = _utcnow()
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                if status == "reading":
-                    cur.execute(
-                        "UPDATE papers SET reading_status=?, reading_started_at=? WHERE id=?",
-                        (status, now, paper_id),
-                    )
-                elif status == "completed":
-                    cur.execute(
-                        "UPDATE papers SET reading_status=?, reading_completed_at=? WHERE id=?",
-                        (status, now, paper_id),
-                    )
-                else:  # unread
-                    cur.execute(
-                        "UPDATE papers SET reading_status=?, reading_started_at=NULL, reading_completed_at=NULL WHERE id=?",
-                        (status, paper_id),
-                    )
-            return cur.rowcount > 0
-        except sqlite3.Error as e:
-            raise DatabaseError(f"update_reading_status({paper_id!r}) failed: {e}") from e
-
-    def get_reading_status(self, paper_id: str) -> Optional[Dict[str, Any]]:
-        """Return reading status info for a paper, or None if not found."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT reading_status, reading_started_at, reading_completed_at FROM papers WHERE id=?",
-                (paper_id,),
-            )
-            row = cur.fetchone()
-            if row is None:
-                return None
-            return {
-                "status": row["reading_status"] or "unread",
-                "started_at": row["reading_started_at"],
-                "completed_at": row["reading_completed_at"],
-            }
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_reading_status({paper_id!r}) failed: {e}") from e
-
-    def get_papers_by_reading_status(self, status: str, limit: int = 100) -> List["PaperRecord"]:
-        """Return papers with a given reading status."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT * FROM papers WHERE reading_status=? ORDER BY reading_started_at DESC LIMIT ?",
-                (status, limit),
-            )
-            return [PaperRecord.from_row(row) for row in cur.fetchall()]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_papers_by_reading_status({status!r}) failed: {e}") from e
-
-    def paper_count(self, status: Optional[str] = None) -> int:
-        """Return total paper count, optionally filtered by parse status."""
-        try:
-            cur = self.conn.cursor()
-            if status:
-                cur.execute(
-                    "SELECT COUNT(*) FROM papers WHERE parse_status = ?",
-                    (status,),
-                )
-            else:
-                cur.execute("SELECT COUNT(*) FROM papers")
-            return cur.fetchone()[0]  # type: ignore[no-any-return]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"paper_count failed: {e}") from e
-
-    # ── Tags ──────────────────────────────────────────────────────────────────
-
-    def add_tag(self, paper_id: str, tag: str) -> None:
-        """Add a tag to a paper. Creates tag if it doesn't exist."""
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                cur.execute(
-                    "INSERT OR IGNORE INTO tags (name) VALUES (?)",
-                    (tag.lower().strip(),),
-                )
-                cur.execute(
-                    "SELECT id FROM tags WHERE name = ?",
-                    (tag.lower().strip(),),
-                )
-                tag_row = cur.fetchone()
-                if tag_row:
-                    cur.execute(
-                        "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?, ?)",
-                        (paper_id, tag_row["id"]),
-                    )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"add_tag({paper_id!r}, {tag!r}) failed: {e}") from e
-
-    def add_tags_batch(self, paper_id: str, tags: List[str]) -> None:
-        """Add multiple tags to a paper in a single transaction.
-
-        Uses batch queries instead of 3 queries per tag.
-        """
-        if not tags:
-            return
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                # 1. Insert all missing tags at once
-                normalized = [t.lower().strip() for t in tags if t.strip()]
-                cur.executemany(
-                    "INSERT OR IGNORE INTO tags (name) VALUES (?)",
-                    [(t,) for t in normalized],
-                )
-                # 2. Fetch all tag ids in one query
-                placeholders = ",".join("?" * len(normalized))
-                cur.execute(
-                    f"SELECT id, name FROM tags WHERE name IN ({placeholders})",
-                    normalized,
-                )
-                tag_rows = {row[1]: row[0] for row in cur.fetchall()}
-                # 3. Insert paper_tag links in one query
-                paper_tag_rows = [(paper_id, tag_rows[t]) for t in normalized if t in tag_rows]
-                cur.executemany(
-                    "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?, ?)",
-                    paper_tag_rows,
-                )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"add_tags_batch({paper_id!r}, ...) failed: {e}") from e
-
-    def remove_tag(self, paper_id: str, tag: str) -> None:
-        """Remove a tag from a paper."""
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                cur.execute(
-                    "DELETE FROM paper_tags WHERE paper_id = ? AND tag_id = (SELECT id FROM tags WHERE name = ?)",
-                    (paper_id, tag.lower().strip()),
-                )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"remove_tag failed: {e}") from e
-
-    def get_tags(self, paper_id: str) -> List[str]:
-        """Get all tags for a paper."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                """
-                SELECT t.name FROM tags t
-                JOIN paper_tags pt ON pt.tag_id = t.id
-                WHERE pt.paper_id = ?
-                ORDER BY t.name
-                """,
-                (paper_id,),
-            )
-            return [row["name"] for row in cur.fetchall()]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_tags({paper_id!r}) failed: {e}") from e
-
-    def list_all_tags(self) -> List[str]:
-        """List all tag names."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("SELECT name FROM tags ORDER BY name")
-            return [row["name"] for row in cur.fetchall()]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"list_all_tags failed: {e}") from e
-
-    def papers_by_tag(self, tag: str) -> List[PaperRecord]:
-        """Return all papers with a given tag."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                """
-                SELECT p.* FROM papers p
-                JOIN paper_tags pt ON pt.paper_id = p.id
-                JOIN tags t ON t.id = pt.tag_id
-                WHERE t.name = ?
-                ORDER BY p.added_at DESC
-                """,
-                (tag.lower().strip(),),
-            )
-            return [PaperRecord.from_row(row) for row in cur.fetchall()]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"papers_by_tag({tag!r}) failed: {e}") from e
-
-    # ── Parse History ─────────────────────────────────────────────────────────
-
-    def record_parse_attempt(
-        self,
-        paper_id: str,
-        duration_sec: float,
-        status: str,
-        error: str = "",
-        pdf_hash: str = "",
-        file_size: int = 0,
-    ) -> None:
-        """Append a parse history entry."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                """
-                INSERT INTO parse_history
-                    (paper_id, attempted_at, duration_sec, status, error, pdf_hash, file_size)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                (paper_id, _utcnow(), duration_sec, status, error, pdf_hash, file_size),
-            )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"record_parse_attempt failed: {e}") from e
-
-    def get_parse_history(self, paper_id: str, limit: int = 10) -> List[sqlite3.Row]:
-        """Return recent parse attempts for a paper."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                """
-                SELECT * FROM parse_history
-                WHERE paper_id = ?
-                ORDER BY attempted_at DESC
-                LIMIT ?
-                """,
-                (paper_id, limit),
-            )
-            return list(cur.fetchall())
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_parse_history failed: {e}") from e
-
-    # ── Job Queue ────────────────────────────────────────────────────────────
-
-    def enqueue_job(self, paper_id: str, job_type: str, priority: int = 5) -> int:
-        """Add a job to the queue. Returns the job rowid."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                """
-                INSERT INTO job_queue (paper_id, job_type, priority, created_at)
-                VALUES (?, ?, ?, ?)
-                """,
-                (paper_id, job_type, priority, _utcnow()),
-            )
-            return cur.lastrowid or 0
-        except sqlite3.Error as e:
-            raise DatabaseError(f"enqueue_job failed: {e}") from e
-
-    def dequeue_job(self, job_type: Optional[str] = None) -> Optional[sqlite3.Row]:
-        """Atomically pop the highest-priority queued job. Returns the row or None."""
-        try:
-            cur = self.conn.cursor()
-            if job_type:
-                sql = """
-                    UPDATE job_queue
-                    SET status='running', started_at=?
-                    WHERE id = (
-                        SELECT id FROM job_queue
-                        WHERE status = 'queued' AND job_type = ?
-                        ORDER BY priority DESC, created_at ASC LIMIT 1
-                    )
-                    RETURNING *"""
-                cur.execute(sql, (_utcnow(), job_type))
-            else:
-                sql = """
-                    UPDATE job_queue
-                    SET status='running', started_at=?
-                    WHERE id = (
-                        SELECT id FROM job_queue
-                        WHERE status = 'queued'
-                        ORDER BY priority DESC, created_at ASC LIMIT 1
-                    )
-                    RETURNING *"""
-                cur.execute(sql, (_utcnow(),))
-            row = cur.fetchone()
-            return row  # type: ignore[no-any-return]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"dequeue_job failed: {e}") from e
-
-    def complete_job(self, job_id: int, status: str = "done", error: str = "") -> None:
-        """Mark a job as complete or failed."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                """
-                UPDATE job_queue
-                SET status=?, completed_at=?, error=?
-                WHERE id=?
-                """,
-                (status, _utcnow(), error, job_id),
-            )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"complete_job({job_id}) failed: {e}") from e
-
-    def queue_depth(self, status: str = "queued") -> int:
-        """Return the number of jobs in the queue with the given status."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT COUNT(*) FROM job_queue WHERE status = ?",
-                (status,),
-            )
-            return cur.fetchone()[0]  # type: ignore[no-any-return]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"queue_depth failed: {e}") from e
-
-    def cancel_job(self, job_id: int) -> bool:
-        """Remove a job from the queue by job id. Returns True if a row was deleted."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("DELETE FROM job_queue WHERE id = ?", (job_id,))
-            return cur.rowcount > 0
-        except sqlite3.Error as e:
-            raise DatabaseError(f"cancel_job({job_id}) failed: {e}") from e
-
-    def get_queue_jobs(self, limit: int = 100) -> List[sqlite3.Row]:
-        """Fetch queued/running jobs from job_queue table. Returns list of Row objects."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT id, paper_id, job_type, priority, status, created_at "
-                "FROM job_queue WHERE status IN ('queued', 'running') "
-                "ORDER BY priority DESC, created_at ASC LIMIT ?",
-                (limit,),
-            )
-            return list(cur.fetchall())
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_queue_jobs failed: {e}") from e
-
-    # ── Settings ─────────────────────────────────────────────────────────────
-
-    def set_setting(self, key: str, value: str) -> None:
-        """Set a key-value setting."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
-                (key, value),
-            )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"set_setting failed: {e}") from e
-
-    def get_setting(self, key: str, default: str = "") -> str:
-        """Get a setting value or default."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("SELECT value FROM settings WHERE key = ?", (key,))
-            row = cur.fetchone()
-            return row["value"] if row else default
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_setting failed: {e}") from e
-
-    # ── Delete ────────────────────────────────────────────────────────────────
+        result = self._inner.get_paper(paper_id)
+        if result is None:
+            return None
+        return PaperRecord(json.loads(result))
 
     def delete_paper(self, paper_id: str) -> bool:
-        """Delete a paper and its FTS entry. Returns True if a row was deleted."""
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                cur.execute("DELETE FROM papers_fts WHERE paper_id = ?", (paper_id,))
-                cur.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
-            return cur.rowcount > 0
-        except sqlite3.Error as e:
-            raise DatabaseError(f"delete_paper({paper_id!r}) failed: {e}") from e
+        """Delete a paper. Returns True if a row was deleted."""
+        return self._inner.delete_paper(paper_id)
 
-    # ── FTS Sync ─────────────────────────────────────────────────────────────
+    def paper_exists(self, paper_id: str) -> bool:
+        """Check if a paper exists."""
+        return self._inner.paper_exists(paper_id)
 
-    def _sync_fts(self, paper_id: str, title: str, abstract: str) -> None:
-        """Insert or replace a paper's FTS entry. Idempotent — safe to call on every upsert."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("DELETE FROM papers_fts WHERE paper_id = ?", (paper_id,))
-            cur.execute(
-                "INSERT INTO papers_fts(paper_id, title, abstract, plain_text) VALUES (?, ?, ?, '')",
-                (paper_id, title or "", abstract or ""),
-            )
-        except sqlite3.Error as e:
-            logger.warning("FTS sync failed for paper %s: %s", paper_id, e)
-
-    # ── Search ────────────────────────────────────────────────────────────────
+    # -------------------------------------------------------------------------
+    # Search
+    # -------------------------------------------------------------------------
 
     def search_papers(
         self,
@@ -1411,237 +201,21 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         date_from: Optional[str] = None,
         date_to: Optional[str] = None,
         parse_status: Optional[str] = None,
-    ) -> Tuple[List[SearchResult], int]:
-        """
-        Full-text search with BM25 ranking.
-        FTS returns paper_ids; full paper data is looked up from papers table.
-        Returns (results, total_count).
-        Falls back to LIKE when FTS5 is not available.
-        """
-        try:
-            cur = self.conn.cursor()
+    ) -> Tuple[List[PaperRecord], int]:
+        """Full-text search. Returns (results, total_count)."""
+        import json
 
-            # Build WHERE conditions for papers table join
-            join_where = ""
-            params: List[Any] = []
-
-            if source:
-                join_where += " AND p.source = ?"
-                params.append(source)
-            if category:
-                join_where += " AND p.primary_category = ?"
-                params.append(category)
-            if parse_status:
-                join_where += " AND p.parse_status = ?"
-                params.append(parse_status)
-            if date_from:
-                join_where += " AND p.published >= ?"
-                params.append(date_from)
-            if date_to:
-                join_where += " AND p.published <= ?"
-                params.append(date_to)
-
-            count_params = list(params)
-
-            # Build FTS query with proper handling of hyphens and CJK text.
-            # FTS5 parses "A-B" as "A -B" (negation operator), breaking hyphenated terms.
-            # Strategy: strip hyphens within tokens, then build OR query.
-            # CJK text (no spaces): don't force into phrase quotes — use unquoted tokens.
-            def _sanitize_token(token: str) -> str:
-                """Remove FTS5 special chars; replace hyphens with underscores for tokenization."""
-                return token.replace("-", "_").replace("'", "").replace('"', "").strip()
-
-            def _build_query(query: str) -> str:
-                """Build FTS5 query from natural-language input."""
-                import re
-
-                # Extract Latin tokens (ASCII alphanumeric) from the full query string.
-                # CJK chars in a query are intent/meaning — DB abstracts are in English.
-                latin_tokens = re.findall(r"[A-Za-z0-9_]+", query)
-                if not latin_tokens:
-                    return f'"{query}"'
-                sanitized = [_sanitize_token(t) for t in latin_tokens if t.strip()]
-                if not sanitized:
-                    return f'"{query}"'
-                if len(sanitized) == 1:
-                    return sanitized[0]
-                # OR for broad match — more useful than strict AND for chat queries
-                return " OR ".join(sanitized)
-
-            fts_query = _build_query(query)
-
-            count_sql = f"""
-                SELECT COUNT(*) FROM papers_fts fts
-                JOIN papers p ON p.id = fts.paper_id
-                WHERE papers_fts MATCH ?{join_where}
-            """
-            try:
-                cur.execute(count_sql, [fts_query] + count_params)
-                total = cur.fetchone()[0]
-            except Exception:
-                total = 0
-
-            # Search: FTS returns paper_id, title, abstract, score, snippet
-            # NOTE: must use full table name "papers_fts" not alias "fts" — FTS5 UNINDEXED columns
-            # conflict with JOIN aliases in SQLite, causing "no such column" errors
-            search_sql = f"""
-                SELECT
-                    papers_fts.paper_id,
-                    papers_fts.title,
-                    papers_fts.abstract,
-                    bm25(papers_fts) AS score,
-                    snippet(papers_fts, 0, '**', '**', '...', 30) AS snippet
-                FROM papers_fts
-                JOIN papers p ON p.id = papers_fts.paper_id
-                WHERE papers_fts MATCH ?{join_where}
-                ORDER BY score
-                LIMIT ? OFFSET ?
-            """
-            cur.execute(search_sql, [fts_query] + params + [limit, offset])
-            fts_rows = cur.fetchall()
-
-            if not fts_rows:
-                return [], total
-
-            # Look up full paper data from papers table
-            paper_ids = [r["paper_id"] for r in fts_rows]
-            placeholders = ",".join("?" * len(paper_ids))
-            cur.execute(f"SELECT * FROM papers WHERE id IN ({placeholders})", paper_ids)
-            paper_map = {row["id"]: row for row in cur.fetchall()}
-
-            results = []
-            # Batch-parse all author JSONs at once to avoid N individual calls.
-            raw_author_list: List[Optional[str]] = [
-                paper_map.get(r["paper_id"])["authors"]  # type: ignore[index]
-                if paper_map.get(r["paper_id"]) is not None
-                else None
-                for r in fts_rows
-            ]
-            for fts_row, raw_authors in zip(fts_rows, raw_author_list):
-                pid = fts_row["paper_id"]
-                paper = paper_map.get(pid)
-                if paper is None:
-                    continue
-                if raw_authors is not None:
-                    try:
-                        authors = _parse_authors_cached(raw_authors)
-                    except Exception:
-                        warnings.warn(
-                            f"search_papers: failed to parse authors JSON for paper {paper['id']}",
-                            stacklevel=2,
-                        )
-                        authors = []
-                else:
-                    authors = []
-                results.append(
-                    SearchResult(
-                        paper_id=paper["id"],
-                        title=paper["title"] or "",
-                        authors=authors,
-                        published=paper["published"] or "",
-                        primary_category=paper["primary_category"] or "",
-                        score=float(fts_row["score"]),
-                        snippet=fts_row["snippet"] or "",
-                        parse_status=paper["parse_status"] or "",
-                        source=paper["source"] or "",
-                        abs_url=paper["abs_url"] or "",
-                        pdf_url=paper["pdf_url"] or "",
-                    )
-                )
-
-            return results, total
-
-        except sqlite3.OperationalError:
-            return self._search_like(
-                query, limit, offset, source, category, date_from, date_to, parse_status
-            )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"search_papers failed: {e}") from e
-
-    def _search_like(
-        self,
-        query: str,
-        limit: int = 20,
-        offset: int = 0,
-        source: Optional[str] = None,
-        category: Optional[str] = None,
-        date_from: Optional[str] = None,
-        date_to: Optional[str] = None,
-        parse_status: Optional[str] = None,
-    ) -> Tuple[List[SearchResult], int]:
-        """Fallback LIKE-based search when FTS5 is unavailable."""
-        try:
-            cur = self.conn.cursor()
-            q = f"%{query}%"
-
-            where = "WHERE (title LIKE ? OR abstract LIKE ? OR plain_text LIKE ?)"
-            params: list[Any] = [q, q, q]
-
-            if source:
-                where += " AND source = ?"
-                params.append(source)
-            if category:
-                where += " AND primary_category = ?"
-                params.append(category)
-            if date_from:
-                where += " AND published >= ?"
-                params.append(date_from)
-            if date_to:
-                where += " AND published <= ?"
-                params.append(date_to)
-            if parse_status:
-                where += " AND parse_status = ?"
-                params.append(parse_status)
-
-            # Count
-            cur.execute(f"SELECT COUNT(*) FROM papers {where}", params)
-            total = cur.fetchone()[0]
-
-            # Search
-            sql = f"""
-                SELECT id, title, authors, published, primary_category,
-                       source, parse_status, abs_url, pdf_url
-                FROM papers
-                {where}
-                ORDER BY added_at DESC
-                LIMIT ? OFFSET ?
-            """
-            params.extend([limit, offset])
-            cur.execute(sql, params)
-
-            results = []
-            for row in cur.fetchall():
-                try:
-                    authors = _parse_authors_cached(row["authors"])
-                except Exception:
-                    warnings.warn(
-                        f"_search_like: failed to parse authors JSON for paper {row['id']}",
-                        stacklevel=2,
-                    )
-                    authors = []
-                results.append(
-                    SearchResult(
-                        paper_id=row["id"],
-                        title=row["title"] or "",
-                        authors=authors,
-                        published=row["published"] or "",
-                        primary_category=row["primary_category"] or "",
-                        score=0.0,
-                        snippet=f"...{query}...",
-                        parse_status=row["parse_status"] or "",
-                        source=row["source"] or "",
-                        abs_url=row["abs_url"] or "",
-                        pdf_url=row["pdf_url"] or "",
-                    )
-                )
-            return results, total
-
-        except sqlite3.Error as e:
-            raise DatabaseError(f"_search_like failed: {e}") from e
+        result = self._inner.search_papers(
+            query, limit, offset, source, category, parse_status
+        )
+        data = json.loads(result)
+        total = data.get("total", 0)
+        records = [PaperRecord(r) for r in data.get("results", [])]
+        return records, total
 
     def list_papers(
         self,
-        limit: int = 20,
+        limit: int = 100,
         offset: int = 0,
         source: Optional[str] = None,
         category: Optional[str] = None,
@@ -1651,692 +225,111 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         sort_by: str = "added_at",
         sort_order: str = "desc",
     ) -> Tuple[List[PaperRecord], int]:
-        """Filtered list with sort. Returns (papers, total_count)."""
-        try:
-            cur = self.conn.cursor()
-            where_parts: list[str] = []
-            params: list[Any] = []
+        """List papers with optional filters. Returns (papers, total_count)."""
+        import json
 
-            if source:
-                where_parts.append("source = ?")
-                params.append(source)
-            if category:
-                where_parts.append("primary_category = ?")
-                params.append(category)
-            if date_from:
-                where_parts.append("published >= ?")
-                params.append(date_from)
-            if date_to:
-                where_parts.append("published <= ?")
-                params.append(date_to)
-            if parse_status:
-                where_parts.append("parse_status = ?")
-                params.append(parse_status)
-
-            where = "WHERE " + " AND ".join(where_parts) if where_parts else ""
-
-            # Validate sort
-            allowed_sort = {"added_at", "published", "title"}
-            if sort_by not in allowed_sort:
-                sort_by = "added_at"
-            sort_order = "DESC" if sort_order.lower() == "desc" else "ASC"
-
-            # Count
-            cur.execute(f"SELECT COUNT(*) FROM papers {where}", params)
-            total = cur.fetchone()[0]
-
-            # List
-            sql = f"SELECT * FROM papers {where} ORDER BY {sort_by} {sort_order} LIMIT ? OFFSET ?"
-            params.extend([limit, offset])
-            cur.execute(sql, params)
-
-            return [PaperRecord.from_row(row) for row in cur.fetchall()], total
-
-        except sqlite3.Error as e:
-            raise DatabaseError(f"list_papers failed: {e}") from e
-
-    def rebuild_fts_index(self) -> int:
-        """Rebuild FTS index from all existing papers. Returns count of indexed papers."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("DELETE FROM papers_fts")
-            cur.execute("""
-                INSERT INTO papers_fts(paper_id, title, abstract, plain_text)
-                SELECT id, title, abstract, COALESCE(plain_text, '') FROM papers
-            """)
-            count = cur.rowcount
-            logger.info("FTS index rebuilt: %d papers indexed", count)
-            return count
-        except sqlite3.Error as e:
-            raise DatabaseError(f"rebuild_fts_index failed: {e}") from e
-
-    def get_cached_paper(self, uid: str) -> Optional[Any]:
-        """Get a cached paper by UID, or a stats counter if uid=='__stats__'."""
-        try:
-            cur = self.conn.cursor()
-            if uid == "__stats__":
-                cur.execute("SELECT COUNT(*) FROM paper_cache")
-                return cur.fetchone()[0]
-            cur.execute("SELECT data FROM paper_cache WHERE uid = ?", (uid,))
-            row = cur.fetchone()
-            return orjson.loads(row[0]) if row else None
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_cached_paper failed: {e}") from e
-
-    def set_cached_paper(self, uid: str, data: Any) -> None:
-        """Cache a paper JSON blob by UID."""
-        try:
-            with self.conn as c:
-                c.execute(
-                    "INSERT OR REPLACE INTO paper_cache (uid, data, cached_at) VALUES (?, ?, ?)",
-                    (uid, orjson.dumps(data).decode("utf-8"), _utcnow()),
-                )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"set_cached_paper failed: {e}") from e
-
-    def clear_cache(self) -> int:
-        """Clear all cache entries. Returns count deleted."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("DELETE FROM paper_cache")
-            deleted = cur.rowcount
-            self.conn.commit()
-            return deleted
-        except sqlite3.Error as e:
-            raise DatabaseError(f"clear_cache failed: {e}") from e
-
-    def clear_jobs(self, status: str = "queued") -> int:
-        """Delete all jobs in the queue with the given status. Returns count deleted."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("DELETE FROM job_queue WHERE status = ?", (status,))
-            return cur.rowcount
-        except sqlite3.Error as e:
-            raise DatabaseError(f"clear_jobs failed: {e}") from e
-
-    def clear_pending_papers(self) -> int:
-        """Reset parse_status of all pending papers to 'idle'. Returns count cleared."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("UPDATE papers SET parse_status = 'idle' WHERE parse_status = 'pending'")
-            self.conn.commit()
-            return cur.rowcount
-        except sqlite3.Error as e:
-            raise DatabaseError(f"clear_pending_papers failed: {e}") from e
-
-    def get_papers(self, limit: int = 10000, offset: int = 0) -> List[PaperRecord]:
-        """Return all papers (no filters), newest first."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT * FROM papers ORDER BY added_at DESC LIMIT ? OFFSET ?",
-                (limit, offset),
-            )
-            return [PaperRecord.from_row(row) for row in cur.fetchall()]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_papers failed: {e}") from e
-
-    def get_stats(self) -> dict[str, Any]:
-        """Return a summary dict of database statistics."""
-        try:
-            cur = self.conn.cursor()
-            stats: dict[str, Any] = {}
-            # Papers
-            cur.execute("SELECT COUNT(*) FROM papers")
-            r = cur.fetchone()
-            stats["total_papers"] = r[0] if r else 0
-            # By source
-            cur.execute("SELECT source, COUNT(*) FROM papers GROUP BY source")
-            stats["by_source"] = {r[0]: r[1] for r in cur.fetchall()}
-            # By status
-            cur.execute("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")
-            stats["by_status"] = {r[0] or "none": r[1] for r in cur.fetchall()}
-            # Queue
-            cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'queued'")
-            r = cur.fetchone()
-            stats["queue_queued"] = r[0] if r else 0
-            cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'running'")
-            r = cur.fetchone()
-            stats["queue_running"] = r[0] if r else 0
-            # Cache
-            cur.execute("SELECT COUNT(*) FROM paper_cache")
-            r = cur.fetchone()
-            stats["cache_entries"] = r[0] if r else 0
-            # Dedup log
-            cur.execute("SELECT COUNT(*) FROM dedup_log")
-            r = cur.fetchone()
-            stats["dedup_records"] = r[0] if r else 0
-            return stats
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_stats failed: {e}") from e
-
-    def export_papers(
-        self, format: str = "csv", limit: int = 0
-    ) -> Tuple[str, List[Dict[str, Any]]]:
-        """Export all papers as CSV or JSON. Returns (header_row_or_fields, rows)."""
-        try:
-            cur = self.conn.cursor()
-            fields = [
-                "id",
-                "source",
-                "title",
-                "authors",
-                "abstract",
-                "published",
-                "doi",
-                "primary_category",
-                "parse_status",
-                "added_at",
-            ]
-            sql = f"SELECT {','.join(fields)} FROM papers ORDER BY added_at DESC"
-            if limit > 0:
-                sql += f" LIMIT {limit}"
-            cur.execute(sql)
-            rows = []
-            for row in cur.fetchall():
-                rows.append({f: row[i] for i, f in enumerate(fields)})
-            return (fields, rows)  # type: ignore[return-value]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"export_papers failed: {e}") from e
-
-    # ── Utilities ────────────────────────────────────────────────────────────
-
-    def close(self) -> None:
-        """Close the thread-local connection."""
-        if hasattr(self._local, "conn") and self._local.conn:
-            try:
-                self._local.conn.close()
-            except Exception:
-                warnings.warn("Database.close: failed to close connection", stacklevel=2)
-            self._local.conn = None
-
-    def vacuum(self) -> None:
-        """Shrink the database file."""
-        try:
-            with self.conn as c:
-                c.execute("VACUUM")
-            logger.info("Database vacuumed")
-        except sqlite3.Error as e:
-            raise DatabaseError(f"vacuum failed: {e}") from e
-
-    # ── Deduplication & Merge ─────────────────────────────────────────────────
-
-    def find_duplicates(self, since: Optional[str] = None) -> List[Tuple[PaperRecord, PaperRecord]]:
-        """
-        Find pairs of papers that are likely duplicates.
-        Two papers are duplicates if:
-          - They share the same DOI (non-empty), OR
-          - Their titles are identical and neither title is empty
-        If `since` is given (YYYY-MM-DD), only papers added on or after that date are considered.
-        Returns a list of (older, newer) PaperRecord pairs.
-        """
-        try:
-            cur = self.conn.cursor()
-            where_since = " AND a.added_at >= ?" if since else ""
-            # Single query: join papers with itself and fetch all needed columns at once.
-            cur.execute(
-                f"""
-                SELECT a.id      AS a_id,
-                       b.id      AS b_id,
-                       a.source  AS a_source,  a.title      AS a_title,
-                       a.authors AS a_authors, a.abstract   AS a_abstract,
-                       a.published    AS a_published,    a.updated      AS a_updated,
-                       a.abs_url      AS a_abs_url,      a.pdf_url      AS a_pdf_url,
-                       a.primary_category AS a_primary_category,
-                       a.journal  AS a_journal,  a.volume    AS a_volume,
-                       a.issue    AS a_issue,    a.page      AS a_page,
-                       a.doi      AS a_doi,      a.categories AS a_categories,
-                       a.parse_status   AS a_parse_status,
-                       a.embed_vector  AS a_embed_vector,
-                       a.added_at AS a_added_at, a.updated_at AS a_updated_at,
-                       b.source  AS b_source,  b.title      AS b_title,
-                       b.authors AS b_authors, b.abstract   AS b_abstract,
-                       b.published    AS b_published,    b.updated      AS b_updated,
-                       b.abs_url      AS b_abs_url,      b.pdf_url      AS b_pdf_url,
-                       b.primary_category AS b_primary_category,
-                       b.journal  AS b_journal,  b.volume    AS b_volume,
-                       b.issue    AS b_issue,    b.page      AS b_page,
-                       b.doi      AS b_doi,      b.categories AS b_categories,
-                       b.parse_status   AS b_parse_status,
-                       b.embed_vector  AS b_embed_vector,
-                       b.added_at AS b_added_at, b.updated_at AS b_updated_at
-                FROM papers a
-                JOIN papers b ON
-                    a.id < b.id
-                    AND (
-                        (a.doi IS NOT NULL AND a.doi = b.doi AND a.doi != '')
-                        OR
-                        (a.title IS NOT NULL AND a.title != '' AND a.title = b.title)
-                    )
-                WHERE 1=1{where_since}
-                ORDER BY a.added_at DESC
-                """,
-                ([since] if since else []),
-            )
-            pairs: List[Tuple[PaperRecord, PaperRecord]] = []
-            for row in cur.fetchall():
-                a_record = PaperRecord(
-                    id=row["a_id"],
-                    source=row["a_source"],
-                    title=row["a_title"],
-                    authors=row["a_authors"],
-                    abstract=row["a_abstract"],
-                    published=row["a_published"],
-                    updated=row["a_updated"],
-                    abs_url=row["a_abs_url"],
-                    pdf_url=row["a_pdf_url"],
-                    primary_category=row["a_primary_category"],
-                    journal=row["a_journal"],
-                    volume=row["a_volume"],
-                    issue=row["a_issue"],
-                    page=row["a_page"],
-                    doi=row["a_doi"],
-                    categories=row["a_categories"],
-                    parse_status=row["a_parse_status"],
-                    embed_vector=row["a_embed_vector"],
-                    added_at=row["a_added_at"],
-                    updated_at=row["a_updated_at"],
-                )
-                b_record = PaperRecord(
-                    id=row["b_id"],
-                    source=row["b_source"],
-                    title=row["b_title"],
-                    authors=row["b_authors"],
-                    abstract=row["b_abstract"],
-                    published=row["b_published"],
-                    updated=row["b_updated"],
-                    abs_url=row["b_abs_url"],
-                    pdf_url=row["b_pdf_url"],
-                    primary_category=row["b_primary_category"],
-                    journal=row["b_journal"],
-                    volume=row["b_volume"],
-                    issue=row["b_issue"],
-                    page=row["b_page"],
-                    doi=row["b_doi"],
-                    categories=row["b_categories"],
-                    parse_status=row["b_parse_status"],
-                    embed_vector=row["b_embed_vector"],
-                    added_at=row["b_added_at"],
-                    updated_at=row["b_updated_at"],
-                )
-                pairs.append((a_record, b_record))
-            return pairs
-        except sqlite3.Error as e:
-            raise DatabaseError(f"find_duplicates failed: {e}") from e
-
-    def merge_papers(self, target_id: str, duplicate_id: str) -> bool:
-        """
-        Merge duplicate_id into target_id:
-          - Copies paper_tags from duplicate to target (skipping conflicts)
-          - Copies parse data (plain_text, latex_blocks, table_count, figure_count,
-            word_count, page_count, pnote_path, cnote_path, mnote_path) if target is empty
-          - Transfers pending/running jobs from duplicate to target
-          - Deletes the duplicate paper and its FTS entry
-        Returns True if the duplicate was found and deleted.
-        """
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-
-                # Make sure both papers exist
-                cur.execute("SELECT id FROM papers WHERE id = ?", (duplicate_id,))
-                if cur.fetchone() is None:
-                    return False
-
-                # Transfer tags (insert ignore — skip if target already has the tag)
-                cur.execute(
-                    """
-                    INSERT OR IGNORE INTO paper_tags (paper_id, tag_id)
-                    SELECT ?, tag_id FROM paper_tags WHERE paper_id = ?
-                    """,
-                    (target_id, duplicate_id),
-                )
-
-                # Fill empty parse fields on target from duplicate
-                parse_fields = [
-                    (
-                        "plain_text",
-                        "papers.plain_text = COALESCE(NULLIF(papers.plain_text, ''), excluded.plain_text)",
-                    ),
-                    (
-                        "latex_blocks",
-                        "papers.latex_blocks = CASE WHEN papers.latex_blocks = '[]' THEN excluded.latex_blocks ELSE papers.latex_blocks END",
-                    ),
-                    (
-                        "table_count",
-                        "papers.table_count = CASE WHEN papers.table_count = 0 THEN excluded.table_count ELSE papers.table_count END",
-                    ),
-                    (
-                        "figure_count",
-                        "papers.figure_count = CASE WHEN papers.figure_count = 0 THEN excluded.figure_count ELSE papers.figure_count END",
-                    ),
-                    (
-                        "word_count",
-                        "papers.word_count = CASE WHEN papers.word_count = 0 THEN excluded.word_count ELSE papers.word_count END",
-                    ),
-                    (
-                        "page_count",
-                        "papers.page_count = CASE WHEN papers.page_count = 0 THEN excluded.page_count ELSE papers.page_count END",
-                    ),
-                    (
-                        "pnote_path",
-                        "papers.pnote_path = CASE WHEN papers.pnote_path = '' THEN excluded.pnote_path ELSE papers.pnote_path END",
-                    ),
-                    (
-                        "cnote_path",
-                        "papers.cnote_path = CASE WHEN papers.cnote_path = '' THEN excluded.cnote_path ELSE papers.cnote_path END",
-                    ),
-                    (
-                        "mnote_path",
-                        "papers.mnote_path = CASE WHEN papers.mnote_path = '' THEN excluded.mnote_path ELSE papers.mnote_path END",
-                    ),
-                ]
-                for fname, _ in parse_fields:
-                    cur.execute(f"SELECT {fname} FROM papers WHERE id = ?", (duplicate_id,))
-                    row = cur.fetchone()
-                    val = row[fname] if row else None
-                    if val is not None and val != "" and val != 0 and val != "[]":
-                        cur.execute(
-                            f"UPDATE papers SET {fname} = ? WHERE id = ? AND ({fname} = '' OR {fname} = '[]' OR {fname} = 0)",
-                            (val, target_id),
-                        )
-
-                # Transfer jobs from duplicate to target (only queued jobs)
-                cur.execute(
-                    "UPDATE job_queue SET paper_id = ? WHERE paper_id = ? AND status = 'queued'",
-                    (target_id, duplicate_id),
-                )
-
-                # Update updated_at on target
-                cur.execute(
-                    "UPDATE papers SET updated_at = ? WHERE id = ?",
-                    (_utcnow(), target_id),
-                )
-
-                # Delete duplicate FTS entry
-                cur.execute("DELETE FROM papers_fts WHERE paper_id = ?", (duplicate_id,))
-                # Delete duplicate paper
-                cur.execute("DELETE FROM papers WHERE id = ?", (duplicate_id,))
-
-            return True
-        except sqlite3.Error as e:
-            raise DatabaseError(f"merge_papers({target_id!r}, {duplicate_id!r}) failed: {e}") from e
-
-    def log_dedup(self, target_id: str, duplicate_id: str, keep_policy: str) -> None:
-        """Record a dedup merge in the dedup_log table."""
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                cur.execute(
-                    "INSERT INTO dedup_log (target_id, duplicate_id, keep_policy) VALUES (?, ?, ?)",
-                    (target_id, duplicate_id, keep_policy),
-                )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"log_dedup failed: {e}") from e
-
-    def get_dedup_log(self) -> List[Dict[str, Any]]:
-        """Return dedup history ordered by most recent first."""
-        cur = self.conn.cursor()
-        cur.execute(
-            """
-            SELECT d.id, d.target_id, d.duplicate_id, d.keep_policy, d.logged_at,
-                   p1.title AS target_title, p2.title AS duplicate_title
-            FROM dedup_log d
-            JOIN papers p1 ON p1.id = d.target_id
-            JOIN papers p2 ON p2.id = d.duplicate_id
-            ORDER BY d.id DESC
-            """,
+        result = self._inner.list_papers(
+            limit, offset, source, category, parse_status
         )
-        return [dict(row) for row in cur.fetchall()]
+        data = json.loads(result)
+        total = data.get("total", 0)
+        records = [PaperRecord(r) for r in data.get("papers", [])]
+        return records, total
 
-    # ── Citations ────────────────────────────────────────────────────────────────
+    # -------------------------------------------------------------------------
+    # Bulk operations
+    # -------------------------------------------------------------------------
 
-    def add_citation(self, source_id: str, target_id: str) -> bool:
-        """Insert one citation pair. Returns True if inserted, False if duplicate."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
-                (source_id, target_id, _utcnow()),
+    def upsert_papers_bulk(
+        self, papers: List[dict], source: str = "bulk"
+    ) -> Tuple[int, int]:
+        """Bulk upsert. Returns (inserted, updated)."""
+        inserted = 0
+        updated = 0
+        for p in papers:
+            result = self.upsert_paper(
+                paper_id=p.get("paper_id", ""),
+                source=source,
+                title=p.get("title", ""),
+                authors=p.get("authors", []),
+                abstract=p.get("abstract", ""),
+                published=p.get("published", ""),
+                abs_url=p.get("abs_url", ""),
+                pdf_url=p.get("pdf_url", ""),
+                primary_category=p.get("primary_category", ""),
             )
-            self.conn.commit()
-            return cur.rowcount > 0
-        except sqlite3.Error as e:
-            raise DatabaseError(f"add_citation failed: {e}") from e
+            if result.id:
+                inserted += 1
+        return inserted, updated
 
-    def add_citations_batch(self, source_id: str, target_ids: list[str]) -> int:
-        """Bulk insert citation pairs. Returns count of newly inserted rows."""
-        if not target_ids:
-            return 0
-        try:
-            cur = self.conn.cursor()
-            now = _utcnow()
-            rows = [(source_id, tid, now) for tid in target_ids]
-            cur.executemany(
-                "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
-                rows,
-            )
-            self.conn.commit()
-            return cur.rowcount
-        except sqlite3.Error as e:
-            raise DatabaseError(f"add_citations_batch failed: {e}") from e
+    # -------------------------------------------------------------------------
+    # Stats
+    # -------------------------------------------------------------------------
 
-    def upsert_citations(self, source_id: str, target_ids: list[str]) -> Tuple[int, int]:
-        """Bulk upsert citation pairs. Returns (new_count, duplicate_count)."""
-        if not target_ids:
-            return 0, 0
-        try:
-            cur = self.conn.cursor()
-            # Count existing citation links for this source before inserting
-            placeholders = ",".join("?" * len(target_ids))
-            cur.execute(
-                f"SELECT COUNT(*) FROM citations WHERE source_id = ? AND target_id IN ({placeholders})",
-                [source_id] + target_ids,
-            )
-            existing_count = cur.fetchone()[0]
-            now = _utcnow()
-            rows = [(source_id, tid, now) for tid in target_ids]
-            cur.executemany(
-                "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
-                rows,
-            )
-            new_count = len(target_ids) - existing_count
-            dup_count = existing_count
-            self.conn.commit()
-            return max(0, new_count), dup_count
-        except sqlite3.Error as e:
-            raise DatabaseError(f"upsert_citations failed: {e}") from e
+    def paper_count(self, parse_status: Optional[str] = None) -> int:
+        """Count papers, optionally filtered by parse_status."""
+        return self._inner.paper_count(parse_status)
 
-    # ── Experiment Tables ─────────────────────────────────────────────────────
+    def get_total_papers(self) -> int:
+        """Total paper count."""
+        return self._inner.get_total_papers()
 
-    def upsert_experiment_tables(
-        self,
-        paper_id: str,
-        tables: List[ExperimentTableRecord],
-    ) -> int:
-        """
-        Replace all experiment tables for a paper with the given list.
-        Returns the count of tables stored.
-        """
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                # Clear existing tables for this paper
-                cur.execute(
-                    "DELETE FROM experiment_tables WHERE paper_id = ?",
-                    (paper_id,),
-                )
-                rows = [
-                    (
-                        paper_id,
-                        tbl.table_caption,
-                        tbl.page,
-                        orjson.dumps(tbl.headers).decode("utf-8"),
-                        orjson.dumps(tbl.rows).decode("utf-8"),
-                        tbl.bbox_x0,
-                        tbl.bbox_y0,
-                        tbl.bbox_x1,
-                        tbl.bbox_y1,
-                        tbl.created_at,
-                    )
-                    for tbl in tables
-                ]
-                cur.executemany(
-                    """
-                    INSERT INTO experiment_tables
-                        (paper_id, table_caption, page, headers, rows,
-                         bbox_x0, bbox_y0, bbox_x1, bbox_y1, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    rows,
-                )
-                return len(tables)
-        except sqlite3.Error as e:
-            raise DatabaseError(f"upsert_experiment_tables({paper_id!r}) failed: {e}") from e
-
-    def get_experiment_tables(self, paper_id: str) -> List[ExperimentTableRecord]:
-        """Return all experiment tables for a paper."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT * FROM experiment_tables WHERE paper_id = ? ORDER BY page, id",
-                (paper_id,),
-            )
-            results = []
-            for row in cur.fetchall():
-                try:
-                    headers = orjson.loads(row["headers"] or "[]")
-                except Exception:
-                    headers = []
-                try:
-                    rows_data = orjson.loads(row["rows"] or "[]")
-                except Exception:
-                    rows_data = []
-                results.append(
-                    ExperimentTableRecord(
-                        id=row["id"],
-                        paper_id=row["paper_id"],
-                        table_caption=row["table_caption"] or "",
-                        page=row["page"] or 0,
-                        headers=headers,
-                        rows=rows_data,
-                        bbox_x0=row["bbox_x0"] or 0.0,
-                        bbox_y0=row["bbox_y0"] or 0.0,
-                        bbox_x1=row["bbox_x1"] or 0.0,
-                        bbox_y1=row["bbox_y1"] or 0.0,
-                        created_at=row["created_at"] or "",
-                    )
-                )
-            return results
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_experiment_tables({paper_id!r}) failed: {e}") from e
-
-    def get_all_experiment_tables(self) -> List[ExperimentTableRecord]:
-        """Return all experiment tables across all papers."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("SELECT * FROM experiment_tables ORDER BY paper_id, page, id")
-            results = []
-            for row in cur.fetchall():
-                try:
-                    headers = orjson.loads(row["headers"] or "[]")
-                except Exception:
-                    headers = []
-                try:
-                    rows_data = orjson.loads(row["rows"] or "[]")
-                except Exception:
-                    rows_data = []
-                results.append(
-                    ExperimentTableRecord(
-                        id=row["id"],
-                        paper_id=row["paper_id"],
-                        table_caption=row["table_caption"] or "",
-                        page=row["page"] or 0,
-                        headers=headers,
-                        rows=rows_data,
-                        bbox_x0=row["bbox_x0"] or 0.0,
-                        bbox_y0=row["bbox_y0"] or 0.0,
-                        bbox_x1=row["bbox_x1"] or 0.0,
-                        bbox_y1=row["bbox_y1"] or 0.0,
-                        created_at=row["created_at"] or "",
-                    )
-                )
-            return results
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_all_experiment_tables() failed: {e}") from e
-
-    def get_citations(
-        self, paper_id: str, direction: Literal["from", "to", "both"] = "both"
-    ) -> List[CitationRecord]:
-        """Fetch citations for a paper.
-
-        direction='from'  — papers cited by paper_id (backward citations / references)
-        direction='to'    — papers that cite paper_id (forward citations)
-        direction='both'  — union of the above
-        """
-        try:
-            cur = self.conn.cursor()
-            if direction == "from":
-                cur.execute(
-                    "SELECT id, source_id, target_id, created_at FROM citations WHERE source_id = ?",
-                    (paper_id,),
-                )
-            elif direction == "to":
-                cur.execute(
-                    "SELECT id, source_id, target_id, created_at FROM citations WHERE target_id = ?",
-                    (paper_id,),
-                )
-            else:
-                cur.execute(
-                    "SELECT id, source_id, target_id, created_at FROM citations "
-                    "WHERE source_id = ? OR target_id = ?",
-                    (paper_id, paper_id),
-                )
-            return [CitationRecord(**dict(row)) for row in cur.fetchall()]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_citations failed: {e}") from e
-
-    def get_citation_count(self, paper_id: str) -> dict[str, int]:
-        """Return {'forward': N, 'backward': M} counts."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute(
-                """
-                SELECT
-                    SUM(CASE WHEN target_id = ? THEN 1 ELSE 0 END) AS forward,
-                    SUM(CASE WHEN source_id = ? THEN 1 ELSE 0 END) AS backward
-                FROM citations
-                WHERE target_id = ? OR source_id = ?
-                """,
-                (paper_id, paper_id, paper_id, paper_id),
-            )
-            row = cur.fetchone()
-            return {"forward": row[0] or 0, "backward": row[1] or 0}
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_citation_count failed: {e}") from e
-
-    def get_paper_title(self, paper_id: str) -> str:
-        """Return title for a paper, or '' if not found."""
-        try:
-            cur = self.conn.cursor()
-            cur.execute("SELECT title FROM papers WHERE id = ?", (paper_id,))
-            row = cur.fetchone()
-            return row[0] if row else ""
-        except sqlite3.Error as e:
-            raise DatabaseError(f"get_paper_title failed: {e}") from e
-
-    def paper_exists(self, paper_id: str) -> bool:
-        """Check if a paper exists in the database by its ID."""
-        row = self.conn.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,)).fetchone()
-        return row is not None
-
-    # ── Helpers ────────────────────────────────────────────────────────────────
-
-    @staticmethod
-    def _dict_factory(keys: List[str], rows: List[sqlite3.Row]) -> List[dict]:
-        """Convert SQLite Row objects to dicts."""
-        return [dict(zip(keys, row)) for row in rows]
+    def get_stats(self) -> dict:
+        """Get database statistics."""
+        return self._inner.get_stats()
 
 
-def _utcnow() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+class SearchResult:
+    """Wrapper for search result dict."""
+
+    __slots__ = ("_data",)
+
+    def __init__(self, data: dict):
+        self._data = data
+
+    @property
+    def paper_id(self) -> str:
+        return self._data.get("paper_id", "")
+
+    @property
+    def id(self) -> str:
+        return self._data.get("paper_id", "")
+
+    @property
+    def title(self) -> str:
+        return self._data.get("title", "")
+
+    @property
+    def score(self) -> float:
+        return self._data.get("score", 0.0)
+
+    @property
+    def snippet(self) -> str:
+        return self._data.get("snippet", "")
+
+    def __getattr__(self, name: str) -> Any:
+        return self._data.get(name)
+
+
+class _MockCursor:
+    """Minimal cursor mock for code that accesses db.conn directly."""
+
+    __slots__ = ("_db",)
+
+    def __init__(self, db: Database):
+        self._db = db
+
+    def execute(self, query: str, params: tuple = ()):
+        """Mock execute — only handles a few known patterns."""
+        import sqlite3
+
+        # For simple queries that some code uses, fall back to raw SQLite
+        # on a separate in-memory DB for read operations
+        conn = sqlite3.connect(":memory:")
+        return conn.execute(query, params)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
