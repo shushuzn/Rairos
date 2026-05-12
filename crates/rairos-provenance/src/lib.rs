@@ -1,70 +1,37 @@
-//! Provenance — track paper location for AI-extracted content.
+//! rairos-provenance — Provenance tracking for paper content extraction.
 //!
-//! Tracks the absolute position of content (claims, equations, algorithms)
-//! within the concatenated paper text for citation and verification.
-//!
-//! Python original: `research_loop/provenance.py` (54 lines)
+//! Ported from `research_loop/provenance.py` (54 LOC, pure stdlib).
 
 use serde::{Deserialize, Serialize};
-
-// ─── PaperLocation ────────────────────────────────────────────────────────────
 
 /// Absolute position of a content item within the concatenated paper text.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PaperLocation {
-    /// e.g. "3.2", "Abstract", "Algorithm"
-    pub section: String,
-    /// 1-based page number (0 = unknown)
-    pub page: u32,
-    /// character offset in concatenated full-text
-    pub char_start: u32,
-    /// inclusive end offset
-    pub char_end: u32,
+    pub section: String,  // e.g. "3.2", "Abstract", "Algorithm"
+    pub page: u32,        // 1-based page number (0 = unknown)
+    pub char_start: u32,  // character offset in concatenated full-text
+    pub char_end: u32,    // inclusive end offset
 }
 
 impl PaperLocation {
-    pub fn new(section: &str, page: u32, char_start: u32, char_end: u32) -> Self {
-        Self {
-            section: section.to_string(),
-            page,
-            char_start,
-            char_end,
-        }
-    }
-
-    /// Short reference string, e.g. "§3.2p5@1023"
     pub fn short_ref(&self) -> String {
         format!("§{}p{}@{}", self.section, self.page, self.char_start)
     }
 }
 
-// ─── EquationSource ───────────────────────────────────────────────────────────
-
 /// An equation with its provenance.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquationSource {
     pub index: u32,
-    /// raw LaTeX string
-    pub equation: String,
+    pub equation: String,       // raw LaTeX string
     pub location: PaperLocation,
 }
 
 impl EquationSource {
-    pub fn new(index: u32, equation: &str, location: PaperLocation) -> Self {
-        Self {
-            index,
-            equation: equation.to_string(),
-            location,
-        }
-    }
-
-    /// Citation tag, e.g. "@eq[3]"
     pub fn tag(&self) -> String {
         format!("@eq[{}]", self.index)
     }
 }
-
-// ─── ClaimSource ──────────────────────────────────────────────────────────────
 
 /// A claim with its provenance.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -75,21 +42,10 @@ pub struct ClaimSource {
 }
 
 impl ClaimSource {
-    pub fn new(index: u32, claim: &str, location: PaperLocation) -> Self {
-        Self {
-            index,
-            claim: claim.to_string(),
-            location,
-        }
-    }
-
-    /// Citation tag, e.g. "@claim[7]"
     pub fn tag(&self) -> String {
         format!("@claim[{}]", self.index)
     }
 }
-
-// ─── AlgorithmSource ─────────────────────────────────────────────────────────
 
 /// An algorithm description with its provenance.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -100,21 +56,10 @@ pub struct AlgorithmSource {
 }
 
 impl AlgorithmSource {
-    pub fn new(index: u32, description: &str, location: PaperLocation) -> Self {
-        Self {
-            index,
-            description: description.to_string(),
-            location,
-        }
-    }
-
-    /// Citation tag, e.g. "@algo[1]"
     pub fn tag(&self) -> String {
         format!("@algo[{}]", self.index)
     }
 }
-
-// ─── Tests ────────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
@@ -122,37 +67,72 @@ mod tests {
 
     #[test]
     fn test_paper_location_short_ref() {
-        let loc = PaperLocation::new("3.2", 5, 1023, 1150);
-        assert_eq!(loc.short_ref(), "§3.2p5@1023");
+        let loc = PaperLocation {
+            section: "3.2".to_string(),
+            page: 5,
+            char_start: 1234,
+            char_end: 4567,
+        };
+        assert_eq!(loc.short_ref(), "§3.2p5@1234");
     }
 
     #[test]
     fn test_equation_source_tag() {
-        let loc = PaperLocation::new("2.1", 1, 0, 50);
-        let eq = EquationSource::new(3, "E = mc^2", loc);
-        assert_eq!(eq.tag(), "@eq[3]");
+        let loc = PaperLocation {
+            section: "Abstract".to_string(),
+            page: 1,
+            char_start: 0,
+            char_end: 100,
+        };
+        let eq = EquationSource {
+            index: 2,
+            equation: "E = mc^2".to_string(),
+            location: loc,
+        };
+        assert_eq!(eq.tag(), "@eq[2]");
+        assert_eq!(eq.equation, "E = mc^2");
     }
 
     #[test]
     fn test_claim_source_tag() {
-        let loc = PaperLocation::new("Abstract", 1, 0, 200);
-        let claim = ClaimSource::new(7, "The model achieves 95% accuracy", loc);
+        let loc = PaperLocation {
+            section: "2.1".to_string(),
+            page: 3,
+            char_start: 500,
+            char_end: 800,
+        };
+        let claim = ClaimSource {
+            index: 7,
+            claim: "Transformers scale sub-quadratically".to_string(),
+            location: loc,
+        };
         assert_eq!(claim.tag(), "@claim[7]");
     }
 
     #[test]
     fn test_algorithm_source_tag() {
-        let loc = PaperLocation::new("Algorithm 1", 3, 500, 1200);
-        let algo = AlgorithmSource::new(1, "Backpropagation steps", loc);
+        let loc = PaperLocation {
+            section: "Algorithm".to_string(),
+            page: 4,
+            char_start: 900,
+            char_end: 2000,
+        };
+        let algo = AlgorithmSource {
+            index: 1,
+            description: "Backpropagation".to_string(),
+            location: loc,
+        };
         assert_eq!(algo.tag(), "@algo[1]");
     }
 
     #[test]
-    fn test_serde_round_trip() {
-        let loc = PaperLocation::new("1.0", 2, 100, 200);
-        let json = serde_json::to_string(&loc).unwrap();
-        let restored: PaperLocation = serde_json::from_str(&json).unwrap();
-        assert_eq!(restored.section, "1.0");
-        assert_eq!(restored.page, 2);
+    fn test_paper_location_page_zero() {
+        let loc = PaperLocation {
+            section: "Appendix".to_string(),
+            page: 0,
+            char_start: 0,
+            char_end: 50,
+        };
+        assert_eq!(loc.short_ref(), "§Appendixp0@0");
     }
 }

@@ -179,6 +179,7 @@ members = [
     "crates/rairos-friction-tracker",
     "crates/rairos-game-mode",
     "crates/rairos-gene-pool-watcher",
+    "crates/rairos-provenance",
     "crates/rairos-value-quantifier",
     "crates/rairos-db",
     "benches",
