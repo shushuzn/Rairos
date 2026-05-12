@@ -341,10 +341,27 @@ class Database:
             "parse_status, pdf_path, pdf_hash) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)",
             (
-                paper_id, source, title, authors_json, abstract,
-                published, updated, abs_url, pdf_url, primary_category,
-                journal, volume, issue, page, doi, categories,
-                reference_count, now, now, pdf_path, pdf_hash,
+                paper_id,
+                source,
+                title,
+                authors_json,
+                abstract,
+                published,
+                updated,
+                abs_url,
+                pdf_url,
+                primary_category,
+                journal,
+                volume,
+                issue,
+                page,
+                doi,
+                categories,
+                reference_count,
+                now,
+                now,
+                pdf_path,
+                pdf_hash,
             ),
         )
         # Also populate FTS
@@ -365,9 +382,7 @@ class Database:
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
         """Get a paper by ID. Checks local mirror first (most up-to-date)."""
         # Check local mirror first — it has the latest parse_status etc.
-        row = self._conn.execute(
-            "SELECT * FROM papers WHERE id = ?", (paper_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT * FROM papers WHERE id = ?", (paper_id,)).fetchone()
         if row:
             cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
             d = dict(zip(cols, row))
@@ -433,9 +448,7 @@ class Database:
             # Build full PaperRecord objects from local mirror for filtering
             filtered: List[PaperRecord] = []
             for pid in candidate_ids:
-                row = self._conn.execute(
-                    "SELECT * FROM papers WHERE id = ?", (pid,)
-                ).fetchone()
+                row = self._conn.execute("SELECT * FROM papers WHERE id = ?", (pid,)).fetchone()
                 if not row:
                     continue
                 cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
@@ -497,9 +510,11 @@ class Database:
         if parse_status:
             sql += " AND parse_status = ?"
             params.append(parse_status)
-        order_col = sort_by if sort_by in (
-            "added_at", "published", "updated", "title", "reference_count"
-        ) else "added_at"
+        order_col = (
+            sort_by
+            if sort_by in ("added_at", "published", "updated", "title", "reference_count")
+            else "added_at"
+        )
         order_dir = "DESC" if sort_order.lower() == "desc" else "ASC"
         sql += f" ORDER BY {order_col} {order_dir} LIMIT ? OFFSET ?"
         params.extend([limit, offset])
@@ -535,9 +550,7 @@ class Database:
     # Bulk operations
     # -------------------------------------------------------------------------
 
-    def upsert_papers_bulk(
-        self, papers: List[dict], source: str = "bulk"
-    ) -> Tuple[int, int]:
+    def upsert_papers_bulk(self, papers: List[dict], source: str = "bulk") -> Tuple[int, int]:
         """Bulk upsert. Returns (inserted, updated)."""
         inserted = 0
         for p in papers:
@@ -685,7 +698,9 @@ class Database:
                 ).fetchall()
                 mirror_count = sum(r[0] for r in mirror_rows)
             # Papers not yet in mirror are implicitly pending
-            missing = max(0, rust_total - self._conn.execute("SELECT COUNT(*) FROM papers").fetchone()[0])
+            missing = max(
+                0, rust_total - self._conn.execute("SELECT COUNT(*) FROM papers").fetchone()[0]
+            )
             if status == "pending":
                 return mirror_count + missing  # type: ignore[no-any-return]
             return mirror_count  # type: ignore[no-any-return]
@@ -710,9 +725,7 @@ class Database:
             key = row[0] if row[0] else "pending"
             by_status[key] = row[1]
         # cache entries
-        cache_row = self._conn.execute(
-            "SELECT COUNT(*) FROM arxiv_search_cache"
-        ).fetchone()
+        cache_row = self._conn.execute("SELECT COUNT(*) FROM arxiv_search_cache").fetchone()
         cache_count = cache_row[0] if cache_row else 0
         # queue size
         queue_row = self._conn.execute(
@@ -794,10 +807,23 @@ class Database:
 
             # Copy non-empty fields from duplicate to primary
             fields_to_copy = [
-                "title", "authors", "abstract", "published", "updated",
-                "abs_url", "pdf_url", "primary_category", "journal",
-                "volume", "issue", "page", "doi", "categories",
-                "reference_count", "pdf_path", "pdf_hash",
+                "title",
+                "authors",
+                "abstract",
+                "published",
+                "updated",
+                "abs_url",
+                "pdf_url",
+                "primary_category",
+                "journal",
+                "volume",
+                "issue",
+                "page",
+                "doi",
+                "categories",
+                "reference_count",
+                "pdf_path",
+                "pdf_hash",
             ]
             for field in fields_to_copy:
                 primary_val = getattr(primary, field, "") or ""
@@ -805,8 +831,7 @@ class Database:
                 if not primary_val and dup_val:
                     # Use raw SQL to update in both mirrors
                     self._conn.execute(
-                        f"UPDATE papers SET {field} = ? WHERE id = ?",
-                        (dup_val, primary_id)
+                        f"UPDATE papers SET {field} = ? WHERE id = ?", (dup_val, primary_id)
                     )
 
             # Copy parse_status if primary's is empty and duplicate's is filled
@@ -815,17 +840,23 @@ class Database:
                 if dup_parse_status:
                     self._conn.execute(
                         "UPDATE papers SET parse_status = ? WHERE id = ?",
-                        (dup_parse_status, primary_id)
+                        (dup_parse_status, primary_id),
                     )
                     # Also copy parse-related fields
-                    for f in ["plain_text", "latex_blocks", "table_count",
-                               "figure_count", "word_count", "page_count",
-                               "parse_error", "parse_version"]:
+                    for f in [
+                        "plain_text",
+                        "latex_blocks",
+                        "table_count",
+                        "figure_count",
+                        "word_count",
+                        "page_count",
+                        "parse_error",
+                        "parse_version",
+                    ]:
                         v = getattr(dup, f, None)
                         if v and v != "":
                             self._conn.execute(
-                                f"UPDATE papers SET {f} = ? WHERE id = ?",
-                                (v, primary_id)
+                                f"UPDATE papers SET {f} = ? WHERE id = ?", (v, primary_id)
                             )
 
             # Transfer tags from duplicate to primary
@@ -835,7 +866,7 @@ class Database:
             # Transfer enqueued jobs from duplicate to primary
             self._conn.execute(
                 "UPDATE job_queue SET paper_id = ? WHERE paper_id = ? AND status = 'queued'",
-                (primary_id, dup_id)
+                (primary_id, dup_id),
             )
 
             # Delete duplicate
@@ -848,11 +879,13 @@ class Database:
 
     def log_dedup(self, target_id: str, duplicate_id: str, keep_policy: str) -> None:
         """Log a deduplication event."""
-        self._dedup_log.append({
-            "target_id": target_id,
-            "duplicate_id": duplicate_id,
-            "keep_policy": keep_policy,
-        })
+        self._dedup_log.append(
+            {
+                "target_id": target_id,
+                "duplicate_id": duplicate_id,
+                "keep_policy": keep_policy,
+            }
+        )
 
     def get_dedup_log(self, limit: int = 100) -> List[dict]:
         """Get deduplication log."""
@@ -860,17 +893,13 @@ class Database:
 
     def clear_pending_papers(self) -> int:
         """Clear all papers with parse_status='pending'. Returns count deleted."""
-        cur = self._conn.execute(
-            "SELECT id FROM papers WHERE parse_status = 'pending'"
-        ).fetchall()
+        cur = self._conn.execute("SELECT id FROM papers WHERE parse_status = 'pending'").fetchall()
         count = len(cur)
         self._conn.execute("DELETE FROM papers WHERE parse_status = 'pending'")
         self._conn.commit()
         return count
 
-    def export_papers(
-        self, paper_ids: List[str], format: str = "json", **kwargs
-    ) -> str:
+    def export_papers(self, paper_ids: List[str], format: str = "json", **kwargs) -> str:
         """Export papers in specified format (stub JSON)."""
         papers = self.get_papers_bulk(paper_ids)
         return json.dumps([papers[pid]._data for pid in paper_ids], ensure_ascii=False)
@@ -913,9 +942,7 @@ class Database:
 
     # Subscriptions
 
-    def add_arxiv_subscription(
-        self, query: str, name: str = "", max_results: int = 10
-    ) -> dict:
+    def add_arxiv_subscription(self, query: str, name: str = "", max_results: int = 10) -> dict:
         """Add an arXiv subscription (stub)."""
         return {"query": query, "name": name, "max_results": max_results}
 
@@ -935,9 +962,7 @@ class Database:
         """Get active arXiv subscriptions (stub — empty list)."""
         return []
 
-    def get_subscription_papers(
-        self, subscription_id: str, limit: int = 20
-    ) -> List[PaperRecord]:
+    def get_subscription_papers(self, subscription_id: str, limit: int = 20) -> List[PaperRecord]:
         """Get papers from a subscription (stub — empty list)."""
         return []
 
@@ -946,6 +971,7 @@ class Database:
     def dequeue_job(self, **kwargs) -> Optional[dict]:
         """Dequeue a queued job. Marks it as running and returns it."""
         import datetime
+
         now = datetime.datetime.now().isoformat()
         row = self._conn.execute(
             "SELECT id, paper_id, job_type, status, priority, created_at "
@@ -954,8 +980,7 @@ class Database:
         if row is None:
             return None
         self._conn.execute(
-            "UPDATE job_queue SET status = 'running', started_at = ? WHERE id = ?",
-            (now, row[0])
+            "UPDATE job_queue SET status = 'running', started_at = ? WHERE id = ?", (now, row[0])
         )
         self._conn.commit()
         return {
@@ -985,6 +1010,7 @@ class Database:
     def set_cached_paper(self, paper_id: str, data: dict) -> bool:
         """Store cached paper metadata in local mirror."""
         import datetime
+
         now = datetime.datetime.now().isoformat()
         self._conn.execute(
             "INSERT OR REPLACE INTO arxiv_search_cache(query_hash, query, results_json, created_at) VALUES(?, ?, ?, ?)",
@@ -1023,27 +1049,29 @@ class Database:
 
     # Citations
 
-    def add_citation(
-        self, source_id: str, target_id: str, context: str = "", **kwargs
-    ) -> bool:
+    def add_citation(self, source_id: str, target_id: str, context: str = "", **kwargs) -> bool:
         """Add a citation edge. Returns False if already exists."""
         # Check for duplicate
         for c in self._citations:
             if c["source_id"] == source_id and c["target_id"] == target_id:
                 return False
-        self._citations.append({
-            "source_id": source_id,
-            "target_id": target_id,
-        })
+        self._citations.append(
+            {
+                "source_id": source_id,
+                "target_id": target_id,
+            }
+        )
         return True
 
     def add_citations_batch(self, source_id: str, target_ids: list[str]) -> int:
         """Batch add citations."""
         for target_id in target_ids:
-            self._citations.append({
-                "source_id": source_id,
-                "target_id": target_id,
-            })
+            self._citations.append(
+                {
+                    "source_id": source_id,
+                    "target_id": target_id,
+                }
+            )
         return len(target_ids)
 
     def get_citations(
@@ -1051,14 +1079,29 @@ class Database:
     ) -> List[CitationRecord]:
         """Get citations for a paper."""
         if direction == "from":
-            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")  # type: ignore[misc]
-                    for i, c in enumerate(self._citations) if c["source_id"] == paper_id]
+            return [
+                CitationRecord(
+                    id=i, source_id=c["source_id"], target_id=c["target_id"], created_at=""
+                )  # type: ignore[misc]
+                for i, c in enumerate(self._citations)
+                if c["source_id"] == paper_id
+            ]
         elif direction == "to":
-            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")  # type: ignore[misc]
-                    for i, c in enumerate(self._citations) if c["target_id"] == paper_id]
+            return [
+                CitationRecord(
+                    id=i, source_id=c["source_id"], target_id=c["target_id"], created_at=""
+                )  # type: ignore[misc]
+                for i, c in enumerate(self._citations)
+                if c["target_id"] == paper_id
+            ]
         else:
-            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")  # type: ignore[misc]
-                    for i, c in enumerate(self._citations) if c["source_id"] == paper_id or c["target_id"] == paper_id]
+            return [
+                CitationRecord(
+                    id=i, source_id=c["source_id"], target_id=c["target_id"], created_at=""
+                )  # type: ignore[misc]
+                for i, c in enumerate(self._citations)
+                if c["source_id"] == paper_id or c["target_id"] == paper_id
+            ]
 
     def get_citation_count(self, paper_id: str) -> dict[str, int]:
         """Get citation count for a paper."""
@@ -1079,8 +1122,7 @@ class Database:
             if not target_id:
                 continue
             existed = any(
-                x["source_id"] == paper_id and x["target_id"] == target_id
-                for x in self._citations
+                x["source_id"] == paper_id and x["target_id"] == target_id for x in self._citations
             )
             if existed:
                 dup_count += 1
@@ -1103,9 +1145,7 @@ class Database:
         """Get all experiment tables (stub — empty list)."""
         return []
 
-    def upsert_experiment_tables(
-        self, paper_id: str, tables: List[ExperimentTableRecord]
-    ) -> bool:
+    def upsert_experiment_tables(self, paper_id: str, tables: List[ExperimentTableRecord]) -> bool:
         """Upsert experiment tables (stub)."""
         return True
 
@@ -1115,9 +1155,7 @@ class Database:
         """Get reading status of a paper (stub — always 'unread')."""
         return "unread"
 
-    def update_reading_status(
-        self, paper_id: str, status: str, **kwargs
-    ) -> bool:
+    def update_reading_status(self, paper_id: str, status: str, **kwargs) -> bool:
         """Update reading status (stub)."""
         return True
 
@@ -1165,16 +1203,14 @@ class Database:
     def add_tag(self, paper_id: str, tag: str) -> None:
         """Add a tag to a paper."""
         self._conn.execute(
-            "INSERT OR IGNORE INTO tags(paper_id, tag) VALUES(?, ?)",
-            (paper_id, tag)
+            "INSERT OR IGNORE INTO tags(paper_id, tag) VALUES(?, ?)", (paper_id, tag)
         )
         self._conn.commit()
 
     def remove_tag(self, paper_id: str, tag: str) -> bool:
         """Remove a tag from a paper. Returns True if tag existed."""
         cur = self._conn.execute(
-            "DELETE FROM tags WHERE paper_id=? AND tag=? RETURNING tag",
-            (paper_id, tag)
+            "DELETE FROM tags WHERE paper_id=? AND tag=? RETURNING tag", (paper_id, tag)
         )
         deleted = cur.fetchone() is not None
         self._conn.commit()
@@ -1182,10 +1218,7 @@ class Database:
 
     def get_tags(self, paper_id: str) -> List[str]:
         """Get tags for a paper."""
-        cur = self._conn.execute(
-            "SELECT tag FROM tags WHERE paper_id=? ORDER BY tag",
-            (paper_id,)
-        )
+        cur = self._conn.execute("SELECT tag FROM tags WHERE paper_id=? ORDER BY tag", (paper_id,))
         return [r[0] for r in cur.fetchall()]
 
     def list_all_tags(self, **kwargs) -> List[str]:
@@ -1199,7 +1232,7 @@ class Database:
         offset = kwargs.get("offset", 0)
         cur = self._conn.execute(
             "SELECT paper_id FROM tags WHERE tag=? ORDER BY paper_id LIMIT ? OFFSET ?",
-            (tag, limit, offset)
+            (tag, limit, offset),
         )
         result = []
         for (pid,) in cur.fetchall():
@@ -1222,6 +1255,7 @@ class Database:
     ) -> None:
         """Update parse status for a paper in the local mirror."""
         import datetime
+
         now = datetime.datetime.now().isoformat()
 
         # Get current version
@@ -1240,8 +1274,19 @@ class Database:
             "UPDATE papers SET parse_status = ?, parse_error = ?, plain_text = ?, "
             "latex_blocks = ?, table_count = ?, figure_count = ?, word_count = ?, "
             "page_count = ?, parse_version = ?, updated_at = ? WHERE id = ?",
-            (status, error, plain_text, latex_blocks, table_count,
-             figure_count, word_count, page_count, version, now, paper_id)
+            (
+                status,
+                error,
+                plain_text,
+                latex_blocks,
+                table_count,
+                figure_count,
+                word_count,
+                page_count,
+                version,
+                now,
+                paper_id,
+            ),
         )
         self._conn.commit()
 
@@ -1256,10 +1301,11 @@ class Database:
     ) -> None:
         """Record a parse attempt in the history table."""
         import datetime
+
         now = datetime.datetime.now().isoformat()
         self._conn.execute(
             "INSERT INTO parse_history(paper_id, status, error, duration_sec, pdf_hash, file_size, attempted_at) VALUES(?, ?, ?, ?, ?, ?, ?)",
-            (paper_id, status, error, duration_sec, pdf_hash, file_size, now)
+            (paper_id, status, error, duration_sec, pdf_hash, file_size, now),
         )
         self._conn.commit()
 
@@ -1267,11 +1313,19 @@ class Database:
         """Get parse history for a paper."""
         cur = self._conn.execute(
             "SELECT id, paper_id, status, error, duration_sec, pdf_hash, file_size, attempted_at FROM parse_history WHERE paper_id=? ORDER BY attempted_at DESC",
-            (paper_id,)
+            (paper_id,),
         )
         return [
-            {"id": r[0], "paper_id": r[1], "status": r[2], "error": r[3],
-             "duration_sec": r[4], "pdf_hash": r[5], "file_size": r[6], "attempted_at": r[7]}
+            {
+                "id": r[0],
+                "paper_id": r[1],
+                "status": r[2],
+                "error": r[3],
+                "duration_sec": r[4],
+                "pdf_hash": r[5],
+                "file_size": r[6],
+                "attempted_at": r[7],
+            }
             for r in cur.fetchall()
         ]
 
@@ -1281,10 +1335,7 @@ class Database:
 
     def set_setting(self, key: str, value: str) -> None:
         """Set a key-value setting."""
-        self._conn.execute(
-            "INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)",
-            (key, value)
-        )
+        self._conn.execute("INSERT OR REPLACE INTO settings(key, value) VALUES(?, ?)", (key, value))
         self._conn.commit()
 
     def get_setting(self, key: str, default: Optional[str] = None) -> Optional[str]:
@@ -1300,11 +1351,12 @@ class Database:
     def enqueue_job(self, paper_id: str, job_type: str, priority: int = 5) -> int:
         """Add a job to the queue. Returns the job ID (rowid)."""
         import datetime
+
         now = datetime.datetime.now().isoformat()
         cursor = self._conn.execute(
             "INSERT INTO job_queue (paper_id, job_type, status, priority, created_at) "
             "VALUES (?, ?, 'queued', ?, ?)",
-            (paper_id, job_type, priority, now)
+            (paper_id, job_type, priority, now),
         )
         self._conn.commit()
         return cursor.lastrowid if cursor.lastrowid else 0
@@ -1312,10 +1364,11 @@ class Database:
     def complete_job(self, job_id: int, status: str = "done", error: str = "") -> None:
         """Mark a job as complete or failed."""
         import datetime
+
         now = datetime.datetime.now().isoformat()
         self._conn.execute(
             "UPDATE job_queue SET status = ?, error = ?, completed_at = ? WHERE id = ?",
-            (status, error, now, job_id)
+            (status, error, now, job_id),
         )
         self._conn.commit()
 
@@ -1337,20 +1390,27 @@ class Database:
 
 class _SqliteRow:
     """Minimal row-like object with both index and name access."""
+
     __slots__ = ("_data", "_keys")
+
     def __init__(self, data: tuple, keys: List[str]):
         self._data = data
         self._keys = keys
+
     def __getitem__(self, key):
         if isinstance(key, int):
             return self._data[key]
         return self._data[self._keys.index(key)]
+
     def __iter__(self):
         return iter(self._data)
+
     def keys(self):
         return self._keys
+
     def values(self):
         return self._data
+
     def __len__(self):
         return len(self._data)
 
@@ -1378,12 +1438,20 @@ class _LegacyCursor:
                 self._last = None
                 return _MockResult()
             self._last = self._conn.execute(query, params)
-            self._cols = [d[0] for d in self._last.description] if self._last and self._last.description else []
+            self._cols = (
+                [d[0] for d in self._last.description]
+                if self._last and self._last.description
+                else []
+            )
             return self
         else:
             # INSERT/UPDATE/DELETE — route through mirror only
             if "papers" in query.lower() and "arxiv_search_cache" not in query.lower():
-                if "INSERT OR REPLACE INTO papers" in query or "INSERT OR IGNORE" in query.upper() or "UPDATE" in q:
+                if (
+                    "INSERT OR REPLACE INTO papers" in query
+                    or "INSERT OR IGNORE" in query.upper()
+                    or "UPDATE" in q
+                ):
                     self._last = self._conn.execute(query, params)
                     return self
             if "embeddings" in query.lower():

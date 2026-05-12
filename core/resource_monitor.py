@@ -18,6 +18,7 @@ from datetime import datetime
 
 try:
     import rairos_sysinfo as _sysinfo
+
     _SYSINFO_AVAILABLE = True
 except ImportError:
     _SYSINFO_AVAILABLE = False
