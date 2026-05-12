@@ -90,7 +90,7 @@ pub fn compute_impact_score(
     let decay = (-lambda_ * age_days).exp();
     let feedback_bonus = (feedback_count as f64 + 1.0).ln();
     let citation_boost = citation_boost_override
-        .unwrap_or_else(|| 1.0 + 0.1 * inbound_citations as f64);
+        .unwrap_or(1.0 + 0.1 * inbound_citations as f64);
 
     let impact = success_score * decay * feedback_bonus * citation_boost;
     (round(impact, 4), round(age_days, 1))
@@ -220,11 +220,10 @@ pub fn check_self_correction(
     let triggered = !gap_type_coverage.is_empty();
 
     for (gap_type, coverage) in gap_type_coverage {
-        if *coverage < COVERAGE_THRESHOLD {
-            if !pending.contains(gap_type) {
+        if *coverage < COVERAGE_THRESHOLD
+            && !pending.contains(gap_type) {
                 pending.push(gap_type.clone());
             }
-        }
     }
 
     let mut result = HashMap::new();
@@ -280,7 +279,7 @@ pub fn get_gap_type_momentum(
     days: i32,
 ) -> HashMap<String, HashMap<String, serde_json::Value>> {
     let mut new_by_gap_type: HashMap<String, i32> = HashMap::new();
-    let mut archived_by_gap_type: HashMap<String, i32> = HashMap::new();
+    let archived_by_gap_type: HashMap<String, i32> = HashMap::new();
 
     let cutoff = chrono::Utc::now() - chrono::Duration::days(days as i64);
 

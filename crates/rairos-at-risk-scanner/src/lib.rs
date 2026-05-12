@@ -63,7 +63,7 @@ pub fn get_at_risk_capsules(threshold: i32) -> Vec<AtRiskCapsule> {
 
     for cap in all_caps {
         let status = cap.get("status").and_then(|v| v.as_str()).unwrap_or("");
-        if status != "active" && status != "" {
+        if status != "active" && !status.is_empty() {
             continue;
         }
         let streak = cap.get("low_score_streak").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
@@ -104,7 +104,7 @@ pub fn get_at_risk_capsules(threshold: i32) -> Vec<AtRiskCapsule> {
         });
     }
 
-    results.sort_by(|a, b| b.low_score_streak.cmp(&a.low_score_streak));
+    results.sort_by_key(|b| std::cmp::Reverse(b.low_score_streak));
     results
 }
 

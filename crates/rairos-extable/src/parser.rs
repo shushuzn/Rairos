@@ -138,7 +138,7 @@ impl ExperimentTableParser {
         // If no metric columns found, detect numeric-only columns
         let table_num_re = Regex::new(r"^\s*[\d.]+\s*$").unwrap();
         if metric_cols.is_empty() {
-            for (row_idx, row) in rows.iter().take(3).enumerate() {
+            for (_row_idx, row) in rows.iter().take(3).enumerate() {
                 for (j, cell) in row.iter().enumerate() {
                     if table_num_re.is_match(cell.trim()) {
                         metric_cols.push((j, format!("metric_{}", j)));

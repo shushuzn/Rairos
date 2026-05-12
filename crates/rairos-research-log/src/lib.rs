@@ -67,7 +67,7 @@ pub fn get_notes(paper_id: Option<&str>, limit: usize) -> Vec<ResearchNote> {
         .lines()
         .filter(|l| !l.trim().is_empty())
         .filter_map(|l| serde_json::from_str(l).ok())
-        .filter(|n: &ResearchNote| paper_id.map_or(true, |pid| n.paper_id == pid))
+        .filter(|n: &ResearchNote| paper_id.is_none_or(|pid| n.paper_id == pid))
         .collect();
 
     notes.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));

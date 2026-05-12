@@ -153,7 +153,7 @@ impl EvolutionEngine {
         }
     }
 
-    pub fn propose(&self, topic: &str, gap_type: Option<&str>, limit: usize) -> Vec<CapsuleCandidate> {
+    pub fn propose(&self, topic: &str, _gap_type: Option<&str>, limit: usize) -> Vec<CapsuleCandidate> {
         let mut candidates = Vec::new();
 
         for capsule in self.capsules.iter().take(MAX_CANDIDATES_PER_EVOLVE) {

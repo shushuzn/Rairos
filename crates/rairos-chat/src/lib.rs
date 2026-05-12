@@ -138,22 +138,22 @@ impl RagChat {
         scores.insert("temporal".to_string(), 0);
 
         for pattern in factual_patterns {
-            if Regex::new(pattern).map_or(false, |r| r.is_match(query)) {
+            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
                 *scores.get_mut("factual").unwrap() += 1;
             }
         }
         for pattern in conceptual_patterns {
-            if Regex::new(pattern).map_or(false, |r| r.is_match(query)) {
+            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
                 *scores.get_mut("conceptual").unwrap() += 1;
             }
         }
         for pattern in comparative_patterns {
-            if Regex::new(pattern).map_or(false, |r| r.is_match(query)) {
+            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
                 *scores.get_mut("comparative").unwrap() += 1;
             }
         }
         for pattern in temporal_patterns {
-            if Regex::new(pattern).map_or(false, |r| r.is_match(query)) {
+            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
                 *scores.get_mut("temporal").unwrap() += 1;
             }
         }
@@ -223,7 +223,7 @@ impl RagChat {
         ];
 
         for (pattern, name) in section_patterns {
-            if Regex::new(pattern).map_or(false, |r| r.is_match(before_pos)) {
+            if Regex::new(pattern).is_ok_and(|r| r.is_match(before_pos)) {
                 return name.to_string();
             }
         }
@@ -292,7 +292,7 @@ impl RagChat {
 
         for cap in sentence_ends.split(&text) {
             let sentence = cap.trim();
-            if result.len() + sentence.len() + 1 <= max_chars {
+            if result.len() + sentence.len() < max_chars {
                 if !result.is_empty() {
                     result.push(' ');
                 }
@@ -504,9 +504,9 @@ impl RagChat {
         show_insights: bool,
     ) -> String {
         let mut output = Vec::new();
-        output.push(format!("{}", "-".repeat(60)));
+        output.push("-".repeat(60).to_string());
         output.push(result.answer.clone());
-        output.push(format!("{}", "-".repeat(60)));
+        output.push("-".repeat(60).to_string());
 
         if show_insights && !result.cross_paper_insights.is_empty() {
             output.push(String::new());

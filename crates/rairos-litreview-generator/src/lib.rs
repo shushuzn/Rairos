@@ -82,7 +82,7 @@ impl LitReviewGenerator {
         &self,
         topic: &str,
         limit: usize,
-        use_llm: bool,
+        _use_llm: bool,
         _api_key: Option<&str>,
         _base_url: Option<&str>,
         _model: Option<&str>,

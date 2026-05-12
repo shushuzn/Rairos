@@ -429,7 +429,7 @@ impl InsightManager {
 
         let mut by_paper: HashMap<String, Vec<&InsightCard>> = HashMap::new();
         for card in cards {
-            by_paper.entry(card.paper_id.clone()).or_insert_with(Vec::new).push(card);
+            by_paper.entry(card.paper_id.clone()).or_default().push(card);
         }
 
         for (paper_id, paper_cards) in &by_paper {

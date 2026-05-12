@@ -70,7 +70,7 @@ impl TestSuite {
 
 // ─── Numerical claim extraction ──────────────────────────────────────────────────
 
-fn extract_numerical_claims(arxiv_id: &str, text_sources: &[String]) -> Vec<TestCase> {
+fn extract_numerical_claims(_arxiv_id: &str, text_sources: &[String]) -> Vec<TestCase> {
     let mut tests = Vec::new();
     let mut seen: HashSet<String> = HashSet::new();
 
@@ -142,7 +142,7 @@ fn extract_numerical_claims(arxiv_id: &str, text_sources: &[String]) -> Vec<Test
     tests
 }
 
-fn generate_claim_assertion(idx: usize, value: f64, desc: &str, is_accuracy: bool) -> String {
+fn generate_claim_assertion(idx: usize, _value: f64, desc: &str, is_accuracy: bool) -> String {
     if is_accuracy {
         format!(
             r#"def test_numerical_claim_{idx}():
@@ -196,7 +196,7 @@ fn extract_hyperparameter_tests(hyperparameters: &std::collections::HashMap<Stri
         let value_str = raw_value.trim();
 
         // Numeric values
-        if let Some(num_match) = value_str.chars().take_while(|c| c.is_ascii_digit() || *c == '.').collect::<String>().parse::<f64>().ok() {
+        if let Ok(num_match) = value_str.chars().take_while(|c| c.is_ascii_digit() || *c == '.').collect::<String>().parse::<f64>() {
             let lo = (num_match * 0.5).max(0.0001);
             let hi = num_match * 2.0;
 
@@ -339,7 +339,7 @@ fn get_io_patterns() -> Vec<Regex> {
     ]
 }
 
-fn extract_io_examples(abstract_text: &str, algorithm_descriptions: &[String], module_name: &str) -> Vec<TestCase> {
+fn extract_io_examples(abstract_text: &str, algorithm_descriptions: &[String], _module_name: &str) -> Vec<TestCase> {
     let mut tests = Vec::new();
     let text = format!("{} {}", abstract_text, algorithm_descriptions.join(" "));
     let mut seen: HashSet<String> = HashSet::new();
@@ -437,7 +437,7 @@ pub fn extract_tests(
 
 // ─── File writing ───────────────────────────────────────────────────────────────
 
-pub fn save_tests(suite: &TestSuite, test_dir: &PathBuf, framework: &str) -> std::io::Result<()> {
+pub fn save_tests(suite: &TestSuite, test_dir: &PathBuf, _framework: &str) -> std::io::Result<()> {
     fs::create_dir_all(test_dir)?;
 
     // __init__.py

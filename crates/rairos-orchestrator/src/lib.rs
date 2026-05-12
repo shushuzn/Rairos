@@ -586,7 +586,7 @@ impl AutonomousOrchestrator {
             };
 
             let gaps = &research_result.gaps;
-            let session_id = &research_result.session_id;
+            let _session_id = &research_result.session_id;
             if gaps.is_empty() {
                 tracing::info!("[Orchestrator] No gaps found for '{}'", topic);
                 continue;

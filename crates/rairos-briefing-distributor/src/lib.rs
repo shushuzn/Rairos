@@ -92,7 +92,7 @@ pub fn get_latest_briefing_markdown(arxiv_id: &str) -> Option<String> {
         return None;
     }
 
-    let pattern = format!("*{}*briefing*", arxiv_id);
+    let _pattern = format!("*{}*briefing*", arxiv_id);
     let entries: Vec<_> = std::fs::read_dir(&dir)
         .ok()?
         .filter_map(|e| e.ok())
@@ -128,7 +128,7 @@ fn parse_markdown_sections(md: &str) -> HashMap<String, String> {
                 sections.insert(current.clone(), body_lines.join("\n").trim().to_string());
                 body_lines.clear();
             }
-            current = line[3..].trim().to_lowercase().replace(' ', "_");
+            current = line.strip_prefix("## ").unwrap_or(line).trim().to_lowercase().replace(' ', "_");
         } else if line.starts_with("# ") {
             sections.insert("_title".to_string(), line[2..].trim().to_string());
         } else {

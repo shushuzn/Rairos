@@ -423,10 +423,7 @@ fn parse_sse_event(line: &str) -> Option<StreamChunk> {
         Err(_) => return None,
     };
 
-    let choice = match chunk.choices.into_iter().next() {
-        Some(c) => c,
-        None => return None,
-    };
+    let choice = chunk.choices.into_iter().next()?;
 
     let mut tool_calls = Vec::new();
     if let Some(tcs) = choice.delta.tool_calls {
@@ -1920,7 +1917,7 @@ pub fn get_at_risk_capsules(threshold: usize) -> Vec<AtRiskCapsule> {
 
     for cap in all_caps {
         let status = cap.status.as_deref().unwrap_or("");
-        if status != "active" && status != "" {
+        if status != "active" && !status.is_empty() {
             continue;
         }
         let streak = cap.low_score_streak.unwrap_or(0);

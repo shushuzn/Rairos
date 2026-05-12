@@ -5,7 +5,7 @@
 //!
 //! Python original: `research_loop/code_generator.py` (372 lines)
 
-use rairos_llm::{LlmClient, LlmResponse, Message};
+use rairos_llm::{LlmClient, Message};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -39,6 +39,7 @@ impl Default for CodeGenConfig {
 /// Paper content fields used for code generation.
 /// Minimal subset of the full PaperContent struct.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct PaperContent {
     pub title: String,
     pub arxiv_id: String,
@@ -52,22 +53,6 @@ pub struct PaperContent {
     pub methods: Vec<String>,
 }
 
-impl Default for PaperContent {
-    fn default() -> Self {
-        Self {
-            title: String::new(),
-            arxiv_id: String::new(),
-            abstract_text: String::new(),
-            authors: Vec::new(),
-            algorithm_descriptions: Vec::new(),
-            equations: Vec::new(),
-            claims: Vec::new(),
-            hyperparameters: std::collections::HashMap::new(),
-            datasets: Vec::new(),
-            methods: Vec::new(),
-        }
-    }
-}
 
 /// System prompt injected into the LLM to enforce code quality rules.
 pub const CODE_GEN_SYSTEM: &str = r#"You are an expert ML/AI researcher and Python programmer.

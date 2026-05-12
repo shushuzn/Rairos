@@ -237,7 +237,7 @@ async fn run_single_agent_tokio(
     cluster_id: String,
     gap_sub_topic: String,
     initial_papers: Vec<serde_json::Value>,
-    max_iterations: usize,
+    _max_iterations: usize,
     agent_id: String,
     barrier: Option<Arc<Barrier>>,
     orchestrator: Arc<dyn Orchestrator>,

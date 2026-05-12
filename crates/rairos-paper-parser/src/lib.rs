@@ -19,6 +19,7 @@ use std::collections::HashMap;
 use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct PaperContent {
     /// ArXiv identifier
     pub arxiv_id: String,
@@ -54,29 +55,6 @@ pub struct PaperContent {
     pub algorithm_sources: Vec<AlgorithmSource>,
 }
 
-impl Default for PaperContent {
-    fn default() -> Self {
-        Self {
-            arxiv_id: String::new(),
-            title: String::new(),
-            authors: Vec::new(),
-            abstract_text: String::new(),
-            published: String::new(),
-            updated: String::new(),
-            algorithm_descriptions: Vec::new(),
-            equations: Vec::new(),
-            claims: Vec::new(),
-            hyperparameters: HashMap::new(),
-            datasets: Vec::new(),
-            methods: Vec::new(),
-            categories: Vec::new(),
-            algorithm_fingerprint: String::new(),
-            equation_sources: Vec::new(),
-            claim_sources: Vec::new(),
-            algorithm_sources: Vec::new(),
-        }
-    }
-}
 
 impl From<PaperContent> for CodeGenPaperContent {
     fn from(pc: PaperContent) -> Self {
@@ -376,12 +354,12 @@ fn parse_arxiv_response(xml: &str, arxiv_id: &str) -> PaperContent {
         if let Ok(pdf_data) = tokio::runtime::Handle::current().block_on(download_pdf(&url)) {
             let pdf_path_str = format!(
                 "{}.pdf",
-                arxiv_id.replace('.', "_").replace('/', "_")
+                arxiv_id.replace(['.', '/'], "_")
             );
             let pdf_path = Path::new(&pdf_path_str);
-            if std::fs::write(&pdf_path, &pdf_data).is_ok() {
+            if std::fs::write(pdf_path, &pdf_data).is_ok() {
                 _enrich_from_pdf(&mut content, pdf_path);
-                let _ = std::fs::remove_file(&pdf_path);
+                let _ = std::fs::remove_file(pdf_path);
             }
         }
     }
@@ -443,7 +421,7 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
             .iter()
             .enumerate()
             .filter(|(_, &off)| char_start >= off)
-            .last()
+            .next_back()
             .map(|(i, _)| i)
             .unwrap_or(0);
         PaperLocation::new("unknown", (page_idx + 1) as u32, char_start as u32, char_start as u32)
@@ -524,7 +502,7 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
         let re = Regex::new(pat).unwrap();
         for cap in re.captures_iter(&text_lower) {
             if let Some(m) = cap.get(0) {
-                let val = m.as_str().split(':').last().unwrap_or("").trim();
+                let val = m.as_str().split(':').next_back().unwrap_or("").trim();
                 if !val.is_empty() {
                     content.hyperparameters.insert(name.to_string(), val.to_string());
                 }

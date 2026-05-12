@@ -219,7 +219,7 @@ fn from_gap_clusters(
             Ok(c) => c,
             Err(_) => {
                 // Fallback: try to access gaps field
-                let gaps = cluster_val.get("gaps").and_then(|v| v.as_array()).map(|a| a.clone()).unwrap_or_default();
+                let gaps = cluster_val.get("gaps").and_then(|v| v.as_array()).cloned().unwrap_or_default();
                 let novelty_score = cluster_val.get("novelty_score").and_then(|v| v.as_f64()).unwrap_or(0.0);
                 let gap_type = cluster_val.get("gap_type").and_then(|v| v.as_str()).unwrap_or("unknown").to_string();
                 let cluster_id = cluster_val.get("cluster_id").and_then(|v| v.as_str()).unwrap_or("").to_string();

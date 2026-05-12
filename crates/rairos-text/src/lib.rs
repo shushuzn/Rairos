@@ -15,7 +15,7 @@ const KEYWORD_STOPWORDS: &[&str] = &[
 ];
 
 fn is_stopword(w: &str) -> bool {
-    KEYWORD_STOPWORDS.iter().any(|&s| s == w)
+    KEYWORD_STOPWORDS.contains(&w)
 }
 
 fn word_chars(text: &str) -> Vec<(usize, usize)> {

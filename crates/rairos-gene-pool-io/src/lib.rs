@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::PathBuf;
@@ -131,7 +130,6 @@ pub fn get_gene_pool_diversity() -> HashMap<String, serde_json::Value> {
             "overrepresented_families": [],
         }).as_object().unwrap().clone()
         .into_iter()
-        .map(|(k, v)| (k, v))
         .collect();
     }
 
@@ -357,7 +355,7 @@ pub fn import_pool(data: &HashMap<String, serde_json::Value>, merge: bool) -> Ha
         if !new_genes.is_empty() {
             let mut open_result = if merge {
                 std::fs::OpenOptions::new()
-                    .write(true)
+                    
                     .append(true)
                     .create(true)
                     .open(&jsonl_path)

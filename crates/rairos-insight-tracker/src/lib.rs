@@ -106,7 +106,7 @@ impl EvolutionTracker {
             .open(&self.lifecycle_events_file)
         {
             let mut f = file;
-            writeln!(f, "{}", event.to_string()).ok();
+            writeln!(f, "{}", event).ok();
         }
     }
 
@@ -146,7 +146,7 @@ impl EvolutionTracker {
             .open(&self.events_file)
         {
             let mut f = file;
-            writeln!(f, "{}", event_data.to_string()).ok();
+            writeln!(f, "{}", event_data).ok();
         }
 
         self.update_profile(event);
@@ -460,7 +460,7 @@ impl EvolutionTracker {
             dimensions.insert(dim.to_string(), serde_json::json!({
                 "raw": (*raw * 1000.0).round() / 1000.0,
                 "norm": (norm * 100.0).round() / 100.0,
-                "label": labels.get(dim).unwrap_or(&dim),
+                "label": labels.get(dim).unwrap_or(dim),
                 "desc": descs.get(dim).unwrap_or(&""),
             }));
         }

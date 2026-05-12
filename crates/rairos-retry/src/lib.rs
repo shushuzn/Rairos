@@ -38,7 +38,7 @@ impl RetryStats {
         error: Option<&str>,
     ) {
         let mut guard = self.stats.write().unwrap();
-        let entry = guard.entry(func_name.to_string()).or_insert_with(RetryStatsData::default);
+        let entry = guard.entry(func_name.to_string()).or_default();
         entry.total_attempts += 1;
         if !success {
             entry.total_failures += 1;
@@ -114,17 +114,14 @@ where
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum CircuitState {
+    #[default]
     Closed,
     Open,
     HalfOpen,
 }
 
-impl Default for CircuitState {
-    fn default() -> Self {
-        CircuitState::Closed
-    }
-}
 
 #[derive(Debug)]
 pub struct CircuitBreaker {

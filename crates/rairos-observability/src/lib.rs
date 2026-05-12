@@ -7,7 +7,6 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, RwLock};
-use std::thread;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn now_iso() -> String {
@@ -76,11 +75,11 @@ pub struct CorrelationContext {
 }
 
 thread_local! {
-    static CORRELATION: RwLock<CorrelationContext> = RwLock::new(CorrelationContext {
+    static CORRELATION: RwLock<CorrelationContext> = const { RwLock::new(CorrelationContext {
         trace_id: None,
         span_id: None,
         parent_span_id: None,
-    });
+    }) };
 }
 
 pub fn get_trace_id() -> Option<String> {
@@ -286,7 +285,7 @@ impl MetricsCollector {
     pub fn observe(&self, subsystem: &str, name: &str, value: f64) {
         let key = format!("{}.{}", subsystem, name);
         let mut histograms = self.histograms.write().unwrap();
-        let hist = histograms.entry(key).or_insert_with(Vec::new);
+        let hist = histograms.entry(key).or_default();
         hist.push(value);
         if hist.len() > 1000 {
             hist.remove(0);
@@ -390,9 +389,7 @@ impl MetricsCollector {
         );
 
         let histograms = self.histograms.read().unwrap();
-        let hist_summary: HashMap<String, HashMap<String, f64>> = histograms
-            .iter()
-            .map(|(k, _v)| {
+        let hist_summary: HashMap<String, HashMap<String, f64>> = histograms.keys().map(|k| {
                 let stats = Self::new().histogram_stats(
                     k.split('.').next().unwrap_or(""),
                     k.split('.').nth(1).unwrap_or(""),

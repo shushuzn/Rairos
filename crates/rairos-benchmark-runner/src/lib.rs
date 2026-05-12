@@ -199,36 +199,33 @@ fn parse_pytest_output(result: &mut BenchmarkResult, output: &str) {
 
 /// Parse pytest-json-report output.
 fn parse_json_report(result: &mut BenchmarkResult, report_path: &Path) {
-    match fs::read_to_string(report_path) {
-        Ok(content) => {
-            if let Ok(data) = serde_json::from_str::<serde_json::Value>(&content) {
-                if let Some(summary) = data.get("summary").and_then(|s| s.as_object()) {
-                    if let Some(p) = summary.get("passed").and_then(|v| v.as_u64()) {
-                        result.passed = p as u32;
-                    }
-                    if let Some(f) = summary.get("failed").and_then(|v| v.as_u64()) {
-                        result.failed = f as u32;
-                    }
-                    if let Some(s) = summary.get("skipped").and_then(|v| v.as_u64()) {
-                        result.skipped = s as u32;
-                    }
+    if let Ok(content) = fs::read_to_string(report_path) {
+        if let Ok(data) = serde_json::from_str::<serde_json::Value>(&content) {
+            if let Some(summary) = data.get("summary").and_then(|s| s.as_object()) {
+                if let Some(p) = summary.get("passed").and_then(|v| v.as_u64()) {
+                    result.passed = p as u32;
                 }
-                if let Some(results) = data.get("results").and_then(|r| r.as_array()) {
-                    for node in results {
-                        if let Some(nodeid) = node.get("nodeid").and_then(|v| v.as_str()) {
-                            if let Some(outcome) = node.get("outcome").and_then(|v| v.as_str()) {
-                                match outcome {
-                                    "passed" => result.passed_tests.push(nodeid.to_string()),
-                                    "failed" => result.failed_tests.push(nodeid.to_string()),
-                                    _ => {}
-                                }
+                if let Some(f) = summary.get("failed").and_then(|v| v.as_u64()) {
+                    result.failed = f as u32;
+                }
+                if let Some(s) = summary.get("skipped").and_then(|v| v.as_u64()) {
+                    result.skipped = s as u32;
+                }
+            }
+            if let Some(results) = data.get("results").and_then(|r| r.as_array()) {
+                for node in results {
+                    if let Some(nodeid) = node.get("nodeid").and_then(|v| v.as_str()) {
+                        if let Some(outcome) = node.get("outcome").and_then(|v| v.as_str()) {
+                            match outcome {
+                                "passed" => result.passed_tests.push(nodeid.to_string()),
+                                "failed" => result.failed_tests.push(nodeid.to_string()),
+                                _ => {}
                             }
                         }
                     }
                 }
             }
         }
-        Err(_) => {}
     }
 }
 
@@ -245,7 +242,7 @@ fn populate_coverage_fields(result: &mut BenchmarkResult, config: &BenchmarkConf
     if let Ok(entries) = fs::read_dir(&result.test_dir) {
         for entry in entries.flatten() {
             let path = entry.path();
-            if path.file_name().map_or(false, |n| n == "test_claims.py") {
+            if path.file_name().is_some_and(|n| n == "test_claims.py") {
                 if let Ok(content) = fs::read_to_string(&path) {
                     let re_func = Regex::new(r"def (test_numerical_claim_\d+.*?):").unwrap();
                     for caps in re_func.captures_iter(&content) {

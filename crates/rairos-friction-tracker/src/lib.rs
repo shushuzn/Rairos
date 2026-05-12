@@ -198,7 +198,7 @@ impl FrictionTracker {
         abandoned: bool,
         notes: &str,
     ) -> FrictionEvent {
-        let id = format!("fr_{}", uuid::Uuid::new_v4().to_string()[..8].to_string());
+        let id = format!("fr_{}", &uuid::Uuid::new_v4().to_string()[..8]);
         let event = FrictionEvent::new(
             &id,
             friction_type,

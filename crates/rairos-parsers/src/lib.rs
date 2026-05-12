@@ -181,7 +181,7 @@ fn extract_paper_from_entry_xml(entry_xml: &str) -> Paper {
     // Extract PDF link
     let pdf_url = extract_pdf_url(entry_xml, &entry_id);
 
-    let arxiv_id = entry_id.split('/').last().unwrap_or(&entry_id).to_string();
+    let arxiv_id = entry_id.split('/').next_back().unwrap_or(&entry_id).to_string();
 
     Paper::with_metadata(
         Some(arxiv_id),
@@ -547,7 +547,7 @@ fn extract_pdf_url(xml: &str, entry_id: &str) -> Option<String> {
     // Fallback
     Some(format!(
         "https://arxiv.org/pdf/{}.pdf",
-        entry_id.split('/').last().unwrap_or("")
+        entry_id.split('/').next_back().unwrap_or("")
     ))
 }
 

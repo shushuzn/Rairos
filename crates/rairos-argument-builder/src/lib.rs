@@ -2,8 +2,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum EvidenceType {
     #[serde(rename = "support")]
+    #[default]
     Support,
     #[serde(rename = "contradict")]
     Contradict,
@@ -13,11 +15,6 @@ pub enum EvidenceType {
     Methodological,
 }
 
-impl Default for EvidenceType {
-    fn default() -> Self {
-        EvidenceType::Support
-    }
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ArgumentSection {

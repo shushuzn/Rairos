@@ -485,7 +485,7 @@ fn parse_claim_edge(data: &serde_json::Value) -> Option<ClaimEdge> {
 // ─── HTML Visualization ─────────────────────────────────────────────────────────
 
 pub fn render_claim_graph_html(graph: Option<&ClaimGraph>) -> String {
-    let graph = graph.map(|g| g.clone()).unwrap_or_else(|| ClaimGraph::load(None));
+    let graph = graph.cloned().unwrap_or_else(|| ClaimGraph::load(None));
     let contradictions = graph.find_contradictions();
 
     let mut paper_stats: HashMap<String, (usize, HashMap<String, usize>, String)> =

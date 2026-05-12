@@ -5,7 +5,6 @@
 //! Python original: `research_loop/snapstate.py` (313 lines)
 
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
@@ -14,6 +13,7 @@ use std::path::PathBuf;
 
 /// A paper captured during research.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct PaperSnapshot {
     pub arxiv_id: String,
     pub title: String,
@@ -27,21 +27,6 @@ pub struct PaperSnapshot {
     pub keywords: Vec<String>,
 }
 
-impl Default for PaperSnapshot {
-    fn default() -> Self {
-        Self {
-            arxiv_id: String::new(),
-            title: String::new(),
-            abstract_text: String::new(),
-            url: String::new(),
-            extracted_text: String::new(),
-            summary: String::new(),
-            gaps_found: Vec::new(),
-            notes: String::new(),
-            keywords: Vec::new(),
-        }
-    }
-}
 
 /// A research gap captured during agent iteration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -170,8 +155,8 @@ impl Snapstate {
             .into_iter()
             .filter_map(|e| e.ok())
             .filter(|e| {
-                e.path().extension().map_or(false, |ext| ext == "json")
-                    && e.path().file_stem().map_or(false, |s| {
+                e.path().extension().is_some_and(|ext| ext == "json")
+                    && e.path().file_stem().is_some_and(|s| {
                         !s.to_string_lossy().ends_with(".tmp")
                     })
             })
@@ -203,8 +188,8 @@ impl Snapstate {
         let mut sessions: Vec<_> = entries
             .into_iter()
             .filter(|e| {
-                e.path().extension().map_or(false, |ext| ext == "json")
-                    && e.path().file_stem().map_or(false, |s| {
+                e.path().extension().is_some_and(|ext| ext == "json")
+                    && e.path().file_stem().is_some_and(|s| {
                         !s.to_string_lossy().ends_with(".tmp")
                     })
             })
@@ -315,7 +300,7 @@ impl Snapstate {
         let mut checkpoints: Vec<_> = entries
             .into_iter()
             .filter(|e| {
-                e.path().extension().map_or(false, |ext| ext == "json")
+                e.path().extension().is_some_and(|ext| ext == "json")
             })
             .collect();
 

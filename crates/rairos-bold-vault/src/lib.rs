@@ -61,7 +61,7 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
 
     for cap in &capsules {
         let status = cap.get("status").and_then(|v| v.as_str()).unwrap_or("");
-        if status != "active" && status != "" {
+        if status != "active" && !status.is_empty() {
             continue;
         }
 

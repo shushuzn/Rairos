@@ -820,7 +820,7 @@ impl ResearchOrchestrator {
 
         {
             let mut tracker = self.cost_tracker.write().await;
-            tracker.record(&response.usage(), response.model(), self.llm.provider_name());
+            tracker.record(response.usage(), response.model(), self.llm.provider_name());
         }
 
         let suggestions: Vec<String> = response
@@ -880,7 +880,7 @@ pub async fn run_research_loop(
         home.join("ai_research")
     });
 
-    std::fs::create_dir_all(&output_dir).map_err(|e| ResearchError::Io(e))?;
+    std::fs::create_dir_all(&output_dir).map_err(ResearchError::Io)?;
 
     // Return empty results - actual implementation requires parser integration
     Ok(vec![])

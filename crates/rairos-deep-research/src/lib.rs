@@ -317,6 +317,12 @@ impl AdaptiveQueryStrategy {
 /// Stub gap analyzer - real implementation would use rairos-llm GapAnalyzerV2
 pub struct GapAnalyzerV2;
 
+impl Default for GapAnalyzerV2 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GapAnalyzerV2 {
     pub fn new() -> Self {
         Self

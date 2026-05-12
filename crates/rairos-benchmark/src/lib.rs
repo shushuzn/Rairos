@@ -160,13 +160,11 @@ fn fuzzy_match_name(name1: &str, name2: &str) -> f64 {
     let n1 = name1
         .to_lowercase()
         .trim()
-        .replace('-', " ")
-        .replace('_', " ");
+        .replace(['-', '_'], " ");
     let n2 = name2
         .to_lowercase()
         .trim()
-        .replace('-', " ")
-        .replace('_', " ");
+        .replace(['-', '_'], " ");
 
     if n1 == n2 {
         return 1.0;
@@ -238,7 +236,7 @@ impl BenchmarkComparator {
         lines.push(format!("\n{}", "=".repeat(70)));
         lines.push("  Cross-Paper Benchmark Comparison".to_string());
         lines.push(format!("  Papers: {}", result.paper_ids.join(", ")));
-        lines.push(format!("{}", "=".repeat(70)));
+        lines.push("=".repeat(70).to_string());
 
         if result.matches.is_empty() {
             lines.push("\n  No matching benchmarks found across papers.".to_string());

@@ -10,7 +10,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::PathBuf;
 
-use rairos_evolution::{EvolutionMemory, FeedbackType, get_evolution_memory};
+use rairos_evolution::{EvolutionMemory, get_evolution_memory};
 
 lazy_static! {
     static ref STOPWORDS: HashSet<&'static str> = {
@@ -505,6 +505,7 @@ impl EvolutionReporter {
     }
 }
 
+#[derive(Default)]
 struct PaperInsightData {
     positive: i32,
     negative: i32,
@@ -512,16 +513,6 @@ struct PaperInsightData {
     queries: Vec<String>,
 }
 
-impl Default for PaperInsightData {
-    fn default() -> Self {
-        Self {
-            positive: 0,
-            negative: 0,
-            scores: Vec::new(),
-            queries: Vec::new(),
-        }
-    }
-}
 
 pub fn generate_evolution_report(days: i32) -> LearningReport {
     let reporter = EvolutionReporter::new(None);
