@@ -15,6 +15,7 @@ class FakeDatabase:
     def __init__(self, papers=None):
         self.papers = papers or {}  # paper_id -> bool (exists)
         self.citations_added = []
+        self._inner = None
 
     def init(self):
         pass
@@ -64,7 +65,7 @@ class TestCiteImportDryRun:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         fake_db = self._mock_db()
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
@@ -85,7 +86,7 @@ class TestCiteImportDryRun:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         fake_db = FakeDatabase({"2302.00001": True})
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
@@ -105,7 +106,7 @@ class TestCiteImportDryRun:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         fake_db = FakeDatabase({"2301.00001": True})  # source exists, target doesn't
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
@@ -136,7 +137,7 @@ class TestCiteImportActual:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         fake_db = self._mock_db()
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
@@ -153,7 +154,7 @@ class TestCiteImportActual:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         fake_db = FakeDatabase({"2302.00001": True})  # only target exists
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
@@ -175,7 +176,7 @@ class TestCiteImportActual:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         fake_db = FakeDatabase({})
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
@@ -196,7 +197,7 @@ class TestCiteImportFileInput:
         )
 
         fake_db = FakeDatabase({"2301.00001": True, "2302.00001": True})
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
@@ -219,7 +220,7 @@ class TestCiteImportFieldVariants:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         fake_db = FakeDatabase({"2301.00001": True, "2302.00001": True})
-        monkeypatch.setattr("cli.Database", lambda: fake_db)
+        monkeypatch.setattr("cli.Database", lambda path=None: fake_db)
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)

@@ -3,6 +3,8 @@ name = "rairos-db-py"
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+
 [lib]
 name = "rairos_db_py"
 crate-type = ["cdylib"]
