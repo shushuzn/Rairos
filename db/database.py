@@ -231,7 +231,6 @@ class Database:
 
     def init(self) -> None:
         self._inner.init_()
-        # Clear residual data from Rust DB (same temp file as mirror)
         try:
             self._inner.clear_all()
         except Exception:
@@ -342,7 +341,7 @@ class Database:
         }
         result = self._inner.upsert_paper(data)
 
-        # Also write to local mirror
+        # Also write to local mirror (for filtered search / list_papers)
         import datetime
 
         now = datetime.datetime.now().isoformat()
@@ -393,20 +392,7 @@ class Database:
         return PaperRecord(json.loads(result))
 
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
-        """Get a paper by ID. Checks local mirror first (most up-to-date)."""
-        # Check local mirror first — it has the latest parse_status etc.
-        row = self._conn.execute("SELECT * FROM papers WHERE id = ?", (paper_id,)).fetchone()
-        if row:
-            cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
-            d = dict(zip(cols, row))
-            for field in ("authors", "latex_blocks"):
-                if d.get(field):
-                    try:
-                        d[field] = json.loads(d[field])
-                    except Exception:
-                        pass
-            return PaperRecord(d)
-        # Fall back to Rust (initial insert source)
+        """Get a paper by ID."""
         result = self._inner.get_paper(paper_id)
         if result is None:
             return None
@@ -443,8 +429,6 @@ class Database:
         parse_status: Optional[str] = None,
     ) -> Tuple[List[PaperRecord], int]:
         """Full-text search. Returns (results, total_count)."""
-        # Rust returns only {paper_id, score, snippet, title} — no source/category/etc.
-        # For filtered queries, use local mirror FTS instead for complete paper data.
         needs_filter = source or category or parse_status or date_from or date_to
 
         if needs_filter:
