@@ -48,6 +48,9 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Sync dependencies
+        run: uv sync --extra dev
+
       - name: Syntax check
         run: python -m py_compile ai_research_os.py
 
@@ -76,9 +79,11 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Sync dependencies
+        run: uv sync --extra dev
+
       - name: Run mypy
         run: uv run mypy core parsers db llm research_loop cli --ignore-missing-imports
-
 
   security-scan:
     runs-on: ubuntu-22.04
@@ -95,6 +100,9 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --extra dev
 
       - name: Run bandit
         continue-on-error: true
