@@ -171,6 +171,7 @@ members = [
     "crates/rairos-eval-gap-monitor",
     "crates/rairos-at-risk-scanner",
     "crates/rairos-impact-scorer",
+    "crates/rairos-progress-tracker",
     "crates/rairos-db",
     "benches",
 ]

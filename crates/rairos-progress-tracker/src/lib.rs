@@ -1,79 +1,26 @@
-//! rairos-progress-tracker — Progress tracking for research tasks.
+//! rairos-progress-tracker — Progress Tracker for AI Research OS.
 //!
-//! Ported from `core/progress_tracker.py`.
+//! Ported from `core/progress_tracker.py` (42 LOC, pure stdlib + chrono).
 
-use chrono::Utc;
-use once_cell::sync::Lazy;
+use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::{Mutex, MutexGuard};
 
-/// A task in the progress tracker.
+// ─── Task Record ───────────────────────────────────────────────────────────────
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Task {
+pub struct TaskRecord {
     pub description: String,
     pub status: String,
     pub created: String,
+    #[serde(default)]
     pub completed: Option<String>,
 }
 
-/// Progress Tracker for research tasks.
+// ─── Progress Tracker ─────────────────────────────────────────────────────────
+
 pub struct ProgressTracker {
-    tasks: HashMap<String, Task>,
-}
-
-impl ProgressTracker {
-    /// Create a new progress tracker.
-    pub fn new() -> Self {
-        Self {
-            tasks: HashMap::new(),
-        }
-    }
-
-    /// Add a task to track.
-    pub fn add_task(&mut self, task_id: &str, description: &str) {
-        self.tasks.insert(
-            task_id.to_string(),
-            Task {
-                description: description.to_string(),
-                status: "pending".to_string(),
-                created: Utc::now().to_rfc3339(),
-                completed: None,
-            },
-        );
-    }
-
-    /// Mark a task as completed.
-    pub fn complete_task(&mut self, task_id: &str) {
-        if let Some(task) = self.tasks.get_mut(task_id) {
-            task.status = "completed".to_string();
-            task.completed = Some(Utc::now().to_rfc3339());
-        }
-    }
-
-    /// Get progress as a percentage (0.0 to 100.0).
-    pub fn get_progress(&self) -> f64 {
-        let total = self.tasks.len();
-        if total == 0 {
-            return 0.0;
-        }
-        let completed = self
-            .tasks
-            .values()
-            .filter(|t| t.status == "completed")
-            .count();
-        (completed as f64 / total as f64) * 100.0
-    }
-
-    /// Get task by ID.
-    pub fn get_task(&self, task_id: &str) -> Option<&Task> {
-        self.tasks.get(task_id)
-    }
-
-    /// Get all tasks.
-    pub fn get_all_tasks(&self) -> &HashMap<String, Task> {
-        &self.tasks
-    }
+    tasks: HashMap<String, TaskRecord>,
 }
 
 impl Default for ProgressTracker {
@@ -82,35 +29,60 @@ impl Default for ProgressTracker {
     }
 }
 
-// Global tracker instance
-static TRACKER: Lazy<Mutex<Option<ProgressTracker>>> = Lazy::new(|| Mutex::new(None));
+impl ProgressTracker {
+    pub fn new() -> Self {
+        Self {
+            tasks: HashMap::new(),
+        }
+    }
 
-/// Get the global progress tracker instance.
-pub fn get_tracker() -> MutexGuard<'static, Option<ProgressTracker>> {
+    pub fn add_task(&mut self, task_id: &str, description: &str) {
+        self.tasks.insert(
+            task_id.to_string(),
+            TaskRecord {
+                description: description.to_string(),
+                status: "pending".to_string(),
+                created: Local::now().to_rfc3339(),
+                completed: None,
+            },
+        );
+    }
+
+    pub fn complete_task(&mut self, task_id: &str) {
+        if let Some(task) = self.tasks.get_mut(task_id) {
+            task.status = "completed".to_string();
+            task.completed = Some(Local::now().to_rfc3339());
+        }
+    }
+
+    pub fn get_progress(&self) -> f64 {
+        let total = self.tasks.len();
+        if total == 0 {
+            return 0.0;
+        }
+        let completed = self.tasks.values().filter(|t| t.status == "completed").count();
+        (completed as f64 / total as f64) * 100.0
+    }
+
+    pub fn get_task(&self, task_id: &str) -> Option<&TaskRecord> {
+        self.tasks.get(task_id)
+    }
+
+    pub fn all_tasks(&self) -> &HashMap<String, TaskRecord> {
+        &self.tasks
+    }
+}
+
+// ─── Singleton ─────────────────────────────────────────────────────────────────
+
+static TRACKER: std::sync::LazyLock<std::sync::Mutex<ProgressTracker>> =
+    std::sync::LazyLock::new(|| std::sync::Mutex::new(ProgressTracker::new()));
+
+pub fn get_tracker() -> std::sync::MutexGuard<'static, ProgressTracker> {
     TRACKER.lock().unwrap()
 }
 
-/// Initialize the global tracker.
-pub fn init_tracker() {
-    let mut guard = TRACKER.lock().unwrap();
-    *guard = Some(ProgressTracker::new());
-}
-
-/// With the global tracker, execute a closure.
-pub fn with_tracker<F, R>(f: F) -> R
-where
-    F: FnOnce(&mut ProgressTracker) -> R,
-{
-    let mut guard = TRACKER.lock().unwrap();
-    if guard.is_none() {
-        *guard = Some(ProgressTracker::new());
-    }
-    if let Some(ref mut tracker) = *guard {
-        f(tracker)
-    } else {
-        panic!("Tracker not initialized")
-    }
-}
+// ─── Tests ─────────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
@@ -120,8 +92,8 @@ mod tests {
     fn test_add_task() {
         let mut tracker = ProgressTracker::new();
         tracker.add_task("task1", "Test task");
-        assert_eq!(tracker.tasks.len(), 1);
-        assert_eq!(tracker.get_task("task1").unwrap().description, "Test task");
+        assert!(tracker.get_task("task1").is_some());
+        assert_eq!(tracker.get_task("task1").unwrap().status, "pending");
     }
 
     #[test]
@@ -129,9 +101,8 @@ mod tests {
         let mut tracker = ProgressTracker::new();
         tracker.add_task("task1", "Test task");
         tracker.complete_task("task1");
-        let task = tracker.get_task("task1").unwrap();
-        assert_eq!(task.status, "completed");
-        assert!(task.completed.is_some());
+        assert_eq!(tracker.get_task("task1").unwrap().status, "completed");
+        assert!(tracker.get_task("task1").unwrap().completed.is_some());
     }
 
     #[test]
@@ -143,20 +114,25 @@ mod tests {
     #[test]
     fn test_get_progress_partial() {
         let mut tracker = ProgressTracker::new();
-        tracker.add_task("task1", "Task 1");
-        tracker.add_task("task2", "Task 2");
-        tracker.complete_task("task1");
-        let progress = tracker.get_progress();
-        assert!((progress - 50.0).abs() < 0.001);
+        tracker.add_task("t1", "Task 1");
+        tracker.add_task("t2", "Task 2");
+        tracker.complete_task("t1");
+        assert!((tracker.get_progress() - 50.0).abs() < 0.001);
     }
 
     #[test]
-    fn test_get_progress_complete() {
+    fn test_get_progress_full() {
         let mut tracker = ProgressTracker::new();
-        tracker.add_task("task1", "Task 1");
-        tracker.add_task("task2", "Task 2");
-        tracker.complete_task("task1");
-        tracker.complete_task("task2");
-        assert_eq!(tracker.get_progress(), 100.0);
+        tracker.add_task("t1", "Task 1");
+        tracker.complete_task("t1");
+        assert!((tracker.get_progress() - 100.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn test_complete_nonexistent() {
+        let mut tracker = ProgressTracker::new();
+        // Should not panic
+        tracker.complete_task("nonexistent");
+        assert_eq!(tracker.get_progress(), 0.0);
     }
 }
