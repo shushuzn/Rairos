@@ -2093,7 +2093,7 @@ pub fn get_at_risk_capsules(threshold: usize) -> Vec<AtRiskCapsule> {
         });
     }
 
-    results.sort_by(|a, b| b.low_score_streak.cmp(&a.low_score_streak));
+    results.sort_by_key(|a| a.low_score_streak);
     results
 }
 

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! rairos-evolution — Evolution Memory: User Feedback & Pattern Learning.
 //!
 //! Ported from `llm/evolution.py`.
@@ -25,7 +26,7 @@ impl FeedbackType {
         }
     }
 
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn parse_from_str(s: &str) -> Option<Self> {
         match s {
             "positive" => Some(FeedbackType::Positive),
             "negative" => Some(FeedbackType::Negative),

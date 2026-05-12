@@ -670,7 +670,7 @@ impl Database {
                ORDER BY rank
                LIMIT ?2"#,
         )?;
-        let rows = stmt.query_map(params![query, limit as i64], |row| Self::row_to_paper(row))?;
+        let rows = stmt.query_map(params![query, limit as i64], Self::row_to_paper)?;
         let mut papers: Vec<Paper> = Vec::new();
         for paper in rows {
             papers.push(paper?);

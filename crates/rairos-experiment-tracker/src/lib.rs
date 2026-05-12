@@ -565,3 +565,8 @@ mod tests {
         assert!(comp.contains_key("experiments"));
     }
 }
+
+#[allow(dead_code)]
+fn _to_slice<T: Copy>(val: &T) -> &[T] {
+    std::slice::from_ref(val)
+}

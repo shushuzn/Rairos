@@ -126,7 +126,6 @@ mod search_result_tests {
 /// Test paper conversion and data integrity
 #[cfg(test)]
 mod paper_tests {
-    use super::*;
     use rairos_core::Paper;
 
     #[test]

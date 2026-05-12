@@ -66,7 +66,8 @@ pub fn check_ruff(code_path: &PathBuf) -> Vec<Diagnostic> {
     }
 }
 
-fn parse_ruff_json(code_path: &PathBuf, stdout: &str) -> Vec<Diagnostic> {
+#[allow(dead_code)]
+fn parse_ruff_json(code_path: &std::path::Path, stdout: &str) -> Vec<Diagnostic> {
     if stdout.trim().is_empty() {
         return vec![];
     }
@@ -83,7 +84,7 @@ fn parse_ruff_json(code_path: &PathBuf, stdout: &str) -> Vec<Diagnostic> {
             let rule = entry.get("rule")?.as_str()?;
 
             Some(Diagnostic {
-                file: code_path.clone(),
+                file: code_path.to_path_buf(),
                 line: location.get("line")?.as_u64()? as u32,
                 column: location.get("column")?.as_u64()? as u32,
                 severity: ruff_to_severity(rule),
@@ -135,7 +136,8 @@ pub fn check_pyright(code_path: &PathBuf) -> Vec<Diagnostic> {
     }
 }
 
-fn parse_pyright_json(code_path: &PathBuf, stdout: &str) -> Vec<Diagnostic> {
+#[allow(dead_code)]
+fn parse_pyright_json(code_path: &std::path::Path, stdout: &str) -> Vec<Diagnostic> {
     if stdout.trim().is_empty() {
         return vec![];
     }
@@ -158,7 +160,7 @@ fn parse_pyright_json(code_path: &PathBuf, stdout: &str) -> Vec<Diagnostic> {
             let start = range.get("start")?;
 
             Some(Diagnostic {
-                file: code_path.clone(),
+                file: code_path.to_path_buf(),
                 line: start.get("line")?.as_u64()? as u32,
                 column: start.get("character")?.as_u64()? as u32,
                 severity,

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! rairos-evolution-report — Evolution Report Generator.
 //!
 //! Ported from `llm/evolution_report.py`.
@@ -368,7 +369,7 @@ impl EvolutionReporter {
         }
 
         let mut sorted: Vec<(&str, usize)> = word_counts.into_iter().collect();
-        sorted.sort_by(|a, b| b.1.cmp(&a.1));
+        sorted.sort_by_key(|a| a.1);
         sorted
             .into_iter()
             .take(10)
