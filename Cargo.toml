@@ -167,6 +167,7 @@ members = [
     "crates/rairos-labor-displacement-tracker",
     "crates/rairos-replication-checker",
     "crates/rairos-credibility-scorer",
+    "crates/rairos-bold-vault",
     "crates/rairos-db",
     "benches",
 ]
