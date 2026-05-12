@@ -12,7 +12,8 @@ We promise:
 - Resource protection guarantees
 """
 
-import psutil
+import rairos_sysinfo
+
 from typing import Dict, List
 from dataclasses import dataclass
 
@@ -63,10 +64,10 @@ class PerformanceGuaranteeSystem:
     def _measure_baseline(self) -> Dict[str, float]:
         """Measure baseline resource usage."""
         try:
-            disk_io = psutil.disk_io_counters()
+            disk_io = rairos_sysinfo.SysInfo().disk_io_counters()
             return {
-                "cpu_percent": psutil.cpu_percent(interval=1),
-                "memory_percent": psutil.virtual_memory().percent,
+                "cpu_percent": rairos_sysinfo.SysInfo().cpu_percent(1),
+                "memory_percent": rairos_sysinfo.SysInfo().virtual_memory()["percent"],
                 "disk_io_read": disk_io.read_bytes if disk_io else 0,
             }
         except (OSError, AttributeError):
@@ -75,8 +76,8 @@ class PerformanceGuaranteeSystem:
     def check_guarantees(self) -> List[PerformanceGuarantee]:
         """Check all performance guarantees."""
         try:
-            cpu = psutil.cpu_percent(interval=0.5)
-            memory = psutil.virtual_memory().percent
+            cpu = rairos_sysinfo.SysInfo().cpu_percent(0.5)
+            memory = rairos_sysinfo.SysInfo().virtual_memory()["percent"]
 
             # Update guarantees
             self.guarantees[0].measured_impact = cpu
@@ -124,8 +125,8 @@ class PerformanceGuaranteeSystem:
     def should_throttle(self) -> bool:
         """Check if we should throttle operations."""
         try:
-            cpu = psutil.cpu_percent(interval=0.5)
-            memory = psutil.virtual_memory().percent
+            cpu = rairos_sysinfo.SysInfo().cpu_percent(0.5)
+            memory = rairos_sysinfo.SysInfo().virtual_memory()["percent"]
 
             # Throttle if resources are high
             return cpu > 70 or memory > 70  # type: ignore[no-any-return]
