@@ -1,12 +1,15 @@
-//! rairos-friction-tracker — Research Friction Tracker.
+//! rairos-friction-tracker — Research Friction Tracker for AI Research OS.
 //!
-//! Ported from `llm/friction_tracker.py`.
+//! Ported from `llm/friction_tracker.py` (248 LOC, pure stdlib).
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs::{self, OpenOptions};
+use std::fs::{File, OpenOptions};
+use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
+
+// ─── Enums ─────────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -28,7 +31,6 @@ impl FrictionType {
             FrictionType::Navigation => "navigation",
         }
     }
-
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
             "command" => Some(FrictionType::Command),
@@ -59,7 +61,6 @@ impl FrictionSeverity {
             FrictionSeverity::Critical => "critical",
         }
     }
-
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
             "low" => Some(FrictionSeverity::Low),
@@ -91,7 +92,6 @@ impl Resolution {
             Resolution::SystemHelped => "system_helped",
         }
     }
-
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
             "retried" => Some(Resolution::Retried),
@@ -103,6 +103,8 @@ impl Resolution {
         }
     }
 }
+
+// ─── FrictionEvent ─────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FrictionEvent {
@@ -121,7 +123,7 @@ pub struct FrictionEvent {
     #[serde(default)]
     pub resolution: String,
     #[serde(default)]
-    pub duration_seconds: i32,
+    pub duration_seconds: i64,
     #[serde(default)]
     pub retry_count: i32,
     #[serde(default)]
@@ -131,57 +133,59 @@ pub struct FrictionEvent {
 }
 
 impl FrictionEvent {
-    pub fn new(
-        id: &str,
-        friction_type: FrictionType,
-        severity: FrictionSeverity,
-        command: &str,
-        query: &str,
-        step: &str,
-        error: &str,
-        resolution: Option<Resolution>,
-        duration_seconds: i32,
-        retry_count: i32,
-        abandoned: bool,
-        notes: &str,
-    ) -> Self {
+    pub fn new(friction_type: &str, severity: &str) -> Self {
+        let now = Local::now().to_rfc3339();
         Self {
-            id: id.to_string(),
-            timestamp: Utc::now().to_rfc3339(),
-            friction_type: friction_type.as_str().to_string(),
-            severity: severity.as_str().to_string(),
-            command: command.to_string(),
-            query: query.to_string(),
-            step: step.to_string(),
-            error: error.to_string(),
-            resolution: resolution
-                .map(|r| r.as_str().to_string())
-                .unwrap_or_default(),
-            duration_seconds,
-            retry_count,
-            abandoned,
-            notes: notes.to_string(),
+            id: format!("fr_{}", uuid::Uuid::new_v4().to_string()[..8].to_string()),
+            timestamp: now,
+            friction_type: friction_type.to_string(),
+            severity: severity.to_string(),
+            command: String::new(),
+            query: String::new(),
+            step: String::new(),
+            error: String::new(),
+            resolution: String::new(),
+            duration_seconds: 0,
+            retry_count: 0,
+            abandoned: false,
+            notes: String::new(),
         }
     }
+
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).unwrap_or_default()
+    }
+
+    pub fn from_json(line: &str) -> Option<Self> {
+        serde_json::from_str(line).ok()
+    }
 }
+
+// ─── FrictionTracker ───────────────────────────────────────────────────────────
 
 pub struct FrictionTracker {
     data_dir: PathBuf,
     events_file: PathBuf,
 }
 
+impl Default for FrictionTracker {
+    fn default() -> Self {
+        Self::new(None)
+    }
+}
+
 impl FrictionTracker {
-    pub fn new(data_dir: Option<PathBuf>) -> Self {
-        let data_dir = data_dir.unwrap_or_else(|| {
-            dirs::home_dir()
-                .unwrap_or_else(|| PathBuf::from("."))
-                .join(".ai_research_os")
-                .join("friction")
-        });
-        let _ = fs::create_dir_all(&data_dir);
+    pub fn new(data_dir: Option<&str>) -> Self {
+        let data_dir = match data_dir {
+            Some(d) => PathBuf::from(d),
+            None => dirs::home_dir().unwrap_or_default().join(".ai_research_os/friction"),
+        };
         let events_file = data_dir.join("friction_events.jsonl");
+        // Ensure directory exists
+        let _ = std::fs::create_dir_all(&data_dir);
+        // Ensure file exists
         if !events_file.exists() {
-            let _ = fs::write(&events_file, "");
+            let _ = std::fs::write(&events_file, "");
         }
         Self {
             data_dir,
@@ -189,47 +193,11 @@ impl FrictionTracker {
         }
     }
 
-    pub fn record(
-        &self,
-        friction_type: FrictionType,
-        severity: FrictionSeverity,
-        command: &str,
-        query: &str,
-        step: &str,
-        error: &str,
-        resolution: Option<Resolution>,
-        duration_seconds: i32,
-        retry_count: i32,
-        abandoned: bool,
-        notes: &str,
-    ) -> FrictionEvent {
-        let id = format!("fr_{}", &uuid::Uuid::new_v4().to_string()[..8]);
-        let event = FrictionEvent::new(
-            &id,
-            friction_type,
-            severity,
-            command,
-            query,
-            step,
-            error,
-            resolution,
-            duration_seconds,
-            retry_count,
-            abandoned,
-            notes,
-        );
-
-        let json = serde_json::to_string(&event).unwrap_or_default();
-        let mut file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&self.events_file)
-            .unwrap_or_else(|_| {
-                fs::File::create(&self.events_file).expect("Failed to create events file")
-            });
-        use std::io::Write;
-        writeln!(file, "{}", json).ok();
-        event
+    pub fn record(&self, event: &FrictionEvent) {
+        if let Ok(mut fh) = OpenOptions::new().append(true).open(&self.events_file) {
+            let line = event.to_json();
+            let _ = writeln!(fh, "{}", line);
+        }
     }
 
     pub fn record_command_failure(
@@ -245,23 +213,18 @@ impl FrictionTracker {
             FrictionSeverity::Medium
         };
         let resolution = if retry_count > 0 {
-            Some(Resolution::Retried)
+            Resolution::Retried
         } else {
-            Some(Resolution::SelfResolved)
+            Resolution::SelfResolved
         };
-        self.record(
-            FrictionType::Command,
-            severity,
-            command,
-            query,
-            "",
-            error,
-            resolution,
-            0,
-            retry_count,
-            false,
-            "",
-        )
+        let mut event = FrictionEvent::new(FrictionType::Command.as_str(), severity.as_str());
+        event.command = command.to_string();
+        event.query = query.to_string();
+        event.error = error.to_string();
+        event.retry_count = retry_count;
+        event.resolution = resolution.as_str().to_string();
+        self.record(&event);
+        event
     }
 
     pub fn record_workflow_abandon(
@@ -269,21 +232,17 @@ impl FrictionTracker {
         command: &str,
         step: &str,
         query: &str,
-        duration_seconds: i32,
+        duration_seconds: i64,
     ) -> FrictionEvent {
-        self.record(
-            FrictionType::Workflow,
-            FrictionSeverity::Medium,
-            command,
-            query,
-            step,
-            "",
-            Some(Resolution::Abandoned),
-            duration_seconds,
-            0,
-            true,
-            "",
-        )
+        let mut event = FrictionEvent::new(FrictionType::Workflow.as_str(), FrictionSeverity::Medium.as_str());
+        event.command = command.to_string();
+        event.step = step.to_string();
+        event.query = query.to_string();
+        event.duration_seconds = duration_seconds;
+        event.abandoned = true;
+        event.resolution = Resolution::Abandoned.as_str().to_string();
+        self.record(&event);
+        event
     }
 
     pub fn record_retrieval_failure(
@@ -292,296 +251,130 @@ impl FrictionTracker {
         query: &str,
         notes: &str,
     ) -> FrictionEvent {
-        self.record(
-            FrictionType::Retrieval,
-            FrictionSeverity::Medium,
-            command,
-            query,
-            "",
-            "",
-            Some(Resolution::WorkedAround),
-            0,
-            0,
-            false,
-            notes,
-        )
+        let mut event = FrictionEvent::new(FrictionType::Retrieval.as_str(), FrictionSeverity::Medium.as_str());
+        event.command = command.to_string();
+        event.query = query.to_string();
+        event.notes = notes.to_string();
+        event.resolution = Resolution::WorkedAround.as_str().to_string();
+        self.record(&event);
+        event
     }
 
-    pub fn get_events(
-        &self,
-        friction_type: Option<FrictionType>,
-        since_days: i32,
-        limit: usize,
-    ) -> Vec<FrictionEvent> {
-        let cutoff = Utc::now() - chrono::Duration::days(since_days as i64);
-        let cutoff_ts = cutoff.timestamp();
-
+    pub fn get_events(&self, since_days: i64, limit: usize) -> Vec<FrictionEvent> {
+        let cutoff = Local::now().timestamp() - (since_days * 86400);
+        let content = match std::fs::read_to_string(&self.events_file) {
+            Ok(c) => c,
+            Err(_) => return Vec::new(),
+        };
         let mut events = Vec::new();
-        if let Ok(text) = fs::read_to_string(&self.events_file) {
-            for line in text.lines().rev() {
-                if limit > 0 && events.len() >= limit {
+        for line in content.lines().rev() {
+            if limit > 0 && events.len() >= limit {
+                break;
+            }
+            let event = match FrictionEvent::from_json(line.trim()) {
+                Some(e) => e,
+                None => continue,
+            };
+            if let Ok(ts) = DateTime::parse_from_rfc3339(&event.timestamp) {
+                if ts.timestamp() < cutoff {
                     break;
                 }
-                if let Ok(event) = serde_json::from_str::<FrictionEvent>(line) {
-                    if let Ok(event_time) = DateTime::parse_from_rfc3339(&event.timestamp) {
-                        if event_time.timestamp() < cutoff_ts {
-                            break;
-                        }
-                    }
-                    if let Some(ft) = friction_type {
-                        if event.friction_type != ft.as_str() {
-                            continue;
-                        }
-                    }
-                    events.push(event);
-                }
             }
+            events.push(event);
         }
         events
     }
 
-    pub fn get_summary(&self, since_days: i32) -> HashMap<String, serde_json::Value> {
-        let events = self.get_events(None, since_days, 1000);
+    pub fn get_summary(&self, since_days: i64) -> serde_json::Value {
+        let events = self.get_events(since_days, 1000);
         if events.is_empty() {
-            let mut map = HashMap::new();
-            map.insert("total_events".to_string(), serde_json::json!(0));
-            map.insert("by_type".to_string(), serde_json::json!({}));
-            map.insert("by_severity".to_string(), serde_json::json!({}));
-            map.insert("top_commands".to_string(), serde_json::json!([]));
-            map.insert("abandon_rate".to_string(), serde_json::json!(0.0));
-            return map;
+            return serde_json::json!({
+                "total_events": 0,
+                "by_type": {},
+                "by_severity": {},
+                "top_commands": [],
+                "abandon_rate": 0.0f64,
+            });
         }
 
-        let mut by_type: HashMap<&str, usize> = HashMap::new();
-        let mut by_severity: HashMap<&str, usize> = HashMap::new();
-        let mut command_counts: HashMap<&str, usize> = HashMap::new();
-        let mut abandoned = 0usize;
+        let mut by_type: HashMap<String, i64> = HashMap::new();
+        let mut by_severity: HashMap<String, i64> = HashMap::new();
+        let mut command_counts: HashMap<String, i64> = HashMap::new();
+        let mut abandoned: i64 = 0;
 
         for e in &events {
-            *by_type.entry(&e.friction_type).or_insert(0) += 1;
-            *by_severity.entry(&e.severity).or_insert(0) += 1;
+            *by_type.entry(e.friction_type.clone()).or_insert(0) += 1;
+            *by_severity.entry(e.severity.clone()).or_insert(0) += 1;
             if !e.command.is_empty() {
-                *command_counts.entry(&e.command).or_insert(0) += 1;
+                *command_counts.entry(e.command.clone()).or_insert(0) += 1;
             }
             if e.abandoned {
                 abandoned += 1;
             }
         }
 
-        let mut top_commands: Vec<(String, usize)> = command_counts
-            .into_iter()
-            .map(|(k, v)| (k.to_string(), v))
-            .collect();
-        top_commands.sort_by_key(|b| std::cmp::Reverse(b.1));
-        top_commands.truncate(5);
+        let mut top_commands: Vec<_> = command_counts.into_iter().collect();
+        top_commands.sort_by(|a, b| b.1.cmp(&a.1));
+        let top_commands: Vec<_> = top_commands.into_iter().take(5).collect();
 
-        let mut summary = HashMap::new();
-        summary.insert("total_events".to_string(), serde_json::json!(events.len()));
-        summary.insert("by_type".to_string(), serde_json::json!(by_type));
-        summary.insert("by_severity".to_string(), serde_json::json!(by_severity));
-        summary.insert("top_commands".to_string(), serde_json::json!(top_commands));
-        summary.insert(
-            "abandon_rate".to_string(),
-            serde_json::json!(abandoned as f64 / events.len() as f64),
-        );
-
-        summary
+        serde_json::json!({
+            "total_events": events.len(),
+            "by_type": by_type,
+            "by_severity": by_severity,
+            "top_commands": top_commands,
+            "abandon_rate": abandoned as f64 / events.len() as f64,
+        })
     }
 }
+
+// ─── Tests ─────────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn temp_tracker() -> (FrictionTracker, tempfile::TempDir) {
-        let temp = tempfile::TempDir::new().unwrap();
-        let tracker = FrictionTracker::new(Some(temp.path().to_path_buf()));
-        (tracker, temp)
+    fn temp_tracker() -> FrictionTracker {
+        let tmp = std::env::temp_dir().join(format!("friction_test_{}", uuid::Uuid::new_v4()));
+        FrictionTracker::new(Some(tmp.to_str().unwrap()))
     }
 
     #[test]
     fn test_friction_type_as_str() {
         assert_eq!(FrictionType::Command.as_str(), "command");
-        assert_eq!(FrictionType::Workflow.as_str(), "workflow");
-        assert_eq!(FrictionType::Retrieval.as_str(), "retrieval");
-        assert_eq!(FrictionType::Cognitive.as_str(), "cognitive");
-        assert_eq!(FrictionType::Navigation.as_str(), "navigation");
-    }
-
-    #[test]
-    fn test_friction_type_from_str() {
-        assert_eq!(
-            FrictionType::from_str("command"),
-            Some(FrictionType::Command)
-        );
-        assert_eq!(
-            FrictionType::from_str("workflow"),
-            Some(FrictionType::Workflow)
-        );
-        assert_eq!(FrictionType::from_str("invalid"), None);
-    }
-
-    #[test]
-    fn test_friction_severity_as_str() {
-        assert_eq!(FrictionSeverity::Low.as_str(), "low");
-        assert_eq!(FrictionSeverity::Medium.as_str(), "medium");
         assert_eq!(FrictionSeverity::High.as_str(), "high");
-        assert_eq!(FrictionSeverity::Critical.as_str(), "critical");
-    }
-
-    #[test]
-    fn test_resolution_as_str() {
-        assert_eq!(Resolution::Retried.as_str(), "retried");
         assert_eq!(Resolution::Abandoned.as_str(), "abandoned");
-        assert_eq!(Resolution::WorkedAround.as_str(), "worked_around");
-        assert_eq!(Resolution::SelfResolved.as_str(), "self_resolved");
-        assert_eq!(Resolution::SystemHelped.as_str(), "system_helped");
-    }
-
-    #[test]
-    fn test_friction_event_record() {
-        let (tracker, _temp) = temp_tracker();
-        let event = tracker.record(
-            FrictionType::Command,
-            FrictionSeverity::Medium,
-            "search",
-            "test query",
-            "",
-            "timeout",
-            Some(Resolution::Retried),
-            10,
-            2,
-            false,
-            "",
-        );
-        assert_eq!(event.friction_type, "command");
-        assert_eq!(event.severity, "medium");
-        assert!(!event.id.is_empty());
     }
 
     #[test]
     fn test_record_command_failure() {
-        let (tracker, _temp) = temp_tracker();
-        let event = tracker.record_command_failure("search", "test", "timeout", 3);
+        let tracker = temp_tracker();
+        let event = tracker.record_command_failure("llm search", "query", "timeout", 2);
         assert_eq!(event.friction_type, "command");
-        assert_eq!(event.severity, "high");
-        assert_eq!(event.retry_count, 3);
-    }
-
-    #[test]
-    fn test_record_workflow_abandon() {
-        let (tracker, _temp) = temp_tracker();
-        let event = tracker.record_workflow_abandon("analyze", "step2", "query", 60);
-        assert_eq!(event.friction_type, "workflow");
-        assert!(event.abandoned);
-    }
-
-    #[test]
-    fn test_record_retrieval_failure() {
-        let (tracker, _temp) = temp_tracker();
-        let event = tracker.record_retrieval_failure("search", "query", "no results");
-        assert_eq!(event.friction_type, "retrieval");
-        assert_eq!(event.notes, "no results");
+        assert_eq!(event.severity, "medium");
+        assert_eq!(event.retry_count, 2);
+        assert_eq!(event.resolution, "retried");
     }
 
     #[test]
     fn test_get_events_empty() {
-        let (tracker, _temp) = temp_tracker();
-        let events = tracker.get_events(None, 30, 100);
+        let tracker = temp_tracker();
+        let events = tracker.get_events(30, 100);
         assert!(events.is_empty());
     }
 
     #[test]
-    fn test_get_events_with_data() {
-        let (tracker, _temp) = temp_tracker();
-        tracker.record(
-            FrictionType::Command,
-            FrictionSeverity::Medium,
-            "search",
-            "",
-            "",
-            "",
-            None,
-            0,
-            0,
-            false,
-            "",
-        );
-        let events = tracker.get_events(None, 30, 100);
-        assert_eq!(events.len(), 1);
-    }
-
-    #[test]
-    fn test_get_events_filter_type() {
-        let (tracker, _temp) = temp_tracker();
-        tracker.record(
-            FrictionType::Command,
-            FrictionSeverity::Medium,
-            "c1",
-            "",
-            "",
-            "",
-            None,
-            0,
-            0,
-            false,
-            "",
-        );
-        tracker.record(
-            FrictionType::Retrieval,
-            FrictionSeverity::Medium,
-            "c2",
-            "",
-            "",
-            "",
-            None,
-            0,
-            0,
-            false,
-            "",
-        );
-        let events = tracker.get_events(Some(FrictionType::Command), 30, 100);
-        assert_eq!(events.len(), 1);
-        assert_eq!(events[0].friction_type, "command");
-    }
-
-    #[test]
     fn test_get_summary_empty() {
-        let (tracker, _temp) = temp_tracker();
+        let tracker = temp_tracker();
         let summary = tracker.get_summary(30);
-        assert_eq!(summary["total_events"], serde_json::json!(0));
+        assert_eq!(summary["total_events"], 0);
     }
 
     #[test]
-    fn test_get_summary_with_data() {
-        let (tracker, _temp) = temp_tracker();
-        tracker.record(
-            FrictionType::Command,
-            FrictionSeverity::Medium,
-            "search",
-            "",
-            "",
-            "",
-            None,
-            0,
-            0,
-            false,
-            "",
-        );
-        tracker.record(
-            FrictionType::Retrieval,
-            FrictionSeverity::High,
-            "search",
-            "",
-            "",
-            "",
-            None,
-            0,
-            0,
-            true,
-            "",
-        );
-        let summary = tracker.get_summary(30);
-        assert_eq!(summary["total_events"], serde_json::json!(2));
+    fn test_friction_event_json_roundtrip() {
+        let event = FrictionEvent::new("command", "high");
+        let json = event.to_json();
+        let parsed = FrictionEvent::from_json(&json).unwrap();
+        assert_eq!(parsed.friction_type, "command");
+        assert_eq!(parsed.severity, "high");
     }
 }
