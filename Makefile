@@ -11,14 +11,14 @@ py-deps: ## Install Python dependencies
 	uv sync --extra dev
 
 py-lint: ## Run ruff linter
-	uv run ruff check . --exclude neuraloperator_fork/
+	uvx ruff check . --exclude neuraloperator_fork/
 
 py-fmt: ## Format Python code
-	uv run ruff format . --exclude neuraloperator_fork/
-	uv run ruff check --fix . --exclude neuraloperator_fork/
+	uvx ruff format . --exclude neuraloperator_fork/
+	uvx ruff check --fix . --exclude neuraloperator_fork/
 
 py-typecheck: ## Run mypy type checker
-	uv run mypy core parsers db llm research_loop cli --ignore-missing-imports
+	uvx mypy core parsers db llm research_loop cli --ignore-missing-imports
 
 py-test: ## Run Python tests
 	uv run pytest tests/ -q --timeout=30
@@ -56,9 +56,9 @@ dev-verify: py-all rust-build ## Verify full dev setup
 
 ci-python: ## Run CI Python checks (lint + typecheck)
 	uv sync --extra dev
-	uv run ruff check . --exclude neuraloperator_fork/
-	uv run ruff format --check . --exclude neuraloperator_fork/
-	uv run mypy core parsers db llm research_loop cli --ignore-missing-imports
+	uvx ruff check . --exclude neuraloperator_fork/
+	uvx ruff format --check . --exclude neuraloperator_fork/
+	uvx mypy core parsers db llm research_loop cli --ignore-missing-imports
 
 ci-rust: ## Run CI Rust checks
 	cargo fmt --check

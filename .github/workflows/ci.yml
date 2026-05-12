@@ -55,10 +55,10 @@ jobs:
         run: python -m py_compile ai_research_os.py
 
       - name: Ruff check
-        run: uv run ruff check . --exclude neuraloperator_fork/
+        run: uvx ruff check . --exclude neuraloperator_fork/
 
       - name: Ruff format check
-        run: uv run ruff format --check . --exclude neuraloperator_fork/
+        run: uvx ruff format --check . --exclude neuraloperator_fork/
 
       - name: Test Crossref API
         run: python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK')"
@@ -83,7 +83,7 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run mypy
-        run: uv run mypy core parsers db llm research_loop cli --ignore-missing-imports
+        run: uvx mypy core parsers db llm research_loop cli --ignore-missing-imports
 
   security-scan:
     runs-on: ubuntu-22.04
@@ -106,7 +106,7 @@ jobs:
 
       - name: Run bandit
         continue-on-error: true
-        run: uv run bandit -r llm/ research_loop/ core/ parsers/ db/ -ll -f txt
+        run: uvx bandit -r llm/ research_loop/ core/ parsers/ db/ -ll -f txt
   test-pytest:
     runs-on: ubuntu-22.04
     strategy:
