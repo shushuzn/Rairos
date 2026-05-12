@@ -263,9 +263,17 @@ class Database:
         # Drop Rust-created tables that conflict with _SCHEMA definitions.
         # Rust PyDatabase uses different table schemas (e.g. tags(id,name) vs
         # our tags(paper_id,tag)). CREATE TABLE IF NOT EXISTS won't fix this.
-        for tbl in ("tags", "paper_tags", "paper_cache", "dedup_log",
-                    "citations", "experiment_tables", "paper_code_trace",
-                    "gap_history", "arxiv_search_cache"):
+        for tbl in (
+            "tags",
+            "paper_tags",
+            "paper_cache",
+            "dedup_log",
+            "citations",
+            "experiment_tables",
+            "paper_code_trace",
+            "gap_history",
+            "arxiv_search_cache",
+        ):
             conn.execute(f"DROP TABLE IF EXISTS {tbl}")
         # Execute full schema (regular tables only; FTS5 needs special handling)
         conn.executescript(_SCHEMA)
