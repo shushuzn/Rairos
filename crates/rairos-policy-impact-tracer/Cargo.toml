@@ -1,5 +1,5 @@
 [package]
-name = "rairos-labor-displacement-tracker"
+name = "rairos-policy-impact-tracer"
 version = "0.1.0"
 edition = "2021"
 

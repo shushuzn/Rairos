@@ -162,6 +162,9 @@ members = [
     "crates/rairos-pdf-parser",
     "crates/rairos-config",
     "crates/rairos-query-types",
+    "crates/rairos-policy-impact-tracer",
+    "crates/rairos-review-queue",
+    "crates/rairos-labor-displacement-tracker",
     "crates/rairos-db",
     "benches",
 ]
