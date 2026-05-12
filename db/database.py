@@ -217,10 +217,6 @@ class Database:
         else:
             self._inner = PyDatabase()
         self._inner.init_()
-        try:
-            self._inner.clear_all()
-        except Exception:
-            pass  # embeddings table may not exist on fresh init
         self._conn: Optional[sqlite3.Connection] = None  # Local mirror
         self._dedup_log: list = []
         self._citations: list = []

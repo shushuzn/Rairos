@@ -37,63 +37,69 @@ def _seed_search_db(db_path: Path, papers: list[dict]) -> None:
     """Create schema and seed a search DB for testing.
 
     Uses the actual project schema to ensure db.init() migrations succeed.
+    Then uses upsert_paper (via PyDatabase directly) to insert data, ensuring
+    the data is stored with the exact same schema that PyDatabase expects.
     """
-    conn = sqlite3.connect(str(db_path))
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA foreign_keys=ON")
-
-    # Import actual schema from database.py to ensure consistency
     import sys
     from pathlib import Path as P
 
-    # Temporarily add project root to path so we can import db.database
     project_root = P(__file__).parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
 
-    from db.database import _SCHEMA, _FTS_SCHEMA
+    import rairos_db_py
 
-    # Create actual schema (mimics what db.init() does)
-    conn.executescript(_SCHEMA)
-    conn.executescript(_FTS_SCHEMA)
+    # Create schema using PyDatabase.init_() (does NOT clear data)
+    py_db = rairos_db_py.PyDatabase(str(db_path))
+    py_db.init_()
 
-    # ── FTS5 virtual table ─────────────────────────────────────────────────────
-    conn.execute("""
-        CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
-            paper_id UNINDEXED,
-            title,
-            abstract,
-            plain_text
-        );
-    """)
-
+    # Build paper inputs and insert via upsert_paper
     now = "2024-01-01T00:00:00Z"
     for p in papers:
-        conn.execute(
-            """INSERT INTO papers (id, source, title, authors, abstract, published,
-                                  primary_category, parse_status, added_at, updated_at,
-                                  abs_url, pdf_url)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (
-                p["id"],
-                p.get("source", "arxiv"),
-                p.get("title", ""),
-                p.get("authors", "[]"),
-                p.get("abstract", ""),
-                p.get("published", ""),
-                p.get("primary_category", ""),
-                p.get("parse_status", "pending"),
-                now,
-                now,
-                p.get("abs_url", ""),
-                p.get("pdf_url", ""),
-            ),
-        )
+        paper_input = {
+            "paper_id": p["id"],
+            "source": p.get("source", "arxiv"),
+            "title": p.get("title", ""),
+            "abstract_text": p.get("abstract", ""),
+            "authors": p.get("authors", "[]"),
+            "published": p.get("published", ""),
+            "updated": now,
+            "abs_url": p.get("abs_url", ""),
+            "pdf_url": p.get("pdf_url", ""),
+            "primary_category": p.get("primary_category", ""),
+            "journal": "",
+            "volume": "",
+            "issue": "",
+            "page": "",
+            "doi": "",
+            "categories": "",
+            "reference_count": 0,
+            "added_at": now,
+            "pdf_path": "",
+            "pdf_hash": "",
+            "parse_status": p.get("parse_status", "pending"),
+            "plain_text": "",
+            "latex_blocks": "[]",
+            "table_count": 0,
+            "figure_count": 0,
+            "word_count": 0,
+            "page_count": 0,
+        }
+        py_db.upsert_paper(paper_input)
+
+    # Seed FTS entries (search requires FTS, and upsert_paper doesn't create them)
+    import sqlite3
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("""
+        CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
+            paper_id UNINDEXED, title, abstract, plain_text
+        );
+    """)
+    for p in papers:
         conn.execute(
             "INSERT INTO papers_fts(paper_id, title, abstract, plain_text) VALUES (?, ?, ?, '')",
             (p["id"], p.get("title", ""), p.get("abstract", "")),
         )
-
     conn.commit()
     conn.close()
 
@@ -128,7 +134,6 @@ def _run_cli(
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skip(reason="pre-existing bug: Rust search_papers returns total=N but results=[]")
 def test_search_returns_json_results(tmp_db_path):
     """'rairos search' should query the seeded DB and return matching papers as JSON."""
     papers = [

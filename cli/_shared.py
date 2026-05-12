@@ -37,8 +37,12 @@ def load_dotenv() -> None:
 def get_db():
     """Get a Database instance via the cli namespace (patchable via patch('cli.Database'))."""
     import cli
+    import os
 
-    return cli.Database()
+    db_path = os.environ.get("AIROS_DB") or os.environ.get("RAIROS_DB") or None
+    db = cli.Database(db_path)
+    db._inner.init_()  # Initialize Rust schema without clearing data
+    return db
 
 
 class Colors:
