@@ -150,6 +150,7 @@ members = [
     "crates/rairos-rankers-score",
     "crates/rairos-pdf-parser",
     "crates/rairos-config",
+    "benches",
 ]
 
 [profile.dev]

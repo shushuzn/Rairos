@@ -1,27 +1,45 @@
 services:
-  # ── Core Application ──────────────────────────────────────────────────
-  app:
+  # ── CLI (default target) ──────────────────────────────────────────────────
+  cli:
     build:
       context: .
       dockerfile: Dockerfile
+      target: rairos-cli
+    image: rairos:cli
+    volumes:
+      - airos_data:/data
+      - airos_home:/home/rairos/.rairos
+    env_file: .env
+    profiles: ["cli"]
+
+  # ── Web / API Server ─────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: rairos-web
+    image: rairos:web
     ports:
-      - "8501:8501"   # FastAPI hand-drawn web UI
+      - "8501:8501"   # FastAPI web UI
       - "11434:11434" # Ollama API (for semantic search)
     environment:
-      AI_RESEARCH_OS_DB: /data/papers.db
+      RAIROS_DATA_DIR: /data
+      RAIROS_HOME_DIR: /home/rairos/.rairos
       OLLAMA_BASE_URL: http://ollama:11434
     volumes:
       - airos_data:/data
-      - airos_home:/home/airos/.ai_research_os
+      - airos_home:/home/rairos/.rairos
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8501/health"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 15s
-    command: ["uvicorn", "web.app:app", "--host", "0.0.0.0", "--port", "8501"]
+    depends_on:
+      ollama:
+        condition: service_healthy
 
-  # ── Ollama — local embeddings & LLM ────────────────────────────────
+  # ── Ollama — local embeddings & LLM ─────────────────────────────────────
   ollama:
     image: ollama/ollama:latest
     ports:
@@ -34,7 +52,7 @@ services:
       timeout: 5s
       retries: 3
 
-  # ── Optional: Milvus (uncomment if using vector search at scale) ──
+  # ── Optional: Milvus (uncomment if using vector search at scale) ─────────
   # milvus-etcd:
   #   image: quay.io/coreos/etcd:v3.9.5
   #   environment:
@@ -60,7 +78,7 @@ services:
   #     - milvus_minio_data:/minio_data
   #   command: minio server /minio_data
   #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
   #     interval: 10s
   #     timeout: 5s
   #     retries: 3
@@ -84,7 +102,7 @@ services:
   #     interval: 10s
   #     timeout: 5s
   #     retries: 5
-  #     start_period: 30s
+  #   start_period: 30s
 
 volumes:
   airos_data:

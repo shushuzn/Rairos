@@ -1,49 +1,96 @@
-# ============================
-# Stage 1: Builder
-# ============================
-FROM python:3.12-slim AS builder
+# ==============================================================================
+# Rairos — Rust Research OS
+# Multi-stage build for minimal runtime image
+# ==============================================================================
+
+# ─── Stage 1: Builder ────────────────────────────────────────────────────────
+FROM rust:1.87-slim AS builder
 
 WORKDIR /app
 
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    pkg-config \
+    libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Cache cargo registry and build dependencies
+COPY Cargo.toml Cargo.lock ./
+COPY rust-toolchain.toml rustsec.toml ./
 
-COPY pyproject.toml ./
-RUN pip install --no-cache-dir --upgrade pip wheel && \
-    pip install --no-cache-dir -e ".[all]"
+# Pre-build dependency crates (faster incremental builds)
+RUN mkdir -p crates && \
+    # Touch all lib.rs files to prevent missing file errors
+    find crates -name 'lib.rs' -exec touch {} \; && \
+    cargo fetch --locked 2>/dev/null || true
 
-# ============================
-# Stage 2: Runtime
-# ============================
-FROM python:3.12-slim AS runtime
+# Copy source
+COPY . .
 
-WORKDIR /app
+# Build all binary targets (cli + web server)
+RUN cargo build --release --bin rairos-cli --bin rairos-web && \
+    cargo build --release --bin rairos-mcp
 
-# Runtime deps
+# Strip debug symbols (reduce binary size by ~40%)
+RUN strip --strip-unneeded /app/target/release/rairos-cli && \
+    strip --strip-unneeded /app/target/release/rairos-web && \
+    strip --strip-unneeded /app/target/release/rairos-mcp 2>/dev/null || true
+
+# ==============================================================================
+# Stage 2: Runtime — rairos-cli
+# ==============================================================================
+FROM debian:bookworm-slim AS rairos-cli
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tesseract-ocr \
-    tesseract-ocr-eng \
+    libssl3 \
+    ca-certificates \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-ENV PYTHONUNBUFFERED=1
+WORKDIR /app
 
-# Data directories
-RUN mkdir -p /data /home/airos/.ai_research_os
+# Data directory
+RUN mkdir -p /data /home/rairos/.rairos && \
+    useradd -m -u 1000 rairos && \
+    chown -R rairos:rairos /app /data /home/rairos
 
-COPY . .
+COPY --from=builder /app/target/release/rairos-cli /usr/local/bin/rairos
 
-RUN useradd -m -u 1000 airos && \
-    chown -R airos:airos /app /data /home/airos
-USER airos
+USER rairos
+ENV RAIROS_DATA_DIR=/data
+ENV RAIROS_HOME_DIR=/home/rairos/.rairos
 
-EXPOSE 8501
+ENTRYPOINT ["rairos"]
+CMD ["--help"]
 
-ENTRYPOINT ["uvicorn"]
-CMD ["web.app:app", "--host", "0.0.0.0", "--port", "8501"]
+# ==============================================================================
+# Stage 3: Runtime — rairos-web
+# ==============================================================================
+FROM debian:bookworm-slim AS rairos-web
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 \
+    ca-certificates \
+    curl \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN mkdir -p /data /home/rairos/.rairos && \
+    useradd -m -u 1000 rairos && \
+    chown -R rairos:rairos /app /data /home/rairos
+
+EXPOSE 8501 11434
+
+COPY --from=builder /app/target/release/rairos-web /usr/local/bin/rairos-web
+COPY --from=builder /app/target/release/rairos-mcp /usr/local/bin/rairos-mcp
+
+USER rairos
+ENV RAIROS_DATA_DIR=/data
+ENV RAIROS_HOME_DIR=/home/rairos/.rairos
+
+ENTRYPOINT ["rairos-web"]
+CMD ["--host", "0.0.0.0", "--port", "8501"]
