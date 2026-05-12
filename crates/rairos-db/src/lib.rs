@@ -239,7 +239,9 @@ impl Database {
             .map(std::path::PathBuf::from)
             .unwrap_or_else(|_| {
                 let home = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
-                std::path::PathBuf::from(home).join(".rairos").join("rairos.db")
+                std::path::PathBuf::from(home)
+                    .join(".rairos")
+                    .join("rairos.db")
             });
         Self::open(db_path)
     }
@@ -378,11 +380,9 @@ impl Database {
 
         self.with_conn(|conn| {
             let exists: bool = conn
-                .query_row(
-                    "SELECT 1 FROM papers WHERE id = ?",
-                    [paper_id],
-                    |_| Ok(true),
-                )
+                .query_row("SELECT 1 FROM papers WHERE id = ?", [paper_id], |_| {
+                    Ok(true)
+                })
                 .optional()?
                 .is_some();
 
@@ -516,7 +516,10 @@ impl Database {
             // Pre-fetch existing IDs
             let paper_ids: Vec<&str> = papers.iter().map(|p| p.paper_id.as_str()).collect();
             let placeholders: Vec<String> = paper_ids.iter().map(|_| "?".to_string()).collect();
-            let sql = format!("SELECT id FROM papers WHERE id IN ({})", placeholders.join(","));
+            let sql = format!(
+                "SELECT id FROM papers WHERE id IN ({})",
+                placeholders.join(",")
+            );
             let mut stmt = conn.prepare(&sql)?;
             let existing: std::collections::HashSet<String> = stmt
                 .query_map(rusqlite::params_from_iter(paper_ids), |row| row.get(0))?
@@ -621,7 +624,13 @@ impl Database {
                 .query_row(
                     "SELECT parse_version, title, abstract FROM papers WHERE id = ?",
                     [paper_id],
-                    |row| Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?, row.get::<_, String>(2)?)),
+                    |row| {
+                        Ok((
+                            row.get::<_, i64>(0)?,
+                            row.get::<_, String>(1)?,
+                            row.get::<_, String>(2)?,
+                        ))
+                    },
                 )
                 .optional()?
                 .map(|(v, t, a)| (v, t, a))
@@ -677,7 +686,9 @@ impl Database {
     pub fn paper_exists(&self, paper_id: &str) -> Result<bool> {
         self.with_conn(|conn| {
             let exists: bool = conn
-                .query_row("SELECT 1 FROM papers WHERE id = ?", [paper_id], |_| Ok(true))
+                .query_row("SELECT 1 FROM papers WHERE id = ?", [paper_id], |_| {
+                    Ok(true)
+                })
                 .optional()?
                 .is_some();
             Ok(exists)
@@ -687,9 +698,8 @@ impl Database {
     /// Get all papers (newest first), with optional limit/offset.
     pub fn get_papers(&self, limit: i64, offset: i64) -> Result<Vec<Paper>> {
         self.with_conn(|conn| {
-            let mut stmt = conn.prepare(
-                "SELECT * FROM papers ORDER BY added_at DESC LIMIT ? OFFSET ?",
-            )?;
+            let mut stmt =
+                conn.prepare("SELECT * FROM papers ORDER BY added_at DESC LIMIT ? OFFSET ?")?;
             let rows = stmt.query_map([limit, offset], Paper::from_row)?;
             let mut papers = Vec::new();
             for row in rows {
@@ -757,7 +767,8 @@ impl Database {
 
             // Count
             let count_sql = format!("SELECT COUNT(*) FROM papers {}", where_clause);
-            let params_ref: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|p| p.as_ref()).collect();
+            let params_ref: Vec<&dyn rusqlite::ToSql> =
+                params_vec.iter().map(|p| p.as_ref()).collect();
             let total: i64 = conn.query_row(&count_sql, params_ref.as_slice(), |row| row.get(0))?;
 
             // List
@@ -768,7 +779,8 @@ impl Database {
             let mut all_params = params_vec;
             all_params.push(Box::new(limit));
             all_params.push(Box::new(offset));
-            let params_ref: Vec<&dyn rusqlite::ToSql> = all_params.iter().map(|p| p.as_ref()).collect();
+            let params_ref: Vec<&dyn rusqlite::ToSql> =
+                all_params.iter().map(|p| p.as_ref()).collect();
 
             let mut stmt = conn.prepare(&sql)?;
             let rows = stmt.query_map(params_ref.as_slice(), Paper::from_row)?;
@@ -784,10 +796,7 @@ impl Database {
     /// Delete a paper and its FTS entry. Returns true if a row was deleted.
     pub fn delete_paper(&self, paper_id: &str) -> Result<bool> {
         self.with_conn(|conn| {
-            conn.execute(
-                "DELETE FROM papers_fts WHERE paper_id = ?",
-                [paper_id],
-            )?;
+            conn.execute("DELETE FROM papers_fts WHERE paper_id = ?", [paper_id])?;
             let n = conn.execute("DELETE FROM papers WHERE id = ?", [paper_id])?;
             Ok(n > 0)
         })
@@ -874,7 +883,8 @@ impl Database {
                     .collect();
             all_params.push(Box::new(limit));
             all_params.push(Box::new(offset));
-            let all_params_ref: Vec<&dyn rusqlite::ToSql> = all_params.iter().map(|p| p.as_ref()).collect();
+            let all_params_ref: Vec<&dyn rusqlite::ToSql> =
+                all_params.iter().map(|p| p.as_ref()).collect();
 
             let mut stmt = conn.prepare(&search_sql)?;
             let fts_rows = stmt.query_map(all_params_ref.as_slice(), |row| {
@@ -901,7 +911,10 @@ impl Database {
 
             // Look up full paper data
             let placeholders: Vec<String> = paper_ids.iter().map(|_| "?".to_string()).collect();
-            let lookup_sql = format!("SELECT * FROM papers WHERE id IN ({})", placeholders.join(","));
+            let lookup_sql = format!(
+                "SELECT * FROM papers WHERE id IN ({})",
+                placeholders.join(",")
+            );
             let mut lookup_stmt = conn.prepare(&lookup_sql)?;
             let paper_map: HashMap<String, Paper> = lookup_stmt
                 .query_map(rusqlite::params_from_iter(paper_ids), Paper::from_row)?
@@ -936,17 +949,29 @@ impl Database {
             Ok(v) => Ok(v),
             Err(_) => {
                 // Fallback to LIKE search on FTS error
-                self._search_like(query, limit, offset, source, category, date_from, date_to, parse_status)
+                self._search_like(
+                    query,
+                    limit,
+                    offset,
+                    source,
+                    category,
+                    date_from,
+                    date_to,
+                    parse_status,
+                )
             }
         }
     }
 
     /// Internal FTS sync — must be called within a with_conn closure.
-    fn _sync_fts_internal(&self, conn: &Connection, paper_id: &str, title: &str, abstract_text: &str) -> Result<()> {
-        conn.execute(
-            "DELETE FROM papers_fts WHERE paper_id = ?",
-            [paper_id],
-        )?;
+    fn _sync_fts_internal(
+        &self,
+        conn: &Connection,
+        paper_id: &str,
+        title: &str,
+        abstract_text: &str,
+    ) -> Result<()> {
+        conn.execute("DELETE FROM papers_fts WHERE paper_id = ?", [paper_id])?;
         conn.execute(
             "INSERT INTO papers_fts(paper_id, title, abstract, plain_text) VALUES (?, ?, ?, '')",
             rusqlite::params![paper_id, title, abstract_text],
@@ -982,11 +1007,8 @@ impl Database {
         self.with_conn(|conn| {
             let q = format!("%{}%", query);
             let mut where_parts = vec!["(title LIKE ? OR abstract LIKE ? OR plain_text LIKE ?)"];
-            let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = vec![
-                Box::new(q.clone()),
-                Box::new(q.clone()),
-                Box::new(q),
-            ];
+            let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> =
+                vec![Box::new(q.clone()), Box::new(q.clone()), Box::new(q)];
 
             if let Some(s) = source {
                 where_parts.push("source = ?");
@@ -1010,7 +1032,8 @@ impl Database {
             }
 
             let where_clause = format!("WHERE {}", where_parts.join(" AND "));
-            let params_ref: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|p| p.as_ref()).collect();
+            let params_ref: Vec<&dyn rusqlite::ToSql> =
+                params_vec.iter().map(|p| p.as_ref()).collect();
 
             let count_sql = format!("SELECT COUNT(*) FROM papers {}", where_clause);
             let total: i64 = conn.query_row(&count_sql, params_ref.as_slice(), |row| row.get(0))?;
@@ -1024,7 +1047,8 @@ impl Database {
             let mut all_params = params_vec;
             all_params.push(Box::new(limit));
             all_params.push(Box::new(offset));
-            let all_params_ref: Vec<&dyn rusqlite::ToSql> = all_params.iter().map(|p| p.as_ref()).collect();
+            let all_params_ref: Vec<&dyn rusqlite::ToSql> =
+                all_params.iter().map(|p| p.as_ref()).collect();
 
             let mut stmt = conn.prepare(&sql)?;
             let rows = stmt.query_map(all_params_ref.as_slice(), |row| {
@@ -1043,22 +1067,35 @@ impl Database {
 
             let results: Vec<SearchResult> = rows
                 .filter_map(|r| r.ok())
-                .map(|(id, title, authors_raw, published, primary_category, source, parse_status, abs_url, pdf_url)| {
-                    let authors: Vec<String> = serde_json::from_str(&authors_raw).unwrap_or_default();
-                    SearchResult {
-                        paper_id: id,
+                .map(
+                    |(
+                        id,
                         title,
-                        authors,
+                        authors_raw,
                         published,
                         primary_category,
-                        score: 0.0,
-                        snippet: format!("...{}...", query),
-                        parse_status,
                         source,
+                        parse_status,
                         abs_url,
                         pdf_url,
-                    }
-                })
+                    )| {
+                        let authors: Vec<String> =
+                            serde_json::from_str(&authors_raw).unwrap_or_default();
+                        SearchResult {
+                            paper_id: id,
+                            title,
+                            authors,
+                            published,
+                            primary_category,
+                            score: 0.0,
+                            snippet: format!("...{}...", query),
+                            parse_status,
+                            source,
+                            abs_url,
+                            pdf_url,
+                        }
+                    },
+                )
                 .collect();
 
             Ok((results, total))
@@ -1073,14 +1110,17 @@ impl Database {
 
             let mut by_source = HashMap::new();
             let mut stmt = conn.prepare("SELECT source, COUNT(*) FROM papers GROUP BY source")?;
-            let rows = stmt.query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?)))?;
+            let rows = stmt.query_map([], |row| {
+                Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+            })?;
             for r in rows {
                 let (src, cnt) = r?;
                 by_source.insert(src, cnt);
             }
 
             let mut by_status = HashMap::new();
-            let mut stmt = conn.prepare("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")?;
+            let mut stmt =
+                conn.prepare("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")?;
             let rows = stmt.query_map([], |row| {
                 Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
             })?;
@@ -1123,11 +1163,23 @@ impl Database {
     }
 
     /// Export papers as (header_fields, rows).
-    pub fn export_papers(&self, _format: &str, limit: i64) -> Result<(Vec<String>, Vec<HashMap<String, serde_json::Value>>)> {
+    pub fn export_papers(
+        &self,
+        _format: &str,
+        limit: i64,
+    ) -> Result<(Vec<String>, Vec<HashMap<String, serde_json::Value>>)> {
         self.with_conn(|conn| {
             let fields = [
-                "id", "source", "title", "authors", "abstract", "published",
-                "doi", "primary_category", "parse_status", "added_at",
+                "id",
+                "source",
+                "title",
+                "authors",
+                "abstract",
+                "published",
+                "doi",
+                "primary_category",
+                "parse_status",
+                "added_at",
             ];
 
             let sql = if limit > 0 {
@@ -1137,7 +1189,10 @@ impl Database {
                     limit
                 )
             } else {
-                format!("SELECT {} FROM papers ORDER BY added_at DESC", fields.join(","))
+                format!(
+                    "SELECT {} FROM papers ORDER BY added_at DESC",
+                    fields.join(",")
+                )
             };
 
             let mut stmt = conn.prepare(&sql)?;
@@ -1472,15 +1527,17 @@ CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
 
 #[cfg(not(windows))]
 mod py_bindings {
-    use std::collections::HashMap;
     use pyo3::prelude::*;
+    use std::collections::HashMap;
 
     fn db_err_to_py(err: crate::DbError) -> PyErr {
         PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(err.to_string())
     }
 
     #[pyclass]
-    struct PyDatabase { inner: crate::Database }
+    struct PyDatabase {
+        inner: crate::Database,
+    }
 
     #[pymethods]
     impl PyDatabase {
@@ -1517,22 +1574,68 @@ mod py_bindings {
 
         fn upsert_paper(&self, data: &Bound<'_, PyAny>) -> PyResult<Option<String>> {
             let paper_id: String = data.get_item("paper_id")?.extract()?;
-            let title: String = data.get_item("title").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
-            let authors: Vec<String> = data.get_item("authors").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
-            let abstract_text: String = data.get_item("abstract").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
-            let published: String = data.get_item("published").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
-            let abs_url: String = data.get_item("abs_url").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
-            let pdf_url: String = data.get_item("pdf_url").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
-            let primary_category: String = data.get_item("primary_category").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
-            let source: String = data.get_item("source").ok().and_then(|a| a.extract().ok()).unwrap_or_default();
+            let title: String = data
+                .get_item("title")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
+            let authors: Vec<String> = data
+                .get_item("authors")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
+            let abstract_text: String = data
+                .get_item("abstract")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
+            let published: String = data
+                .get_item("published")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
+            let abs_url: String = data
+                .get_item("abs_url")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
+            let pdf_url: String = data
+                .get_item("pdf_url")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
+            let primary_category: String = data
+                .get_item("primary_category")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
+            let source: String = data
+                .get_item("source")
+                .ok()
+                .and_then(|a| a.extract().ok())
+                .unwrap_or_default();
 
-            let result = self
-                .inner
-                .upsert_paper(
-                    &paper_id, &source, &title, &authors, &abstract_text, &published,
-                    "", &abs_url, &pdf_url, &primary_category,
-                    "", "", "", "", "", "", 0, "", "",
-                );
+            let result = self.inner.upsert_paper(
+                &paper_id,
+                &source,
+                &title,
+                &authors,
+                &abstract_text,
+                &published,
+                "",
+                &abs_url,
+                &pdf_url,
+                &primary_category,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                "",
+                "",
+            );
             match result {
                 Ok(p) => {
                     let json = serde_json::json!({
@@ -1574,49 +1677,85 @@ mod py_bindings {
             }
         }
 
-        fn search_papers(&self, query: &str, limit: Option<i64>, offset: Option<i64>,
-                         source: Option<&str>, category: Option<&str>,
-                         parse_status: Option<&str>) -> PyResult<String> {
+        fn search_papers(
+            &self,
+            query: &str,
+            limit: Option<i64>,
+            offset: Option<i64>,
+            source: Option<&str>,
+            category: Option<&str>,
+            parse_status: Option<&str>,
+        ) -> PyResult<String> {
             let limit = limit.unwrap_or(20);
             let offset = offset.unwrap_or(0);
             let (results, total) = self
                 .inner
-                .search_papers(query, limit, offset, source, category, None, None, parse_status)
+                .search_papers(
+                    query,
+                    limit,
+                    offset,
+                    source,
+                    category,
+                    None,
+                    None,
+                    parse_status,
+                )
                 .map_err(db_err_to_py)?;
-            let results_json: Vec<serde_json::Value> = results.into_iter().map(|r| {
-                serde_json::json!({
-                    "paper_id": r.paper_id,
-                    "title": r.title,
-                    "score": r.score,
-                    "snippet": r.snippet,
+            let results_json: Vec<serde_json::Value> = results
+                .into_iter()
+                .map(|r| {
+                    serde_json::json!({
+                        "paper_id": r.paper_id,
+                        "title": r.title,
+                        "score": r.score,
+                        "snippet": r.snippet,
+                    })
                 })
-            }).collect();
+                .collect();
             let json = serde_json::json!({ "results": results_json, "total": total });
             Ok(serde_json::to_string(&json).unwrap_or_default())
         }
 
-        fn list_papers(&self, limit: Option<i64>, offset: Option<i64>,
-                       source: Option<&str>, category: Option<&str>,
-                       parse_status: Option<&str>) -> PyResult<String> {
+        fn list_papers(
+            &self,
+            limit: Option<i64>,
+            offset: Option<i64>,
+            source: Option<&str>,
+            category: Option<&str>,
+            parse_status: Option<&str>,
+        ) -> PyResult<String> {
             let limit = limit.unwrap_or(100);
             let offset = offset.unwrap_or(0);
             let (papers, total) = self
                 .inner
-                .list_papers(limit, offset, source, category, None, None, parse_status, "added_at", "desc")
+                .list_papers(
+                    limit,
+                    offset,
+                    source,
+                    category,
+                    None,
+                    None,
+                    parse_status,
+                    "added_at",
+                    "desc",
+                )
                 .map_err(db_err_to_py)?;
-            let papers_json: Vec<serde_json::Value> = papers.into_iter().map(|p| {
-                serde_json::json!({
-                    "id": p.id,
-                    "title": p.title,
-                    "authors": p.authors,
-                    "abstract": p.abstract_text,
-                    "published": p.published,
-                    "source": p.source,
-                    "parse_status": p.parse_status,
-                    "primary_category": p.primary_category,
-                    "added_at": p.added_at,
+            let papers_json: Vec<serde_json::Value> = papers
+                .into_iter()
+                .map(|p| {
+                    serde_json::json!({
+                        "id": p.id,
+                        "title": p.title,
+                        "authors": p.authors,
+                        "abstract": p.abstract_text,
+                        "published": p.published,
+                        "source": p.source,
+                        "parse_status": p.parse_status,
+                        "primary_category": p.primary_category,
+                        "added_at": p.added_at,
+                    })
                 })
-            }).collect();
+                .collect();
             let json = serde_json::json!({ "papers": papers_json, "total": total });
             Ok(serde_json::to_string(&json).unwrap_or_default())
         }
@@ -1641,4 +1780,3 @@ mod py_bindings {
         Ok(())
     }
 }
-

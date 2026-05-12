@@ -213,22 +213,34 @@ mod tests {
 
     #[test]
     fn test_parse_quality_score_full() {
-        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Full)) - 1.0).abs() < f32::EPSILON);
+        assert!(
+            (CompositeScorer::parse_quality_score(Some(ParseStatus::Full)) - 1.0).abs()
+                < f32::EPSILON
+        );
     }
 
     #[test]
     fn test_parse_quality_score_sections() {
-        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Sections)) - 0.8).abs() < f32::EPSILON);
+        assert!(
+            (CompositeScorer::parse_quality_score(Some(ParseStatus::Sections)) - 0.8).abs()
+                < f32::EPSILON
+        );
     }
 
     #[test]
     fn test_parse_quality_score_partial() {
-        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Partial)) - 0.5).abs() < f32::EPSILON);
+        assert!(
+            (CompositeScorer::parse_quality_score(Some(ParseStatus::Partial)) - 0.5).abs()
+                < f32::EPSILON
+        );
     }
 
     #[test]
     fn test_parse_quality_score_failed() {
-        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Failed)) - 0.1).abs() < f32::EPSILON);
+        assert!(
+            (CompositeScorer::parse_quality_score(Some(ParseStatus::Failed)) - 0.1).abs()
+                < f32::EPSILON
+        );
     }
 
     #[test]

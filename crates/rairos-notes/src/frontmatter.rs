@@ -28,7 +28,11 @@ impl Frontmatter {
         let re_list_item = Regex::new(r#"^\s+-\s+(.*)\s*$"#).unwrap();
 
         // Skip opening ------------------ delimiter if present
-        if lines.first().map(|l| l.trim() == "------------------").unwrap_or(false) {
+        if lines
+            .first()
+            .map(|l| l.trim() == "------------------")
+            .unwrap_or(false)
+        {
             i = 1;
         }
 

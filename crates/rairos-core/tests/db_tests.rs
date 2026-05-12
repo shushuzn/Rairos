@@ -4,9 +4,7 @@
 //! FTS search, job queue (subscriptions), settings (stats), paper_count,
 //! paper_exists, citations, experiment_tables (research_gaps)
 
-use rairos_core::{
-    Database, Paper, PaperMetadata, ParseStatus, Subscription, Tag,
-};
+use rairos_core::{Database, Paper, PaperMetadata, ParseStatus, Subscription, Tag};
 use tempfile::TempDir;
 
 fn create_test_db() -> (Database, TempDir) {
@@ -47,8 +45,13 @@ fn test_db_init_creates_tables() {
 fn test_db_init_creates_fts_index() {
     let (db, _temp_dir) = create_test_db();
     // FTS is created via trigger, search should work
-    let results = db.search_papers_fts("test", 10).expect("search_papers_fts should work");
-    assert!(results.is_empty(), "Empty FTS search should return empty vec");
+    let results = db
+        .search_papers_fts("test", 10)
+        .expect("search_papers_fts should work");
+    assert!(
+        results.is_empty(),
+        "Empty FTS search should return empty vec"
+    );
 }
 
 // ============================================================================
@@ -62,7 +65,8 @@ fn test_insert_paper_roundtrip() {
     let paper_id = paper.id.clone();
 
     // Insert
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     // Retrieve by id
     let retrieved = db.get_paper(&paper_id).expect("get_paper should succeed");
@@ -80,7 +84,8 @@ fn test_insert_paper_by_arxiv_roundtrip() {
     let paper = create_test_paper(Some("2301.99999"), "arXiv Paper");
     let arxiv_id = paper.arxiv_id.clone().unwrap();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     // Retrieve by arxiv_id
     let retrieved = db
@@ -97,7 +102,8 @@ fn test_update_paper_status() {
     let paper = create_test_paper(Some("2301.00002"), "Status Test");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     // Update status
     db.update_paper_status(&paper_id, ParseStatus::Done)
@@ -114,8 +120,10 @@ fn test_delete_paper() {
     let paper = create_test_paper(Some("2301.00003"), "Delete Me");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
-    db.delete_paper(&paper_id).expect("delete_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
+    db.delete_paper(&paper_id)
+        .expect("delete_paper should succeed");
 
     let result = db.get_paper(&paper_id);
     assert!(result.is_err(), "Deleted paper should not be found");
@@ -141,7 +149,8 @@ fn test_list_papers_bulk() {
     // Insert 15 papers
     for i in 0..15 {
         let paper = create_test_paper(Some(&format!("2301.{:05}", i)), &format!("Paper {}", i));
-        db.insert_paper(&paper).expect("insert_paper should succeed");
+        db.insert_paper(&paper)
+            .expect("insert_paper should succeed");
     }
 
     // List all with limit
@@ -163,14 +172,22 @@ fn test_list_papers_by_status() {
 
     // Insert papers with different statuses
     for i in 0..5 {
-        let mut paper = create_test_paper(Some(&format!("2301.00{:02}", i)), &format!("Pending Paper {}", i));
+        let mut paper = create_test_paper(
+            Some(&format!("2301.00{:02}", i)),
+            &format!("Pending Paper {}", i),
+        );
         paper.parse_status = ParseStatus::Pending;
-        db.insert_paper(&paper).expect("insert_paper should succeed");
+        db.insert_paper(&paper)
+            .expect("insert_paper should succeed");
     }
     for i in 5..10 {
-        let mut paper = create_test_paper(Some(&format!("2301.01{:02}", i)), &format!("Done Paper {}", i));
+        let mut paper = create_test_paper(
+            Some(&format!("2301.01{:02}", i)),
+            &format!("Done Paper {}", i),
+        );
         paper.parse_status = ParseStatus::Done;
-        db.insert_paper(&paper).expect("insert_paper should succeed");
+        db.insert_paper(&paper)
+            .expect("insert_paper should succeed");
     }
 
     // Filter by status
@@ -227,13 +244,15 @@ fn test_add_paper_tag() {
     let paper = create_test_paper(Some("2301.10001"), "Tagged Paper");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let tag = Tag::new("important");
     let tag_id = tag.id.clone();
     db.insert_tag(&tag).expect("insert_tag should succeed");
 
-    db.add_paper_tag(&paper_id, &tag_id).expect("add_paper_tag should succeed");
+    db.add_paper_tag(&paper_id, &tag_id)
+        .expect("add_paper_tag should succeed");
 
     let tags = db
         .get_paper_tags(&paper_id)
@@ -248,13 +267,15 @@ fn test_remove_paper_tag() {
     let paper = create_test_paper(Some("2301.10002"), "Untag Paper");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let tag = Tag::new("to-remove");
     let tag_id = tag.id.clone();
     db.insert_tag(&tag).expect("insert_tag should succeed");
 
-    db.add_paper_tag(&paper_id, &tag_id).expect("add_paper_tag should succeed");
+    db.add_paper_tag(&paper_id, &tag_id)
+        .expect("add_paper_tag should succeed");
     db.remove_paper_tag(&paper_id, &tag_id)
         .expect("remove_paper_tag should succeed");
 
@@ -289,9 +310,12 @@ fn test_search_papers_fts_basic() {
     let paper2 = create_test_paper(Some("2301.20002"), "Natural Language Processing");
     let paper3 = create_test_paper(Some("2301.20003"), "Reinforcement Learning");
 
-    db.insert_paper(&paper1).expect("insert_paper should succeed");
-    db.insert_paper(&paper2).expect("insert_paper should succeed");
-    db.insert_paper(&paper3).expect("insert_paper should succeed");
+    db.insert_paper(&paper1)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper2)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper3)
+        .expect("insert_paper should succeed");
 
     let results = db
         .search_papers_fts("deep learning", 10)
@@ -305,7 +329,8 @@ fn test_search_papers_fts_multiple_terms() {
     let (db, _temp_dir) = create_test_db();
 
     let paper = create_test_paper(Some("2301.20004"), "Transformers for Machine Translation");
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let results = db
         .search_papers_fts("transformers translation", 10)
@@ -319,7 +344,8 @@ fn test_search_papers_fts_abstract() {
 
     let paper = create_test_paper(Some("2301.20005"), "Novel Approach Paper");
     let _paper_id = paper.id.clone();
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let results = db
         .search_papers_fts("Abstract for Novel Approach Paper", 10)
@@ -332,7 +358,8 @@ fn test_search_papers_fts_no_results() {
     let (db, _temp_dir) = create_test_db();
 
     let paper = create_test_paper(Some("2301.20006"), "Specific Topic Paper");
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let results = db
         .search_papers_fts("nonexistent query xyz123", 10)
@@ -349,7 +376,8 @@ fn test_search_papers_fts_limit() {
             Some(&format!("2301.300{:02}", i)),
             &format!("Machine Learning Paper {}", i),
         );
-        db.insert_paper(&paper).expect("insert_paper should succeed");
+        db.insert_paper(&paper)
+            .expect("insert_paper should succeed");
     }
 
     let results = db
@@ -367,7 +395,8 @@ fn test_insert_subscription() {
     let (db, _temp_dir) = create_test_db();
     let sub = Subscription::new("transformer attention");
 
-    db.insert_subscription(&sub).expect("insert_subscription should succeed");
+    db.insert_subscription(&sub)
+        .expect("insert_subscription should succeed");
 
     let subs = db
         .list_subscriptions(false)
@@ -384,8 +413,10 @@ fn test_list_subscriptions_enabled_only() {
     let mut sub2 = Subscription::new("disabled-query");
     sub2.enabled = false;
 
-    db.insert_subscription(&sub1).expect("insert_subscription should succeed");
-    db.insert_subscription(&sub2).expect("insert_subscription should succeed");
+    db.insert_subscription(&sub1)
+        .expect("insert_subscription should succeed");
+    db.insert_subscription(&sub2)
+        .expect("insert_subscription should succeed");
 
     let all = db
         .list_subscriptions(false)
@@ -404,8 +435,10 @@ fn test_delete_subscription() {
     let sub = Subscription::new("to-delete");
     let sub_id = sub.id.clone();
 
-    db.insert_subscription(&sub).expect("insert_subscription should succeed");
-    db.delete_subscription(&sub_id).expect("delete_subscription should succeed");
+    db.insert_subscription(&sub)
+        .expect("insert_subscription should succeed");
+    db.delete_subscription(&sub_id)
+        .expect("delete_subscription should succeed");
 
     let subs = db
         .list_subscriptions(false)
@@ -419,7 +452,8 @@ fn test_update_subscription_last_check() {
     let sub = Subscription::new("check-test");
     let sub_id = sub.id.clone();
 
-    db.insert_subscription(&sub).expect("insert_subscription should succeed");
+    db.insert_subscription(&sub)
+        .expect("insert_subscription should succeed");
     db.update_subscription_last_check(&sub_id, "2024-01-01T00:00:00Z", "1 result")
         .expect("update_subscription_last_check should succeed");
 
@@ -451,16 +485,22 @@ fn test_stats_with_papers() {
 
     // Add pending papers
     for i in 0..3 {
-        let mut paper = create_test_paper(Some(&format!("2301.400{:02}", i)), &format!("Pending {}", i));
+        let mut paper = create_test_paper(
+            Some(&format!("2301.400{:02}", i)),
+            &format!("Pending {}", i),
+        );
         paper.parse_status = ParseStatus::Pending;
-        db.insert_paper(&paper).expect("insert_paper should succeed");
+        db.insert_paper(&paper)
+            .expect("insert_paper should succeed");
     }
 
     // Add done papers
     for i in 3..7 {
-        let mut paper = create_test_paper(Some(&format!("2301.400{:02}", i)), &format!("Done {}", i));
+        let mut paper =
+            create_test_paper(Some(&format!("2301.400{:02}", i)), &format!("Done {}", i));
         paper.parse_status = ParseStatus::Done;
-        db.insert_paper(&paper).expect("insert_paper should succeed");
+        db.insert_paper(&paper)
+            .expect("insert_paper should succeed");
     }
 
     let stats = db.stats().expect("stats should work");
@@ -485,8 +525,12 @@ fn test_count_papers_after_insert() {
     let (db, _temp_dir) = create_test_db();
 
     for i in 0..5 {
-        let paper = create_test_paper(Some(&format!("2301.500{:02}", i)), &format!("Count Test {}", i));
-        db.insert_paper(&paper).expect("insert_paper should succeed");
+        let paper = create_test_paper(
+            Some(&format!("2301.500{:02}", i)),
+            &format!("Count Test {}", i),
+        );
+        db.insert_paper(&paper)
+            .expect("insert_paper should succeed");
     }
 
     let count = db.count_papers().expect("count_papers should work");
@@ -501,12 +545,15 @@ fn test_count_papers_after_delete() {
     let paper2 = create_test_paper(Some("2301.50011"), "Delete Test 2");
     let paper1_id = paper1.id.clone();
 
-    db.insert_paper(&paper1).expect("insert_paper should succeed");
-    db.insert_paper(&paper2).expect("insert_paper should succeed");
+    db.insert_paper(&paper1)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper2)
+        .expect("insert_paper should succeed");
 
     assert_eq!(db.count_papers().expect("count_papers should work"), 2);
 
-    db.delete_paper(&paper1_id).expect("delete_paper should succeed");
+    db.delete_paper(&paper1_id)
+        .expect("delete_paper should succeed");
     assert_eq!(db.count_papers().expect("count_papers should work"), 1);
 }
 
@@ -520,7 +567,8 @@ fn test_paper_exists_by_arxiv() {
     let paper = create_test_paper(Some("2301.60001"), "Existence Test");
     let arxiv_id = paper.arxiv_id.clone().unwrap();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let found = db
         .get_paper_by_arxiv(&arxiv_id)
@@ -544,7 +592,8 @@ fn test_paper_exists_by_id() {
     let paper = create_test_paper(Some("2301.60002"), "ID Existence Test");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let result = db.get_paper(&paper_id);
     assert!(result.is_ok(), "Paper should exist by id");
@@ -562,14 +611,22 @@ fn test_insert_citation() {
     let paper1_id = paper1.id.clone();
     let paper2_id = paper2.id.clone();
 
-    db.insert_paper(&paper1).expect("insert_paper should succeed");
-    db.insert_paper(&paper2).expect("insert_paper should succeed");
+    db.insert_paper(&paper1)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper2)
+        .expect("insert_paper should succeed");
 
     db.insert_citation(&paper1_id, &paper2_id)
         .expect("insert_citation should succeed");
 
-    let citations = db.get_citations(&paper2_id).expect("get_citations should work");
-    assert_eq!(citations.citing.len(), 1, "paper2 should have 1 citing paper");
+    let citations = db
+        .get_citations(&paper2_id)
+        .expect("get_citations should work");
+    assert_eq!(
+        citations.citing.len(),
+        1,
+        "paper2 should have 1 citing paper"
+    );
     assert_eq!(citations.citing[0], paper1_id, "Citing paper should match");
 }
 
@@ -581,15 +638,23 @@ fn test_get_citations_references() {
     let paper1_id = paper1.id.clone();
     let paper2_id = paper2.id.clone();
 
-    db.insert_paper(&paper1).expect("insert_paper should succeed");
-    db.insert_paper(&paper2).expect("insert_paper should succeed");
+    db.insert_paper(&paper1)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper2)
+        .expect("insert_paper should succeed");
 
     // paper1 references paper2
     db.insert_citation(&paper1_id, &paper2_id)
         .expect("insert_citation should succeed");
 
-    let citations = db.get_citations(&paper1_id).expect("get_citations should work");
-    assert_eq!(citations.references.len(), 1, "paper1 should have 1 reference");
+    let citations = db
+        .get_citations(&paper1_id)
+        .expect("get_citations should work");
+    assert_eq!(
+        citations.references.len(),
+        1,
+        "paper1 should have 1 reference"
+    );
     assert_eq!(citations.references[0], paper2_id, "Reference should match");
 }
 
@@ -601,8 +666,10 @@ fn test_get_citations_bidirectional() {
     let paper1_id = paper1.id.clone();
     let paper2_id = paper2.id.clone();
 
-    db.insert_paper(&paper1).expect("insert_paper should succeed");
-    db.insert_paper(&paper2).expect("insert_paper should succeed");
+    db.insert_paper(&paper1)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper2)
+        .expect("insert_paper should succeed");
 
     // A cites B
     db.insert_citation(&paper1_id, &paper2_id)
@@ -611,11 +678,15 @@ fn test_get_citations_bidirectional() {
     db.insert_citation(&paper2_id, &paper1_id)
         .expect("insert_citation should succeed");
 
-    let citations_a = db.get_citations(&paper1_id).expect("get_citations should work");
+    let citations_a = db
+        .get_citations(&paper1_id)
+        .expect("get_citations should work");
     assert_eq!(citations_a.citing.len(), 1, "A should be cited by B");
     assert_eq!(citations_a.references.len(), 1, "A should reference B");
 
-    let citations_b = db.get_citations(&paper2_id).expect("get_citations should work");
+    let citations_b = db
+        .get_citations(&paper2_id)
+        .expect("get_citations should work");
     assert_eq!(citations_b.citing.len(), 1, "B should be cited by A");
     assert_eq!(citations_b.references.len(), 1, "B should reference A");
 }
@@ -628,8 +699,10 @@ fn test_insert_citation_duplicate_no_error() {
     let paper1_id = paper1.id.clone();
     let paper2_id = paper2.id.clone();
 
-    db.insert_paper(&paper1).expect("insert_paper should succeed");
-    db.insert_paper(&paper2).expect("insert_paper should succeed");
+    db.insert_paper(&paper1)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper2)
+        .expect("insert_paper should succeed");
 
     // Insert same citation twice (should not error due to OR IGNORE)
     db.insert_citation(&paper1_id, &paper2_id)
@@ -637,8 +710,14 @@ fn test_insert_citation_duplicate_no_error() {
     db.insert_citation(&paper1_id, &paper2_id)
         .expect("insert_citation should succeed second time (no error)");
 
-    let citations = db.get_citations(&paper2_id).expect("get_citations should work");
-    assert_eq!(citations.citing.len(), 1, "Should still only have 1 citation");
+    let citations = db
+        .get_citations(&paper2_id)
+        .expect("get_citations should work");
+    assert_eq!(
+        citations.citing.len(),
+        1,
+        "Should still only have 1 citation"
+    );
 }
 
 // ============================================================================
@@ -665,7 +744,8 @@ fn test_update_paper_full_text() {
     let paper = create_test_paper(Some("2301.90001"), "Full Text Test");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     db.update_paper_full_text(&paper_id, "This is the plain text content", 5, 3, 1000, 10)
         .expect("update_paper_full_text should succeed");
@@ -684,7 +764,8 @@ fn test_paper_metadata_preserved() {
     let paper = create_test_paper(Some("2301.95001"), "Metadata Test");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let retrieved = db.get_paper(&paper_id).expect("get_paper should succeed");
     assert_eq!(retrieved.metadata.cited_by, 10);
@@ -704,7 +785,8 @@ fn test_paper_metadata_preserved() {
 fn test_search_papers_basic() {
     let (db, _temp_dir) = create_test_db();
     let paper = create_test_paper(Some("2301.96001"), "Attention Is All You Need");
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let results = db
         .search_papers("Attention", 10)
@@ -716,7 +798,8 @@ fn test_search_papers_basic() {
 fn test_search_papers_no_results() {
     let (db, _temp_dir) = create_test_db();
     let paper = create_test_paper(Some("2301.96002"), "Specific Title");
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let results = db
         .search_papers("nonexistent term", 10)
@@ -734,7 +817,8 @@ fn test_set_and_get_embedding() {
     let paper = create_test_paper(Some("2301.97001"), "Embedding Test");
     let paper_id = paper.id.clone();
 
-    db.insert_paper(&paper).expect("insert_paper should succeed");
+    db.insert_paper(&paper)
+        .expect("insert_paper should succeed");
 
     let embedding: Vec<f32> = vec![0.1, 0.2, 0.3, 0.4];
     db.set_paper_embedding(&paper_id, &embedding)
@@ -757,8 +841,10 @@ fn test_list_papers_with_embeddings() {
     let paper2 = create_test_paper(Some("2301.98002"), "Without Embedding");
     let paper1_id = paper1.id.clone();
 
-    db.insert_paper(&paper1).expect("insert_paper should succeed");
-    db.insert_paper(&paper2).expect("insert_paper should succeed");
+    db.insert_paper(&paper1)
+        .expect("insert_paper should succeed");
+    db.insert_paper(&paper2)
+        .expect("insert_paper should succeed");
 
     let embedding: Vec<f32> = vec![0.1, 0.2, 0.3];
     db.set_paper_embedding(&paper1_id, &embedding)
@@ -777,8 +863,6 @@ fn test_list_papers_with_embeddings() {
 
 #[test]
 fn test_rate_limiter_basic() {
-    
-
     let rl = rairos_core::RateLimiter::new();
     let handle = rl.get_or_create("test-endpoint");
     assert!(handle.can(), "Should be able to make request");
@@ -786,8 +870,6 @@ fn test_rate_limiter_basic() {
 
 #[test]
 fn test_rate_limiter_reset() {
-    
-
     let rl = rairos_core::RateLimiter::new();
     let handle = rl.get_or_create("reset-test");
     handle.reset();

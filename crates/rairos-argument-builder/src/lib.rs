@@ -35,9 +35,9 @@ pub type Result<T> = std::result::Result<T, ArgumentBuilderError>;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum EvidenceType {
-    Support,       // 支持证据
-    Contradict,    // 反驳证据
-    Qualify,       // 限定条件
+    Support,        // 支持证据
+    Contradict,     // 反驳证据
+    Qualify,        // 限定条件
     Methodological, // 方法论问题
 }
 
@@ -84,8 +84,7 @@ impl std::fmt::Display for ArgumentSection {
 // ============================================================================
 
 /// A piece of evidence for or against a claim.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Evidence {
     /// Type of evidence.
     pub evidence_type: EvidenceType,
@@ -269,10 +268,8 @@ impl ArgumentBuilder {
             Self::categorize_evidence(supporting, contradicting);
 
         // Generate section guidance
-        let section_guidance = template_guidance(
-            supporting_evidence.len(),
-            contradicting_evidence.len(),
-        );
+        let section_guidance =
+            template_guidance(supporting_evidence.len(), contradicting_evidence.len());
 
         // Generate summary
         let summary = Self::summarize(
@@ -308,8 +305,16 @@ impl ArgumentBuilder {
         mut contradicting: Vec<Evidence>,
     ) -> (Vec<Evidence>, Vec<Evidence>) {
         // Sort both by weight descending
-        supporting.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap_or(std::cmp::Ordering::Equal));
-        contradicting.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap_or(std::cmp::Ordering::Equal));
+        supporting.sort_by(|a, b| {
+            b.weight
+                .partial_cmp(&a.weight)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        contradicting.sort_by(|a, b| {
+            b.weight
+                .partial_cmp(&a.weight)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         (supporting, contradicting)
     }
 
@@ -328,10 +333,7 @@ impl ArgumentBuilder {
 
     /// Suggest which sections need most attention.
     pub fn suggest_sections(has_contradicting: bool) -> Vec<ArgumentSection> {
-        let mut sections = vec![
-            ArgumentSection::Introduction,
-            ArgumentSection::Discussion,
-        ];
+        let mut sections = vec![ArgumentSection::Introduction, ArgumentSection::Discussion];
 
         if has_contradicting {
             sections.push(ArgumentSection::Limitation);
@@ -355,10 +357,7 @@ impl ArgumentBuilder {
 
         format!(
             "论点「{}」有 {} 条支持证据，{} 条反驳证据。涉及 {} 个相关研究空白。",
-            thesis_preview,
-            support_count,
-            contradict_count,
-            gap_count
+            thesis_preview, support_count, contradict_count, gap_count
         )
     }
 
@@ -366,13 +365,19 @@ impl ArgumentBuilder {
     /// This is a best-effort parser that looks for section keywords.
     pub fn parse_guidance_response(response: &str) -> HashMap<ArgumentSection, String> {
         let sections = [
-            (ArgumentSection::Introduction, vec!["introduction", "引言", "动机"]),
+            (
+                ArgumentSection::Introduction,
+                vec!["introduction", "引言", "动机"],
+            ),
             (
                 ArgumentSection::RelatedWork,
                 vec!["related", "相关工作", "贡献"],
             ),
             (ArgumentSection::Methodology, vec!["method", "方法", "实验"]),
-            (ArgumentSection::Discussion, vec!["discussion", "讨论", "回应"]),
+            (
+                ArgumentSection::Discussion,
+                vec!["discussion", "讨论", "回应"],
+            ),
             (
                 ArgumentSection::Limitation,
                 vec!["limitation", "局限", "边界"],
@@ -474,7 +479,12 @@ pub fn render_argument(result: &ArgumentResult) -> String {
     if arg.supporting_evidence.is_empty() {
         lines.push("   暂无支持证据".to_string());
     } else {
-        for (i, e) in arg.supporting_evidence.iter().take(5).enumerate().map(|(i, e)| (i + 1, e))
+        for (i, e) in arg
+            .supporting_evidence
+            .iter()
+            .take(5)
+            .enumerate()
+            .map(|(i, e)| (i + 1, e))
         {
             lines.push(format!("   {}. [{}]", i, e.source));
             let preview: String = e.content.chars().take(80).collect();
@@ -556,9 +566,7 @@ pub fn render_argument_markdown(result: &ArgumentResult) -> String {
         for e in &arg.supporting_evidence {
             lines.push(format!(
                 "- **{}** (权重: {:.2})  \n  {}",
-                e.source,
-                e.weight,
-                e.content
+                e.source, e.weight, e.content
             ));
         }
         lines.push(String::new());
@@ -571,9 +579,7 @@ pub fn render_argument_markdown(result: &ArgumentResult) -> String {
         for e in &arg.contradicting_evidence {
             lines.push(format!(
                 "- **{}** (权重: {:.2})  \n  {}",
-                e.source,
-                e.weight,
-                e.content
+                e.source, e.weight, e.content
             ));
         }
         lines.push(String::new());
@@ -659,15 +665,13 @@ mod tests {
                 ..Default::default()
             },
         ];
-        let contradicting = vec![
-            Evidence {
-                evidence_type: EvidenceType::Contradict,
-                source: "C".to_string(),
-                content: "c".to_string(),
-                weight: 0.3,
-                ..Default::default()
-            },
-        ];
+        let contradicting = vec![Evidence {
+            evidence_type: EvidenceType::Contradict,
+            source: "C".to_string(),
+            content: "c".to_string(),
+            weight: 0.3,
+            ..Default::default()
+        }];
 
         let (sup, con) = ArgumentBuilder::categorize_evidence(supporting, contradicting);
 
@@ -760,7 +764,9 @@ mod tests {
 
     #[test]
     fn test_evidence_default_weight() {
-        let e: Evidence = serde_json::from_str(r#"{"evidence_type":"support","source":"test","content":"test"}"#).unwrap();
+        let e: Evidence =
+            serde_json::from_str(r#"{"evidence_type":"support","source":"test","content":"test"}"#)
+                .unwrap();
         assert!((e.weight - 1.0).abs() < 0.001);
     }
 

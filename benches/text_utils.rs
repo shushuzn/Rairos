@@ -1,11 +1,14 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use rairos_text_utils::{extract_keywords, cosine_sim, jaccard};
+use rairos_text_utils::{cosine_sim, extract_keywords, jaccard};
 
 fn bench_text_utils(c: &mut Criterion) {
     let text = "This is a sample text for benchmarking word tokenization \
                 and frequency analysis operations across multiple calls.";
     let keywords = extract_keywords(text, 3);
-    let keywords2 = extract_keywords("Another text with different keywords for similarity testing.", 3);
+    let keywords2 = extract_keywords(
+        "Another text with different keywords for similarity testing.",
+        3,
+    );
 
     let mut group = c.benchmark_group("text_utils");
     group.bench_function("extract_keywords_50", |b| {

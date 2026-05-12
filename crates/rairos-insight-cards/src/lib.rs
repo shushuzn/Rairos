@@ -319,8 +319,14 @@ impl InsightManager {
         let data = self.load_cards();
         let mut results: Vec<InsightCard> = Vec::new();
         for item in &data {
-            let rating = item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
-            let scores = item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            let rating = item
+                .get("quality_rating")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32;
+            let scores = item
+                .get("times_rated")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32;
             if rating >= min_rating && scores >= min_scores {
                 if let Some(card) = self._item_to_card(item) {
                     results.push(card);
@@ -335,8 +341,14 @@ impl InsightManager {
         let data = self.load_cards();
         let mut results: Vec<InsightCard> = Vec::new();
         for item in &data {
-            let rating = item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
-            let scores = item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+            let rating = item
+                .get("quality_rating")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32;
+            let scores = item
+                .get("times_rated")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32;
             if rating > 0 && rating <= max_rating && scores >= min_scores {
                 if let Some(card) = self._item_to_card(item) {
                     results.push(card);
@@ -372,19 +384,66 @@ impl InsightManager {
         item: &std::collections::HashMap<String, serde_json::Value>,
     ) -> Option<InsightCard> {
         Some(InsightCard {
-            card_id: item.get("card_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            paper_id: item.get("paper_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            paper_title: item.get("paper_title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            content: item.get("content").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            insight_type: item.get("insight_type").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            tags: item.get("tags").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
-            evidence: item.get("evidence").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            page_ref: item.get("page_ref").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            created_at: item.get("created_at").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            references: item.get("references").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
-            quality_rating: item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
-            usefulness_score: item.get("usefulness_score").and_then(|v| v.as_f64()).unwrap_or(0.0),
-            times_rated: item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
+            card_id: item
+                .get("card_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            paper_id: item
+                .get("paper_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            paper_title: item
+                .get("paper_title")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            content: item
+                .get("content")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            insight_type: item
+                .get("insight_type")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            tags: item
+                .get("tags")
+                .and_then(|v| serde_json::from_value(v.clone()).ok())
+                .unwrap_or_default(),
+            evidence: item
+                .get("evidence")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            page_ref: item
+                .get("page_ref")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            created_at: item
+                .get("created_at")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            references: item
+                .get("references")
+                .and_then(|v| serde_json::from_value(v.clone()).ok())
+                .unwrap_or_default(),
+            quality_rating: item
+                .get("quality_rating")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32,
+            usefulness_score: item
+                .get("usefulness_score")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.0),
+            times_rated: item
+                .get("times_rated")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32,
         })
     }
 

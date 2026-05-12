@@ -7,10 +7,10 @@
 
 #![allow(clippy::unnecessary_unwrap)]
 
-use std::collections::{HashMap, HashSet};
-use serde::{Deserialize, Serialize};
-use thiserror::Error;
 use chrono::Datelike;
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
+use thiserror::Error;
 
 pub use rairos_constants::AI_RESEARCH_KEYWORDS;
 
@@ -134,7 +134,9 @@ impl TrendAnalyzer {
     }
 
     pub fn with_keywords(keywords: HashSet<&'static str>) -> Self {
-        Self { tech_keywords: keywords }
+        Self {
+            tech_keywords: keywords,
+        }
     }
 
     pub fn analyze(
@@ -159,10 +161,26 @@ impl TrendAnalyzer {
         let trends = self.detect_keyword_trends(papers, year_range);
         let growth = self.compute_growth_rate(&yearly_stats);
 
-        let rising: Vec<_> = trends.iter().filter(|t| t.direction == TrendDirection::Rising).cloned().collect();
-        let falling: Vec<_> = trends.iter().filter(|t| t.direction == TrendDirection::Falling).cloned().collect();
-        let emerging: Vec<_> = trends.iter().filter(|t| t.direction == TrendDirection::Emerging).cloned().collect();
-        let stable: Vec<_> = trends.iter().filter(|t| t.direction == TrendDirection::Stable).cloned().collect();
+        let rising: Vec<_> = trends
+            .iter()
+            .filter(|t| t.direction == TrendDirection::Rising)
+            .cloned()
+            .collect();
+        let falling: Vec<_> = trends
+            .iter()
+            .filter(|t| t.direction == TrendDirection::Falling)
+            .cloned()
+            .collect();
+        let emerging: Vec<_> = trends
+            .iter()
+            .filter(|t| t.direction == TrendDirection::Emerging)
+            .cloned()
+            .collect();
+        let stable: Vec<_> = trends
+            .iter()
+            .filter(|t| t.direction == TrendDirection::Stable)
+            .cloned()
+            .collect();
 
         TrendAnalysisResult {
             topic: topic.to_string(),
@@ -180,11 +198,7 @@ impl TrendAnalyzer {
         }
     }
 
-    fn compute_yearly_stats(
-        &self,
-        papers: &[Paper],
-        year_range: (i32, i32),
-    ) -> Vec<YearlyStats> {
+    fn compute_yearly_stats(&self, papers: &[Paper], year_range: (i32, i32)) -> Vec<YearlyStats> {
         let mut yearly_data: HashMap<i32, YearlyData> = HashMap::new();
 
         for paper in papers {
@@ -220,11 +234,7 @@ impl TrendAnalyzer {
         stats
     }
 
-    fn detect_keyword_trends(
-        &self,
-        papers: &[Paper],
-        year_range: (i32, i32),
-    ) -> Vec<TrendKeyword> {
+    fn detect_keyword_trends(&self, papers: &[Paper], year_range: (i32, i32)) -> Vec<TrendKeyword> {
         let mut keyword_yearly: HashMap<String, HashMap<i32, usize>> = HashMap::new();
 
         for paper in papers {
@@ -237,7 +247,11 @@ impl TrendAnalyzer {
                             .or_default()
                             .entry(paper.year)
                             .or_insert(0);
-                        *keyword_yearly.get_mut(*kw).unwrap().get_mut(&paper.year).unwrap() += 1;
+                        *keyword_yearly
+                            .get_mut(*kw)
+                            .unwrap()
+                            .get_mut(&paper.year)
+                            .unwrap() += 1;
                     }
                 }
             }
@@ -253,7 +267,11 @@ impl TrendAnalyzer {
             }
         }
 
-        trends.sort_by(|a, b| b.growth_rate.partial_cmp(&a.growth_rate).unwrap_or(std::cmp::Ordering::Equal));
+        trends.sort_by(|a, b| {
+            b.growth_rate
+                .partial_cmp(&a.growth_rate)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         trends.truncate(20);
         trends
     }
@@ -265,7 +283,10 @@ impl TrendAnalyzer {
         year_range: (i32, i32),
     ) -> Option<TrendKeyword> {
         let years: Vec<i32> = (year_range.0..=year_range.1).collect();
-        let counts: Vec<usize> = years.iter().map(|y| yearly_counts.get(y).copied().unwrap_or(0)).collect();
+        let counts: Vec<usize> = years
+            .iter()
+            .map(|y| yearly_counts.get(y).copied().unwrap_or(0))
+            .collect();
 
         let first_nonzero = counts.iter().copied().find(|&c| c > 0).unwrap_or(0);
         let last_count = *counts.last().unwrap_or(&0);
@@ -274,10 +295,14 @@ impl TrendAnalyzer {
             return None;
         }
 
-        let growth_rate = ((last_count as f64 - first_nonzero as f64) / first_nonzero as f64) * 100.0;
+        let growth_rate =
+            ((last_count as f64 - first_nonzero as f64) / first_nonzero as f64) * 100.0;
 
         let direction = if last_count as f64 > first_nonzero as f64 * 1.5 {
-            if counts.len() >= 2 && counts[counts.len() - 1] > counts[counts.len() - 2] && counts[counts.len() - 2] > 0 {
+            if counts.len() >= 2
+                && counts[counts.len() - 1] > counts[counts.len() - 2]
+                && counts[counts.len() - 2] > 0
+            {
                 TrendDirection::Emerging
             } else {
                 TrendDirection::Rising
@@ -299,7 +324,11 @@ impl TrendAnalyzer {
         let momentum = if counts.len() >= 3 {
             let recent_change = counts[counts.len() - 1] as f64 - counts[counts.len() - 2] as f64;
             let prev_change = counts[counts.len() - 2] as f64 - counts[counts.len() - 3] as f64;
-            let prev_change = if prev_change.abs() < 0.001 { 1.0 } else { prev_change };
+            let prev_change = if prev_change.abs() < 0.001 {
+                1.0
+            } else {
+                prev_change
+            };
             (recent_change - prev_change) / prev_change.abs()
         } else {
             0.0
@@ -362,7 +391,10 @@ impl TrendAnalyzer {
             for stats in &result.yearly_distribution {
                 let bar_count = std::cmp::min(stats.paper_count, 20);
                 let bar = "█".repeat(bar_count);
-                lines.push(format!("   {}: {:3} {}", stats.year, stats.paper_count, bar));
+                lines.push(format!(
+                    "   {}: {:3} {}",
+                    stats.year, stats.paper_count, bar
+                ));
             }
             lines.push(String::new());
         }
@@ -416,7 +448,12 @@ impl TrendAnalyzer {
             "    section Keywords".to_string(),
         ];
 
-        for trend in result.emerging_trends.iter().take(3).chain(result.rising_trends.iter().take(3)) {
+        for trend in result
+            .emerging_trends
+            .iter()
+            .take(3)
+            .chain(result.rising_trends.iter().take(3))
+        {
             if let (Some(&start_year), Some(&end_year)) = (
                 trend.yearly_counts.keys().min(),
                 trend.yearly_counts.keys().max(),
@@ -466,13 +503,18 @@ impl TrendAnalyzer {
             .collect();
 
         let mut lines = vec![
-            "%%{ init: { 'theme': 'base', 'themeVariables': { 'primaryColor': '#ff9900' } } }%%".to_string(),
+            "%%{ init: { 'theme': 'base', 'themeVariables': { 'primaryColor': '#ff9900' } } }%%"
+                .to_string(),
             "```mermaid".to_string(),
             "xychart-beta".to_string(),
             format!(r#"    title "{} - Keyword Trends""#, result.topic),
             format!(
                 "    x-axis [{}]",
-                year_range.iter().map(|y| y.to_string()).collect::<Vec<_>>().join(", ")
+                year_range
+                    .iter()
+                    .map(|y| y.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
             ),
             "    y-axis \"Papers\" 0 --> 50".to_string(),
             String::new(),
@@ -484,7 +526,11 @@ impl TrendAnalyzer {
                 .iter()
                 .map(|y| trend.yearly_counts.get(y).unwrap_or(&0).to_string())
                 .collect();
-            lines.push(format!(r#"        "{}" : {}"#, trend.keyword, counts.join(", ")));
+            lines.push(format!(
+                r#"        "{}" : {}"#,
+                trend.keyword,
+                counts.join(", ")
+            ));
         }
 
         lines.push("```".to_string());
@@ -663,7 +709,9 @@ mod tests {
         let analyzer = TrendAnalyzer::new();
         let papers = make_papers();
         let trends = analyzer.detect_keyword_trends(&papers, (2020, 2024));
-        let has_attention = trends.iter().any(|t| t.keyword.to_lowercase().contains("attention"));
+        let has_attention = trends
+            .iter()
+            .any(|t| t.keyword.to_lowercase().contains("attention"));
         assert!(has_attention || !trends.is_empty());
     }
 
@@ -712,8 +760,20 @@ mod tests {
     fn test_growth_rate() {
         let analyzer = TrendAnalyzer::new();
         let stats = vec![
-            YearlyStats { year: 2020, paper_count: 100, total_citations: 500, avg_citations: 5.0, keywords: HashMap::new() },
-            YearlyStats { year: 2021, paper_count: 150, total_citations: 750, avg_citations: 5.0, keywords: HashMap::new() },
+            YearlyStats {
+                year: 2020,
+                paper_count: 100,
+                total_citations: 500,
+                avg_citations: 5.0,
+                keywords: HashMap::new(),
+            },
+            YearlyStats {
+                year: 2021,
+                paper_count: 150,
+                total_citations: 750,
+                avg_citations: 5.0,
+                keywords: HashMap::new(),
+            },
         ];
         let growth = analyzer.compute_growth_rate(&stats);
         assert!((growth - 50.0).abs() < 0.01);

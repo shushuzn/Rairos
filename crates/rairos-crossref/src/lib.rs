@@ -141,7 +141,14 @@ fn parse_date(date: Option<&CrossrefDate>) -> String {
 
 fn best_effort_date(item: &CrossrefItem) -> String {
     // Try in order of preference
-    for key in &["published-print", "published-online", "published", "issued", "created", "deposited"] {
+    for key in &[
+        "published-print",
+        "published-online",
+        "published",
+        "issued",
+        "created",
+        "deposited",
+    ] {
         let date = match *key {
             "published-print" => item.published_print.as_ref(),
             "published-online" => item.published_online.as_ref(),
@@ -220,9 +227,10 @@ fn try_find_arxiv_id(item: &CrossrefItem, doi: &str) -> Option<String> {
             _ => None,
         } {
             for v in val {
-                if let Some(m) = regex::Regex::new(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?")
-                    .unwrap()
-                    .captures(v)
+                if let Some(m) =
+                    regex::Regex::new(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?")
+                        .unwrap()
+                        .captures(v)
                 {
                     let id = m.get(1).map(|g| g.as_str()).unwrap_or("");
                     let ver = m.get(2).map(|g| g.as_str()).unwrap_or("");
@@ -231,7 +239,10 @@ fn try_find_arxiv_id(item: &CrossrefItem, doi: &str) -> Option<String> {
                 // Check if the string itself looks like an arxiv ID in a sea of "arxiv"
                 let blob = v.to_lowercase();
                 if blob.contains("arxiv") {
-                    if let Some(m) = regex::Regex::new(r"(\d{4}\.\d{4,5})(v\d+)?").unwrap().captures(&blob) {
+                    if let Some(m) = regex::Regex::new(r"(\d{4}\.\d{4,5})(v\d+)?")
+                        .unwrap()
+                        .captures(&blob)
+                    {
                         return Some(format!(
                             "{}{}",
                             m.get(1).map(|g| g.as_str()).unwrap_or(""),
@@ -250,7 +261,10 @@ fn normalize_arxiv_id_from_doi(doi: &str) -> Option<String> {
     // Direct arXiv DOI pattern: 10.48550/arXiv.XXXXX
     if let Some(rest) = doi.strip_prefix("10.48550/arXiv.") {
         let id = rest.trim();
-        if regex::Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$").unwrap().is_match(id) {
+        if regex::Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$")
+            .unwrap()
+            .is_match(id)
+        {
             return Some(id.to_string());
         }
     }
@@ -259,7 +273,8 @@ fn normalize_arxiv_id_from_doi(doi: &str) -> Option<String> {
 
 // ─── Main Fetch Function ───────────────────────────────────────────────────────
 
-static CIRCUIT_FAILURE_COUNT: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+static CIRCUIT_FAILURE_COUNT: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
 static CIRCUIT_OPEN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 static LAST_FAILURE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 
@@ -302,7 +317,10 @@ fn record_success() {
 /// Fetch paper metadata from Crossref by DOI.
 /// Returns (CrossrefPaper, maybe_arxiv_id).
 /// Does NOT crash on 404/network error — returns minimal fallback paper.
-pub fn fetch_crossref_metadata(doi: &str, timeout_secs: u64) -> Result<(CrossrefPaper, Option<String>), CrossrefError> {
+pub fn fetch_crossref_metadata(
+    doi: &str,
+    timeout_secs: u64,
+) -> Result<(CrossrefPaper, Option<String>), CrossrefError> {
     if check_circuit() {
         return Err(CrossrefError::CircuitOpen);
     }
@@ -314,7 +332,11 @@ pub fn fetch_crossref_metadata(doi: &str, timeout_secs: u64) -> Result<(Crossref
         .build()
         .map_err(|e| CrossrefError::Network(e.to_string()))?;
 
-    let response = match client.get(&url).header("User-Agent", "AI-Research-OS/1.0").send() {
+    let response = match client
+        .get(&url)
+        .header("User-Agent", "AI-Research-OS/1.0")
+        .send()
+    {
         Ok(r) => r,
         Err(e) => {
             record_failure();
@@ -324,7 +346,10 @@ pub fn fetch_crossref_metadata(doi: &str, timeout_secs: u64) -> Result<(Crossref
 
     if response.status() == reqwest::StatusCode::NOT_FOUND {
         record_failure();
-        return Err(CrossrefError::NotFound(format!("DOI {} not found in Crossref", doi)));
+        return Err(CrossrefError::NotFound(format!(
+            "DOI {} not found in Crossref",
+            doi
+        )));
     }
 
     if !response.status().is_success() {
@@ -344,19 +369,27 @@ pub fn fetch_crossref_metadata(doi: &str, timeout_secs: u64) -> Result<(Crossref
     let authors = parse_authors(&item);
     let abstract_text = parse_abstract(&item);
     let published = best_effort_date(&item);
-    let abs_url = item.URL.clone().unwrap_or_else(|| format!("{}{}", DOI_RESOLVER, doi));
+    let abs_url = item
+        .URL
+        .clone()
+        .unwrap_or_else(|| format!("{}{}", DOI_RESOLVER, doi));
     let pdf_url = item
         .link
         .as_ref()
         .and_then(|links| {
-            links.iter()
+            links
+                .iter()
                 .find(|l| l.content_type.as_deref() == Some("application/pdf"))
                 .and_then(|l| l.URL.clone())
         })
         .unwrap_or_default();
 
     let maybe_arxiv = try_find_arxiv_id(&item, doi);
-    let journal = item.container_title.as_ref().and_then(|t| t.first().cloned()).unwrap_or_default();
+    let journal = item
+        .container_title
+        .as_ref()
+        .and_then(|t| t.first().cloned())
+        .unwrap_or_default();
     let volume = item.volume.clone().unwrap_or_default();
     let issue = item.issue.clone().unwrap_or_default();
     let page = item.page.clone().unwrap_or_default();
@@ -378,7 +411,7 @@ pub fn fetch_crossref_metadata(doi: &str, timeout_secs: u64) -> Result<(Crossref
         issue,
         page,
         reference_count: ref_count,
-            maybe_arxiv: maybe_arxiv.clone(),
+        maybe_arxiv: maybe_arxiv.clone(),
     };
 
     Ok((paper, maybe_arxiv))

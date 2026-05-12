@@ -1,0 +1,17 @@
+[package]
+name = "rairos-research-session"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rairos-constants = { path = "../rairos-constants" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+regex = "1"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+thiserror = "2.0"
+dirs = "5"
+
+[dev-dependencies]
+tempfile = "3"
