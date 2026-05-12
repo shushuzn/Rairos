@@ -88,7 +88,6 @@ def _seed_search_db(db_path: Path, papers: list[dict]) -> None:
         py_db.upsert_paper(paper_input)
 
     # Seed FTS entries (search requires FTS, and upsert_paper doesn't create them)
-    import sqlite3
     conn = sqlite3.connect(str(db_path))
     conn.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
