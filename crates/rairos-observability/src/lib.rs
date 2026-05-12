@@ -582,7 +582,7 @@ mod tests {
     #[test]
     fn test_track_duration() {
         let result = track_duration("test", "my_op", || {
-            thread::sleep(std::time::Duration::from_millis(10));
+            std::thread::sleep(std::time::Duration::from_millis(10));
             42
         });
         assert_eq!(result, 42);
