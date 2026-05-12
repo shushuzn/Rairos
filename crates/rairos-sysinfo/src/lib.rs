@@ -34,7 +34,11 @@ impl SysInfo {
         let total = sys.total_memory() as f64;
         let available = sys.available_memory() as f64;
         let used = total - available;
-        let percent = if total > 0.0 { (used / total) * 100.0 } else { 0.0 };
+        let percent = if total > 0.0 {
+            (used / total) * 100.0
+        } else {
+            0.0
+        };
         let mut m = HashMap::new();
         m.insert("used_mb".into(), used / 1024.0 / 1024.0);
         m.insert("available_mb".into(), available / 1024.0 / 1024.0);
@@ -53,7 +57,11 @@ impl SysInfo {
             let total = disk.total_space() as f64;
             let free = disk.available_space() as f64;
             let used = total - free;
-            let percent = if total > 0.0 { (used / total) * 100.0 } else { 0.0 };
+            let percent = if total > 0.0 {
+                (used / total) * 100.0
+            } else {
+                0.0
+            };
             m.insert("total_gb".into(), total / 1024.0 / 1024.0 / 1024.0);
             m.insert("used_gb".into(), used / 1024.0 / 1024.0 / 1024.0);
             m.insert("free_gb".into(), free / 1024.0 / 1024.0 / 1024.0);

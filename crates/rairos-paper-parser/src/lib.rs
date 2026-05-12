@@ -421,13 +421,13 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
     let text_lower = full_text.to_lowercase();
 
     fn match_to_location(char_start: usize, page_offsets: &[usize]) -> PaperLocation {
-            #[allow(clippy::filter_next)]
-            let page_idx = page_offsets
-                .iter()
-                .enumerate()
-                .filter(|(_, &off)| char_start >= off)
-                .next_back()
-                .map(|(i, _)| i)
+        #[allow(clippy::filter_next)]
+        let page_idx = page_offsets
+            .iter()
+            .enumerate()
+            .filter(|(_, &off)| char_start >= off)
+            .next_back()
+            .map(|(i, _)| i)
             .unwrap_or(0);
         PaperLocation::new(
             "unknown",

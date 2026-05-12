@@ -104,7 +104,11 @@ fn collect_rows(
     result
 }
 
-fn collect_ids(conn: &rusqlite::Connection, sql: &str, params: &[&dyn rusqlite::ToSql]) -> Vec<String> {
+fn collect_ids(
+    conn: &rusqlite::Connection,
+    sql: &str,
+    params: &[&dyn rusqlite::ToSql],
+) -> Vec<String> {
     let mut stmt = match conn.prepare(sql) {
         Ok(s) => s,
         Err(_) => return vec![],

@@ -155,7 +155,9 @@ impl ChatResearchSession {
     pub fn duration_minutes(&self) -> i64 {
         let ended: Option<chrono::DateTime<chrono::FixedOffset>> = match &self.ended_at {
             Some(e) => DateTime::parse_from_rfc3339(e).ok(),
-            None => Utc::now().with_timezone(&chrono::FixedOffset::east_opt(0).unwrap()).into(),
+            None => Utc::now()
+                .with_timezone(&chrono::FixedOffset::east_opt(0).unwrap())
+                .into(),
         };
         let started = DateTime::parse_from_rfc3339(&self.started_at).ok();
         match (ended, started) {
@@ -288,16 +290,25 @@ fn get_research_path_suggestion(intent: ResearchIntent, topics: &[String]) -> St
     let main_topic = topics.first().map(|s| s.as_str()).unwrap_or("该主题");
     match intent {
         ResearchIntent::Learning => {
-            format!("📚 学习路径建议: {} → 核心论文 → 变体模型 → 应用案例", main_topic)
+            format!(
+                "📚 学习路径建议: {} → 核心论文 → 变体模型 → 应用案例",
+                main_topic
+            )
         }
         ResearchIntent::Reproducing => {
             "🔧 复现路径建议: 找到基准实现 → 对齐指标 → 消融实验 → 复现结果".to_string()
         }
         ResearchIntent::Improving => {
-            format!("🚀 改进路径建议: {} → 痛点分析 → 改进思路 → 验证实验", main_topic)
+            format!(
+                "🚀 改进路径建议: {} → 痛点分析 → 改进思路 → 验证实验",
+                main_topic
+            )
         }
         ResearchIntent::Comparing => {
-            format!("⚖️ 对比路径建议: {} → 竞品分析 → 优缺点 → 选型建议", main_topic)
+            format!(
+                "⚖️ 对比路径建议: {} → 竞品分析 → 优缺点 → 选型建议",
+                main_topic
+            )
         }
         ResearchIntent::Exploring => {
             "🔍 探索路径建议: 最新论文 → 开源实现 → 社区反馈 → 实际应用".to_string()
@@ -312,10 +323,7 @@ fn get_research_path_suggestion(intent: ResearchIntent, topics: &[String]) -> St
 // Template-based probing questions (fallback when LLM unavailable)
 // ============================================================================
 
-fn get_template_probing_questions(
-    intent: ResearchIntent,
-    topics: &[String],
-) -> Vec<String> {
+fn get_template_probing_questions(intent: ResearchIntent, topics: &[String]) -> Vec<String> {
     let mut questions = Vec::new();
     if topics.len() == 1 {
         questions.push("这个 topic 和其他领域有什么联系？".to_string());
@@ -346,11 +354,7 @@ fn parse_questions_from_response(response: &str) -> Vec<String> {
         let mut cleaned = line.to_string();
 
         // Remove common prefixes
-        for prefix in &[
-            r"^\d+[.、]",
-            r"^[-•*\s]+",
-            r"^Q\d*[:：]\s*",
-        ] {
+        for prefix in &[r"^\d+[.、]", r"^[-•*\s]+", r"^Q\d*[:：]\s*"] {
             let re = Regex::new(prefix).unwrap();
             cleaned = re.replace(&cleaned, "").trim().to_string();
         }
@@ -371,7 +375,15 @@ fn generate_insights(session: &ChatResearchSession) -> Vec<String> {
     // Insight 1: main topics (always show at least something about what was discussed)
     let topics = session.topics();
     if !topics.is_empty() {
-        insights.push(format!("主要研究主题: {}", topics.iter().take(3).map(|s| s.as_str()).collect::<Vec<_>>().join(", ")));
+        insights.push(format!(
+            "主要研究主题: {}",
+            topics
+                .iter()
+                .take(3)
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
     } else {
         // Fallback: describe what was asked if no keywords matched
         if !session.queries.is_empty() {
@@ -417,10 +429,7 @@ fn generate_insights(session: &ChatResearchSession) -> Vec<String> {
 
 fn render_session_tree(session: &ChatResearchSession) -> String {
     let mut lines = Vec::new();
-    lines.push(format!(
-        "📚 {}",
-        session.title
-    ));
+    lines.push(format!("📚 {}", session.title));
     lines.push(format!(
         "   时长: {} 分钟 | {} 个问答",
         session.duration_minutes(),
@@ -428,7 +437,16 @@ fn render_session_tree(session: &ChatResearchSession) -> String {
     ));
 
     if !session.insights.is_empty() {
-        lines.push(format!("   💡 {}", session.insights.iter().take(2).map(|s| s.as_str()).collect::<Vec<_>>().join(" | ")));
+        lines.push(format!(
+            "   💡 {}",
+            session
+                .insights
+                .iter()
+                .take(2)
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join(" | ")
+        ));
     }
     lines.push(String::new());
 
@@ -774,7 +792,9 @@ pub fn get_session_tracker() -> MutexGuard<'static, Option<ResearchSessionTracke
 }
 
 /// Initialize and get the global tracker.
-pub fn init_session_tracker(memory_dir: Option<PathBuf>) -> &'static Mutex<Option<ResearchSessionTracker>> {
+pub fn init_session_tracker(
+    memory_dir: Option<PathBuf>,
+) -> &'static Mutex<Option<ResearchSessionTracker>> {
     let mut guard = SESSION_TRACKER.lock().unwrap();
     if guard.is_none() {
         *guard = Some(ResearchSessionTracker::new(memory_dir));
@@ -879,7 +899,12 @@ mod tests {
     fn test_research_path_suggestion() {
         let mut tracker = temp_tracker();
         tracker.start_session(None);
-        tracker.add_query("What is RLHF?", "It is...", vec![], vec!["RLHF paper".to_string()]);
+        tracker.add_query(
+            "What is RLHF?",
+            "It is...",
+            vec![],
+            vec!["RLHF paper".to_string()],
+        );
 
         let suggestion = tracker.get_research_path_suggestion();
         assert!(suggestion.is_some());
@@ -975,7 +1000,11 @@ mod tests {
             queries: vec![],
             started_at: Utc::now().to_rfc3339(),
             ended_at: None,
-            tags: vec!["transformer".to_string(), "attention".to_string(), "transformer".to_string()],
+            tags: vec![
+                "transformer".to_string(),
+                "attention".to_string(),
+                "transformer".to_string(),
+            ],
             insights: vec![],
             intent: ResearchIntent::Learning,
         };

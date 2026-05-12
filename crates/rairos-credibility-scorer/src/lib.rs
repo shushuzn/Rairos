@@ -58,7 +58,10 @@ impl CapsuleCredibility {
             "max_overlap".to_string(),
             serde_json::json!(self.max_overlap),
         );
-        m.insert("is_trendslop".to_string(), serde_json::json!(self.is_trendslop));
+        m.insert(
+            "is_trendslop".to_string(),
+            serde_json::json!(self.is_trendslop),
+        );
         m.insert(
             "trigger_keywords".to_string(),
             serde_json::json!(self.trigger_keywords),
@@ -108,8 +111,11 @@ impl CredibilityScorer {
             let keywords: Vec<String> = cap
                 .get("trigger_keywords")
                 .and_then(|v| {
-                    v.as_array()
-                        .map(|arr| arr.iter().filter_map(|e| e.as_str().map(String::from)).collect())
+                    v.as_array().map(|arr| {
+                        arr.iter()
+                            .filter_map(|e| e.as_str().map(String::from))
+                            .collect()
+                    })
                 })
                 .unwrap_or_default();
 
@@ -129,7 +135,9 @@ impl CredibilityScorer {
                     .get("trigger_keywords")
                     .and_then(|v| {
                         v.as_array().map(|arr| {
-                            arr.iter().filter_map(|e| e.as_str().map(String::from)).collect()
+                            arr.iter()
+                                .filter_map(|e| e.as_str().map(String::from))
+                                .collect()
                         })
                     })
                     .unwrap_or_default();
@@ -206,10 +214,7 @@ impl CredibilityScorer {
             trendslop_count
         ));
         lines.push("<table class=\"credibility-table\">".to_string());
-        lines.push(
-            "<thead><tr>"
-                .to_string()
-        );
+        lines.push("<thead><tr>".to_string());
         lines.push("<th>Gap Title</th><th>Type</th><th>Outcome</th><th>Novelty</th><th>Max Overlap</th><th>Status</th>".to_string());
         lines.push("</tr></thead>".to_string());
         lines.push("<tbody>".to_string());
@@ -234,7 +239,10 @@ impl CredibilityScorer {
             lines.push(format!("<td><code>{}</code></td>", c.gap_type));
             lines.push(format!("<td>{:.2}</td>", c.outcome_score));
             lines.push(format!("<td>{}%</td>", novelty_pct));
-            lines.push(format!("<td>{}%</td>", (c.max_overlap * 100.0).round() as i32));
+            lines.push(format!(
+                "<td>{}%</td>",
+                (c.max_overlap * 100.0).round() as i32
+            ));
             lines.push(format!("<td>{}</td>", badge));
             lines.push("</tr>".to_string());
         }
@@ -304,22 +312,15 @@ mod tests {
                 // All scores should be in [0, 1]
                 assert!(cap.novelty_score >= 0.0 && cap.novelty_score <= 1.0);
                 assert!(cap.max_overlap >= 0.0 && cap.max_overlap <= 1.0);
-                assert_eq!(
-                    cap.is_trendslop,
-                    cap.max_overlap > TRENDSLOP_THRESHOLD,
-                );
+                assert_eq!(cap.is_trendslop, cap.max_overlap > TRENDSLOP_THRESHOLD,);
             }
             // Should be sorted descending by novelty
             for window in result.windows(2) {
-                assert!(
-                    window[0].novelty_score >= window[1].novelty_score,
-                );
+                assert!(window[0].novelty_score >= window[1].novelty_score,);
             }
             // Trendslop capsules should be a subset
             let trendslop = scorer.get_trendslop_capsules();
-            assert!(
-                trendslop.iter().all(|c| c.is_trendslop),
-            );
+            assert!(trendslop.iter().all(|c| c.is_trendslop),);
         }
         let html = scorer.render_html();
         assert!(html.contains("credibility-panel"));
