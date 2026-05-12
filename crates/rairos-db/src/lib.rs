@@ -6,9 +6,9 @@
 //!
 //! Thread-local connection management (one connection per thread).
 
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use regex::Regex;
-use rusqlite::{params, Connection, OptionalExtension};
+use rusqlite::{Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
@@ -220,7 +220,6 @@ pub struct DbStats {
 
 pub struct Database {
     db_path: Arc<std::path::PathBuf>,
-    thread_local: Arc<()>,
 }
 
 impl Database {
@@ -230,10 +229,7 @@ impl Database {
         if let Some(parent) = db_path.parent() {
             std::fs::create_dir_all(parent)?;
         }
-        Ok(Self {
-            db_path,
-            thread_local: Arc::new(()),
-        })
+        Ok(Self { db_path })
     }
 
     /// Open database from RAIROS_DB env var, falling back to ~/.rairos/rairos.db
@@ -1088,7 +1084,7 @@ impl Database {
     }
 
     /// Export papers as (header_fields, rows).
-    pub fn export_papers(&self, format: &str, limit: i64) -> Result<(Vec<String>, Vec<HashMap<String, serde_json::Value>>)> {
+    pub fn export_papers(&self, _format: &str, limit: i64) -> Result<(Vec<String>, Vec<HashMap<String, serde_json::Value>>)> {
         self.with_conn(|conn| {
             let fields = [
                 "id", "source", "title", "authors", "abstract", "published",
