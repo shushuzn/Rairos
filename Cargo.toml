@@ -149,6 +149,7 @@ members = [
     "crates/rairos-rankers-cosine",
     "crates/rairos-rankers-score",
     "crates/rairos-pdf-parser",
+    "crates/rairos-config",
 ]
 
 [profile.dev]
