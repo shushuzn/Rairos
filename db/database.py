@@ -501,7 +501,7 @@ class Database:
         if result and self._conn is not None:
             self._conn.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
             self._conn.commit()
-        return result
+        return result  # type: ignore[no-any-return]
 
     def paper_exists(self, paper_id: str) -> bool:
         """Check if a paper exists."""
