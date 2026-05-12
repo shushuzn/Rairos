@@ -429,12 +429,12 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
             .next_back()
             .map(|(i, _)| i)
             .unwrap_or(0);
-        PaperLocation::new(
-            "unknown",
-            (page_idx + 1) as u32,
-            char_start as u32,
-            char_start as u32,
-        )
+        PaperLocation {
+            section: "unknown".to_string(),
+            page: (page_idx + 1) as u32,
+            char_start: char_start as u32,
+            char_end: char_start as u32,
+        }
     }
 
     // Algorithm descriptions: look for "algorithm", "method", "approach" sections
@@ -451,11 +451,11 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
                 content
                     .algorithm_descriptions
                     .push(desc_str[..300.min(desc_str.len())].to_string());
-                content.algorithm_sources.push(AlgorithmSource::new(
-                    idx,
-                    &desc_str[..300.min(desc_str.len())],
-                    loc,
-                ));
+                content.algorithm_sources.push(AlgorithmSource {
+                    index: idx,
+                    description: desc_str[..300.min(desc_str.len())].to_string(),
+                    location: loc,
+                });
             }
         }
     }
@@ -472,9 +472,11 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
             let idx = content.equations.len() as u32;
             let loc = match_to_location(cap.get(0).unwrap().start(), &page_offsets);
             content.equations.push(eq[..200.min(eq.len())].to_string());
-            content
-                .equation_sources
-                .push(EquationSource::new(idx, &eq[..200.min(eq.len())], loc));
+            content.equation_sources.push(EquationSource {
+                index: idx,
+                equation: eq[..200.min(eq.len())].to_string(),
+                location: loc,
+            });
         }
     }
 
@@ -495,11 +497,11 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
                     content
                         .claims
                         .push(claim[..300.min(claim.len())].to_string());
-                    content.claim_sources.push(ClaimSource::new(
-                        idx,
-                        &claim[..300.min(claim.len())],
-                        loc,
-                    ));
+                    content.claim_sources.push(ClaimSource {
+                        index: idx,
+                        claim: claim[..300.min(claim.len())].to_string(),
+                        location: loc,
+                    });
                 }
             }
         }

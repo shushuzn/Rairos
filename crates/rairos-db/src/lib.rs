@@ -1773,10 +1773,4 @@ mod py_bindings {
             self.inner.clear_all().map_err(db_err_to_py)
         }
     }
-
-    #[pymodule]
-    fn rairos_db_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
-        m.add_class::<PyDatabase>()?;
-        Ok(())
-    }
 }
