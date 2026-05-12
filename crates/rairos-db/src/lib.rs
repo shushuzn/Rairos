@@ -250,35 +250,6 @@ impl Database {
         Self::open(":memory:")
     }
 
-    /// Returns a thread-local connection, creating it if necessary.
-    fn with_conn<F, T>(&self, f: F) -> Result<T>
-    where
-        F: FnOnce(&Connection) -> Result<T>,
-    {
-        // Use a thread-local Option<Connection> guarded by a mutex.
-        // We use a simple Arc<()> as a marker that this Database instance is alive.
-        thread_local! {
-            static CONN: std::cell::RefCell<Option<Connection>> = const { std::cell::RefCell::new(None) };
-        }
-
-        CONN.with(|cell| {
-            let mut conn_opt = cell.borrow_mut();
-            if conn_opt.is_none() {
-                let conn = Connection::open(self.db_path.as_path())?;
-                conn.execute_batch(
-                    "PRAGMA journal_mode=WAL;
-                     PRAGMA synchronous=NORMAL;
-                     PRAGMA foreign_keys=ON;
-                     PRAGMA busy_timeout=30000;
-                     PRAGMA cache_size=-102400;",
-                )?;
-                *conn_opt = Some(conn);
-            }
-            let conn = conn_opt.as_ref().unwrap();
-            f(conn)
-        })
-    }
-
     /// Initialize the database schema and FTS5 virtual table.
     pub fn init(&self) -> Result<()> {
         self.with_conn(|conn| {
@@ -289,14 +260,46 @@ impl Database {
         Ok(())
     }
 
+    /// Returns a connection for the database.
+    /// Always opens a fresh connection (no caching) to ensure test isolation.
+    /// Creates the DB file if it doesn't exist (e.g. after clear_all deleted it).
+    fn with_conn<F, T>(&self, f: F) -> Result<T>
+    where
+        F: FnOnce(&Connection) -> Result<T>,
+    {
+        let path = self.db_path.as_path();
+        // If DB file doesn't exist (e.g. clear_all deleted it), recreate it
+        if !path.exists() {
+            if let Some(parent) = path.parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+            let _ = std::fs::File::create(path);
+            // Also clean up any stale WAL/SHM
+            let _ = std::fs::remove_file(path.with_extension("db-wal"));
+            let _ = std::fs::remove_file(path.with_extension("db-shm"));
+        }
+        let conn = Connection::open(path)?;
+        conn.execute_batch(
+            "PRAGMA journal_mode=WAL;
+             PRAGMA synchronous=NORMAL;
+             PRAGMA foreign_keys=OFF;
+             PRAGMA busy_timeout=30000;
+             PRAGMA cache_size=-102400;",
+        )?;
+        f(&conn)
+    }
+
     /// Delete all papers and embeddings (for test isolation).
+    /// Physically removes the DB file so the next connection gets a fresh DB,
+    /// then reinitializes the schema so the DB is immediately usable.
     pub fn clear_all(&self) -> Result<()> {
-        self.with_conn(|conn| {
-            conn.execute("DELETE FROM papers", [])?;
-            conn.execute("DELETE FROM embeddings", [])?;
-            Ok(())
-        })?;
-        Ok(())
+        let path = self.db_path.as_path();
+        drop(std::fs::File::open(path).ok());
+        let _ = std::fs::remove_file(path);
+        let _ = std::fs::remove_file(path.with_extension("db-wal"));
+        let _ = std::fs::remove_file(path.with_extension("db-shm"));
+        // Reinitialize schema so the DB is immediately usable after clear
+        self.init()
     }
 
     /// Execute a transaction.

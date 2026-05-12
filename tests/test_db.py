@@ -12,10 +12,7 @@ from db import Database
 def db(tmp_path):
     d = Database(tmp_path / "research.db")
     d.init()
-    try:
-        d._inner.clear_all()
-    except Exception:
-        pass
+    d._inner.clear_all()
     return d
 
 

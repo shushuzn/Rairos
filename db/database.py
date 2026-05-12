@@ -260,6 +260,7 @@ class Database:
         path_str = str(self._db_path) if self._db_path else ":memory:"
         conn = sqlite3.connect(path_str)
         conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA foreign_keys=OFF")
         # Drop Rust-created tables that conflict with _SCHEMA definitions.
         # Rust PyDatabase uses different table schemas (e.g. tags(id,name) vs
         # our tags(paper_id,tag)). CREATE TABLE IF NOT EXISTS won't fix this.
@@ -275,7 +276,6 @@ class Database:
             "arxiv_search_cache",
         ):
             conn.execute(f"DROP TABLE IF EXISTS {tbl}")
-        # Execute full schema (regular tables only; FTS5 needs special handling)
         conn.executescript(_SCHEMA)
         # FTS5 virtual table must be created outside transaction
         try:
@@ -437,18 +437,23 @@ class Database:
 
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
         """Get a paper by ID. Checks local mirror first (most up-to-date)."""
-        # Check local mirror first — it has the latest parse_status etc.
-        row = self._conn.execute("SELECT * FROM papers WHERE id = ?", (paper_id,)).fetchone()
-        if row:
-            cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
-            d = dict(zip(cols, row))
-            for field in ("authors", "latex_blocks"):
-                if d.get(field):
-                    try:
-                        d[field] = json.loads(d[field])
-                    except Exception:
-                        pass
-            return PaperRecord(d)
+        if self._conn is not None:
+            row = self._conn.execute("SELECT * FROM papers WHERE id = ?", (paper_id,)).fetchone()
+            if row:
+                # Guard: if Rust says gone, mirror is stale — delete and return None
+                if not self._inner.paper_exists(paper_id):
+                    self._conn.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
+                    self._conn.commit()
+                    return None
+                cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
+                d = dict(zip(cols, row))
+                for field in ("authors", "latex_blocks"):
+                    if d.get(field):
+                        try:
+                            d[field] = json.loads(d[field])
+                        except Exception:
+                            pass
+                return PaperRecord(d)
         # Fall back to Rust (initial insert source)
         result = self._inner.get_paper(paper_id)
         if result is None:
@@ -457,13 +462,11 @@ class Database:
 
     def delete_paper(self, paper_id: str) -> bool:
         """Delete a paper. Returns True if a row was deleted."""
-        self._conn.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
-        self._conn.execute("DELETE FROM embeddings WHERE paper_id = ?", (paper_id,))
-        try:
-            self._conn.execute("DELETE FROM papers_fts WHERE paper_id = ?", (paper_id,))
-        except Exception:
-            pass  # FTS virtual table may not exist
-        self._conn.commit()
+        # Delete from Python mirror first (if mirror exists)
+        if self._conn is not None:
+            self._conn.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
+            self._conn.commit()
+        # Rust handles papers + embeddings + FTS deletion
         return self._inner.delete_paper(paper_id)  # type: ignore[no-any-return]
 
     def paper_exists(self, paper_id: str) -> bool:
