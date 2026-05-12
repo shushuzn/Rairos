@@ -175,6 +175,7 @@ members = [
     "crates/rairos-impact-ranking",
     "crates/rairos-contradiction-heatmap",
     "crates/rairos-paradigm-monitor",
+    "crates/rairos-climate-ai-monitor",
     "crates/rairos-db",
     "benches",
 ]
