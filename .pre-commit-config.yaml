@@ -1,15 +1,69 @@
 repos:
-- hooks:
-  - args:
-    - --fix
-    - --exit-non-zero-on-fix
-    exclude: neuraloperator_fork/
-    id: ruff
-  - exclude: neuraloperator_fork/
-    id: ruff-format
-  repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.12.0
-- hooks:
-  - id: gitleaks
-  repo: https://github.com/gitleaks/gitleaks
-  rev: v8.18.3
+  # Ruff — Python linter + formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        exclude: neuraloperator_fork/
+      - id: ruff-format
+        exclude: neuraloperator_fork/
+
+  # mypy — Python type checker
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+        args: [--ignore-missing-imports]
+        name: mypy (Python type check)
+        pass_filenames: false
+        entry: uv run mypy core parsers db llm research_loop cli --ignore-missing-imports
+
+  # Gitleaks — secret detection
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.3
+    hooks:
+      - id: gitleaks
+
+  # Rust fmt — Rust formatting
+  - repo: https://github.com/dense-analysis/ruff-pre-commit
+    # Provides rustfmt hook via ruff's Rust support
+    rev: v0.12.0
+    hooks:
+      - id: ruff-format
+        types: [rust]
+
+  # Trailing whitespace fixer
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.(lock|svg|png|jpg|jpeg|gif|ico|bin)$|
+
+  # End-of-file fixer
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+
+  # Check for merge conflict markers
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+
+  # YAML/TOML: consistency checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+
+  # Branch name format (feature|fix|docs|refactor|chore|ci)/description
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.0.1
+    hooks:
+      - id: branch-name-format
+        args: ['--pattern', '^(feature|fix|docs|refactor|chore|ci|test|build|deps)\/[a-z0-9-]+$']
+        exclude: ^main$|^dev$

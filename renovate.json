@@ -1,0 +1,39 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": ["dependencies"],
+  "assignees": ["@shushuzn"],
+  "reviewers": ["@shushuzn"],
+  "packageRules": [
+    {
+      "description": "Group all non-major dependency updates",
+      "matchUpdateKinds": ["minor", "patch"],
+      "groupName": "all-minor-patch"
+    },
+    {
+      "description": "Auto-merge GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "matchTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Auto-merge pip dependencies for patch/minor",
+      "matchManagers": ["pip_requirements"],
+      "automerge": true,
+      "matchTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Schedule weekly updates",
+      "schedule": ["every weekend"]
+    }
+  ],
+  "rust": {
+    "enabled": true
+  },
+  "python": {
+    "packageTargets": ["pyproject.toml"],
+    "constraintsFileNames": ["pyproject.toml"]
+  }
+}
