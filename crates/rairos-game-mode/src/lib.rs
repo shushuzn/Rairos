@@ -1,12 +1,15 @@
 //! rairos-game-mode — Research Game Mode: badges and progression system.
 //!
-//! Ported from `llm/game_mode.py`.
+//! Ported from `llm/game_mode.py` (270 LOC, pure stdlib).
 
-use chrono::Utc;
+use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+
+const CAPSULES_PATH: &str = ".ai_research_os/gene_pool/capsules.json";
+const BADGES_PATH: &str = ".ai_research_os/badges.json";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Badge {
@@ -21,377 +24,341 @@ pub struct Badge {
 }
 
 impl Badge {
-    pub fn new(
-        id: &str,
-        name: &str,
-        description: &str,
-        icon: &str,
-        earned: bool,
-        earned_at: Option<&str>,
-    ) -> Self {
+    pub fn new(id: &str, name: &str, description: &str, icon: &str) -> Self {
         Self {
             id: id.to_string(),
             name: name.to_string(),
             description: description.to_string(),
             icon: icon.to_string(),
-            earned,
-            earned_at: earned_at.map(|s| s.to_string()),
+            earned: false,
+            earned_at: None,
+        }
+    }
+    pub fn award(&mut self) {
+        if !self.earned {
+            self.earned = true;
+            self.earned_at = Some(Local::now().to_rfc3339());
         }
     }
 }
 
-fn get_capsules_path() -> PathBuf {
-    dirs::home_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join(".ai_research_os")
-        .join("gene_pool")
-        .join("capsules.json")
+pub struct BadgeManager {
+    badges: HashMap<String, Badge>,
+    capsules_path: PathBuf,
+    badges_path: PathBuf,
 }
 
-fn get_badges_path() -> PathBuf {
-    dirs::home_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join(".ai_research_os")
-        .join("badges.json")
-}
-
-fn load_capsules() -> Vec<serde_json::Map<String, serde_json::Value>> {
-    let path = get_capsules_path();
-    if !path.exists() {
-        return Vec::new();
+impl Default for BadgeManager {
+    fn default() -> Self {
+        Self::new()
     }
-    match fs::read_to_string(&path) {
-        Ok(text) => {
-            if let Ok(data) = serde_json::from_str::<serde_json::Value>(&text) {
-                data.get("capsules")
-                    .and_then(|v| v.as_array())
-                    .map(|arr| arr.iter().filter_map(|v| v.as_object().cloned()).collect())
-                    .unwrap_or_default()
-            } else {
-                Vec::new()
+}
+
+impl BadgeManager {
+    pub fn new() -> Self {
+        let home = dirs::home_dir().unwrap_or_default();
+        let capsules_path = home.join(CAPSULES_PATH);
+        let badges_path = home.join(BADGES_PATH);
+        Self {
+            badges: HashMap::new(),
+            capsules_path,
+            badges_path,
+        }
+    }
+
+    pub fn load_badges(&mut self) {
+        if !self.badges_path.exists() {
+            self.init_badges();
+            return;
+        }
+        if let Ok(content) = fs::read_to_string(&self.badges_path) {
+            if let Ok(loaded) = serde_json::from_str::<HashMap<String, Badge>>(&content) {
+                self.badges = loaded;
+                return;
             }
         }
-        Err(_) => Vec::new(),
+        self.init_badges();
     }
-}
 
-fn load_badges() -> HashMap<String, serde_json::Value> {
-    let path = get_badges_path();
-    if !path.exists() {
-        return HashMap::new();
+    fn init_badges(&mut self) {
+        self.badges.insert(
+            "contradiction_hunter".to_string(),
+            Badge::new(
+                "contradiction_hunter",
+                "Contradiction Hunter",
+                "3+ contradiction pairs detected",
+                "🔍",
+            ),
+        );
+        self.badges.insert(
+            "gap_extractor".to_string(),
+            Badge::new(
+                "gap_extractor",
+                "Gap Extractor",
+                "10+ capsules in Gene Pool",
+                "💎",
+            ),
+        );
+        self.badges.insert(
+            "evolution_master".to_string(),
+            Badge::new(
+                "evolution_master",
+                "Evolution Master",
+                "1+ capsule that has been evolved",
+                "🧬",
+            ),
+        );
+        self.badges.insert(
+            "bold_explorer".to_string(),
+            Badge::new(
+                "bold_explorer",
+                "Bold Explorer",
+                "5+ bold hypothesis capsules",
+                "🚀",
+            ),
+        );
+        self.badges.insert(
+            "rigor_rater".to_string(),
+            Badge::new(
+                "rigor_rater",
+                "Rigor Rater",
+                "10+ papers with rigor scores",
+                "📊",
+            ),
+        );
+        self.badges.insert(
+            "paradigm_sentinel".to_string(),
+            Badge::new(
+                "paradigm_sentinel",
+                "Paradigm Sentinel",
+                "Paradigm concentration alert triggered",
+                "🛡️",
+            ),
+        );
     }
-    match fs::read_to_string(&path) {
-        Ok(text) => serde_json::from_str(&text).unwrap_or_else(|_| HashMap::new()),
-        Err(_) => HashMap::new(),
-    }
-}
 
-fn save_badges(badges: &HashMap<String, serde_json::Value>) -> std::io::Result<()> {
-    let path = get_badges_path();
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent)?;
-    }
-    let json = serde_json::to_string_pretty(badges)?;
-    fs::write(path, json)
-}
-
-fn check_gap_extractor() -> bool {
-    let capsules = load_capsules();
-    let active: Vec<_> = capsules
-        .iter()
-        .filter(|c| {
-            c.get("status")
-                .and_then(|v| v.as_str())
-                .map(|s| s == "active" || s.is_empty())
-                .unwrap_or(false)
-        })
-        .collect();
-    active.len() >= 10
-}
-
-fn check_evolution_master() -> bool {
-    let capsules = load_capsules();
-    capsules
-        .iter()
-        .any(|c| c.get("evolved_from").is_some() || c.get("source_cap_id").is_some())
-}
-
-fn check_bold_explorer() -> bool {
-    let capsules = load_capsules();
-    let bold_types = ["theoretical_gap"];
-    let bold_polarity = ["negative"];
-    let mut count = 0i32;
-
-    for c in &capsules {
-        let gap_type = c
-            .get("action_gap_type")
-            .or_else(|| c.get("trigger_gap_type"))
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-        let polarity = c
-            .get("polarity")
-            .and_then(|v| v.as_str())
-            .unwrap_or("positive");
-
-        if bold_types.contains(&gap_type) || bold_polarity.contains(&polarity) {
-            count += 1;
-        }
-        if count >= 5 {
-            return true;
-        }
-    }
-    false
-}
-
-fn check_rigor_rater() -> bool {
-    let flag = dirs::home_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join(".ai_research_os")
-        .join(".rigor_rated");
-    if !flag.exists() {
-        return false;
-    }
-    match fs::read_to_string(&flag) {
-        Ok(text) => text.trim().parse::<i32>().map(|n| n >= 10).unwrap_or(false),
-        Err(_) => false,
-    }
-}
-
-pub fn compute_badges() -> Vec<Badge> {
-    let checks: Vec<(&str, &str, &str, fn() -> bool)> = vec![
-        (
-            "contradiction_hunter",
-            "Contradiction Hunter",
-            "Detect 3+ contradiction pairs",
-            || false,
-        ),
-        (
-            "gap_extractor",
-            "Gap Extractor",
-            "Build Gene Pool to 10+ capsules",
-            check_gap_extractor,
-        ),
-        (
-            "evolution_master",
-            "Evolution Master",
-            "Have 1 capsule evolved",
-            check_evolution_master,
-        ),
-        (
-            "bold_explorer",
-            "Bold Explorer",
-            "Collect 5 bold hypothesis capsules",
-            check_bold_explorer,
-        ),
-        (
-            "rigor_rater",
-            "Rigor Rater",
-            "Score 10+ papers for research rigor",
-            check_rigor_rater,
-        ),
-        (
-            "paradigm_sentinel",
-            "Paradigm Sentinel",
-            "Trigger a paradigm concentration alert",
-            || false,
-        ),
-    ];
-
-    let icons: HashMap<&str, &str> = [
-        ("contradiction_hunter", "🎯"),
-        ("gap_extractor", "🧬"),
-        ("evolution_master", "🔄"),
-        ("bold_explorer", "🔴"),
-        ("rigor_rater", "🏆"),
-        ("paradigm_sentinel", "⚠️"),
-    ]
-    .into_iter()
-    .collect();
-
-    let mut saved = load_badges();
-    let mut badges = Vec::new();
-
-    for (bid, name, desc, check_fn) in checks {
-        let earned = check_fn();
-        let saved_entry = saved.get(bid).and_then(|v| v.as_object());
-        let earned_at = if earned {
-            let existing_at = saved_entry
-                .and_then(|e| e.get("earned_at"))
-                .and_then(|v| v.as_str());
-            if existing_at.is_some() && !existing_at.unwrap().is_empty() {
-                existing_at.map(|s| s.to_string())
-            } else {
-                let ts = Utc::now().to_rfc3339();
-                let mut entry = saved_entry.cloned().unwrap_or_default();
-                entry.insert("earned_at".to_string(), serde_json::json!(ts));
-                saved.insert(bid.to_string(), serde_json::json!(entry));
-                Some(ts)
+    pub fn check_and_award_badges(&mut self) {
+        // Contradiction Hunter: check claim graph
+        if let Ok(content) = fs::read_to_string(
+            dirs::home_dir()
+                .unwrap_or_default()
+                .join(".ai_research_os/evolution/claim_graph.json"),
+        ) {
+            if let Ok(data) = serde_json::from_str::<serde_json::Value>(&content) {
+                if let Some(edges) = data.get("edges").and_then(|e| e.as_array()) {
+                    let contradictions: usize = edges
+                        .iter()
+                        .filter(|e| {
+                            e.get("improvement_ratio")
+                                .and_then(|r| r.as_f64())
+                                .map(|r| r < 1.0)
+                                .unwrap_or(false)
+                        })
+                        .count();
+                    if contradictions >= 3 {
+                        if let Some(b) = self.badges.get_mut("contradiction_hunter") {
+                            b.award();
+                        }
+                    }
+                }
             }
+        }
+
+        // Gap Extractor: 10+ capsules
+        if self.capsules_path.exists() {
+            if let Ok(content) = fs::read_to_string(&self.capsules_path) {
+                if let Ok(capsules) = serde_json::from_str::<serde_json::Value>(&content) {
+                    if let Some(arr) = capsules.as_array() {
+                        if arr.len() >= 10 {
+                            if let Some(b) = self.badges.get_mut("gap_extractor") {
+                                b.award();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Evolution Master: check evolved capsules
+        if self.capsules_path.exists() {
+            if let Ok(content) = fs::read_to_string(&self.capsules_path) {
+                if let Ok(capsules) = serde_json::from_str::<serde_json::Value>(&content) {
+                    if let Some(arr) = capsules.as_array() {
+                        let evolved = arr.iter().any(|c| {
+                            c.get("evolved")
+                                .and_then(|e| e.as_bool())
+                                .unwrap_or(false)
+                        });
+                        if evolved {
+                            if let Some(b) = self.badges.get_mut("evolution_master") {
+                                b.award();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Bold Explorer: 5+ bold hypothesis capsules
+        if self.capsules_path.exists() {
+            if let Ok(content) = fs::read_to_string(&self.capsules_path) {
+                if let Ok(capsules) = serde_json::from_str::<serde_json::Value>(&content) {
+                    if let Some(arr) = capsules.as_array() {
+                        let bold_count = arr.iter().filter(|c| {
+                            c.get("is_bold")
+                                .and_then(|b| b.as_bool())
+                                .unwrap_or(false)
+                        }).count();
+                        if bold_count >= 5 {
+                            if let Some(b) = self.badges.get_mut("bold_explorer") {
+                                b.award();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Rigor Rater: check rigor_scores directory
+        let rigor_path = dirs::home_dir()
+            .unwrap_or_default()
+            .join(".ai_research_os/rigor_scores");
+        if rigor_path.exists() {
+            if let Ok(entries) = fs::read_dir(&rigor_path) {
+                let count = entries.filter_map(std::result::Result::ok).count();
+                if count >= 10 {
+                    if let Some(b) = self.badges.get_mut("rigor_rater") {
+                        b.award();
+                    }
+                }
+            }
+        }
+
+        self.save_badges();
+    }
+
+    pub fn get_unlocked_badges(&self) -> Vec<&Badge> {
+        self.badges
+            .values()
+            .filter(|b| b.earned)
+            .collect()
+    }
+
+    pub fn render_badges_html(&self) -> String {
+        let earned: Vec<_> = self.badges.values().filter(|b| b.earned).collect();
+        let locked: Vec<_> = self.badges.values().filter(|b| !b.earned).collect();
+
+        let mut html = r#"<div class="badges-container" style="font-family:Georgia,serif;padding:16px">"#.to_string();
+        html.push_str("<h3>🏆 Research Badges</h3>");
+
+        if earned.is_empty() {
+            html.push_str("<p style='color:#888'>No badges earned yet. Keep researching!</p>");
         } else {
-            saved_entry
-                .and_then(|e| e.get("earned_at"))
-                .and_then(|v| v.as_str())
-                .map(|s| s.to_string())
-        };
-
-        badges.push(Badge::new(
-            bid,
-            name,
-            desc,
-            icons.get(bid).unwrap_or(&"?"),
-            earned,
-            earned_at.as_deref(),
-        ));
-    }
-
-    let _ = save_badges(&saved);
-    badges
-}
-
-pub fn render_game_mode_html(badges: Option<Vec<Badge>>) -> String {
-    let badges = badges.unwrap_or_else(compute_badges);
-    let earned: Vec<_> = badges.iter().filter(|b| b.earned).collect();
-    let locked: Vec<_> = badges.iter().filter(|b| !b.earned).collect();
-
-    let mut lines = vec!["<div class=\"game-mode\">".to_string()];
-    lines.push("<h3>🎮 Research Game Mode</h3>".to_string());
-    lines.push(format!(
-        "<p style='font-size:13px;color:#A89E8C;margin-bottom:20px'>{} / {} badges earned</p>",
-        earned.len(),
-        badges.len()
-    ));
-
-    if !earned.is_empty() {
-        lines.push("<div class='badge-grid'>".to_string());
-        for b in &earned {
-            lines.push(format!(
-                "<div class='badge-card earned'>\
-                 <div class='badge-icon'>{}</div>\
-                 <div class='badge-name'>{}</div>\
-                 <div class='badge-desc'>{}</div>\
-                 </div>",
-                b.icon, b.name, b.description
-            ));
+            html.push_str("<div style='display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px'>");
+            for b in &earned {
+                let date = b.earned_at.as_deref().unwrap_or("");
+                html.push_str(&format!(
+                    r#"<div style='text-align:center;padding:12px;border:1px solid #ddd;border-radius:8px;background:#f9f9f9;min-width:100px'>
+<div style='font-size:28px'>{}</div>
+<div style='font-weight:bold'>{}</div>
+<div style='font-size:11px;color:#666'>{}</div>
+<div style='font-size:10px;color:#999;margin-top:4px'>{}</div>
+</div>"#,
+                    b.icon, b.name, b.description, &date[..10]
+                ));
+            }
+            html.push_str("</div>");
         }
-        lines.push("</div>".to_string());
-    }
 
-    if !locked.is_empty() {
-        lines.push("<div style='margin-top:16px;font-size:12px;color:#A89E8C;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px'>Locked</div>".to_string());
-        lines.push("<div class='badge-grid'>".to_string());
-        for b in &locked {
-            lines.push(format!(
-                "<div class='badge-card locked'>\
-                 <div class='badge-icon' style='opacity:0.3'>{}</div>\
-                 <div class='badge-name' style='color:#A89E8C'>{}</div>\
-                 <div class='badge-desc' style='color:#C0B8AE'>{}</div>\
-                 </div>",
-                b.icon, b.name, b.description
-            ));
+        if !locked.is_empty() {
+            html.push_str("<details style='margin-top:12px'><summary style='cursor:pointer;color:#888;font-size:13px'>Locked Badges</summary>");
+            html.push_str("<div style='display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;opacity:0.5'>");
+            for b in &locked {
+                html.push_str(&format!(
+                    r#"<div style='text-align:center;padding:12px;border:1px solid #ddd;border-radius:8px;background:#f0f0f0;min-width:100px'>
+<div style='font-size:28px'>🔒</div>
+<div style='font-weight:bold'>{}</div>
+<div style='font-size:11px;color:#666'>{}</div>
+</div>"#,
+                    b.name, b.description
+                ));
+            }
+            html.push_str("</div></details>");
         }
-        lines.push("</div>".to_string());
+
+        html.push_str("</div>");
+        html
     }
 
-    lines.extend(vec![
-        "<style>".to_string(),
-        ".badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }".to_string(),
-        ".badge-card { border-radius: 8px; padding: 14px; text-align: center; }".to_string(),
-        ".badge-card.earned { border: 2px solid #6B8FB5; background: rgba(107,143,181,0.08); }".to_string(),
-        ".badge-card.locked { border: 1px dashed #A89E8C; background: rgba(168,158,140,0.04); }".to_string(),
-        ".badge-icon { font-size: 28px; margin-bottom: 6px; }".to_string(),
-        ".badge-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #2a2a2a; }".to_string(),
-        ".badge-desc { font-size: 11px; color: #7a7570; line-height: 1.4; }".to_string(),
-        "</style>".to_string(),
-        "</div>".to_string(),
-    ]);
-
-    lines.join("\n")
+    pub fn save_badges(&self) {
+        if let Ok(json) = serde_json::to_string_pretty(&self.badges) {
+            let _ = fs::write(&self.badges_path, json);
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    fn temp_manager() -> BadgeManager {
+        let m = BadgeManager::new();
+        m
+    }
+
     #[test]
-    fn test_badge_new() {
-        let badge = Badge::new(
-            "test",
-            "Test Badge",
-            "A test badge",
-            "🏆",
-            true,
-            Some("2024-01-01"),
-        );
-        assert_eq!(badge.id, "test");
-        assert_eq!(badge.name, "Test Badge");
+    fn test_badge_award() {
+        let mut badge = Badge::new("test", "Test", "desc", "⭐");
+        assert!(!badge.earned);
+        badge.award();
         assert!(badge.earned);
         assert!(badge.earned_at.is_some());
+        // Awarding again doesn't change earned_at
+        let first_earned = badge.earned_at.clone();
+        badge.award();
+        assert_eq!(badge.earned_at, first_earned);
     }
 
     #[test]
-    fn test_badge_not_earned() {
-        let badge = Badge::new("test", "Test Badge", "A test badge", "🏆", false, None);
-        assert!(!badge.earned);
-        assert!(badge.earned_at.is_none());
+    fn test_init_badges() {
+        let mut m = BadgeManager::new();
+        m.init_badges();
+        assert_eq!(m.badges.len(), 6);
+        assert!(m.badges.contains_key("contradiction_hunter"));
+        assert!(m.badges.contains_key("gap_extractor"));
+        assert!(m.badges.contains_key("evolution_master"));
+        assert!(m.badges.contains_key("bold_explorer"));
+        assert!(m.badges.contains_key("rigor_rater"));
+        assert!(m.badges.contains_key("paradigm_sentinel"));
     }
 
     #[test]
-    fn test_compute_badges_returns_vec() {
-        let badges = compute_badges();
-        assert_eq!(badges.len(), 6);
+    fn test_render_badges_html_empty() {
+        let mut m = BadgeManager::new();
+        m.init_badges();
+        let html = m.render_badges_html();
+        assert!(html.contains("No badges earned yet"));
+        assert!(html.contains("Locked Badges"));
     }
 
     #[test]
-    fn test_compute_badges_has_required_fields() {
-        let badges = compute_badges();
-        let ids: Vec<_> = badges.iter().map(|b| b.id.as_str()).collect();
-        assert!(ids.contains(&"gap_extractor"));
-        assert!(ids.contains(&"evolution_master"));
-        assert!(ids.contains(&"bold_explorer"));
+    fn test_render_badges_html_with_earned() {
+        let mut m = BadgeManager::new();
+        m.init_badges();
+        m.badges.get_mut("gap_extractor").unwrap().award();
+        let html = m.render_badges_html();
+        assert!(html.contains("Gap Extractor"));
+        assert!(!html.contains("No badges earned yet"));
     }
 
     #[test]
-    fn test_render_game_mode_html() {
-        let badges = vec![
-            Badge::new(
-                "test1",
-                "Test 1",
-                "Description 1",
-                "🏆",
-                true,
-                Some("2024-01-01"),
-            ),
-            Badge::new("test2", "Test 2", "Description 2", "🎯", false, None),
-        ];
-        let html = render_game_mode_html(Some(badges));
-        assert!(html.contains("game-mode"));
-        assert!(html.contains("Test 1"));
-        assert!(html.contains("Test 2"));
-        assert!(html.contains("badge-grid"));
-    }
-
-    #[test]
-    fn test_render_game_mode_html_earned_count() {
-        let badges = vec![
-            Badge::new(
-                "test1",
-                "Test 1",
-                "Description 1",
-                "🏆",
-                true,
-                Some("2024-01-01"),
-            ),
-            Badge::new(
-                "test2",
-                "Test 2",
-                "Description 2",
-                "🎯",
-                true,
-                Some("2024-01-02"),
-            ),
-            Badge::new("test3", "Test 3", "Description 3", "🎯", false, None),
-        ];
-        let html = render_game_mode_html(Some(badges));
-        assert!(html.contains("2 / 3 badges earned"));
+    fn test_get_unlocked_badges() {
+        let mut m = BadgeManager::new();
+        m.init_badges();
+        assert!(m.get_unlocked_badges().is_empty());
+        m.badges.get_mut("contradiction_hunter").unwrap().award();
+        m.badges.get_mut("gap_extractor").unwrap().award();
+        let unlocked = m.get_unlocked_badges();
+        assert_eq!(unlocked.len(), 2);
     }
 }
