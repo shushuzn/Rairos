@@ -89,6 +89,32 @@ pub fn retry_with_backoff<F, T, E>(
 where
     F: Fn() -> Result<T, E>,
 {
+    retry_with_backoff_inner(max_attempts, base_delay_secs, max_delay_secs, 0.0, func)
+}
+
+pub fn retry_with_backoff_jitter<F, T, E>(
+    max_attempts: i32,
+    base_delay_secs: f64,
+    max_delay_secs: f64,
+    jitter_factor: f64,
+    func: F,
+) -> Result<T, E>
+where
+    F: Fn() -> Result<T, E>,
+{
+    retry_with_backoff_inner(max_attempts, base_delay_secs, max_delay_secs, jitter_factor, func)
+}
+
+fn retry_with_backoff_inner<F, T, E>(
+    max_attempts: i32,
+    base_delay_secs: f64,
+    max_delay_secs: f64,
+    jitter_factor: f64,
+    func: F,
+) -> Result<T, E>
+where
+    F: Fn() -> Result<T, E>,
+{
     let mut last_err = None;
     let mut rng = rand::thread_rng();
 
@@ -103,14 +129,18 @@ where
                 RETRY_STATS.record_attempt("anonymous", attempt, false, None);
                 if attempt < max_attempts {
                     let delay = (base_delay_secs * 2_f64.powi(attempt - 1)).min(max_delay_secs);
-                    let jitter = delay * 0.1 * rng.gen::<f64>();
+                    let jitter = if jitter_factor > 0.0 {
+                        delay * jitter_factor * rng.gen::<f64>()
+                    } else {
+                        0.0
+                    };
                     thread::sleep(Duration::from_secs_f64(delay + jitter));
                 }
             }
         }
     }
 
-        Err(last_err.unwrap())
+    Err(last_err.unwrap())
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

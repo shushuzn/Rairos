@@ -32,6 +32,7 @@ members = [
     "crates/rairos-memory",
     "crates/rairos-auth",
     "crates/rairos-i18n",
+    "crates/rairos-identifiers",
     "crates/rairos-replication",
     "crates/rairos-credibility",
     "crates/rairos-impact",
