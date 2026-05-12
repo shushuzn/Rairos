@@ -70,6 +70,7 @@ members = [
     "crates/rairos-exceptions",
     "crates/rairos-retry",
     "crates/rairos-observability",
+    "crates/rairos-argument-builder",
     "crates/rairos-text-utils",
     "crates/rairos-basics",
     "crates/rairos-progress-tracker",
