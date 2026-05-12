@@ -68,6 +68,7 @@ members = [
     "crates/rairos-bridge",
     "crates/rairos-contradiction",
     "crates/rairos-distributor",
+    "crates/rairos-review-generator",
     "crates/rairos-review-simulator",
     "crates/rairos-crossover",
     "crates/rairos-insight",
@@ -78,6 +79,7 @@ members = [
     "crates/rairos-text-utils",
     "crates/rairos-basics",
     "crates/rairos-progress-tracker",
+    "crates/rairos-weekly-digest",
     "crates/rairos-watch-papers",
     "crates/rairos-db-migrate",
     "crates/rairos-db-optimize",
@@ -158,6 +160,7 @@ members = [
     "crates/rairos-rankers-score",
     "crates/rairos-pdf-parser",
     "crates/rairos-config",
+    "crates/rairos-query-types",
     "crates/rairos-db",
     "benches",
 ]
