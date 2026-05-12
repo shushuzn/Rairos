@@ -61,7 +61,9 @@ pub fn render_pnote(
     if let Some(ref scores) = rubric_scores {
         if !scores.is_empty() {
             frontmatter_fields.push("rubric:".to_string());
-            for k in ["novelty", "leverage", "evidence", "cost", "moat", "adoption"] {
+            for k in [
+                "novelty", "leverage", "evidence", "cost", "moat", "adoption",
+            ] {
                 if let Some(&v) = scores.get(k) {
                     frontmatter_fields.push(format!("  {}: {}", k, v));
                 }
@@ -88,13 +90,19 @@ pub fn render_pnote(
     let fm = frontmatter_fields.join("\n");
 
     let table_md_section = if !table_md.trim().is_empty() {
-        format!("\n\n---\n\n## 附：PDF 表格（结构化抽取）\n\n{}\n", table_md.trim())
+        format!(
+            "\n\n---\n\n## 附：PDF 表格（结构化抽取）\n\n{}\n",
+            table_md.trim()
+        )
     } else {
         String::new()
     };
 
     let math_md_section = if !math_md.trim().is_empty() {
-        format!("\n\n---\n\n## 附：PDF 公式（结构化抽取）\n\n{}\n", math_md.trim())
+        format!(
+            "\n\n---\n\n## 附：PDF 公式（结构化抽取）\n\n{}\n",
+            math_md.trim()
+        )
     } else {
         String::new()
     };
@@ -106,7 +114,10 @@ pub fn render_pnote(
     };
 
     let ai_block = if !ai_draft_md.trim().is_empty() {
-        format!("> AI Draft（可编辑，需人工核验）\n\n{}\n", ai_draft_md.trim())
+        format!(
+            "> AI Draft（可编辑，需人工核验）\n\n{}\n",
+            ai_draft_md.trim()
+        )
     } else {
         String::new()
     };

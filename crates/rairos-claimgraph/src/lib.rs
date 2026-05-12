@@ -242,10 +242,7 @@ impl ClaimGraph {
         let mut contradictions = Vec::new();
         let mut edge_map: HashMap<(String, String), &ClaimEdge> = HashMap::new();
         for edge in &self.edges {
-            edge_map.insert(
-                (edge.from_paper.clone(), edge.to_paper.clone()),
-                edge,
-            );
+            edge_map.insert((edge.from_paper.clone(), edge.to_paper.clone()), edge);
         }
 
         let mut seen: HashSet<String> = HashSet::new();
@@ -267,15 +264,13 @@ impl ClaimGraph {
                 }
 
                 let metric = edge_ab.claim_type.as_str();
-                let diff_ratio =
-                    (edge_ab.improvement_ratio - edge_ba.improvement_ratio).abs()
-                        / edge_ab
-                            .improvement_ratio
-                            .max(edge_ba.improvement_ratio)
-                            .max(1.0);
+                let diff_ratio = (edge_ab.improvement_ratio - edge_ba.improvement_ratio).abs()
+                    / edge_ab
+                        .improvement_ratio
+                        .max(edge_ba.improvement_ratio)
+                        .max(1.0);
 
-                let avg_ratio =
-                    (edge_ab.improvement_ratio + edge_ba.improvement_ratio) / 2.0;
+                let avg_ratio = (edge_ab.improvement_ratio + edge_ba.improvement_ratio) / 2.0;
                 let severity = if avg_ratio > 1.2 && diff_ratio > 0.15 {
                     "critical"
                 } else if avg_ratio > 1.1 {
@@ -382,8 +377,10 @@ impl ClaimGraph {
             if let Some(obj) = v.as_object() {
                 for (k, arr) in obj {
                     if let Some(list) = arr.as_array() {
-                        let ids: Vec<String> =
-                            list.iter().filter_map(|v| v.as_str().map(String::from)).collect();
+                        let ids: Vec<String> = list
+                            .iter()
+                            .filter_map(|v| v.as_str().map(String::from))
+                            .collect();
                         g._paper_claims.insert(k.clone(), ids);
                     }
                 }
@@ -458,9 +455,18 @@ fn parse_claim_node(data: &serde_json::Value) -> Option<ClaimNode> {
             _ => ComparisonOp::Gte,
         },
         source_text: obj.get("source_text")?.as_str()?.to_string(),
-        page_ref: obj.get("page_ref").and_then(|v| v.as_i64()).map(|n| n as i32),
-        char_start: obj.get("char_start").and_then(|v| v.as_i64()).map(|n| n as i32),
-        char_end: obj.get("char_end").and_then(|v| v.as_i64()).map(|n| n as i32),
+        page_ref: obj
+            .get("page_ref")
+            .and_then(|v| v.as_i64())
+            .map(|n| n as i32),
+        char_start: obj
+            .get("char_start")
+            .and_then(|v| v.as_i64())
+            .map(|n| n as i32),
+        char_end: obj
+            .get("char_end")
+            .and_then(|v| v.as_i64())
+            .map(|n| n as i32),
     })
 }
 
@@ -488,14 +494,16 @@ pub fn render_claim_graph_html(graph: Option<&ClaimGraph>) -> String {
     let graph = graph.cloned().unwrap_or_else(|| ClaimGraph::load(None));
     let contradictions = graph.find_contradictions();
 
-    let mut paper_stats: HashMap<String, (usize, HashMap<String, usize>, String)> =
-        HashMap::new();
+    let mut paper_stats: HashMap<String, (usize, HashMap<String, usize>, String)> = HashMap::new();
     for node in graph.nodes.values() {
         let entry = paper_stats
             .entry(node.paper_id.clone())
             .or_insert_with(|| (0, HashMap::new(), String::new()));
         entry.0 += 1;
-        *entry.1.entry(node.claim_type.as_str().to_string()).or_insert(0) += 1;
+        *entry
+            .1
+            .entry(node.claim_type.as_str().to_string())
+            .or_insert(0) += 1;
         if entry.2.is_empty() {
             entry.2 = node.source_text.chars().take(80).collect();
         }
@@ -725,7 +733,9 @@ pub fn claim_graph_action(
             let contradictions = graph.find_contradictions();
             let mut by_type: HashMap<String, usize> = HashMap::new();
             for node in graph.nodes.values() {
-                *by_type.entry(node.claim_type.as_str().to_string()).or_insert(0) += 1;
+                *by_type
+                    .entry(node.claim_type.as_str().to_string())
+                    .or_insert(0) += 1;
             }
             serde_json::json!({
                 "total_claims": graph.node_count(),
@@ -753,7 +763,8 @@ pub fn claim_graph_action(
         }
 
         "add_edge" => {
-            let (Some(fp), Some(tp), Some(ratio)) = (from_paper, to_paper, improvement_ratio) else {
+            let (Some(fp), Some(tp), Some(ratio)) = (from_paper, to_paper, improvement_ratio)
+            else {
                 return serde_json::json!({ "error": "from_paper, to_paper, and improvement_ratio are required" });
             };
             let ct = parse_ctype(claim_type);
@@ -855,12 +866,24 @@ mod tests {
     fn test_add_claim() {
         let mut graph = ClaimGraph::new();
         let id1 = graph.add_claim(
-            "paperA", ClaimType::Accuracy, 0.95, ComparisonOp::Gte,
-            "achieves 95% accuracy", None, None, None,
+            "paperA",
+            ClaimType::Accuracy,
+            0.95,
+            ComparisonOp::Gte,
+            "achieves 95% accuracy",
+            None,
+            None,
+            None,
         );
         let id2 = graph.add_claim(
-            "paperB", ClaimType::Accuracy, 0.88, ComparisonOp::Gte,
-            "achieves 88% accuracy", None, None, None,
+            "paperB",
+            ClaimType::Accuracy,
+            0.88,
+            ComparisonOp::Gte,
+            "achieves 88% accuracy",
+            None,
+            None,
+            None,
         );
         assert_eq!(graph.node_count(), 2);
         assert_eq!(id1, "n0");
@@ -870,8 +893,26 @@ mod tests {
     #[test]
     fn test_contradiction_detection() {
         let mut graph = ClaimGraph::new();
-        graph.add_claim("pA", ClaimType::Accuracy, 0.95, ComparisonOp::Gte, "test", None, None, None);
-        graph.add_claim("pB", ClaimType::Accuracy, 0.90, ComparisonOp::Lte, "test", None, None, None);
+        graph.add_claim(
+            "pA",
+            ClaimType::Accuracy,
+            0.95,
+            ComparisonOp::Gte,
+            "test",
+            None,
+            None,
+            None,
+        );
+        graph.add_claim(
+            "pB",
+            ClaimType::Accuracy,
+            0.90,
+            ComparisonOp::Lte,
+            "test",
+            None,
+            None,
+            None,
+        );
         let contradictions = graph.find_contradictions();
         assert_eq!(contradictions.len(), 1);
         assert_eq!(contradictions[0].severity, "high");
@@ -880,8 +921,20 @@ mod tests {
     #[test]
     fn test_bidirectional_contradiction() {
         let mut graph = ClaimGraph::new();
-        graph.add_edge("A", "B", ClaimType::Accuracy, 1.2, "A claims 1.2x improvement");
-        graph.add_edge("B", "A", ClaimType::Accuracy, 1.3, "B claims 1.3x improvement");
+        graph.add_edge(
+            "A",
+            "B",
+            ClaimType::Accuracy,
+            1.2,
+            "A claims 1.2x improvement",
+        );
+        graph.add_edge(
+            "B",
+            "A",
+            ClaimType::Accuracy,
+            1.3,
+            "B claims 1.3x improvement",
+        );
         let bi = graph.find_bidirectional_contradictions();
         assert_eq!(bi.len(), 1);
         assert_eq!(bi[0].paper_a, "A");
@@ -891,9 +944,36 @@ mod tests {
     #[test]
     fn test_paper_claims() {
         let mut graph = ClaimGraph::new();
-        graph.add_claim("p1", ClaimType::Accuracy, 0.95, ComparisonOp::Gte, "test", None, None, None);
-        graph.add_claim("p1", ClaimType::Speedup, 2.0, ComparisonOp::Gte, "test", None, None, None);
-        graph.add_claim("p2", ClaimType::Accuracy, 0.90, ComparisonOp::Gte, "test", None, None, None);
+        graph.add_claim(
+            "p1",
+            ClaimType::Accuracy,
+            0.95,
+            ComparisonOp::Gte,
+            "test",
+            None,
+            None,
+            None,
+        );
+        graph.add_claim(
+            "p1",
+            ClaimType::Speedup,
+            2.0,
+            ComparisonOp::Gte,
+            "test",
+            None,
+            None,
+            None,
+        );
+        graph.add_claim(
+            "p2",
+            ClaimType::Accuracy,
+            0.90,
+            ComparisonOp::Gte,
+            "test",
+            None,
+            None,
+            None,
+        );
         let p1 = graph.get_paper_claims("p1");
         assert_eq!(p1.len(), 2);
         assert_eq!(graph.get_paper_claims("p2").len(), 1);
@@ -902,7 +982,16 @@ mod tests {
     #[test]
     fn test_serialization_roundtrip() {
         let mut graph = ClaimGraph::new();
-        graph.add_claim("p1", ClaimType::Accuracy, 0.95, ComparisonOp::Gte, "test claim", None, None, None);
+        graph.add_claim(
+            "p1",
+            ClaimType::Accuracy,
+            0.95,
+            ComparisonOp::Gte,
+            "test claim",
+            None,
+            None,
+            None,
+        );
         graph.add_edge("p2", "p1", ClaimType::Speedup, 1.5, "p2 faster");
         let val = graph.to_json_value();
         let loaded = ClaimGraph::from_json_value(&val);

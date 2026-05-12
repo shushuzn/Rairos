@@ -18,8 +18,7 @@ use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::path::Path;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PaperContent {
     /// ArXiv identifier
     pub arxiv_id: String,
@@ -54,7 +53,6 @@ pub struct PaperContent {
     pub claim_sources: Vec<ClaimSource>,
     pub algorithm_sources: Vec<AlgorithmSource>,
 }
-
 
 impl From<PaperContent> for CodeGenPaperContent {
     fn from(pc: PaperContent) -> Self {
@@ -112,13 +110,24 @@ pub fn compute_algorithm_fingerprint(content: &PaperContent) -> String {
 
     // 2. Method names — canonical form with synonym collapsing
     let synonym_groups: Vec<Vec<&str>> = vec![
-        vec!["feedforward", "feedforwardnetwork", "feedforwardlayer", "feedforwardblock", "feedforwardsublayer"],
+        vec![
+            "feedforward",
+            "feedforwardnetwork",
+            "feedforwardlayer",
+            "feedforwardblock",
+            "feedforwardsublayer",
+        ],
         vec!["selfattention", "selfattention"],
         vec!["multiheadattention", "multihead"],
         vec!["residual", "residualconnection", "skipconnection"],
         vec!["encoder", "encoderlayer", "encoderblock"],
         vec!["decoder", "decoderlayer", "decoderblock"],
-        vec!["attention", "selfattention", "crossattention", "multiheadattention"],
+        vec![
+            "attention",
+            "selfattention",
+            "crossattention",
+            "multiheadattention",
+        ],
         vec!["layer_norm", "layernorm", "ln"],
         vec!["convolution", "conv", "convlayer"],
     ];
@@ -322,11 +331,9 @@ fn parse_arxiv_response(xml: &str, arxiv_id: &str) -> PaperContent {
 
     let authors = extract_author_names(xml);
 
-    let published = extract_text_from_xml(xml, "published")
-        .unwrap_or_default();
+    let published = extract_text_from_xml(xml, "published").unwrap_or_default();
 
-    let updated = extract_text_from_xml(xml, "updated")
-        .unwrap_or_default();
+    let updated = extract_text_from_xml(xml, "updated").unwrap_or_default();
 
     let categories = extract_categories(xml);
 
@@ -352,10 +359,7 @@ fn parse_arxiv_response(xml: &str, arxiv_id: &str) -> PaperContent {
     // Download and enrich from PDF if available
     if let Some(url) = pdf_url {
         if let Ok(pdf_data) = tokio::runtime::Handle::current().block_on(download_pdf(&url)) {
-            let pdf_path_str = format!(
-                "{}.pdf",
-                arxiv_id.replace(['.', '/'], "_")
-            );
+            let pdf_path_str = format!("{}.pdf", arxiv_id.replace(['.', '/'], "_"));
             let pdf_path = Path::new(&pdf_path_str);
             if std::fs::write(pdf_path, &pdf_data).is_ok() {
                 _enrich_from_pdf(&mut content, pdf_path);
@@ -424,7 +428,12 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
             .next_back()
             .map(|(i, _)| i)
             .unwrap_or(0);
-        PaperLocation::new("unknown", (page_idx + 1) as u32, char_start as u32, char_start as u32)
+        PaperLocation::new(
+            "unknown",
+            (page_idx + 1) as u32,
+            char_start as u32,
+            char_start as u32,
+        )
     }
 
     // Algorithm descriptions: look for "algorithm", "method", "approach" sections
@@ -438,7 +447,9 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
             if desc_str.len() > 30 {
                 let idx = content.algorithm_descriptions.len() as u32;
                 let loc = match_to_location(desc.start(), &page_offsets);
-                content.algorithm_descriptions.push(desc_str[..300.min(desc_str.len())].to_string());
+                content
+                    .algorithm_descriptions
+                    .push(desc_str[..300.min(desc_str.len())].to_string());
                 content.algorithm_sources.push(AlgorithmSource::new(
                     idx,
                     &desc_str[..300.min(desc_str.len())],
@@ -451,16 +462,18 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
     // Equations: look for display math
     let eq_pattern = Regex::new(r"\$\$(.+?)\$\$|\$(.+?)\$").unwrap();
     for cap in eq_pattern.captures_iter(&full_text) {
-        let eq = cap.get(1).or_else(|| cap.get(2)).map(|m| m.as_str().trim()).unwrap_or("");
+        let eq = cap
+            .get(1)
+            .or_else(|| cap.get(2))
+            .map(|m| m.as_str().trim())
+            .unwrap_or("");
         if !eq.is_empty() && eq.len() > 5 {
             let idx = content.equations.len() as u32;
             let loc = match_to_location(cap.get(0).unwrap().start(), &page_offsets);
             content.equations.push(eq[..200.min(eq.len())].to_string());
-            content.equation_sources.push(EquationSource::new(
-                idx,
-                &eq[..200.min(eq.len())],
-                loc,
-            ));
+            content
+                .equation_sources
+                .push(EquationSource::new(idx, &eq[..200.min(eq.len())], loc));
         }
     }
 
@@ -478,7 +491,9 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
                 if claim.len() > 20 {
                     let idx = content.claims.len() as u32;
                     let loc = match_to_location(m.start(), &page_offsets);
-                    content.claims.push(claim[..300.min(claim.len())].to_string());
+                    content
+                        .claims
+                        .push(claim[..300.min(claim.len())].to_string());
                     content.claim_sources.push(ClaimSource::new(
                         idx,
                         &claim[..300.min(claim.len())],
@@ -504,7 +519,9 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
             if let Some(m) = cap.get(0) {
                 let val = m.as_str().split(':').next_back().unwrap_or("").trim();
                 if !val.is_empty() {
-                    content.hyperparameters.insert(name.to_string(), val.to_string());
+                    content
+                        .hyperparameters
+                        .insert(name.to_string(), val.to_string());
                 }
             }
         }
@@ -512,8 +529,21 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
 
     // Datasets: look for common dataset names
     let dataset_names = [
-        "imagenet", "cifar-10", "cifar-100", "mnist", "wikitext", "glue", "squad",
-        "arxiv", "pubmed", "openwebtext", "pile", "the pile", "alpaca", "dolly", "hh-rlhf",
+        "imagenet",
+        "cifar-10",
+        "cifar-100",
+        "mnist",
+        "wikitext",
+        "glue",
+        "squad",
+        "arxiv",
+        "pubmed",
+        "openwebtext",
+        "pile",
+        "the pile",
+        "alpaca",
+        "dolly",
+        "hh-rlhf",
     ];
 
     let text_lower_short = text_lower[..20000.min(text_lower.len())].to_string();
@@ -564,11 +594,15 @@ mod tests {
     #[test]
     fn test_fingerprint_same_algorithm() {
         let mut content1 = PaperContent::default();
-        content1.equations.push("Attention(Q,K,V) = softmax(QK^T / sqrt(d_k))V".to_string());
+        content1
+            .equations
+            .push("Attention(Q,K,V) = softmax(QK^T / sqrt(d_k))V".to_string());
         content1.methods.push("multi-head attention".to_string());
 
         let mut content2 = PaperContent::default();
-        content2.equations.push("Attention(Q,K,V) = softmax(QK^T / sqrt(d))V".to_string());
+        content2
+            .equations
+            .push("Attention(Q,K,V) = softmax(QK^T / sqrt(d))V".to_string());
         content2.methods.push("multiheadattention".to_string());
 
         let fp1 = compute_algorithm_fingerprint(&content1);

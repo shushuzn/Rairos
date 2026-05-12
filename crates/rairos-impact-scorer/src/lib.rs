@@ -22,13 +22,34 @@ impl ImpactScore {
         m.insert("paper_id".to_string(), serde_json::json!(self.paper_id));
         m.insert("title".to_string(), serde_json::json!(self.title));
         m.insert("year".to_string(), serde_json::json!(self.year));
-        m.insert("raw_citations".to_string(), serde_json::json!(self.raw_citations));
-        m.insert("normalized_score".to_string(), serde_json::json!(round(self.normalized_score, 3)));
-        m.insert("pagerank_score".to_string(), serde_json::json!(round(self.pagerank_score, 3)));
-        m.insert("momentum_score".to_string(), serde_json::json!(round(self.momentum_score, 3)));
-        m.insert("author_h_index".to_string(), serde_json::json!(round(self.author_h_index, 3)));
-        m.insert("composite_score".to_string(), serde_json::json!(round(self.composite_score, 3)));
-        m.insert("percentile".to_string(), serde_json::json!(round(self.percentile, 1)));
+        m.insert(
+            "raw_citations".to_string(),
+            serde_json::json!(self.raw_citations),
+        );
+        m.insert(
+            "normalized_score".to_string(),
+            serde_json::json!(round(self.normalized_score, 3)),
+        );
+        m.insert(
+            "pagerank_score".to_string(),
+            serde_json::json!(round(self.pagerank_score, 3)),
+        );
+        m.insert(
+            "momentum_score".to_string(),
+            serde_json::json!(round(self.momentum_score, 3)),
+        );
+        m.insert(
+            "author_h_index".to_string(),
+            serde_json::json!(round(self.author_h_index, 3)),
+        );
+        m.insert(
+            "composite_score".to_string(),
+            serde_json::json!(round(self.composite_score, 3)),
+        );
+        m.insert(
+            "percentile".to_string(),
+            serde_json::json!(round(self.percentile, 1)),
+        );
         m.insert("tier".to_string(), serde_json::json!(self.tier));
         m
     }
@@ -95,7 +116,11 @@ impl ImpactScorer {
         score
     }
 
-    fn compute_pagerank(&self, _paper_id: &str, citing_papers: Vec<HashMap<String, String>>) -> f64 {
+    fn compute_pagerank(
+        &self,
+        _paper_id: &str,
+        citing_papers: Vec<HashMap<String, String>>,
+    ) -> f64 {
         if citing_papers.is_empty() {
             return 0.1;
         }
@@ -133,11 +158,17 @@ impl ImpactScorer {
     }
 
     fn tier(&self, composite: f64) -> String {
-        if composite >= 0.8 { "S".to_string() }
-        else if composite >= 0.6 { "A".to_string() }
-        else if composite >= 0.4 { "B".to_string() }
-        else if composite >= 0.2 { "C".to_string() }
-        else { "D".to_string() }
+        if composite >= 0.8 {
+            "S".to_string()
+        } else if composite >= 0.6 {
+            "A".to_string()
+        } else if composite >= 0.4 {
+            "B".to_string()
+        } else if composite >= 0.2 {
+            "C".to_string()
+        } else {
+            "D".to_string()
+        }
     }
 
     pub fn score_batch(
@@ -151,20 +182,37 @@ impl ImpactScorer {
             let paper_id = p.get("paper_id").and_then(|v| v.as_str()).unwrap_or("");
             let title = p.get("title").and_then(|v| v.as_str()).unwrap_or("");
             let year = p.get("year").and_then(|v| v.as_i64()).unwrap_or(2020) as i32;
-            let raw_citations = p.get("citation_count").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
-            let author_h_index = p.get("author_h_index")
+            let raw_citations = p
+                .get("citation_count")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32;
+            let author_h_index = p
+                .get("author_h_index")
                 .and_then(|v| v.as_f64())
                 .unwrap_or(0.0);
 
-            let citing = citing_map.as_ref()
+            let citing = citing_map
+                .as_ref()
                 .and_then(|m| m.get(paper_id))
-                .map(|ids| ids.iter().map(|id| {
-                    let mut m = HashMap::new();
-                    m.insert("paper_id".to_string(), id.clone());
-                    m
-                }).collect()).unwrap_or_default();
+                .map(|ids| {
+                    ids.iter()
+                        .map(|id| {
+                            let mut m = HashMap::new();
+                            m.insert("paper_id".to_string(), id.clone());
+                            m
+                        })
+                        .collect()
+                })
+                .unwrap_or_default();
 
-            let score = self.score_paper(paper_id, title, year, raw_citations, Some(citing), author_h_index);
+            let score = self.score_paper(
+                paper_id,
+                title,
+                year,
+                raw_citations,
+                Some(citing),
+                author_h_index,
+            );
             results.push(score);
         }
 
@@ -192,12 +240,17 @@ impl ImpactScorer {
         let mut sorted = scored;
         sorted.sort_by(|a, b| b.composite_score.partial_cmp(&a.composite_score).unwrap());
 
-        sorted.into_iter().take(top_k).enumerate().map(|(i, s)| {
-            let mut m = s.to_dict();
-            m.insert("rank".to_string(), serde_json::json!(i + 1));
-            m.insert("why".to_string(), serde_json::json!(self.explain_score(&s)));
-            m
-        }).collect()
+        sorted
+            .into_iter()
+            .take(top_k)
+            .enumerate()
+            .map(|(i, s)| {
+                let mut m = s.to_dict();
+                m.insert("rank".to_string(), serde_json::json!(i + 1));
+                m.insert("why".to_string(), serde_json::json!(self.explain_score(&s)));
+                m
+            })
+            .collect()
     }
 
     fn explain_score(&self, s: &ImpactScore) -> String {
@@ -231,7 +284,10 @@ impl ImpactScorer {
             "📊 Paper Impact Ranking".to_string(),
             "=".repeat(70),
             "".to_string(),
-            format!("{:<6}{:<6}{:<8}{:<12}{:<6} Title", "Rank", "Tier", "Score", "Citations", "Year"),
+            format!(
+                "{:<6}{:<6}{:<8}{:<12}{:<6} Title",
+                "Rank", "Tier", "Score", "Citations", "Year"
+            ),
             "-".repeat(70),
         ];
 
@@ -244,8 +300,14 @@ impl ImpactScorer {
                 _ => "📄",
             };
             let rank = entry.get("rank").and_then(|v| v.as_i64()).unwrap_or(0);
-            let score = entry.get("composite_score").and_then(|v| v.as_f64()).unwrap_or(0.0);
-            let raw_citations = entry.get("raw_citations").and_then(|v| v.as_i64()).unwrap_or(0);
+            let score = entry
+                .get("composite_score")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.0);
+            let raw_citations = entry
+                .get("raw_citations")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0);
             let year = entry.get("year").and_then(|v| v.as_i64()).unwrap_or(0);
             let title = entry.get("title").and_then(|v| v.as_str()).unwrap_or("");
             let title = &title[..title.len().min(40)];
@@ -279,14 +341,7 @@ mod tests {
     #[test]
     fn test_score_paper() {
         let mut scorer = ImpactScorer::new();
-        let score = scorer.score_paper(
-            "paper1",
-            "Test Paper",
-            2020,
-            100,
-            None,
-            25.0,
-        );
+        let score = scorer.score_paper("paper1", "Test Paper", 2020, 100, None, 25.0);
         assert!(score.composite_score > 0.0);
         assert!(!score.tier.is_empty());
     }

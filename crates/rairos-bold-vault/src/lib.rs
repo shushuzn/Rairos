@@ -7,7 +7,11 @@ const NOVELTY_THRESHOLD: f64 = 0.7;
 
 fn capsule_path() -> PathBuf {
     dirs::home_dir()
-        .map(|p| p.join(".ai_research_os").join("gene_pool").join(CAPSULE_FILE_NAME))
+        .map(|p| {
+            p.join(".ai_research_os")
+                .join("gene_pool")
+                .join(CAPSULE_FILE_NAME)
+        })
         .unwrap_or_else(|| PathBuf::from(CAPSULE_FILE_NAME))
 }
 
@@ -36,8 +40,9 @@ fn load_capsules() -> Vec<HashMap<String, serde_json::Value>> {
     }
     match std::fs::read_to_string(&path) {
         Ok(contents) => {
-            let data: CapsuleData =
-                serde_json::from_str(&contents).unwrap_or(CapsuleData { capsules: Vec::new() });
+            let data: CapsuleData = serde_json::from_str(&contents).unwrap_or(CapsuleData {
+                capsules: Vec::new(),
+            });
             data.capsules
         }
         Err(_) => Vec::new(),
@@ -70,11 +75,18 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
             .or_else(|| cap.get("trigger_gap_type"))
             .and_then(|v| v.as_str())
             .unwrap_or("");
-        let polarity = cap.get("polarity").and_then(|v| v.as_str()).unwrap_or("positive");
+        let polarity = cap
+            .get("polarity")
+            .and_then(|v| v.as_str())
+            .unwrap_or("positive");
         let trigger_keywords: Vec<String> = cap
             .get("trigger_keywords")
             .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
             .unwrap_or_default();
 
         let mut max_overlap = 0.0f64;
@@ -85,7 +97,11 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
             let other_keywords: Vec<String> = other
                 .get("trigger_keywords")
                 .and_then(|v| v.as_array())
-                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
                 .unwrap_or_default();
             let ov = jaccard(&trigger_keywords, &other_keywords);
             if ov > max_overlap {
@@ -120,7 +136,11 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
             .unwrap_or(0.0);
 
         results.push(BoldCapsule {
-            capsule_id: cap.get("capsule_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            capsule_id: cap
+                .get("capsule_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
             gap_title,
             gap_type: gap_type.to_string(),
             polarity: polarity.to_string(),
@@ -131,12 +151,18 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
         });
     }
 
-    results.sort_by(|a, b| b.novelty_score.partial_cmp(&a.novelty_score).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.novelty_score
+            .partial_cmp(&a.novelty_score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     results
 }
 
 pub fn render_html(capsules: Option<&[BoldCapsule]>) -> String {
-    let capsules = capsules.map(|c| c.to_vec()).unwrap_or_else(get_bold_capsules);
+    let capsules = capsules
+        .map(|c| c.to_vec())
+        .unwrap_or_else(get_bold_capsules);
 
     if capsules.is_empty() {
         return "<p>No bold hypotheses yet. Theoretical gaps and negative-polarity capsules will appear here.</p>".to_string();
@@ -159,7 +185,13 @@ pub fn render_html(capsules: Option<&[BoldCapsule]>) -> String {
         } else {
             c.gap_title.clone()
         };
-        let kw_str = c.trigger_keywords.iter().take(4).map(|s| s.as_str()).collect::<Vec<_>>().join(", ");
+        let kw_str = c
+            .trigger_keywords
+            .iter()
+            .take(4)
+            .map(|s| s.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
 
         let html = format!(
             "<div class='bold-card'>\

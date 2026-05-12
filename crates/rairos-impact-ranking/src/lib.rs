@@ -26,12 +26,17 @@ pub fn render_impact_html(data: &[HashMap<String, serde_json::Value>]) -> String
 
     let mut rows = Vec::new();
     for (i, item) in data.iter().take(20).enumerate() {
-        let score = item.get("impact_score").and_then(|v| v.as_i64()).unwrap_or(0);
-        let title = item.get("title")
+        let score = item
+            .get("impact_score")
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0);
+        let title = item
+            .get("title")
             .and_then(|v| v.as_str())
             .unwrap_or("Unknown");
         let title = &title[..title.len().min(70)];
-        let pub_year = item.get("published")
+        let pub_year = item
+            .get("published")
             .and_then(|v| v.as_str())
             .unwrap_or("")
             .chars()
@@ -94,7 +99,10 @@ mod tests {
         item.insert("reference_count".to_string(), serde_json::json!(50));
         item.insert("impact_score".to_string(), serde_json::json!(150));
         item.insert("published".to_string(), serde_json::json!("2020-01-01"));
-        item.insert("abs_url".to_string(), serde_json::json!("https://example.com"));
+        item.insert(
+            "abs_url".to_string(),
+            serde_json::json!("https://example.com"),
+        );
 
         let result = render_impact_html(&[item]);
         assert!(result.contains("<table"));

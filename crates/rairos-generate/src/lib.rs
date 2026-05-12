@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-const PNOTE_SYSTEM_PROMPT: &str = "You are a rigorous AI research assistant, skilled in adversarial review.";
+const PNOTE_SYSTEM_PROMPT: &str =
+    "You are a rigorous AI research assistant, skilled in adversarial review.";
 
 const PNOTE_USER_PROMPT_TEMPLATE: &str = r#"Paper title: {paper_title}
 Authors: {paper_authors}
@@ -164,7 +165,7 @@ pub fn estimate_cost(model: &str, input_text: &str, output_text: &str) -> CostEs
         output_cost_usd: round((out_toks as f64 / 1_000_000.0) * out_per_1m, 6),
         total_cost_usd: round(
             (in_toks as f64 / 1_000_000.0) * in_per_1m
-            + (out_toks as f64 / 1_000_000.0) * out_per_1m,
+                + (out_toks as f64 / 1_000_000.0) * out_per_1m,
             6,
         ),
     }
@@ -191,10 +192,7 @@ pub fn format_pnote_prompt(
         .replace("{paper_body}", paper_body)
 }
 
-pub fn format_cnote_prompt(
-    concept: &str,
-    pnotes: &[HashMap<String, String>],
-) -> String {
+pub fn format_cnote_prompt(concept: &str, pnotes: &[HashMap<String, String>]) -> String {
     let pnotes_chunks: Vec<String> = pnotes.iter().enumerate().map(|(i, p)| {
         let title = p.get("title").map(|s| s.as_str()).unwrap_or("N/A");
         let authors = p.get("authors").map(|s| s.as_str()).unwrap_or("Unknown");
@@ -236,7 +234,8 @@ pub fn format_reading_recommendation_prompt(
         ("标签重叠", tag_score),
         ("时效性", recency_score),
     ];
-    let (top_signal, top_value) = scores.iter()
+    let (top_signal, top_value) = scores
+        .iter()
         .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
         .copied()
         .unwrap_or(("语义相似度", 0.0));
@@ -244,13 +243,17 @@ pub fn format_reading_recommendation_prompt(
     let read_papers_str = if read_papers_context.is_empty() {
         "（暂无已读论文记录）".to_string()
     } else {
-        read_papers_context.iter()
+        read_papers_context
+            .iter()
             .map(|p| {
                 let title = p.get("title").map(|s| s.as_str()).unwrap_or("Unknown");
                 let authors = p.get("authors").map(|s| s.as_str()).unwrap_or("未知");
                 let year = p.get("year").map(|s| s.as_str()).unwrap_or("");
                 let category = p.get("category").map(|s| s.as_str()).unwrap_or("N/A");
-                format!(r#"- "{}" by {} ({}), 领域: {}"#, title, authors, year, category)
+                format!(
+                    r#"- "{}" by {} ({}), 领域: {}"#,
+                    title, authors, year, category
+                )
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -363,19 +366,17 @@ mod tests {
 
     #[test]
     fn test_format_cnote_prompt() {
-        let pnotes = vec![
-            {
-                let mut m = HashMap::new();
-                m.insert("title".to_string(), "Paper 1".to_string());
-                m.insert("authors".to_string(), "Author A".to_string());
-                m.insert("year".to_string(), "2023".to_string());
-                m.insert("source".to_string(), "arxiv".to_string());
-                m.insert("uid".to_string(), "1111".to_string());
-                m.insert("tags".to_string(), "AI".to_string());
-                m.insert("abstract".to_string(), "Abstract 1".to_string());
-                m
-            },
-        ];
+        let pnotes = vec![{
+            let mut m = HashMap::new();
+            m.insert("title".to_string(), "Paper 1".to_string());
+            m.insert("authors".to_string(), "Author A".to_string());
+            m.insert("year".to_string(), "2023".to_string());
+            m.insert("source".to_string(), "arxiv".to_string());
+            m.insert("uid".to_string(), "1111".to_string());
+            m.insert("tags".to_string(), "AI".to_string());
+            m.insert("abstract".to_string(), "Abstract 1".to_string());
+            m
+        }];
         let prompt = format_cnote_prompt("Attention Mechanism", &pnotes);
         assert!(prompt.contains("Attention Mechanism"));
         assert!(prompt.contains("Paper 1"));
@@ -383,16 +384,14 @@ mod tests {
 
     #[test]
     fn test_format_reading_recommendation_prompt() {
-        let read_papers = vec![
-            {
-                let mut m = HashMap::new();
-                m.insert("title".to_string(), "Read Paper 1".to_string());
-                m.insert("authors".to_string(), "Author X".to_string());
-                m.insert("year".to_string(), "2022".to_string());
-                m.insert("category".to_string(), "NLP".to_string());
-                m
-            },
-        ];
+        let read_papers = vec![{
+            let mut m = HashMap::new();
+            m.insert("title".to_string(), "Read Paper 1".to_string());
+            m.insert("authors".to_string(), "Author X".to_string());
+            m.insert("year".to_string(), "2022".to_string());
+            m.insert("category".to_string(), "NLP".to_string());
+            m
+        }];
         let prompt = format_reading_recommendation_prompt(
             "New Paper",
             "Author Y",

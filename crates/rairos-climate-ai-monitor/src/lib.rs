@@ -67,11 +67,16 @@ pub fn is_climate_related(title: &str, abstract_text: &str, categories: &[String
         return true;
     }
 
-    CLIMATE_KEYWORDS.iter().any(|kw| text.contains(&kw.to_lowercase()))
+    CLIMATE_KEYWORDS
+        .iter()
+        .any(|kw| text.contains(&kw.to_lowercase()))
 }
 
 pub fn filter_climate_papers(papers: &[Paper]) -> Vec<&Paper> {
-    papers.iter().filter(|p| is_climate_related(&p.title, &p.abstract_text, &p.categories)).collect()
+    papers
+        .iter()
+        .filter(|p| is_climate_related(&p.title, &p.abstract_text, &p.categories))
+        .collect()
 }
 
 #[derive(Debug, Clone, Default)]
@@ -86,19 +91,27 @@ pub fn get_watch_stats(papers: &[Paper], watched_ids: &[String], last_scan: &str
     let climate_papers = filter_climate_papers(papers);
     let watched_ids_set: HashSet<&str> = watched_ids.iter().map(|s| s.as_str()).collect();
 
-    let recent_count = climate_papers.iter().filter(|p| {
-        p.published.len() >= 4 && &p.published[..4] >= "2025"
-    }).count();
+    let recent_count = climate_papers
+        .iter()
+        .filter(|p| p.published.len() >= 4 && &p.published[..4] >= "2025")
+        .count();
 
     WatchStats {
         total_climate_papers: climate_papers.len(),
-        watched_count: climate_papers.iter().filter(|p| watched_ids_set.contains(p.id.as_str())).count(),
+        watched_count: climate_papers
+            .iter()
+            .filter(|p| watched_ids_set.contains(p.id.as_str()))
+            .count(),
         recent_count,
         last_scan: last_scan.to_string(),
     }
 }
 
-pub fn render_climate_monitor_html(stats: Option<&WatchStats>, papers: &[Paper], watched_ids: &[String]) -> String {
+pub fn render_climate_monitor_html(
+    stats: Option<&WatchStats>,
+    papers: &[Paper],
+    watched_ids: &[String],
+) -> String {
     let stats = match stats {
         Some(s) => s.clone(),
         None => get_watch_stats(papers, watched_ids, "never"),
@@ -115,9 +128,16 @@ pub fn render_climate_monitor_html(stats: Option<&WatchStats>, papers: &[Paper],
         "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>Papers at the intersection of climate science and AI. High priority in gap watch matching.</p>".to_string()
     );
 
-    lines.push("<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px'>".to_string());
+    lines.push(
+        "<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px'>"
+            .to_string(),
+    );
     let stats_cells = [
-        ("Total Climate Papers", stats.total_climate_papers, "#6B8FB5"),
+        (
+            "Total Climate Papers",
+            stats.total_climate_papers,
+            "#6B8FB5",
+        ),
         ("In Your Watch List", stats.watched_count, "#6BBF8A"),
         ("Published 2025+", stats.recent_count, "#D4A055"),
     ];
@@ -134,12 +154,23 @@ pub fn render_climate_monitor_html(stats: Option<&WatchStats>, papers: &[Paper],
     } else {
         for p in climate_papers.iter().take(15) {
             let is_watched = watched_ids_set.contains(p.id.as_str());
-            let cats = p.categories.iter().take(2).map(|s| s.as_str()).collect::<Vec<_>>().join(", ");
+            let cats = p
+                .categories
+                .iter()
+                .take(2)
+                .map(|s| s.as_str())
+                .collect::<Vec<_>>()
+                .join(", ");
             let title = p.title.chars().take(70).collect::<String>();
             let published = p.published.chars().take(4).collect::<String>();
-            let _kw_matches: Vec<&str> = CLIMATE_KEYWORDS.iter()
+            let _kw_matches: Vec<&str> = CLIMATE_KEYWORDS
+                .iter()
                 .filter(|kw| {
-                    let text_lower = format!("{} {}", p.title.to_lowercase(), p.abstract_text.to_lowercase());
+                    let text_lower = format!(
+                        "{} {}",
+                        p.title.to_lowercase(),
+                        p.abstract_text.to_lowercase()
+                    );
                     text_lower.contains(&kw.to_lowercase())
                 })
                 .take(3)
@@ -190,7 +221,11 @@ mod tests {
             categories: vec!["cs.AI".to_string()],
             published: "2024".to_string(),
         };
-        assert!(is_climate_related(&paper.title, &paper.abstract_text, &paper.categories));
+        assert!(is_climate_related(
+            &paper.title,
+            &paper.abstract_text,
+            &paper.categories
+        ));
     }
 
     #[test]
@@ -202,7 +237,11 @@ mod tests {
             categories: vec!["cs.CV".to_string()],
             published: "2024".to_string(),
         };
-        assert!(is_climate_related(&paper.title, &paper.abstract_text, &paper.categories));
+        assert!(is_climate_related(
+            &paper.title,
+            &paper.abstract_text,
+            &paper.categories
+        ));
     }
 
     #[test]
@@ -214,14 +253,30 @@ mod tests {
             categories: vec!["cs.CV".to_string()],
             published: "2024".to_string(),
         };
-        assert!(!is_climate_related(&paper.title, &paper.abstract_text, &paper.categories));
+        assert!(!is_climate_related(
+            &paper.title,
+            &paper.abstract_text,
+            &paper.categories
+        ));
     }
 
     #[test]
     fn test_filter_climate_papers() {
         let papers = vec![
-            Paper { id: "1".to_string(), title: "Climate AI".to_string(), abstract_text: "Test".to_string(), categories: vec!["cs.AI".to_string()], published: "2024".to_string() },
-            Paper { id: "2".to_string(), title: "Object Detection".to_string(), abstract_text: "CNN".to_string(), categories: vec!["cs.CV".to_string()], published: "2024".to_string() },
+            Paper {
+                id: "1".to_string(),
+                title: "Climate AI".to_string(),
+                abstract_text: "Test".to_string(),
+                categories: vec!["cs.AI".to_string()],
+                published: "2024".to_string(),
+            },
+            Paper {
+                id: "2".to_string(),
+                title: "Object Detection".to_string(),
+                abstract_text: "CNN".to_string(),
+                categories: vec!["cs.CV".to_string()],
+                published: "2024".to_string(),
+            },
         ];
         let filtered = filter_climate_papers(&papers);
         assert_eq!(filtered.len(), 1);
@@ -231,8 +286,20 @@ mod tests {
     #[test]
     fn test_get_watch_stats() {
         let papers = vec![
-            Paper { id: "1".to_string(), title: "Climate AI".to_string(), abstract_text: "Test".to_string(), categories: vec!["cs.AI".to_string()], published: "2026".to_string() },
-            Paper { id: "2".to_string(), title: "Carbon Footprint".to_string(), abstract_text: "Energy".to_string(), categories: vec![], published: "2026".to_string() },
+            Paper {
+                id: "1".to_string(),
+                title: "Climate AI".to_string(),
+                abstract_text: "Test".to_string(),
+                categories: vec!["cs.AI".to_string()],
+                published: "2026".to_string(),
+            },
+            Paper {
+                id: "2".to_string(),
+                title: "Carbon Footprint".to_string(),
+                abstract_text: "Energy".to_string(),
+                categories: vec![],
+                published: "2026".to_string(),
+            },
         ];
         let watched = vec!["1".to_string()];
         let stats = get_watch_stats(&papers, &watched, "2026-01-01");

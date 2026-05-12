@@ -143,17 +143,32 @@ impl InsightManager {
         let mut card_map = HashMap::new();
         card_map.insert("card_id".to_string(), serde_json::json!(card.card_id));
         card_map.insert("paper_id".to_string(), serde_json::json!(card.paper_id));
-        card_map.insert("paper_title".to_string(), serde_json::json!(card.paper_title));
+        card_map.insert(
+            "paper_title".to_string(),
+            serde_json::json!(card.paper_title),
+        );
         card_map.insert("content".to_string(), serde_json::json!(card.content));
-        card_map.insert("insight_type".to_string(), serde_json::json!(card.insight_type));
+        card_map.insert(
+            "insight_type".to_string(),
+            serde_json::json!(card.insight_type),
+        );
         card_map.insert("tags".to_string(), serde_json::json!(card.tags));
         card_map.insert("evidence".to_string(), serde_json::json!(card.evidence));
         card_map.insert("page_ref".to_string(), serde_json::json!(card.page_ref));
         card_map.insert("created_at".to_string(), serde_json::json!(card.created_at));
         card_map.insert("references".to_string(), serde_json::json!(card.references));
-        card_map.insert("quality_rating".to_string(), serde_json::json!(card.quality_rating));
-        card_map.insert("usefulness_score".to_string(), serde_json::json!(card.usefulness_score));
-        card_map.insert("times_rated".to_string(), serde_json::json!(card.times_rated));
+        card_map.insert(
+            "quality_rating".to_string(),
+            serde_json::json!(card.quality_rating),
+        );
+        card_map.insert(
+            "usefulness_score".to_string(),
+            serde_json::json!(card.usefulness_score),
+        );
+        card_map.insert(
+            "times_rated".to_string(),
+            serde_json::json!(card.times_rated),
+        );
 
         data.push(card_map);
         self.save_cards(&data);
@@ -165,19 +180,66 @@ impl InsightManager {
         for item in &data {
             if item.get("card_id").and_then(|v| v.as_str()) == Some(card_id) {
                 return Some(InsightCard {
-                    card_id: item.get("card_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    paper_id: item.get("paper_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    paper_title: item.get("paper_title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    content: item.get("content").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    insight_type: item.get("insight_type").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    tags: item.get("tags").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
-                    evidence: item.get("evidence").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    page_ref: item.get("page_ref").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    created_at: item.get("created_at").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                references: item.get("references").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
-                    quality_rating: item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
-                    usefulness_score: item.get("usefulness_score").and_then(|v| v.as_f64()).unwrap_or(0.0),
-                    times_rated: item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
+                    card_id: item
+                        .get("card_id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    paper_id: item
+                        .get("paper_id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    paper_title: item
+                        .get("paper_title")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    content: item
+                        .get("content")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    insight_type: item
+                        .get("insight_type")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    tags: item
+                        .get("tags")
+                        .and_then(|v| serde_json::from_value(v.clone()).ok())
+                        .unwrap_or_default(),
+                    evidence: item
+                        .get("evidence")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    page_ref: item
+                        .get("page_ref")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    created_at: item
+                        .get("created_at")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    references: item
+                        .get("references")
+                        .and_then(|v| serde_json::from_value(v.clone()).ok())
+                        .unwrap_or_default(),
+                    quality_rating: item
+                        .get("quality_rating")
+                        .and_then(|v| v.as_i64())
+                        .unwrap_or(0) as i32,
+                    usefulness_score: item
+                        .get("usefulness_score")
+                        .and_then(|v| v.as_f64())
+                        .unwrap_or(0.0),
+                    times_rated: item
+                        .get("times_rated")
+                        .and_then(|v| v.as_i64())
+                        .unwrap_or(0) as i32,
                 });
             }
         }
@@ -192,13 +254,25 @@ impl InsightManager {
         let mut data = self.load_cards();
         for item in &mut data {
             if item.get("card_id").and_then(|v| v.as_str()) == Some(card_id) {
-                let times_rated = item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0);
-                let old = item.get("usefulness_score").and_then(|v| v.as_f64()).unwrap_or(0.0);
+                let times_rated = item
+                    .get("times_rated")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(0);
+                let old = item
+                    .get("usefulness_score")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0);
                 let new_score = old + (rating as f64 - old) * 0.3;
 
-                item.insert("usefulness_score".to_string(), serde_json::json!(round(new_score, 3)));
+                item.insert(
+                    "usefulness_score".to_string(),
+                    serde_json::json!(round(new_score, 3)),
+                );
                 item.insert("quality_rating".to_string(), serde_json::json!(rating));
-                item.insert("times_rated".to_string(), serde_json::json!(times_rated + 1));
+                item.insert(
+                    "times_rated".to_string(),
+                    serde_json::json!(times_rated + 1),
+                );
 
                 self.save_cards(&data);
                 return true;
@@ -228,15 +302,24 @@ impl InsightManager {
         for item in &data {
             if let Some(q) = query {
                 let q_lower = q.to_lowercase();
-                let content = item.get("content").and_then(|v| v.as_str()).unwrap_or("").to_lowercase();
-                let title = item.get("paper_title").and_then(|v| v.as_str()).unwrap_or("").to_lowercase();
+                let content = item
+                    .get("content")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_lowercase();
+                let title = item
+                    .get("paper_title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_lowercase();
                 if !content.contains(&q_lower) && !title.contains(&q_lower) {
                     continue;
                 }
             }
 
             if let Some(t) = &tags {
-                let card_tags: Vec<String> = item.get("tags")
+                let card_tags: Vec<String> = item
+                    .get("tags")
                     .and_then(|v| serde_json::from_value(v.clone()).ok())
                     .unwrap_or_default();
                 if !t.iter().any(|tag| card_tags.iter().any(|ct| ct == tag)) {
@@ -257,19 +340,66 @@ impl InsightManager {
             }
 
             results.push(InsightCard {
-                card_id: item.get("card_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                paper_id: item.get("paper_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                paper_title: item.get("paper_title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                content: item.get("content").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                insight_type: item.get("insight_type").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                tags: item.get("tags").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
-                evidence: item.get("evidence").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                page_ref: item.get("page_ref").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                created_at: item.get("created_at").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                references: item.get("references").and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default(),
-                quality_rating: item.get("quality_rating").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
-                usefulness_score: item.get("usefulness_score").and_then(|v| v.as_f64()).unwrap_or(0.0),
-                times_rated: item.get("times_rated").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
+                card_id: item
+                    .get("card_id")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                paper_id: item
+                    .get("paper_id")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                paper_title: item
+                    .get("paper_title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                content: item
+                    .get("content")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                insight_type: item
+                    .get("insight_type")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                tags: item
+                    .get("tags")
+                    .and_then(|v| serde_json::from_value(v.clone()).ok())
+                    .unwrap_or_default(),
+                evidence: item
+                    .get("evidence")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                page_ref: item
+                    .get("page_ref")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                created_at: item
+                    .get("created_at")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                references: item
+                    .get("references")
+                    .and_then(|v| serde_json::from_value(v.clone()).ok())
+                    .unwrap_or_default(),
+                quality_rating: item
+                    .get("quality_rating")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(0) as i32,
+                usefulness_score: item
+                    .get("usefulness_score")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0),
+                times_rated: item
+                    .get("times_rated")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(0) as i32,
             });
         }
 
@@ -282,7 +412,8 @@ impl InsightManager {
         let mut tags: HashMap<String, i32> = HashMap::new();
 
         for item in &data {
-            let card_tags: Vec<String> = item.get("tags")
+            let card_tags: Vec<String> = item
+                .get("tags")
                 .and_then(|v| serde_json::from_value(v.clone()).ok())
                 .unwrap_or_default();
             for tag in card_tags {
@@ -313,10 +444,19 @@ impl InsightManager {
         };
 
         let mut collection_map = HashMap::new();
-        collection_map.insert("collection_id".to_string(), serde_json::json!(collection.collection_id));
+        collection_map.insert(
+            "collection_id".to_string(),
+            serde_json::json!(collection.collection_id),
+        );
         collection_map.insert("title".to_string(), serde_json::json!(collection.title));
-        collection_map.insert("description".to_string(), serde_json::json!(collection.description));
-        collection_map.insert("card_ids".to_string(), serde_json::json!(collection.card_ids));
+        collection_map.insert(
+            "description".to_string(),
+            serde_json::json!(collection.description),
+        );
+        collection_map.insert(
+            "card_ids".to_string(),
+            serde_json::json!(collection.card_ids),
+        );
         collection_map.insert("tags".to_string(), serde_json::json!(collection.tags));
 
         collections.push(collection_map);
@@ -328,7 +468,8 @@ impl InsightManager {
         let mut collections = self.load_collections();
         for item in &mut collections {
             if item.get("collection_id").and_then(|v| v.as_str()) == Some(collection_id) {
-                let mut card_ids: Vec<String> = item.get("card_ids")
+                let mut card_ids: Vec<String> = item
+                    .get("card_ids")
                     .and_then(|v| serde_json::from_value(v.clone()).ok())
                     .unwrap_or_default();
                 if !card_ids.contains(&card_id.to_string()) {
@@ -342,7 +483,12 @@ impl InsightManager {
         false
     }
 
-    pub fn extract_from_text(&self, paper_id: &str, paper_title: &str, text: &str) -> Vec<InsightCard> {
+    pub fn extract_from_text(
+        &self,
+        paper_id: &str,
+        paper_title: &str,
+        text: &str,
+    ) -> Vec<InsightCard> {
         let mut cards = Vec::new();
         let patterns = [
             r"improved by\s+(\d+\.?\d*)%",
@@ -363,7 +509,11 @@ impl InsightManager {
                         let card = self.add_card(
                             paper_id,
                             paper_title,
-                            &format!("Key finding: {} - {}", mat.as_str(), &context[..context.len().min(200)]),
+                            &format!(
+                                "Key finding: {} - {}",
+                                mat.as_str(),
+                                &context[..context.len().min(200)]
+                            ),
                             "finding",
                             None,
                             "",
@@ -398,14 +548,26 @@ impl InsightManager {
 
         for card in cards.iter().take(20) {
             let icon = type_icons.get(card.insight_type.as_str()).unwrap_or(&"💡");
-            lines.push(format!("{} [{}] {}", icon, card.card_id, card.insight_type.to_uppercase()));
-            lines.push(format!("   Paper: {}", &card.paper_title[..card.paper_title.len().min(50)]));
-            lines.push(format!("   {}", &card.content[..card.content.len().min(100)]));
+            lines.push(format!(
+                "{} [{}] {}",
+                icon,
+                card.card_id,
+                card.insight_type.to_uppercase()
+            ));
+            lines.push(format!(
+                "   Paper: {}",
+                &card.paper_title[..card.paper_title.len().min(50)]
+            ));
+            lines.push(format!(
+                "   {}",
+                &card.content[..card.content.len().min(100)]
+            ));
             if !card.tags.is_empty() {
                 lines.push(format!("   Tags: {}", card.tags.join(", ")));
             }
             if card.quality_rating > 0 {
-                let stars = "★".repeat(card.quality_rating as usize) + &"☆".repeat((5 - card.quality_rating) as usize);
+                let stars = "★".repeat(card.quality_rating as usize)
+                    + &"☆".repeat((5 - card.quality_rating) as usize);
                 let votes = if card.times_rated != 1 { "s" } else { "" };
                 lines.push(format!(
                     "   Rating: {} ({:.2}, {} vote{})",
@@ -429,21 +591,35 @@ impl InsightManager {
 
         let mut by_paper: HashMap<String, Vec<&InsightCard>> = HashMap::new();
         for card in cards {
-            by_paper.entry(card.paper_id.clone()).or_default().push(card);
+            by_paper
+                .entry(card.paper_id.clone())
+                .or_default()
+                .push(card);
         }
 
         for (paper_id, paper_cards) in &by_paper {
-            lines.push(format!("## {}\n", &paper_cards[0].paper_title[..paper_cards[0].paper_title.len().min(60)]));
+            lines.push(format!(
+                "## {}\n",
+                &paper_cards[0].paper_title[..paper_cards[0].paper_title.len().min(60)]
+            ));
             lines.push(format!("*From: {}*\n", paper_id));
 
             for card in paper_cards {
                 let type_icon = type_icons_markdown(card.insight_type.as_str());
-                lines.push(format!("### {} {}", type_icon, capitalize(&card.insight_type)));
+                lines.push(format!(
+                    "### {} {}",
+                    type_icon,
+                    capitalize(&card.insight_type)
+                ));
                 lines.push(format!("{}\n", card.content));
 
                 if card.quality_rating > 0 {
-                    let stars = "★".repeat(card.quality_rating as usize) + &"☆".repeat((5 - card.quality_rating) as usize);
-                    lines.push(format!("**Rating:** {} ({:.2}/5)\n", stars, card.usefulness_score));
+                    let stars = "★".repeat(card.quality_rating as usize)
+                        + &"☆".repeat((5 - card.quality_rating) as usize);
+                    lines.push(format!(
+                        "**Rating:** {} ({:.2}/5)\n",
+                        stars, card.usefulness_score
+                    ));
                 }
 
                 if !card.evidence.is_empty() {
@@ -451,7 +627,12 @@ impl InsightManager {
                 }
 
                 if !card.tags.is_empty() {
-                    let tag_str = card.tags.iter().map(|t| format!("#{}", t)).collect::<Vec<_>>().join(", ");
+                    let tag_str = card
+                        .tags
+                        .iter()
+                        .map(|t| format!("#{}", t))
+                        .collect::<Vec<_>>()
+                        .join(", ");
                     lines.push(format!("*Tags: {}*\n", tag_str));
                 }
             }

@@ -36,10 +36,13 @@ impl LLMClient {
         system_prompt: Option<&str>,
     ) -> Result<String, String> {
         if self.model.starts_with("claude") || self.model.contains("claude") {
-            return self.call_anthropic_api(messages, user_prompt, system_prompt).await;
+            return self
+                .call_anthropic_api(messages, user_prompt, system_prompt)
+                .await;
         }
 
-        self.call_openai_compatible(messages, user_prompt, system_prompt).await
+        self.call_openai_compatible(messages, user_prompt, system_prompt)
+            .await
     }
 
     async fn call_openai_compatible(
@@ -67,7 +70,10 @@ impl LLMClient {
         let mut payload = HashMap::new();
         payload.insert("model".to_string(), self.model.clone());
         payload.insert("temperature".to_string(), "0.2".to_string());
-        payload.insert("messages".to_string(), serde_json::to_string(&messages).unwrap_or_default());
+        payload.insert(
+            "messages".to_string(),
+            serde_json::to_string(&messages).unwrap_or_default(),
+        );
 
         let client = reqwest::Client::new();
         let response = client
@@ -88,7 +94,8 @@ impl LLMClient {
             .await
             .map_err(|e| format!("Failed to parse response: {}", e))?;
 
-        if let Some(content) = body.get("choices")
+        if let Some(content) = body
+            .get("choices")
             .and_then(|c| c.as_array())
             .and_then(|arr| arr.first())
             .and_then(|c| c.get("message"))
@@ -119,20 +126,29 @@ impl LLMClient {
         }
 
         for msg in messages {
-            let role = msg.get("role").cloned().unwrap_or_else(|| "user".to_string());
+            let role = msg
+                .get("role")
+                .cloned()
+                .unwrap_or_else(|| "user".to_string());
             if role == "system" {
                 if !anthropic_messages.is_empty() {
                     anthropic_messages.insert(0, {
                         let mut m = HashMap::new();
                         m.insert("role".to_string(), "user".to_string());
-                        m.insert("content".to_string(), msg.get("content").cloned().unwrap_or_default());
+                        m.insert(
+                            "content".to_string(),
+                            msg.get("content").cloned().unwrap_or_default(),
+                        );
                         m
                     });
                 } else {
                     anthropic_messages.push({
                         let mut m = HashMap::new();
                         m.insert("role".to_string(), "user".to_string());
-                        m.insert("content".to_string(), msg.get("content").cloned().unwrap_or_default());
+                        m.insert(
+                            "content".to_string(),
+                            msg.get("content").cloned().unwrap_or_default(),
+                        );
                         m
                     });
                 }
@@ -140,7 +156,10 @@ impl LLMClient {
                 anthropic_messages.push({
                     let mut m = HashMap::new();
                     m.insert("role".to_string(), role);
-                    m.insert("content".to_string(), msg.get("content").cloned().unwrap_or_default());
+                    m.insert(
+                        "content".to_string(),
+                        msg.get("content").cloned().unwrap_or_default(),
+                    );
                     m
                 });
             }
@@ -155,7 +174,10 @@ impl LLMClient {
 
         let mut payload = HashMap::new();
         payload.insert("model".to_string(), self.model.clone());
-        payload.insert("messages".to_string(), serde_json::to_string(&anthropic_messages).unwrap_or_default());
+        payload.insert(
+            "messages".to_string(),
+            serde_json::to_string(&anthropic_messages).unwrap_or_default(),
+        );
         payload.insert("max_tokens".to_string(), "4096".to_string());
         payload.insert("temperature".to_string(), "0.2".to_string());
 
@@ -197,7 +219,8 @@ impl LLMClient {
         if system.is_empty() {
             self.chat(messages, Some(prompt), None).unwrap_or_default()
         } else {
-            self.chat(messages, Some(prompt), Some(system)).unwrap_or_default()
+            self.chat(messages, Some(prompt), Some(system))
+                .unwrap_or_default()
         }
     }
 }

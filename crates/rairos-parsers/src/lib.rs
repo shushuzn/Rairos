@@ -114,7 +114,9 @@ pub async fn arxiv_search(
     timeout_secs: u64,
 ) -> Result<Vec<Paper>, SearchError> {
     if query.trim().is_empty() {
-        return Err(SearchError::SearchFailed("Query cannot be empty".to_string()));
+        return Err(SearchError::SearchFailed(
+            "Query cannot be empty".to_string(),
+        ));
     }
 
     let max_results = max_results.min(100);
@@ -181,7 +183,11 @@ fn extract_paper_from_entry_xml(entry_xml: &str) -> Paper {
     // Extract PDF link
     let pdf_url = extract_pdf_url(entry_xml, &entry_id);
 
-    let arxiv_id = entry_id.split('/').next_back().unwrap_or(&entry_id).to_string();
+    let arxiv_id = entry_id
+        .split('/')
+        .next_back()
+        .unwrap_or(&entry_id)
+        .to_string();
 
     Paper::with_metadata(
         Some(arxiv_id),
@@ -209,7 +215,8 @@ pub fn arxiv_search_blocking(query: &str, max_results: usize) -> Result<Vec<Pape
 // ============================================================================
 
 const SEMANTIC_API: &str = "https://api.semanticscholar.org/graph/v1";
-const S2_FIELDS: &str = "title,authors,abstract,year,venue,citationCount,openAccessPdf,paperId,externalIds";
+const S2_FIELDS: &str =
+    "title,authors,abstract,year,venue,citationCount,openAccessPdf,paperId,externalIds";
 
 /// Semantic Scholar search response
 #[derive(Debug, Deserialize)]
@@ -292,7 +299,9 @@ pub async fn semantic_search(
     timeout_secs: u64,
 ) -> Result<Vec<Paper>, SearchError> {
     if query.trim().is_empty() {
-        return Err(SearchError::SearchFailed("Query cannot be empty".to_string()));
+        return Err(SearchError::SearchFailed(
+            "Query cannot be empty".to_string(),
+        ));
     }
 
     let max_results = max_results.min(100);
@@ -342,11 +351,7 @@ fn semantic_paper_to_paper(s2: SemanticPaper) -> Paper {
         .map(|a| a.name)
         .collect();
 
-    let categories: Vec<String> = s2
-        .venue
-        .iter()
-        .cloned()
-        .collect();
+    let categories: Vec<String> = s2.venue.iter().cloned().collect();
 
     let arxiv_id = s2.external_ids.as_ref().and_then(|ids| ids.arxiv.clone());
     let doi = s2.external_ids.as_ref().and_then(|ids| ids.doi.clone());
@@ -379,7 +384,10 @@ fn semantic_paper_to_paper(s2: SemanticPaper) -> Paper {
 }
 
 /// Search Semantic Scholar (sync wrapper)
-pub fn semantic_search_blocking(query: &str, max_results: usize) -> Result<Vec<Paper>, SearchError> {
+pub fn semantic_search_blocking(
+    query: &str,
+    max_results: usize,
+) -> Result<Vec<Paper>, SearchError> {
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(semantic_search(query, max_results, 30))
 }
@@ -425,7 +433,9 @@ pub async fn cross_search(
     sources: &[Source],
 ) -> Result<Vec<SearchResult>, SearchError> {
     if query.trim().is_empty() {
-        return Err(SearchError::SearchFailed("Query cannot be empty".to_string()));
+        return Err(SearchError::SearchFailed(
+            "Query cannot be empty".to_string(),
+        ));
     }
 
     if sources.is_empty() {
@@ -438,12 +448,8 @@ pub async fn cross_search(
 
     for &source in sources {
         let result = match source {
-            Source::ArXiv => {
-                arxiv_search(query, max_per_source, 30).await
-            }
-            Source::SemanticScholar => {
-                semantic_search(query, max_per_source, 30).await
-            }
+            Source::ArXiv => arxiv_search(query, max_per_source, 30).await,
+            Source::SemanticScholar => semantic_search(query, max_per_source, 30).await,
         };
 
         match result {
@@ -472,7 +478,10 @@ pub fn cross_search_blocking(
 }
 
 /// Convenience function for searching both arXiv and Semantic Scholar
-pub fn search_papers_multi(query: &str, max_per_source: usize) -> Result<Vec<SearchResult>, SearchError> {
+pub fn search_papers_multi(
+    query: &str,
+    max_per_source: usize,
+) -> Result<Vec<SearchResult>, SearchError> {
     cross_search_blocking(
         query,
         max_per_source,
@@ -593,10 +602,7 @@ mod tests {
             clean_arxiv_title("Title\nWith\nNewlines"),
             "Title With Newlines"
         );
-        assert_eq!(
-            clean_arxiv_title("  Trimmed  "),
-            "Trimmed"
-        );
+        assert_eq!(clean_arxiv_title("  Trimmed  "), "Trimmed");
     }
 
     #[test]

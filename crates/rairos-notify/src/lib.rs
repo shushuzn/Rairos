@@ -68,7 +68,6 @@ pub enum Platform {
     Generic,
 }
 
-
 // ============================================================================
 // Payloads
 // ============================================================================
@@ -128,13 +127,10 @@ pub struct PaperIngestedPayload {
 pub struct DiscordRenderer;
 
 impl DiscordRenderer {
-    const SEVERITY_COLORS: &'static [( &'static str, u32 )] = &[
-        ("high", 0xFF4444),
-        ("medium", 0xFFAA00),
-        ("low", 0x44FF44),
-    ];
+    const SEVERITY_COLORS: &'static [(&'static str, u32)] =
+        &[("high", 0xFF4444), ("medium", 0xFFAA00), ("low", 0x44FF44)];
 
-    const GAP_TYPE_COLORS: &'static [( &'static str, u32 )] = &[
+    const GAP_TYPE_COLORS: &'static [(&'static str, u32)] = &[
         ("method_limitation", 0xCC88FF),
         ("scalability_issue", 0xFF8800),
         ("evaluation_gap", 0x88CCFF),
@@ -191,7 +187,12 @@ impl DiscordRenderer {
         }
 
         if !payload.supporting_papers.is_empty() {
-            let papers: Vec<&str> = payload.supporting_papers.iter().map(|s| s.as_str()).take(3).collect();
+            let papers: Vec<&str> = payload
+                .supporting_papers
+                .iter()
+                .map(|s| s.as_str())
+                .take(3)
+                .collect();
             let extra = payload.supporting_papers.len().saturating_sub(3);
             let mut papers_str = papers.join(", ");
             if extra > 0 {
@@ -228,8 +229,16 @@ impl DiscordRenderer {
     }
 
     pub fn render_paradigm_shift(payload: &ParadigmShiftPayload) -> Value {
-        let icon = if payload.alert_type == "contradiction_cluster" { "⚠️" } else { "🔄" };
-        let color = if payload.severity == "high" { 0xFF0000 } else { 0xFF8800 };
+        let icon = if payload.alert_type == "contradiction_cluster" {
+            "⚠️"
+        } else {
+            "🔄"
+        };
+        let color = if payload.severity == "high" {
+            0xFF0000
+        } else {
+            0xFF8800
+        };
 
         let mut fields: Vec<Value> = vec![
             json!({
@@ -249,7 +258,10 @@ impl DiscordRenderer {
         } else {
             payload.message.clone()
         };
-        let footer_text = format!("Rairos Paradigm Watch • {}", Utc::now().format("%Y-%m-%d %H:%M"));
+        let footer_text = format!(
+            "Rairos Paradigm Watch • {}",
+            Utc::now().format("%Y-%m-%d %H:%M")
+        );
 
         let mut embed = json!({
             "title": format!("{} Paradigm Shift Signal: {}", icon, payload.gap_type),
@@ -285,7 +297,11 @@ impl DiscordRenderer {
     }
 
     pub fn render_paper_ingested(title: &str, arxiv_id: &str, tags: &[String]) -> Value {
-        let title = if title.len() > 256 { &title[..256] } else { title };
+        let title = if title.len() > 256 {
+            &title[..256]
+        } else {
+            title
+        };
 
         let mut embed = json!({
             "title": format!("📄 {}", title),
@@ -425,9 +441,17 @@ impl FeishuRenderer {
     }
 
     pub fn render_paradigm_shift(payload: &ParadigmShiftPayload) -> Value {
-        let icon = if payload.alert_type == "contradiction_cluster" { "⚠️" } else { "🔄" };
+        let icon = if payload.alert_type == "contradiction_cluster" {
+            "⚠️"
+        } else {
+            "🔄"
+        };
         let severity_emoji = Self::severity_emoji(&payload.severity);
-        let template = if payload.severity == "high" { "red" } else { "yellow" };
+        let template = if payload.severity == "high" {
+            "red"
+        } else {
+            "yellow"
+        };
 
         let message = if payload.message.len() > 2000 {
             payload.message[..2000].to_string()
@@ -603,14 +627,17 @@ impl WebhookDispatcher {
         tags: Option<&[String]>,
     ) -> Result<()> {
         let rendered = match self.platform {
-            Platform::Discord => DiscordRenderer::render_paper_ingested(paper_title, arxiv_id, tags.unwrap_or(&[])),
-            Platform::Feishu | Platform::Generic => {
-                self.render_generic("paper_ingested", &PaperIngestedPayload {
+            Platform::Discord => {
+                DiscordRenderer::render_paper_ingested(paper_title, arxiv_id, tags.unwrap_or(&[]))
+            }
+            Platform::Feishu | Platform::Generic => self.render_generic(
+                "paper_ingested",
+                &PaperIngestedPayload {
                     title: paper_title.to_string(),
                     arxiv_id: arxiv_id.to_string(),
                     tags: tags.map(|v| v.to_vec()).unwrap_or_default(),
-                })
-            }
+                },
+            ),
         };
 
         self.send_payload(rendered).await
@@ -652,7 +679,9 @@ pub struct NotificationCenter {
 
 impl NotificationCenter {
     pub fn new() -> Self {
-        Self { dispatchers: Vec::new() }
+        Self {
+            dispatchers: Vec::new(),
+        }
     }
 
     pub fn add(&mut self, dispatcher: WebhookDispatcher) {
@@ -686,16 +715,20 @@ impl NotificationCenter {
                 continue;
             }
             let label = d.label.clone();
-            results.insert(label, d.send_gap_alert(
-                gap_type,
-                title,
-                novelty,
-                severity,
-                supporting_papers,
-                source,
-                confidence,
-                impact_score,
-            ).await);
+            results.insert(
+                label,
+                d.send_gap_alert(
+                    gap_type,
+                    title,
+                    novelty,
+                    severity,
+                    supporting_papers,
+                    source,
+                    confidence,
+                    impact_score,
+                )
+                .await,
+            );
         }
         results
     }
@@ -715,13 +748,11 @@ impl NotificationCenter {
                 continue;
             }
             let label = d.label.clone();
-            results.insert(label, d.send_paradigm_shift(
-                alert_type,
-                gap_type,
-                message,
-                severity,
-                contradictions,
-            ).await);
+            results.insert(
+                label,
+                d.send_paradigm_shift(alert_type, gap_type, message, severity, contradictions)
+                    .await,
+            );
         }
         results
     }
@@ -739,7 +770,10 @@ impl NotificationCenter {
                 continue;
             }
             let label = d.label.clone();
-            results.insert(label, d.send_paper_ingested(paper_title, arxiv_id, tags).await);
+            results.insert(
+                label,
+                d.send_paper_ingested(paper_title, arxiv_id, tags).await,
+            );
         }
         results
     }
@@ -763,8 +797,8 @@ impl NotificationCenter {
 // ============================================================================
 
 pub use gap_alert::{GapAlertBuilder, GapAlertSender};
-pub use paradigm_shift::{ParadigmShiftBuilder, ParadigmShiftSender};
 pub use paper_ingested::{PaperIngestedBuilder, PaperIngestedSender};
+pub use paradigm_shift::{ParadigmShiftBuilder, ParadigmShiftSender};
 
 pub mod gap_alert {
     use super::*;
@@ -782,7 +816,13 @@ pub mod gap_alert {
     }
 
     impl<'a> GapAlertSender<'a> {
-        pub fn new(dispatcher: &'a WebhookDispatcher, gap_type: &str, title: &str, novelty: f64, severity: &str) -> Self {
+        pub fn new(
+            dispatcher: &'a WebhookDispatcher,
+            gap_type: &str,
+            title: &str,
+            novelty: f64,
+            severity: &str,
+        ) -> Self {
             Self {
                 dispatcher,
                 gap_type: gap_type.to_string(),
@@ -817,22 +857,30 @@ pub mod gap_alert {
         }
 
         pub async fn send(self) -> Result<()> {
-            self.dispatcher.send_gap_alert(
-                &self.gap_type,
-                &self.title,
-                self.novelty,
-                &self.severity,
-                Some(&self.supporting_papers),
-                Some(&self.source),
-                Some(self.confidence),
-                Some(self.impact_score),
-            ).await
+            self.dispatcher
+                .send_gap_alert(
+                    &self.gap_type,
+                    &self.title,
+                    self.novelty,
+                    &self.severity,
+                    Some(&self.supporting_papers),
+                    Some(&self.source),
+                    Some(self.confidence),
+                    Some(self.impact_score),
+                )
+                .await
         }
     }
 
     pub type GapAlertBuilder = GapAlertSender<'static>;
 
-    pub fn gap_alert<'a>(dispatcher: &'a WebhookDispatcher, gap_type: &'a str, title: &'a str, novelty: f64, severity: &'a str) -> GapAlertSender<'a> {
+    pub fn gap_alert<'a>(
+        dispatcher: &'a WebhookDispatcher,
+        gap_type: &'a str,
+        title: &'a str,
+        novelty: f64,
+        severity: &'a str,
+    ) -> GapAlertSender<'a> {
         GapAlertSender::new(dispatcher, gap_type, title, novelty, severity)
     }
 }
@@ -850,7 +898,13 @@ pub mod paradigm_shift {
     }
 
     impl<'a> ParadigmShiftSender<'a> {
-        pub fn new(dispatcher: &'a WebhookDispatcher, alert_type: &str, gap_type: &str, message: &str, severity: &str) -> Self {
+        pub fn new(
+            dispatcher: &'a WebhookDispatcher,
+            alert_type: &str,
+            gap_type: &str,
+            message: &str,
+            severity: &str,
+        ) -> Self {
             Self {
                 dispatcher,
                 alert_type: alert_type.to_string(),
@@ -867,19 +921,27 @@ pub mod paradigm_shift {
         }
 
         pub async fn send(self) -> Result<()> {
-            self.dispatcher.send_paradigm_shift(
-                &self.alert_type,
-                &self.gap_type,
-                &self.message,
-                &self.severity,
-                Some(&self.contradictions),
-            ).await
+            self.dispatcher
+                .send_paradigm_shift(
+                    &self.alert_type,
+                    &self.gap_type,
+                    &self.message,
+                    &self.severity,
+                    Some(&self.contradictions),
+                )
+                .await
         }
     }
 
     pub type ParadigmShiftBuilder = ParadigmShiftSender<'static>;
 
-    pub fn paradigm_shift<'a>(dispatcher: &'a WebhookDispatcher, alert_type: &'a str, gap_type: &'a str, message: &'a str, severity: &'a str) -> ParadigmShiftSender<'a> {
+    pub fn paradigm_shift<'a>(
+        dispatcher: &'a WebhookDispatcher,
+        alert_type: &'a str,
+        gap_type: &'a str,
+        message: &'a str,
+        severity: &'a str,
+    ) -> ParadigmShiftSender<'a> {
         ParadigmShiftSender::new(dispatcher, alert_type, gap_type, message, severity)
     }
 }
@@ -910,17 +972,19 @@ pub mod paper_ingested {
         }
 
         pub async fn send(self) -> Result<()> {
-            self.dispatcher.send_paper_ingested(
-                &self.title,
-                &self.arxiv_id,
-                Some(&self.tags),
-            ).await
+            self.dispatcher
+                .send_paper_ingested(&self.title, &self.arxiv_id, Some(&self.tags))
+                .await
         }
     }
 
     pub type PaperIngestedBuilder = PaperIngestedSender<'static>;
 
-    pub fn paper_ingested<'a>(dispatcher: &'a WebhookDispatcher, title: &'a str, arxiv_id: &'a str) -> PaperIngestedSender<'a> {
+    pub fn paper_ingested<'a>(
+        dispatcher: &'a WebhookDispatcher,
+        title: &'a str,
+        arxiv_id: &'a str,
+    ) -> PaperIngestedSender<'a> {
         PaperIngestedSender::new(dispatcher, title, arxiv_id)
     }
 }

@@ -47,16 +47,20 @@ impl PerformanceMonitor {
         let total: f64 = values.iter().sum();
         let avg = total / count as f64;
 
-        Some(MetricStats { count, min, max, avg, total })
+        Some(MetricStats {
+            count,
+            min,
+            max,
+            avg,
+            total,
+        })
     }
 
     pub fn get_all_stats(&self) -> HashMap<String, MetricStats> {
         let metrics = self.metrics.read().unwrap();
         metrics
             .keys()
-            .filter_map(|k| {
-                self.get_stats(k).map(|stats| (k.clone(), stats))
-            })
+            .filter_map(|k| self.get_stats(k).map(|stats| (k.clone(), stats)))
             .collect()
     }
 
@@ -89,10 +93,7 @@ pub fn get_performance_report() -> String {
         return "No performance metrics recorded.".to_string();
     }
 
-    let mut lines = vec![
-        "=== Performance Report ===".to_string(),
-        String::new(),
-    ];
+    let mut lines = vec!["=== Performance Report ===".to_string(), String::new()];
 
     for (name, metric_stats) in stats {
         lines.push(format!("{}:", name));
@@ -121,7 +122,8 @@ where
     let elapsed = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
-        .as_secs_f64() - start;
+        .as_secs_f64()
+        - start;
 
     GLOBAL_MONITOR.record(name, elapsed);
     result

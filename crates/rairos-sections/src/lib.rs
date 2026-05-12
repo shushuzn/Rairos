@@ -9,8 +9,9 @@
 #![allow(clippy::needless_range_loop)]
 
 use rairos_pdf::{
-    segment_into_sections as pdf_segment_into_sections, looks_like_heading as pdf_looks_like_heading,
-    StructuredPdfContent, TextBlock, TableBlock, MathBlock,
+    looks_like_heading as pdf_looks_like_heading,
+    segment_into_sections as pdf_segment_into_sections, MathBlock, StructuredPdfContent,
+    TableBlock, TextBlock,
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -107,9 +108,7 @@ pub fn segment_structured(
     let plain_sections = pdf_segment_into_sections(&text, max_sections);
 
     // Count total math in the document for heuristic
-    let total_math = sdoc.math_blocks.iter()
-        .filter(|m| m.is_display)
-        .count();
+    let total_math = sdoc.math_blocks.iter().filter(|m| m.is_display).count();
 
     // Attach metadata to each section
     let mut result = Vec::new();
@@ -270,7 +269,9 @@ pub fn format_tables_markdown(sdoc: &StructuredPdfContent, max_chars: usize) -> 
 
 /// Format display math blocks as fenced code for reference.
 pub fn format_math_markdown(sdoc: &StructuredPdfContent, max_count: usize) -> String {
-    let display_blocks: Vec<&MathBlock> = sdoc.math_blocks.iter()
+    let display_blocks: Vec<&MathBlock> = sdoc
+        .math_blocks
+        .iter()
         .filter(|m| m.is_display)
         .take(max_count)
         .collect();
@@ -321,8 +322,16 @@ mod tests {
     #[test]
     fn test_text_blocks_to_lines() {
         let blocks = vec![
-            TextBlock { block_type: rairos_pdf::BlockType::Heading, text: "Intro".to_string(), page: 1 },
-            TextBlock { block_type: rairos_pdf::BlockType::Body, text: "Some text".to_string(), page: 1 },
+            TextBlock {
+                block_type: rairos_pdf::BlockType::Heading,
+                text: "Intro".to_string(),
+                page: 1,
+            },
+            TextBlock {
+                block_type: rairos_pdf::BlockType::Body,
+                text: "Some text".to_string(),
+                page: 1,
+            },
         ];
         let lines = text_blocks_to_lines(&blocks);
         assert_eq!(lines, vec!["Intro", "Some text"]);
@@ -354,7 +363,9 @@ mod tests {
         let titles: Vec<_> = sections.iter().map(|(t, _, _)| t.as_str()).collect();
         assert!(titles.contains(&"Methods"));
         // Abstract should have higher priority
-        assert!(sections.iter().any(|(t, _, m)| t == "Abstract" && m.has_math == false));
+        assert!(sections
+            .iter()
+            .any(|(t, _, m)| t == "Abstract" && m.has_math == false));
     }
 
     #[test]
@@ -395,9 +406,21 @@ mod tests {
     #[test]
     fn test_format_section_snippets_priority() {
         let sections = vec![
-            ("References".to_string(), "Many citations here.".to_string(), SectionMeta::default()),
-            ("Abstract".to_string(), "This paper presents a new method.".to_string(), SectionMeta::default()),
-            ("Methods".to_string(), "We propose a novel approach.".to_string(), SectionMeta::default()),
+            (
+                "References".to_string(),
+                "Many citations here.".to_string(),
+                SectionMeta::default(),
+            ),
+            (
+                "Abstract".to_string(),
+                "This paper presents a new method.".to_string(),
+                SectionMeta::default(),
+            ),
+            (
+                "Methods".to_string(),
+                "We propose a novel approach.".to_string(),
+                SectionMeta::default(),
+            ),
         ];
         let result = format_section_snippets(&sections, 1000, 100);
         let abstract_pos = result.find("Abstract");
@@ -405,8 +428,14 @@ mod tests {
         let refs_pos = result.find("References");
         // References appears first (position 0), Abstract and Methods appear after it
         let refs_idx = refs_pos.unwrap_or(0);
-        assert!(abstract_pos.map(|p| p > refs_idx).unwrap_or(false), "Abstract should appear after References");
-        assert!(methods_pos.map(|p| p > refs_idx).unwrap_or(false), "Methods should appear after References");
+        assert!(
+            abstract_pos.map(|p| p > refs_idx).unwrap_or(false),
+            "Abstract should appear after References"
+        );
+        assert!(
+            methods_pos.map(|p| p > refs_idx).unwrap_or(false),
+            "Methods should appear after References"
+        );
     }
 
     #[test]
@@ -421,8 +450,16 @@ mod tests {
         let sdoc = StructuredPdfContent {
             text_blocks: vec![],
             tables: vec![
-                TableBlock { text: "| A | B |\n|---|---|\n| 1 | 2 |".to_string(), page: 0, bbox: (0.0, 0.0, 0.0, 0.0) },
-                TableBlock { text: "| X | Y |\n|---|---|\n| 3 | 4 |".to_string(), page: 1, bbox: (0.0, 0.0, 0.0, 0.0) },
+                TableBlock {
+                    text: "| A | B |\n|---|---|\n| 1 | 2 |".to_string(),
+                    page: 0,
+                    bbox: (0.0, 0.0, 0.0, 0.0),
+                },
+                TableBlock {
+                    text: "| X | Y |\n|---|---|\n| 3 | 4 |".to_string(),
+                    page: 1,
+                    bbox: (0.0, 0.0, 0.0, 0.0),
+                },
             ],
             math_blocks: vec![],
         };
@@ -463,9 +500,21 @@ mod tests {
             text_blocks: vec![],
             tables: vec![],
             math_blocks: vec![
-                MathBlock { text: "x^2".to_string(), is_display: true, page: 0 },
-                MathBlock { text: "y = mx + b".to_string(), is_display: true, page: 2 },
-                MathBlock { text: "$inline$".to_string(), is_display: false, page: 3 },
+                MathBlock {
+                    text: "x^2".to_string(),
+                    is_display: true,
+                    page: 0,
+                },
+                MathBlock {
+                    text: "y = mx + b".to_string(),
+                    is_display: true,
+                    page: 2,
+                },
+                MathBlock {
+                    text: "$inline$".to_string(),
+                    is_display: false,
+                    page: 3,
+                },
             ],
         };
         let result = format_math_markdown(&sdoc, 5);

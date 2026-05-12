@@ -130,9 +130,7 @@ pub fn check_pyright(code_path: &PathBuf) -> Vec<Diagnostic> {
         .output();
 
     match output {
-        Ok(out) => {
-            parse_pyright_json(code_path, String::from_utf8_lossy(&out.stdout).as_ref())
-        }
+        Ok(out) => parse_pyright_json(code_path, String::from_utf8_lossy(&out.stdout).as_ref()),
         Err(_) => vec![],
     }
 }
@@ -147,7 +145,8 @@ fn parse_pyright_json(code_path: &PathBuf, stdout: &str) -> Vec<Diagnostic> {
         Err(_) => return vec![],
     };
 
-    let Some(general_diagnostics) = report.get("generalDiagnostics").and_then(|v| v.as_array()) else {
+    let Some(general_diagnostics) = report.get("generalDiagnostics").and_then(|v| v.as_array())
+    else {
         return vec![];
     };
 

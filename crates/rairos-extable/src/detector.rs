@@ -118,7 +118,12 @@ impl Ord for RoundKey {
         self.0
             .partial_cmp(&other.0)
             .unwrap_or(Ordering::Equal)
-            .then_with(|| self.0.round().partial_cmp(&other.0.round()).unwrap_or(Ordering::Equal))
+            .then_with(|| {
+                self.0
+                    .round()
+                    .partial_cmp(&other.0.round())
+                    .unwrap_or(Ordering::Equal)
+            })
     }
 }
 
@@ -134,7 +139,11 @@ impl TableDetector {
     /// text blocks and performs heuristic detection on them.
     ///
     /// In a full integration, this would be called with data from a PDF parser.
-    pub fn detect_tables_from_blocks(&self, blocks: &[PdfTextBlock], page_num: usize) -> Vec<DetectedTable> {
+    pub fn detect_tables_from_blocks(
+        &self,
+        blocks: &[PdfTextBlock],
+        page_num: usize,
+    ) -> Vec<DetectedTable> {
         let mut tables = Vec::new();
 
         for block in blocks {
@@ -336,7 +345,10 @@ mod tests {
             (0.0, 0.0, 500.0, 30.0),
             vec![make_line(
                 10.0,
-                vec![make_span(0.0, 10.0, "Model"), make_span(100.0, 10.0, "Accuracy")],
+                vec![
+                    make_span(0.0, 10.0, "Model"),
+                    make_span(100.0, 10.0, "Accuracy"),
+                ],
             )],
         );
         let tables = detector.detect_tables_from_blocks(&[block], 0);
@@ -352,12 +364,21 @@ mod tests {
             vec![
                 make_line(
                     10.0,
-                    vec![make_span(0.0, 10.0, "Model"), make_span(100.0, 10.0, "Accuracy")],
+                    vec![
+                        make_span(0.0, 10.0, "Model"),
+                        make_span(100.0, 10.0, "Accuracy"),
+                    ],
                 ),
-                make_line(20.0, vec![make_span(0.0, 20.0, "BERT"), make_span(100.0, 20.0, "90.5")]),
+                make_line(
+                    20.0,
+                    vec![make_span(0.0, 20.0, "BERT"), make_span(100.0, 20.0, "90.5")],
+                ),
                 make_line(
                     30.0,
-                    vec![make_span(0.0, 30.0, "RoBERTa"), make_span(100.0, 30.0, "92.1")],
+                    vec![
+                        make_span(0.0, 30.0, "RoBERTa"),
+                        make_span(100.0, 30.0, "92.1"),
+                    ],
                 ),
             ],
         );
@@ -379,19 +400,24 @@ mod tests {
     #[test]
     fn test_is_experiment_table_single_row() {
         let detector = TableDetector::new();
-        assert!(!detector.is_experiment_table(&[vec![
-            "Model".to_string(),
-            "Accuracy".to_string()
-        ]]));
+        assert!(!detector.is_experiment_table(&[vec!["Model".to_string(), "Accuracy".to_string()]]));
     }
 
     #[test]
     fn test_is_experiment_table_with_metrics_and_numbers() {
         let detector = TableDetector::new();
         let table = vec![
-            vec!["Model".to_string(), "Accuracy".to_string(), "F1".to_string()],
+            vec![
+                "Model".to_string(),
+                "Accuracy".to_string(),
+                "F1".to_string(),
+            ],
             vec!["BERT".to_string(), "90.5".to_string(), "88.0".to_string()],
-            vec!["RoBERTa".to_string(), "92.1".to_string(), "90.3".to_string()],
+            vec![
+                "RoBERTa".to_string(),
+                "92.1".to_string(),
+                "90.3".to_string(),
+            ],
         ];
         // Has "accuracy" and "f1" keywords, and 4+ numeric cells
         assert!(detector.is_experiment_table(&table));
@@ -401,9 +427,21 @@ mod tests {
     fn test_is_experiment_table_with_datasets() {
         let detector = TableDetector::new();
         let table = vec![
-            vec!["Method".to_string(), "SQuAD".to_string(), "MNLI".to_string()],
-            vec!["Our Method".to_string(), "92.1".to_string(), "86.5".to_string()],
-            vec!["Baseline".to_string(), "88.0".to_string(), "82.1".to_string()],
+            vec![
+                "Method".to_string(),
+                "SQuAD".to_string(),
+                "MNLI".to_string(),
+            ],
+            vec![
+                "Our Method".to_string(),
+                "92.1".to_string(),
+                "86.5".to_string(),
+            ],
+            vec![
+                "Baseline".to_string(),
+                "88.0".to_string(),
+                "82.1".to_string(),
+            ],
             vec!["BERT".to_string(), "85.5".to_string(), "80.3".to_string()],
         ];
         // Has "squad", "mnli" dataset keywords, and 6+ numeric cells

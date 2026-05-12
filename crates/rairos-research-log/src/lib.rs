@@ -41,7 +41,9 @@ pub fn add_note(paper_id: &str, note_text: &str, tags: Option<Vec<String>>) -> b
 
     match serde_json::to_string(&note) {
         Ok(json) => match OpenOptions::new().create(true).append(true).open(&path) {
-            Ok(mut file) => file.write_all(json.as_bytes()).is_ok() && file.write_all(b"\n").is_ok(),
+            Ok(mut file) => {
+                file.write_all(json.as_bytes()).is_ok() && file.write_all(b"\n").is_ok()
+            }
             Err(_) => false,
         },
         Err(_) => false,
@@ -130,7 +132,10 @@ pub fn render_log_html(paper_id: Option<&str>) -> String {
         })
         .collect();
 
-    format!(r#"<div style="max-width:700px;margin:0 auto;">{}</div>"#, cards)
+    format!(
+        r#"<div style="max-width:700px;margin:0 auto;">{}</div>"#,
+        cards
+    )
 }
 
 #[cfg(test)]
@@ -140,7 +145,11 @@ mod tests {
     #[test]
     fn test_add_note_and_get() {
         let paper_id = "test_paper_123";
-        let result = add_note(paper_id, "This is a test note.", Some(vec!["test".to_string()]));
+        let result = add_note(
+            paper_id,
+            "This is a test note.",
+            Some(vec!["test".to_string()]),
+        );
         assert!(result);
 
         let notes = get_notes(Some(paper_id), 10);

@@ -36,12 +36,9 @@ static RE_DASHES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"-{2,}").unwrap
 // ============================================================================
 
 fn get_config_path() -> std::path::PathBuf {
-    std::path::PathBuf::from(
-        std::env::var("HOME")
-            .unwrap_or_else(|_| "~".to_string())
-    )
-    .join(".ai_research_os")
-    .join("categories.json")
+    std::path::PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "~".to_string()))
+        .join(".ai_research_os")
+        .join("categories.json")
 }
 
 /// Return the list of research tree directory names.
@@ -59,7 +56,10 @@ pub fn get_research_dirs() -> Vec<String> {
             }
         }
     }
-    DEFAULT_RESEARCH_DIRS.iter().map(|s| s.to_string()).collect()
+    DEFAULT_RESEARCH_DIRS
+        .iter()
+        .map(|s| s.to_string())
+        .collect()
 }
 
 /// Return the default directory for C-Notes (concept notes).
@@ -79,7 +79,9 @@ pub fn get_default_concept_dir() -> String {
 /// Falls back to "00-Radar".
 pub fn get_default_radar_dir() -> String {
     let dirs = get_research_dirs();
-    dirs.first().cloned().unwrap_or_else(|| "00-Radar".to_string())
+    dirs.first()
+        .cloned()
+        .unwrap_or_else(|| "00-Radar".to_string())
 }
 
 // ============================================================================

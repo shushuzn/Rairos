@@ -62,8 +62,21 @@ impl PaperComparator {
         Self
     }
 
-    pub fn add_paper(&self, paper_id: &str, title: &str, year: i32, authors: Vec<String>, r#abstract: &str) -> ComparisonColumn {
-        let text = format!("{} {} {}", title.to_lowercase(), r#abstract.to_lowercase(), "").to_lowercase();
+    pub fn add_paper(
+        &self,
+        paper_id: &str,
+        title: &str,
+        year: i32,
+        authors: Vec<String>,
+        r#abstract: &str,
+    ) -> ComparisonColumn {
+        let text = format!(
+            "{} {} {}",
+            title.to_lowercase(),
+            r#abstract.to_lowercase(),
+            ""
+        )
+        .to_lowercase();
 
         let method_keywords: HashMap<&str, &str> = [
             ("transformer", "Transformer"),
@@ -81,7 +94,9 @@ impl PaperComparator {
             ("rlhf", "RLHF"),
             ("chain-of-thought", "Chain-of-Thought"),
             ("prompt", "Prompting"),
-        ].into_iter().collect();
+        ]
+        .into_iter()
+        .collect();
 
         let mut methods = Vec::new();
         for (kw, name) in &method_keywords {
@@ -112,7 +127,9 @@ impl PaperComparator {
             ("stsb", "STS-B"),
             ("qqp", "QQP"),
             ("mrpc", "MRPC"),
-        ].into_iter().collect();
+        ]
+        .into_iter()
+        .collect();
 
         let mut datasets = Vec::new();
         for (kw, name) in &dataset_keywords {
@@ -123,8 +140,15 @@ impl PaperComparator {
         datasets.truncate(5);
 
         let metric_keywords = [
-            "accuracy", "precision", "recall", "f1", "bleu", "rouge",
-            "perplexity", "latency", "throughput",
+            "accuracy",
+            "precision",
+            "recall",
+            "f1",
+            "bleu",
+            "rouge",
+            "perplexity",
+            "latency",
+            "throughput",
         ];
 
         let mut metrics = HashMap::new();
@@ -155,9 +179,18 @@ impl PaperComparator {
         }
     }
 
-    pub fn compare(&self, columns: Vec<ComparisonColumn>, aspects: Vec<String>) -> ComparisonResult {
+    pub fn compare(
+        &self,
+        columns: Vec<ComparisonColumn>,
+        aspects: Vec<String>,
+    ) -> ComparisonResult {
         let default_aspects = if aspects.is_empty() {
-            vec!["methods".to_string(), "datasets".to_string(), "metrics".to_string(), "authors".to_string()]
+            vec![
+                "methods".to_string(),
+                "datasets".to_string(),
+                "metrics".to_string(),
+                "authors".to_string(),
+            ]
         } else {
             aspects
         };
@@ -188,7 +221,8 @@ impl PaperComparator {
                         if col.metrics.is_empty() {
                             "-".to_string()
                         } else {
-                            col.metrics.iter()
+                            col.metrics
+                                .iter()
                                 .map(|(k, v)| format!("{}={}", k, v))
                                 .collect::<Vec<_>>()
                                 .join(", ")
@@ -246,9 +280,11 @@ impl PaperComparator {
         }
 
         let mut lines = vec![
-            "================================================================================".to_string(),
+            "================================================================================"
+                .to_string(),
             "📊 Paper Comparison".to_string(),
-            "================================================================================".to_string(),
+            "================================================================================"
+                .to_string(),
             String::new(),
         ];
 
@@ -261,13 +297,29 @@ impl PaperComparator {
             };
             header.push(title);
         }
-        lines.push(header.iter().map(|h| format!("{:^25}", h)).collect::<Vec<_>>().join(" | "));
-        lines.push("--------------------------------------------------------------------------------".to_string());
+        lines.push(
+            header
+                .iter()
+                .map(|h| format!("{:^25}", h))
+                .collect::<Vec<_>>()
+                .join(" | "),
+        );
+        lines.push(
+            "--------------------------------------------------------------------------------"
+                .to_string(),
+        );
 
         for row in &result.aspect_rows {
-            let mut row_str: Vec<String> = vec![format!("{:12}", row.values.get("aspect").cloned().unwrap_or_default())];
+            let mut row_str: Vec<String> = vec![format!(
+                "{:12}",
+                row.values.get("aspect").cloned().unwrap_or_default()
+            )];
             for col in &result.columns {
-                let val = row.values.get(&col.paper_id).cloned().unwrap_or_else(|| "-".to_string());
+                let val = row
+                    .values
+                    .get(&col.paper_id)
+                    .cloned()
+                    .unwrap_or_else(|| "-".to_string());
                 let val = if val.len() > 25 {
                     format!("{}...", &val[..22])
                 } else {
@@ -278,7 +330,10 @@ impl PaperComparator {
             lines.push(row_str.join(" | "));
         }
 
-        lines.push("--------------------------------------------------------------------------------".to_string());
+        lines.push(
+            "--------------------------------------------------------------------------------"
+                .to_string(),
+        );
         lines.push(String::new());
         lines.join("\n")
     }
@@ -304,9 +359,16 @@ impl PaperComparator {
         lines.push("|".to_string() + &"|".repeat(result.columns.len()) + "|");
 
         for row in &result.aspect_rows {
-            let mut cells: Vec<String> = vec![format!("| {}", row.values.get("aspect").cloned().unwrap_or_default())];
+            let mut cells: Vec<String> = vec![format!(
+                "| {}",
+                row.values.get("aspect").cloned().unwrap_or_default()
+            )];
             for col in &result.columns {
-                let val = row.values.get(&col.paper_id).cloned().unwrap_or_else(|| "-".to_string());
+                let val = row
+                    .values
+                    .get(&col.paper_id)
+                    .cloned()
+                    .unwrap_or_else(|| "-".to_string());
                 cells.push(format!(" {} |", val));
             }
             lines.push(cells.join(""));
@@ -315,7 +377,12 @@ impl PaperComparator {
         lines.join("\n")
     }
 
-    pub fn render_diff(&self, col_a: &ComparisonColumn, col_b: &ComparisonColumn, field: &str) -> String {
+    pub fn render_diff(
+        &self,
+        col_a: &ComparisonColumn,
+        col_b: &ComparisonColumn,
+        field: &str,
+    ) -> String {
         let (a_items, b_items): (Vec<String>, Vec<String>) = match field {
             "methods" => (col_a.methods.clone(), col_b.methods.clone()),
             "datasets" => (col_a.datasets.clone(), col_b.datasets.clone()),
@@ -328,8 +395,16 @@ impl PaperComparator {
         let mut lines = Vec::new();
         lines.push(format!(
             "=== Diff: {} vs {} ===",
-            if a_title.len() > 30 { &a_title[..30] } else { a_title },
-            if b_title.len() > 30 { &b_title[..30] } else { b_title }
+            if a_title.len() > 30 {
+                &a_title[..30]
+            } else {
+                a_title
+            },
+            if b_title.len() > 30 {
+                &b_title[..30]
+            } else {
+                b_title
+            }
         ));
         lines.push(format!("--- {} ---", field));
 
@@ -369,7 +444,12 @@ fn capitalize(s: &str) -> String {
     }
 }
 
-fn unified_diff(a: &[String], b: &[String], from_file: Option<&str>, to_file: Option<&str>) -> Vec<String> {
+fn unified_diff(
+    a: &[String],
+    b: &[String],
+    from_file: Option<&str>,
+    to_file: Option<&str>,
+) -> Vec<String> {
     let mut result = Vec::new();
 
     let from_file = from_file.unwrap_or("a");
@@ -412,7 +492,13 @@ mod tests {
     #[test]
     fn test_add_paper_extracts_methods() {
         let comp = PaperComparator::new();
-        let col = comp.add_paper("p1", "BERT Pre-training", 2018, vec!["Author".to_string()], "We propose a new transformer method with attention.");
+        let col = comp.add_paper(
+            "p1",
+            "BERT Pre-training",
+            2018,
+            vec!["Author".to_string()],
+            "We propose a new transformer method with attention.",
+        );
         assert!(!col.methods.is_empty());
         assert!(col.methods.contains(&"Attention".to_string()));
         assert!(col.methods.contains(&"Transformer".to_string()));
@@ -421,7 +507,13 @@ mod tests {
     #[test]
     fn test_add_paper_extracts_datasets() {
         let comp = PaperComparator::new();
-        let col = comp.add_paper("p1", "BERT", 2018, vec![], "We evaluate on GLUE and MNLI benchmarks.");
+        let col = comp.add_paper(
+            "p1",
+            "BERT",
+            2018,
+            vec![],
+            "We evaluate on GLUE and MNLI benchmarks.",
+        );
         assert!(col.datasets.contains(&"GLUE".to_string()));
         assert!(col.datasets.contains(&"MNLI".to_string()));
     }
@@ -429,15 +521,33 @@ mod tests {
     #[test]
     fn test_add_paper_extracts_metrics() {
         let comp = PaperComparator::new();
-        let col = comp.add_paper("p1", "Paper", 2020, vec![], "Our method achieves 90% accuracy on the test set.");
+        let col = comp.add_paper(
+            "p1",
+            "Paper",
+            2020,
+            vec![],
+            "Our method achieves 90% accuracy on the test set.",
+        );
         assert!(col.metrics.contains_key("accuracy"));
     }
 
     #[test]
     fn test_compare_text() {
         let comp = PaperComparator::new();
-        let col1 = comp.add_paper("p1", "Paper A", 2020, vec!["Auth1".to_string()], "Transformer method with attention.");
-        let col2 = comp.add_paper("p2", "Paper B", 2021, vec!["Auth2".to_string()], "CNN method for images.");
+        let col1 = comp.add_paper(
+            "p1",
+            "Paper A",
+            2020,
+            vec!["Auth1".to_string()],
+            "Transformer method with attention.",
+        );
+        let col2 = comp.add_paper(
+            "p2",
+            "Paper B",
+            2021,
+            vec!["Auth2".to_string()],
+            "CNN method for images.",
+        );
         let result = comp.compare(vec![col1, col2], vec!["methods".to_string()]);
 
         assert_eq!(result.columns.len(), 2);
@@ -456,8 +566,20 @@ mod tests {
     #[test]
     fn test_render_text_with_data() {
         let comp = PaperComparator::new();
-        let col1 = comp.add_paper("p1", "Paper A", 2020, vec!["Auth1".to_string()], "A method.");
-        let col2 = comp.add_paper("p2", "Paper B", 2021, vec!["Auth2".to_string()], "B method.");
+        let col1 = comp.add_paper(
+            "p1",
+            "Paper A",
+            2020,
+            vec!["Auth1".to_string()],
+            "A method.",
+        );
+        let col2 = comp.add_paper(
+            "p2",
+            "Paper B",
+            2021,
+            vec!["Auth2".to_string()],
+            "B method.",
+        );
         let result = comp.compare(vec![col1, col2], vec!["methods".to_string()]);
         let text = comp.render_text(&result);
         assert!(text.contains("Paper Comparison"));
@@ -496,7 +618,13 @@ mod tests {
     #[test]
     fn test_compare_authors() {
         let comp = PaperComparator::new();
-        let col = comp.add_paper("p1", "Paper", 2020, vec!["A".to_string(), "B".to_string(), "C".to_string()], "");
+        let col = comp.add_paper(
+            "p1",
+            "Paper",
+            2020,
+            vec!["A".to_string(), "B".to_string(), "C".to_string()],
+            "",
+        );
         let result = comp.compare(vec![col], vec!["authors".to_string()]);
         let val = result.aspect_rows[0].values.get("p1").unwrap();
         assert!(val.contains("A"));

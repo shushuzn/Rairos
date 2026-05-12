@@ -58,13 +58,33 @@ impl CrossReferencer {
         }
     }
 
-    pub fn add_paper(&mut self, paper_id: &str, title: &str, abstract_text: &str, tags: Vec<String>) {
-        self.papers.insert(paper_id.to_string(), (title.to_string(), abstract_text.to_string(), tags));
+    pub fn add_paper(
+        &mut self,
+        paper_id: &str,
+        title: &str,
+        abstract_text: &str,
+        tags: Vec<String>,
+    ) {
+        self.papers.insert(
+            paper_id.to_string(),
+            (title.to_string(), abstract_text.to_string(), tags),
+        );
     }
 
-    pub fn analyze(&self, paper_id: &str, _title: &str, _abstract_text: &str, _body_text: &str, tags: Option<Vec<String>>, _use_llm: bool) -> CrossReferenceResult {
+    pub fn analyze(
+        &self,
+        paper_id: &str,
+        _title: &str,
+        _abstract_text: &str,
+        _body_text: &str,
+        tags: Option<Vec<String>>,
+        _use_llm: bool,
+    ) -> CrossReferenceResult {
         if self.papers.is_empty() {
-            return CrossReferenceResult::with_error(paper_id, "No database available for cross-referencing");
+            return CrossReferenceResult::with_error(
+                paper_id,
+                "No database available for cross-referencing",
+            );
         }
 
         let tags = tags.unwrap_or_default();
@@ -83,7 +103,12 @@ impl CrossReferencer {
         self.analyze_fallback(paper_id, candidates)
     }
 
-    fn find_candidates(&self, paper_id: &str, tags: &[String], max_candidates: usize) -> Vec<(String, String, String)> {
+    fn find_candidates(
+        &self,
+        paper_id: &str,
+        tags: &[String],
+        max_candidates: usize,
+    ) -> Vec<(String, String, String)> {
         let mut candidates = Vec::new();
         let mut seen = std::collections::HashSet::new();
 
@@ -105,7 +130,11 @@ impl CrossReferencer {
         candidates
     }
 
-    fn analyze_fallback(&self, paper_id: &str, candidates: Vec<(String, String, String)>) -> CrossReferenceResult {
+    fn analyze_fallback(
+        &self,
+        paper_id: &str,
+        candidates: Vec<(String, String, String)>,
+    ) -> CrossReferenceResult {
         let mut items = Vec::new();
 
         for (pid, title, _) in candidates.into_iter().take(5) {
@@ -113,7 +142,8 @@ impl CrossReferencer {
                 relation: "alignment".to_string(),
                 target_paper_id: pid,
                 target_title: title,
-                description: "Same tag overlap — suggest manual review for relationship".to_string(),
+                description: "Same tag overlap — suggest manual review for relationship"
+                    .to_string(),
                 confidence: 0.3,
                 evidence: String::new(),
             });
@@ -128,19 +158,32 @@ impl CrossReferencer {
         }
     }
 
-    pub fn parse_response(&self, raw: &str, candidates: &[(String, String, String)]) -> Vec<CrossReferenceItem> {
+    pub fn parse_response(
+        &self,
+        raw: &str,
+        candidates: &[(String, String, String)],
+    ) -> Vec<CrossReferenceItem> {
         let pattern = Regex::new(r"\[?(\S+?)\]?\s*\((\w+)\)").unwrap();
         let mut items = Vec::new();
 
         for cap in pattern.captures_iter(raw) {
-            let pid = cap.get(1).map(|m| m.as_str().trim_matches(|c| c == '[' || c == ']')).unwrap_or("");
-            let relation = cap.get(2).map(|m| m.as_str().to_lowercase()).unwrap_or_default();
+            let pid = cap
+                .get(1)
+                .map(|m| m.as_str().trim_matches(|c| c == '[' || c == ']'))
+                .unwrap_or("");
+            let relation = cap
+                .get(2)
+                .map(|m| m.as_str().to_lowercase())
+                .unwrap_or_default();
 
-            if !["contradiction", "alignment", "extension", "unrelated"].contains(&relation.as_str()) {
+            if !["contradiction", "alignment", "extension", "unrelated"]
+                .contains(&relation.as_str())
+            {
                 continue;
             }
 
-            let title = candidates.iter()
+            let title = candidates
+                .iter()
                 .find(|(p, _, _)| p == pid)
                 .map(|(_, t, _)| t.clone())
                 .unwrap_or_else(|| pid.to_string());
@@ -198,7 +241,14 @@ mod tests {
     #[test]
     fn test_analyze_empty_database() {
         let cr = CrossReferencer::new();
-        let result = cr.analyze("p1", "Title", "Abstract", "Body", Some(vec!["tag1".to_string()]), false);
+        let result = cr.analyze(
+            "p1",
+            "Title",
+            "Abstract",
+            "Body",
+            Some(vec!["tag1".to_string()]),
+            false,
+        );
         assert!(result.error.contains("No database"));
     }
 
@@ -206,7 +256,14 @@ mod tests {
     fn test_analyze_fallback() {
         let mut cr = CrossReferencer::new();
         cr.add_paper("p2", "Title 2", "Abstract 2", vec!["tag1".to_string()]);
-        let result = cr.analyze("p1", "Title 1", "Abstract 1", "Body", Some(vec!["tag1".to_string()]), false);
+        let result = cr.analyze(
+            "p1",
+            "Title 1",
+            "Abstract 1",
+            "Body",
+            Some(vec!["tag1".to_string()]),
+            false,
+        );
         assert!(result.used_fallback);
         assert!(!result.items.is_empty());
     }
@@ -214,9 +271,11 @@ mod tests {
     #[test]
     fn test_parse_response_empty() {
         let cr = CrossReferencer::new();
-        let candidates = vec![
-            ("p1".to_string(), "Title 1".to_string(), "Abstract 1".to_string()),
-        ];
+        let candidates = vec![(
+            "p1".to_string(),
+            "Title 1".to_string(),
+            "Abstract 1".to_string(),
+        )];
         let items = cr.parse_response("Some random text", &candidates);
         assert!(!items.is_empty());
     }
@@ -224,9 +283,11 @@ mod tests {
     #[test]
     fn test_parse_response_with_relation() {
         let cr = CrossReferencer::new();
-        let candidates = vec![
-            ("p1".to_string(), "Title 1".to_string(), "Abstract 1".to_string()),
-        ];
+        let candidates = vec![(
+            "p1".to_string(),
+            "Title 1".to_string(),
+            "Abstract 1".to_string(),
+        )];
         let items = cr.parse_response("[p1] (alignment)", &candidates);
         assert_eq!(items.len(), 1);
         assert_eq!(items[0].relation, "alignment");

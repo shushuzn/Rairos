@@ -164,7 +164,10 @@ impl UpsertRequest {
     /// Validate the upsert request.
     pub fn validate(&self) -> Result<(), VectorStoreError> {
         let n = self.ids.len();
-        if self.vectors.len() != n || self.contents.len() != n || self.files.len() != n || self.lines.len() != n
+        if self.vectors.len() != n
+            || self.contents.len() != n
+            || self.files.len() != n
+            || self.lines.len() != n
         {
             return Err(VectorStoreError::InsertFailed(
                 "All input vectors must have the same length".to_string(),
@@ -266,7 +269,8 @@ mod tests {
 
     #[test]
     fn test_search_request_with_filter() {
-        let request = SearchRequest::new(vec![0.1, 0.2, 0.3], 10).with_filter("file like '%test%'".to_string());
+        let request = SearchRequest::new(vec![0.1, 0.2, 0.3], 10)
+            .with_filter("file like '%test%'".to_string());
         assert!(request.filter_expr.is_some());
     }
 }

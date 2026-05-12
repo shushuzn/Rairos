@@ -43,10 +43,26 @@ pub struct NewsItem {
 impl NewsItem {
     pub fn from_dict(map: &HashMap<String, serde_json::Value>) -> Self {
         Self {
-            content: map.get("content").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            title: map.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            timestamp: map.get("timestamp").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            url: map.get("url").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            content: map
+                .get("content")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            title: map
+                .get("title")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            timestamp: map
+                .get("timestamp")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            url: map
+                .get("url")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
         }
     }
 }
@@ -90,14 +106,21 @@ pub fn build_summary(news_items: &[NewsItem], keyword: &str) -> EventSummary {
         .collect::<Vec<_>>()
         .join(" ");
 
-    let words: Vec<&str> = all_text.split_whitespace().filter(|w| w.len() > 1).collect();
+    let words: Vec<&str> = all_text
+        .split_whitespace()
+        .filter(|w| w.len() > 1)
+        .collect();
     let mut word_counts: HashMap<&str, usize> = HashMap::new();
     for w in &words {
         *word_counts.entry(w).or_insert(0) += 1;
     }
     let mut sorted_words: Vec<(&str, usize)> = word_counts.into_iter().collect();
     sorted_words.sort_by_key(|b| std::cmp::Reverse(b.1));
-    let top_kws: Vec<String> = sorted_words.iter().take(10).map(|(w, _)| (*w).to_string()).collect();
+    let top_kws: Vec<String> = sorted_words
+        .iter()
+        .take(10)
+        .map(|(w, _)| (*w).to_string())
+        .collect();
 
     let first_text = news_items
         .first()
@@ -106,7 +129,10 @@ pub fn build_summary(news_items: &[NewsItem], keyword: &str) -> EventSummary {
 
     EventSummary {
         primary_keyword: if keyword.is_empty() {
-            top_kws.first().cloned().unwrap_or_else(|| "event".to_string())
+            top_kws
+                .first()
+                .cloned()
+                .unwrap_or_else(|| "event".to_string())
         } else {
             keyword.to_string()
         },
@@ -151,11 +177,17 @@ pub fn render_event_report(result: &EventResult) -> String {
     let mut lines = vec![
         "\n  ⚡ Event Processed".to_string(),
         format!("  ID: {}", result.event_id),
-        format!("  Time: {}", &result.timestamp[..19.min(result.timestamp.len())]),
+        format!(
+            "  Time: {}",
+            &result.timestamp[..19.min(result.timestamp.len())]
+        ),
         format!("  Keywords: {}", result.keywords.join(", ")),
         String::new(),
         "  Capsule encoded:".to_string(),
-        format!("    {}", &result.capsule_title[..result.capsule_title.len().min(80)]),
+        format!(
+            "    {}",
+            &result.capsule_title[..result.capsule_title.len().min(80)]
+        ),
         String::new(),
         format!(
             "  Related academic papers ({}):",
@@ -164,10 +196,7 @@ pub fn render_event_report(result: &EventResult) -> String {
     ];
 
     for r in &result.related_papers {
-        lines.push(format!(
-            "    {} relevance={:.2}",
-            r.paper_id, r.relevance
-        ));
+        lines.push(format!("    {} relevance={:.2}", r.paper_id, r.relevance));
         lines.push(format!("    {}", &r.title[..r.title.len().min(70)]));
     }
     lines.push(String::new());

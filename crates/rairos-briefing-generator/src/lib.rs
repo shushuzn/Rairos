@@ -73,11 +73,7 @@ fn load_gene_pool() -> Vec<serde_json::Map<String, serde_json::Value>> {
             } else if let Some(obj) = data.as_object() {
                 obj.get("capsules")
                     .and_then(|v| v.as_array())
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|v| v.as_object().cloned())
-                            .collect()
-                    })
+                    .map(|arr| arr.iter().filter_map(|v| v.as_object().cloned()).collect())
                     .unwrap_or_default()
             } else {
                 Vec::new()
@@ -108,7 +104,11 @@ fn load_research_memory() -> Vec<serde_json::Map<String, serde_json::Value>> {
     }
 }
 
-fn match_gene_pool(_arxiv_id: &str, title: &str, abstract_text: &str) -> Vec<serde_json::Map<String, serde_json::Value>> {
+fn match_gene_pool(
+    _arxiv_id: &str,
+    title: &str,
+    abstract_text: &str,
+) -> Vec<serde_json::Map<String, serde_json::Value>> {
     let gene_pool = load_gene_pool();
     if gene_pool.is_empty() {
         return Vec::new();
@@ -148,13 +148,19 @@ fn match_gene_pool(_arxiv_id: &str, title: &str, abstract_text: &str) -> Vec<ser
             .and_then(|v| v.as_f64())
             .unwrap_or(0.0);
 
-        let overlap = keywords.iter().filter(|kw| text.contains(kw.as_str())).count() as f64;
+        let overlap = keywords
+            .iter()
+            .filter(|kw| text.contains(kw.as_str()))
+            .count() as f64;
 
         if overlap >= 1.0 || (!gap_title.is_empty() && overlap > 0.0) {
             let mut m = serde_json::Map::new();
             m.insert("gap_title".to_string(), serde_json::json!(gap_title));
             m.insert("gap_type".to_string(), serde_json::json!(gap_type));
-            m.insert("outcome_score".to_string(), serde_json::json!(outcome_score));
+            m.insert(
+                "outcome_score".to_string(),
+                serde_json::json!(outcome_score),
+            );
             m.insert(
                 "match_reason".to_string(),
                 serde_json::json!(if overlap > 0.0 {
@@ -208,27 +214,45 @@ fn match_research_memory(
             let mut m = serde_json::Map::new();
             m.insert(
                 "stance_id".to_string(),
-                stance.get("stance_id").cloned().unwrap_or(serde_json::Value::Null),
+                stance
+                    .get("stance_id")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
             );
             m.insert(
                 "topic".to_string(),
-                stance.get("topic").cloned().unwrap_or(serde_json::Value::Null),
+                stance
+                    .get("topic")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
             );
             m.insert(
                 "claim".to_string(),
-                stance.get("claim").cloned().unwrap_or(serde_json::Value::Null),
+                stance
+                    .get("claim")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
             );
             m.insert(
                 "stance".to_string(),
-                stance.get("stance").cloned().unwrap_or(serde_json::Value::Null),
+                stance
+                    .get("stance")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
             );
             m.insert(
                 "confidence".to_string(),
-                stance.get("confidence").cloned().unwrap_or(serde_json::json!(0.0)),
+                stance
+                    .get("confidence")
+                    .cloned()
+                    .unwrap_or(serde_json::json!(0.0)),
             );
             m.insert(
                 "evidence_refs".to_string(),
-                stance.get("evidence_refs").cloned().unwrap_or(serde_json::Value::Null),
+                stance
+                    .get("evidence_refs")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
             );
             matches.push(m);
         }
@@ -260,7 +284,12 @@ impl BriefingGenerator {
         let gene_pool_matches = match_gene_pool(arxiv_id, &paper_title, &abstract_text);
         let memory_stances = match_research_memory(arxiv_id, &paper_title, &abstract_text);
 
-        let (verdict, verdict_reason) = self.compute_verdict(&paper_title, &abstract_text, &gene_pool_matches, &memory_stances);
+        let (verdict, verdict_reason) = self.compute_verdict(
+            &paper_title,
+            &abstract_text,
+            &gene_pool_matches,
+            &memory_stances,
+        );
 
         let sections = self.generate_metadata_briefing(
             &paper_title,
@@ -326,9 +355,12 @@ impl BriefingGenerator {
             );
         }
 
-        let validates_gaps = gene_pool_matches
-            .iter()
-            .any(|m| m.get("outcome_score").and_then(|v| v.as_f64()).unwrap_or(0.0) >= 0.5);
+        let validates_gaps = gene_pool_matches.iter().any(|m| {
+            m.get("outcome_score")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.0)
+                >= 0.5
+        });
 
         let contradiction_signals = [
             "fail to",
@@ -398,12 +430,27 @@ impl BriefingGenerator {
         ];
 
         if !gene_pool_matches.is_empty() {
-            let mut lines = vec![format!("**Relevant Gene Pool Gaps ({}):**", gene_pool_matches.len())];
+            let mut lines = vec![format!(
+                "**Relevant Gene Pool Gaps ({}):**",
+                gene_pool_matches.len()
+            )];
             for m in gene_pool_matches {
-                let gap_title = m.get("gap_title").and_then(|v| v.as_str()).unwrap_or("(unknown)");
-                let gap_type = m.get("gap_type").and_then(|v| v.as_str()).unwrap_or("unknown");
-                let score = m.get("outcome_score").and_then(|v| v.as_f64()).unwrap_or(0.0);
-                lines.push(format!("- [{}] {} (score: {:.2})", gap_type, gap_title, score));
+                let gap_title = m
+                    .get("gap_title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("(unknown)");
+                let gap_type = m
+                    .get("gap_type")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("unknown");
+                let score = m
+                    .get("outcome_score")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0);
+                lines.push(format!(
+                    "- [{}] {} (score: {:.2})",
+                    gap_type, gap_title, score
+                ));
             }
             sections.push(BriefingSection {
                 title: "Gene Pool Relevance".to_string(),
@@ -418,8 +465,14 @@ impl BriefingGenerator {
                 memory_stances.len()
             )];
             for s in memory_stances {
-                let stance_type = s.get("stance").and_then(|v| v.as_str()).unwrap_or("unknown");
-                let topic = s.get("topic").and_then(|v| v.as_str()).unwrap_or("(unknown)");
+                let stance_type = s
+                    .get("stance")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("unknown");
+                let topic = s
+                    .get("topic")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("(unknown)");
                 let claim = s.get("claim").and_then(|v| v.as_str()).unwrap_or("");
                 lines.push(format!(
                     "- [{}] {}: {}",
@@ -461,11 +514,21 @@ impl BriefingGenerator {
 **Authors:** {} | **Generated:** {}",
                 briefing.paper_arxiv_id,
                 briefing.paper_arxiv_id,
-                authors.iter().take(3).map(|s| s.as_str()).collect::<Vec<_>>().join(", "),
+                authors
+                    .iter()
+                    .take(3)
+                    .map(|s| s.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", "),
                 now
             ),
             String::new(),
-            format!("**Verdict:** {} **{}** — {}", emoji, briefing.verdict.to_uppercase(), briefing.verdict_reason),
+            format!(
+                "**Verdict:** {} **{}** — {}",
+                emoji,
+                briefing.verdict.to_uppercase(),
+                briefing.verdict_reason
+            ),
             String::new(),
         ];
 
@@ -480,11 +543,23 @@ impl BriefingGenerator {
             lines.push("## Gene Pool Matches".to_string());
             lines.push(String::new());
             for m in &briefing.gene_pool_matches {
-                let gap_type = m.get("gap_type").and_then(|v| v.as_str()).unwrap_or("unknown");
-                let gap_title = m.get("gap_title").and_then(|v| v.as_str()).unwrap_or("(unknown)");
-                let score = m.get("outcome_score").and_then(|v| v.as_f64()).unwrap_or(0.0);
+                let gap_type = m
+                    .get("gap_type")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("unknown");
+                let gap_title = m
+                    .get("gap_title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("(unknown)");
+                let score = m
+                    .get("outcome_score")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0);
                 let reason = m.get("match_reason").and_then(|v| v.as_str()).unwrap_or("");
-                lines.push(format!("- **[{}]** {} (score: {:.2}) — {}", gap_type, gap_title, score, reason));
+                lines.push(format!(
+                    "- **[{}]** {} (score: {:.2}) — {}",
+                    gap_type, gap_title, score, reason
+                ));
             }
             lines.push(String::new());
         }
@@ -493,16 +568,30 @@ impl BriefingGenerator {
             lines.push("## Research Memory Alignment".to_string());
             lines.push(String::new());
             for s in &briefing.memory_stances {
-                let stance_type = s.get("stance").and_then(|v| v.as_str()).unwrap_or("unknown");
-                let topic = s.get("topic").and_then(|v| v.as_str()).unwrap_or("(unknown)");
+                let stance_type = s
+                    .get("stance")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("unknown");
+                let topic = s
+                    .get("topic")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("(unknown)");
                 let claim = s.get("claim").and_then(|v| v.as_str()).unwrap_or("");
-                lines.push(format!("- **[{}]** {}: {}", stance_type.to_uppercase(), topic, &claim[..claim.len().min(80)]));
+                lines.push(format!(
+                    "- **[{}]** {}: {}",
+                    stance_type.to_uppercase(),
+                    topic,
+                    &claim[..claim.len().min(80)]
+                ));
             }
             lines.push(String::new());
         }
 
         lines.push("---".to_string());
-        lines.push(format!("_Generated by Rairos BriefingGenerator on {}_", now));
+        lines.push(format!(
+            "_Generated by Rairos BriefingGenerator on {}_",
+            now
+        ));
 
         lines.join("\n")
     }

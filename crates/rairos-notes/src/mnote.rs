@@ -94,11 +94,7 @@ fn append_view_evolution_log(
     }
 }
 
-pub fn ensure_or_update_mnote(
-    mnote_dir: &Path,
-    tag: &str,
-    top3: &[PathBuf],
-) -> Option<PathBuf> {
+pub fn ensure_or_update_mnote(mnote_dir: &Path, tag: &str, top3: &[PathBuf]) -> Option<PathBuf> {
     std::fs::create_dir_all(mnote_dir).ok()?;
     if top3.len() < 3 {
         return None;
@@ -170,4 +166,181 @@ pub fn ensure_or_update_mnote(
     }
 
     Some(path.clone())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_short_removes_p_prefix() {
+        let result = short("P - 2017 - Attention Is All You Need", 19);
+        assert!(!result.contains("P"));
+        assert!(!result.contains("2017"));
+    }
+
+    #[test]
+    fn test_short_truncates_long_names() {
+        let result = short(
+            "P - 2017 - Very Long Paper Title That Should Be Truncated",
+            19,
+        );
+        // Should be <= 19 chars with ~XXXXX suffix
+        assert!(result.len() <= 19);
+        assert!(result.contains('~'));
+    }
+
+    #[test]
+    fn test_short_preserves_short_names() {
+        let result = short("P - 2020 - GPT-3", 19);
+        assert_eq!(result, "GPT-3");
+    }
+
+    #[test]
+    fn test_short_handles_no_p_prefix() {
+        let result = short("Some Paper Title", 19);
+        assert_eq!(result, "Some Paper Title");
+    }
+
+    #[test]
+    fn test_mnote_filename_format() {
+        let a = Path::new("P - 2017 - Attention Is All You Need.md");
+        let b = Path::new("P - 2020 - GPT-3.md");
+        let c = Path::new("P - 2023 - Claude.md");
+        let result = mnote_filename("LLM", &a, &b, &c);
+        assert!(result.starts_with("M - LLM - "));
+        assert!(result.ends_with(".md"));
+        assert!(result.contains(" vs "));
+    }
+
+    #[test]
+    fn test_parse_current_abc() {
+        let md = r#"
+## 当前 A/B/C（自动补齐）
+
+- A: P - 2017 - Attention
+- B: P - 2020 - GPT-3
+- C: P - 2023 - Claude
+"#;
+        let (a, b, c) = parse_current_abc(md);
+        assert!(a.unwrap().contains("Attention"));
+        assert!(b.unwrap().contains("GPT-3"));
+        assert!(c.unwrap().contains("Claude"));
+    }
+
+    #[test]
+    fn test_parse_current_abc_missing_field() {
+        let md = r#"
+## 当前 A/B/C（自动补齐）
+
+- A: Paper A
+- C: Paper C
+"#;
+        let (a, b, c) = parse_current_abc(md);
+        assert!(a.is_some());
+        assert!(b.is_none());
+        assert!(c.is_some());
+    }
+
+    #[test]
+    fn test_append_view_evolution_log_creates_section() {
+        let md = "# M - Test\n\nSome content";
+        let result = append_view_evolution_log(
+            md,
+            (None, None, None),
+            (
+                Some("A1".to_string()),
+                Some("B1".to_string()),
+                Some("C1".to_string()),
+            ),
+        );
+        assert!(result.contains("## View Evolution Log"));
+        assert!(result.contains("A1"));
+        assert!(result.contains("B1"));
+        assert!(result.contains("C1"));
+    }
+
+    #[test]
+    fn test_append_view_evolution_log_appends_to_existing() {
+        let md = "# M - Test\n\n## View Evolution Log\n\n* 2024-01-01\n\n  * Old entry";
+        let result = append_view_evolution_log(
+            md,
+            (
+                Some("OldA".to_string()),
+                Some("OldB".to_string()),
+                Some("OldC".to_string()),
+            ),
+            (
+                Some("NewA".to_string()),
+                Some("NewB".to_string()),
+                Some("NewC".to_string()),
+            ),
+        );
+        assert!(result.contains("OldA"));
+        assert!(result.contains("NewA"));
+        // Should have two dated entries
+        let count = result.matches("* 20").count();
+        assert!(count >= 2);
+    }
+
+    #[test]
+    fn test_ensure_or_update_mnote_creates_new() {
+        let tmp_dir = std::env::temp_dir().join("mnote_test_create");
+        std::fs::create_dir_all(&tmp_dir).ok();
+
+        let a = tmp_dir.join("P - 2017 - Attention.md");
+        let b = tmp_dir.join("P - 2020 - GPT-3.md");
+        let c = tmp_dir.join("P - 2023 - Claude.md");
+        std::fs::write(&a, "").ok();
+        std::fs::write(&b, "").ok();
+        std::fs::write(&c, "").ok();
+
+        let result = ensure_or_update_mnote(&tmp_dir, "LLM", &[a.clone(), b.clone(), c.clone()]);
+        assert!(result.is_some());
+        let path = result.unwrap();
+        assert!(path.exists());
+        let content = std::fs::read_to_string(&path).unwrap();
+        assert!(content.contains("# M - LLM:"));
+        assert!(content.contains("## 比较维度"));
+
+        std::fs::remove_dir_all(&tmp_dir).ok();
+    }
+
+    #[test]
+    fn test_ensure_or_update_mnote_less_than_3_returns_none() {
+        let tmp_dir = std::env::temp_dir().join("mnote_test_less");
+        std::fs::create_dir_all(&tmp_dir).ok();
+        let a = tmp_dir.join("A.md");
+        std::fs::write(&a, "").ok();
+        let result = ensure_or_update_mnote(&tmp_dir, "LLM", &[a.clone()]);
+        assert!(result.is_none());
+        std::fs::remove_dir_all(&tmp_dir).ok();
+    }
+
+    #[test]
+    fn test_ensure_or_update_mnote_updates_existing_abc() {
+        let tmp_dir = std::env::temp_dir().join("mnote_test_update");
+        std::fs::create_dir_all(&tmp_dir).ok();
+
+        let a = tmp_dir.join("P - 2017 - OldPaper.md");
+        let b = tmp_dir.join("P - 2020 - GPT3.md");
+        let c = tmp_dir.join("P - 2023 - Claude.md");
+        let d = tmp_dir.join("P - 2024 - NewPaper.md");
+        std::fs::write(&a, "").ok();
+        std::fs::write(&b, "").ok();
+        std::fs::write(&c, "").ok();
+        std::fs::write(&d, "").ok();
+
+        // Create initial mnote
+        let initial =
+            ensure_or_update_mnote(&tmp_dir, "LLM", &[a.clone(), b.clone(), c.clone()]).unwrap();
+
+        // Update with new papers
+        let result = ensure_or_update_mnote(&tmp_dir, "LLM", &[d.clone(), b.clone(), c.clone()]);
+        assert!(result.is_some());
+        let content = std::fs::read_to_string(&initial).unwrap();
+        assert!(content.contains("P - 2024 - NewPaper") || content.contains("View Evolution Log"));
+
+        std::fs::remove_dir_all(&tmp_dir).ok();
+    }
 }

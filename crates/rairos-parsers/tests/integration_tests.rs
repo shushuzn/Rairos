@@ -3,8 +3,7 @@
 //! These tests verify the search API functionality.
 
 use rairos_parsers::{
-    cross_search_blocking, semantic_search_blocking, Source,
-    SearchError, SearchResult,
+    cross_search_blocking, semantic_search_blocking, SearchError, SearchResult, Source,
 };
 
 /// Test cross_search functionality
@@ -21,18 +20,18 @@ mod cross_search_tests {
     #[test]
     fn test_search_result_has_source() {
         use rairos_core::Paper;
-        
+
         let paper = Paper::new(
             Some("2301.00001".to_string()),
             "Test Title".to_string(),
             "Test abstract".to_string(),
         );
-        
+
         let result = SearchResult {
             paper,
             source: Source::ArXiv,
         };
-        
+
         assert_eq!(result.source, Source::ArXiv);
         assert_eq!(result.paper.title, "Test Title");
     }
@@ -141,7 +140,11 @@ mod paper_tests {
                 "Yoshua Bengio".to_string(),
                 "Geoffrey Hinton".to_string(),
             ],
-            vec!["cs.CL".to_string(), "cs.LG".to_string(), "cs.AI".to_string()],
+            vec![
+                "cs.CL".to_string(),
+                "cs.LG".to_string(),
+                "cs.AI".to_string(),
+            ],
             Default::default(),
         );
 
@@ -182,7 +185,8 @@ mod error_tests {
         let parse_failed = SearchError::ParseFailed("invalid xml".to_string());
         assert!(!parse_failed.to_string().is_empty());
 
-        let json_err = SearchError::Json(serde_json::from_str::<serde_json::Value>("invalid").unwrap_err());
+        let json_err =
+            SearchError::Json(serde_json::from_str::<serde_json::Value>("invalid").unwrap_err());
         assert!(!json_err.to_string().is_empty());
     }
 }

@@ -2,7 +2,7 @@
 //!
 //! Ported from `llm/evolution_report.py`.
 
-use chrono::{Utc, Duration};
+use chrono::{Duration, Utc};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -10,15 +10,28 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::PathBuf;
 
-use rairos_evolution::{EvolutionMemory, get_evolution_memory};
+use rairos_evolution::{get_evolution_memory, EvolutionMemory};
 
 lazy_static! {
     static ref STOPWORDS: HashSet<&'static str> = {
         let mut s = HashSet::new();
-        s.insert("the"); s.insert("is"); s.insert("are"); s.insert("a"); s.insert("an");
-        s.insert("what"); s.insert("how"); s.insert("why"); s.insert("this"); s.insert("that");
-        s.insert("and"); s.insert("or"); s.insert("的"); s.insert("是"); s.insert("如何");
-        s.insert("什么"); s.insert("怎么");
+        s.insert("the");
+        s.insert("is");
+        s.insert("are");
+        s.insert("a");
+        s.insert("an");
+        s.insert("what");
+        s.insert("how");
+        s.insert("why");
+        s.insert("this");
+        s.insert("that");
+        s.insert("and");
+        s.insert("or");
+        s.insert("的");
+        s.insert("是");
+        s.insert("如何");
+        s.insert("什么");
+        s.insert("怎么");
         s
     };
 }
@@ -86,7 +99,11 @@ impl LearningReport {
         let mut lines = vec![
             "# AI Research OS 学习报告".to_string(),
             "".to_string(),
-            format!("*{} ~ {}*", &self.period_start[..10.min(self.period_start.len())], &self.period_end[..10.min(self.period_end.len())]),
+            format!(
+                "*{} ~ {}*",
+                &self.period_start[..10.min(self.period_start.len())],
+                &self.period_end[..10.min(self.period_end.len())]
+            ),
             "".to_string(),
         ];
 
@@ -113,13 +130,13 @@ impl LearningReport {
         ]);
 
         if !self.top_papers.is_empty() {
-            lines.extend(vec![
-                "### 你最常引用的论文".to_string(),
-                "".to_string(),
-            ]);
+            lines.extend(vec!["### 你最常引用的论文".to_string(), "".to_string()]);
             let top = &self.top_papers[0];
             lines.push(format!("**{}** 是你的「老朋友」——", top.title));
-            lines.push(format!("你引用了 {} 次，每次都有收获。", top.positive_count));
+            lines.push(format!(
+                "你引用了 {} 次，每次都有收获。",
+                top.positive_count
+            ));
             if self.top_papers.len() > 1 {
                 lines.push(String::new());
                 lines.push("其他你关注的论文：".to_string());
@@ -155,7 +172,10 @@ impl LearningReport {
             lines.extend(vec![
                 "### 系统预测".to_string(),
                 "".to_string(),
-                format!("基于你的探索轨迹，我猜你接下来会感兴趣：**{}**。", self.predicted_interests[0]),
+                format!(
+                    "基于你的探索轨迹，我猜你接下来会感兴趣：**{}**。",
+                    self.predicted_interests[0]
+                ),
                 "".to_string(),
             ]);
         }
@@ -215,7 +235,11 @@ impl EvolutionReporter {
         let highlight = self.generate_highlight(&feedbacks, &paper_insights);
 
         let mut top_papers = paper_insights.clone();
-        top_papers.sort_by(|a, b| b.boost_score().partial_cmp(&a.boost_score()).unwrap_or(std::cmp::Ordering::Equal));
+        top_papers.sort_by(|a, b| {
+            b.boost_score()
+                .partial_cmp(&a.boost_score())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         top_papers.truncate(5);
 
         LearningReport {
@@ -224,7 +248,11 @@ impl EvolutionReporter {
             total_queries: feedbacks.len() as i32,
             positive_rate: self.calc_positive_rate(&feedbacks),
             top_papers,
-            top_keywords: self.extract_top_keywords(&feedbacks).into_iter().take(5).collect(),
+            top_keywords: self
+                .extract_top_keywords(&feedbacks)
+                .into_iter()
+                .take(5)
+                .collect(),
             emerging_patterns: self.find_emerging_patterns(&feedbacks),
             predicted_interests: predicted,
             questions_to_explore: suggestions,
@@ -255,7 +283,10 @@ impl EvolutionReporter {
         feedbacks
     }
 
-    fn analyze_paper_insights(&self, feedbacks: &[HashMap<String, serde_json::Value>]) -> Vec<PaperInsight> {
+    fn analyze_paper_insights(
+        &self,
+        feedbacks: &[HashMap<String, serde_json::Value>],
+    ) -> Vec<PaperInsight> {
         let mut paper_data: HashMap<String, PaperInsightData> = HashMap::new();
 
         for fb in feedbacks {
@@ -302,14 +333,23 @@ impl EvolutionReporter {
             .collect()
     }
 
-    fn extract_top_keywords(&self, feedbacks: &[HashMap<String, serde_json::Value>]) -> Vec<String> {
+    fn extract_top_keywords(
+        &self,
+        feedbacks: &[HashMap<String, serde_json::Value>],
+    ) -> Vec<String> {
         let all_text: String = feedbacks
             .iter()
             .filter_map(|fb| {
                 let query = fb.get("query").and_then(|v| v.as_str()).unwrap_or("");
-                let papers: String = fb.get("paper_ids")
+                let papers: String = fb
+                    .get("paper_ids")
                     .and_then(|v| v.as_array())
-                    .map(|arr| arr.iter().filter_map(|p| p.as_str()).collect::<Vec<_>>().join(" "))
+                    .map(|arr| {
+                        arr.iter()
+                            .filter_map(|p| p.as_str())
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                    })
                     .unwrap_or_default();
                 Some(format!("{} {}", query, papers))
             })
@@ -329,10 +369,17 @@ impl EvolutionReporter {
 
         let mut sorted: Vec<(&str, usize)> = word_counts.into_iter().collect();
         sorted.sort_by(|a, b| b.1.cmp(&a.1));
-        sorted.into_iter().take(10).map(|(w, _)| w.to_string()).collect()
+        sorted
+            .into_iter()
+            .take(10)
+            .map(|(w, _)| w.to_string())
+            .collect()
     }
 
-    fn find_emerging_patterns(&self, feedbacks: &[HashMap<String, serde_json::Value>]) -> Vec<String> {
+    fn find_emerging_patterns(
+        &self,
+        feedbacks: &[HashMap<String, serde_json::Value>],
+    ) -> Vec<String> {
         let mut patterns = Vec::new();
         let compare_kw = ["vs", "versus", "比较", "区别", "diff", "对比"];
         let compare_count: usize = feedbacks
@@ -353,7 +400,12 @@ impl EvolutionReporter {
 
         let long_queries: usize = feedbacks
             .iter()
-            .filter(|fb| fb.get("query").and_then(|v| v.as_str()).map(|q| q.len() > 30).unwrap_or(false))
+            .filter(|fb| {
+                fb.get("query")
+                    .and_then(|v| v.as_str())
+                    .map(|q| q.len() > 30)
+                    .unwrap_or(false)
+            })
             .count();
 
         if long_queries > feedbacks.len() / 2 {
@@ -363,7 +415,11 @@ impl EvolutionReporter {
         patterns
     }
 
-    fn generate_suggestions(&self, feedbacks: &[HashMap<String, serde_json::Value>], paper_insights: &[PaperInsight]) -> Vec<String> {
+    fn generate_suggestions(
+        &self,
+        feedbacks: &[HashMap<String, serde_json::Value>],
+        paper_insights: &[PaperInsight],
+    ) -> Vec<String> {
         let mut suggestions = Vec::new();
         if let Some(top_paper) = paper_insights.first() {
             suggestions.push(format!("深入探索 \"{}\" 的相关工作", top_paper.paper_id));
@@ -380,7 +436,11 @@ impl EvolutionReporter {
         suggestions
     }
 
-    fn predict_interests(&self, feedbacks: &[HashMap<String, serde_json::Value>], _paper_insights: &[PaperInsight]) -> Vec<String> {
+    fn predict_interests(
+        &self,
+        feedbacks: &[HashMap<String, serde_json::Value>],
+        _paper_insights: &[PaperInsight],
+    ) -> Vec<String> {
         let mut predictions = Vec::new();
         let recent_queries: String = feedbacks
             .iter()
@@ -416,19 +476,35 @@ impl EvolutionReporter {
     }
 
     fn get_evolution_status(&self, stats: &HashMap<String, serde_json::Value>) -> (String, String) {
-        let reliable = stats.get("reliable_patterns").and_then(|v| v.as_i64()).unwrap_or(0);
+        let reliable = stats
+            .get("reliable_patterns")
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0);
         if reliable >= 5 {
             ("🚀 进化期".to_string(), "系统已具备自进化能力".to_string())
         } else if reliable >= 3 {
-            ("🌲 成熟期".to_string(), "扩展模式库，覆盖更多场景".to_string())
+            (
+                "🌲 成熟期".to_string(),
+                "扩展模式库，覆盖更多场景".to_string(),
+            )
         } else if reliable >= 1 {
-            ("🌳 成长期".to_string(), "积累 10+ 反馈，强化现有模式".to_string())
+            (
+                "🌳 成长期".to_string(),
+                "积累 10+ 反馈，强化现有模式".to_string(),
+            )
         } else {
-            ("🌱 种子期".to_string(), "继续使用，系统会持续学习".to_string())
+            (
+                "🌱 种子期".to_string(),
+                "继续使用，系统会持续学习".to_string(),
+            )
         }
     }
 
-    fn generate_user_journey(&self, feedbacks: &[HashMap<String, serde_json::Value>], _paper_insights: &[PaperInsight]) -> String {
+    fn generate_user_journey(
+        &self,
+        feedbacks: &[HashMap<String, serde_json::Value>],
+        _paper_insights: &[PaperInsight],
+    ) -> String {
         let total = feedbacks.len();
         if total >= 20 {
             format!("这是充实的一周！你深入探索了 {} 个问题。", total)
@@ -443,12 +519,23 @@ impl EvolutionReporter {
         }
     }
 
-    fn generate_system_learned(&self, feedbacks: &[HashMap<String, serde_json::Value>], _paper_insights: &[PaperInsight], stats: &HashMap<String, serde_json::Value>) -> String {
-        let reliable = stats.get("reliable_patterns").and_then(|v| v.as_i64()).unwrap_or(0);
+    fn generate_system_learned(
+        &self,
+        feedbacks: &[HashMap<String, serde_json::Value>],
+        _paper_insights: &[PaperInsight],
+        stats: &HashMap<String, serde_json::Value>,
+    ) -> String {
+        let reliable = stats
+            .get("reliable_patterns")
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0);
         let total = feedbacks.len();
 
         if reliable >= 5 {
-            format!("我已经学会了 {} 个有效的回应模式，能够更好地帮助你理解论文。", reliable)
+            format!(
+                "我已经学会了 {} 个有效的回应模式，能够更好地帮助你理解论文。",
+                reliable
+            )
         } else if reliable >= 3 {
             let keywords = self.extract_top_keywords(feedbacks);
             let kw = keywords.first().map(|s| s.as_str()).unwrap_or("相关主题");
@@ -462,7 +549,11 @@ impl EvolutionReporter {
         }
     }
 
-    fn generate_highlight(&self, _feedbacks: &[HashMap<String, serde_json::Value>], paper_insights: &[PaperInsight]) -> String {
+    fn generate_highlight(
+        &self,
+        _feedbacks: &[HashMap<String, serde_json::Value>],
+        paper_insights: &[PaperInsight],
+    ) -> String {
         if paper_insights.is_empty() {
             return String::new();
         }
@@ -471,7 +562,10 @@ impl EvolutionReporter {
         let pos_count = top.positive_count;
 
         if pos_count >= 5 {
-            format!("「{}」是你最信赖的参考资料，被引用了 {} 次！", top.title, pos_count)
+            format!(
+                "「{}」是你最信赖的参考资料，被引用了 {} 次！",
+                top.title, pos_count
+            )
         } else if pos_count >= 3 {
             format!("「{}」成为你的研究利器，帮你解答了多个问题。", top.title)
         } else if pos_count >= 1 {
@@ -512,7 +606,6 @@ struct PaperInsightData {
     scores: Vec<f64>,
     queries: Vec<String>,
 }
-
 
 pub fn generate_evolution_report(days: i32) -> LearningReport {
     let reporter = EvolutionReporter::new(None);
@@ -558,18 +651,24 @@ impl AdaptiveRetrieval {
             HashMap::new()
         };
 
-        Self { boost_data, boost_file }
+        Self {
+            boost_data,
+            boost_file,
+        }
     }
 
     pub fn record_retrieval(&mut self, paper_id: &str, query: &str, was_useful: bool) {
-        let entry = self.boost_data.entry(paper_id.to_string()).or_insert(BoostEntry {
-            positive_mentions: 0,
-            negative_mentions: 0,
-            queries: vec![],
-            boost_score: 0.0,
-            confidence: 0.0,
-            last_update: String::new(),
-        });
+        let entry = self
+            .boost_data
+            .entry(paper_id.to_string())
+            .or_insert(BoostEntry {
+                positive_mentions: 0,
+                negative_mentions: 0,
+                queries: vec![],
+                boost_score: 0.0,
+                confidence: 0.0,
+                last_update: String::new(),
+            });
 
         if was_useful {
             entry.positive_mentions += 1;
@@ -582,7 +681,7 @@ impl AdaptiveRetrieval {
         }
 
         let total = entry.positive_mentions + entry.negative_mentions;
-            let (boost_score, confidence) = {
+        let (boost_score, confidence) = {
             let ws = Self::wilson_score(entry.positive_mentions, total, 0.95);
             let conf = (total as f64 / Self::CONFIDENCE_THRESHOLD as f64).min(1.0);
             (ws, conf)
@@ -702,16 +801,16 @@ mod tests {
     #[test]
     fn test_extract_top_keywords() {
         let reporter = EvolutionReporter::new(None);
-        let feedbacks: Vec<HashMap<String, serde_json::Value>> = vec![
-            serde_json::json!({
-                "query": "What is machine learning?",
-                "paper_ids": ["paper1", "paper2"]
-            }),
-        ]
+        let feedbacks: Vec<HashMap<String, serde_json::Value>> = vec![serde_json::json!({
+            "query": "What is machine learning?",
+            "paper_ids": ["paper1", "paper2"]
+        })]
         .into_iter()
         .map(|v| serde_json::from_value(v).unwrap())
         .collect();
         let keywords = reporter.extract_top_keywords(&feedbacks);
-        assert!(keywords.contains(&"machine".to_string()) || keywords.contains(&"learning".to_string()));
+        assert!(
+            keywords.contains(&"machine".to_string()) || keywords.contains(&"learning".to_string())
+        );
     }
 }

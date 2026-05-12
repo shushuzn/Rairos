@@ -72,11 +72,7 @@ pub struct SelfCorrectionState {
 pub const COVERAGE_THRESHOLD: f64 = 0.20;
 pub const CONSECUTIVE_CYCLES_THRESHOLD: usize = 3;
 
-const TRUST_BADGE_MULTIPLIER: &[(&str, f64)] = &[
-    ("high", 1.5),
-    ("medium", 1.0),
-    ("low", 0.3),
-];
+const TRUST_BADGE_MULTIPLIER: &[(&str, f64)] = &[("high", 1.5), ("medium", 1.0), ("low", 0.3)];
 
 pub fn compute_impact_score(
     success_score: f64,
@@ -89,8 +85,7 @@ pub fn compute_impact_score(
     let age_days = parse_age_days(created_at);
     let decay = (-lambda_ * age_days).exp();
     let feedback_bonus = (feedback_count as f64 + 1.0).ln();
-    let citation_boost = citation_boost_override
-        .unwrap_or(1.0 + 0.1 * inbound_citations as f64);
+    let citation_boost = citation_boost_override.unwrap_or(1.0 + 0.1 * inbound_citations as f64);
 
     let impact = success_score * decay * feedback_bonus * citation_boost;
     (round(impact, 4), round(age_days, 1))
@@ -171,15 +166,17 @@ pub fn predict_impact(
     };
     let citation_factor = 1.0 + 0.01 * inbound_citations as f64;
 
-    let predicted = 0.50 * success_score
-        + 0.25 * fb_bonus
-        + 0.15 * age_factor
-        + 0.10 * citation_factor;
+    let predicted =
+        0.50 * success_score + 0.25 * fb_bonus + 0.15 * age_factor + 0.10 * citation_factor;
 
-    let non_zero_features = [success_score > 0.0, feedback_count > 0, inbound_citations > 0]
-        .iter()
-        .filter(|&&b| b)
-        .count();
+    let non_zero_features = [
+        success_score > 0.0,
+        feedback_count > 0,
+        inbound_citations > 0,
+    ]
+    .iter()
+    .filter(|&&b| b)
+    .count();
     let confidence = if non_zero_features >= 3 {
         "high"
     } else if non_zero_features == 2 {
@@ -197,19 +194,37 @@ pub fn predict_impact(
     };
 
     let mut result = HashMap::new();
-    result.insert("predicted_impact".to_string(), serde_json::json!(round(predicted, 4)));
+    result.insert(
+        "predicted_impact".to_string(),
+        serde_json::json!(round(predicted, 4)),
+    );
     result.insert("confidence".to_string(), serde_json::json!(confidence));
     result.insert("verdict".to_string(), serde_json::json!(verdict));
-    result.insert("factors".to_string(), serde_json::json!({
-        "success_contribution": round(0.50 * success_score, 4),
-        "feedback_contribution": round(0.25 * fb_bonus, 4),
-        "age_factor": round(age_factor, 4),
-        "citation_factor": round(citation_factor, 4),
-    }));
-    result.insert("success_score".to_string(), serde_json::json!(success_score));
-    result.insert("feedback_count".to_string(), serde_json::json!(feedback_count));
-    result.insert("age_days".to_string(), serde_json::json!(round(age_days, 1)));
-    result.insert("inbound_citations".to_string(), serde_json::json!(inbound_citations));
+    result.insert(
+        "factors".to_string(),
+        serde_json::json!({
+            "success_contribution": round(0.50 * success_score, 4),
+            "feedback_contribution": round(0.25 * fb_bonus, 4),
+            "age_factor": round(age_factor, 4),
+            "citation_factor": round(citation_factor, 4),
+        }),
+    );
+    result.insert(
+        "success_score".to_string(),
+        serde_json::json!(success_score),
+    );
+    result.insert(
+        "feedback_count".to_string(),
+        serde_json::json!(feedback_count),
+    );
+    result.insert(
+        "age_days".to_string(),
+        serde_json::json!(round(age_days, 1)),
+    );
+    result.insert(
+        "inbound_citations".to_string(),
+        serde_json::json!(inbound_citations),
+    );
     result
 }
 
@@ -220,15 +235,17 @@ pub fn check_self_correction(
     let triggered = !gap_type_coverage.is_empty();
 
     for (gap_type, coverage) in gap_type_coverage {
-        if *coverage < COVERAGE_THRESHOLD
-            && !pending.contains(gap_type) {
-                pending.push(gap_type.clone());
-            }
+        if *coverage < COVERAGE_THRESHOLD && !pending.contains(gap_type) {
+            pending.push(gap_type.clone());
+        }
     }
 
     let mut result = HashMap::new();
     result.insert("triggered".to_string(), serde_json::json!(triggered));
-    result.insert("triggered_gap_types".to_string(), serde_json::json!(pending));
+    result.insert(
+        "triggered_gap_types".to_string(),
+        serde_json::json!(pending),
+    );
     result.insert("pending_gap_types".to_string(), serde_json::json!(pending));
     result.insert("corrections_triggered".to_string(), serde_json::json!({}));
     result
@@ -296,14 +313,16 @@ pub fn get_gap_type_momentum(
             }
         }
 
-        let gt = cap.get("action_gap_type")
+        let gt = cap
+            .get("action_gap_type")
             .and_then(|v| v.as_str())
             .unwrap_or("unknown");
         *new_by_gap_type.entry(gt.to_string()).or_insert(0) += 1;
     }
 
     let mut result: HashMap<String, HashMap<String, serde_json::Value>> = HashMap::new();
-    let all_gap_types: std::collections::HashSet<_> = new_by_gap_type.keys()
+    let all_gap_types: std::collections::HashSet<_> = new_by_gap_type
+        .keys()
         .chain(archived_by_gap_type.keys())
         .collect();
 
@@ -311,7 +330,11 @@ pub fn get_gap_type_momentum(
         let new_count = new_by_gap_type.get(gt).copied().unwrap_or(0);
         let archived_count = archived_by_gap_type.get(gt).copied().unwrap_or(0);
         let total = new_count + archived_count;
-        let momentum = if total == 0 { 1.0 } else { new_count as f64 / archived_count.max(1) as f64 };
+        let momentum = if total == 0 {
+            1.0
+        } else {
+            new_count as f64 / archived_count.max(1) as f64
+        };
 
         let trend = if new_count > archived_count {
             "rising"
@@ -324,7 +347,10 @@ pub fn get_gap_type_momentum(
         let mut entry = HashMap::new();
         entry.insert("new_7d".to_string(), serde_json::json!(new_count));
         entry.insert("archived_7d".to_string(), serde_json::json!(archived_count));
-        entry.insert("momentum".to_string(), serde_json::json!(round(momentum, 3)));
+        entry.insert(
+            "momentum".to_string(),
+            serde_json::json!(round(momentum, 3)),
+        );
         entry.insert("trend".to_string(), serde_json::json!(trend));
 
         result.insert(gt.clone(), entry);
@@ -348,14 +374,8 @@ mod tests {
 
     #[test]
     fn test_compute_impact_score() {
-        let (impact, age_days) = compute_impact_score(
-            0.8,
-            "2024-01-01T00:00:00Z",
-            10,
-            5,
-            DEFAULT_LAMBDA,
-            None,
-        );
+        let (impact, age_days) =
+            compute_impact_score(0.8, "2024-01-01T00:00:00Z", 10, 5, DEFAULT_LAMBDA, None);
         assert!(impact >= 0.0);
         assert!(age_days >= 0.0);
     }
@@ -403,7 +423,10 @@ mod tests {
         assert_eq!(get_adaptive_lambda("cs.AI", DEFAULT_LAMBDA), 0.02);
         assert_eq!(get_adaptive_lambda("cs.LG", DEFAULT_LAMBDA), 0.02);
         assert_eq!(get_adaptive_lambda("cs.CR", DEFAULT_LAMBDA), 0.005);
-        assert_eq!(get_adaptive_lambda("unknown", DEFAULT_LAMBDA), DEFAULT_LAMBDA);
+        assert_eq!(
+            get_adaptive_lambda("unknown", DEFAULT_LAMBDA),
+            DEFAULT_LAMBDA
+        );
         assert_eq!(get_adaptive_lambda("", DEFAULT_LAMBDA), DEFAULT_LAMBDA);
     }
 

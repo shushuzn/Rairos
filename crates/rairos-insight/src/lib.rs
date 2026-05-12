@@ -101,8 +101,14 @@ impl InsightCollection {
 pub fn render_insight_card(card: &InsightCard) -> String {
     let mut lines = Vec::new();
     lines.push(format!("# {}", card.title));
-    lines.push(format!("Topic: {} | Gap Type: {}", card.topic, card.gap_type));
-    lines.push(format!("Quality: {:.2} | Novelty: {:.2}", card.quality_score, card.novelty_score));
+    lines.push(format!(
+        "Topic: {} | Gap Type: {}",
+        card.topic, card.gap_type
+    ));
+    lines.push(format!(
+        "Quality: {:.2} | Novelty: {:.2}",
+        card.quality_score, card.novelty_score
+    ));
     if !card.impact_tags.is_empty() {
         lines.push(format!("Tags: {}", card.impact_tags.join(", ")));
     }
@@ -117,7 +123,10 @@ pub fn render_insight_collection(collection: &InsightCollection) -> String {
     }
 
     let mut lines = Vec::new();
-    lines.push(format!("# Insight Collection ({} cards)", collection.cards.len()));
+    lines.push(format!(
+        "# Insight Collection ({} cards)",
+        collection.cards.len()
+    ));
     lines.push(String::new());
 
     for card in &collection.cards {
@@ -221,7 +230,11 @@ mod tests {
                 id: format!("ins_{:03}", i),
                 title: format!("Insight {}", i),
                 content: "Content".to_string(),
-                topic: if i < 3 { "NLP".to_string() } else { "Vision".to_string() },
+                topic: if i < 3 {
+                    "NLP".to_string()
+                } else {
+                    "Vision".to_string()
+                },
                 gap_type: "method_gap".to_string(),
                 source_paper_id: None,
                 created_at: "2024-01-01T00:00:00Z".to_string(),

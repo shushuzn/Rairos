@@ -108,9 +108,11 @@ impl Default for HypothesisGenerator {
     }
 }
 
-pub const _HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT: &str = "You are a research hypothesis enhancement assistant.";
+pub const _HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT: &str =
+    "You are a research hypothesis enhancement assistant.";
 
-pub const _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE: &str = "Enhance the following hypothesis: {hypothesis}";
+pub const _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE: &str =
+    "Enhance the following hypothesis: {hypothesis}";
 
 #[cfg(test)]
 mod tests {

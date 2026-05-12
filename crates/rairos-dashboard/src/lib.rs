@@ -115,7 +115,14 @@ impl Dashboard {
         }
     }
 
-    pub fn add_paper(&mut self, id: &str, title: &str, year: Option<i32>, created_at: &str, tags: Vec<String>) {
+    pub fn add_paper(
+        &mut self,
+        id: &str,
+        title: &str,
+        year: Option<i32>,
+        created_at: &str,
+        tags: Vec<String>,
+    ) {
         self.papers.push(PaperRecord {
             id: id.to_string(),
             title: title.to_string(),
@@ -174,7 +181,9 @@ impl Dashboard {
     }
 
     fn collect_hot_papers(&self) -> Vec<HotPaper> {
-        let mut scored: Vec<(f64, i32, String, String, i32)> = self.papers.iter()
+        let mut scored: Vec<(f64, i32, String, String, i32)> = self
+            .papers
+            .iter()
             .filter_map(|p| {
                 let year = p.year?;
                 if !(2000..=2026).contains(&year) {
@@ -188,15 +197,21 @@ impl Dashboard {
 
         scored.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
 
-        scored.into_iter().take(10).map(|(velocity, fwd, pid, title, year)| {
-            HotPaper {
+        scored
+            .into_iter()
+            .take(10)
+            .map(|(velocity, fwd, pid, title, year)| HotPaper {
                 paper_id: pid,
-                title: if title.len() > 60 { format!("{}...", &title[..60]) } else { title },
+                title: if title.len() > 60 {
+                    format!("{}...", &title[..60])
+                } else {
+                    title
+                },
                 year,
                 velocity: (velocity * 10.0).round() / 10.0,
                 forward_cites: fwd,
-            }
-        }).collect()
+            })
+            .collect()
     }
 
     fn build_summary(&self, data: &DashboardData) -> HashMap<String, serde_json::Value> {
@@ -212,18 +227,42 @@ impl Dashboard {
             *experiments_by_status.entry(&e.status).or_insert(0) += 1;
         }
 
-        summary.insert("total_questions".to_string(), serde_json::json!(data.questions.len()));
-        summary.insert("questions_by_status".to_string(), serde_json::json!(questions_by_status));
-        summary.insert("total_experiments".to_string(), serde_json::json!(data.experiments.len()));
-        summary.insert("experiments_by_status".to_string(), serde_json::json!(experiments_by_status));
+        summary.insert(
+            "total_questions".to_string(),
+            serde_json::json!(data.questions.len()),
+        );
+        summary.insert(
+            "questions_by_status".to_string(),
+            serde_json::json!(questions_by_status),
+        );
+        summary.insert(
+            "total_experiments".to_string(),
+            serde_json::json!(data.experiments.len()),
+        );
+        summary.insert(
+            "experiments_by_status".to_string(),
+            serde_json::json!(experiments_by_status),
+        );
 
         if let Some(ref papers) = data.papers {
-            summary.insert("total_papers".to_string(), serde_json::json!(papers.total_papers));
-            summary.insert("papers_this_month".to_string(), serde_json::json!(papers.recent_papers));
+            summary.insert(
+                "total_papers".to_string(),
+                serde_json::json!(papers.total_papers),
+            );
+            summary.insert(
+                "papers_this_month".to_string(),
+                serde_json::json!(papers.recent_papers),
+            );
         }
 
-        summary.insert("hot_papers_count".to_string(), serde_json::json!(data.hot_papers.len()));
-        summary.insert("trends_count".to_string(), serde_json::json!(data.trends.len()));
+        summary.insert(
+            "hot_papers_count".to_string(),
+            serde_json::json!(data.hot_papers.len()),
+        );
+        summary.insert(
+            "trends_count".to_string(),
+            serde_json::json!(data.trends.len()),
+        );
 
         summary
     }
@@ -239,10 +278,23 @@ impl Dashboard {
 
         lines.push("## Summary".to_string());
         let s = &data.summary;
-        lines.push(format!("  Questions: {}", s.get("total_questions").and_then(|v| v.as_u64()).unwrap_or(0)));
-        lines.push(format!("  Experiments: {}", s.get("total_experiments").and_then(|v| v.as_u64()).unwrap_or(0)));
+        lines.push(format!(
+            "  Questions: {}",
+            s.get("total_questions")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(0)
+        ));
+        lines.push(format!(
+            "  Experiments: {}",
+            s.get("total_experiments")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(0)
+        ));
         if let Some(papers) = &data.papers {
-            lines.push(format!("  Papers: {} (this month: {})", papers.total_papers, papers.recent_papers));
+            lines.push(format!(
+                "  Papers: {} (this month: {})",
+                papers.total_papers, papers.recent_papers
+            ));
         }
 
         lines.push(String::new());
@@ -250,7 +302,13 @@ impl Dashboard {
         if !data.hot_papers.is_empty() {
             lines.push("## Hot Papers (by Citation Velocity)".to_string());
             for (i, p) in data.hot_papers.iter().take(5).enumerate() {
-                lines.push(format!("  {}. {}/y  {} ({}))", i + 1, p.velocity, p.title, p.year));
+                lines.push(format!(
+                    "  {}. {}/y  {} ({}))",
+                    i + 1,
+                    p.velocity,
+                    p.title,
+                    p.year
+                ));
             }
             lines.push(String::new());
         }
@@ -267,7 +325,11 @@ impl Dashboard {
                 let questions = &by_status[status];
                 lines.push(format!("  {} ({})", status.to_uppercase(), questions.len()));
                 for q in questions.iter().take(3) {
-                    let q_short = if q.question.len() > 50 { format!("{}...", &q.question[..50]) } else { q.question.clone() };
+                    let q_short = if q.question.len() > 50 {
+                        format!("{}...", &q.question[..50])
+                    } else {
+                        q.question.clone()
+                    };
                     lines.push(format!("    - [{}] {}", q.id, q_short));
                 }
             }
@@ -284,7 +346,11 @@ impl Dashboard {
             status_keys.sort();
             for status in status_keys {
                 let experiments = &by_status[status];
-                lines.push(format!("  {} ({})", status.to_uppercase(), experiments.len()));
+                lines.push(format!(
+                    "  {} ({})",
+                    status.to_uppercase(),
+                    experiments.len()
+                ));
                 for e in experiments.iter().take(3) {
                     lines.push(format!("    - [{}] {}", e.id, e.name));
                 }
@@ -317,8 +383,8 @@ impl Default for Dashboard {
     }
 }
 
-use std::iter::Iterator;
 use std::cmp::PartialOrd;
+use std::iter::Iterator;
 
 #[cfg(test)]
 mod tests {
@@ -333,7 +399,13 @@ mod tests {
     #[test]
     fn test_dashboard_add_paper() {
         let mut dashboard = Dashboard::new();
-        dashboard.add_paper("p1", "Test Paper", Some(2024), "2024-01-01T00:00:00Z", vec!["tag1".to_string()]);
+        dashboard.add_paper(
+            "p1",
+            "Test Paper",
+            Some(2024),
+            "2024-01-01T00:00:00Z",
+            vec!["tag1".to_string()],
+        );
         assert_eq!(dashboard.papers.len(), 1);
     }
 
@@ -348,7 +420,13 @@ mod tests {
     #[test]
     fn test_collect_paper_stats() {
         let mut dashboard = Dashboard::new();
-        dashboard.add_paper("p1", "Paper 1", Some(2024), &Utc::now().to_rfc3339(), vec!["cs.AI".to_string()]);
+        dashboard.add_paper(
+            "p1",
+            "Paper 1",
+            Some(2024),
+            &Utc::now().to_rfc3339(),
+            vec!["cs.AI".to_string()],
+        );
         let data = dashboard.collect();
         assert!(data.papers.is_some());
         if let Some(ref stats) = data.papers {

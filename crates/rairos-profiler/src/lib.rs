@@ -79,7 +79,9 @@ impl PerformanceProfiler {
 
     fn record_call(&self, name: &str, elapsed: f64) {
         let mut profiles = self.profiles.write().unwrap();
-        let profile = profiles.entry(name.to_string()).or_insert_with(|| FunctionProfile::new(name));
+        let profile = profiles
+            .entry(name.to_string())
+            .or_insert_with(|| FunctionProfile::new(name));
         profile.update(elapsed);
     }
 
@@ -91,7 +93,11 @@ impl PerformanceProfiler {
     pub fn get_all_profiles(&self) -> Vec<FunctionProfile> {
         let profiles = self.profiles.read().unwrap();
         let mut result: Vec<_> = profiles.values().cloned().collect();
-        result.sort_by(|a, b| b.total_time.partial_cmp(&a.total_time).unwrap_or(std::cmp::Ordering::Equal));
+        result.sort_by(|a, b| {
+            b.total_time
+                .partial_cmp(&a.total_time)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         result
     }
 
@@ -114,7 +120,10 @@ impl PerformanceProfiler {
             "=".repeat(70),
             String::new(),
             format!("Total profiling time: {:.2}s", now_secs() - self.start_time),
-            format!("Total functions tracked: {}", self.profiles.read().unwrap().len()),
+            format!(
+                "Total functions tracked: {}",
+                self.profiles.read().unwrap().len()
+            ),
             String::new(),
             "TOP 10 SLOWEST FUNCTIONS (by total time):".to_string(),
             "-".repeat(70),
@@ -159,7 +168,8 @@ impl PerformanceProfiler {
     }
 
     pub fn get_stats_dict(&self) -> serde_json::Value {
-        let slowest: Vec<_> = self.get_slowest_functions(10)
+        let slowest: Vec<_> = self
+            .get_slowest_functions(10)
             .into_iter()
             .map(|p| {
                 serde_json::json!({
@@ -173,7 +183,8 @@ impl PerformanceProfiler {
             })
             .collect();
 
-        let most_called: Vec<_> = self.get_most_called(10)
+        let most_called: Vec<_> = self
+            .get_most_called(10)
             .into_iter()
             .map(|p| {
                 serde_json::json!({
@@ -220,7 +231,8 @@ where
     let elapsed = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
-        .as_secs_f64() - start;
+        .as_secs_f64()
+        - start;
 
     let profile_name = name.unwrap_or("anonymous");
     profiler.record_call(profile_name, elapsed);
@@ -247,7 +259,8 @@ where
     let elapsed = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
-        .as_secs_f64() - start;
+        .as_secs_f64()
+        - start;
 
     profiler.record_call(name, elapsed);
 

@@ -21,7 +21,14 @@ pub struct Badge {
 }
 
 impl Badge {
-    pub fn new(id: &str, name: &str, description: &str, icon: &str, earned: bool, earned_at: Option<&str>) -> Self {
+    pub fn new(
+        id: &str,
+        name: &str,
+        description: &str,
+        icon: &str,
+        earned: bool,
+        earned_at: Option<&str>,
+    ) -> Self {
         Self {
             id: id.to_string(),
             name: name.to_string(),
@@ -58,11 +65,7 @@ fn load_capsules() -> Vec<serde_json::Map<String, serde_json::Value>> {
             if let Ok(data) = serde_json::from_str::<serde_json::Value>(&text) {
                 data.get("capsules")
                     .and_then(|v| v.as_array())
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|v| v.as_object().cloned())
-                            .collect()
-                    })
+                    .map(|arr| arr.iter().filter_map(|v| v.as_object().cloned()).collect())
                     .unwrap_or_default()
             } else {
                 Vec::new()
@@ -108,9 +111,9 @@ fn check_gap_extractor() -> bool {
 
 fn check_evolution_master() -> bool {
     let capsules = load_capsules();
-    capsules.iter().any(|c| {
-        c.get("evolved_from").is_some() || c.get("source_cap_id").is_some()
-    })
+    capsules
+        .iter()
+        .any(|c| c.get("evolved_from").is_some() || c.get("source_cap_id").is_some())
 }
 
 fn check_bold_explorer() -> bool {
@@ -125,7 +128,10 @@ fn check_bold_explorer() -> bool {
             .or_else(|| c.get("trigger_gap_type"))
             .and_then(|v| v.as_str())
             .unwrap_or("");
-        let polarity = c.get("polarity").and_then(|v| v.as_str()).unwrap_or("positive");
+        let polarity = c
+            .get("polarity")
+            .and_then(|v| v.as_str())
+            .unwrap_or("positive");
 
         if bold_types.contains(&gap_type) || bold_polarity.contains(&polarity) {
             count += 1;
@@ -146,21 +152,49 @@ fn check_rigor_rater() -> bool {
         return false;
     }
     match fs::read_to_string(&flag) {
-        Ok(text) => {
-            text.trim().parse::<i32>().map(|n| n >= 10).unwrap_or(false)
-        }
+        Ok(text) => text.trim().parse::<i32>().map(|n| n >= 10).unwrap_or(false),
         Err(_) => false,
     }
 }
 
 pub fn compute_badges() -> Vec<Badge> {
     let checks: Vec<(&str, &str, &str, fn() -> bool)> = vec![
-        ("contradiction_hunter", "Contradiction Hunter", "Detect 3+ contradiction pairs", || false),
-        ("gap_extractor", "Gap Extractor", "Build Gene Pool to 10+ capsules", check_gap_extractor),
-        ("evolution_master", "Evolution Master", "Have 1 capsule evolved", check_evolution_master),
-        ("bold_explorer", "Bold Explorer", "Collect 5 bold hypothesis capsules", check_bold_explorer),
-        ("rigor_rater", "Rigor Rater", "Score 10+ papers for research rigor", check_rigor_rater),
-        ("paradigm_sentinel", "Paradigm Sentinel", "Trigger a paradigm concentration alert", || false),
+        (
+            "contradiction_hunter",
+            "Contradiction Hunter",
+            "Detect 3+ contradiction pairs",
+            || false,
+        ),
+        (
+            "gap_extractor",
+            "Gap Extractor",
+            "Build Gene Pool to 10+ capsules",
+            check_gap_extractor,
+        ),
+        (
+            "evolution_master",
+            "Evolution Master",
+            "Have 1 capsule evolved",
+            check_evolution_master,
+        ),
+        (
+            "bold_explorer",
+            "Bold Explorer",
+            "Collect 5 bold hypothesis capsules",
+            check_bold_explorer,
+        ),
+        (
+            "rigor_rater",
+            "Rigor Rater",
+            "Score 10+ papers for research rigor",
+            check_rigor_rater,
+        ),
+        (
+            "paradigm_sentinel",
+            "Paradigm Sentinel",
+            "Trigger a paradigm concentration alert",
+            || false,
+        ),
     ];
 
     let icons: HashMap<&str, &str> = [
@@ -181,7 +215,9 @@ pub fn compute_badges() -> Vec<Badge> {
         let earned = check_fn();
         let saved_entry = saved.get(bid).and_then(|v| v.as_object());
         let earned_at = if earned {
-            let existing_at = saved_entry.and_then(|e| e.get("earned_at")).and_then(|v| v.as_str());
+            let existing_at = saved_entry
+                .and_then(|e| e.get("earned_at"))
+                .and_then(|v| v.as_str());
             if existing_at.is_some() && !existing_at.unwrap().is_empty() {
                 existing_at.map(|s| s.to_string())
             } else {
@@ -192,7 +228,10 @@ pub fn compute_badges() -> Vec<Badge> {
                 Some(ts)
             }
         } else {
-            saved_entry.and_then(|e| e.get("earned_at")).and_then(|v| v.as_str()).map(|s| s.to_string())
+            saved_entry
+                .and_then(|e| e.get("earned_at"))
+                .and_then(|v| v.as_str())
+                .map(|s| s.to_string())
         };
 
         badges.push(Badge::new(
@@ -275,7 +314,14 @@ mod tests {
 
     #[test]
     fn test_badge_new() {
-        let badge = Badge::new("test", "Test Badge", "A test badge", "🏆", true, Some("2024-01-01"));
+        let badge = Badge::new(
+            "test",
+            "Test Badge",
+            "A test badge",
+            "🏆",
+            true,
+            Some("2024-01-01"),
+        );
         assert_eq!(badge.id, "test");
         assert_eq!(badge.name, "Test Badge");
         assert!(badge.earned);
@@ -307,7 +353,14 @@ mod tests {
     #[test]
     fn test_render_game_mode_html() {
         let badges = vec![
-            Badge::new("test1", "Test 1", "Description 1", "🏆", true, Some("2024-01-01")),
+            Badge::new(
+                "test1",
+                "Test 1",
+                "Description 1",
+                "🏆",
+                true,
+                Some("2024-01-01"),
+            ),
             Badge::new("test2", "Test 2", "Description 2", "🎯", false, None),
         ];
         let html = render_game_mode_html(Some(badges));
@@ -320,8 +373,22 @@ mod tests {
     #[test]
     fn test_render_game_mode_html_earned_count() {
         let badges = vec![
-            Badge::new("test1", "Test 1", "Description 1", "🏆", true, Some("2024-01-01")),
-            Badge::new("test2", "Test 2", "Description 2", "🎯", true, Some("2024-01-02")),
+            Badge::new(
+                "test1",
+                "Test 1",
+                "Description 1",
+                "🏆",
+                true,
+                Some("2024-01-01"),
+            ),
+            Badge::new(
+                "test2",
+                "Test 2",
+                "Description 2",
+                "🎯",
+                true,
+                Some("2024-01-02"),
+            ),
             Badge::new("test3", "Test 3", "Description 3", "🎯", false, None),
         ];
         let html = render_game_mode_html(Some(badges));

@@ -114,11 +114,18 @@ pub fn render_citation_graph_svg(
         Some(g) => g,
         None => {
             let g = build_citation_graph(paper_id, paper_title, cited_paper_ids, cited_capsule_ids);
-            return render_citation_graph_svg(Some(&g), paper_id, paper_title, cited_paper_ids, cited_capsule_ids);
+            return render_citation_graph_svg(
+                Some(&g),
+                paper_id,
+                paper_title,
+                cited_paper_ids,
+                cited_capsule_ids,
+            );
         }
     };
 
-    let node_map: HashMap<&str, &GraphNode> = graph.nodes.iter().map(|n| (n.id.as_str(), n)).collect();
+    let node_map: HashMap<&str, &GraphNode> =
+        graph.nodes.iter().map(|n| (n.id.as_str(), n)).collect();
 
     let svg_nodes: Vec<String> = graph.nodes.iter().map(|n| {
         match n.node_type.as_str() {
@@ -143,19 +150,23 @@ pub fn render_citation_graph_svg(
         }
     }).collect();
 
-    let svg_edges: Vec<String> = graph.edges.iter().filter_map(|e| {
-        let from_node = node_map.get(e.from.as_str())?;
-        let to_node = node_map.get(e.to.as_str())?;
-        let style = if e.style.as_deref() == Some("dashed") {
-            "stroke-dasharray='4,3'"
-        } else {
-            ""
-        };
-        Some(format!(
-            "<line x1='{}' y1='{}' x2='{}' y2='{}' stroke='#aaa' stroke-width='1.2' {}/>",
-            from_node.x, from_node.y, to_node.x, to_node.y, style
-        ))
-    }).collect();
+    let svg_edges: Vec<String> = graph
+        .edges
+        .iter()
+        .filter_map(|e| {
+            let from_node = node_map.get(e.from.as_str())?;
+            let to_node = node_map.get(e.to.as_str())?;
+            let style = if e.style.as_deref() == Some("dashed") {
+                "stroke-dasharray='4,3'"
+            } else {
+                ""
+            };
+            Some(format!(
+                "<line x1='{}' y1='{}' x2='{}' y2='{}' stroke='#aaa' stroke-width='1.2' {}/>",
+                from_node.x, from_node.y, to_node.x, to_node.y, style
+            ))
+        })
+        .collect();
 
     let all_nodes_svg = svg_nodes.join("\n    ");
     let all_edges_svg = svg_edges.join("\n    ");

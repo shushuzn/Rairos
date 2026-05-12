@@ -123,9 +123,7 @@ impl EventBus {
     pub async fn subscribe(&self, event_type: &str) -> broadcast::Receiver<DaemonEvent> {
         let (tx, rx) = broadcast::channel(100);
         let mut subs = self.subscribers.lock().await;
-        subs.entry(event_type.to_string())
-            .or_default()
-            .push(tx);
+        subs.entry(event_type.to_string()).or_default().push(tx);
         rx
     }
 
@@ -166,7 +164,11 @@ impl EventBus {
     pub async fn get_history(&self, event_type: Option<&str>, limit: usize) -> Vec<DaemonEvent> {
         let history = self.history.lock().await;
         let filtered: Vec<_> = match event_type {
-            Some(et) => history.iter().filter(|e| e.event_type == et).cloned().collect(),
+            Some(et) => history
+                .iter()
+                .filter(|e| e.event_type == et)
+                .cloned()
+                .collect(),
             None => history.clone(),
         };
         filtered.into_iter().rev().take(limit).rev().collect()
@@ -212,14 +214,12 @@ impl SseServer {
             .and(with_event_bus(event_bus.clone()))
             .and_then(handle_health);
 
-        let routes = events_route
-            .or(health_route)
-            .with(
-                warp::cors()
-                    .allow_any_origin()
-                    .allow_headers(vec!["*"])
-                    .allow_methods(vec!["GET"]),
-            );
+        let routes = events_route.or(health_route).with(
+            warp::cors()
+                .allow_any_origin()
+                .allow_headers(vec!["*"])
+                .allow_methods(vec!["GET"]),
+        );
 
         let addr: std::net::SocketAddr = ([0, 0, 0, 0], self.port).into();
         tracing::info!("[SseServer] listening on http://{}/events", addr);
@@ -242,16 +242,16 @@ async fn handle_events(
 
     let rx = event_bus.subscribe(filter_type).await;
 
-    let stream = BroadcastStream::new(rx).map(|result| {
-        match result {
-            Ok(event) => {
-                let sse_data = event.to_sse();
-                Ok::<_, std::convert::Infallible>(warp::sse::Event::default().data(sse_data))
-            }
-            Err(e) => {
-                tracing::warn!("broadcast error: {}", e);
-                Ok::<_, std::convert::Infallible>(warp::sse::Event::default().data("event: error\ndata: broadcast error\n\n"))
-            }
+    let stream = BroadcastStream::new(rx).map(|result| match result {
+        Ok(event) => {
+            let sse_data = event.to_sse();
+            Ok::<_, std::convert::Infallible>(warp::sse::Event::default().data(sse_data))
+        }
+        Err(e) => {
+            tracing::warn!("broadcast error: {}", e);
+            Ok::<_, std::convert::Infallible>(
+                warp::sse::Event::default().data("event: error\ndata: broadcast error\n\n"),
+            )
         }
     });
 
@@ -287,7 +287,8 @@ mod tests {
         let bus = Arc::new(EventBus::new(50));
         let mut rx = bus.subscribe("test_event").await;
 
-        bus.publish("test_event", serde_json::json!({"key": "value"})).await;
+        bus.publish("test_event", serde_json::json!({"key": "value"}))
+            .await;
 
         let received = rx.recv().await.unwrap();
         assert_eq!(received.event_type, "test_event");
@@ -299,7 +300,8 @@ mod tests {
         let bus = Arc::new(EventBus::new(50));
         let mut rx = bus.subscribe("*").await;
 
-        bus.publish("any_event", serde_json::json!({"foo": "bar"})).await;
+        bus.publish("any_event", serde_json::json!({"foo": "bar"}))
+            .await;
 
         let received = rx.recv().await.unwrap();
         assert_eq!(received.event_type, "any_event");

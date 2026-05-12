@@ -351,7 +351,11 @@ impl ParallelResearchCoordinator {
     /// - `max_concurrency`: max parallel agents (default 3 — avoid rate limiting)
     /// - `max_iterations_per_agent`: iterations per agent (default 2)
     /// - `agent_timeout_seconds`: kill agent if it exceeds this timeout
-    pub fn new(max_concurrency: usize, max_iterations_per_agent: usize, agent_timeout_seconds: u64) -> Self {
+    pub fn new(
+        max_concurrency: usize,
+        max_iterations_per_agent: usize,
+        agent_timeout_seconds: u64,
+    ) -> Self {
         Self {
             max_concurrency,
             max_iterations_per_agent,
@@ -392,25 +396,31 @@ impl ParallelResearchCoordinator {
                     return None;
                 }
 
-                let gap_titles: Vec<String> = cluster
-                    .gaps
-                    .iter()
-                    .map(|g| g.title.clone())
-                    .collect();
+                let gap_titles: Vec<String> =
+                    cluster.gaps.iter().map(|g| g.title.clone()).collect();
 
                 let sub_topic = if cluster.keywords.is_empty() {
                     format!(
                         "{} — {}: {}",
                         topic,
                         cluster.gap_type,
-                        gap_titles.first().map(|t| t[..80.min(t.len())].to_string()).unwrap_or_default()
+                        gap_titles
+                            .first()
+                            .map(|t| t[..80.min(t.len())].to_string())
+                            .unwrap_or_default()
                     )
                 } else {
                     format!(
                         "{} — {}: {}",
                         topic,
                         cluster.gap_type,
-                        cluster.keywords.iter().take(3).cloned().collect::<Vec<_>>().join(", ")
+                        cluster
+                            .keywords
+                            .iter()
+                            .take(3)
+                            .cloned()
+                            .collect::<Vec<_>>()
+                            .join(", ")
                     )
                 };
 
@@ -495,7 +505,8 @@ impl ParallelResearchCoordinator {
         existing_papers: Option<Vec<serde_json::Value>>,
         orchestrator: Arc<dyn Orchestrator>,
     ) -> ParallelResearchResult {
-        self.run(topic, clusters, existing_papers, orchestrator).await
+        self.run(topic, clusters, existing_papers, orchestrator)
+            .await
     }
 }
 
@@ -512,7 +523,9 @@ mod tests {
             &self,
             topic: &str,
             _new_papers: Vec<serde_json::Value>,
-        ) -> Pin<Box<dyn Future<Output = Result<serde_json::Value, ParallelResearchError>> + Send + '_>> {
+        ) -> Pin<
+            Box<dyn Future<Output = Result<serde_json::Value, ParallelResearchError>> + Send + '_>,
+        > {
             let topic = topic.to_string();
             Box::pin(async move {
                 Ok(serde_json::json!({
@@ -530,7 +543,9 @@ mod tests {
     async fn test_coordinator_empty_clusters() {
         let coordinator = ParallelResearchCoordinator::default();
         let orchestrator: Arc<dyn Orchestrator> = Arc::new(MockOrchestrator);
-        let result = coordinator.run("test topic", vec![], None, orchestrator).await;
+        let result = coordinator
+            .run("test topic", vec![], None, orchestrator)
+            .await;
         assert_eq!(result.total_gaps, 0);
         assert_eq!(result.unique_gaps, 0);
     }
@@ -551,7 +566,9 @@ mod tests {
             gap_type: "method_limitation".to_string(),
             keywords: vec!["transformer".to_string()],
         }];
-        let result = coordinator.run("transformer efficiency", clusters, None, orchestrator).await;
+        let result = coordinator
+            .run("transformer efficiency", clusters, None, orchestrator)
+            .await;
         assert_eq!(result.total_gaps, 1);
         assert_eq!(result.unique_gaps, 1);
         assert_eq!(result.total_papers_analyzed, 10);
@@ -563,15 +580,13 @@ mod tests {
             AgentResult {
                 agent_id: "a0".to_string(),
                 cluster_id: "c0".to_string(),
-                gaps: vec![
-                    ResearchGap {
-                        title: "Same Gap".to_string(),
-                        gap_type: "method".to_string(),
-                        novelty_score: 0.5,
-                        description: "".to_string(),
-                        sources: vec![],
-                    },
-                ],
+                gaps: vec![ResearchGap {
+                    title: "Same Gap".to_string(),
+                    gap_type: "method".to_string(),
+                    novelty_score: 0.5,
+                    description: "".to_string(),
+                    sources: vec![],
+                }],
                 papers_analyzed: 5,
                 iterations: 1,
                 insights: vec![],
@@ -581,15 +596,13 @@ mod tests {
             AgentResult {
                 agent_id: "a1".to_string(),
                 cluster_id: "c1".to_string(),
-                gaps: vec![
-                    ResearchGap {
-                        title: "Same Gap".to_string(),
-                        gap_type: "method".to_string(),
-                        novelty_score: 0.9,
-                        description: "".to_string(),
-                        sources: vec![],
-                    },
-                ],
+                gaps: vec![ResearchGap {
+                    title: "Same Gap".to_string(),
+                    gap_type: "method".to_string(),
+                    novelty_score: 0.9,
+                    description: "".to_string(),
+                    sources: vec![],
+                }],
                 papers_analyzed: 7,
                 iterations: 2,
                 insights: vec![],
@@ -612,14 +625,12 @@ mod tests {
                 gaps: vec![],
                 papers_analyzed: 5,
                 iterations: 1,
-                insights: vec![
-                    Insight {
-                        title: "Duplicate Insight".to_string(),
-                        summary: "".to_string(),
-                        sources: vec![],
-                        confidence: 0.5,
-                    },
-                ],
+                insights: vec![Insight {
+                    title: "Duplicate Insight".to_string(),
+                    summary: "".to_string(),
+                    sources: vec![],
+                    confidence: 0.5,
+                }],
                 error: None,
                 duration_seconds: 1.0,
             },
@@ -665,7 +676,9 @@ mod tests {
             gap_type: "unknown".to_string(),
             keywords: vec![],
         }];
-        let result = coordinator.run_on_gap_clusters("topic", clusters, None, orchestrator).await;
+        let result = coordinator
+            .run_on_gap_clusters("topic", clusters, None, orchestrator)
+            .await;
         assert_eq!(result.total_gaps, 0);
     }
 }

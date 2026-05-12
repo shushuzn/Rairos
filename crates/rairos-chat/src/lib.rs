@@ -1,5 +1,5 @@
 use regex::Regex;
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 use std::collections::{HashMap, HashSet};
 
 pub const LLM_BASE_URL: &str = "https://api.openai.com/v1";
@@ -163,7 +163,8 @@ impl RagChat {
             return QueryType::General;
         }
 
-        scores.into_iter()
+        scores
+            .into_iter()
             .find(|(_, s)| *s == max_score)
             .map(|(k, _)| match k.as_str() {
                 "factual" => QueryType::Factual,
@@ -182,17 +183,18 @@ impl RagChat {
         ];
         let mut cleaned = text.to_string();
         for p in clean_patterns {
-            cleaned = Regex::new(p)
-                .map_or(cleaned.clone(), |r| r.replace_all(&cleaned, "").to_string());
+            cleaned =
+                Regex::new(p).map_or(cleaned.clone(), |r| r.replace_all(&cleaned, "").to_string());
         }
 
-        let stop_words = [
-            "的", "了", "是", "在", "和", "the", "a", "an", "is", "are",
-        ];
+        let stop_words = ["的", "了", "是", "在", "和", "the", "a", "an", "is", "are"];
 
         for word in cleaned.split_whitespace() {
             let word_trimmed = word.trim();
-            if word_trimmed.len() >= 2 && word_trimmed.len() <= 15 && !stop_words.contains(&word_trimmed) {
+            if word_trimmed.len() >= 2
+                && word_trimmed.len() <= 15
+                && !stop_words.contains(&word_trimmed)
+            {
                 return Some(word_trimmed.chars().take(20).collect());
             }
         }
@@ -230,7 +232,12 @@ impl RagChat {
         String::new()
     }
 
-    pub fn extract_snippet(&self, text: &str, query: &str, context_chars: usize) -> (String, String, i32, i32) {
+    pub fn extract_snippet(
+        &self,
+        text: &str,
+        query: &str,
+        context_chars: usize,
+    ) -> (String, String, i32, i32) {
         if text.is_empty() || query.is_empty() {
             let end = context_chars.min(text.len());
             return (
@@ -273,7 +280,12 @@ impl RagChat {
         let prefix = if start > 0 { "..." } else { "" };
         let suffix = if end < text.len() { "..." } else { "" };
 
-        (format!("{}{}{}", prefix, snippet, suffix), section, start as i32, end as i32)
+        (
+            format!("{}{}{}", prefix, snippet, suffix),
+            section,
+            start as i32,
+            end as i32,
+        )
     }
 
     pub fn compress_snippet(&self, text: &str, max_chars: usize) -> String {
@@ -281,7 +293,8 @@ impl RagChat {
             return String::new();
         }
 
-        let text = Regex::new(r"\s+").map_or(text.to_string(), |r| r.replace_all(text, " ").to_string());
+        let text =
+            Regex::new(r"\s+").map_or(text.to_string(), |r| r.replace_all(text, " ").to_string());
 
         if text.len() <= max_chars {
             return text;
@@ -320,8 +333,16 @@ impl RagChat {
             };
         }
 
-        let papers_count = contexts.iter().map(|c| &c.paper_id).collect::<HashSet<_>>().len();
-        let avg_relevance = contexts.iter().map(|c| c.relevance_score as f64).sum::<f64>() / contexts.len() as f64;
+        let papers_count = contexts
+            .iter()
+            .map(|c| &c.paper_id)
+            .collect::<HashSet<_>>()
+            .len();
+        let avg_relevance = contexts
+            .iter()
+            .map(|c| c.relevance_score as f64)
+            .sum::<f64>()
+            / contexts.len() as f64;
 
         let mut sections = HashSet::new();
         for ctx in contexts {
@@ -380,7 +401,16 @@ impl RagChat {
             warnings.push("部分检索结果相关性较低".to_string());
         }
 
-        let coverage = format!("{}篇论文，覆盖{}", papers_count, sections.iter().take(3).cloned().collect::<Vec<_>>().join(", "));
+        let coverage = format!(
+            "{}篇论文，覆盖{}",
+            papers_count,
+            sections
+                .iter()
+                .take(3)
+                .cloned()
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
 
         ConfidenceScore {
             score,
@@ -443,7 +473,11 @@ impl RagChat {
     }
 
     fn clean_quote(&self, quote: &str) -> String {
-        let quote = quote.trim_matches('"').trim_matches('…').trim_matches('»').to_string();
+        let quote = quote
+            .trim_matches('"')
+            .trim_matches('…')
+            .trim_matches('»')
+            .to_string();
         if quote.len() > 150 {
             format!("{}...", &quote[..147])
         } else {
@@ -456,12 +490,16 @@ impl RagChat {
 
         let mut paper_contexts: HashMap<String, Vec<&ChatContext>> = HashMap::new();
         for ctx in contexts {
-            paper_contexts.entry(ctx.paper_id.clone()).or_default().push(ctx);
+            paper_contexts
+                .entry(ctx.paper_id.clone())
+                .or_default()
+                .push(ctx);
         }
 
         for (_, ctxs) in paper_contexts {
             let ctx = ctxs[0];
-            let compressed_snippets: Vec<String> = ctxs.iter()
+            let compressed_snippets: Vec<String> = ctxs
+                .iter()
                 .take(2)
                 .map(|c| format!("> {}", self.compress_snippet(&c.snippet, 300)))
                 .collect();
@@ -469,7 +507,12 @@ impl RagChat {
             let authors = if ctx.authors.is_empty() {
                 "Unknown".to_string()
             } else {
-                ctx.authors.iter().take(3).cloned().collect::<Vec<_>>().join(", ")
+                ctx.authors
+                    .iter()
+                    .take(3)
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .join(", ")
             };
             let year = if ctx.published.len() >= 4 {
                 ctx.published[..4].to_string()
@@ -479,10 +522,7 @@ impl RagChat {
 
             context_parts.push(format!(
                 "【论文】{}\n作者：{}\n年份：{}\n\n{}",
-                ctx.paper_title,
-                authors,
-                year,
-                snippets_text
+                ctx.paper_title, authors, year, snippets_text
             ));
         }
 
@@ -531,13 +571,25 @@ impl RagChat {
             output.push(String::new());
             output.push("Citations:".to_string());
             for (i, cite) in result.citations.iter().enumerate() {
-                let authors = cite.authors.iter().take(3).cloned().collect::<Vec<_>>().join(", ");
+                let authors = cite
+                    .authors
+                    .iter()
+                    .take(3)
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .join(", ");
                 let year = if cite.published.len() >= 4 {
                     &cite.published[..4]
                 } else {
                     "N/A"
                 };
-                output.push(format!("[{}] {} by {} ({})", i + 1, cite.paper_title, authors, year));
+                output.push(format!(
+                    "[{}] {} by {} ({})",
+                    i + 1,
+                    cite.paper_title,
+                    authors,
+                    year
+                ));
                 output.push(format!("  Relevance: {:.2}", cite.relevance_score));
                 if !cite.quote.is_empty() {
                     output.push(format!("  \"{}\"", cite.quote));
@@ -569,29 +621,50 @@ mod tests {
     #[test]
     fn test_classify_query_factual() {
         let chat = RagChat::new(None, None, None);
-        assert_eq!(chat.classify_query("Who proposed the transformer?"), QueryType::Factual);
-        assert_eq!(chat.classify_query("Which paper introduced BERT?"), QueryType::Factual);
+        assert_eq!(
+            chat.classify_query("Who proposed the transformer?"),
+            QueryType::Factual
+        );
+        assert_eq!(
+            chat.classify_query("Which paper introduced BERT?"),
+            QueryType::Factual
+        );
     }
 
     #[test]
     fn test_classify_query_conceptual() {
         let chat = RagChat::new(None, None, None);
-        assert_eq!(chat.classify_query("What is attention mechanism?"), QueryType::Conceptual);
-        assert_eq!(chat.classify_query("Explain how transformers work"), QueryType::Conceptual);
+        assert_eq!(
+            chat.classify_query("What is attention mechanism?"),
+            QueryType::Conceptual
+        );
+        assert_eq!(
+            chat.classify_query("Explain how transformers work"),
+            QueryType::Conceptual
+        );
     }
 
     #[test]
     fn test_classify_query_comparative() {
         let chat = RagChat::new(None, None, None);
         assert_eq!(chat.classify_query("BERT vs GPT"), QueryType::Comparative);
-        assert_eq!(chat.classify_query("Compare BERT and GPT"), QueryType::Comparative);
+        assert_eq!(
+            chat.classify_query("Compare BERT and GPT"),
+            QueryType::Comparative
+        );
     }
 
     #[test]
     fn test_classify_query_temporal() {
         let chat = RagChat::new(None, None, None);
-        assert_eq!(chat.classify_query("Recent advances in NLP"), QueryType::Temporal);
-        assert_eq!(chat.classify_query("2024 papers on AI"), QueryType::Temporal);
+        assert_eq!(
+            chat.classify_query("Recent advances in NLP"),
+            QueryType::Temporal
+        );
+        assert_eq!(
+            chat.classify_query("2024 papers on AI"),
+            QueryType::Temporal
+        );
     }
 
     #[test]
@@ -642,16 +715,14 @@ mod tests {
     #[test]
     fn test_calculate_confidence_with_contexts() {
         let chat = RagChat::new(None, None, None);
-        let contexts = vec![
-            ChatContext {
-                paper_id: "p1".to_string(),
-                paper_title: "Paper 1".to_string(),
-                authors: vec![],
-                published: "2024".to_string(),
-                snippet: "abstract test".to_string(),
-                relevance_score: 0.9,
-            },
-        ];
+        let contexts = vec![ChatContext {
+            paper_id: "p1".to_string(),
+            paper_title: "Paper 1".to_string(),
+            authors: vec![],
+            published: "2024".to_string(),
+            snippet: "abstract test".to_string(),
+            relevance_score: 0.9,
+        }];
         let conf = chat.calculate_confidence(&contexts);
         assert!(conf.score > 0);
     }
@@ -659,16 +730,14 @@ mod tests {
     #[test]
     fn test_extract_citations() {
         let chat = RagChat::new(None, None, None);
-        let contexts = vec![
-            ChatContext {
-                paper_id: "p1".to_string(),
-                paper_title: "Paper 1".to_string(),
-                authors: vec!["Author".to_string()],
-                published: "2024".to_string(),
-                snippet: "Test snippet content".to_string(),
-                relevance_score: 0.9,
-            },
-        ];
+        let contexts = vec![ChatContext {
+            paper_id: "p1".to_string(),
+            paper_title: "Paper 1".to_string(),
+            authors: vec!["Author".to_string()],
+            published: "2024".to_string(),
+            snippet: "Test snippet content".to_string(),
+            relevance_score: 0.9,
+        }];
         let citations = chat.extract_citations(&contexts);
         assert_eq!(citations.len(), 1);
         assert_eq!(citations[0].paper_id, "p1");
@@ -677,16 +746,14 @@ mod tests {
     #[test]
     fn test_build_prompt() {
         let chat = RagChat::new(None, None, None);
-        let contexts = vec![
-            ChatContext {
-                paper_id: "p1".to_string(),
-                paper_title: "Paper 1".to_string(),
-                authors: vec![],
-                published: "2024".to_string(),
-                snippet: "Test snippet".to_string(),
-                relevance_score: 0.9,
-            },
-        ];
+        let contexts = vec![ChatContext {
+            paper_id: "p1".to_string(),
+            paper_title: "Paper 1".to_string(),
+            authors: vec![],
+            published: "2024".to_string(),
+            snippet: "Test snippet".to_string(),
+            relevance_score: 0.9,
+        }];
         let prompt = chat.build_prompt("What is this about?", &contexts);
         assert!(prompt.contains("Paper 1"));
         assert!(prompt.contains("What is this about?"));

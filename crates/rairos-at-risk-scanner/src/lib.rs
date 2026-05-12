@@ -7,7 +7,11 @@ const STREAK_THRESHOLD_DEFAULT: i32 = 2;
 
 fn capsule_path() -> PathBuf {
     dirs::home_dir()
-        .map(|p| p.join(".ai_research_os").join("gene_pool").join(CAPSULE_FILE_NAME))
+        .map(|p| {
+            p.join(".ai_research_os")
+                .join("gene_pool")
+                .join(CAPSULE_FILE_NAME)
+        })
         .unwrap_or_else(|| PathBuf::from(CAPSULE_FILE_NAME))
 }
 
@@ -38,7 +42,9 @@ fn load_capsules() -> Vec<HashMap<String, serde_json::Value>> {
     }
     match std::fs::read_to_string(&path) {
         Ok(contents) => {
-            let data: CapsuleData = serde_json::from_str(&contents).unwrap_or(CapsuleData { capsules: Vec::new() });
+            let data: CapsuleData = serde_json::from_str(&contents).unwrap_or(CapsuleData {
+                capsules: Vec::new(),
+            });
             data.capsules
         }
         Err(_) => Vec::new(),
@@ -66,7 +72,10 @@ pub fn get_at_risk_capsules(threshold: i32) -> Vec<AtRiskCapsule> {
         if status != "active" && !status.is_empty() {
             continue;
         }
-        let streak = cap.get("low_score_streak").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+        let streak = cap
+            .get("low_score_streak")
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0) as i32;
         if streak < threshold {
             continue;
         }
@@ -89,11 +98,19 @@ pub fn get_at_risk_capsules(threshold: i32) -> Vec<AtRiskCapsule> {
         let trigger_keywords: Vec<String> = cap
             .get("trigger_keywords")
             .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
             .unwrap_or_default();
 
         results.push(AtRiskCapsule {
-            capsule_id: cap.get("capsule_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            capsule_id: cap
+                .get("capsule_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
             gap_title,
             gap_type,
             outcome_score,
@@ -147,7 +164,9 @@ pub fn pin_to_ttl(capsule_id: &str, ttl: i32) -> bool {
 }
 
 pub fn render_html(capsules: Option<&[AtRiskCapsule]>) -> String {
-    let capsules = capsules.map(|c| c.to_vec()).unwrap_or_else(|| get_at_risk_capsules(STREAK_THRESHOLD_DEFAULT));
+    let capsules = capsules
+        .map(|c| c.to_vec())
+        .unwrap_or_else(|| get_at_risk_capsules(STREAK_THRESHOLD_DEFAULT));
 
     if capsules.is_empty() {
         return "<p>No at-risk capsules. All capsules are healthy.</p>".to_string();
@@ -169,7 +188,7 @@ pub fn render_html(capsules: Option<&[AtRiskCapsule]>) -> String {
         <th>Pinned</th>
         <th>Action</th>
         </tr></thead>"
-        .to_string(),
+            .to_string(),
     );
     lines.push("<tbody>".to_string());
 
@@ -209,7 +228,9 @@ pub fn render_html(capsules: Option<&[AtRiskCapsule]>) -> String {
     lines.push("</tbody></table>".to_string());
     lines.push("<style>".to_string());
     lines.push(".at-risk-panel { font-family: Georgia, serif; }".to_string());
-    lines.push(".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }".to_string());
+    lines.push(
+        ".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }".to_string(),
+    );
     lines.push(
         ".at-risk-table th, .at-risk-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }"
             .to_string(),
@@ -218,9 +239,15 @@ pub fn render_html(capsules: Option<&[AtRiskCapsule]>) -> String {
         ".at-risk-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }"
             .to_string(),
     );
-    lines.push(".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }".to_string());
+    lines.push(
+        ".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }"
+            .to_string(),
+    );
     lines.push(".btn-keep { background: #7A9E7A; color: white; border: none; }".to_string());
-    lines.push(".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }".to_string());
+    lines.push(
+        ".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }"
+            .to_string(),
+    );
     lines.push("</style>".to_string());
     lines.push("</div>".to_string());
 

@@ -85,18 +85,23 @@ impl Frontmatter {
 
 pub fn parse_tags_from_frontmatter(fm: &Frontmatter) -> Vec<String> {
     match fm.get("tags") {
-        Some(FrontmatterValue::List(items)) => {
-            items.iter().map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect()
-        }
+        Some(FrontmatterValue::List(items)) => items
+            .iter()
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect(),
         Some(FrontmatterValue::String(s)) => {
             let s = s.trim();
             if s.is_empty() {
                 return Vec::new();
             }
             if s.contains(',') && !s.starts_with('[') {
-                s.split(',').map(|t| t.trim().to_string()).filter(|t| !t.is_empty()).collect()
+                s.split(',')
+                    .map(|t| t.trim().to_string())
+                    .filter(|t| !t.is_empty())
+                    .collect()
             } else if s.starts_with('[') && s.ends_with(']') {
-                let inner = &s[1..s.len()-1];
+                let inner = &s[1..s.len() - 1];
                 inner
                     .split(',')
                     .map(|t| t.trim().to_string())

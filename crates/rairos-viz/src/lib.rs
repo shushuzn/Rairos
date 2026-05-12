@@ -112,7 +112,10 @@ impl D3ForceGraph {
         tag: Option<&str>,
         max_nodes: usize,
     ) -> Result<D3Graph> {
-        let db = self.db.as_ref().ok_or_else(|| VizError::Database("No database configured".into()))?;
+        let db = self
+            .db
+            .as_ref()
+            .ok_or_else(|| VizError::Database("No database configured".into()))?;
 
         let papers = match (&paper_uids, tag) {
             (Some(uids), _) => {
@@ -131,9 +134,7 @@ impl D3ForceGraph {
                     .filter(|p| p.categories.iter().any(|c| c == t))
                     .collect()
             }
-            (None, None) => {
-                db.list_papers(None, max_nodes, 0).unwrap_or_default()
-            }
+            (None, None) => db.list_papers(None, max_nodes, 0).unwrap_or_default(),
         };
 
         let mut nodes: Vec<D3Node> = Vec::new();
@@ -173,7 +174,10 @@ impl D3ForceGraph {
         _depth: usize,
         _max_nodes: usize,
     ) -> Result<D3Graph> {
-        let db = self.db.as_ref().ok_or_else(|| VizError::Database("No database configured".into()))?;
+        let db = self
+            .db
+            .as_ref()
+            .ok_or_else(|| VizError::Database("No database configured".into()))?;
 
         // Resolve root node
         let root_paper = db
@@ -181,7 +185,9 @@ impl D3ForceGraph {
             .map_err(|e| VizError::Database(e.to_string()))?
             .or_else(|| {
                 // Try without arXiv: prefix
-                db.get_paper_by_arxiv(&format!("arXiv:{}", paper_id)).ok().flatten()
+                db.get_paper_by_arxiv(&format!("arXiv:{}", paper_id))
+                    .ok()
+                    .flatten()
             })
             .ok_or_else(|| VizError::NotFound(paper_id.to_string()))?;
 
@@ -224,7 +230,10 @@ impl D3ForceGraph {
         _threshold: f32,
         _max_nodes: usize,
     ) -> Result<D3Graph> {
-        let db = self.db.as_ref().ok_or_else(|| VizError::Database("No database configured".into()))?;
+        let db = self
+            .db
+            .as_ref()
+            .ok_or_else(|| VizError::Database("No database configured".into()))?;
 
         let root_paper = db
             .get_paper_by_arxiv(paper_id)
@@ -269,8 +278,8 @@ impl D3ForceGraph {
 
 /// Colour palette (12 colours, colour-blindness safe).
 const BENCHMARK_COLORS: [&str; 12] = [
-    "#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F", "#EDC948",
-    "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC", "#86BCB6", "#D37295",
+    "#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F", "#EDC948", "#B07AA1", "#FF9DA7",
+    "#9C755F", "#BAB0AC", "#86BCB6", "#D37295",
 ];
 
 /// Benchmark match data point.
@@ -302,7 +311,10 @@ impl BenchmarkChartData {
     /// This would be called with actual benchmark comparison results.
     pub fn from_papers(papers: &[Paper], matches: Vec<BenchmarkChart>) -> Self {
         Self {
-            papers: papers.iter().map(|p| p.arxiv_id.clone().unwrap_or_default()).collect(),
+            papers: papers
+                .iter()
+                .map(|p| p.arxiv_id.clone().unwrap_or_default())
+                .collect(),
             charts: matches,
         }
     }
@@ -519,13 +531,11 @@ mod tests {
             benchmark: "MMLU".to_string(),
             metric: "accuracy".to_string(),
             direction: "higher".to_string(),
-            data: vec![
-                BenchmarkEntry {
-                    label: "GPT-4".to_string(),
-                    paper: "2301.00001".to_string(),
-                    value: 0.86,
-                },
-            ],
+            data: vec![BenchmarkEntry {
+                label: "GPT-4".to_string(),
+                paper: "2301.00001".to_string(),
+                value: 0.86,
+            }],
         };
 
         let data = BenchmarkChartData {

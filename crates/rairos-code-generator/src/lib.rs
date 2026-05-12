@@ -38,8 +38,7 @@ impl Default for CodeGenConfig {
 
 /// Paper content fields used for code generation.
 /// Minimal subset of the full PaperContent struct.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PaperContent {
     pub title: String,
     pub arxiv_id: String,
@@ -52,7 +51,6 @@ pub struct PaperContent {
     pub datasets: Vec<String>,
     pub methods: Vec<String>,
 }
-
 
 /// System prompt injected into the LLM to enforce code quality rules.
 pub const CODE_GEN_SYSTEM: &str = r#"You are an expert ML/AI researcher and Python programmer.
@@ -155,7 +153,12 @@ pub fn build_prompt(paper_content: &PaperContent, framework: &str) -> String {
     parts.push(format!("# Paper: {}", paper_content.title));
     parts.push(format!("arXiv ID: {}", paper_content.arxiv_id));
 
-    let authors: Vec<&str> = paper_content.authors.iter().take(3).map(|s| s.as_str()).collect();
+    let authors: Vec<&str> = paper_content
+        .authors
+        .iter()
+        .take(3)
+        .map(|s| s.as_str())
+        .collect();
     let author_str = if paper_content.authors.len() > 3 {
         format!("{} et al.", authors.join(", "))
     } else {
@@ -163,13 +166,22 @@ pub fn build_prompt(paper_content: &PaperContent, framework: &str) -> String {
     };
     parts.push(format!("Authors: {}", author_str));
 
-    let abstract_preview = paper_content.abstract_text.chars().take(500).collect::<String>();
+    let abstract_preview = paper_content
+        .abstract_text
+        .chars()
+        .take(500)
+        .collect::<String>();
     parts.push(format!("\n## Abstract\n{}", abstract_preview));
 
     // Algorithm descriptions
     if !paper_content.algorithm_descriptions.is_empty() {
         parts.push("\n## Algorithms\n".to_string());
-        for (i, algo) in paper_content.algorithm_descriptions.iter().take(3).enumerate() {
+        for (i, algo) in paper_content
+            .algorithm_descriptions
+            .iter()
+            .take(3)
+            .enumerate()
+        {
             let preview = algo.chars().take(500).collect::<String>();
             parts.push(format!("### Algorithm {}\n{}", i + 1, preview));
         }
@@ -202,7 +214,10 @@ pub fn build_prompt(paper_content: &PaperContent, framework: &str) -> String {
 
     // Datasets
     if !paper_content.datasets.is_empty() {
-        parts.push(format!("\n## Datasets\n{}", paper_content.datasets.join(", ")));
+        parts.push(format!(
+            "\n## Datasets\n{}",
+            paper_content.datasets.join(", ")
+        ));
     }
 
     // Methods
@@ -252,8 +267,7 @@ pub fn strip_prose_secondary(code: &str) -> String {
     )
     .unwrap();
 
-    let markers: std::collections::HashSet<char> =
-        "(){}=[]<>:@#\"".chars().collect();
+    let markers: std::collections::HashSet<char> = "(){}=[]<>:@#\"".chars().collect();
 
     let mut result: Vec<&str> = Vec::new();
     for line in code.split('\n') {
@@ -266,8 +280,7 @@ pub fn strip_prose_secondary(code: &str) -> String {
         let alpha = stripped.chars().filter(|c| c.is_alphabetic()).count();
         let ratio = alpha as f64 / total as f64;
         let has_marker = stripped.chars().any(|c| markers.contains(&c));
-        let is_import =
-            stripped.starts_with("import ") || stripped.starts_with("from ");
+        let is_import = stripped.starts_with("import ") || stripped.starts_with("from ");
         let is_py_kw = re_py_kw.is_match(stripped);
         if total > 10 && ratio > 0.75 && !has_marker && !is_import && !is_py_kw {
             continue; // drop prose line
@@ -293,10 +306,7 @@ pub fn save_code(
     let code = strip_thinking_blocks(&code);
 
     // Strip text appended after valid Python entry point
-    let re_main = Regex::new(
-        r#"\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$"#,
-    )
-    .unwrap();
+    let re_main = Regex::new(r#"\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$"#).unwrap();
     let code = re_main.replace_all(&code, "").to_string();
 
     // Secondary prose stripping

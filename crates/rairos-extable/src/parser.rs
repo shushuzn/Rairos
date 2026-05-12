@@ -10,7 +10,15 @@ use thiserror::Error;
 
 /// Metric keyword list for column identification.
 const METRIC_KW: &[&str] = &[
-    "accuracy", "precision", "recall", "f1", "bleu", "rouge", "ppl", "perplexity", "auc",
+    "accuracy",
+    "precision",
+    "recall",
+    "f1",
+    "bleu",
+    "rouge",
+    "ppl",
+    "perplexity",
+    "auc",
 ];
 
 /// Dataset keyword list for column identification.
@@ -21,13 +29,7 @@ const MODEL_KW: &[&str] = &["model", "method", "approach", "system"];
 
 /// Keywords indicating the "our method" / proposed method row.
 const OUR_KW: &[&str] = &[
-    "ours",
-    "our",
-    "proposed",
-    "this",
-    "method",
-    "approach",
-    "system",
+    "ours", "our", "proposed", "this", "method", "approach", "system",
 ];
 
 /// Errors from parsing operations.
@@ -311,8 +313,14 @@ mod tests {
         assert_eq!(pt.caption, "Main Results");
         assert_eq!(pt.models, vec!["BERT", "RoBERTa"]);
         // Metrics are deduplicated by name, keeping highest value
-        assert!(pt.metrics.iter().any(|m| m.name == "accuracy" && (m.value - 92.1).abs() < 0.01));
-        assert!(pt.metrics.iter().any(|m| m.name == "f1" && (m.value - 90.3).abs() < 0.01));
+        assert!(pt
+            .metrics
+            .iter()
+            .any(|m| m.name == "accuracy" && (m.value - 92.1).abs() < 0.01));
+        assert!(pt
+            .metrics
+            .iter()
+            .any(|m| m.name == "f1" && (m.value - 90.3).abs() < 0.01));
     }
 
     #[test]
@@ -324,21 +332,13 @@ mod tests {
                 "Model".to_string(),
                 "Accuracy".to_string(),
             ],
-            vec![
-                "SQuAD".to_string(),
-                "BERT".to_string(),
-                "88.0".to_string(),
-            ],
+            vec!["SQuAD".to_string(), "BERT".to_string(), "88.0".to_string()],
             vec![
                 "SQuAD".to_string(),
                 "RoBERTa".to_string(),
                 "92.0".to_string(),
             ],
-            vec![
-                "MNLI".to_string(),
-                "BERT".to_string(),
-                "85.0".to_string(),
-            ],
+            vec!["MNLI".to_string(), "BERT".to_string(), "85.0".to_string()],
             vec![
                 "MNLI".to_string(),
                 "RoBERTa".to_string(),
@@ -514,10 +514,7 @@ mod tests {
         let p = parser();
         let table = vec![
             vec!["Model".to_string(), "BLEU".to_string()],
-            vec![
-                "Transformer".to_string(),
-                "28.5".to_string(),
-            ],
+            vec!["Transformer".to_string(), "28.5".to_string()],
         ];
         let result = p.parse_table_to_struct(&table, "Translation").unwrap();
         assert!(!result.tables[0].metrics.is_empty());

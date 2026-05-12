@@ -52,7 +52,16 @@ fn family_of(keywords: &[String]) -> String {
         ),
         (
             "reinforcement",
-            &["rl", "reinforcement", "policy", "reward", "agent", "DQN", "PPO", "A3C"],
+            &[
+                "rl",
+                "reinforcement",
+                "policy",
+                "reward",
+                "agent",
+                "DQN",
+                "PPO",
+                "A3C",
+            ],
         ),
         (
             "language_model",
@@ -69,14 +78,23 @@ fn family_of(keywords: &[String]) -> String {
         (
             "vision",
             &[
-                "CNN", "convolution", "resnet", "image", "vision", "ViT", "classification",
+                "CNN",
+                "convolution",
+                "resnet",
+                "image",
+                "vision",
+                "ViT",
+                "classification",
             ],
         ),
         (
             "optimization",
             &["optimizer", "Adam", "SGD", "gradient", "loss", "training"],
         ),
-        ("graph", &["GNN", "graph", "node", "edge", "message passing"]),
+        (
+            "graph",
+            &["GNN", "graph", "node", "edge", "message passing"],
+        ),
         (
             "reasoning",
             &[
@@ -196,13 +214,11 @@ pub fn get_capsule_by_paper(paper_id: &str, gap_type: Option<&str>) -> Option<se
         return None;
     }
 
-    candidates
-        .into_iter()
-        .max_by(|a, b| {
-            let a_ts = a.get("created_at").and_then(|v| v.as_str()).unwrap_or("");
-            let b_ts = b.get("created_at").and_then(|v| v.as_str()).unwrap_or("");
-            a_ts.cmp(b_ts)
-        })
+    candidates.into_iter().max_by(|a, b| {
+        let a_ts = a.get("created_at").and_then(|v| v.as_str()).unwrap_or("");
+        let b_ts = b.get("created_at").and_then(|v| v.as_str()).unwrap_or("");
+        a_ts.cmp(b_ts)
+    })
 }
 
 pub fn paper_exists_in_pool(paper_id: &str, gap_type: Option<&str>) -> bool {
@@ -422,7 +438,10 @@ pub fn import_pool(data: serde_json::Value, merge: bool) -> ImportStats {
                         .unwrap_or(false)
                 })
                 .collect();
-            (existing_caps.iter().chain(to_add.iter()).cloned().collect(), to_add.len())
+            (
+                existing_caps.iter().chain(to_add.iter()).cloned().collect(),
+                to_add.len(),
+            )
         } else {
             let count = new_capsules.len();
             (new_capsules, count)
@@ -447,7 +466,9 @@ pub fn import_pool(data: serde_json::Value, merge: bool) -> ImportStats {
                     .filter_map(|l| {
                         serde_json::from_str::<serde_json::Value>(l)
                             .ok()
-                            .and_then(|v| v.get("gene_id").and_then(|v| v.as_str()).map(String::from))
+                            .and_then(|v| {
+                                v.get("gene_id").and_then(|v| v.as_str()).map(String::from)
+                            })
                     })
                     .collect()
             } else {
@@ -534,7 +555,8 @@ pub fn create_backup() -> Result<String, String> {
         for fname in &["gene_pool.jsonl", "capsules.json"] {
             let src = gp_dir().join(fname);
             if src.exists() {
-                tar.append_path_with_name(&src, *fname).map_err(|e| e.to_string())?;
+                tar.append_path_with_name(&src, *fname)
+                    .map_err(|e| e.to_string())?;
             }
         }
     }
@@ -633,13 +655,17 @@ pub fn render_backup_html(info: Option<&BackupInfo>) -> String {
     ));
 
     lines.push("<div style='margin-bottom:16px'>".to_string());
-    lines.push("<button onclick='triggerBackup()' style='background:#6B8FB5;color:white;border:none;\
+    lines.push(
+        "<button onclick='triggerBackup()' style='background:#6B8FB5;color:white;border:none;\
                 border-radius:4px;padding:8px 16px;cursor:pointer;font-size:13px'>\
-                Take Backup Now</button>".to_string());
+                Take Backup Now</button>"
+            .to_string(),
+    );
     lines.push("</div>".to_string());
 
     if !info.stamps.is_empty() {
-        lines.push("<table style='width:100%;border-collapse:collapse;font-size:13px'>".to_string());
+        lines
+            .push("<table style='width:100%;border-collapse:collapse;font-size:13px'>".to_string());
         lines.push("<tr style='border-bottom:1px solid #e0dbd4'><th style='text-align:left;padding:6px 8px'>Date</th>\
                    <th style='text-align:right;padding:6px 8px'>Action</th></tr>".to_string());
 
@@ -658,8 +684,11 @@ pub fn render_backup_html(info: Option<&BackupInfo>) -> String {
         }
         lines.push("</table>".to_string());
     } else {
-        lines.push("<p style='color:#A89E8C;font-size:13px'>\
-                    No backups yet. Click 'Take Backup Now' to create your first snapshot.</p>".to_string());
+        lines.push(
+            "<p style='color:#A89E8C;font-size:13px'>\
+                    No backups yet. Click 'Take Backup Now' to create your first snapshot.</p>"
+                .to_string(),
+        );
     }
 
     lines.push("<script>\

@@ -77,7 +77,10 @@ pub fn render_radar_chart(scores: HashMap<String, i32>, size: usize) -> String {
         size, size
     ));
     parts.push("  <title>论文评分雷达图</title>".to_string());
-    parts.push(format!(r#"  <rect width="{}" height="{}" fill="{}" rx="8"/>"#, size, size, BG_COLOUR));
+    parts.push(format!(
+        r#"  <rect width="{}" height="{}" fill="{}" rx="8"/>"#,
+        size, size, BG_COLOUR
+    ));
 
     // Grid rings
     for ring in 1..=rings {
@@ -85,11 +88,7 @@ pub fn render_radar_chart(scores: HashMap<String, i32>, size: usize) -> String {
         let ring_pts: Vec<String> = (0..n)
             .map(|i| {
                 let angle = i as f64 * angle_step - std::f64::consts::FRAC_PI_2;
-                format!(
-                    "{:.1},{:.1}",
-                    cx + r * angle.sin(),
-                    cy + r * angle.cos()
-                )
+                format!("{:.1},{:.1}", cx + r * angle.sin(), cy + r * angle.cos())
             })
             .collect();
         parts.push(format!(
@@ -219,8 +218,14 @@ mod tests {
 
     #[test]
     fn test_render_radar_chart_valid() {
-        let scores: HashMap<String, i32> =
-            HashMap::from_iter([("novelty".into(), 4), ("leverage".into(), 5), ("evidence".into(), 3), ("cost".into(), 4), ("moat".into(), 3), ("adoption".into(), 2)]);
+        let scores: HashMap<String, i32> = HashMap::from_iter([
+            ("novelty".into(), 4),
+            ("leverage".into(), 5),
+            ("evidence".into(), 3),
+            ("cost".into(), 4),
+            ("moat".into(), 3),
+            ("adoption".into(), 2),
+        ]);
         let svg = render_radar_chart(scores, 280);
         assert!(svg.contains("<svg"));
         assert!(svg.contains("</svg>"));

@@ -46,11 +46,26 @@ impl CapsuleCredibility {
         m.insert("capsule_id".to_string(), serde_json::json!(self.capsule_id));
         m.insert("gap_title".to_string(), serde_json::json!(self.gap_title));
         m.insert("gap_type".to_string(), serde_json::json!(self.gap_type));
-        m.insert("outcome_score".to_string(), serde_json::json!(self.outcome_score));
-        m.insert("novelty_score".to_string(), serde_json::json!(self.novelty_score));
-        m.insert("max_overlap".to_string(), serde_json::json!(self.max_overlap));
-        m.insert("is_trendslop".to_string(), serde_json::json!(self.is_trendslop));
-        m.insert("trigger_keywords".to_string(), serde_json::json!(self.trigger_keywords));
+        m.insert(
+            "outcome_score".to_string(),
+            serde_json::json!(self.outcome_score),
+        );
+        m.insert(
+            "novelty_score".to_string(),
+            serde_json::json!(self.novelty_score),
+        );
+        m.insert(
+            "max_overlap".to_string(),
+            serde_json::json!(self.max_overlap),
+        );
+        m.insert(
+            "is_trendslop".to_string(),
+            serde_json::json!(self.is_trendslop),
+        );
+        m.insert(
+            "trigger_keywords".to_string(),
+            serde_json::json!(self.trigger_keywords),
+        );
         m
     }
 }
@@ -89,7 +104,11 @@ impl CredibilityScorer {
             }
         };
 
-        let capsules = data.get("capsules").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+        let capsules = data
+            .get("capsules")
+            .and_then(|v| v.as_array())
+            .cloned()
+            .unwrap_or_default();
 
         let mut results: Vec<CapsuleCredibility> = Vec::new();
 
@@ -97,7 +116,11 @@ impl CredibilityScorer {
             let kw: Vec<String> = cap
                 .get("trigger_keywords")
                 .and_then(|v| v.as_array())
-                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str().map(String::from))
+                        .collect()
+                })
                 .unwrap_or_default();
 
             let cap_id = cap
@@ -114,7 +137,11 @@ impl CredibilityScorer {
                 let other_kw: Vec<String> = other
                     .get("trigger_keywords")
                     .and_then(|v| v.as_array())
-                    .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                    .map(|arr| {
+                        arr.iter()
+                            .filter_map(|v| v.as_str().map(String::from))
+                            .collect()
+                    })
                     .unwrap_or_default();
                 let ov = jaccard(&kw, &other_kw);
                 if ov > max_overlap {
@@ -125,9 +152,20 @@ impl CredibilityScorer {
             let novelty = 1.0 - max_overlap;
             results.push(CapsuleCredibility {
                 capsule_id: cap_id,
-                gap_title: cap.get("action_gap_title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                gap_type: cap.get("action_gap_type").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                outcome_score: cap.get("outcome_success_score").and_then(|v| v.as_f64()).unwrap_or(0.0),
+                gap_title: cap
+                    .get("action_gap_title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                gap_type: cap
+                    .get("action_gap_type")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                outcome_score: cap
+                    .get("outcome_success_score")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0),
                 novelty_score: (novelty * 1000.0).round() / 1000.0,
                 max_overlap: (max_overlap * 1000.0).round() / 1000.0,
                 is_trendslop: max_overlap > TRENDSLOP_THRESHOLD,
@@ -135,7 +173,11 @@ impl CredibilityScorer {
             });
         }
 
-        results.sort_by(|a, b| b.novelty_score.partial_cmp(&a.novelty_score).unwrap_or(std::cmp::Ordering::Equal));
+        results.sort_by(|a, b| {
+            b.novelty_score
+                .partial_cmp(&a.novelty_score)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         self.credibility = Some(results.clone());
         results
     }
@@ -193,7 +235,10 @@ impl CredibilityScorer {
         lines.push("</tbody></table>".to_string());
         lines.push("<style>".to_string());
         lines.push(".credibility-panel { font-family: Georgia, serif; }".to_string());
-        lines.push(".credibility-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }".to_string());
+        lines.push(
+            ".credibility-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }"
+                .to_string(),
+        );
         lines.push(".credibility-table th, .credibility-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }".to_string());
         lines.push(".credibility-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }".to_string());
         lines.push("</style>".to_string());

@@ -290,7 +290,10 @@ impl LitReviewAnalyzer {
             let mut matched = false;
             for (method, keywords) in &method_keywords {
                 if keywords.iter().any(|kw| text.contains(*kw)) {
-                    groups.entry((*method).to_string()).or_default().push(paper.clone());
+                    groups
+                        .entry((*method).to_string())
+                        .or_default()
+                        .push(paper.clone());
                     matched = true;
                     break;
                 }
@@ -488,8 +491,18 @@ mod tests {
     fn test_detect_rising_topics() {
         let analyzer = LitReviewAnalyzer::new();
         let papers = vec![
-            make_paper("Diffusion Model", "A new diffusion approach", "2024-01-01", 0.9),
-            make_paper("LLM Paper", "Large language model advances", "2024-01-15", 0.85),
+            make_paper(
+                "Diffusion Model",
+                "A new diffusion approach",
+                "2024-01-01",
+                0.9,
+            ),
+            make_paper(
+                "LLM Paper",
+                "Large language model advances",
+                "2024-01-15",
+                0.85,
+            ),
         ];
         let rising = analyzer.detect_rising_topics(&papers);
         assert!(!rising.is_empty());

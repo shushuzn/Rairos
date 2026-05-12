@@ -99,11 +99,24 @@ impl CapsuleEntry {
         Some(Self {
             capsule_id: value.get("capsule_id")?.as_str()?.to_string(),
             action_gap_title: value.get("action_gap_title")?.as_str()?.to_string(),
-            action_gap_type: value.get("action_gap_type").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            action_gap_type: value
+                .get("action_gap_type")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
             outcome_success_score: value.get("outcome_success_score")?.as_f64().unwrap_or(0.0),
             created_at: value.get("created_at")?.as_str()?.to_string(),
-            trigger_keywords: value.get("trigger_keywords")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
-            source_arxiv_category: value.get("source_arxiv_category").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            trigger_keywords: value
+                .get("trigger_keywords")?
+                .as_array()?
+                .iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect(),
+            source_arxiv_category: value
+                .get("source_arxiv_category")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
         })
     }
 }
@@ -159,9 +172,17 @@ pub fn discover(_force: bool) -> DiscoveryResult {
     for c in &capsules {
         let title_lower = c.action_gap_title.to_lowercase();
         let is_event = c.source_arxiv_category == "cs.GL"
-            || ["oil", "military", "ceasefire", "hormuz", "drone", "地震", "导弹"]
-                .iter()
-                .any(|kw| title_lower.contains(kw));
+            || [
+                "oil",
+                "military",
+                "ceasefire",
+                "hormuz",
+                "drone",
+                "地震",
+                "导弹",
+            ]
+            .iter()
+            .any(|kw| title_lower.contains(kw));
 
         let entry = CapsuleEntry {
             capsule_id: c.capsule_id.clone(),
@@ -182,17 +203,21 @@ pub fn discover(_force: bool) -> DiscoveryResult {
 
     let mut markets: HashMap<String, MarketQuote> = HashMap::new();
     for sym in ["USOIL", "XAUUSD", "EURUSD", "USDCNH", "UKOIL", "COPPER"] {
-        markets.insert(sym.to_string(), MarketQuote {
-            price: "0".to_string(),
-            change_pct: "0".to_string(),
-            change_val: "0".to_string(),
-        });
+        markets.insert(
+            sym.to_string(),
+            MarketQuote {
+                price: "0".to_string(),
+                change_pct: "0".to_string(),
+                change_val: "0".to_string(),
+            },
+        );
     }
 
     let mut new_patterns: Vec<Pattern> = Vec::new();
     let now = Utc::now().to_rfc3339();
 
-    let hormuz_caps: Vec<&CapsuleEntry> = event_caps.iter()
+    let hormuz_caps: Vec<&CapsuleEntry> = event_caps
+        .iter()
         .filter(|c| {
             let t = c.action_gap_title.to_lowercase();
             t.contains("hormuz") || c.action_gap_title.contains("石油")
@@ -203,8 +228,16 @@ pub fn discover(_force: bool) -> DiscoveryResult {
         if let Some(oil) = markets.get("USOIL") {
             let oil_change: f64 = oil.change_pct.parse().unwrap_or(0.0);
             if oil_change.abs() > 2.0 {
-                let signal = if oil_change.abs() > 3.0 { "oil_volatility" } else { "oil_watch" };
-                let avg_score: f64 = hormuz_caps.iter().map(|c| c.outcome_success_score).sum::<f64>() / hormuz_caps.len() as f64;
+                let signal = if oil_change.abs() > 3.0 {
+                    "oil_volatility"
+                } else {
+                    "oil_watch"
+                };
+                let avg_score: f64 = hormuz_caps
+                    .iter()
+                    .map(|c| c.outcome_success_score)
+                    .sum::<f64>()
+                    / hormuz_caps.len() as f64;
 
                 new_patterns.push(Pattern {
                     pattern_type: "hormuz_oil_correlation".to_string(),
@@ -225,7 +258,8 @@ pub fn discover(_force: bool) -> DiscoveryResult {
         }
     }
 
-    let military_caps: Vec<&CapsuleEntry> = event_caps.iter()
+    let military_caps: Vec<&CapsuleEntry> = event_caps
+        .iter()
         .filter(|c| {
             let t = c.action_gap_title.to_lowercase();
             t.contains("military") || c.action_gap_title.contains("导弹") || t.contains("ceasefire")
@@ -247,7 +281,11 @@ pub fn discover(_force: bool) -> DiscoveryResult {
                     last_event: None,
                     current_gold_change_pct: Some((gold_change * 1000.0).round() / 1000.0),
                     direction: Some(direction.to_string()),
-                    note: Some(format!("Gold moving {} {}% during military escalation events", direction, gold_change.abs())),
+                    note: Some(format!(
+                        "Gold moving {} {}% during military escalation events",
+                        direction,
+                        gold_change.abs()
+                    )),
                     total_capsules: None,
                     event_vs_research_ratio: None,
                     avg_score: None,
@@ -259,11 +297,19 @@ pub fn discover(_force: bool) -> DiscoveryResult {
 
     let total_caps = capsules.len();
     let avg_score = if total_caps > 0 {
-        capsules.iter().map(|c| c.outcome_success_score).sum::<f64>() / total_caps as f64
+        capsules
+            .iter()
+            .map(|c| c.outcome_success_score)
+            .sum::<f64>()
+            / total_caps as f64
     } else {
         0.0
     };
-    let event_ratio = if total_caps > 0 { event_caps.len() as f64 / total_caps as f64 } else { 0.0 };
+    let event_ratio = if total_caps > 0 {
+        event_caps.len() as f64 / total_caps as f64
+    } else {
+        0.0
+    };
 
     new_patterns.push(Pattern {
         pattern_type: "gene_pool_composition".to_string(),
@@ -274,7 +320,13 @@ pub fn discover(_force: bool) -> DiscoveryResult {
         last_event: None,
         current_gold_change_pct: None,
         direction: None,
-        note: Some(format!("Gene Pool: {} capsules, {} events, {} research, avg {:.2}", total_caps, event_caps.len(), research_caps.len(), avg_score)),
+        note: Some(format!(
+            "Gene Pool: {} capsules, {} events, {} research, avg {:.2}",
+            total_caps,
+            event_caps.len(),
+            research_caps.len(),
+            avg_score
+        )),
         total_capsules: Some(total_caps),
         event_vs_research_ratio: Some((event_ratio * 1000.0).round() / 1000.0),
         avg_score: Some((avg_score * 1000.0).round() / 1000.0),
@@ -284,7 +336,11 @@ pub fn discover(_force: bool) -> DiscoveryResult {
     if !new_patterns.is_empty() {
         let mut correlations = load_patterns();
         for np in &new_patterns {
-            if let Some(existing) = correlations.correlations.iter_mut().find(|p| p.pattern_type == np.pattern_type) {
+            if let Some(existing) = correlations
+                .correlations
+                .iter_mut()
+                .find(|p| p.pattern_type == np.pattern_type)
+            {
                 *existing = np.clone();
             } else {
                 correlations.correlations.push(np.clone());

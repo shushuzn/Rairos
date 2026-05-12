@@ -61,14 +61,22 @@ impl LlmCredentials {
         let resolved_key = explicit_api_key
             .map(|s| s.to_string())
             .filter(|s| !s.is_empty())
-            .or_else(|| std::env::var("OPENAI_API_KEY").ok().filter(|s| !s.is_empty()))
+            .or_else(|| {
+                std::env::var("OPENAI_API_KEY")
+                    .ok()
+                    .filter(|s| !s.is_empty())
+            })
             .or_else(|| {
                 std::env::var("MINIMAX_CN_API_KEY")
                     .ok()
                     .filter(|s| !s.is_empty())
                     .or_else(|| hermes_env.get("MINIMAX_CN_API_KEY").cloned())
             })
-            .or_else(|| std::env::var("MINIMAX_API_KEY").ok().filter(|s| !s.is_empty()))
+            .or_else(|| {
+                std::env::var("MINIMAX_API_KEY")
+                    .ok()
+                    .filter(|s| !s.is_empty())
+            })
             .unwrap_or_default();
 
         // Resolve base URL with priority: explicit > MINIMAX_CN > MINIMAX > default
@@ -82,8 +90,16 @@ impl LlmCredentials {
                     .filter(|s| !s.is_empty())
                     .or_else(|| hermes_env.get("MINIMAX_CN_BASE_URL").cloned())
             })
-            .or_else(|| std::env::var("MINIMAX_BASE_URL").ok().filter(|s| !s.is_empty()))
-            .or_else(|| std::env::var("OPENAI_BASE_URL").ok().filter(|s| !s.is_empty()))
+            .or_else(|| {
+                std::env::var("MINIMAX_BASE_URL")
+                    .ok()
+                    .filter(|s| !s.is_empty())
+            })
+            .or_else(|| {
+                std::env::var("OPENAI_BASE_URL")
+                    .ok()
+                    .filter(|s| !s.is_empty())
+            })
             .unwrap_or_else(|| "https://api.minimaxi.com/v1".to_string());
 
         Self {
@@ -223,8 +239,7 @@ impl LlmUsage {
             prompt_tokens: prompt,
             completion_tokens: completion,
             total_tokens: prompt + completion,
-            cost_usd: (prompt as f64 * 1.1 / 1_000_000.0)
-                + (completion as f64 * 4.4 / 1_000_000.0),
+            cost_usd: (prompt as f64 * 1.1 / 1_000_000.0) + (completion as f64 * 4.4 / 1_000_000.0),
         }
     }
 
@@ -318,7 +333,8 @@ pub struct StreamToolCall {
 
 /// Streaming response iterator
 pub struct StreamResponse {
-    chunks: std::pin::Pin<Box<dyn tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send>>,
+    chunks:
+        std::pin::Pin<Box<dyn tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send>>,
 }
 
 impl std::fmt::Debug for StreamResponse {
@@ -334,13 +350,17 @@ impl Clone for StreamResponse {
 }
 
 impl StreamResponse {
-    pub fn new(chunks: impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send + 'static) -> Self {
+    pub fn new(
+        chunks: impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send + 'static,
+    ) -> Self {
         Self {
             chunks: Box::pin(chunks),
         }
     }
 
-    pub fn into_inner(self) -> impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send {
+    pub fn into_inner(
+        self,
+    ) -> impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send {
         self.chunks
     }
 }
@@ -432,7 +452,11 @@ fn parse_sse_event(line: &str) -> Option<StreamChunk> {
                 index: tc.index.unwrap_or(0),
                 id: tc.id,
                 name: tc.function.as_ref().and_then(|f| f.name.clone()),
-                arguments: tc.function.as_ref().and_then(|f| f.arguments.clone()).unwrap_or_default(),
+                arguments: tc
+                    .function
+                    .as_ref()
+                    .and_then(|f| f.arguments.clone())
+                    .unwrap_or_default(),
             });
         }
     }
@@ -446,9 +470,9 @@ fn parse_sse_event(line: &str) -> Option<StreamChunk> {
 }
 
 /// Convert a byte stream into a stream of SSE-parsed StreamChunks
-fn streamerr(stream: impl tokio_stream::Stream<Item = Result<bytes::Bytes, reqwest::Error>> + Send + 'static)
-    -> impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send + 'static
-{
+fn streamerr(
+    stream: impl tokio_stream::Stream<Item = Result<bytes::Bytes, reqwest::Error>> + Send + 'static,
+) -> impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send + 'static {
     use futures_util::StreamExt;
 
     let stream = stream.map(|result| {
@@ -562,7 +586,10 @@ impl LlmClient for OpenAiClient {
         };
 
         Ok(LlmResponse::NonStream(NonStreamResponse {
-            content: data.choices.into_iter().next()
+            content: data
+                .choices
+                .into_iter()
+                .next()
                 .map(|c| c.message.content)
                 .unwrap_or_default(),
             usage,
@@ -687,13 +714,13 @@ impl LlmClient for AnthropicClient {
         if status.as_u16() == 429 {
             return Err(LlmError::RateLimited);
         }
-            if !status.is_success() {
-                let body = resp.text().await?;
-                return Err(LlmError::Api {
-                    code: status.as_u16(),
-                    message: body,
-                });
-            }
+        if !status.is_success() {
+            let body = resp.text().await?;
+            return Err(LlmError::Api {
+                code: status.as_u16(),
+                message: body,
+            });
+        }
 
         #[derive(Deserialize)]
         struct Response {
@@ -718,7 +745,8 @@ impl LlmClient for AnthropicClient {
 
         let data: Response = resp.json().await?;
 
-        let content = data.content
+        let content = data
+            .content
             .into_iter()
             .map(|c| match c {
                 ContentBlock::Text { text } => text,
@@ -775,7 +803,10 @@ impl CostTracker {
         self.total_cost_usd += usage.cost_usd;
         self.total_tokens += usage.total_tokens as u64;
         *self.calls_by_model.entry(model.to_string()).or_insert(0) += 1;
-        *self.calls_by_provider.entry(provider.to_string()).or_insert(0) += 1;
+        *self
+            .calls_by_provider
+            .entry(provider.to_string())
+            .or_insert(0) += 1;
     }
 
     pub fn reset(&mut self) {
@@ -785,10 +816,7 @@ impl CostTracker {
     pub fn summary(&self) -> String {
         format!(
             "Total cost: {:.4}, Total tokens: {}, Models: {:?}, Providers: {:?}",
-            self.total_cost_usd,
-            self.total_tokens,
-            self.calls_by_model,
-            self.calls_by_provider
+            self.total_cost_usd, self.total_tokens, self.calls_by_model, self.calls_by_provider
         )
     }
 }
@@ -833,7 +861,8 @@ impl CitationGraph {
     }
 
     pub fn citation_count(&self, paper_id: &str) -> usize {
-        self.edges.values()
+        self.edges
+            .values()
             .filter(|refs| refs.iter().any(|r| r == paper_id))
             .count()
     }
@@ -854,14 +883,13 @@ impl GapDetector {
         for keyword in keywords {
             let has_keyword = papers.iter().any(|p| {
                 p.title.to_lowercase().contains(&keyword.to_lowercase())
-                    || p.abstract_text.to_lowercase().contains(&keyword.to_lowercase())
+                    || p.abstract_text
+                        .to_lowercase()
+                        .contains(&keyword.to_lowercase())
             });
 
             if !has_keyword {
-                gaps.push(format!(
-                    "No papers found matching keyword: {}",
-                    keyword
-                ));
+                gaps.push(format!("No papers found matching keyword: {}", keyword));
             }
         }
 
@@ -878,7 +906,8 @@ impl GapDetector {
             }
         }
 
-        category_count.into_iter()
+        category_count
+            .into_iter()
             .filter(|(_, count)| *count < threshold)
             .map(|(cat, _)| cat.to_string())
             .collect()
@@ -940,7 +969,6 @@ impl std::fmt::Display for CapsuleStatus {
         }
     }
 }
-
 
 impl Capsule {
     pub fn new(approach_summary: &str, gap_type: &str, keywords: Vec<String>) -> Self {
@@ -1027,7 +1055,12 @@ pub struct CapsuleImpact {
 }
 
 impl Capsule {
-    pub fn compute_impact(&self, lambda: f64, inbound_citations: i32, citation_boost: f64) -> CapsuleImpact {
+    pub fn compute_impact(
+        &self,
+        lambda: f64,
+        inbound_citations: i32,
+        citation_boost: f64,
+    ) -> CapsuleImpact {
         let created = chrono::DateTime::parse_from_rfc3339(&self.created_at)
             .map(|dt| dt.with_timezone(&chrono::Utc))
             .unwrap_or_else(|_| chrono::Utc::now());
@@ -1050,7 +1083,10 @@ impl Capsule {
             capsule_trust,
             archived: base_impact < DEFAULT_MIN_IMPACT,
             reason: if base_impact < DEFAULT_MIN_IMPACT {
-                format!("Impact {:.4} < threshold {:.4}", base_impact, DEFAULT_MIN_IMPACT)
+                format!(
+                    "Impact {:.4} < threshold {:.4}",
+                    base_impact, DEFAULT_MIN_IMPACT
+                )
             } else {
                 String::new()
             },
@@ -1080,20 +1116,80 @@ pub struct GenePoolDiversityCalculator;
 
 impl GenePoolDiversityCalculator {
     const FAMILY_KEYWORDS: &'static [(&'static str, &'static [&'static str])] = &[
-        ("attention", &["attention", "transformer", "multi-head", "self-attention", "cross-attention"]),
-        ("reinforcement", &["rl", "reinforcement", "policy", "reward", "agent", "DQN", "PPO", "A3C"]),
-        ("language_model", &["LM", "language model", "decoder", "autoregressive", "LLM", "GPT", "BERT"]),
-        ("vision", &["CNN", "convolution", "resnet", "image", "vision", "ViT", "classification"]),
-        ("optimization", &["optimizer", "Adam", "SGD", "gradient", "loss", "training"]),
-        ("graph", &["GNN", "graph", "node", "edge", "message passing"]),
-        ("reasoning", &["reasoning", "chain-of-thought", "logical", "inference", "planning"]),
-        ("embodied", &["embodied", "robotics", "navigation", "control", "motor"]),
+        (
+            "attention",
+            &[
+                "attention",
+                "transformer",
+                "multi-head",
+                "self-attention",
+                "cross-attention",
+            ],
+        ),
+        (
+            "reinforcement",
+            &[
+                "rl",
+                "reinforcement",
+                "policy",
+                "reward",
+                "agent",
+                "DQN",
+                "PPO",
+                "A3C",
+            ],
+        ),
+        (
+            "language_model",
+            &[
+                "LM",
+                "language model",
+                "decoder",
+                "autoregressive",
+                "LLM",
+                "GPT",
+                "BERT",
+            ],
+        ),
+        (
+            "vision",
+            &[
+                "CNN",
+                "convolution",
+                "resnet",
+                "image",
+                "vision",
+                "ViT",
+                "classification",
+            ],
+        ),
+        (
+            "optimization",
+            &["optimizer", "Adam", "SGD", "gradient", "loss", "training"],
+        ),
+        (
+            "graph",
+            &["GNN", "graph", "node", "edge", "message passing"],
+        ),
+        (
+            "reasoning",
+            &[
+                "reasoning",
+                "chain-of-thought",
+                "logical",
+                "inference",
+                "planning",
+            ],
+        ),
+        (
+            "embodied",
+            &["embodied", "robotics", "navigation", "control", "motor"],
+        ),
     ];
 
     fn family_of(keywords: &[String]) -> String {
-        let kw_set: std::collections::HashSet<String> = keywords.iter()
-            .map(|k| k.to_lowercase())
-            .collect();
+        let kw_set: std::collections::HashSet<String> =
+            keywords.iter().map(|k| k.to_lowercase()).collect();
         for (fam, fam_kws) in Self::FAMILY_KEYWORDS {
             if fam_kws.iter().any(|fk| kw_set.contains(*fk)) {
                 return fam.to_string();
@@ -1124,7 +1220,9 @@ impl GenePoolDiversityCalculator {
         for cap in capsules {
             let fam = Self::family_of(&cap.trigger_keywords);
             *family_counts.entry(fam).or_insert(0) += 1;
-            *gap_type_counts.entry(cap.action_gap_type.clone()).or_insert(0) += 1;
+            *gap_type_counts
+                .entry(cap.action_gap_type.clone())
+                .or_insert(0) += 1;
         }
 
         let total = capsules.len() as f64;
@@ -1138,20 +1236,29 @@ impl GenePoolDiversityCalculator {
 
         let family_count = family_counts.len();
         let max_entropy = (family_count as f64).ln().max(1.0);
-        let normalized_shannon = if max_entropy > 0.0 { shannon / max_entropy } else { 0.0 };
+        let normalized_shannon = if max_entropy > 0.0 {
+            shannon / max_entropy
+        } else {
+            0.0
+        };
 
         let family_coverage = family_count as f64 / Self::FAMILY_KEYWORDS.len() as f64;
         let diversity_score = ((normalized_shannon * 0.6 + family_coverage * 0.4) * 100.0) as i32;
 
         let mut sorted_counts: Vec<usize> = family_counts.values().cloned().collect();
         sorted_counts.sort();
-        let median_count = sorted_counts.get(sorted_counts.len() / 2).copied().unwrap_or(1);
+        let median_count = sorted_counts
+            .get(sorted_counts.len() / 2)
+            .copied()
+            .unwrap_or(1);
 
-        let underrep: Vec<String> = family_counts.iter()
+        let underrep: Vec<String> = family_counts
+            .iter()
             .filter(|(_, &c)| c < median_count / 10)
             .map(|(f, _)| f.clone())
             .collect();
-        let overrep: Vec<String> = family_counts.iter()
+        let overrep: Vec<String> = family_counts
+            .iter()
             .filter(|(_, &c)| c > median_count * 2)
             .map(|(f, _)| f.clone())
             .collect();
@@ -1382,25 +1489,29 @@ impl GenePool {
     }
 
     pub fn active_capsules(&self) -> Vec<&Capsule> {
-        self.capsules.iter()
+        self.capsules
+            .iter()
             .filter(|c| c.status == CapsuleStatus::Active && !c.archived)
             .collect()
     }
 
     pub fn find_by_paper(&self, paper_id: &str) -> Option<&Capsule> {
-        self.capsules.iter()
+        self.capsules
+            .iter()
             .filter(|c| c.archetype.source_paper_id.as_deref() == Some(paper_id))
             .max_by(|a, b| a.created_at.cmp(&b.created_at))
     }
 
     pub fn find_by_fingerprint(&self, fingerprint: &str) -> Option<&Capsule> {
-        self.capsules.iter()
+        self.capsules
+            .iter()
             .filter(|c| c.archetype.algorithm_fingerprint.as_deref() == Some(fingerprint))
             .find(|c| c.status == CapsuleStatus::Active)
     }
 
     pub fn search(&self, keywords: &[&str], gap_type: Option<&str>) -> Vec<&Capsule> {
-        self.capsules.iter()
+        self.capsules
+            .iter()
             .filter(|c| {
                 if c.status == CapsuleStatus::Archived {
                     return false;
@@ -1410,16 +1521,24 @@ impl GenePool {
                         return false;
                     }
                 }
-                let kw_lower: std::collections::HashSet<String> = c.trigger_keywords.iter()
+                let kw_lower: std::collections::HashSet<String> = c
+                    .trigger_keywords
+                    .iter()
                     .map(|s| s.to_lowercase())
                     .collect();
-                keywords.iter().any(|kw| kw_lower.contains(&kw.to_lowercase()))
+                keywords
+                    .iter()
+                    .any(|kw| kw_lower.contains(&kw.to_lowercase()))
             })
             .collect()
     }
 
     pub fn record_feedback(&mut self, capsule_id: &str, is_positive: bool) {
-        if let Some(cap) = self.capsules.iter_mut().find(|c| c.capsule_id == capsule_id) {
+        if let Some(cap) = self
+            .capsules
+            .iter_mut()
+            .find(|c| c.capsule_id == capsule_id)
+        {
             if is_positive {
                 cap.record_success();
             } else {
@@ -1457,8 +1576,12 @@ impl GenePool {
     }
 
     pub fn suggest_crossover(&self, gap_type: &str, count: usize) -> Vec<(String, String)> {
-        let candidates: Vec<&Capsule> = self.capsules.iter()
-            .filter(|c| c.action_gap_type == gap_type && c.status == CapsuleStatus::Active && !c.archived)
+        let candidates: Vec<&Capsule> = self
+            .capsules
+            .iter()
+            .filter(|c| {
+                c.action_gap_type == gap_type && c.status == CapsuleStatus::Active && !c.archived
+            })
             .take(count * 2)
             .collect();
 
@@ -1468,7 +1591,10 @@ impl GenePool {
                 if pairs.len() >= count {
                     return pairs;
                 }
-                pairs.push((candidates[i].capsule_id.clone(), candidates[j].capsule_id.clone()));
+                pairs.push((
+                    candidates[i].capsule_id.clone(),
+                    candidates[j].capsule_id.clone(),
+                ));
             }
         }
         pairs
@@ -1481,14 +1607,16 @@ impl GenePool {
 
 impl GenePool {
     pub fn to_jsonl(&self) -> String {
-        self.capsules.iter()
+        self.capsules
+            .iter()
             .map(|c| serde_json::to_string(c).unwrap_or_default())
             .collect::<Vec<_>>()
             .join("\n")
     }
 
     pub fn from_jsonl(text: &str) -> Self {
-        let capsules = text.lines()
+        let capsules = text
+            .lines()
             .filter_map(|l| serde_json::from_str(l).ok())
             .collect();
         Self {
@@ -1562,8 +1690,16 @@ mod tests {
     #[test]
     fn test_gene_pool_search() {
         let mut pool = GenePool::new();
-        pool.add_capsule(Capsule::new("Attention approach", "nlp", vec!["attention".to_string(), "transformer".to_string()]));
-        pool.add_capsule(Capsule::new("RL approach", "rl", vec!["reinforcement".to_string(), "policy".to_string()]));
+        pool.add_capsule(Capsule::new(
+            "Attention approach",
+            "nlp",
+            vec!["attention".to_string(), "transformer".to_string()],
+        ));
+        pool.add_capsule(Capsule::new(
+            "RL approach",
+            "rl",
+            vec!["reinforcement".to_string(), "policy".to_string()],
+        ));
 
         let results = pool.search(&["attention"], None);
         assert_eq!(results.len(), 1);
@@ -1589,7 +1725,11 @@ mod tests {
     fn test_crossover_suggestion() {
         let mut pool = GenePool::new();
         for i in 0..5 {
-            pool.add_capsule(Capsule::new(&format!("Capsule {}", i), "test_gap", vec![format!("kw{}", i)]));
+            pool.add_capsule(Capsule::new(
+                &format!("Capsule {}", i),
+                "test_gap",
+                vec![format!("kw{}", i)],
+            ));
         }
 
         let pairs = pool.suggest_crossover("test_gap", 3);
@@ -1673,7 +1813,9 @@ mod tests {
 
     #[test]
     fn test_contains_research_keyword() {
-        assert!(super::contains_research_keyword("The transformer model uses attention"));
+        assert!(super::contains_research_keyword(
+            "The transformer model uses attention"
+        ));
         assert!(super::contains_research_keyword("RLHF training"));
         assert!(super::contains_research_keyword(" diffusion model"));
         assert!(!super::contains_research_keyword("xyz abcdef")); // no keywords
@@ -1688,9 +1830,18 @@ mod tests {
 
     #[test]
     fn test_query_type() {
-        assert_eq!(super::QueryType::from_str("factual"), super::QueryType::Factual);
-        assert_eq!(super::QueryType::from_str("conceptual"), super::QueryType::Conceptual);
-        assert_eq!(super::QueryType::from_str("unknown"), super::QueryType::General);
+        assert_eq!(
+            super::QueryType::from_str("factual"),
+            super::QueryType::Factual
+        );
+        assert_eq!(
+            super::QueryType::from_str("conceptual"),
+            super::QueryType::Conceptual
+        );
+        assert_eq!(
+            super::QueryType::from_str("unknown"),
+            super::QueryType::General
+        );
         assert_eq!(super::bm25_weight(super::QueryType::Factual), 0.65);
         assert_eq!(super::mmr_lambda(super::QueryType::Factual), 0.8);
     }
@@ -1836,7 +1987,9 @@ pub const SMART_FOLLOWUP_BASE: &[&str] = &[
 /// Check if a text contains any AI research keywords.
 pub fn contains_research_keyword(text: &str) -> bool {
     let text_lower = text.to_lowercase();
-    AI_RESEARCH_KEYWORDS.iter().any(|kw| text_lower.contains(&kw.to_lowercase()))
+    AI_RESEARCH_KEYWORDS
+        .iter()
+        .any(|kw| text_lower.contains(&kw.to_lowercase()))
 }
 
 // ============================================================================
@@ -1859,7 +2012,11 @@ pub struct AtRiskCapsule {
 
 fn capsule_path() -> std::path::PathBuf {
     dirs::home_dir()
-        .map(|p| p.join(".ai_research_os").join("gene_pool").join("capsules.json"))
+        .map(|p| {
+            p.join(".ai_research_os")
+                .join("gene_pool")
+                .join("capsules.json")
+        })
         .unwrap_or_else(|| std::path::PathBuf::from("capsules.json"))
 }
 
@@ -2022,7 +2179,10 @@ pub fn render_at_risk_html() -> String {
         ));
         html.push_str(&format!("<td><code>{}</code></td>", cap.gap_type));
         html.push_str(&format!("<td>{:.2}</td>", cap.outcome_score));
-        html.push_str(&format!("<td>{} <small>{}</small></td>", streak_bar, cap.low_score_streak));
+        html.push_str(&format!(
+            "<td>{} <small>{}</small></td>",
+            streak_bar, cap.low_score_streak
+        ));
         html.push_str(&format!("<td>{}</td>", pinned));
         html.push_str("<td>");
         html.push_str(&format!(
@@ -2043,9 +2203,13 @@ pub fn render_at_risk_html() -> String {
     html.push_str(".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }");
     html.push_str(".at-risk-table th, .at-risk-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }");
     html.push_str(".at-risk-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }");
-    html.push_str(".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }");
+    html.push_str(
+        ".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }",
+    );
     html.push_str(".btn-keep { background: #7A9E7A; color: white; border: none; }");
-    html.push_str(".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }");
+    html.push_str(
+        ".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }",
+    );
     html.push_str("</style>");
     html.push_str("</div>");
 

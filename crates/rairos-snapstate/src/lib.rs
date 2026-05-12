@@ -12,8 +12,7 @@ use std::path::PathBuf;
 // ─── Dataclasses ────────────────────────────────────────────────────────────────
 
 /// A paper captured during research.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PaperSnapshot {
     pub arxiv_id: String,
     pub title: String,
@@ -26,7 +25,6 @@ pub struct PaperSnapshot {
     pub notes: String,
     pub keywords: Vec<String>,
 }
-
 
 /// A research gap captured during agent iteration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -156,9 +154,9 @@ impl Snapstate {
             .filter_map(|e| e.ok())
             .filter(|e| {
                 e.path().extension().is_some_and(|ext| ext == "json")
-                    && e.path().file_stem().is_some_and(|s| {
-                        !s.to_string_lossy().ends_with(".tmp")
-                    })
+                    && e.path()
+                        .file_stem()
+                        .is_some_and(|s| !s.to_string_lossy().ends_with(".tmp"))
             })
             .collect();
         sessions.sort_by(|a, b| {
@@ -172,7 +170,8 @@ impl Snapstate {
             }
         });
         sessions.first().and_then(|e| {
-            e.path().file_stem()
+            e.path()
+                .file_stem()
                 .map(|s| self.load(&s.to_string_lossy()))
                 .unwrap_or(None)
         })
@@ -189,9 +188,9 @@ impl Snapstate {
             .into_iter()
             .filter(|e| {
                 e.path().extension().is_some_and(|ext| ext == "json")
-                    && e.path().file_stem().is_some_and(|s| {
-                        !s.to_string_lossy().ends_with(".tmp")
-                    })
+                    && e.path()
+                        .file_stem()
+                        .is_some_and(|s| !s.to_string_lossy().ends_with(".tmp"))
             })
             .collect();
 
@@ -299,9 +298,7 @@ impl Snapstate {
 
         let mut checkpoints: Vec<_> = entries
             .into_iter()
-            .filter(|e| {
-                e.path().extension().is_some_and(|ext| ext == "json")
-            })
+            .filter(|e| e.path().extension().is_some_and(|ext| ext == "json"))
             .collect();
 
         checkpoints.sort_by(|a, b| {
@@ -347,7 +344,8 @@ impl Snapstate {
 
     /// Delete a specific checkpoint.
     pub fn delete_checkpoint(&self, session_id: &str, checkpoint_id: &str) -> bool {
-        let ck_path = checkpoint_dir(&self.base_dir, session_id).join(format!("{checkpoint_id}.json"));
+        let ck_path =
+            checkpoint_dir(&self.base_dir, session_id).join(format!("{checkpoint_id}.json"));
         if ck_path.exists() {
             return fs::remove_file(&ck_path).is_ok();
         }

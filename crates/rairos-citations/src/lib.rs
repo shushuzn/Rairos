@@ -3,7 +3,11 @@
 //! Core citation chain structures and algorithms: building chains, finding paths,
 //! research family clustering, and silent citation detection.
 
-#![allow(clippy::vec_init_then_push, clippy::unnecessary_sort_by, clippy::needless_range_loop)]
+#![allow(
+    clippy::vec_init_then_push,
+    clippy::unnecessary_sort_by,
+    clippy::needless_range_loop
+)]
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -83,8 +87,9 @@ impl CitationChainBuilder {
         abstract_text: String,
         citation_count: i32,
     ) -> &mut CitationNode {
-        self.nodes.entry(paper_id.to_string()).or_insert_with(|| {
-            CitationNode {
+        self.nodes
+            .entry(paper_id.to_string())
+            .or_insert_with(|| CitationNode {
                 paper_id: paper_id.to_string(),
                 title: title.to_string(),
                 year,
@@ -93,8 +98,7 @@ impl CitationChainBuilder {
                 citations: references.clone(),
                 cited_by: Vec::new(),
                 citation_count,
-            }
-        });
+            });
         let node = self.nodes.get_mut(paper_id).unwrap();
         node.citations = references;
         node
@@ -241,7 +245,10 @@ impl CitationChainBuilder {
         let mut ref_to_papers: HashMap<&str, HashSet<&str>> = HashMap::new();
         for node in &node_values {
             for r in &node.citations {
-                ref_to_papers.entry(r).or_default().insert(node.paper_id.as_str());
+                ref_to_papers
+                    .entry(r)
+                    .or_default()
+                    .insert(node.paper_id.as_str());
             }
         }
 
@@ -254,7 +261,10 @@ impl CitationChainBuilder {
 
             let mut family_members: HashMap<&str, HashSet<&str>> = HashMap::new();
             for reference in &node.citations {
-                for other_pid in ref_to_papers.get(reference.as_str()).unwrap_or(&HashSet::new()) {
+                for other_pid in ref_to_papers
+                    .get(reference.as_str())
+                    .unwrap_or(&HashSet::new())
+                {
                     if *other_pid != node.paper_id.as_str() {
                         family_members
                             .entry(other_pid)
@@ -267,10 +277,7 @@ impl CitationChainBuilder {
             for (other_pid, shared_refs) in family_members {
                 if shared_refs.len() >= 2 {
                     let other_node = self.nodes.get(other_pid);
-                    let pair_key = (
-                        node.paper_id.clone(),
-                        other_pid.to_string(),
-                    );
+                    let pair_key = (node.paper_id.clone(), other_pid.to_string());
                     let sorted_key = (
                         pair_key.0.clone().min(pair_key.1.clone()),
                         pair_key.0.clone().max(pair_key.1.clone()),
@@ -295,7 +302,9 @@ impl CitationChainBuilder {
                             },
                             PaperInfo {
                                 paper_id: other_pid.to_string(),
-                                title: other_node.map(|n| n.title.clone()).unwrap_or_else(|| other_pid.to_string()),
+                                title: other_node
+                                    .map(|n| n.title.clone())
+                                    .unwrap_or_else(|| other_pid.to_string()),
                                 year: other_node.map(|n| n.year).unwrap_or(0),
                             },
                         ],
@@ -312,14 +321,49 @@ impl CitationChainBuilder {
 
     pub fn detect_silent_citations(&self) -> Vec<SilentCitation> {
         let method_terms: HashSet<&str> = [
-            "transformer", "attention", "neural", "network", "embedding", "latent",
-            "fine-tuning", "pretraining", "gradient", "loss", "optimization",
-            "encoder", "decoder", "architecture", "layer", "token", "rag", "retrieval",
-            "knowledge", "distillation", "quantization", "chain-of-thought", "prompting",
-            "few-shot", "zero-shot", "in-context", "reinforcement", "reward", "policy",
-            "rlhf", "dpo", "graph", "neural network", "convolutional", "recurrent",
-            "generative", "diffusion", "gan", "vae", "autoencoder",
-        ].into_iter().collect();
+            "transformer",
+            "attention",
+            "neural",
+            "network",
+            "embedding",
+            "latent",
+            "fine-tuning",
+            "pretraining",
+            "gradient",
+            "loss",
+            "optimization",
+            "encoder",
+            "decoder",
+            "architecture",
+            "layer",
+            "token",
+            "rag",
+            "retrieval",
+            "knowledge",
+            "distillation",
+            "quantization",
+            "chain-of-thought",
+            "prompting",
+            "few-shot",
+            "zero-shot",
+            "in-context",
+            "reinforcement",
+            "reward",
+            "policy",
+            "rlhf",
+            "dpo",
+            "graph",
+            "neural network",
+            "convolutional",
+            "recurrent",
+            "generative",
+            "diffusion",
+            "gan",
+            "vae",
+            "autoencoder",
+        ]
+        .into_iter()
+        .collect();
 
         let re_word = Regex::new(r"\b[a-z][a-z0-9-]{3,}\b").unwrap();
 
@@ -428,7 +472,11 @@ impl CitationChainBuilder {
             ));
             lines.push(format!(
                 "  Year: {} | Cites: {} | Cited by: {}",
-                if node.year > 0 { node.year.to_string() } else { "?".to_string() },
+                if node.year > 0 {
+                    node.year.to_string()
+                } else {
+                    "?".to_string()
+                },
                 node.citations.len(),
                 node.cited_by.len()
             ));
@@ -436,7 +484,10 @@ impl CitationChainBuilder {
         }
 
         if chain.nodes.len() > max_nodes {
-            lines.push(format!("... and {} more papers", chain.nodes.len() - max_nodes));
+            lines.push(format!(
+                "... and {} more papers",
+                chain.nodes.len() - max_nodes
+            ));
             lines.push(String::new());
         }
 
@@ -457,7 +508,11 @@ impl CitationChainBuilder {
 
         for node in chain.nodes.values() {
             let label = if node.year > 0 {
-                format!("{}\\n({})", &node.title[..node.title.len().min(30)], node.year)
+                format!(
+                    "{}\\n({})",
+                    &node.title[..node.title.len().min(30)],
+                    node.year
+                )
             } else {
                 node.title[..node.title.len().min(30)].to_string()
             };
@@ -522,7 +577,11 @@ impl CitationChainBuilder {
                     "  - [{}] {} ({})",
                     &p.paper_id[..p.paper_id.len().min(8)],
                     &p.title[..p.title.len().min(50)],
-                    if p.year > 0 { p.year.to_string() } else { "?".to_string() }
+                    if p.year > 0 {
+                        p.year.to_string()
+                    } else {
+                        "?".to_string()
+                    }
                 ));
             }
             lines.push(String::new());
@@ -594,7 +653,15 @@ mod tests {
     #[test]
     fn test_add_paper() {
         let mut builder = CitationChainBuilder::new();
-        builder.add_paper("p1", "Paper One", 2023, vec!["Author A".to_string()], vec![], "Abstract".to_string(), 5);
+        builder.add_paper(
+            "p1",
+            "Paper One",
+            2023,
+            vec!["Author A".to_string()],
+            vec![],
+            "Abstract".to_string(),
+            5,
+        );
         let chain = builder.build_chain();
         assert!(chain.nodes.contains_key("p1"));
     }
@@ -612,8 +679,24 @@ mod tests {
     #[test]
     fn test_find_path() {
         let mut builder = CitationChainBuilder::new();
-        builder.add_paper("p1", "Paper One", 2023, vec![], vec!["p2".to_string()], String::new(), 0);
-        builder.add_paper("p2", "Paper Two", 2022, vec![], vec!["p3".to_string()], String::new(), 0);
+        builder.add_paper(
+            "p1",
+            "Paper One",
+            2023,
+            vec![],
+            vec!["p2".to_string()],
+            String::new(),
+            0,
+        );
+        builder.add_paper(
+            "p2",
+            "Paper Two",
+            2022,
+            vec![],
+            vec!["p3".to_string()],
+            String::new(),
+            0,
+        );
         builder.add_paper("p3", "Paper Three", 2021, vec![], vec![], String::new(), 0);
         let path = builder.find_path("p1", "p3");
         assert!(path.is_some());

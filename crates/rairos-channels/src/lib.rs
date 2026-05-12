@@ -192,7 +192,10 @@ pub fn match_paper_to_channels(paper: &Paper) -> Vec<String> {
             continue;
         }
         if !cfg.keywords.is_empty()
-            && cfg.keywords.iter().any(|kw| abstract_text.contains(&kw.to_lowercase()))
+            && cfg
+                .keywords
+                .iter()
+                .any(|kw| abstract_text.contains(&kw.to_lowercase()))
         {
             matched.push(cid.clone());
         }
@@ -258,13 +261,9 @@ pub fn toggle_channel(cid: &str) -> bool {
 }
 
 #[allow(clippy::vec_init_then_push)]
-pub fn render_channels_html(
-    check_results: Option<&HashMap<String, Vec<Paper>>>,
-) -> String {
+pub fn render_channels_html(check_results: Option<&HashMap<String, Vec<Paper>>>) -> String {
     let channels = get_channels();
-    let results: HashMap<String, Vec<Paper>> = check_results
-        .cloned()
-        .unwrap_or_default();
+    let results: HashMap<String, Vec<Paper>> = check_results.cloned().unwrap_or_default();
 
     let mut lines: Vec<String> = {
         let mut v = Vec::new();
@@ -274,7 +273,7 @@ pub fn render_channels_html(
             "<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>\
              Configure multiple feed channels with different matching criteria. \
              Higher priority = shown first in alerts.</p>"
-            .to_string(),
+                .to_string(),
         );
         v.push(
             "<div style=\"margin-bottom: 20px;\">\
@@ -297,18 +296,37 @@ pub fn render_channels_html(
             2 => "#D4A055",
             _ => "#6B8FB5",
         };
-        let status = if ch.enabled { "✅ Enabled" } else { "❌ Disabled" };
-        let kw_str = ch.keywords.iter().take(6)
+        let status = if ch.enabled {
+            "✅ Enabled"
+        } else {
+            "❌ Disabled"
+        };
+        let kw_str = ch
+            .keywords
+            .iter()
+            .take(6)
             .map(|k| format!("<code>{}</code>", k))
             .collect::<Vec<_>>()
             .join(", ");
-        let cat_str = ch.categories.iter().take(4).cloned().collect::<Vec<_>>().join(", ");
+        let cat_str = ch
+            .categories
+            .iter()
+            .take(4)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(", ");
 
         let channel_results = results.get(&ch.id);
         let result_rows = if let Some(rps) = channel_results {
             let mut rows = String::new();
             for rp in rps.iter().take(5) {
-                let title = rp.title.as_deref().unwrap_or("").chars().take(80).collect::<String>();
+                let title = rp
+                    .title
+                    .as_deref()
+                    .unwrap_or("")
+                    .chars()
+                    .take(80)
+                    .collect::<String>();
                 let published = rp.published.as_deref().unwrap_or("");
                 let score = rp.score.unwrap_or(0.0);
                 rows.push_str(&format!(
@@ -385,7 +403,8 @@ pub fn render_channels_html(
                    status.textContent = 'Error: ' + e.message;\
                });\
          }\
-         </script>".to_string()
+         </script>"
+            .to_string(),
     );
     lines.push("<style>.channels-panel { font-family: Georgia, serif; }</style>".to_string());
     lines.push("</div>".to_string());

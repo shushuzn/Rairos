@@ -209,7 +209,8 @@ impl EvolutionMemory {
     }
 
     pub fn add_feedback(&self, feedback: &Feedback) -> std::io::Result<()> {
-        let json = serde_json::to_string(feedback).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+        let json = serde_json::to_string(feedback)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
         fs::write(&self.feedback_file, format!("{}\n", json))?;
         Ok(())
     }
@@ -223,12 +224,20 @@ impl EvolutionMemory {
         score: f64,
         note: &str,
     ) -> std::io::Result<()> {
-        let fb_type = if is_positive { FeedbackType::Positive } else { FeedbackType::Negative };
+        let fb_type = if is_positive {
+            FeedbackType::Positive
+        } else {
+            FeedbackType::Negative
+        };
         let id = format!("fb_{}", Utc::now().timestamp_millis());
         let feedback = Feedback::new(&id, fb_type, "chat", query, paper_ids, outcome, score, note);
         self.add_feedback(&feedback)?;
 
-        let signal = if is_positive { SignalType::ChatSuccess } else { SignalType::ChatFailure };
+        let signal = if is_positive {
+            SignalType::ChatSuccess
+        } else {
+            SignalType::ChatFailure
+        };
         let mut trigger = HashMap::new();
         trigger.insert("query".to_string(), serde_json::json!(query));
         trigger.insert("papers".to_string(), serde_json::json!(feedback.paper_ids));
@@ -246,7 +255,8 @@ impl EvolutionMemory {
     }
 
     pub fn record_evolution_event(&self, event: &EvolutionEvent) -> std::io::Result<()> {
-        let json = serde_json::to_string(event).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+        let json = serde_json::to_string(event)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
         fs::write(&self.events_file, format!("{}\n", json))?;
         self.update_pattern_from_event(event);
         Ok(())
@@ -257,15 +267,18 @@ impl EvolutionMemory {
         let pattern_key = format!("{}_{}", event.signal_type, event.action);
 
         if !patterns.contains_key(&pattern_key) {
-            patterns.insert(pattern_key.clone(), LearnedPattern {
-                name: pattern_key.clone(),
-                signal_type: event.signal_type.clone(),
-                trigger_conditions: event.trigger.clone(),
-                success_count: 0,
-                failure_count: 0,
-                last_used: String::new(),
-                effectiveness: 0.0,
-            });
+            patterns.insert(
+                pattern_key.clone(),
+                LearnedPattern {
+                    name: pattern_key.clone(),
+                    signal_type: event.signal_type.clone(),
+                    trigger_conditions: event.trigger.clone(),
+                    success_count: 0,
+                    failure_count: 0,
+                    last_used: String::new(),
+                    effectiveness: 0.0,
+                },
+            );
         }
 
         if let Some(p) = patterns.get_mut(&pattern_key) {
@@ -275,7 +288,11 @@ impl EvolutionMemory {
                 p.failure_count += 1;
             }
             let total = p.success_count + p.failure_count;
-            p.effectiveness = if total > 0 { p.success_count as f64 / total as f64 } else { 0.0 };
+            p.effectiveness = if total > 0 {
+                p.success_count as f64 / total as f64
+            } else {
+                0.0
+            };
             p.last_used = event.timestamp.clone();
         }
 
@@ -295,7 +312,8 @@ impl EvolutionMemory {
     }
 
     fn save_patterns(&self, patterns: &HashMap<String, LearnedPattern>) -> std::io::Result<()> {
-        let json = serde_json::to_string_pretty(patterns).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+        let json = serde_json::to_string_pretty(patterns)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
         fs::write(&self.patterns_file, json)
     }
 
@@ -339,14 +357,43 @@ impl EvolutionMemory {
         let total_patterns = patterns.len() as i32;
 
         let mut stats = HashMap::new();
-        stats.insert("total_feedback".to_string(), serde_json::json!(feedback_count));
-        stats.insert("positive_feedback".to_string(), serde_json::json!(positive_count));
-        stats.insert("negative_feedback".to_string(), serde_json::json!(feedback_count - positive_count));
-        stats.insert("positive_rate".to_string(), serde_json::json!(if feedback_count > 0 { positive_count as f64 / feedback_count as f64 } else { 0.0 }));
+        stats.insert(
+            "total_feedback".to_string(),
+            serde_json::json!(feedback_count),
+        );
+        stats.insert(
+            "positive_feedback".to_string(),
+            serde_json::json!(positive_count),
+        );
+        stats.insert(
+            "negative_feedback".to_string(),
+            serde_json::json!(feedback_count - positive_count),
+        );
+        stats.insert(
+            "positive_rate".to_string(),
+            serde_json::json!(if feedback_count > 0 {
+                positive_count as f64 / feedback_count as f64
+            } else {
+                0.0
+            }),
+        );
         stats.insert("total_events".to_string(), serde_json::json!(event_count));
-        stats.insert("total_patterns".to_string(), serde_json::json!(total_patterns));
-        stats.insert("reliable_patterns".to_string(), serde_json::json!(reliable_count));
-        stats.insert("learning_progress".to_string(), serde_json::json!(if reliable_count < 10 { reliable_count as f64 / 10.0 } else { 1.0 }));
+        stats.insert(
+            "total_patterns".to_string(),
+            serde_json::json!(total_patterns),
+        );
+        stats.insert(
+            "reliable_patterns".to_string(),
+            serde_json::json!(reliable_count),
+        );
+        stats.insert(
+            "learning_progress".to_string(),
+            serde_json::json!(if reliable_count < 10 {
+                reliable_count as f64 / 10.0
+            } else {
+                1.0
+            }),
+        );
         stats
     }
 }
@@ -375,9 +422,18 @@ mod tests {
 
     #[test]
     fn test_feedback_type_from_str() {
-        assert_eq!(FeedbackType::from_str("positive"), Some(FeedbackType::Positive));
-        assert_eq!(FeedbackType::from_str("negative"), Some(FeedbackType::Negative));
-        assert_eq!(FeedbackType::from_str("neutral"), Some(FeedbackType::Neutral));
+        assert_eq!(
+            FeedbackType::from_str("positive"),
+            Some(FeedbackType::Positive)
+        );
+        assert_eq!(
+            FeedbackType::from_str("negative"),
+            Some(FeedbackType::Negative)
+        );
+        assert_eq!(
+            FeedbackType::from_str("neutral"),
+            Some(FeedbackType::Neutral)
+        );
         assert_eq!(FeedbackType::from_str("invalid"), None);
     }
 
@@ -446,14 +502,16 @@ mod tests {
     #[test]
     fn test_evolution_memory_record_chat_feedback() {
         let (memory, _temp) = temp_memory();
-        assert!(memory.record_chat_feedback(
-            "test query",
-            vec!["paper1".to_string()],
-            true,
-            "success",
-            0.9,
-            "great!"
-        ).is_ok());
+        assert!(memory
+            .record_chat_feedback(
+                "test query",
+                vec!["paper1".to_string()],
+                true,
+                "success",
+                0.9,
+                "great!"
+            )
+            .is_ok());
     }
 
     #[test]

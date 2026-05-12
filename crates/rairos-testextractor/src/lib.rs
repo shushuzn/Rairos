@@ -78,29 +78,31 @@ fn extract_numerical_claims(_arxiv_id: &str, text_sources: &[String]) -> Vec<Tes
         if text.is_empty() {
             continue;
         }
-            let mut seen_in_pat: std::collections::HashSet<String> = std::collections::HashSet::new();
-            for pat in get_patterns().iter() {
-                for cap in pat.captures_iter(text) {
-                    let value_str = match cap.get(1) {
-                        Some(v) => v.as_str(),
-                        None => continue,
-                    };
-                    if seen_in_pat.contains(value_str) { continue; }
-                    seen_in_pat.insert(value_str.to_string());
+        let mut seen_in_pat: std::collections::HashSet<String> = std::collections::HashSet::new();
+        for pat in get_patterns().iter() {
+            for cap in pat.captures_iter(text) {
+                let value_str = match cap.get(1) {
+                    Some(v) => v.as_str(),
+                    None => continue,
+                };
+                if seen_in_pat.contains(value_str) {
+                    continue;
+                }
+                seen_in_pat.insert(value_str.to_string());
 
-                    let value = match value_str.parse::<f64>() {
-                        Ok(v) => v,
-                        Err(_) => continue,
-                    };
+                let value = match value_str.parse::<f64>() {
+                    Ok(v) => v,
+                    Err(_) => continue,
+                };
 
-                    // Find match position for context
-                    let m = match pat.find(text) {
-                        Some(mm) => mm,
-                        None => continue,
-                    };
-                    let start_idx = m.start().saturating_sub(30);
-                    let end_idx = (m.end() + 30).min(text.len());
-                    let full_context = text[start_idx..end_idx].to_lowercase();
+                // Find match position for context
+                let m = match pat.find(text) {
+                    Some(mm) => mm,
+                    None => continue,
+                };
+                let start_idx = m.start().saturating_sub(30);
+                let end_idx = (m.end() + 30).min(text.len());
+                let full_context = text[start_idx..end_idx].to_lowercase();
 
                 let lower_is_better = full_context.contains("reduction");
                 let higher_is_better =
@@ -187,7 +189,9 @@ fn generate_claim_assertion(idx: usize, _value: f64, desc: &str, is_accuracy: bo
 
 // ─── Hyperparameter tests ───────────────────────────────────────────────────────
 
-fn extract_hyperparameter_tests(hyperparameters: &std::collections::HashMap<String, String>) -> Vec<TestCase> {
+fn extract_hyperparameter_tests(
+    hyperparameters: &std::collections::HashMap<String, String>,
+) -> Vec<TestCase> {
     let mut tests = Vec::new();
 
     let valid_choices = ["relu", "gelu", "sigmoid", "tanh", "adam", "sgd", "adamw"];
@@ -196,7 +200,12 @@ fn extract_hyperparameter_tests(hyperparameters: &std::collections::HashMap<Stri
         let value_str = raw_value.trim();
 
         // Numeric values
-        if let Ok(num_match) = value_str.chars().take_while(|c| c.is_ascii_digit() || *c == '.').collect::<String>().parse::<f64>() {
+        if let Ok(num_match) = value_str
+            .chars()
+            .take_while(|c| c.is_ascii_digit() || *c == '.')
+            .collect::<String>()
+            .parse::<f64>()
+        {
             let lo = (num_match * 0.5).max(0.0001);
             let hi = num_match * 2.0;
 
@@ -275,7 +284,10 @@ fn extract_dataset_tests(datasets: &[String], code: &str) -> Vec<TestCase> {
         );
 
         tests.push(TestCase {
-            name: format!("dataset_{}_presence", dataset.replace("-", "_").to_lowercase()),
+            name: format!(
+                "dataset_{}_presence",
+                dataset.replace("-", "_").to_lowercase()
+            ),
             category: String::from("DatasetPresence"),
             description: format!("Dataset {dataset} referenced in code"),
             test_code,
@@ -339,7 +351,11 @@ fn get_io_patterns() -> Vec<Regex> {
     ]
 }
 
-fn extract_io_examples(abstract_text: &str, algorithm_descriptions: &[String], _module_name: &str) -> Vec<TestCase> {
+fn extract_io_examples(
+    abstract_text: &str,
+    algorithm_descriptions: &[String],
+    _module_name: &str,
+) -> Vec<TestCase> {
     let mut tests = Vec::new();
     let text = format!("{} {}", abstract_text, algorithm_descriptions.join(" "));
     let mut seen: HashSet<String> = HashSet::new();
@@ -356,7 +372,11 @@ fn extract_io_examples(abstract_text: &str, algorithm_descriptions: &[String], _
             };
             let inp_s: String = inp.trim().chars().take(50).collect();
             let out_s: String = out.trim().chars().take(50).collect();
-            let key = format!("{}|{}", &inp_s[..inp_s.len().min(20)], &out_s[..out_s.len().min(20)]);
+            let key = format!(
+                "{}|{}",
+                &inp_s[..inp_s.len().min(20)],
+                &out_s[..out_s.len().min(20)]
+            );
 
             if seen.contains(&key) || inp_s.len() < 2 || out_s.len() < 2 {
                 continue;
@@ -414,16 +434,24 @@ pub fn extract_tests(
         .chain(paper.claims.clone())
         .chain(paper.algorithm_descriptions.clone())
         .collect();
-    suite.test_cases.extend(extract_numerical_claims(&paper.arxiv_id, &text_sources));
+    suite
+        .test_cases
+        .extend(extract_numerical_claims(&paper.arxiv_id, &text_sources));
 
     // 2. Hyperparameter bounds
-    suite.test_cases.extend(extract_hyperparameter_tests(&paper.hyperparameters));
+    suite
+        .test_cases
+        .extend(extract_hyperparameter_tests(&paper.hyperparameters));
 
     // 3. Dataset presence checks
-    suite.test_cases.extend(extract_dataset_tests(&paper.datasets, generated_code));
+    suite
+        .test_cases
+        .extend(extract_dataset_tests(&paper.datasets, generated_code));
 
     // 4. Equation constraint tests
-    suite.test_cases.extend(extract_equation_tests(&paper.equations));
+    suite
+        .test_cases
+        .extend(extract_equation_tests(&paper.equations));
 
     // 5. IO example tests
     suite.test_cases.extend(extract_io_examples(
@@ -450,7 +478,10 @@ pub fn save_tests(suite: &TestSuite, test_dir: &PathBuf, _framework: &str) -> st
     let mut by_category: std::collections::HashMap<&str, Vec<&TestCase>> =
         std::collections::HashMap::new();
     for tc in &suite.test_cases {
-        by_category.entry(tc.category.as_str()).or_default().push(tc);
+        by_category
+            .entry(tc.category.as_str())
+            .or_default()
+            .push(tc);
     }
 
     // Write one file per category
@@ -465,7 +496,11 @@ pub fn save_tests(suite: &TestSuite, test_dir: &PathBuf, _framework: &str) -> st
         };
 
         let mut content = String::new();
-        let header = format!("\"\"\"Auto-generated {} tests for arXiv:{}.\n\n", cat.to_lowercase(), suite.arxiv_id);
+        let header = format!(
+            "\"\"\"Auto-generated {} tests for arXiv:{}.\n\n",
+            cat.to_lowercase(),
+            suite.arxiv_id
+        );
         content.push_str(&header);
 
         for tc in cases {
@@ -475,7 +510,10 @@ pub fn save_tests(suite: &TestSuite, test_dir: &PathBuf, _framework: &str) -> st
             content.push_str(&format!("\n{}\n", tc.test_code));
         }
 
-        fs::write(test_dir.join(filename), content.trim_end().to_string() + "\n")?;
+        fs::write(
+            test_dir.join(filename),
+            content.trim_end().to_string() + "\n",
+        )?;
     }
 
     Ok(())
@@ -506,7 +544,13 @@ def code_module():
 
 fn sanitize_name(name: &str) -> String {
     name.chars()
-        .map(|c| if c.is_alphanumeric() || c == '_' { c } else { '_' })
+        .map(|c| {
+            if c.is_alphanumeric() || c == '_' {
+                c
+            } else {
+                '_'
+            }
+        })
         .collect()
 }
 
@@ -518,7 +562,9 @@ mod tests {
 
     #[test]
     fn test_extract_numerical_accuracy_claim() {
-        let sources = vec![String::from("Our method achieves 95.2% accuracy on ImageNet")];
+        let sources = vec![String::from(
+            "Our method achieves 95.2% accuracy on ImageNet",
+        )];
         let tests = extract_numerical_claims("test", &sources);
         assert_eq!(tests.len(), 1);
         assert_eq!(tests[0].category, "NumericalClaim");

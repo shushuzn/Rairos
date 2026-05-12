@@ -122,10 +122,7 @@ pub fn detect_polarity_contradiction(
 
     for i in 0..capsules.len() {
         let c = &capsules[i];
-        let p_i = c
-            .get("polarity")
-            .and_then(|v| v.as_str())
-            .unwrap_or("open");
+        let p_i = c.get("polarity").and_then(|v| v.as_str()).unwrap_or("open");
 
         for other in capsules.iter().skip(i + 1) {
             let p_j = other
@@ -137,8 +134,14 @@ pub fn detect_polarity_contradiction(
                 contradictions.push(PolarityContradiction {
                     contrad_type: "polarity".to_string(),
                     gap_type: gap_type.to_string(),
-                    capsule_a: c.get("capsule_id").and_then(|v| v.as_str()).map(String::from),
-                    capsule_b: other.get("capsule_id").and_then(|v| v.as_str()).map(String::from),
+                    capsule_a: c
+                        .get("capsule_id")
+                        .and_then(|v| v.as_str())
+                        .map(String::from),
+                    capsule_b: other
+                        .get("capsule_id")
+                        .and_then(|v| v.as_str())
+                        .map(String::from),
                     paper_a: c
                         .get("archetype")
                         .and_then(|v| v.get("source_paper_id"))
@@ -215,10 +218,7 @@ pub fn detect_evidence_contradiction(
 pub fn detect_contradictions(capsules: &[serde_json::Value]) -> Vec<serde_json::Value> {
     let mut by_type: HashMap<String, Vec<serde_json::Value>> = HashMap::new();
     for c in capsules {
-        if let Some(gt) = c
-            .get("trigger_gap_type")
-            .and_then(|v| v.as_str())
-        {
+        if let Some(gt) = c.get("trigger_gap_type").and_then(|v| v.as_str()) {
             by_type.entry(gt.to_string()).or_default().push(c.clone());
         }
     }
@@ -252,10 +252,7 @@ pub struct CapsulesWithPolarity {
 pub fn detect_contradictions_full(capsules: &[serde_json::Value]) -> Vec<CapsulesWithPolarity> {
     let mut by_type: HashMap<String, Vec<serde_json::Value>> = HashMap::new();
     for c in capsules {
-        if let Some(gt) = c
-            .get("trigger_gap_type")
-            .and_then(|v| v.as_str())
-        {
+        if let Some(gt) = c.get("trigger_gap_type").and_then(|v| v.as_str()) {
             by_type.entry(gt.to_string()).or_default().push(c.clone());
         }
     }
@@ -302,10 +299,7 @@ pub fn detect_contradictions_full(capsules: &[serde_json::Value]) -> Vec<Capsule
                         })
                         .unwrap_or_default();
 
-                    let shared: Vec<String> = kw_pos
-                        .intersection(&kw_neg)
-                        .cloned()
-                        .collect();
+                    let shared: Vec<String> = kw_pos.intersection(&kw_neg).cloned().collect();
 
                     results.push(CapsulesWithPolarity {
                         positive_capsule: pos,
@@ -379,10 +373,12 @@ pub fn compute_paper_contradictions() -> ContradMap {
             (neg_id, pos_id, "negative"),
         ] {
             if pid != "?" {
-                let entry = by_paper.entry(pid).or_insert_with(|| PaperContradictionInfo {
-                    count: 0,
-                    contradictions: Vec::new(),
-                });
+                let entry = by_paper
+                    .entry(pid)
+                    .or_insert_with(|| PaperContradictionInfo {
+                        count: 0,
+                        contradictions: Vec::new(),
+                    });
                 entry.count += 1;
                 entry.contradictions.push(ContradictionEntry {
                     gap_type: gap_type.clone(),
@@ -397,17 +393,12 @@ pub fn compute_paper_contradictions() -> ContradMap {
     by_paper
 }
 
-pub fn render_heatmap_html(
-    papers: &[serde_json::Value],
-    contrad_map: &ContradMap,
-) -> String {
+pub fn render_heatmap_html(papers: &[serde_json::Value], contrad_map: &ContradMap) -> String {
     if papers.is_empty() {
         return "<p>No papers yet.</p>".to_string();
     }
 
-    let mut lines: Vec<String> = vec![
-        "<div class=\"heatmap-grid\">".to_string(),
-    ];
+    let mut lines: Vec<String> = vec!["<div class=\"heatmap-grid\">".to_string()];
 
     for p in papers {
         let pid = p.get("id").and_then(|v| v.as_str()).unwrap_or("");
@@ -463,13 +454,7 @@ pub fn render_heatmap_html(
              <div class=\"heatmap-card-title\">{}</div>\
              <div class=\"heatmap-card-count\">{} 🔥</div>\
              </div>",
-            bg,
-            color,
-            border_color,
-            tooltip_text,
-            primary_cat,
-            title_short,
-            count
+            bg, color, border_color, tooltip_text, primary_cat, title_short, count
         ));
     }
 
@@ -477,10 +462,15 @@ pub fn render_heatmap_html(
     lines.push("<style>".to_string());
     lines.push(".heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }".to_string());
     lines.push(".heatmap-card { border-radius: 6px; padding: 12px; border: 1.5px solid #bdc3c7; cursor: help; transition: transform 0.1s; }".to_string());
-    lines.push(".heatmap-card:hover { transform: scale(1.02); z-index: 1; position: relative; }".to_string());
+    lines.push(
+        ".heatmap-card:hover { transform: scale(1.02); z-index: 1; position: relative; }"
+            .to_string(),
+    );
     lines.push(".heatmap-card-cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; opacity: 0.8; }".to_string());
     lines.push(".heatmap-card-title { font-size: 12px; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }".to_string());
-    lines.push(".heatmap-card-count { font-size: 11px; font-weight: 700; text-align: right; }".to_string());
+    lines.push(
+        ".heatmap-card-count { font-size: 11px; font-weight: 700; text-align: right; }".to_string(),
+    );
     lines.push("</style>".to_string());
 
     lines.join("\n")
@@ -492,7 +482,8 @@ mod tests {
 
     #[test]
     fn test_detect_field_contradiction_no_val() {
-        let result = detect_field_contradiction("theoretical_gap", "primary_field", "unknown", None);
+        let result =
+            detect_field_contradiction("theoretical_gap", "primary_field", "unknown", None);
         assert!(result.is_none());
     }
 

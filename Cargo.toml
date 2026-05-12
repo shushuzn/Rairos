@@ -140,6 +140,13 @@ members = [
     "crates/rairos-paper-parser",
     "crates/rairos-deep-research",
     "crates/rairos-orchestrator",
+    "crates/rairos-cli-registry",
+    "crates/rairos-cli-shared",
+    "crates/rairos-scoring-momentum",
+    "crates/rairos-rankers-base",
+    "crates/rairos-rankers-cosine",
+    "crates/rairos-rankers-score",
+    "crates/rairos-pdf-parser",
 ]
 
 [profile.dev]

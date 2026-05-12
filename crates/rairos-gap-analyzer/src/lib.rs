@@ -90,10 +90,7 @@ impl GapAnalyzerV2 {
 }
 
 pub fn render_gap_report(result: &GapAnalysisResultV2) -> String {
-    let mut lines = vec![
-        "# Gap Analysis Report".to_string(),
-        String::new(),
-    ];
+    let mut lines = vec!["# Gap Analysis Report".to_string(), String::new()];
 
     if !result.summary.is_empty() {
         lines.push(result.summary.clone());
@@ -124,10 +121,7 @@ pub fn render_gap_report(result: &GapAnalysisResultV2) -> String {
 }
 
 pub fn render_combined_report(results: &[GapAnalysisResultV2]) -> String {
-    let mut lines = vec![
-        "# Combined Gap Analysis Report".to_string(),
-        String::new(),
-    ];
+    let mut lines = vec!["# Combined Gap Analysis Report".to_string(), String::new()];
 
     let total_gaps: usize = results.iter().map(|r| r.gaps.len()).sum();
     lines.push(format!("Total gaps identified: {}\n", total_gaps));
@@ -158,7 +152,10 @@ mod tests {
 
     #[test]
     fn test_gap_type_as_str() {
-        assert_eq!(GapType::UnexploredApplication.as_str(), "unexplored_application");
+        assert_eq!(
+            GapType::UnexploredApplication.as_str(),
+            "unexplored_application"
+        );
         assert_eq!(GapType::ScalabilityIssue.as_str(), "scalability_issue");
         assert_eq!(GapType::EvaluationGap.as_str(), "evaluation_gap");
         assert_eq!(GapType::MethodLimitation.as_str(), "method_limitation");
@@ -166,8 +163,14 @@ mod tests {
 
     #[test]
     fn test_gap_type_from_str() {
-        assert_eq!(GapType::from_str("unexplored_application"), Some(GapType::UnexploredApplication));
-        assert_eq!(GapType::from_str("scalability_issue"), Some(GapType::ScalabilityIssue));
+        assert_eq!(
+            GapType::from_str("unexplored_application"),
+            Some(GapType::UnexploredApplication)
+        );
+        assert_eq!(
+            GapType::from_str("scalability_issue"),
+            Some(GapType::ScalabilityIssue)
+        );
         assert_eq!(GapType::from_str("invalid"), None);
     }
 

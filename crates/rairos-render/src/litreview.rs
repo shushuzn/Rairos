@@ -51,7 +51,10 @@ pub fn render_litreview(
         lines.push("| 日期 | 论文 |".to_string());
         lines.push("|------|------|".to_string());
         for p in sorted_papers.iter().take(20) {
-            let date = p.get("published").and_then(|v| v.as_str()).unwrap_or("未知");
+            let date = p
+                .get("published")
+                .and_then(|v| v.as_str())
+                .unwrap_or("未知");
             let title = p.get("title").and_then(|v| v.as_str()).unwrap_or("无标题");
             let date_short = &date[..10.min(date.len())];
             let title_short = &title[..50.min(title.len())];
@@ -121,7 +124,11 @@ pub fn render_litreview(
 
     lines.push(String::new());
     lines.push("## 更新日志".to_string());
-    lines.push(format!("- {}: 创建综述文档 ({} 篇论文)", &now[..10], paper_count));
+    lines.push(format!(
+        "- {}: 创建综述文档 ({} 篇论文)",
+        &now[..10],
+        paper_count
+    ));
 
     lines.join("\n") + "\n"
 }
@@ -191,7 +198,9 @@ pub fn update_litreview(
             let title_short = &title[..50.min(title.len())];
             result.push(format!(
                 "- {}: 新增 [{}](https://arxiv.org/abs/{})",
-                &now[..10], title_short, arxiv_id
+                &now[..10],
+                title_short,
+                arxiv_id
             ));
         }
         result.push(String::new());
@@ -245,14 +254,44 @@ fn sorted_by_score(papers: &[PaperDict]) -> Vec<&PaperDict> {
 
 fn group_by_methodology(papers: &[PaperDict]) -> HashMap<String, Vec<&PaperDict>> {
     let method_keywords: HashMap<&str, Vec<&str>> = [
-        ("Transformer", vec!["transformer", "attention", "self-attention", "bert", "gpt"]),
-        ("CNN/卷积", vec!["convolution", "cnn", "convolutional", "resnet", "vgg"]),
+        (
+            "Transformer",
+            vec!["transformer", "attention", "self-attention", "bert", "gpt"],
+        ),
+        (
+            "CNN/卷积",
+            vec!["convolution", "cnn", "convolutional", "resnet", "vgg"],
+        ),
         ("图神经网络", vec!["graph", "gnn", "gcn", "gat"]),
-        ("强化学习", vec!["reinforcement", "rl", "policy", "q-learning", "ddpg"]),
+        (
+            "强化学习",
+            vec!["reinforcement", "rl", "policy", "q-learning", "ddpg"],
+        ),
         ("扩散模型", vec!["diffusion", "ddpm", "score-based", "gan"]),
-        ("检索增强", vec!["retrieval", "rag", "retrieval-augmented", "knowledge retrieval"]),
-        ("多模态", vec!["multimodal", "vision-language", "image-text", "vqa"]),
-        ("大语言模型", vec!["llm", "large language", "foundation model", "gpt-", "claude", "gemini"]),
+        (
+            "检索增强",
+            vec![
+                "retrieval",
+                "rag",
+                "retrieval-augmented",
+                "knowledge retrieval",
+            ],
+        ),
+        (
+            "多模态",
+            vec!["multimodal", "vision-language", "image-text", "vqa"],
+        ),
+        (
+            "大语言模型",
+            vec![
+                "llm",
+                "large language",
+                "foundation model",
+                "gpt-",
+                "claude",
+                "gemini",
+            ],
+        ),
     ]
     .iter()
     .cloned()
@@ -305,17 +344,15 @@ fn extract_open_problems(papers: &[PaperDict]) -> Vec<String> {
                 let end = (idx + 80).min(abstract_.len());
                 let snippet: String = abstract_[start..end].split_whitespace().collect();
                 if snippet.len() > 20 {
-                    let title = paper
-                        .get("title")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("")[..40.min(
+                    let title = paper.get("title").and_then(|v| v.as_str()).unwrap_or("")[..40
+                        .min(
                             paper
                                 .get("title")
                                 .and_then(|v| v.as_str())
                                 .unwrap_or("")
                                 .len(),
                         )]
-                    .to_string();
+                        .to_string();
                     problems.push(format!("_{}..._: {}...", title, snippet));
                     break;
                 }

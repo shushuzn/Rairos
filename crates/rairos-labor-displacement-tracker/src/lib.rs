@@ -155,7 +155,13 @@ pub fn render_labor_tracker_html() -> String {
                 .collect::<Vec<_>>()
                 .join(", ");
             let title = &p.title()[..p.title().len().min(70)];
-            let published = p.published.as_deref().unwrap_or("").chars().take(4).collect::<String>();
+            let published = p
+                .published
+                .as_deref()
+                .unwrap_or("")
+                .chars()
+                .take(4)
+                .collect::<String>();
 
             let text_lower = format!(
                 "{} {}",
@@ -164,9 +170,7 @@ pub fn render_labor_tracker_html() -> String {
             );
             let kw_matches: Vec<_> = LABOR_KEYWORDS
                 .iter()
-                .filter(|kw| {
-                    kw.len() > 4 && text_lower.contains(&kw.to_lowercase())
-                })
+                .filter(|kw| kw.len() > 4 && text_lower.contains(&kw.to_lowercase()))
                 .take(3)
                 .collect();
 

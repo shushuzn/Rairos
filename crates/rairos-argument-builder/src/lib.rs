@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum EvidenceType {
     #[serde(rename = "support")]
     #[default]
@@ -14,7 +13,6 @@ pub enum EvidenceType {
     #[serde(rename = "methodological")]
     Methodological,
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ArgumentSection {
@@ -120,10 +118,8 @@ impl ArgumentBuilder {
         let insight_evidence = self.collect_insight_evidence(thesis);
         let related_gaps = self.find_related_gaps(thesis);
 
-        let all_evidence: Vec<Evidence> = paper_evidence
-            .into_iter()
-            .chain(insight_evidence)
-            .collect();
+        let all_evidence: Vec<Evidence> =
+            paper_evidence.into_iter().chain(insight_evidence).collect();
 
         let (supporting, contradicting) = self.categorize_evidence(&all_evidence);
         let section_guidance = self.generate_section_guidance(&supporting, &contradicting);
@@ -157,7 +153,13 @@ impl ArgumentBuilder {
 
     fn classify_insight(&self, content: &str, _thesis: &str) -> EvidenceType {
         let contradict_keywords = [
-            "局限", "问题", "失败", "缺陷", "limitation", "problem", "fail",
+            "局限",
+            "问题",
+            "失败",
+            "缺陷",
+            "limitation",
+            "problem",
+            "fail",
         ];
         let content_lower = content.to_lowercase();
         for kw in &contradict_keywords {
@@ -183,8 +185,16 @@ impl ArgumentBuilder {
             }
         }
 
-        supporting.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap_or(std::cmp::Ordering::Equal));
-        contradicting.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap_or(std::cmp::Ordering::Equal));
+        supporting.sort_by(|a, b| {
+            b.weight
+                .partial_cmp(&a.weight)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        contradicting.sort_by(|a, b| {
+            b.weight
+                .partial_cmp(&a.weight)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
 
         (supporting, contradicting)
     }
@@ -198,12 +208,16 @@ impl ArgumentBuilder {
 
         guidance.insert(
             ArgumentSection::Introduction,
-            "开篇应明确研究动机：为什么这个问题重要？引用主要支持证据说明该方向的潜力。".to_string(),
+            "开篇应明确研究动机：为什么这个问题重要？引用主要支持证据说明该方向的潜力。"
+                .to_string(),
         );
 
         guidance.insert(
             ArgumentSection::RelatedWork,
-            format!("综述现有工作，区分本文与前人贡献。识别 {} 个需要回应的质疑。", contradicting.len()),
+            format!(
+                "综述现有工作，区分本文与前人贡献。识别 {} 个需要回应的质疑。",
+                contradicting.len()
+            ),
         );
 
         guidance.insert(

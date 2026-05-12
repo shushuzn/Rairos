@@ -2,15 +2,27 @@
 //!
 //! 77 commands managed via clap derive macros.
 
-#![allow(clippy::too_many_arguments, clippy::needless_borrow, clippy::print_literal, clippy::unwrap_or_default, clippy::unnecessary_sort_by, clippy::format_in_format_args, clippy::map_identity, clippy::unused_enumerate_index, clippy::needless_borrows_for_generic_args, clippy::unnecessary_to_owned, clippy::manual_range_contains)]
+#![allow(
+    clippy::too_many_arguments,
+    clippy::needless_borrow,
+    clippy::print_literal,
+    clippy::unwrap_or_default,
+    clippy::unnecessary_sort_by,
+    clippy::format_in_format_args,
+    clippy::map_identity,
+    clippy::unused_enumerate_index,
+    clippy::needless_borrows_for_generic_args,
+    clippy::unnecessary_to_owned,
+    clippy::manual_range_contains
+)]
 
 use anyhow::{Context, Result};
 use chrono::Utc;
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
-use rairos_llm::{GenePool, Capsule, CapsuleStatus, GenePoolDiversityCalculator};
+use rairos_kg::{GraphAlgorithms, KnowledgeGraph};
+use rairos_llm::{Capsule, CapsuleStatus, GenePool, GenePoolDiversityCalculator};
 use rairos_memory::{ResearchMemory, ResearchStance, StanceType};
-use rairos_kg::{KnowledgeGraph, GraphAlgorithms};
 use rairos_web::{start, AppState};
 use std::collections::HashSet;
 use std::path::PathBuf;
@@ -639,7 +651,10 @@ enum DedupAction {
 
 fn open_db(path: &PathBuf) -> Result<Database> {
     if !path.exists() {
-        eprintln!("Database not found at {}. Run 'rairos init' first.", path.display());
+        eprintln!(
+            "Database not found at {}. Run 'rairos init' first.",
+            path.display()
+        );
         std::process::exit(1);
     }
     Database::open(path).context("Failed to open database")
@@ -700,8 +715,7 @@ fn add_paper_from_arxiv(db: &Database, arxiv_id: &str) -> Result<()> {
     println!("Fetching metadata from arXiv for {}...", arxiv_id);
 
     let url = format!("https://export.arxiv.org/api/query?id_list={}", arxiv_id);
-    let resp = reqwest::blocking::get(&url)
-        .context("Failed to connect to arXiv API")?;
+    let resp = reqwest::blocking::get(&url).context("Failed to connect to arXiv API")?;
 
     if !resp.status().is_success() {
         anyhow::bail!("arXiv API returned error: {}", resp.status());
@@ -744,16 +758,28 @@ fn add_paper_from_arxiv(db: &Database, arxiv_id: &str) -> Result<()> {
         .unwrap_or_else(|| categories.first().cloned().unwrap_or_default());
 
     println!("  Title: {}", title.chars().take(60).collect::<String>());
-    println!("  Authors: {}", authors.iter().take(3).cloned().collect::<Vec<_>>().join(", "));
+    println!(
+        "  Authors: {}",
+        authors
+            .iter()
+            .take(3)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(", ")
+    );
     println!("  Published: {}", published.format("%Y-%m-%d"));
-    println!("  Categories: {}", categories.iter().take(5).cloned().collect::<Vec<_>>().join(", "));
+    println!(
+        "  Categories: {}",
+        categories
+            .iter()
+            .take(5)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(", ")
+    );
 
     // Build paper with fetched metadata
-    let mut paper = Paper::new(
-        Some(arxiv_id.to_string()),
-        title,
-        abstract_text,
-    );
+    let mut paper = Paper::new(Some(arxiv_id.to_string()), title, abstract_text);
     paper.authors = authors;
     paper.categories = categories;
     paper.published = published;
@@ -809,15 +835,21 @@ fn handle_list(
 
     // Year filter
     if let Some(y) = year {
-        papers.retain(|p| p.published.format("%Y").to_string().parse::<i32>().unwrap_or(0) == y);
+        papers.retain(|p| {
+            p.published
+                .format("%Y")
+                .to_string()
+                .parse::<i32>()
+                .unwrap_or(0)
+                == y
+        });
     }
 
     // Tag filter (paper must have ALL specified tags)
     if !tags.is_empty() {
         papers.retain(|p| {
-            let paper_tags: std::collections::HashSet<_> = p.categories.iter()
-                .map(|s| s.to_lowercase())
-                .collect();
+            let paper_tags: std::collections::HashSet<_> =
+                p.categories.iter().map(|s| s.to_lowercase()).collect();
             tags.iter().all(|t| paper_tags.contains(&t.to_lowercase()))
         });
     }
@@ -825,9 +857,27 @@ fn handle_list(
     // Sort
     let reverse = order == "desc";
     match sort {
-        "published" => papers.sort_by(|a, b| if reverse { b.published.cmp(&a.published) } else { a.published.cmp(&b.published) }),
-        "title" => papers.sort_by(|a, b| if reverse { b.title.cmp(&a.title) } else { a.title.cmp(&b.title) }),
-        "status" => papers.sort_by(|a, b| if reverse { status_str(&b.parse_status).cmp(&status_str(&a.parse_status)) } else { status_str(&a.parse_status).cmp(&status_str(&b.parse_status)) }),
+        "published" => papers.sort_by(|a, b| {
+            if reverse {
+                b.published.cmp(&a.published)
+            } else {
+                a.published.cmp(&b.published)
+            }
+        }),
+        "title" => papers.sort_by(|a, b| {
+            if reverse {
+                b.title.cmp(&a.title)
+            } else {
+                a.title.cmp(&b.title)
+            }
+        }),
+        "status" => papers.sort_by(|a, b| {
+            if reverse {
+                status_str(&b.parse_status).cmp(&status_str(&a.parse_status))
+            } else {
+                status_str(&a.parse_status).cmp(&status_str(&b.parse_status))
+            }
+        }),
         _ => {} // added_at - keep insertion order
     }
 
@@ -836,30 +886,48 @@ fn handle_list(
     papers = papers.into_iter().skip(offset).take(limit).collect();
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = papers.iter().map(|p| {
-            serde_json::json!({
-                "id": p.id,
-                "arxiv_id": p.arxiv_id,
-                "title": p.title,
-                "authors": p.authors,
-                "published": p.published,
-                "status": status_str(&p.parse_status),
-                "categories": p.categories,
+        let out: Vec<serde_json::Value> = papers
+            .iter()
+            .map(|p| {
+                serde_json::json!({
+                    "id": p.id,
+                    "arxiv_id": p.arxiv_id,
+                    "title": p.title,
+                    "authors": p.authors,
+                    "published": p.published,
+                    "status": status_str(&p.parse_status),
+                    "categories": p.categories,
+                })
             })
-        }).collect();
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
         return Ok(());
     }
 
     // Table format
-    println!("Showing {}/{} papers (sort: {} {}, offset: {})", papers.len(), total, sort, order, offset);
+    println!(
+        "Showing {}/{} papers (sort: {} {}, offset: {})",
+        papers.len(),
+        total,
+        sort,
+        order,
+        offset
+    );
     println!();
     println!("{:<38} {:<10} {:<12} {}", "ID", "STATUS", "ARXIV", "TITLE");
     println!("{}", "-".repeat(120));
     for paper in &papers {
-        let id_short = if paper.id.len() > 8 { &paper.id[..8] } else { &paper.id };
+        let id_short = if paper.id.len() > 8 {
+            &paper.id[..8]
+        } else {
+            &paper.id
+        };
         let arxiv = paper.arxiv_id.as_deref().unwrap_or("-");
-        let title = if paper.title.len() > 50 { &paper.title[..50] } else { &paper.title };
+        let title = if paper.title.len() > 50 {
+            &paper.title[..50]
+        } else {
+            &paper.title
+        };
         println!(
             "{:<38} {:<10} {:<12} {}",
             id_short,
@@ -896,38 +964,57 @@ fn handle_stats(db: &Database, json: bool, format: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_search(db: &Database, query: &str, limit: usize, field: &str, format: &str) -> Result<()> {
+fn handle_search(
+    db: &Database,
+    query: &str,
+    limit: usize,
+    field: &str,
+    format: &str,
+) -> Result<()> {
     // Use search_papers for real keyword matching in title/abstract
     let papers = db.search_papers(query, limit)?;
 
     let filtered: Vec<&Paper> = if field == "all" {
         papers.iter().collect()
     } else {
-        papers.iter().filter(|p| {
-            match field {
+        papers
+            .iter()
+            .filter(|p| match field {
                 "title" => p.title.to_lowercase().contains(&query.to_lowercase()),
-                "abstract" => p.abstract_text.to_lowercase().contains(&query.to_lowercase()),
-                "authors" => p.authors.iter().any(|a| a.to_lowercase().contains(&query.to_lowercase())),
-                "categories" => p.categories.iter().any(|c| c.to_lowercase().contains(&query.to_lowercase())),
+                "abstract" => p
+                    .abstract_text
+                    .to_lowercase()
+                    .contains(&query.to_lowercase()),
+                "authors" => p
+                    .authors
+                    .iter()
+                    .any(|a| a.to_lowercase().contains(&query.to_lowercase())),
+                "categories" => p
+                    .categories
+                    .iter()
+                    .any(|c| c.to_lowercase().contains(&query.to_lowercase())),
                 _ => true,
-            }
-        }).collect()
+            })
+            .collect()
     };
 
     let papers_vec: Vec<Paper> = filtered.into_iter().cloned().collect();
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = papers_vec.iter().map(|p| {
-            serde_json::json!({
-                "id": p.id,
-                "arxiv_id": p.arxiv_id,
-                "title": p.title,
-                "authors": p.authors,
-                "published": p.published,
-                "categories": p.categories,
-                "cited_by": p.metadata.cited_by,
+        let out: Vec<serde_json::Value> = papers_vec
+            .iter()
+            .map(|p| {
+                serde_json::json!({
+                    "id": p.id,
+                    "arxiv_id": p.arxiv_id,
+                    "title": p.title,
+                    "authors": p.authors,
+                    "published": p.published,
+                    "categories": p.categories,
+                    "cited_by": p.metadata.cited_by,
+                })
             })
-        }).collect();
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
         return Ok(());
     }
@@ -937,14 +1024,22 @@ fn handle_search(db: &Database, query: &str, limit: usize, field: &str, format: 
         return Ok(());
     }
 
-    println!("Found {} papers for '{}' (field: {}):", papers_vec.len(), query, field);
+    println!(
+        "Found {} papers for '{}' (field: {}):",
+        papers_vec.len(),
+        query,
+        field
+    );
     println!();
     for (i, paper) in papers_vec.iter().enumerate() {
         println!("{}. {}", i + 1, paper.title);
         if let Some(ref arxiv) = paper.arxiv_id {
             println!("   arXiv: {}", arxiv);
         }
-        println!("   {} | cited_by: {}", paper.published, paper.metadata.cited_by);
+        println!(
+            "   {} | cited_by: {}",
+            paper.published, paper.metadata.cited_by
+        );
         let abstract_preview = if paper.abstract_text.len() > 100 {
             format!("{}...", &paper.abstract_text[..100])
         } else {
@@ -986,7 +1081,10 @@ fn handle_show(db: &Database, id: &str, format: &str) -> Result<()> {
     println!("ID:          {}", paper.id);
     println!("arXiv:       {:?}", paper.arxiv_id);
     println!("Title:       {}", paper.title);
-    println!("Authors:     {:?}", paper.authors.iter().take(5).collect::<Vec<_>>());
+    println!(
+        "Authors:     {:?}",
+        paper.authors.iter().take(5).collect::<Vec<_>>()
+    );
     if paper.authors.len() > 5 {
         println!("             ... and {} more", paper.authors.len() - 5);
     }
@@ -1010,7 +1108,9 @@ fn handle_delete(db: &Database, ids: &[String], force: bool) -> Result<()> {
         print!("Delete {} papers? [y/N] ", ids.len());
         std::io::Write::flush(&mut std::io::stdout()).ok();
         let mut confirm = String::new();
-        if std::io::stdin().read_line(&mut confirm).is_err() || !confirm.trim().eq_ignore_ascii_case("y") {
+        if std::io::stdin().read_line(&mut confirm).is_err()
+            || !confirm.trim().eq_ignore_ascii_case("y")
+        {
             println!("Cancelled.");
             return Ok(());
         }
@@ -1018,7 +1118,9 @@ fn handle_delete(db: &Database, ids: &[String], force: bool) -> Result<()> {
         print!("Delete paper '{}'? [y/N] ", ids[0]);
         std::io::Write::flush(&mut std::io::stdout()).ok();
         let mut confirm = String::new();
-        if std::io::stdin().read_line(&mut confirm).is_err() || !confirm.trim().eq_ignore_ascii_case("y") {
+        if std::io::stdin().read_line(&mut confirm).is_err()
+            || !confirm.trim().eq_ignore_ascii_case("y")
+        {
             println!("Cancelled.");
             return Ok(());
         }
@@ -1043,8 +1145,12 @@ fn handle_delete(db: &Database, ids: &[String], force: bool) -> Result<()> {
 }
 
 fn handle_update_status(db: &Database, ids: &[String], status: &str) -> Result<()> {
-    let parse_status = parse_status_arg(status)
-        .ok_or_else(|| anyhow::anyhow!("Invalid status '{}'. Use: pending, parsing, done, failed", status))?;
+    let parse_status = parse_status_arg(status).ok_or_else(|| {
+        anyhow::anyhow!(
+            "Invalid status '{}'. Use: pending, parsing, done, failed",
+            status
+        )
+    })?;
 
     let mut updated = 0;
     let mut failed = 0;
@@ -1060,7 +1166,10 @@ fn handle_update_status(db: &Database, ids: &[String], status: &str) -> Result<(
             }
         }
     }
-    println!("\nStatus update complete: {} updated, {} failed", updated, failed);
+    println!(
+        "\nStatus update complete: {} updated, {} failed",
+        updated, failed
+    );
     Ok(())
 }
 
@@ -1079,7 +1188,12 @@ fn handle_parse(db: &Database, id: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_import(db: &Database, path: &Option<PathBuf>, ids: &[String], skip_existing: bool) -> Result<()> {
+fn handle_import(
+    db: &Database,
+    path: &Option<PathBuf>,
+    ids: &[String],
+    skip_existing: bool,
+) -> Result<()> {
     if let Some(p) = path {
         // JSON file import
         let content = std::fs::read_to_string(p)?;
@@ -1125,20 +1239,37 @@ fn handle_import(db: &Database, path: &Option<PathBuf>, ids: &[String], skip_exi
             }
         }
 
-        println!("\nImport complete: {} added, {} skipped, {} failed", added, skipped, failed);
+        println!(
+            "\nImport complete: {} added, {} skipped, {} failed",
+            added, skipped, failed
+        );
     } else {
         println!("Nothing to import. Use positional arXiv IDs or --ids flag, or provide a JSON file path.");
     }
     Ok(())
 }
 
-fn handle_export(db: &Database, path: &PathBuf, status: Option<String>, format: &str) -> Result<()> {
+fn handle_export(
+    db: &Database,
+    path: &PathBuf,
+    status: Option<String>,
+    format: &str,
+) -> Result<()> {
     let parse_status = status.as_ref().and_then(|s| parse_status_arg(s));
     let papers = db.list_papers(parse_status, 10000, 0)?;
 
     if format == "csv" {
         let mut w = csv::Writer::from_path(path)?;
-        w.write_record(&["id", "arxiv_id", "title", "authors", "published", "status", "cited_by", "categories"])?;
+        w.write_record(&[
+            "id",
+            "arxiv_id",
+            "title",
+            "authors",
+            "published",
+            "status",
+            "cited_by",
+            "categories",
+        ])?;
         for p in &papers {
             w.write_record(&[
                 &p.id,
@@ -1153,19 +1284,22 @@ fn handle_export(db: &Database, path: &PathBuf, status: Option<String>, format: 
         }
         w.flush()?;
     } else {
-        let out: Vec<serde_json::Value> = papers.iter().map(|p| {
-            serde_json::json!({
-                "id": p.id,
-                "arxiv_id": p.arxiv_id,
-                "title": p.title,
-                "authors": p.authors,
-                "published": p.published,
-                "status": status_str(&p.parse_status),
-                "cited_by": p.metadata.cited_by,
-                "categories": p.categories,
-                "abstract": p.abstract_text,
+        let out: Vec<serde_json::Value> = papers
+            .iter()
+            .map(|p| {
+                serde_json::json!({
+                    "id": p.id,
+                    "arxiv_id": p.arxiv_id,
+                    "title": p.title,
+                    "authors": p.authors,
+                    "published": p.published,
+                    "status": status_str(&p.parse_status),
+                    "cited_by": p.metadata.cited_by,
+                    "categories": p.categories,
+                    "abstract": p.abstract_text,
+                })
             })
-        }).collect();
+            .collect();
         std::fs::write(path, serde_json::to_string_pretty(&out)?)?;
     }
 
@@ -1173,41 +1307,150 @@ fn handle_export(db: &Database, path: &PathBuf, status: Option<String>, format: 
     Ok(())
 }
 
-fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: Option<String>) -> Result<()> {
+fn handle_gap(
+    db: &Database,
+    topic: &str,
+    limit: usize,
+    format: &str,
+    category: Option<String>,
+) -> Result<()> {
     println!("Detecting research gaps for topic: {}", topic);
 
     let papers = db.search_papers(topic, limit * 3)?;
 
     if papers.is_empty() {
-        println!("No papers found for topic '{}'. Try a different query.", topic);
+        println!(
+            "No papers found for topic '{}'. Try a different query.",
+            topic
+        );
         return Ok(());
     }
 
     let total_papers = papers.len();
     let stop_words: std::collections::HashSet<&str> = [
-        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
-        "have", "has", "had", "do", "does", "did", "will", "would", "could",
-        "should", "may", "might", "must", "shall", "can", "need", "dare",
-        "to", "of", "in", "for", "on", "with", "at", "by", "from", "as",
-        "into", "through", "during", "before", "after", "above", "below",
-        "between", "under", "again", "further", "then", "once", "here", "there",
-        "when", "where", "why", "how", "all", "each", "few", "more", "most",
-        "other", "some", "such", "no", "nor", "not", "only", "own", "same",
-        "so", "than", "too", "very", "just", "but", "and", "or", "if", "because",
-        "as", "until", "while", "this", "that", "these", "those", "paper", "papers",
-        "study", "method", "approach", "result", "results", "show", "shown",
-        "using", "used", "based", "proposed", "present", "presented", "state",
-    ].into();
+        "the",
+        "a",
+        "an",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "must",
+        "shall",
+        "can",
+        "need",
+        "dare",
+        "to",
+        "of",
+        "in",
+        "for",
+        "on",
+        "with",
+        "at",
+        "by",
+        "from",
+        "as",
+        "into",
+        "through",
+        "during",
+        "before",
+        "after",
+        "above",
+        "below",
+        "between",
+        "under",
+        "again",
+        "further",
+        "then",
+        "once",
+        "here",
+        "there",
+        "when",
+        "where",
+        "why",
+        "how",
+        "all",
+        "each",
+        "few",
+        "more",
+        "most",
+        "other",
+        "some",
+        "such",
+        "no",
+        "nor",
+        "not",
+        "only",
+        "own",
+        "same",
+        "so",
+        "than",
+        "too",
+        "very",
+        "just",
+        "but",
+        "and",
+        "or",
+        "if",
+        "because",
+        "as",
+        "until",
+        "while",
+        "this",
+        "that",
+        "these",
+        "those",
+        "paper",
+        "papers",
+        "study",
+        "method",
+        "approach",
+        "result",
+        "results",
+        "show",
+        "shown",
+        "using",
+        "used",
+        "based",
+        "proposed",
+        "present",
+        "presented",
+        "state",
+    ]
+    .into();
 
     // ============================================================
     // GAP 1: Underexplored subtopics (keywords appearing in 1-2 papers)
     // ============================================================
-    let mut keyword_to_papers: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
-    let mut keyword_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    let mut keyword_to_papers: std::collections::HashMap<String, Vec<String>> =
+        std::collections::HashMap::new();
+    let mut keyword_counts: std::collections::HashMap<String, usize> =
+        std::collections::HashMap::new();
 
     for paper in &papers {
-        let text = format!("{} {} {}", paper.title, paper.abstract_text, paper.categories.join(" "));
-        let words: std::collections::HashSet<String> = text.to_lowercase()
+        let text = format!(
+            "{} {} {}",
+            paper.title,
+            paper.abstract_text,
+            paper.categories.join(" ")
+        );
+        let words: std::collections::HashSet<String> = text
+            .to_lowercase()
             .split(|c: char| !c.is_alphanumeric())
             .filter(|w| w.len() > 3 && !stop_words.contains(w))
             .map(|w| w.to_string())
@@ -1215,12 +1458,16 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
 
         for word in words {
             *keyword_counts.entry(word.clone()).or_insert(0) += 1;
-            keyword_to_papers.entry(word).or_insert_with(Vec::new).push(paper.id.clone());
+            keyword_to_papers
+                .entry(word)
+                .or_insert_with(Vec::new)
+                .push(paper.id.clone());
         }
     }
 
     // Rare keywords = appearing in 1-2 papers (out of many) - underexplored areas
-    let rare_keywords: Vec<(String, usize)> = keyword_counts.iter()
+    let rare_keywords: Vec<(String, usize)> = keyword_counts
+        .iter()
         .filter(|(_, &count)| count >= 1 && count <= 2 && total_papers > 5)
         .map(|(k, &c)| (k.clone(), c))
         .collect();
@@ -1241,7 +1488,8 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
             ),
             "high",
         );
-        let paper_ids: Vec<String> = rare_keywords.iter()
+        let paper_ids: Vec<String> = rare_keywords
+            .iter()
             .take(5)
             .flat_map(|(kw, _)| keyword_to_papers.get(kw).cloned().unwrap_or_default())
             .take(5)
@@ -1264,7 +1512,8 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
     let total_cats = cat_counts.values().sum::<usize>();
     if total_cats > 0 {
         let avg_cats_per_paper = total_cats as f64 / total_papers as f64;
-        let underrepresented: Vec<(String, usize)> = cat_counts.iter()
+        let underrepresented: Vec<(String, usize)> = cat_counts
+            .iter()
             .filter(|(_, &count)| {
                 let freq = count as f64 / total_papers as f64;
                 freq < 0.3 * avg_cats_per_paper && count <= 2
@@ -1273,7 +1522,11 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
             .collect();
 
         if !underrepresented.is_empty() {
-            let cats: Vec<String> = underrepresented.iter().take(5).map(|(k, _)| k.clone()).collect();
+            let cats: Vec<String> = underrepresented
+                .iter()
+                .take(5)
+                .map(|(k, _)| k.clone())
+                .collect();
             let gap = ResearchGap::new(
                 category.as_deref().unwrap_or("category-gap"),
                 &format!(
@@ -1292,7 +1545,8 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
     // ============================================================
     use chrono::Utc;
     let now = Utc::now();
-    let recent_papers: Vec<_> = papers.iter()
+    let recent_papers: Vec<_> = papers
+        .iter()
         .filter(|p| (now - p.published).num_days() < 365)
         .collect();
 
@@ -1329,18 +1583,40 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
     // ============================================================
     // GAP 5: Method diversity gap (check if papers use similar methods)
     // ============================================================
-    let method_keywords = ["rl", "reinforcement", "supervised", "unsupervised", "reinforcement learning",
-        "neural", "transformer", "diffusion", "gcn", "attention", "gan",
-        "bayesian", "optimization", "gradient", "supervised learning"];
-    let method_counts: Vec<(&str, usize)> = method_keywords.iter()
+    let method_keywords = [
+        "rl",
+        "reinforcement",
+        "supervised",
+        "unsupervised",
+        "reinforcement learning",
+        "neural",
+        "transformer",
+        "diffusion",
+        "gcn",
+        "attention",
+        "gan",
+        "bayesian",
+        "optimization",
+        "gradient",
+        "supervised learning",
+    ];
+    let method_counts: Vec<(&str, usize)> = method_keywords
+        .iter()
         .filter_map(|m| {
             let count = keyword_counts.get(*m).copied().unwrap_or(0);
-            if count > 0 { Some((*m, count)) } else { None }
+            if count > 0 {
+                Some((*m, count))
+            } else {
+                None
+            }
         })
         .collect();
 
     if !method_counts.is_empty() && method_counts.len() <= 2 && total_papers >= 5 {
-        let methods: Vec<String> = method_counts.iter().map(|(m, _)| format!("\"{}\"", m)).collect();
+        let methods: Vec<String> = method_counts
+            .iter()
+            .map(|(m, _)| format!("\"{}\"", m))
+            .collect();
         let gap = ResearchGap::new(
             category.as_deref().unwrap_or("method-diversity"),
             &format!(
@@ -1359,21 +1635,27 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
     }
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = gaps.iter().map(|g| {
-            serde_json::json!({
-                "id": g.id,
-                "category": g.category,
-                "description": g.description,
-                "severity": g.severity,
-                "paper_count": g.paper_ids.len(),
+        let out: Vec<serde_json::Value> = gaps
+            .iter()
+            .map(|g| {
+                serde_json::json!({
+                    "id": g.id,
+                    "category": g.category,
+                    "description": g.description,
+                    "severity": g.severity,
+                    "paper_count": g.paper_ids.len(),
+                })
             })
-        }).collect();
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
     } else {
         println!("\n=== Detected {} Research Gaps ===\n", gaps.len());
         for (i, gap) in gaps.iter().enumerate() {
             println!("[{}/{}] Gap: {}", i + 1, gaps.len(), gap.description);
-            println!("       Severity: {} | Category: {}", gap.severity, gap.category);
+            println!(
+                "       Severity: {} | Category: {}",
+                gap.severity, gap.category
+            );
             println!("       Related papers: {}", gap.paper_ids.len());
             println!();
         }
@@ -1382,7 +1664,10 @@ fn handle_gap(db: &Database, topic: &str, limit: usize, format: &str, category: 
     if gaps.is_empty() {
         println!("No significant gaps detected. The field appears well-explored for this topic.");
     } else {
-        println!("Note: {} gap(s) saved to database. Use 'rairos gap-list' to view.", gaps.len());
+        println!(
+            "Note: {} gap(s) saved to database. Use 'rairos gap-list' to view.",
+            gaps.len()
+        );
     }
     Ok(())
 }
@@ -1396,24 +1681,41 @@ fn handle_gap_list(db: &Database, limit: usize, offset: usize, format: &str) -> 
     }
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = gaps.iter().map(|g| {
-            serde_json::json!({
-                "id": g.id,
-                "category": g.category,
-                "description": g.description,
-                "severity": g.severity,
-                "paper_count": g.paper_ids.len(),
+        let out: Vec<serde_json::Value> = gaps
+            .iter()
+            .map(|g| {
+                serde_json::json!({
+                    "id": g.id,
+                    "category": g.category,
+                    "description": g.description,
+                    "severity": g.severity,
+                    "paper_count": g.paper_ids.len(),
+                })
             })
-        }).collect();
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
     } else {
         println!("\n=== Research Gaps ({}) ===\n", gaps.len());
-        println!("{:<36} {:<10} {:<8} {}", "ID", "CATEGORY", "SEVERITY", "DESCRIPTION");
+        println!(
+            "{:<36} {:<10} {:<8} {}",
+            "ID", "CATEGORY", "SEVERITY", "DESCRIPTION"
+        );
         println!("{}", "-".repeat(100));
         for gap in &gaps {
-            let id_short = if gap.id.len() > 8 { &gap.id[..8] } else { &gap.id };
-            let desc_short = if gap.description.len() > 60 { format!("{}...", &gap.description[..60]) } else { gap.description.clone() };
-            println!("{:<36} {:<10} {:<8} {}", id_short, gap.category, gap.severity, desc_short);
+            let id_short = if gap.id.len() > 8 {
+                &gap.id[..8]
+            } else {
+                &gap.id
+            };
+            let desc_short = if gap.description.len() > 60 {
+                format!("{}...", &gap.description[..60])
+            } else {
+                gap.description.clone()
+            };
+            println!(
+                "{:<36} {:<10} {:<8} {}",
+                id_short, gap.category, gap.severity, desc_short
+            );
         }
         println!();
     }
@@ -1421,7 +1723,8 @@ fn handle_gap_list(db: &Database, limit: usize, offset: usize, format: &str) -> 
 }
 
 fn handle_gap_show(db: &Database, id: &str) -> Result<()> {
-    let gap = db.get_gap(id)?
+    let gap = db
+        .get_gap(id)?
         .ok_or_else(|| anyhow::anyhow!("Gap not found: {}", id))?;
 
     println!("\n=== Research Gap Details ===\n");
@@ -1429,7 +1732,11 @@ fn handle_gap_show(db: &Database, id: &str) -> Result<()> {
     println!("Category:    {}", gap.category);
     println!("Severity:    {}", gap.severity);
     println!("Description: {}", gap.description);
-    println!("Paper IDs:   {} ({} total)", gap.paper_ids.join(", "), gap.paper_ids.len());
+    println!(
+        "Paper IDs:   {} ({} total)",
+        gap.paper_ids.join(", "),
+        gap.paper_ids.len()
+    );
     println!();
 
     // Show related papers
@@ -1437,7 +1744,11 @@ fn handle_gap_show(db: &Database, id: &str) -> Result<()> {
         println!("Related Papers:");
         for pid in gap.paper_ids.iter().take(5) {
             if let Ok(paper) = db.get_paper(pid) {
-                let title = if paper.title.len() > 60 { format!("{}...", &paper.title[..60]) } else { paper.title };
+                let title = if paper.title.len() > 60 {
+                    format!("{}...", &paper.title[..60])
+                } else {
+                    paper.title
+                };
                 println!("  - {} | {}", &pid[..8.min(pid.len())], title);
             }
         }
@@ -1451,7 +1762,12 @@ fn handle_gap_delete(db: &Database, id: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_gene_add(approach: &str, gap_type: &str, keywords: &str, paper_id: Option<String>) -> Result<()> {
+fn handle_gene_add(
+    approach: &str,
+    gap_type: &str,
+    keywords: &str,
+    paper_id: Option<String>,
+) -> Result<()> {
     let keywords: Vec<String> = keywords.split(',').map(|s| s.trim().to_string()).collect();
     let mut capsule = Capsule::new(approach, gap_type, keywords);
     if let Some(pid) = paper_id {
@@ -1463,15 +1779,27 @@ fn handle_gene_add(approach: &str, gap_type: &str, keywords: &str, paper_id: Opt
     pool.save().context("Failed to save gene pool")?;
 
     println!("[OK] Gene added to pool");
-    println!("Capsule ID: {}", pool.capsules().last().map(|c| c.capsule_id.as_str()).unwrap_or("N/A"));
+    println!(
+        "Capsule ID: {}",
+        pool.capsules()
+            .last()
+            .map(|c| c.capsule_id.as_str())
+            .unwrap_or("N/A")
+    );
     Ok(())
 }
 
-fn handle_gene_list(gap_type: Option<String>, status: Option<String>, limit: usize, format: &str) -> Result<()> {
+fn handle_gene_list(
+    gap_type: Option<String>,
+    status: Option<String>,
+    limit: usize,
+    format: &str,
+) -> Result<()> {
     let pool = GenePool::load().context("Failed to load gene pool")?;
     let all_capsules = pool.capsules();
 
-    let filtered: Vec<&Capsule> = all_capsules.iter()
+    let filtered: Vec<&Capsule> = all_capsules
+        .iter()
         .filter(|c| {
             if let Some(ref gt) = gap_type {
                 if &c.action_gap_type != gt {
@@ -1495,32 +1823,57 @@ fn handle_gene_list(gap_type: Option<String>, status: Option<String>, limit: usi
         .collect();
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = filtered.iter().map(|c| {
-            let status = if c.archived { "archived".to_string() } else { c.status.to_string() };
-            serde_json::json!({
-                "capsule_id": c.capsule_id,
-                "gap_type": c.action_gap_type,
-                "approach": c.archetype.approach_summary,
-                "status": status,
-                "impact_score": c.impact_score,
-                "success_count": c.success_count,
-                "failure_count": c.failure_count,
-                "created_at": c.created_at,
+        let out: Vec<serde_json::Value> = filtered
+            .iter()
+            .map(|c| {
+                let status = if c.archived {
+                    "archived".to_string()
+                } else {
+                    c.status.to_string()
+                };
+                serde_json::json!({
+                    "capsule_id": c.capsule_id,
+                    "gap_type": c.action_gap_type,
+                    "approach": c.archetype.approach_summary,
+                    "status": status,
+                    "impact_score": c.impact_score,
+                    "success_count": c.success_count,
+                    "failure_count": c.failure_count,
+                    "created_at": c.created_at,
+                })
             })
-        }).collect();
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
         return Ok(());
     }
 
     let count = filtered.len();
     println!("=== Gene Pool ({} capsules) ===\n", count);
-    println!("{:<38} {:<15} {:<12} {:>8} {:>8} {:>8}", "ID", "GAP_TYPE", "STATUS", "IMPACT", "SUCCESS", "FAILED");
+    println!(
+        "{:<38} {:<15} {:<12} {:>8} {:>8} {:>8}",
+        "ID", "GAP_TYPE", "STATUS", "IMPACT", "SUCCESS", "FAILED"
+    );
     println!("{}", "-".repeat(95));
     for cap in &filtered {
-        let id_short = if cap.capsule_id.len() > 8 { &cap.capsule_id[..8] } else { &cap.capsule_id };
-        let status_str = if cap.archived { "archived".to_string() } else { cap.status.to_string() };
-        println!("{:<38} {:<15} {:<12} {:>8.3} {:>8} {:>8}",
-            id_short, cap.action_gap_type, status_str, cap.impact_score, cap.success_count, cap.failure_count);
+        let id_short = if cap.capsule_id.len() > 8 {
+            &cap.capsule_id[..8]
+        } else {
+            &cap.capsule_id
+        };
+        let status_str = if cap.archived {
+            "archived".to_string()
+        } else {
+            cap.status.to_string()
+        };
+        println!(
+            "{:<38} {:<15} {:<12} {:>8.3} {:>8} {:>8}",
+            id_short,
+            cap.action_gap_type,
+            status_str,
+            cap.impact_score,
+            cap.success_count,
+            cap.failure_count
+        );
     }
     println!("\n{} capsules shown", count);
     Ok(())
@@ -1528,7 +1881,11 @@ fn handle_gene_list(gap_type: Option<String>, status: Option<String>, limit: usi
 
 fn handle_gene_show(id: &str, format: &str) -> Result<()> {
     let pool = GenePool::load().context("Failed to load gene pool")?;
-    if let Some(cap) = pool.capsules().iter().find(|c| c.capsule_id == id || c.capsule_id.starts_with(id)) {
+    if let Some(cap) = pool
+        .capsules()
+        .iter()
+        .find(|c| c.capsule_id == id || c.capsule_id.starts_with(id))
+    {
         if format == "json" {
             println!("{}", serde_json::to_string_pretty(cap)?);
             return Ok(());
@@ -1538,7 +1895,14 @@ fn handle_gene_show(id: &str, format: &str) -> Result<()> {
         println!("ID:           {}", cap.capsule_id);
         println!("Gap Type:     {}", cap.action_gap_type);
         println!("Approach:     {}", cap.archetype.approach_summary);
-        println!("Status:       {}", if cap.archived { "archived".to_string() } else { cap.status.to_string() });
+        println!(
+            "Status:       {}",
+            if cap.archived {
+                "archived".to_string()
+            } else {
+                cap.status.to_string()
+            }
+        );
         println!("Impact Score: {:.4}", cap.impact_score);
         println!("Success:      {}", cap.success_count);
         println!("Failure:      {}", cap.failure_count);
@@ -1559,7 +1923,11 @@ fn handle_gene_show(id: &str, format: &str) -> Result<()> {
 
 fn handle_gene_feedback(id: &str, positive: bool) -> Result<()> {
     let mut pool = GenePool::load().context("Failed to load gene pool")?;
-    if let Some(cap) = pool.capsules_mut().iter_mut().find(|c| c.capsule_id == id || c.capsule_id.starts_with(id)) {
+    if let Some(cap) = pool
+        .capsules_mut()
+        .iter_mut()
+        .find(|c| c.capsule_id == id || c.capsule_id.starts_with(id))
+    {
         if positive {
             cap.record_success();
             println!("[OK] Recorded positive feedback for {}", id);
@@ -1591,7 +1959,10 @@ fn handle_gene_diversity(format: &str) -> Result<()> {
     println!("Shannon Index:      {:.4}", diversity.shannon_index);
     println!("Shannon Normalized:  {:.4}", diversity.shannon_normalized);
     println!("Diversity Score:    {} / 100", diversity.diversity_score);
-    println!("Family Coverage:     {:.1}%", diversity.family_coverage * 100.0);
+    println!(
+        "Family Coverage:     {:.1}%",
+        diversity.family_coverage * 100.0
+    );
     println!();
 
     println!("Family Distribution:");
@@ -1603,7 +1974,10 @@ fn handle_gene_diversity(format: &str) -> Result<()> {
     println!();
 
     if !diversity.underrepresented_families.is_empty() {
-        println!("Underrepresented: {:?}", diversity.underrepresented_families);
+        println!(
+            "Underrepresented: {:?}",
+            diversity.underrepresented_families
+        );
     }
     if !diversity.overrepresented_families.is_empty() {
         println!("Overrepresented:  {:?}", diversity.overrepresented_families);
@@ -1623,20 +1997,27 @@ fn handle_gene_evolve(max_crossovers: usize, format: &str) -> Result<()> {
     }
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = suggestions.iter().map(|(gt, id1, id2)| {
-            serde_json::json!({
-                "gap_type": gt,
-                "parent_1": id1,
-                "parent_2": id2,
+        let out: Vec<serde_json::Value> = suggestions
+            .iter()
+            .map(|(gt, id1, id2)| {
+                serde_json::json!({
+                    "gap_type": gt,
+                    "parent_1": id1,
+                    "parent_2": id2,
+                })
             })
-        }).collect();
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
         return Ok(());
     }
 
-    println!("=== Evolution Suggestions ({} crossovers) ===\n", suggestions.len());
+    println!(
+        "=== Evolution Suggestions ({} crossovers) ===\n",
+        suggestions.len()
+    );
     for (i, (gap_type, id1, id2)) in suggestions.iter().enumerate() {
-        println!("{}. {} × {} -> {}",
+        println!(
+            "{}. {} × {} -> {}",
             i + 1,
             &id1[..8.min(id1.len())],
             &id2[..8.min(id2.len())],
@@ -1672,9 +2053,11 @@ fn handle_kg_rank(limit: usize, format: &str) -> Result<()> {
     sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = sorted.iter().take(limit).map(|(id, score)| {
-            serde_json::json!({ "paper_id": id, "score": score })
-        }).collect();
+        let out: Vec<serde_json::Value> = sorted
+            .iter()
+            .take(limit)
+            .map(|(id, score)| serde_json::json!({ "paper_id": id, "score": score }))
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
         return Ok(());
     }
@@ -1683,7 +2066,12 @@ fn handle_kg_rank(limit: usize, format: &str) -> Result<()> {
     println!("{:>6} {:<40} {:>10}", "RANK", "PAPER ID", "SCORE");
     println!("{}", "-".repeat(60));
     for (i, (id, score)) in sorted.iter().take(limit).enumerate() {
-        println!("{:>6} {:<40} {:>10.4}", i + 1, &id[..id.len().min(40)], score);
+        println!(
+            "{:>6} {:<40} {:>10.4}",
+            i + 1,
+            &id[..id.len().min(40)],
+            score
+        );
     }
     Ok(())
 }
@@ -1706,13 +2094,17 @@ fn handle_kg_path(source: &str, target: &str) -> Result<()> {
 }
 
 fn handle_kg_add_paper(db: &Database, paper_id: &str) -> Result<()> {
-    let paper = db.get_paper(paper_id).ok().or_else(|| {
-        db.get_paper_by_arxiv(paper_id).ok().flatten()
-    }).ok_or_else(|| anyhow::anyhow!("Paper not found: {}", paper_id))?;
+    let paper = db
+        .get_paper(paper_id)
+        .ok()
+        .or_else(|| db.get_paper_by_arxiv(paper_id).ok().flatten())
+        .ok_or_else(|| anyhow::anyhow!("Paper not found: {}", paper_id))?;
 
     let mut graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
     graph.add_paper(&paper);
-    graph.save().map_err(|e| anyhow::anyhow!("Failed to save knowledge graph: {}", e))?;
+    graph
+        .save()
+        .map_err(|e| anyhow::anyhow!("Failed to save knowledge graph: {}", e))?;
 
     println!("[OK] Added paper to knowledge graph:");
     println!("  ID: {}", paper.id);
@@ -1721,13 +2113,17 @@ fn handle_kg_add_paper(db: &Database, paper_id: &str) -> Result<()> {
 }
 
 fn handle_kg_add_citation(db: &Database, source: &str, target: &str) -> Result<()> {
-    let source_paper = db.get_paper(source).ok().or_else(|| {
-        db.get_paper_by_arxiv(source).ok().flatten()
-    }).ok_or_else(|| anyhow::anyhow!("Source paper not found: {}", source))?;
+    let source_paper = db
+        .get_paper(source)
+        .ok()
+        .or_else(|| db.get_paper_by_arxiv(source).ok().flatten())
+        .ok_or_else(|| anyhow::anyhow!("Source paper not found: {}", source))?;
 
-    let target_paper = db.get_paper(target).ok().or_else(|| {
-        db.get_paper_by_arxiv(target).ok().flatten()
-    }).ok_or_else(|| anyhow::anyhow!("Target paper not found: {}", target))?;
+    let target_paper = db
+        .get_paper(target)
+        .ok()
+        .or_else(|| db.get_paper_by_arxiv(target).ok().flatten())
+        .ok_or_else(|| anyhow::anyhow!("Target paper not found: {}", target))?;
 
     let mut graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
 
@@ -1735,7 +2131,9 @@ fn handle_kg_add_citation(db: &Database, source: &str, target: &str) -> Result<(
     graph.add_paper(&source_paper);
     graph.add_paper(&target_paper);
     graph.add_citation(&source_paper.id, &target_paper.id);
-    graph.save().map_err(|e| anyhow::anyhow!("Failed to save knowledge graph: {}", e))?;
+    graph
+        .save()
+        .map_err(|e| anyhow::anyhow!("Failed to save knowledge graph: {}", e))?;
 
     println!("[OK] Added citation edge:");
     println!("  {} -> {}", source_paper.id, target_paper.id);
@@ -1748,7 +2146,10 @@ fn handle_stance_add(topic: &str, claim: &str, stance: &str, reasoning: &str) ->
         "rejected" => StanceType::Rejected,
         "deferred" => StanceType::Deferred,
         "qualified" => StanceType::Qualified,
-        _ => anyhow::bail!("Invalid stance: {}. Use: supported, rejected, deferred, qualified", stance),
+        _ => anyhow::bail!(
+            "Invalid stance: {}. Use: supported, rejected, deferred, qualified",
+            stance
+        ),
     };
 
     let mut memory = ResearchMemory::load().context("Failed to load research memory")?;
@@ -1771,26 +2172,42 @@ fn handle_stance_list(topic: Option<String>, tag: Option<String>, format: &str) 
     };
 
     if format == "json" {
-        let out: Vec<serde_json::Value> = stances.iter().map(|s| {
-            serde_json::json!({
-                "stance_id": s.stance_id,
-                "topic": s.topic,
-                "claim": s.claim,
-                "stance": s.stance.to_string(),
-                "confidence": s.confidence,
-                "tags": s.tags,
+        let out: Vec<serde_json::Value> = stances
+            .iter()
+            .map(|s| {
+                serde_json::json!({
+                    "stance_id": s.stance_id,
+                    "topic": s.topic,
+                    "claim": s.claim,
+                    "stance": s.stance.to_string(),
+                    "confidence": s.confidence,
+                    "tags": s.tags,
+                })
             })
-        }).collect();
+            .collect();
         println!("{}", serde_json::to_string_pretty(&out)?);
         return Ok(());
     }
 
     println!("=== Research Stances ({} found) ===\n", stances.len());
-    println!("{:<38} {:<20} {:<15} {:<10}", "ID", "TOPIC", "STANCE", "CONFIDENCE");
+    println!(
+        "{:<38} {:<20} {:<15} {:<10}",
+        "ID", "TOPIC", "STANCE", "CONFIDENCE"
+    );
     println!("{}", "-".repeat(85));
     for s in stances {
-        let id_short = if s.stance_id.len() > 8 { &s.stance_id[..8] } else { &s.stance_id };
-        println!("{:<38} {:<20} {:<15} {:.2}", id_short, &s.topic[..20.min(s.topic.len())], s.stance, s.confidence);
+        let id_short = if s.stance_id.len() > 8 {
+            &s.stance_id[..8]
+        } else {
+            &s.stance_id
+        };
+        println!(
+            "{:<38} {:<20} {:<15} {:.2}",
+            id_short,
+            &s.topic[..20.min(s.topic.len())],
+            s.stance,
+            s.confidence
+        );
     }
     Ok(())
 }
@@ -1798,8 +2215,12 @@ fn handle_stance_list(topic: Option<String>, tag: Option<String>, format: &str) 
 fn handle_stance_show(id: &str, format: &str) -> Result<()> {
     let memory = ResearchMemory::load().context("Failed to load research memory")?;
 
-    let stance = memory.get_stance(id)
-        .or_else(|| memory.stances().iter().find(|s| s.stance_id.starts_with(id)));
+    let stance = memory.get_stance(id).or_else(|| {
+        memory
+            .stances()
+            .iter()
+            .find(|s| s.stance_id.starts_with(id))
+    });
 
     if let Some(s) = stance {
         if format == "json" {
@@ -1822,7 +2243,12 @@ fn handle_stance_show(id: &str, format: &str) -> Result<()> {
         if !anomalies.is_empty() {
             println!("\n=== Anomalies ({} found) ===", anomalies.len());
             for a in anomalies {
-                println!("  - [{}] {} ({})", format!("{:?}", a.severity), a.paper_title, a.anomaly_type);
+                println!(
+                    "  - [{}] {} ({})",
+                    format!("{:?}", a.severity),
+                    a.paper_title,
+                    a.anomaly_type
+                );
             }
         }
     } else {
@@ -1856,7 +2282,12 @@ fn handle_memory_stats(format: &str) -> Result<()> {
     Ok(())
 }
 
-fn handle_cite_stats(db: &Database, paper: Option<&str>, top: Option<usize>, format: &str) -> Result<()> {
+fn handle_cite_stats(
+    db: &Database,
+    paper: Option<&str>,
+    top: Option<usize>,
+    format: &str,
+) -> Result<()> {
     if let Some(paper_id) = paper {
         let citations = db.get_citations(paper_id)?;
         let pap = db.get_paper(paper_id);
@@ -1912,13 +2343,19 @@ fn handle_cite_stats(db: &Database, paper: Option<&str>, top: Option<usize>, for
     println!("Parsed:        {}", stats.done);
 
     if let Some(n) = top {
-        let mut papers_with_cites: Vec<_> = all_papers.iter()
+        let mut papers_with_cites: Vec<_> = all_papers
+            .iter()
             .filter(|p| p.metadata.cited_by > 0 || p.metadata.references > 0)
             .collect();
         papers_with_cites.sort_by(|a, b| b.metadata.cited_by.cmp(&a.metadata.cited_by));
         println!("\nTop {} most-cited papers:", n);
         for p in papers_with_cites.iter().take(n) {
-            println!("  [{:4}] {}  {}", p.metadata.cited_by, p.id, p.title.chars().take(60).collect::<String>());
+            println!(
+                "  [{:4}] {}  {}",
+                p.metadata.cited_by,
+                p.id,
+                p.title.chars().take(60).collect::<String>()
+            );
         }
     }
 
@@ -1952,7 +2389,10 @@ fn handle_rate_limit_benchmark(count: usize) -> Result<()> {
     println!("Allowed:         {}", allowed);
     println!("Waited:          {}", waited);
     println!("Total wait time: {:.3}s", total_wait.as_secs_f64());
-    println!("Throughput:      {:.0} req/s", count as f64 / elapsed.as_secs_f64());
+    println!(
+        "Throughput:      {:.0} req/s",
+        count as f64 / elapsed.as_secs_f64()
+    );
     Ok(())
 }
 
@@ -1995,7 +2435,13 @@ fn handle_daemon(db: &Database, port: u16, _log_level: &str, _foreground: bool) 
     Ok(())
 }
 
-fn handle_subscribe(db: &Database, query: &str, interval_minutes: u64, max_papers: usize, auto_add: bool) -> Result<()> {
+fn handle_subscribe(
+    db: &Database,
+    query: &str,
+    interval_minutes: u64,
+    max_papers: usize,
+    auto_add: bool,
+) -> Result<()> {
     println!("=== Subscribing to arXiv: {} ===", query);
     println!("Check interval: {} minutes", interval_minutes);
     println!("Max papers per check: {}", max_papers);
@@ -2009,8 +2455,7 @@ fn handle_subscribe(db: &Database, query: &str, interval_minutes: u64, max_paper
         query.replace(' ', "+"), max_papers
     );
 
-    let resp = reqwest::blocking::get(&url)
-        .context("Failed to connect to arXiv API")?;
+    let resp = reqwest::blocking::get(&url).context("Failed to connect to arXiv API")?;
 
     if !resp.status().is_success() {
         anyhow::bail!("arXiv API returned error: {}", resp.status());
@@ -2020,7 +2465,10 @@ fn handle_subscribe(db: &Database, query: &str, interval_minutes: u64, max_paper
 
     // Count entries in response
     let entry_count = body.matches("<entry>").count();
-    println!("[OK] Found {} papers from arXiv for query '{}'", entry_count, query);
+    println!(
+        "[OK] Found {} papers from arXiv for query '{}'",
+        entry_count, query
+    );
 
     if entry_count == 0 {
         println!("No papers found. Try a different query.");
@@ -2058,7 +2506,11 @@ fn handle_subscribe(db: &Database, query: &str, interval_minutes: u64, max_paper
 
     println!("\nTop papers found:");
     for (i, (_, title)) in papers_info.iter().enumerate().take(5) {
-        println!("  {}. {}", i + 1, title.chars().take(70).collect::<String>());
+        println!(
+            "  {}. {}",
+            i + 1,
+            title.chars().take(70).collect::<String>()
+        );
     }
 
     if auto_add && !papers_info.is_empty() {
@@ -2087,11 +2539,17 @@ fn handle_subscribe(db: &Database, query: &str, interval_minutes: u64, max_paper
                 }
             }
         }
-        println!("\nAuto-add complete: {} added, {} skipped, {} failed", added, skipped, failed);
+        println!(
+            "\nAuto-add complete: {} added, {} skipped, {} failed",
+            added, skipped, failed
+        );
     }
 
     println!("\nNote: Background monitoring requires daemon process. Subscription saved.");
-    println!("Run 'rairos subscribe \"{}\" --interval {}' periodically to check manually.", query, interval_minutes);
+    println!(
+        "Run 'rairos subscribe \"{}\" --interval {}' periodically to check manually.",
+        query, interval_minutes
+    );
     Ok(())
 }
 
@@ -2111,7 +2569,11 @@ fn handle_cache(action: &CacheAction) -> Result<()> {
                 .map(|m| m.len())
                 .sum::<u64>();
             println!("Entries: {}", entries);
-            println!("Total size: {} bytes ({:.2} MB)", total_size, total_size as f64 / 1_048_576.0);
+            println!(
+                "Total size: {} bytes ({:.2} MB)",
+                total_size,
+                total_size as f64 / 1_048_576.0
+            );
         }
         CacheAction::Clear => {
             println!("Clearing all cache...");
@@ -2153,7 +2615,10 @@ fn handle_cache(action: &CacheAction) -> Result<()> {
             let mut count = 0;
             for entry in std::fs::read_dir(cache_dir)? {
                 if count >= *limit {
-                    println!("... and more ({} total entries)", std::fs::read_dir(cache_dir)?.count());
+                    println!(
+                        "... and more ({} total entries)",
+                        std::fs::read_dir(cache_dir)?.count()
+                    );
                     break;
                 }
                 let entry = entry?;
@@ -2205,8 +2670,12 @@ fn handle_benchmark(kind: &str, iterations: usize) -> Result<()> {
                     let _ = db.stats();
                 }
                 let elapsed = start.elapsed();
-                println!("[DB] {} stats() calls in {:.3}s ({:.0} ops/s)",
-                    iterations, elapsed.as_secs_f64(), iterations as f64 / elapsed.as_secs_f64());
+                println!(
+                    "[DB] {} stats() calls in {:.3}s ({:.0} ops/s)",
+                    iterations,
+                    elapsed.as_secs_f64(),
+                    iterations as f64 / elapsed.as_secs_f64()
+                );
 
                 // Search benchmark
                 let start = std::time::Instant::now();
@@ -2215,8 +2684,12 @@ fn handle_benchmark(kind: &str, iterations: usize) -> Result<()> {
                 }
                 let elapsed = start.elapsed();
                 let ops = iterations.min(100);
-                println!("[DB] {} search() calls in {:.3}s ({:.0} ops/s)",
-                    ops, elapsed.as_secs_f64(), ops as f64 / elapsed.as_secs_f64());
+                println!(
+                    "[DB] {} search() calls in {:.3}s ({:.0} ops/s)",
+                    ops,
+                    elapsed.as_secs_f64(),
+                    ops as f64 / elapsed.as_secs_f64()
+                );
             } else {
                 println!("Could not open database");
             }
@@ -2231,35 +2704,53 @@ fn handle_benchmark(kind: &str, iterations: usize) -> Result<()> {
                     &std::net::SocketAddr::from(([127, 0, 0, 1], port)),
                     std::time::Duration::from_millis(500),
                 ) {
-                    stream.set_read_timeout(Some(std::time::Duration::from_millis(500))).ok();
+                    stream
+                        .set_read_timeout(Some(std::time::Duration::from_millis(500)))
+                        .ok();
                     ok += 1;
                 }
             }
             let elapsed = start.elapsed();
             if ok > 0 {
-                println!("[API] {} TCP connect attempts in {:.3}s ({:.0} conn/s), {} OK",
-                    iterations, elapsed.as_secs_f64(), iterations as f64 / elapsed.as_secs_f64(), ok);
+                println!(
+                    "[API] {} TCP connect attempts in {:.3}s ({:.0} conn/s), {} OK",
+                    iterations,
+                    elapsed.as_secs_f64(),
+                    iterations as f64 / elapsed.as_secs_f64(),
+                    ok
+                );
             } else {
-                println!("[API] Could not reach localhost:{} (no server running?)", port);
-                println!("[API] {} attempts in {:.3}s (no server to test)",
-                    iterations, elapsed.as_secs_f64());
+                println!(
+                    "[API] Could not reach localhost:{} (no server running?)",
+                    port
+                );
+                println!(
+                    "[API] {} attempts in {:.3}s (no server to test)",
+                    iterations,
+                    elapsed.as_secs_f64()
+                );
             }
         }
         "parse" => {
             println!("[Parse] Running parse benchmark...");
-            let sample_text = "This is a sample abstract about machine learning and neural networks. "
-                .repeat(50);
+            let sample_text =
+                "This is a sample abstract about machine learning and neural networks. ".repeat(50);
             let start = std::time::Instant::now();
             for _ in 0..iterations {
                 let words: Vec<&str> = sample_text.split_whitespace().collect();
                 let mut count = 0;
                 for w in &words {
-                    if w.len() > 3 { count += 1; }
+                    if w.len() > 3 {
+                        count += 1;
+                    }
                 }
                 let _ = count;
             }
-            println!("[Parse] {} text processing iterations in {:.3}s",
-                iterations, start.elapsed().as_secs_f64());
+            println!(
+                "[Parse] {} text processing iterations in {:.3}s",
+                iterations,
+                start.elapsed().as_secs_f64()
+            );
         }
         _ => {
             println!("Unknown benchmark type: {}. Use: all, db, api, parse", kind);
@@ -2270,7 +2761,13 @@ fn handle_benchmark(kind: &str, iterations: usize) -> Result<()> {
     Ok(())
 }
 
-fn handle_agent(db: &Database, topic: &str, max_papers: usize, _max_time_minutes: u64, format: &str) -> Result<()> {
+fn handle_agent(
+    db: &Database,
+    topic: &str,
+    max_papers: usize,
+    _max_time_minutes: u64,
+    format: &str,
+) -> Result<()> {
     println!("=== Rairos Research Agent ===");
     println!("Topic: {}", topic);
     println!("Max papers: {}", max_papers);
@@ -2288,7 +2785,10 @@ fn handle_agent(db: &Database, topic: &str, max_papers: usize, _max_time_minutes
     println!();
 
     println!("Research Plan:");
-    println!("  1. Analyze {} papers for key themes and methodologies", papers.len());
+    println!(
+        "  1. Analyze {} papers for key themes and methodologies",
+        papers.len()
+    );
     println!("  2. Identify research gaps and opportunities");
     println!("  3. Generate hypotheses for further investigation");
     println!();
@@ -2312,20 +2812,30 @@ fn handle_analyze(db: &Database, kind: &str, paper: Option<String>, format: &str
     match kind {
         "keywords" => {
             if let Some(p) = paper {
-                let paper_obj = db.get_paper(&p).ok()
+                let paper_obj = db
+                    .get_paper(&p)
+                    .ok()
                     .or_else(|| db.get_paper_by_arxiv(&p).ok().flatten())
                     .ok_or_else(|| anyhow::anyhow!("Paper not found: {}", p))?;
 
                 // Extract keywords from title + abstract using TF-like scoring
-                let text = format!("{} {} {}", paper_obj.title, paper_obj.abstract_text, paper_obj.categories.join(" "));
+                let text = format!(
+                    "{} {} {}",
+                    paper_obj.title,
+                    paper_obj.abstract_text,
+                    paper_obj.categories.join(" ")
+                );
                 let keywords = extract_keywords(&text, 10);
 
                 if format == "json" {
-                    println!("{}", serde_json::to_string_pretty(&serde_json::json!({
-                        "id": paper_obj.id,
-                        "title": paper_obj.title,
-                        "keywords": keywords,
-                    }))?);
+                    println!(
+                        "{}",
+                        serde_json::to_string_pretty(&serde_json::json!({
+                            "id": paper_obj.id,
+                            "title": paper_obj.title,
+                            "keywords": keywords,
+                        }))?
+                    );
                 } else {
                     println!("=== Keyword Analysis ===\n");
                     println!("Title: {}", paper_obj.title);
@@ -2337,17 +2847,30 @@ fn handle_analyze(db: &Database, kind: &str, paper: Option<String>, format: &str
             } else {
                 println!("Analyzing all papers...");
                 let papers = db.list_papers(None, 100, 0)?;
-                let mut all_kw: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+                let mut all_kw: std::collections::HashMap<String, usize> =
+                    std::collections::HashMap::new();
                 for p in &papers {
-                    let text = format!("{} {} {}", p.title, p.abstract_text, p.categories.join(" "));
+                    let text =
+                        format!("{} {} {}", p.title, p.abstract_text, p.categories.join(" "));
                     for (kw, _) in extract_keywords(&text, 5) {
                         *all_kw.entry(kw).or_insert(0) += 1;
                     }
                 }
-                let top: Vec<_> = all_kw.into_iter().filter(|(_, c)| *c > 1).map(|(k, c)| (k, c))
-                    .collect::<Vec<_>>().into_iter().take(10).collect();
+                let top: Vec<_> = all_kw
+                    .into_iter()
+                    .filter(|(_, c)| *c > 1)
+                    .map(|(k, c)| (k, c))
+                    .collect::<Vec<_>>()
+                    .into_iter()
+                    .take(10)
+                    .collect();
                 if format == "json" {
-                    println!("{}", serde_json::to_string_pretty(&serde_json::json!({"papers": papers.len(), "top_keywords": top}))?);
+                    println!(
+                        "{}",
+                        serde_json::to_string_pretty(
+                            &serde_json::json!({"papers": papers.len(), "top_keywords": top})
+                        )?
+                    );
                 } else {
                     println!("\n=== Cross-Paper Keywords (n={}) ===\n", papers.len());
                     for (kw, count) in top {
@@ -2358,21 +2881,30 @@ fn handle_analyze(db: &Database, kind: &str, paper: Option<String>, format: &str
         }
         "summary" | "topics" | "quality" => {
             if let Some(p) = paper {
-                let paper_obj = db.get_paper(&p).ok()
+                let paper_obj = db
+                    .get_paper(&p)
+                    .ok()
                     .or_else(|| db.get_paper_by_arxiv(&p).ok().flatten())
                     .ok_or_else(|| anyhow::anyhow!("Paper not found: {}", p))?;
 
                 // Rule-based topic classification
-                let topics = classify_topics(&paper_obj.title, &paper_obj.abstract_text, &paper_obj.categories);
+                let topics = classify_topics(
+                    &paper_obj.title,
+                    &paper_obj.abstract_text,
+                    &paper_obj.categories,
+                );
                 let quality = estimate_quality(&paper_obj);
 
                 if format == "json" {
-                    println!("{}", serde_json::to_string_pretty(&serde_json::json!({
-                        "id": paper_obj.id,
-                        "title": paper_obj.title,
-                        "topics": topics,
-                        "quality_score": quality,
-                    }))?);
+                    println!(
+                        "{}",
+                        serde_json::to_string_pretty(&serde_json::json!({
+                            "id": paper_obj.id,
+                            "title": paper_obj.title,
+                            "topics": topics,
+                            "quality_score": quality,
+                        }))?
+                    );
                 } else {
                     println!("=== Paper Analysis ===\n");
                     println!("Title: {}", paper_obj.title);
@@ -2382,11 +2914,17 @@ fn handle_analyze(db: &Database, kind: &str, paper: Option<String>, format: &str
             } else {
                 println!("Analyzing all papers in database...");
                 let papers = db.list_papers(None, 100, 0)?;
-                println!("Found {} papers. (Full analysis requires LLM integration)", papers.len());
+                println!(
+                    "Found {} papers. (Full analysis requires LLM integration)",
+                    papers.len()
+                );
             }
         }
         _ => {
-            println!("Unknown analysis type: {}. Use: summary, keywords, topics, quality", kind);
+            println!(
+                "Unknown analysis type: {}. Use: summary, keywords, topics, quality",
+                kind
+            );
         }
     }
     Ok(())
@@ -2395,17 +2933,17 @@ fn handle_analyze(db: &Database, kind: &str, paper: Option<String>, format: &str
 // Extract top keywords using simple TF-like scoring (no LLM needed)
 fn extract_keywords(text: &str, top_n: usize) -> Vec<(String, f64)> {
     let stop_words: std::collections::HashSet<&str> = [
-        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
-        "have", "has", "had", "do", "does", "did", "will", "would", "could",
-        "should", "may", "might", "must", "shall", "can", "need", "to", "of",
-        "in", "for", "on", "with", "at", "by", "from", "as", "into", "through",
-        "during", "before", "after", "above", "below", "between", "under",
-        "again", "further", "then", "once", "here", "there", "when", "where",
-        "why", "how", "all", "each", "few", "more", "most", "other", "some",
-        "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too",
-        "very", "just", "but", "and", "or", "if", "because", "until", "while",
-        "this", "that", "these", "those", "which", "what", "who", "whom"
-    ].into_iter().collect();
+        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
+        "do", "does", "did", "will", "would", "could", "should", "may", "might", "must", "shall",
+        "can", "need", "to", "of", "in", "for", "on", "with", "at", "by", "from", "as", "into",
+        "through", "during", "before", "after", "above", "below", "between", "under", "again",
+        "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "each",
+        "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same",
+        "so", "than", "too", "very", "just", "but", "and", "or", "if", "because", "until", "while",
+        "this", "that", "these", "those", "which", "what", "who", "whom",
+    ]
+    .into_iter()
+    .collect();
 
     let mut counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
     for word in text.split_whitespace() {
@@ -2417,7 +2955,8 @@ fn extract_keywords(text: &str, top_n: usize) -> Vec<(String, f64)> {
     }
 
     let total: usize = counts.values().sum();
-    let mut scored: Vec<_> = counts.into_iter()
+    let mut scored: Vec<_> = counts
+        .into_iter()
         .map(|(w, c)| (w, c as f64 / total as f64 * 100.0))
         .collect();
     scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
@@ -2430,14 +2969,81 @@ fn classify_topics(title: &str, abstract_: &str, categories: &[String]) -> Vec<S
     let mut topics = Vec::new();
 
     let topic_rules: Vec<(&str, &[&str])> = vec![
-        ("Machine Learning", &["machine learning", "deep learning", "neural network", "neural networks"]),
-        ("NLP", &["natural language", "transformer", "attention", "language model", "text", "parsing", "translation"]),
-        ("Computer Vision", &["image", "vision", "object detection", "segmentation", "image classification"]),
-        ("Reinforcement Learning", &["reinforcement learning", "policy", "reward", "agent", "environment"]),
-        ("Optimization", &["optimization", "optimizer", "gradient", "convergence", "loss function"]),
-        ("Graph / Knowledge", &["graph", "knowledge graph", "knowledge base", "entity", "relation"]),
-        ("Uncertainty", &["uncertainty", "probabilistic", "bayesian", "variance", "confidence"]),
-        ("Scaling", &["scale", "scaling", "large-scale", "billion", "parameter"]),
+        (
+            "Machine Learning",
+            &[
+                "machine learning",
+                "deep learning",
+                "neural network",
+                "neural networks",
+            ],
+        ),
+        (
+            "NLP",
+            &[
+                "natural language",
+                "transformer",
+                "attention",
+                "language model",
+                "text",
+                "parsing",
+                "translation",
+            ],
+        ),
+        (
+            "Computer Vision",
+            &[
+                "image",
+                "vision",
+                "object detection",
+                "segmentation",
+                "image classification",
+            ],
+        ),
+        (
+            "Reinforcement Learning",
+            &[
+                "reinforcement learning",
+                "policy",
+                "reward",
+                "agent",
+                "environment",
+            ],
+        ),
+        (
+            "Optimization",
+            &[
+                "optimization",
+                "optimizer",
+                "gradient",
+                "convergence",
+                "loss function",
+            ],
+        ),
+        (
+            "Graph / Knowledge",
+            &[
+                "graph",
+                "knowledge graph",
+                "knowledge base",
+                "entity",
+                "relation",
+            ],
+        ),
+        (
+            "Uncertainty",
+            &[
+                "uncertainty",
+                "probabilistic",
+                "bayesian",
+                "variance",
+                "confidence",
+            ],
+        ),
+        (
+            "Scaling",
+            &["scale", "scaling", "large-scale", "billion", "parameter"],
+        ),
     ];
 
     for (topic, keywords) in topic_rules.iter() {
@@ -2446,7 +3052,9 @@ fn classify_topics(title: &str, abstract_: &str, categories: &[String]) -> Vec<S
         }
     }
 
-    if topics.is_empty() { topics.push("General".to_string()); }
+    if topics.is_empty() {
+        topics.push("General".to_string());
+    }
     topics
 }
 
@@ -2455,17 +3063,26 @@ fn estimate_quality(paper: &Paper) -> f64 {
     let mut score: f64 = 5.0; // base
 
     // Citations boost
-    if paper.metadata.cited_by > 1000 { score += 2.0; }
-    else if paper.metadata.cited_by > 100 { score += 1.0; }
+    if paper.metadata.cited_by > 1000 {
+        score += 2.0;
+    } else if paper.metadata.cited_by > 100 {
+        score += 1.0;
+    }
 
     // Has abstract
-    if !paper.abstract_text.is_empty() && paper.abstract_text.len() > 100 { score += 0.5; }
+    if !paper.abstract_text.is_empty() && paper.abstract_text.len() > 100 {
+        score += 0.5;
+    }
 
     // Has categories
-    if !paper.categories.is_empty() { score += 0.5; }
+    if !paper.categories.is_empty() {
+        score += 0.5;
+    }
 
     // Title length heuristic (reasonable length is better)
-    if paper.title.len() > 30 && paper.title.len() < 150 { score += 0.5; }
+    if paper.title.len() > 30 && paper.title.len() < 150 {
+        score += 0.5;
+    }
 
     score.min(10.0_f64)
 }
@@ -2485,20 +3102,20 @@ fn handle_ask(db: &Database, question: &str, max_papers: usize, format: &str) ->
 
     // Keyword-based retrieval: split question into keywords and score papers
     let stop_words: std::collections::HashSet<&str> = [
-        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
-        "have", "has", "had", "do", "does", "did", "will", "would", "could",
-        "should", "may", "might", "must", "shall", "can", "need", "to", "of",
-        "in", "for", "on", "with", "at", "by", "from", "as", "into", "through",
-        "during", "before", "after", "above", "below", "between", "under",
-        "again", "further", "then", "once", "here", "there", "when", "where",
-        "why", "how", "all", "each", "few", "more", "most", "other", "some",
-        "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too",
-        "very", "just", "but", "and", "or", "if", "because", "until", "while",
+        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
+        "do", "does", "did", "will", "would", "could", "should", "may", "might", "must", "shall",
+        "can", "need", "to", "of", "in", "for", "on", "with", "at", "by", "from", "as", "into",
+        "through", "during", "before", "after", "above", "below", "between", "under", "again",
+        "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "each",
+        "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same",
+        "so", "than", "too", "very", "just", "but", "and", "or", "if", "because", "until", "while",
         "this", "that", "these", "those", "what", "which", "who", "whom",
-    ].into();
+    ]
+    .into();
 
     let question_lower = question.to_lowercase();
-    let question_words: Vec<&str> = question_lower.split_whitespace()
+    let question_words: Vec<&str> = question_lower
+        .split_whitespace()
         .filter(|w| w.len() > 2 && !stop_words.contains(w))
         .collect();
 
@@ -2517,7 +3134,8 @@ fn handle_ask(db: &Database, question: &str, max_papers: usize, format: &str) ->
         let abstract_lower = paper.abstract_text.to_lowercase();
         let combined = format!("{} {}", title_lower, abstract_lower);
 
-        let match_count = question_words.iter()
+        let match_count = question_words
+            .iter()
             .filter(|kw| combined.contains(*kw))
             .count();
 
@@ -2542,7 +3160,11 @@ fn handle_ask(db: &Database, question: &str, max_papers: usize, format: &str) ->
     for (i, (paper, score)) in top_papers.iter().enumerate() {
         println!("{}. [score: {}] {}", i + 1, score, paper.title);
         println!("   {}", paper.authors.join(", "));
-        println!("   {} | cited_by: {}", paper.published.format("%Y-%m-%d"), paper.metadata.cited_by);
+        println!(
+            "   {} | cited_by: {}",
+            paper.published.format("%Y-%m-%d"),
+            paper.metadata.cited_by
+        );
         if !paper.abstract_text.is_empty() {
             let preview = if paper.abstract_text.len() > 150 {
                 format!("{}...", &paper.abstract_text[..150])
@@ -2588,12 +3210,16 @@ fn handle_dedup(db: &Database, action: &DedupAction) -> Result<()> {
             let mut used: Vec<bool> = vec![false; papers.len()];
 
             for i in 0..papers.len() {
-                if used[i] { continue; }
+                if used[i] {
+                    continue;
+                }
                 let mut group: Vec<usize> = vec![i];
                 used[i] = true;
 
                 for j in (i + 1)..papers.len() {
-                    if used[j] { continue; }
+                    if used[j] {
+                        continue;
+                    }
                     let sim = title_similarity(&papers[i].title, &papers[j].title);
                     if sim >= *threshold as f64 {
                         group.push(j);
@@ -2642,16 +3268,16 @@ fn handle_dedup(db: &Database, action: &DedupAction) -> Result<()> {
 
 // Compute Jaccard similarity between two titles (word-level)
 fn title_similarity(a: &str, b: &str) -> f64 {
-    let words_a: std::collections::HashSet<&str> =
-        a.split_whitespace()
-         .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
-         .filter(|w| !w.is_empty())
-         .collect();
-    let words_b: std::collections::HashSet<&str> =
-        b.split_whitespace()
-         .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
-         .filter(|w| !w.is_empty())
-         .collect();
+    let words_a: std::collections::HashSet<&str> = a
+        .split_whitespace()
+        .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
+        .filter(|w| !w.is_empty())
+        .collect();
+    let words_b: std::collections::HashSet<&str> = b
+        .split_whitespace()
+        .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
+        .filter(|w| !w.is_empty())
+        .collect();
 
     if words_a.is_empty() && words_b.is_empty() {
         return 0.0;
@@ -2667,9 +3293,11 @@ fn title_similarity(a: &str, b: &str) -> f64 {
 }
 
 fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
-    let paper = db.get_paper(paper_id).ok().or_else(|| {
-        db.get_paper_by_arxiv(paper_id).ok().flatten()
-    }).ok_or_else(|| anyhow::anyhow!("Paper not found: {}", paper_id))?;
+    let paper = db
+        .get_paper(paper_id)
+        .ok()
+        .or_else(|| db.get_paper_by_arxiv(paper_id).ok().flatten())
+        .ok_or_else(|| anyhow::anyhow!("Paper not found: {}", paper_id))?;
 
     println!("=== Similar Papers ===\n");
     println!("Finding papers similar to:");
@@ -2691,7 +3319,8 @@ fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
         "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same",
         "so", "than", "too", "very", "just", "but", "and", "or", "if", "because", "until", "while",
         "this", "that", "these", "those", "what", "which", "who", "whom",
-    ].into();
+    ]
+    .into();
 
     let target_words: std::collections::HashSet<String> = target_text
         .split(|c: char| !c.is_alphanumeric())
@@ -2710,7 +3339,11 @@ fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
         if p.id == paper.id {
             continue;
         }
-        let p_text = format!("{} {}", p.title.to_lowercase(), p.abstract_text.to_lowercase());
+        let p_text = format!(
+            "{} {}",
+            p.title.to_lowercase(),
+            p.abstract_text.to_lowercase()
+        );
         let p_words: std::collections::HashSet<String> = p_text
             .split(|c: char| !c.is_alphanumeric())
             .filter(|w| w.len() > 3 && !stop_words.contains(w))
@@ -2722,9 +3355,14 @@ fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
         }
 
         // Jaccard similarity
-        let intersection: std::collections::HashSet<_> = target_words.intersection(&p_words).collect();
+        let intersection: std::collections::HashSet<_> =
+            target_words.intersection(&p_words).collect();
         let union: std::collections::HashSet<_> = target_words.union(&p_words).collect();
-        let sim = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
+        let sim = if union.is_empty() {
+            0.0
+        } else {
+            intersection.len() as f64 / union.len() as f64
+        };
 
         if sim > 0.05 {
             scored.push((p, sim));
@@ -2743,7 +3381,11 @@ fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
         println!("{}", "-".repeat(80));
         for (p, sim) in &top {
             let year = p.published.format("%Y");
-            let title = if p.title.len() > 60 { format!("{}...", &p.title[..60]) } else { p.title.clone() };
+            let title = if p.title.len() > 60 {
+                format!("{}...", &p.title[..60])
+            } else {
+                p.title.clone()
+            };
             println!("{:<6.3} {:<8} {}", sim, year, title);
         }
     }
@@ -2775,23 +3417,42 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
 
     println!("Comparing {} papers:\n", papers.len());
     for (i, p) in papers.iter().enumerate() {
-        println!("  {}. {} ({})", i + 1, p.title, p.published.format("%Y-%m-%d"));
+        println!(
+            "  {}. {} ({})",
+            i + 1,
+            p.title,
+            p.published.format("%Y-%m-%d")
+        );
     }
     println!();
 
     match aspect {
         "overview" => {
             // Summary table: title, authors, year, categories, citations, references
-            println!("{:<6} {:<50} {:<8} {:>6} {:>10} {:>10}", "#", "Title", "Year", "Authors", "Cited_by", "Refs");
+            println!(
+                "{:<6} {:<50} {:<8} {:>6} {:>10} {:>10}",
+                "#", "Title", "Year", "Authors", "Cited_by", "Refs"
+            );
             println!("{}", "-".repeat(96));
             for (i, p) in papers.iter().enumerate() {
-                let title = if p.title.len() > 48 { format!("{}...", &p.title[..48]) } else { p.title.clone() };
+                let title = if p.title.len() > 48 {
+                    format!("{}...", &p.title[..48])
+                } else {
+                    p.title.clone()
+                };
                 let year = p.published.format("%Y").to_string();
                 let author_count = p.authors.len();
                 let cited = p.metadata.cited_by;
                 let refs = p.metadata.references;
-                println!("{:<6} {:<50} {:<8} {:>6} {:>10} {:>10}",
-                    i + 1, title, year, author_count, cited, refs);
+                println!(
+                    "{:<6} {:<50} {:<8} {:>6} {:>10} {:>10}",
+                    i + 1,
+                    title,
+                    year,
+                    author_count,
+                    cited,
+                    refs
+                );
             }
         }
         "citations" => {
@@ -2802,17 +3463,27 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
             let mut by_cited: Vec<_> = papers.iter().enumerate().collect();
             by_cited.sort_by(|a, b| b.1.metadata.cited_by.cmp(&a.1.metadata.cited_by));
             for (_rank, (_, p)) in by_cited.iter().enumerate() {
-                println!("{:<50} {:>12} {:>12}", 
-                    if p.title.len() > 48 { format!("{}...", &p.title[..48]) } else { p.title.clone() },
+                println!(
+                    "{:<50} {:>12} {:>12}",
+                    if p.title.len() > 48 {
+                        format!("{}...", &p.title[..48])
+                    } else {
+                        p.title.clone()
+                    },
                     p.metadata.cited_by,
-                    p.metadata.references);
+                    p.metadata.references
+                );
             }
             if papers.len() > 1 {
                 let max_cited = papers.iter().map(|p| p.metadata.cited_by).max().unwrap();
                 let min_cited = papers.iter().map(|p| p.metadata.cited_by).min().unwrap();
                 if max_cited > 0 {
-                    println!("\nCitation spread: {} (max) / {} (min) = {:.1}x",
-                        max_cited, min_cited, max_cited as f64 / min_cited as f64);
+                    println!(
+                        "\nCitation spread: {} (max) / {} (min) = {:.1}x",
+                        max_cited,
+                        min_cited,
+                        max_cited as f64 / min_cited as f64
+                    );
                 }
             }
         }
@@ -2820,20 +3491,36 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
             // Compare author overlap
             println!("Author Comparison:\n");
             for (i, p) in papers.iter().enumerate() {
-                println!("Paper {}: {} author(s) - {}", i + 1, p.authors.len(), p.authors.join(", "));
+                println!(
+                    "Paper {}: {} author(s) - {}",
+                    i + 1,
+                    p.authors.len(),
+                    p.authors.join(", ")
+                );
             }
             if papers.len() > 1 {
                 // Find author overlap between all pairs
                 println!("\nAuthor Overlap:");
                 for i in 0..papers.len() {
-                    for j in (i+1)..papers.len() {
-                        let set_i: HashSet<_> = papers[i].authors.iter().map(|a| a.to_lowercase()).collect();
-                        let set_j: HashSet<_> = papers[j].authors.iter().map(|a| a.to_lowercase()).collect();
+                    for j in (i + 1)..papers.len() {
+                        let set_i: HashSet<_> =
+                            papers[i].authors.iter().map(|a| a.to_lowercase()).collect();
+                        let set_j: HashSet<_> =
+                            papers[j].authors.iter().map(|a| a.to_lowercase()).collect();
                         let intersection: HashSet<_> = set_i.intersection(&set_j).collect();
                         let union: HashSet<_> = set_i.union(&set_j).collect();
-                        let jaccard = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
-                        println!("  Paper {} vs Paper {}: {} shared author(s) (Jaccard: {:.2})",
-                            i + 1, j + 1, intersection.len(), jaccard);
+                        let jaccard = if union.is_empty() {
+                            0.0
+                        } else {
+                            intersection.len() as f64 / union.len() as f64
+                        };
+                        println!(
+                            "  Paper {} vs Paper {}: {} shared author(s) (Jaccard: {:.2})",
+                            i + 1,
+                            j + 1,
+                            intersection.len(),
+                            jaccard
+                        );
                     }
                 }
             }
@@ -2842,19 +3529,33 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
             // Compare categories
             println!("Category Comparison:\n");
             for (i, p) in papers.iter().enumerate() {
-                println!("Paper {}: {} categories - {}", i + 1, p.categories.len(), p.categories.join(", "));
+                println!(
+                    "Paper {}: {} categories - {}",
+                    i + 1,
+                    p.categories.len(),
+                    p.categories.join(", ")
+                );
             }
             if papers.len() > 1 {
                 println!("\nCategory Overlap:");
                 for i in 0..papers.len() {
-                    for j in (i+1)..papers.len() {
+                    for j in (i + 1)..papers.len() {
                         let set_i: HashSet<_> = papers[i].categories.iter().collect();
                         let set_j: HashSet<_> = papers[j].categories.iter().collect();
                         let intersection: HashSet<_> = set_i.intersection(&set_j).collect();
                         let union: HashSet<_> = set_i.union(&set_j).collect();
-                        let jaccard = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
-                        println!("  Paper {} vs Paper {}: {} shared category/ies (Jaccard: {:.2})",
-                            i + 1, j + 1, intersection.len(), jaccard);
+                        let jaccard = if union.is_empty() {
+                            0.0
+                        } else {
+                            intersection.len() as f64 / union.len() as f64
+                        };
+                        println!(
+                            "  Paper {} vs Paper {}: {} shared category/ies (Jaccard: {:.2})",
+                            i + 1,
+                            j + 1,
+                            intersection.len(),
+                            jaccard
+                        );
                     }
                 }
             }
@@ -2869,16 +3570,24 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
             let now = Utc::now();
             for (_, p) in sorted.iter() {
                 let age = (now - p.published).num_days();
-                println!("{:<50} {:>12} {:>12}",
-                    if p.title.len() > 48 { format!("{}...", &p.title[..48]) } else { p.title.clone() },
+                println!(
+                    "{:<50} {:>12} {:>12}",
+                    if p.title.len() > 48 {
+                        format!("{}...", &p.title[..48])
+                    } else {
+                        p.title.clone()
+                    },
                     p.published.format("%Y-%m-%d"),
-                    age);
+                    age
+                );
             }
         }
         "abstract" => {
             println!("Abstract Comparison (keyword overlap):\n");
             for (i, p) in papers.iter().enumerate() {
-                let words: HashSet<String> = p.abstract_text.to_lowercase()
+                let words: HashSet<String> = p
+                    .abstract_text
+                    .to_lowercase()
                     .split(|c: char| !c.is_alphanumeric())
                     .filter(|w| w.len() > 4)
                     .map(|s| s.to_string())
@@ -2888,22 +3597,35 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
             if papers.len() > 1 {
                 println!("\nAbstract Keyword Overlap:");
                 for i in 0..papers.len() {
-                    for j in (i+1)..papers.len() {
-                        let words_i: HashSet<String> = papers[i].abstract_text.to_lowercase()
+                    for j in (i + 1)..papers.len() {
+                        let words_i: HashSet<String> = papers[i]
+                            .abstract_text
+                            .to_lowercase()
                             .split(|c: char| !c.is_alphanumeric())
                             .filter(|w| w.len() > 4)
                             .map(|s| s.to_string())
                             .collect();
-                        let words_j: HashSet<String> = papers[j].abstract_text.to_lowercase()
+                        let words_j: HashSet<String> = papers[j]
+                            .abstract_text
+                            .to_lowercase()
                             .split(|c: char| !c.is_alphanumeric())
                             .filter(|w| w.len() > 4)
                             .map(|s| s.to_string())
                             .collect();
                         let intersection: HashSet<_> = words_i.intersection(&words_j).collect();
                         let union: HashSet<_> = words_i.union(&words_j).collect();
-                        let jaccard = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
-                        println!("  Paper {} vs Paper {}: {} shared words (Jaccard: {:.3})",
-                            i + 1, j + 1, intersection.len(), jaccard);
+                        let jaccard = if union.is_empty() {
+                            0.0
+                        } else {
+                            intersection.len() as f64 / union.len() as f64
+                        };
+                        println!(
+                            "  Paper {} vs Paper {}: {} shared words (Jaccard: {:.3})",
+                            i + 1,
+                            j + 1,
+                            intersection.len(),
+                            jaccard
+                        );
                     }
                 }
             }
@@ -2945,20 +3667,29 @@ fn handle_trend(db: &Database, topic: &str, range: &str, format: &str) -> Result
     println!();
 
     let all_papers = db.search_papers(topic, 500)?;
-    let papers: Vec<_> = all_papers.into_iter()
+    let papers: Vec<_> = all_papers
+        .into_iter()
         .filter(|p| p.published >= cutoff)
         .collect();
 
     if papers.is_empty() {
-        println!("No papers found for topic '{}' in the last {}.", topic, range);
+        println!(
+            "No papers found for topic '{}' in the last {}.",
+            topic, range
+        );
         return Ok(());
     }
 
-    println!("Found {} papers on '{}' in the specified time range.", papers.len(), topic);
+    println!(
+        "Found {} papers on '{}' in the specified time range.",
+        papers.len(),
+        topic
+    );
     println!();
 
     // Group by year
-    let mut year_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    let mut year_counts: std::collections::HashMap<String, usize> =
+        std::collections::HashMap::new();
     for paper in &papers {
         let year = paper.published.format("%Y").to_string();
         *year_counts.entry(year).or_insert(0) += 1;
@@ -2982,9 +3713,15 @@ fn handle_trend(db: &Database, topic: &str, range: &str, format: &str) -> Result
             let first_count = year_counts[first];
             let last_count = year_counts[last];
             if last_count > first_count {
-                println!("  - Growing trend: {} -> {} papers", first_count, last_count);
+                println!(
+                    "  - Growing trend: {} -> {} papers",
+                    first_count, last_count
+                );
             } else {
-                println!("  - Stable/declining: {} -> {} papers", first_count, last_count);
+                println!(
+                    "  - Stable/declining: {} -> {} papers",
+                    first_count, last_count
+                );
             }
         }
     } else if years.len() == 1 {
@@ -3000,7 +3737,15 @@ fn handle_trend(db: &Database, topic: &str, range: &str, format: &str) -> Result
     }
     let mut top_cats: Vec<_> = cat_counts.iter().collect();
     top_cats.sort_by(|a, b| b.1.cmp(a.1));
-    println!("  - Top categories: {}", top_cats.iter().take(5).map(|(c, _)| c.as_str()).collect::<Vec<_>>().join(", "));
+    println!(
+        "  - Top categories: {}",
+        top_cats
+            .iter()
+            .take(5)
+            .map(|(c, _)| c.as_str())
+            .collect::<Vec<_>>()
+            .join(", ")
+    );
 
     if format == "json" {
         let out = serde_json::json!({
@@ -3079,7 +3824,9 @@ fn handle_doctor(format: &str) -> Result<()> {
             warnings.push(format!("API daemon: returned {}", resp.status()));
         }
         Err(_e) => {
-            warnings.push("API daemon: not reachable (run 'rairos daemon --foreground' to start)".to_string());
+            warnings.push(
+                "API daemon: not reachable (run 'rairos daemon --foreground' to start)".to_string(),
+            );
         }
     }
 
@@ -3148,15 +3895,28 @@ fn main() -> Result<()> {
         Commands::Benchmark { kind, iterations } => {
             handle_benchmark(kind, *iterations)?;
         }
-        Commands::Agent { topic, max_papers, max_time_minutes, format } => {
+        Commands::Agent {
+            topic,
+            max_papers,
+            max_time_minutes,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
             handle_agent(&db, topic, *max_papers, *max_time_minutes, format)?;
         }
-        Commands::Analyze { kind, paper, format } => {
+        Commands::Analyze {
+            kind,
+            paper,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
             handle_analyze(&db, kind, paper.clone(), format)?;
         }
-        Commands::Ask { question, max_papers, format } => {
+        Commands::Ask {
+            question,
+            max_papers,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
             handle_ask(&db, question, *max_papers, format)?;
         }
@@ -3172,7 +3932,11 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_compare(&db, papers, aspect)?;
         }
-        Commands::Trend { topic, range, format } => {
+        Commands::Trend {
+            topic,
+            range,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
             handle_trend(&db, topic, range, format)?;
         }
@@ -3187,15 +3951,39 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_add(&db, arxiv_id)?;
         }
-        Commands::List { status, year, tag, limit, offset, sort, order, format } => {
+        Commands::List {
+            status,
+            year,
+            tag,
+            limit,
+            offset,
+            sort,
+            order,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
-            handle_list(&db, status.clone(), *year, &tag, *limit, *offset, sort, order, format)?;
+            handle_list(
+                &db,
+                status.clone(),
+                *year,
+                &tag,
+                *limit,
+                *offset,
+                sort,
+                order,
+                format,
+            )?;
         }
         Commands::Show { id, format } => {
             let db = open_db(&cli.db)?;
             handle_show(&db, id, format)?;
         }
-        Commands::Search { query, limit, field, format } => {
+        Commands::Search {
+            query,
+            limit,
+            field,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
             handle_search(&db, query, *limit, field, format)?;
         }
@@ -3211,19 +3999,36 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_parse(&db, id)?;
         }
-        Commands::Import { path, ids, skip_existing } => {
+        Commands::Import {
+            path,
+            ids,
+            skip_existing,
+        } => {
             let db = open_db(&cli.db)?;
             handle_import(&db, path, &ids, *skip_existing)?;
         }
-        Commands::Export { path, status, format } => {
+        Commands::Export {
+            path,
+            status,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
             handle_export(&db, path, status.clone(), format)?;
         }
-        Commands::Gap { topic, limit, format, category } => {
+        Commands::Gap {
+            topic,
+            limit,
+            format,
+            category,
+        } => {
             let db = open_db(&cli.db)?;
             handle_gap(&db, topic, *limit, format, category.clone())?;
         }
-        Commands::GapList { limit, offset, format } => {
+        Commands::GapList {
+            limit,
+            offset,
+            format,
+        } => {
             let db = open_db(&cli.db)?;
             handle_gap_list(&db, *limit, *offset, format)?;
         }
@@ -3235,10 +4040,20 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_gap_delete(&db, id)?;
         }
-        Commands::GeneAdd { approach, gap_type, keywords, paper_id } => {
+        Commands::GeneAdd {
+            approach,
+            gap_type,
+            keywords,
+            paper_id,
+        } => {
             handle_gene_add(approach, gap_type, keywords, paper_id.clone())?;
         }
-        Commands::GeneList { gap_type, status, limit, format } => {
+        Commands::GeneList {
+            gap_type,
+            status,
+            limit,
+            format,
+        } => {
             handle_gene_list(gap_type.clone(), status.clone(), *limit, format)?;
         }
         Commands::GeneShow { id, format } => {
@@ -3250,7 +4065,10 @@ fn main() -> Result<()> {
         Commands::GeneDiversity { format } => {
             handle_gene_diversity(format)?;
         }
-        Commands::GeneEvolve { max_crossovers, format } => {
+        Commands::GeneEvolve {
+            max_crossovers,
+            format,
+        } => {
             handle_gene_evolve(*max_crossovers, format)?;
         }
         Commands::KgStats { format } => {
@@ -3276,11 +4094,20 @@ fn main() -> Result<()> {
         Commands::RateLimitCheck { endpoint } => {
             handle_rate_limit_check(endpoint)?;
         }
-        Commands::Daemon { port, log_level, foreground } => {
+        Commands::Daemon {
+            port,
+            log_level,
+            foreground,
+        } => {
             let db = open_db(&cli.db)?;
             handle_daemon(&db, *port, log_level, *foreground)?;
         }
-        Commands::Subscribe { query, interval_minutes, max_papers, auto_add } => {
+        Commands::Subscribe {
+            query,
+            interval_minutes,
+            max_papers,
+            auto_add,
+        } => {
             let db = open_db(&cli.db)?;
             handle_subscribe(&db, query, *interval_minutes, *max_papers, *auto_add)?;
         }
@@ -3293,7 +4120,12 @@ fn main() -> Result<()> {
         Commands::Doctor { format } => {
             handle_doctor(format)?;
         }
-        Commands::StanceAdd { topic, claim, stance, reasoning } => {
+        Commands::StanceAdd {
+            topic,
+            claim,
+            stance,
+            reasoning,
+        } => {
             handle_stance_add(&topic, &claim, &stance, &reasoning)?;
         }
         Commands::StanceList { topic, tag, format } => {

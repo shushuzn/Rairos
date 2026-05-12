@@ -152,7 +152,8 @@ impl ExperimentTracker {
     }
 
     fn save_experiments(&self, exps: &[Experiment]) -> std::io::Result<()> {
-        let json = serde_json::to_string_pretty(exps).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+        let json = serde_json::to_string_pretty(exps)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
         fs::write(&self.data_file, json)
     }
 
@@ -186,7 +187,12 @@ impl ExperimentTracker {
         self.load_experiments().into_iter().find(|e| e.id == eid)
     }
 
-    pub fn list_experiments(&self, status: Option<&str>, milestone: Option<&str>, tag: Option<&str>) -> Vec<Experiment> {
+    pub fn list_experiments(
+        &self,
+        status: Option<&str>,
+        milestone: Option<&str>,
+        tag: Option<&str>,
+    ) -> Vec<Experiment> {
         let mut exps = self.load_experiments();
         if let Some(s) = status {
             exps.retain(|e| e.status == s);
@@ -209,7 +215,11 @@ impl ExperimentTracker {
         exps
     }
 
-    pub fn complete(&self, eid: &str, results: Option<HashMap<String, serde_json::Value>>) -> Option<Experiment> {
+    pub fn complete(
+        &self,
+        eid: &str,
+        results: Option<HashMap<String, serde_json::Value>>,
+    ) -> Option<Experiment> {
         let mut exps = self.load_experiments();
         let idx = exps.iter().position(|e| e.id == eid);
         if let Some(idx) = idx {
@@ -232,7 +242,9 @@ impl ExperimentTracker {
             exps[idx].status = "failed".to_string();
             exps[idx].completed_at = Utc::now().to_rfc3339();
             if !error.is_empty() {
-                exps[idx].results.insert("error".to_string(), serde_json::json!(error));
+                exps[idx]
+                    .results
+                    .insert("error".to_string(), serde_json::json!(error));
             }
             let result = exps[idx].clone();
             let _ = self.save_experiments(&exps);
@@ -253,13 +265,20 @@ impl ExperimentTracker {
         None
     }
 
-    pub fn compare(&self, exp_ids: &[String], metric_names: Option<Vec<String>>) -> HashMap<String, serde_json::Value> {
+    pub fn compare(
+        &self,
+        exp_ids: &[String],
+        metric_names: Option<Vec<String>>,
+    ) -> HashMap<String, serde_json::Value> {
         let exps: Vec<Option<Experiment>> = exp_ids.iter().map(|id| self.get(id)).collect();
         let exps: Vec<&Experiment> = exps.iter().filter_map(|e| e.as_ref()).collect();
 
         if exps.is_empty() {
             let mut map = HashMap::new();
-            map.insert("error".to_string(), serde_json::json!("No experiments found"));
+            map.insert(
+                "error".to_string(),
+                serde_json::json!("No experiments found"),
+            );
             return map;
         }
 
@@ -330,13 +349,9 @@ impl ExperimentTracker {
                 .join("  |  ")
         );
 
-        let icons: HashMap<&str, &str> = [
-            ("running", "⚡"),
-            ("completed", "✓"),
-            ("failed", "✗"),
-        ]
-        .into_iter()
-        .collect();
+        let icons: HashMap<&str, &str> = [("running", "⚡"), ("completed", "✓"), ("failed", "✗")]
+            .into_iter()
+            .collect();
 
         let mut lines = vec![summary, String::new()];
         for e in exps {
@@ -366,25 +381,49 @@ impl ExperimentTracker {
 
     pub fn render_compare(&self, comp: &HashMap<String, serde_json::Value>) -> String {
         if comp.get("error").is_some() {
-            return format!("Error: {}", comp.get("error").and_then(|v| v.as_str()).unwrap_or(""));
+            return format!(
+                "Error: {}",
+                comp.get("error").and_then(|v| v.as_str()).unwrap_or("")
+            );
         }
 
-        let metrics = comp.get("metrics").and_then(|v| v.as_array()).map(|a| a.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>()).unwrap_or_default();
-        let experiments = comp.get("experiments").and_then(|v| v.as_array()).map(|a| a.to_vec()).unwrap_or_default();
+        let metrics = comp
+            .get("metrics")
+            .and_then(|v| v.as_array())
+            .map(|a| a.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>())
+            .unwrap_or_default();
+        let experiments = comp
+            .get("experiments")
+            .and_then(|v| v.as_array())
+            .map(|a| a.to_vec())
+            .unwrap_or_default();
 
         let mut lines = vec![
             "## Experiment Comparison".to_string(),
             String::new(),
             format!("| Exp | {} |", metrics.join(" | ")),
-            format!("|---| {} |", metrics.iter().map(|_| "---").collect::<Vec<_>>().join("|")),
+            format!(
+                "|---| {} |",
+                metrics.iter().map(|_| "---").collect::<Vec<_>>().join("|")
+            ),
         ];
 
         for exp in experiments {
             if let Some(obj) = exp.as_object() {
-                let name = obj.get("name").and_then(|v| v.as_str()).unwrap_or("").chars().take(15).collect::<String>();
+                let name = obj
+                    .get("name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .chars()
+                    .take(15)
+                    .collect::<String>();
                 let vals: Vec<String> = metrics
                     .iter()
-                    .map(|m| obj.get(*m).map(|v| v.to_string()).unwrap_or_else(|| "-".to_string()))
+                    .map(|m| {
+                        obj.get(*m)
+                            .map(|v| v.to_string())
+                            .unwrap_or_else(|| "-".to_string())
+                    })
                     .collect();
                 lines.push(format!("| {} | {} |", name, vals.join(" | ")));
             }
@@ -413,8 +452,14 @@ mod tests {
 
     #[test]
     fn test_experiment_status_from_str() {
-        assert_eq!(ExperimentStatus::from_str("running"), Some(ExperimentStatus::Running));
-        assert_eq!(ExperimentStatus::from_str("completed"), Some(ExperimentStatus::Completed));
+        assert_eq!(
+            ExperimentStatus::from_str("running"),
+            Some(ExperimentStatus::Running)
+        );
+        assert_eq!(
+            ExperimentStatus::from_str("completed"),
+            Some(ExperimentStatus::Completed)
+        );
         assert_eq!(ExperimentStatus::from_str("invalid"), None);
     }
 

@@ -189,8 +189,7 @@ pub fn render_citation_graph_svg(
 
     let nodes = &graph.nodes;
     let edges = &graph.edges;
-    let node_map: HashMap<&str, &GraphNode> =
-        nodes.iter().map(|n| (n.id.as_str(), n)).collect();
+    let node_map: HashMap<&str, &GraphNode> = nodes.iter().map(|n| (n.id.as_str(), n)).collect();
 
     let mut svg_nodes = Vec::new();
     for n in nodes {

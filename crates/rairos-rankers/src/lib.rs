@@ -100,10 +100,7 @@ impl Ranker for CosineSimilarityRanker {
             .list_papers_with_embeddings()
             .map_err(|e| RankerError::NoEmbedding(e.to_string()))?;
 
-        let paper_ids: Vec<String> = paper_ids
-            .into_iter()
-            .filter(|id| id != paper_id)
-            .collect();
+        let paper_ids: Vec<String> = paper_ids.into_iter().filter(|id| id != paper_id).collect();
 
         if paper_ids.is_empty() {
             return Ok(vec![]);
@@ -173,7 +170,12 @@ impl CompositeScorer {
         }
     }
 
-    pub fn with_weights(db: Database, sim_weight: f32, recency_weight: f32, parse_weight: f32) -> Self {
+    pub fn with_weights(
+        db: Database,
+        sim_weight: f32,
+        recency_weight: f32,
+        parse_weight: f32,
+    ) -> Self {
         Self {
             db,
             sim_weight,

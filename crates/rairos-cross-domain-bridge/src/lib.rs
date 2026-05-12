@@ -90,7 +90,8 @@ pub fn get_bridges() -> Vec<Bridge> {
                         })
                         .unwrap_or_default();
 
-                    let shared: std::collections::HashSet<String> = kw_a.intersection(&kw_b).cloned().collect();
+                    let shared: std::collections::HashSet<String> =
+                        kw_a.intersection(&kw_b).cloned().collect();
                     if shared.len() >= 2 {
                         let title_a = ca
                             .get("action_gap_title")
@@ -108,10 +109,8 @@ pub fn get_bridges() -> Vec<Bridge> {
                             .collect::<String>();
 
                         let all_kw: Vec<String> = kw_a.union(&kw_b).cloned().collect();
-                        let strength = (shared.len() as f64)
-                            / (all_kw.len().max(1) as f64)
-                            * 100.0
-                            / 100.0;
+                        let strength =
+                            (shared.len() as f64) / (all_kw.len().max(1) as f64) * 100.0 / 100.0;
 
                         bridges.push(Bridge {
                             type_a: type_a.clone(),
@@ -150,18 +149,29 @@ pub fn render_html(bridges: &[Bridge]) -> String {
     let mut html = vec!["<div class=\"cross-domain\"><h3>Cross-Domain Bridges</h3>".to_string()];
 
     for b in bridges.iter().take(20) {
-        html.push("<div style=\"border:1px solid #eee;padding:10px;margin:8px 0;border-radius:6px;\">".to_string());
+        html.push(
+            "<div style=\"border:1px solid #eee;padding:10px;margin:8px 0;border-radius:6px;\">"
+                .to_string(),
+        );
         html.push(format!(
             "<div style=\"font-size:11px;color:#888;\">{} &#8596; {} (strength={})</div>",
             b.type_a, b.type_b, b.strength
         ));
         html.push(format!(
             "<div style=\"font-size:13px;margin:4px 0;\">{}</div>",
-            if b.capsule_a.len() > 40 { &b.capsule_a[..40] } else { &b.capsule_a }
+            if b.capsule_a.len() > 40 {
+                &b.capsule_a[..40]
+            } else {
+                &b.capsule_a
+            }
         ));
         html.push(format!(
             "<div style=\"font-size:13px;\">{}</div>",
-            if b.capsule_b.len() > 40 { &b.capsule_b[..40] } else { &b.capsule_b }
+            if b.capsule_b.len() > 40 {
+                &b.capsule_b[..40]
+            } else {
+                &b.capsule_b
+            }
         ));
         html.push(format!(
             "<div style=\"font-size:11px;color:#888;\">shared: {}</div>",

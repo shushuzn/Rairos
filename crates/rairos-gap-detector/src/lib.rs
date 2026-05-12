@@ -145,30 +145,73 @@ impl GapDetector {
 
 pub const _GAP_DETECTION_SYSTEM_PROMPT: &str = "You are a research gap detection assistant.";
 
-pub const _GAP_DETECTION_USER_PROMPT_TEMPLATE: &str = "Analyze the following research text and identify gaps:\n\n{text}";
+pub const _GAP_DETECTION_USER_PROMPT_TEMPLATE: &str =
+    "Analyze the following research text and identify gaps:\n\n{text}";
 
-pub const _QUESTION_GENERATION_SYSTEM_PROMPT: &str = "You are a research question generation assistant.";
+pub const _QUESTION_GENERATION_SYSTEM_PROMPT: &str =
+    "You are a research question generation assistant.";
 
-pub const _QUESTION_GENERATION_USER_PROMPT_TEMPLATE: &str = "Based on the following gaps, generate research questions:\n\n{gaps}";
+pub const _QUESTION_GENERATION_USER_PROMPT_TEMPLATE: &str =
+    "Based on the following gaps, generate research questions:\n\n{gaps}";
 
 pub const _GAP_TYPE_PATTERNS: &[(&str, &[&str])] = &[
-    ("unexplored_application", &["no prior work", "not yet explored", "not studied"]),
-    ("scalability_issue", &["scalability", "scale", "large-scale", "computational"]),
-    ("evaluation_gap", &["no benchmark", "evaluation", "missing evaluation", "not evaluated"]),
-    ("method_limitation", &["limitation", "cannot handle", "fails when", "weakness"]),
-    ("theoretical_gap", &["theoretical", "theory", "prove", "formal"]),
-    ("reproducibility_gap", &["reproduce", "replication", "code not available", "open source"]),
-    ("robustness_gap", &["robustness", "adversarial", "noise", "attack"]),
+    (
+        "unexplored_application",
+        &["no prior work", "not yet explored", "not studied"],
+    ),
+    (
+        "scalability_issue",
+        &["scalability", "scale", "large-scale", "computational"],
+    ),
+    (
+        "evaluation_gap",
+        &[
+            "no benchmark",
+            "evaluation",
+            "missing evaluation",
+            "not evaluated",
+        ],
+    ),
+    (
+        "method_limitation",
+        &["limitation", "cannot handle", "fails when", "weakness"],
+    ),
+    (
+        "theoretical_gap",
+        &["theoretical", "theory", "prove", "formal"],
+    ),
+    (
+        "reproducibility_gap",
+        &[
+            "reproduce",
+            "replication",
+            "code not available",
+            "open source",
+        ],
+    ),
+    (
+        "robustness_gap",
+        &["robustness", "adversarial", "noise", "attack"],
+    ),
 ];
 
 pub const _GAP_QUESTION_TEMPLATES: &[(&str, &str)] = &[
-    ("unexplored_application", "How can {topic} be applied to {domain}?"),
-    ("scalability_issue", "How does {topic} scale with {resource}?"),
+    (
+        "unexplored_application",
+        "How can {topic} be applied to {domain}?",
+    ),
+    (
+        "scalability_issue",
+        "How does {topic} scale with {resource}?",
+    ),
     ("evaluation_gap", "What benchmarks exist for {topic}?"),
     ("method_limitation", "What are the limitations of {method}?"),
     ("theoretical_gap", "Can we prove {property} for {topic}?"),
     ("reproducibility_gap", "How can {result} be reproduced?"),
-    ("robustness_gap", "How robust is {method} to {perturbation}?"),
+    (
+        "robustness_gap",
+        "How robust is {method} to {perturbation}?",
+    ),
 ];
 
 #[cfg(test)]
@@ -177,7 +220,10 @@ mod tests {
 
     #[test]
     fn test_gap_type_as_str() {
-        assert_eq!(GapType::UnexploredApplication.as_str(), "unexplored_application");
+        assert_eq!(
+            GapType::UnexploredApplication.as_str(),
+            "unexplored_application"
+        );
         assert_eq!(GapType::ScalabilityIssue.as_str(), "scalability_issue");
         assert_eq!(GapType::EvaluationGap.as_str(), "evaluation_gap");
         assert_eq!(GapType::MethodLimitation.as_str(), "method_limitation");
@@ -188,8 +234,14 @@ mod tests {
 
     #[test]
     fn test_gap_type_from_str() {
-        assert_eq!(GapType::from_str("unexplored_application"), Some(GapType::UnexploredApplication));
-        assert_eq!(GapType::from_str("scalability_issue"), Some(GapType::ScalabilityIssue));
+        assert_eq!(
+            GapType::from_str("unexplored_application"),
+            Some(GapType::UnexploredApplication)
+        );
+        assert_eq!(
+            GapType::from_str("scalability_issue"),
+            Some(GapType::ScalabilityIssue)
+        );
         assert_eq!(GapType::from_str("invalid"), None);
     }
 
@@ -206,13 +258,21 @@ mod tests {
         assert_eq!(GapSeverity::from_str("low"), Some(GapSeverity::Low));
         assert_eq!(GapSeverity::from_str("medium"), Some(GapSeverity::Medium));
         assert_eq!(GapSeverity::from_str("high"), Some(GapSeverity::High));
-        assert_eq!(GapSeverity::from_str("critical"), Some(GapSeverity::Critical));
+        assert_eq!(
+            GapSeverity::from_str("critical"),
+            Some(GapSeverity::Critical)
+        );
         assert_eq!(GapSeverity::from_str("invalid"), None);
     }
 
     #[test]
     fn test_research_gap_new() {
-        let gap = ResearchGap::new("evaluation_gap", "No benchmark", "Missing standard benchmark", "high");
+        let gap = ResearchGap::new(
+            "evaluation_gap",
+            "No benchmark",
+            "Missing standard benchmark",
+            "high",
+        );
         assert_eq!(gap.gap_type, "evaluation_gap");
         assert_eq!(gap.title, "No benchmark");
         assert_eq!(gap.severity, "high");
@@ -245,7 +305,11 @@ mod tests {
     fn test_gap_type_patterns_length() {
         assert_eq!(_GAP_TYPE_PATTERNS.len(), 7);
         for (gap_type, patterns) in _GAP_TYPE_PATTERNS {
-            assert!(!patterns.is_empty(), "Gap type {} has no patterns", gap_type);
+            assert!(
+                !patterns.is_empty(),
+                "Gap type {} has no patterns",
+                gap_type
+            );
         }
     }
 

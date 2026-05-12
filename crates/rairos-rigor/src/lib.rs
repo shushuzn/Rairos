@@ -71,14 +71,8 @@ impl RigorScorer {
     }
 
     pub fn fast_scan(&self, text: &str) -> (bool, bool, Vec<String>) {
-        let has_code = self
-            .code_patterns
-            .iter()
-            .any(|p| p.is_match(text));
-        let has_dataset = self
-            .dataset_patterns
-            .iter()
-            .any(|p| p.is_match(text));
+        let has_code = self.code_patterns.iter().any(|p| p.is_match(text));
+        let has_dataset = self.dataset_patterns.iter().any(|p| p.is_match(text));
 
         let mut signals = Vec::new();
         if has_code {
@@ -116,12 +110,7 @@ impl RigorScorer {
         }
     }
 
-    pub fn score_paper(
-        &self,
-        paper_id: &str,
-        abstract_text: &str,
-        title: &str,
-    ) -> RigorScore {
+    pub fn score_paper(&self, paper_id: &str, abstract_text: &str, title: &str) -> RigorScore {
         let text = format!("{}\n\n{}", title, abstract_text);
 
         let (has_code, has_dataset, signals) = self.fast_scan(&text);
@@ -167,14 +156,15 @@ impl RigorScorer {
             ("B", "#6B8FB5"),
             ("C", "#D4A84B"),
             ("D", "#C4706A"),
-        ].into_iter().collect();
+        ]
+        .into_iter()
+        .collect();
 
         let color = colors.get(score.badge.as_str()).unwrap_or(&"#888");
-        let clarity_labels: HashMap<&str, &str> = [
-            ("high", "High"),
-            ("medium", "Medium"),
-            ("low", "Low"),
-        ].into_iter().collect();
+        let clarity_labels: HashMap<&str, &str> =
+            [("high", "High"), ("medium", "Medium"), ("low", "Low")]
+                .into_iter()
+                .collect();
 
         let signals_html = if score.reproducibility_signals.is_empty() {
             "No signals detected".to_string()
@@ -223,13 +213,7 @@ impl RigorScorer {
     <div style="color:#aaa">Signals:</div>
     <div>{6}</div>
 </div>"#,
-            color,
-            code_icon,
-            dataset_icon,
-            score.badge,
-            overall_pct,
-            clarity_label,
-            signals_html,
+            color, code_icon, dataset_icon, score.badge, overall_pct, clarity_label, signals_html,
         )
     }
 }

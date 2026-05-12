@@ -118,10 +118,15 @@ fn save_watch_list(watch: &ClimateWatch) -> std::io::Result<()> {
 
 pub fn is_climate_related(title: &str, abstract_text: &str, categories: &[String]) -> bool {
     let text = format!("{} {}", title, abstract_text).to_lowercase();
-    if categories.iter().any(|c| CLIMATE_CATS.contains(&c.as_str())) {
+    if categories
+        .iter()
+        .any(|c| CLIMATE_CATS.contains(&c.as_str()))
+    {
         return true;
     }
-    CLIMATE_KEYWORDS.iter().any(|kw| text.contains(&kw.to_lowercase()))
+    CLIMATE_KEYWORDS
+        .iter()
+        .any(|kw| text.contains(&kw.to_lowercase()))
 }
 
 pub fn get_climate_papers() -> Vec<PaperEntry> {
@@ -165,7 +170,11 @@ pub fn get_watch_stats() -> ClimateStats {
         total_climate_papers: climate_papers.len(),
         watched_count: climate_papers
             .iter()
-            .filter(|p| p.id.as_ref().map(|id| watched_ids.contains(id.as_str())).unwrap_or(false))
+            .filter(|p| {
+                p.id.as_ref()
+                    .map(|id| watched_ids.contains(id.as_str()))
+                    .unwrap_or(false)
+            })
             .count(),
         recent_count,
         last_scan: watch_list.last_scan.unwrap_or_else(|| "never".to_string()),
@@ -195,7 +204,11 @@ pub fn render_climate_monitor_html(stats: Option<ClimateStats>) -> String {
     );
 
     let stats_cells = [
-        ("Total Climate Papers", stats.total_climate_papers, "#6B8FB5"),
+        (
+            "Total Climate Papers",
+            stats.total_climate_papers,
+            "#6B8FB5",
+        ),
         ("In Your Watch List", stats.watched_count, "#6BBF8A"),
         ("Published 2025+", stats.recent_count, "#D4A055"),
     ];
@@ -223,10 +236,28 @@ pub fn render_climate_monitor_html(stats: Option<ClimateStats>) -> String {
             let cats = p
                 .categories
                 .as_ref()
-                .map(|c| c.iter().take(2).map(|s| s.as_str()).collect::<Vec<_>>().join(", "))
+                .map(|c| {
+                    c.iter()
+                        .take(2)
+                        .map(|s| s.as_str())
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                })
                 .unwrap_or_default();
-            let title = p.title.as_deref().unwrap_or("").chars().take(70).collect::<String>();
-            let published = p.published.as_deref().unwrap_or("").chars().take(4).collect::<String>();
+            let title = p
+                .title
+                .as_deref()
+                .unwrap_or("")
+                .chars()
+                .take(70)
+                .collect::<String>();
+            let published = p
+                .published
+                .as_deref()
+                .unwrap_or("")
+                .chars()
+                .take(4)
+                .collect::<String>();
 
             let text_lower = format!(
                 "{} {}",
@@ -328,7 +359,11 @@ mod tests {
     #[test]
     fn test_is_climate_related_category() {
         let cats = vec!["cs.AI".to_string()];
-        assert!(is_climate_related("Some AI Paper", "Deep learning for vision", &cats));
+        assert!(is_climate_related(
+            "Some AI Paper",
+            "Deep learning for vision",
+            &cats
+        ));
     }
 
     #[test]

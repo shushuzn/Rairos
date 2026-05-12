@@ -266,21 +266,16 @@ impl CitationChainBuilder {
 
             for (other_pid, shared_refs) in family_members {
                 if shared_refs.len() >= 2 {
-                    let pair_key = (
-                        node.paper_id.clone(),
-                        other_pid.clone(),
-                    );
-                    let sorted_pair = (
-                        pair_key.0.clone(),
-                        pair_key.1.clone(),
-                    );
+                    let pair_key = (node.paper_id.clone(), other_pid.clone());
+                    let sorted_pair = (pair_key.0.clone(), pair_key.1.clone());
                     if seen_pairs.contains(&sorted_pair) {
                         continue;
                     }
                     seen_pairs.insert(sorted_pair);
 
                     let other_node = self.nodes.get(&other_pid);
-                    let shared_refs_vec: Vec<String> = shared_refs.iter().take(3).cloned().collect();
+                    let shared_refs_vec: Vec<String> =
+                        shared_refs.iter().take(3).cloned().collect();
                     let family_id = format!("{:06}", families.len() + 1);
 
                     families.push(ResearchFamily {
@@ -291,15 +286,30 @@ impl CitationChainBuilder {
                             {
                                 let mut m = HashMap::new();
                                 m.insert("paper_id".to_string(), serde_json::json!(node.paper_id));
-                                m.insert("title".to_string(), serde_json::json!(node.title.clone()));
+                                m.insert(
+                                    "title".to_string(),
+                                    serde_json::json!(node.title.clone()),
+                                );
                                 m.insert("year".to_string(), serde_json::json!(node.year));
                                 m
                             },
                             {
                                 let mut m = HashMap::new();
-                                m.insert("paper_id".to_string(), serde_json::json!(other_pid.clone()));
-                                m.insert("title".to_string(), serde_json::json!(other_node.map(|n| &n.title).unwrap_or(&other_pid).clone()));
-                                m.insert("year".to_string(), serde_json::json!(other_node.map(|n| n.year).unwrap_or(0)));
+                                m.insert(
+                                    "paper_id".to_string(),
+                                    serde_json::json!(other_pid.clone()),
+                                );
+                                m.insert(
+                                    "title".to_string(),
+                                    serde_json::json!(other_node
+                                        .map(|n| &n.title)
+                                        .unwrap_or(&other_pid)
+                                        .clone()),
+                                );
+                                m.insert(
+                                    "year".to_string(),
+                                    serde_json::json!(other_node.map(|n| n.year).unwrap_or(0)),
+                                );
                                 m
                             },
                         ],
@@ -316,14 +326,49 @@ impl CitationChainBuilder {
 
     pub fn detect_silent_citations(&self) -> Vec<HashMap<String, serde_json::Value>> {
         let method_terms: HashSet<&str> = [
-            "transformer", "attention", "neural", "network", "embedding", "latent",
-            "fine-tuning", "pretraining", "gradient", "loss", "optimization", "encoder",
-            "decoder", "architecture", "layer", "token", "rag", "retrieval", "knowledge",
-            "distillation", "quantization", "chain-of-thought", "prompting", "few-shot",
-            "zero-shot", "in-context", "reinforcement", "reward", "policy", "rlhf", "dpo",
-            "graph", "convolutional", "recurrent", "generative", "diffusion", "gan", "vae",
+            "transformer",
+            "attention",
+            "neural",
+            "network",
+            "embedding",
+            "latent",
+            "fine-tuning",
+            "pretraining",
+            "gradient",
+            "loss",
+            "optimization",
+            "encoder",
+            "decoder",
+            "architecture",
+            "layer",
+            "token",
+            "rag",
+            "retrieval",
+            "knowledge",
+            "distillation",
+            "quantization",
+            "chain-of-thought",
+            "prompting",
+            "few-shot",
+            "zero-shot",
+            "in-context",
+            "reinforcement",
+            "reward",
+            "policy",
+            "rlhf",
+            "dpo",
+            "graph",
+            "convolutional",
+            "recurrent",
+            "generative",
+            "diffusion",
+            "gan",
+            "vae",
             "autoencoder",
-        ].iter().cloned().collect();
+        ]
+        .iter()
+        .cloned()
+        .collect();
 
         let mut silent: Vec<HashMap<String, serde_json::Value>> = Vec::new();
         let nodes: Vec<&CitationNode> = self.nodes.values().collect();
@@ -344,7 +389,9 @@ impl CitationChainBuilder {
             for j in (i + 1)..nodes.len() {
                 let other = nodes[j];
 
-                if node.citations.contains(&other.paper_id) || other.citations.contains(&node.paper_id) {
+                if node.citations.contains(&other.paper_id)
+                    || other.citations.contains(&node.paper_id)
+                {
                     continue;
                 }
 
@@ -368,15 +415,34 @@ impl CitationChainBuilder {
 
                     silent.push({
                         let mut m = HashMap::new();
-                        m.insert("newer_arxiv_id".to_string(), serde_json::json!(newer.paper_id));
-                        m.insert("newer_title".to_string(), serde_json::json!(newer.title.clone()));
+                        m.insert(
+                            "newer_arxiv_id".to_string(),
+                            serde_json::json!(newer.paper_id),
+                        );
+                        m.insert(
+                            "newer_title".to_string(),
+                            serde_json::json!(newer.title.clone()),
+                        );
                         m.insert("newer_year".to_string(), serde_json::json!(newer.year));
-                        m.insert("older_arxiv_id".to_string(), serde_json::json!(older.paper_id));
-                        m.insert("older_title".to_string(), serde_json::json!(older.title.clone()));
+                        m.insert(
+                            "older_arxiv_id".to_string(),
+                            serde_json::json!(older.paper_id),
+                        );
+                        m.insert(
+                            "older_title".to_string(),
+                            serde_json::json!(older.title.clone()),
+                        );
                         m.insert("older_year".to_string(), serde_json::json!(older.year));
                         m.insert("shared_methods".to_string(), serde_json::json!(shared));
                         m.insert("confidence".to_string(), serde_json::json!(confidence));
-                        m.insert("note".to_string(), serde_json::json!(format!("{} uses similar methods to {} but may not cite it", &newer.paper_id[..8.min(newer.paper_id.len())], &older.paper_id[..8.min(older.paper_id.len())])));
+                        m.insert(
+                            "note".to_string(),
+                            serde_json::json!(format!(
+                                "{} uses similar methods to {} but may not cite it",
+                                &newer.paper_id[..8.min(newer.paper_id.len())],
+                                &older.paper_id[..8.min(older.paper_id.len())]
+                            )),
+                        );
                         m
                     });
                 }
@@ -414,7 +480,11 @@ impl CitationChainBuilder {
             ));
             lines.push(format!(
                 "  Year: {} | Cites: {} | Cited by: {}",
-                if node.year > 0 { node.year.to_string() } else { "?".to_string() },
+                if node.year > 0 {
+                    node.year.to_string()
+                } else {
+                    "?".to_string()
+                },
                 node.citations.len(),
                 node.cited_by.len()
             ));
@@ -422,7 +492,10 @@ impl CitationChainBuilder {
         }
 
         if chain.nodes.len() > max_nodes {
-            lines.push(format!("... and {} more papers", chain.nodes.len() - max_nodes));
+            lines.push(format!(
+                "... and {} more papers",
+                chain.nodes.len() - max_nodes
+            ));
         }
 
         lines.push(String::new());
@@ -444,7 +517,11 @@ impl CitationChainBuilder {
 
         for node in &chain.nodes {
             let label = if node.year > 0 {
-                format!("{}...\\n({})", &node.title[..node.title.len().min(30)], node.year)
+                format!(
+                    "{}...\\n({})",
+                    &node.title[..node.title.len().min(30)],
+                    node.year
+                )
             } else {
                 node.title[..node.title.len().min(30)].to_string()
             };
@@ -534,18 +611,42 @@ impl CitationChainBuilder {
 
         for s in silent {
             let confidence = s.get("confidence").and_then(|v| v.as_f64()).unwrap_or(0.0);
-            let newer_id = s.get("newer_arxiv_id").and_then(|v| v.as_str()).unwrap_or("");
+            let newer_id = s
+                .get("newer_arxiv_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
             let newer_title = s.get("newer_title").and_then(|v| v.as_str()).unwrap_or("");
             let newer_year = s.get("newer_year").and_then(|v| v.as_i64()).unwrap_or(0);
             let older_title = s.get("older_title").and_then(|v| v.as_str()).unwrap_or("");
             let older_year = s.get("older_year").and_then(|v| v.as_i64()).unwrap_or(0);
-            let shared = s.get("shared_methods").and_then(|v| v.as_array()).map(|arr| {
-                arr.iter().filter_map(|v| v.as_str()).take(5).collect::<Vec<_>>().join(", ")
-            }).unwrap_or_default();
+            let shared = s
+                .get("shared_methods")
+                .and_then(|v| v.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str())
+                        .take(5)
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                })
+                .unwrap_or_default();
 
-            lines.push(format!("[{:.*}% confidence] {}", 0, (confidence * 100.0) as i32, &newer_id[..newer_id.len().min(8)]));
-            lines.push(format!("  NEWER: {} ({})", &newer_title[..newer_title.len().min(60)], newer_year));
-            lines.push(format!("  OLDER: {} ({})", &older_title[..older_title.len().min(60)], older_year));
+            lines.push(format!(
+                "[{:.*}% confidence] {}",
+                0,
+                (confidence * 100.0) as i32,
+                &newer_id[..newer_id.len().min(8)]
+            ));
+            lines.push(format!(
+                "  NEWER: {} ({})",
+                &newer_title[..newer_title.len().min(60)],
+                newer_year
+            ));
+            lines.push(format!(
+                "  OLDER: {} ({})",
+                &older_title[..older_title.len().min(60)],
+                older_year
+            ));
             lines.push(format!("  SHARED: {}", shared));
             lines.push(String::new());
         }
@@ -592,8 +693,24 @@ mod tests {
     #[test]
     fn test_link_citations() {
         let mut builder = CitationChainBuilder::new();
-        builder.add_paper("p1".to_string(), "Paper 1".to_string(), 2020, vec![], vec![], String::new(), 0);
-        builder.add_paper("p2".to_string(), "Paper 2".to_string(), 2021, vec![], vec![], String::new(), 0);
+        builder.add_paper(
+            "p1".to_string(),
+            "Paper 1".to_string(),
+            2020,
+            vec![],
+            vec![],
+            String::new(),
+            0,
+        );
+        builder.add_paper(
+            "p2".to_string(),
+            "Paper 2".to_string(),
+            2021,
+            vec![],
+            vec![],
+            String::new(),
+            0,
+        );
         builder.link_citations("p1", "p2");
 
         let p1 = builder.nodes.get("p1").unwrap();
@@ -635,7 +752,10 @@ mod tests {
     #[test]
     fn test_render_text_empty() {
         let builder = CitationChainBuilder::new();
-        let chain = CitationChain { nodes: vec![], edges: vec![] };
+        let chain = CitationChain {
+            nodes: vec![],
+            edges: vec![],
+        };
         let result = builder.render_text(&chain, 20);
         assert_eq!(result, "No citation chain.");
     }
@@ -643,7 +763,10 @@ mod tests {
     #[test]
     fn test_render_graphviz_empty() {
         let builder = CitationChainBuilder::new();
-        let chain = CitationChain { nodes: vec![], edges: vec![] };
+        let chain = CitationChain {
+            nodes: vec![],
+            edges: vec![],
+        };
         let result = builder.render_graphviz(&chain);
         assert!(result.contains("digraph citations"));
     }
@@ -651,7 +774,10 @@ mod tests {
     #[test]
     fn test_render_mermaid_empty() {
         let builder = CitationChainBuilder::new();
-        let chain = CitationChain { nodes: vec![], edges: vec![] };
+        let chain = CitationChain {
+            nodes: vec![],
+            edges: vec![],
+        };
         let result = builder.render_mermaid(&chain);
         assert!(result.contains("```mermaid"));
     }

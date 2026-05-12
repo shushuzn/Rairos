@@ -136,12 +136,15 @@ impl Journal {
     }
 
     pub fn get(&self, entry_id: &str) -> Option<JournalEntry> {
-        self.load_entries()
-            .into_iter()
-            .find(|e| e.id == entry_id)
+        self.load_entries().into_iter().find(|e| e.id == entry_id)
     }
 
-    pub fn update(&self, entry_id: &str, content: Option<&str>, tags: Option<Vec<String>>) -> Option<JournalEntry> {
+    pub fn update(
+        &self,
+        entry_id: &str,
+        content: Option<&str>,
+        tags: Option<Vec<String>>,
+    ) -> Option<JournalEntry> {
         let mut entries = self.load_entries();
         let mut found = false;
         let mut updated_entry: Option<JournalEntry> = None;
@@ -308,7 +311,12 @@ impl Journal {
         for e in entries {
             let icon = mood_icons.get(e.mood.as_str()).unwrap_or(&"📝");
             let date = &e.created_at[..10];
-            lines.push(format!("{} [{}] {}", icon, date, &e.content[..e.content.len().min(80)]));
+            lines.push(format!(
+                "{} [{}] {}",
+                icon,
+                date,
+                &e.content[..e.content.len().min(80)]
+            ));
             if verbose {
                 if !e.tags.is_empty() {
                     lines.push(format!("   Tags: {}", e.tags.join(", ")));
@@ -374,8 +382,7 @@ mod tests {
     #[test]
     fn test_list_entries_with_tag() {
         let (journal, _td) = temp_journal();
-        let entry = JournalEntry::new("Content with tag")
-            .with_tags(vec!["research".to_string()]);
+        let entry = JournalEntry::new("Content with tag").with_tags(vec!["research".to_string()]);
         let mut entries = journal.load_entries();
         entries.push(entry);
         journal.save_entries(&entries);

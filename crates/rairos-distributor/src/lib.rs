@@ -6,7 +6,7 @@
 //! Ported from `llm/briefing_distributor.py`.
 
 use serde::{Deserialize, Serialize};
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
@@ -101,7 +101,10 @@ pub fn get_latest_briefing_markdown(arxiv_id: &str) -> Option<String> {
         .filter(|p| p.to_string_lossy().contains("briefing"))
         .collect();
     matches.sort_by_key(|p| std::cmp::Reverse(p.clone()));
-    matches.into_iter().next().and_then(|p| fs::read_to_string(&p).ok())
+    matches
+        .into_iter()
+        .next()
+        .and_then(|p| fs::read_to_string(&p).ok())
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -167,7 +170,11 @@ fn escape_html(text: &str) -> String {
 }
 
 fn section_html(heading: &str, content: &str) -> String {
-    let truncated = if content.len() > 300 { &content[..300] } else { content };
+    let truncated = if content.len() > 300 {
+        &content[..300]
+    } else {
+        content
+    };
     format!(
         "<div class='digest-section'><h4>{}</h4><p>{}</p></div>",
         heading, truncated
@@ -175,9 +182,21 @@ fn section_html(heading: &str, content: &str) -> String {
 }
 
 fn render_phd_advisor(sections: &ParsedSections, raw: &str) -> String {
-    let summary = sections.sections.get("summary").map(|s| s.as_str()).unwrap_or(&raw[..400.min(raw.len())]);
-    let methodology = sections.sections.get("methodology").map(|s| s.as_str()).unwrap_or("");
-    let gaps = sections.sections.get("research_gaps").map(|s| s.as_str()).unwrap_or("");
+    let summary = sections
+        .sections
+        .get("summary")
+        .map(|s| s.as_str())
+        .unwrap_or(&raw[..400.min(raw.len())]);
+    let methodology = sections
+        .sections
+        .get("methodology")
+        .map(|s| s.as_str())
+        .unwrap_or("");
+    let gaps = sections
+        .sections
+        .get("research_gaps")
+        .map(|s| s.as_str())
+        .unwrap_or("");
 
     format!(
         "{}{}{}",
@@ -188,9 +207,21 @@ fn render_phd_advisor(sections: &ParsedSections, raw: &str) -> String {
 }
 
 fn render_industry_engineer(sections: &ParsedSections, raw: &str) -> String {
-    let summary = sections.sections.get("summary").map(|s| s.as_str()).unwrap_or(&raw[..200.min(raw.len())]);
-    let methodology = sections.sections.get("methodology").map(|s| s.as_str()).unwrap_or("");
-    let experiments = sections.sections.get("experiments").map(|s| s.as_str()).unwrap_or("");
+    let summary = sections
+        .sections
+        .get("summary")
+        .map(|s| s.as_str())
+        .unwrap_or(&raw[..200.min(raw.len())]);
+    let methodology = sections
+        .sections
+        .get("methodology")
+        .map(|s| s.as_str())
+        .unwrap_or("");
+    let experiments = sections
+        .sections
+        .get("experiments")
+        .map(|s| s.as_str())
+        .unwrap_or("");
 
     format!(
         "{}{}{}",
@@ -201,8 +232,16 @@ fn render_industry_engineer(sections: &ParsedSections, raw: &str) -> String {
 }
 
 fn render_policy_maker(sections: &ParsedSections, raw: &str) -> String {
-    let summary = sections.sections.get("summary").map(|s| s.as_str()).unwrap_or(&raw[..300.min(raw.len())]);
-    let limitations = sections.sections.get("limitations").map(|s| s.as_str()).unwrap_or("");
+    let summary = sections
+        .sections
+        .get("summary")
+        .map(|s| s.as_str())
+        .unwrap_or(&raw[..300.min(raw.len())]);
+    let limitations = sections
+        .sections
+        .get("limitations")
+        .map(|s| s.as_str())
+        .unwrap_or("");
 
     format!(
         "{}{}",
@@ -212,7 +251,11 @@ fn render_policy_maker(sections: &ParsedSections, raw: &str) -> String {
 }
 
 fn render_researcher(sections: &ParsedSections, raw: &str) -> String {
-    let v = sections.sections.get("verdict").map(|s| s.to_lowercase()).unwrap_or_else(|| "neutral".to_string());
+    let v = sections
+        .sections
+        .get("verdict")
+        .map(|s| s.to_lowercase())
+        .unwrap_or_else(|| "neutral".to_string());
     let (badge_text, badge_cls) = match v.as_str() {
         "validates" => ("✅ Validates", "verdict-validates"),
         "contradicts" => ("❌ Contradicts", "verdict-contradicts"),
@@ -220,8 +263,17 @@ fn render_researcher(sections: &ParsedSections, raw: &str) -> String {
     };
 
     let body = sections.body.as_deref().unwrap_or(raw);
-    let summary = sections.sections.get("summary").map(|s| s.as_str()).unwrap_or(&body[..400.min(body.len())]);
-    let gaps = sections.sections.get("research_gaps").or(sections.sections.get("gaps")).map(|s| s.as_str()).unwrap_or("");
+    let summary = sections
+        .sections
+        .get("summary")
+        .map(|s| s.as_str())
+        .unwrap_or(&body[..400.min(body.len())]);
+    let gaps = sections
+        .sections
+        .get("research_gaps")
+        .or(sections.sections.get("gaps"))
+        .map(|s| s.as_str())
+        .unwrap_or("");
 
     let mut result = format!(
         "<span class='verdict-badge {}'>{}</span><p style='margin-top:8px'>{}</p>",
@@ -234,7 +286,12 @@ fn render_researcher(sections: &ParsedSections, raw: &str) -> String {
     result
 }
 
-pub fn render_distributed_briefing(arxiv_id: &str, title: &str, markdown: &str, audience: &str) -> String {
+pub fn render_distributed_briefing(
+    arxiv_id: &str,
+    title: &str,
+    markdown: &str,
+    audience: &str,
+) -> String {
     let label = match audience {
         "phd_advisor" => "🎓 PhD Advisor Digest",
         "industry_engineer" => "⚙️ Industry Engineer Digest",
@@ -286,9 +343,21 @@ pub fn render_distributor_panel(arxiv_id: &str, title: &str) -> String {
 
     let buttons = [
         ("researcher", "🔬 Researcher", "peer review format"),
-        ("phd_advisor", "🎓 PhD Advisor", "methodology and open questions"),
-        ("industry_engineer", "⚙️ Industry Engineer", "implementation and deployment"),
-        ("policy_maker", "🏛️ Policy Maker", "societal impact and risks"),
+        (
+            "phd_advisor",
+            "🎓 PhD Advisor",
+            "methodology and open questions",
+        ),
+        (
+            "industry_engineer",
+            "⚙️ Industry Engineer",
+            "implementation and deployment",
+        ),
+        (
+            "policy_maker",
+            "🏛️ Policy Maker",
+            "societal impact and risks",
+        ),
     ];
 
     let buttons_html: String = buttons
@@ -387,7 +456,7 @@ mod tests {
             "2301.12345",
             "Test Paper",
             "# Title\n## Summary\nTest content",
-            "researcher"
+            "researcher",
         );
         assert!(html.contains("Researcher Digest"));
         assert!(html.contains("briefing-dist"));

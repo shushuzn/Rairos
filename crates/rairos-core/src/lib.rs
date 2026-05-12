@@ -96,7 +96,14 @@ impl std::fmt::Display for ParseStatus {
 
 impl Paper {
     pub fn new(arxiv_id: Option<String>, title: String, abstract_text: String) -> Self {
-        Self::with_metadata(arxiv_id, title, abstract_text, Vec::new(), Vec::new(), PaperMetadata::default())
+        Self::with_metadata(
+            arxiv_id,
+            title,
+            abstract_text,
+            Vec::new(),
+            Vec::new(),
+            PaperMetadata::default(),
+        )
     }
 
     pub fn with_metadata(
@@ -431,7 +438,10 @@ impl Database {
         let sql = "SELECT id, arxiv_id, title, authors, published, abstract_text,
                    categories, parse_status, cited_by, references_cnt, doi, pdf_url
                    FROM papers";
-        let sql_with_status = format!("{} WHERE parse_status = ?1 ORDER BY published DESC LIMIT ?2 OFFSET ?3", sql);
+        let sql_with_status = format!(
+            "{} WHERE parse_status = ?1 ORDER BY published DESC LIMIT ?2 OFFSET ?3",
+            sql
+        );
         let sql_no_status = format!("{} ORDER BY published DESC LIMIT ?1 OFFSET ?2", sql);
 
         let mut papers_vec: Vec<Paper> = Vec::new();
@@ -439,20 +449,19 @@ impl Database {
         match status {
             Some(s) => {
                 let mut stmt = conn.prepare(&sql_with_status)?;
-                let rows = stmt.query_map(
-                    params![s.to_string(), limit as i64, offset as i64],
-                    |row| Ok(Self::row_to_paper(row)),
-                )?;
+                let rows = stmt
+                    .query_map(params![s.to_string(), limit as i64, offset as i64], |row| {
+                        Ok(Self::row_to_paper(row))
+                    })?;
                 for paper in rows {
                     papers_vec.push(paper??);
                 }
             }
             None => {
                 let mut stmt = conn.prepare(&sql_no_status)?;
-                let rows = stmt.query_map(
-                    params![limit as i64, offset as i64],
-                    |row| Ok(Self::row_to_paper(row)),
-                )?;
+                let rows = stmt.query_map(params![limit as i64, offset as i64], |row| {
+                    Ok(Self::row_to_paper(row))
+                })?;
                 for paper in rows {
                     papers_vec.push(paper??);
                 }
@@ -479,8 +488,9 @@ impl Database {
     /// Get embedding vector for a paper (bytes as f32 array).
     pub fn get_embedding(&self, paper_id: &str) -> Result<Option<Vec<f32>>> {
         let conn = self.conn.lock();
-        let mut stmt = conn
-            .prepare("SELECT embed_vector FROM papers WHERE id = ?1 AND embed_vector IS NOT NULL")?;
+        let mut stmt = conn.prepare(
+            "SELECT embed_vector FROM papers WHERE id = ?1 AND embed_vector IS NOT NULL",
+        )?;
         let result = stmt.query_row([paper_id], |row| {
             let blob: Vec<u8> = row.get(0)?;
             Ok(blob)
@@ -636,7 +646,7 @@ impl Database {
                 (SELECT COUNT(*) FROM papers) as total,
                 (SELECT COUNT(*) FROM papers WHERE parse_status = 'pending') as pending,
                 (SELECT COUNT(*) FROM papers WHERE parse_status = 'done') as done,
-                (SELECT COUNT(*) FROM research_gaps) as gaps"
+                (SELECT COUNT(*) FROM research_gaps) as gaps",
         )?;
         let row = stmt.query_row([], |r| {
             Ok(DbStats {
@@ -658,11 +668,9 @@ impl Database {
                INNER JOIN papers_fts fts ON p.rowid = fts.rowid
                WHERE papers_fts MATCH ?1
                ORDER BY rank
-               LIMIT ?2"#
+               LIMIT ?2"#,
         )?;
-        let rows = stmt.query_map(params![query, limit as i64], |row| {
-            Self::row_to_paper(row)
-        })?;
+        let rows = stmt.query_map(params![query, limit as i64], |row| Self::row_to_paper(row))?;
         let mut papers: Vec<Paper> = Vec::new();
         for paper in rows {
             papers.push(paper?);
@@ -670,7 +678,15 @@ impl Database {
         Ok(papers)
     }
 
-    pub fn update_paper_full_text(&self, id: &str, plain_text: &str, table_count: i32, figure_count: i32, word_count: i32, page_count: i32) -> Result<()> {
+    pub fn update_paper_full_text(
+        &self,
+        id: &str,
+        plain_text: &str,
+        table_count: i32,
+        figure_count: i32,
+        word_count: i32,
+        page_count: i32,
+    ) -> Result<()> {
         let conn = self.conn.lock();
         conn.execute(
             "UPDATE papers SET plain_text = ?1, table_count = ?2, figure_count = ?3, word_count = ?4, page_count = ?5, updated_at = datetime('now') WHERE id = ?6",
@@ -715,7 +731,9 @@ impl Database {
                 id: row.get(0)?,
                 query: row.get(1)?,
                 name: row.get(2)?,
-                categories: categories_str.map(|s| serde_json::from_str(&s).unwrap_or_default()).unwrap_or_default(),
+                categories: categories_str
+                    .map(|s| serde_json::from_str(&s).unwrap_or_default())
+                    .unwrap_or_default(),
                 max_results: row.get(4)?,
                 check_interval_minutes: row.get::<_, i32>(5)? as u64,
                 last_check,
@@ -736,7 +754,12 @@ impl Database {
         Ok(())
     }
 
-    pub fn update_subscription_last_check(&self, id: &str, last_check: &str, last_results: &str) -> Result<()> {
+    pub fn update_subscription_last_check(
+        &self,
+        id: &str,
+        last_check: &str,
+        last_results: &str,
+    ) -> Result<()> {
         let conn = self.conn.lock();
         conn.execute(
             "UPDATE subscriptions SET last_check = ?1, last_results = ?2 WHERE id = ?3",
@@ -826,24 +849,30 @@ impl Database {
 
     pub fn get_citations(&self, paper_id: &str) -> Result<Citations> {
         let conn = self.conn.lock();
-        let mut citing_stmt = conn.prepare("SELECT source_id FROM citations WHERE target_id = ?1")?;
-        let citing: Vec<String> = citing_stmt.query_map([paper_id], |row| row.get(0))?
+        let mut citing_stmt =
+            conn.prepare("SELECT source_id FROM citations WHERE target_id = ?1")?;
+        let citing: Vec<String> = citing_stmt
+            .query_map([paper_id], |row| row.get(0))?
             .filter_map(|r| r.ok())
             .collect();
 
         let mut refs_stmt = conn.prepare("SELECT target_id FROM citations WHERE source_id = ?1")?;
-        let references: Vec<String> = refs_stmt.query_map([paper_id], |row| row.get(0))?
+        let references: Vec<String> = refs_stmt
+            .query_map([paper_id], |row| row.get(0))?
             .filter_map(|r| r.ok())
             .collect();
 
         Ok(Citations { citing, references })
     }
 
-    pub fn find_similar_by_vector(&self, embedding: &[f32], limit: usize) -> Result<Vec<(String, f32)>> {
+    pub fn find_similar_by_vector(
+        &self,
+        embedding: &[f32],
+        limit: usize,
+    ) -> Result<Vec<(String, f32)>> {
         let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, embed_vector FROM papers WHERE embed_vector IS NOT NULL"
-        )?;
+        let mut stmt =
+            conn.prepare("SELECT id, embed_vector FROM papers WHERE embed_vector IS NOT NULL")?;
         let rows = stmt.query_map([], |row| {
             let id: String = row.get(0)?;
             let blob: Vec<u8> = row.get(1)?;
@@ -856,9 +885,8 @@ impl Database {
             if blob.len() != embedding.len() * 4 {
                 continue;
             }
-            let stored: &[f32] = unsafe {
-                std::slice::from_raw_parts(blob.as_ptr() as *const f32, embedding.len())
-            };
+            let stored: &[f32] =
+                unsafe { std::slice::from_raw_parts(blob.as_ptr() as *const f32, embedding.len()) };
             let similarity = cosine_similarity(embedding, stored);
             results.push((id, similarity));
         }
@@ -870,9 +898,7 @@ impl Database {
 
     pub fn set_paper_embedding(&self, paper_id: &str, embedding: &[f32]) -> Result<()> {
         let conn = self.conn.lock();
-        let blob: Vec<u8> = embedding.iter()
-            .flat_map(|f| f.to_le_bytes())
-            .collect();
+        let blob: Vec<u8> = embedding.iter().flat_map(|f| f.to_le_bytes()).collect();
         conn.execute(
             "UPDATE papers SET embed_vector = ?1 WHERE id = ?2",
             params![blob, paper_id],
@@ -1430,7 +1456,14 @@ impl AchievementSystem {
             .collect()
     }
 
-    pub fn update_stats(&mut self, papers_processed: Option<u32>, api_calls_saved: Option<u32>, hours_saved: Option<f64>, searches_performed: Option<u32>, imports_performed: Option<u32>) -> Vec<Achievement> {
+    pub fn update_stats(
+        &mut self,
+        papers_processed: Option<u32>,
+        api_calls_saved: Option<u32>,
+        hours_saved: Option<f64>,
+        searches_performed: Option<u32>,
+        imports_performed: Option<u32>,
+    ) -> Vec<Achievement> {
         if let Some(v) = papers_processed {
             self.user_stats.papers_processed = v;
         }
@@ -1475,11 +1508,60 @@ impl AchievementSystem {
 // ============================================================================
 
 const KEYWORD_STOPWORDS: &[&str] = &[
-    "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one",
-    "our", "out", "has", "have", "been", "with", "they", "this", "that", "from", "will",
-    "would", "there", "their", "what", "about", "which", "when", "make", "just", "over",
-    "such", "into", "than", "null", "none", "also", "how", "may", "does", "method", "approach",
-    "gap", "issue", "problem", "limitation", "study", "work", "paper", "research", "based",
+    "the",
+    "and",
+    "for",
+    "are",
+    "but",
+    "not",
+    "you",
+    "all",
+    "can",
+    "had",
+    "her",
+    "was",
+    "one",
+    "our",
+    "out",
+    "has",
+    "have",
+    "been",
+    "with",
+    "they",
+    "this",
+    "that",
+    "from",
+    "will",
+    "would",
+    "there",
+    "their",
+    "what",
+    "about",
+    "which",
+    "when",
+    "make",
+    "just",
+    "over",
+    "such",
+    "into",
+    "than",
+    "null",
+    "none",
+    "also",
+    "how",
+    "may",
+    "does",
+    "method",
+    "approach",
+    "gap",
+    "issue",
+    "problem",
+    "limitation",
+    "study",
+    "work",
+    "paper",
+    "research",
+    "based",
     "using",
 ];
 

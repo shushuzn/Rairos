@@ -1,5 +1,5 @@
-use std::process::{Command, Stdio};
 use std::io::Write;
+use std::process::{Command, Stdio};
 
 #[cfg(target_family = "windows")]
 fn get_claude_executable() -> &'static str {
@@ -38,9 +38,12 @@ impl ClaudeCLIClient {
         let mut child = Command::new(&self.cli_path)
             .args([
                 "--print",
-                "--model", model,
-                "--output-format", "json",
-                "--input-format", "text",
+                "--model",
+                model,
+                "--output-format",
+                "json",
+                "--input-format",
+                "text",
             ])
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -60,9 +63,17 @@ impl ClaudeCLIClient {
 
         if output.status.code() != Some(0) {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            let stdout_preview = String::from_utf8_lossy(&output.stdout).trim().chars().take(200).collect::<String>();
+            let stdout_preview = String::from_utf8_lossy(&output.stdout)
+                .trim()
+                .chars()
+                .take(200)
+                .collect::<String>();
             if !stdout_preview.is_empty() {
-                eprintln!("Warning: Claude CLI exit code {:?} (hook error?), using stdout: {}", output.status.code(), &stderr.trim().chars().take(120).collect::<String>());
+                eprintln!(
+                    "Warning: Claude CLI exit code {:?} (hook error?), using stdout: {}",
+                    output.status.code(),
+                    &stderr.trim().chars().take(120).collect::<String>()
+                );
             } else {
                 return Err(format!("Claude CLI error: {}", stderr.trim()));
             }

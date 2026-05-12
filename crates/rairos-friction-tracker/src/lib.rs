@@ -154,7 +154,9 @@ impl FrictionEvent {
             query: query.to_string(),
             step: step.to_string(),
             error: error.to_string(),
-            resolution: resolution.map(|r| r.as_str().to_string()).unwrap_or_default(),
+            resolution: resolution
+                .map(|r| r.as_str().to_string())
+                .unwrap_or_default(),
             duration_seconds,
             retry_count,
             abandoned,
@@ -181,7 +183,10 @@ impl FrictionTracker {
         if !events_file.exists() {
             let _ = fs::write(&events_file, "");
         }
-        Self { data_dir, events_file }
+        Self {
+            data_dir,
+            events_file,
+        }
     }
 
     pub fn record(
@@ -375,7 +380,10 @@ impl FrictionTracker {
         summary.insert("by_type".to_string(), serde_json::json!(by_type));
         summary.insert("by_severity".to_string(), serde_json::json!(by_severity));
         summary.insert("top_commands".to_string(), serde_json::json!(top_commands));
-        summary.insert("abandon_rate".to_string(), serde_json::json!(abandoned as f64 / events.len() as f64));
+        summary.insert(
+            "abandon_rate".to_string(),
+            serde_json::json!(abandoned as f64 / events.len() as f64),
+        );
 
         summary
     }
@@ -402,8 +410,14 @@ mod tests {
 
     #[test]
     fn test_friction_type_from_str() {
-        assert_eq!(FrictionType::from_str("command"), Some(FrictionType::Command));
-        assert_eq!(FrictionType::from_str("workflow"), Some(FrictionType::Workflow));
+        assert_eq!(
+            FrictionType::from_str("command"),
+            Some(FrictionType::Command)
+        );
+        assert_eq!(
+            FrictionType::from_str("workflow"),
+            Some(FrictionType::Workflow)
+        );
         assert_eq!(FrictionType::from_str("invalid"), None);
     }
 
@@ -500,8 +514,32 @@ mod tests {
     #[test]
     fn test_get_events_filter_type() {
         let (tracker, _temp) = temp_tracker();
-        tracker.record(FrictionType::Command, FrictionSeverity::Medium, "c1", "", "", "", None, 0, 0, false, "");
-        tracker.record(FrictionType::Retrieval, FrictionSeverity::Medium, "c2", "", "", "", None, 0, 0, false, "");
+        tracker.record(
+            FrictionType::Command,
+            FrictionSeverity::Medium,
+            "c1",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
+        tracker.record(
+            FrictionType::Retrieval,
+            FrictionSeverity::Medium,
+            "c2",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
         let events = tracker.get_events(Some(FrictionType::Command), 30, 100);
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].friction_type, "command");
@@ -517,8 +555,32 @@ mod tests {
     #[test]
     fn test_get_summary_with_data() {
         let (tracker, _temp) = temp_tracker();
-        tracker.record(FrictionType::Command, FrictionSeverity::Medium, "search", "", "", "", None, 0, 0, false, "");
-        tracker.record(FrictionType::Retrieval, FrictionSeverity::High, "search", "", "", "", None, 0, 0, true, "");
+        tracker.record(
+            FrictionType::Command,
+            FrictionSeverity::Medium,
+            "search",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
+        tracker.record(
+            FrictionType::Retrieval,
+            FrictionSeverity::High,
+            "search",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            true,
+            "",
+        );
         let summary = tracker.get_summary(30);
         assert_eq!(summary["total_events"], serde_json::json!(2));
     }

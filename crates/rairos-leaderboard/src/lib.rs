@@ -123,7 +123,8 @@ impl LeaderboardEntry {
 
         // Raw combined score
         self.combined_score = (self.pass_rate * PASS_RATE_WEIGHT
-            + self.coverage_ratio * COVERAGE_WEIGHT * 100.0) / 100.0;
+            + self.coverage_ratio * COVERAGE_WEIGHT * 100.0)
+            / 100.0;
 
         // Calibrated: penalize easy papers
         self.calibrated_score =
@@ -201,7 +202,11 @@ impl Leaderboard {
     fn _save(&self) {
         let dir = gp_dir();
         if let Err(e) = fs::create_dir_all(&dir) {
-            eprintln!("[leaderboard] failed to create dir {}: {}", dir.display(), e);
+            eprintln!(
+                "[leaderboard] failed to create dir {}: {}",
+                dir.display(),
+                e
+            );
             return;
         }
 
@@ -300,7 +305,11 @@ impl Leaderboard {
             .filter(|e| e.coverage_ratio > 0.0)
             .map(|e| e.coverage_ratio)
             .sum();
-        let count = self.entries.values().filter(|e| e.coverage_ratio > 0.0).count();
+        let count = self
+            .entries
+            .values()
+            .filter(|e| e.coverage_ratio > 0.0)
+            .count();
         if count == 0 {
             return 0.0;
         }
@@ -567,7 +576,12 @@ fn default_limit() -> usize {
 
 /// MCP tool dispatcher for Benchmark Leaderboard.
 /// Actions: status | rankings | upsert | render | entry | transfer_capsules
-pub fn leaderboard_action(action: &str, arxiv_id: Option<&str>, sort_by: &str, limit: usize) -> serde_json::Value {
+pub fn leaderboard_action(
+    action: &str,
+    arxiv_id: Option<&str>,
+    sort_by: &str,
+    limit: usize,
+) -> serde_json::Value {
     let board = Leaderboard::new();
 
     match action {
@@ -636,7 +650,9 @@ pub fn leaderboard_action(action: &str, arxiv_id: Option<&str>, sort_by: &str, l
             let e = board.get(arxiv_id.unwrap());
             match e {
                 Some(entry) => serde_json::to_value(entry).unwrap_or(serde_json::json!({})),
-                None => serde_json::json!({"error": format!("No entry found for {}", arxiv_id.unwrap())}),
+                None => {
+                    serde_json::json!({"error": format!("No entry found for {}", arxiv_id.unwrap())})
+                }
             }
         }
 

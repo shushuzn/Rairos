@@ -75,7 +75,14 @@ pub struct Citation {
 }
 
 impl Citation {
-    pub fn new(paper_id: &str, paper_title: &str, authors: Vec<String>, published: &str, snippet: &str, relevance_score: f64) -> Self {
+    pub fn new(
+        paper_id: &str,
+        paper_title: &str,
+        authors: Vec<String>,
+        published: &str,
+        snippet: &str,
+        relevance_score: f64,
+    ) -> Self {
         Self {
             paper_id: paper_id.to_string(),
             paper_title: paper_title.to_string(),
@@ -102,7 +109,14 @@ pub struct ChatContext {
 }
 
 impl ChatContext {
-    pub fn new(paper_id: &str, paper_title: &str, authors: Vec<String>, published: &str, snippet: &str, relevance_score: f64) -> Self {
+    pub fn new(
+        paper_id: &str,
+        paper_title: &str,
+        authors: Vec<String>,
+        published: &str,
+        snippet: &str,
+        relevance_score: f64,
+    ) -> Self {
         Self {
             paper_id: paper_id.to_string(),
             paper_title: paper_title.to_string(),
@@ -193,7 +207,8 @@ impl ChatResult {
 
 pub const CROSS_PAPER_SYSTEM_PROMPT: &str = "你是一个研究综述助手，擅长发现论文之间的关联。\n\n分析多篇论文，找出：\n1. 共同点 (connection): 讨论相似主题或互补方法\n2. 对比 (comparison): 同一问题的不同解决方法\n3. 矛盾 (contradiction): 结论或方法冲突\n4. 演进 (evolution): 后人如何在前人基础上改进\n\n输出格式（最多3个洞察）：\n- 类型: 一句话总结 [论文1] [论文2]\n例如：\n- comparison: BERT vs GPT的预训练目标不同 [BERT] [GPT-2]\n- evolution: LoRA基于Adapter思想提出低秩更新 [Adapter] [LoRA]";
 
-pub const CROSS_PAPER_USER_PROMPT_TEMPLATE: &str = "请分析以下论文之间的关联：\n\n{context_text}\n\n找出最重要的关联（最多3个）：";
+pub const CROSS_PAPER_USER_PROMPT_TEMPLATE: &str =
+    "请分析以下论文之间的关联：\n\n{context_text}\n\n找出最重要的关联（最多3个）：";
 
 pub const RAG_SYSTEM_PROMPT: &str = "你是一个严谨的 AI 研究助手，精通论文阅读和学术分析。\n\n核心原则：\n1. 基于原文回答，不要捏造或推测未提及的内容\n2. 不确定的信息必须加 [推测] 标注\n3. 使用 > 块引用格式引用原文片段\n4. 区分\"原文明确说\"和\"可推断\"\n5. 回答使用中文，但引用原文时保留英文原句\n\n输出格式：\n- 开头总结回答要点（1-2句话）\n- 详细解释部分引用原文片段\n- 结尾标注信息来源";
 
@@ -231,7 +246,14 @@ mod tests {
 
     #[test]
     fn test_citation_new() {
-        let c = Citation::new("p1", "Title", vec!["Author".to_string()], "2024", "abstract text", 0.9);
+        let c = Citation::new(
+            "p1",
+            "Title",
+            vec!["Author".to_string()],
+            "2024",
+            "abstract text",
+            0.9,
+        );
         assert_eq!(c.paper_id, "p1");
         assert_eq!(c.relevance_score, 0.9);
         assert_eq!(c.section, "");
@@ -239,13 +261,31 @@ mod tests {
 
     #[test]
     fn test_confidence_score_level() {
-        let high = ConfidenceScore { score: 85.0, papers_count: 5, coverage: "5 papers".to_string(), warnings: vec![], sources: vec![] };
+        let high = ConfidenceScore {
+            score: 85.0,
+            papers_count: 5,
+            coverage: "5 papers".to_string(),
+            warnings: vec![],
+            sources: vec![],
+        };
         assert_eq!(high.level(), "高");
 
-        let mid = ConfidenceScore { score: 60.0, papers_count: 3, coverage: "3 papers".to_string(), warnings: vec![], sources: vec![] };
+        let mid = ConfidenceScore {
+            score: 60.0,
+            papers_count: 3,
+            coverage: "3 papers".to_string(),
+            warnings: vec![],
+            sources: vec![],
+        };
         assert_eq!(mid.level(), "中");
 
-        let low = ConfidenceScore { score: 30.0, papers_count: 1, coverage: "1 paper".to_string(), warnings: vec![], sources: vec![] };
+        let low = ConfidenceScore {
+            score: 30.0,
+            papers_count: 1,
+            coverage: "1 paper".to_string(),
+            warnings: vec![],
+            sources: vec![],
+        };
         assert_eq!(low.level(), "低");
     }
 
@@ -259,7 +299,11 @@ mod tests {
 
     #[test]
     fn test_cross_paper_insight_new() {
-        let insight = CrossPaperInsight::new("comparison", "BERT vs GPT", vec!["BERT".to_string(), "GPT".to_string()]);
+        let insight = CrossPaperInsight::new(
+            "comparison",
+            "BERT vs GPT",
+            vec!["BERT".to_string(), "GPT".to_string()],
+        );
         assert_eq!(insight.insight_type, "comparison");
         assert_eq!(insight.summary, "BERT vs GPT");
         assert_eq!(insight.papers.len(), 2);

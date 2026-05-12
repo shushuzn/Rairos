@@ -134,7 +134,8 @@ fn matches_any(text: &str, regexes: &[Regex]) -> bool {
 
 fn extract_match(pattern: &str, text: &str) -> Option<String> {
     if let Ok(re) = Regex::new(&format!("(?i){}", pattern)) {
-        re.captures(text).map(|c| c.get(1).map(|m| m.as_str().to_string()).unwrap_or_default())
+        re.captures(text)
+            .map(|c| c.get(1).map(|m| m.as_str().to_string()).unwrap_or_default())
     } else {
         None
     }
@@ -174,7 +175,12 @@ fn detect_turning_point(text: &str) -> String {
 }
 
 fn extract_contribution(title: &str, abstract_text: &str) -> String {
-    let text = format!("{} {}", title, &abstract_text[..abstract_text.len().min(200)]).to_lowercase();
+    let text = format!(
+        "{} {}",
+        title,
+        &abstract_text[..abstract_text.len().min(200)]
+    )
+    .to_lowercase();
     let patterns = [
         r"we (?:propose|present|introduce|develop) (.+?)\.",
         r"this paper (.+?)\.",
@@ -198,7 +204,10 @@ fn extract_contribution(title: &str, abstract_text: &str) -> String {
 fn determine_role(text: &str, year: i32) -> NarrativeRole {
     if year <= 2018 {
         let lower = text.to_lowercase();
-        if lower.contains("attention is all you need") || lower.contains("bert") || lower.contains("gpt") {
+        if lower.contains("attention is all you need")
+            || lower.contains("bert")
+            || lower.contains("gpt")
+        {
             return NarrativeRole::Protagonist;
         }
     }
@@ -213,7 +222,10 @@ fn determine_role(text: &str, year: i32) -> NarrativeRole {
     NarrativeRole::Protagonist
 }
 
-fn infer_relationship(a: &PaperNarrative, b: &PaperNarrative) -> (Option<RelationshipType>, String) {
+fn infer_relationship(
+    a: &PaperNarrative,
+    b: &PaperNarrative,
+) -> (Option<RelationshipType>, String) {
     let a_lower = a.title.to_lowercase();
     let b_lower = b.title.to_lowercase();
 
@@ -235,12 +247,18 @@ fn infer_relationship(a: &PaperNarrative, b: &PaperNarrative) -> (Option<Relatio
     if divergence_kws.iter().any(|k| b_lower.contains(k)) {
         return (
             Some(RelationshipType::Contrasts),
-            format!("Proposes alternative to {}...", &a.title[..a.title.len().min(30)]),
+            format!(
+                "Proposes alternative to {}...",
+                &a.title[..a.title.len().min(30)]
+            ),
         );
     }
 
     let contrast_kws = ["vs", "versus", "对比", "比较"];
-    if contrast_kws.iter().any(|k| a_lower.contains(k) || b_lower.contains(k)) {
+    if contrast_kws
+        .iter()
+        .any(|k| a_lower.contains(k) || b_lower.contains(k))
+    {
         return (
             Some(RelationshipType::Contrasts),
             format!("Contrasts with {}...", &a.title[..a.title.len().min(30)]),
@@ -288,7 +306,11 @@ fn organize_chapters(narratives: &[PaperNarrative]) -> Vec<Chapter> {
         let mut sorted_papers: Vec<PaperNarrative> = papers.iter().map(|p| (*p).clone()).collect();
         sorted_papers.sort_by_key(|p| p.year);
         chapters.push(Chapter {
-            title: titles.get(period).copied().unwrap_or("未知时期").to_string(),
+            title: titles
+                .get(period)
+                .copied()
+                .unwrap_or("未知时期")
+                .to_string(),
             time_range: *period,
             papers: sorted_papers,
             summary: String::new(),
@@ -329,10 +351,16 @@ fn find_contradictions(narratives: &[PaperNarrative]) -> Vec<(String, String)> {
 
 fn identify_themes(narratives: &[PaperNarrative]) -> Vec<String> {
     let theme_keywords: HashMap<&str, Vec<&str>> = [
-        ("Attention 机制", vec!["attention", "self-attention", "multi-head"]),
+        (
+            "Attention 机制",
+            vec!["attention", "self-attention", "multi-head"],
+        ),
         ("预训练范式", vec!["pre-train", "fine-tun", "mask"]),
         ("规模化", vec!["scale", "large", "billions", "parameters"]),
-        ("效率优化", vec!["efficient", "fast", "distill", "prune", "quantize"]),
+        (
+            "效率优化",
+            vec!["efficient", "fast", "distill", "prune", "quantize"],
+        ),
         ("多模态", vec!["multimodal", "vision", "image", "text"]),
         ("推理能力", vec!["reason", "chain-of-thought", "cot"]),
         ("对齐与安全", vec!["align", "rlhf", "safety", "value"]),
@@ -340,7 +368,11 @@ fn identify_themes(narratives: &[PaperNarrative]) -> Vec<String> {
     .into_iter()
     .collect();
 
-    let all_text: String = narratives.iter().map(|n| n.title.to_lowercase()).collect::<Vec<_>>().join(" ");
+    let all_text: String = narratives
+        .iter()
+        .map(|n| n.title.to_lowercase())
+        .collect::<Vec<_>>()
+        .join(" ");
 
     let mut themes = Vec::new();
     for (theme, keywords) in theme_keywords.iter() {
@@ -358,7 +390,13 @@ fn generate_summary(result: &StoryResult) -> String {
     }
 
     let themes = if !result.themes.is_empty() {
-        result.themes.iter().take(3).cloned().collect::<Vec<_>>().join(", ")
+        result
+            .themes
+            .iter()
+            .take(3)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(", ")
     } else {
         "技术演进".to_string()
     };
@@ -372,7 +410,10 @@ fn generate_summary(result: &StoryResult) -> String {
     );
 
     if !result.contradictions.is_empty() {
-        summary += &format!("\n核心张力: 发现 {} 个主要矛盾点，体现了领域内不同技术路线的竞争与融合。", result.contradictions.len());
+        summary += &format!(
+            "\n核心张力: 发现 {} 个主要矛盾点，体现了领域内不同技术路线的竞争与融合。",
+            result.contradictions.len()
+        );
     }
 
     summary
@@ -392,7 +433,11 @@ impl StoryWeaver {
         let narratives: Vec<PaperNarrative> = papers
             .iter()
             .map(|p| {
-                let text = format!("{} {}", p.title.to_lowercase(), p.abstract_text.to_lowercase());
+                let text = format!(
+                    "{} {}",
+                    p.title.to_lowercase(),
+                    p.abstract_text.to_lowercase()
+                );
                 let role = determine_role(&text, p.year);
                 PaperNarrative {
                     paper_id: p.id.clone(),
@@ -448,25 +493,36 @@ impl StoryWeaver {
 
         for (i, chapter) in result.chapters.iter().enumerate() {
             lines.push(format!("第{}章: {}", i + 1, chapter.title));
-            lines.push(format!("   时间: {}-{}", chapter.time_range.0, chapter.time_range.1));
+            lines.push(format!(
+                "   时间: {}-{}",
+                chapter.time_range.0, chapter.time_range.1
+            ));
 
             if !chapter.summary.is_empty() {
                 lines.push(format!("   {}", chapter.summary));
             } else {
-                let contributions: Vec<String> = chapter.papers.iter().take(3).map(|p| {
-                    p.core_contribution.chars().take(50).collect()
-                }).collect();
+                let contributions: Vec<String> = chapter
+                    .papers
+                    .iter()
+                    .take(3)
+                    .map(|p| p.core_contribution.chars().take(50).collect())
+                    .collect();
                 lines.push(format!("   关键贡献: {}", contributions.join(" | ")));
             }
             lines.push(String::new());
 
             for paper in chapter.papers.iter().take(3) {
                 let role_icon = match paper.role {
-                    NarrativeRole::Protagonist | NarrativeRole::Divergence | NarrativeRole::Antagonist => "├─",
+                    NarrativeRole::Protagonist
+                    | NarrativeRole::Divergence
+                    | NarrativeRole::Antagonist => "├─",
                     NarrativeRole::TurningPoint | NarrativeRole::Synthesis => "└─",
                 };
                 lines.push(format!("   {} {} ({})", role_icon, paper.title, paper.year));
-                lines.push(format!("   │  └─ {}", &paper.key_insight[..paper.key_insight.len().min(60)]));
+                lines.push(format!(
+                    "   │  └─ {}",
+                    &paper.key_insight[..paper.key_insight.len().min(60)]
+                ));
                 if !paper.turning_point_type.is_empty() {
                     lines.push(format!("   │     🔥 {}", paper.turning_point_type));
                 }
@@ -484,7 +540,16 @@ impl StoryWeaver {
         }
 
         if !result.themes.is_empty() {
-            lines.push(format!("🧭 核心主题: {}", result.themes.iter().take(4).cloned().collect::<Vec<_>>().join(", ")));
+            lines.push(format!(
+                "🧭 核心主题: {}",
+                result
+                    .themes
+                    .iter()
+                    .take(4)
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ));
             lines.push(String::new());
         }
 
@@ -512,8 +577,17 @@ impl StoryWeaver {
                     _ => "fill:#ddd",
                 };
                 let title_short = paper.title.chars().take(30).collect::<String>();
-                lines.push(format!("    {}[\"{}\":::{}]", node_id, title_short, paper.role.as_str()));
-                lines.push(format!("    classDef {} {}", paper.role.as_str(), role_class));
+                lines.push(format!(
+                    "    {}[\"{}\":::{}]",
+                    node_id,
+                    title_short,
+                    paper.role.as_str()
+                ));
+                lines.push(format!(
+                    "    classDef {} {}",
+                    paper.role.as_str(),
+                    role_class
+                ));
             }
         }
 
@@ -527,7 +601,12 @@ impl StoryWeaver {
         lines.push(String::new());
 
         let shared_themes: HashSet<&str> = a.themes.iter().map(|s| s.as_str()).collect();
-        let shared: Vec<&str> = b.themes.iter().filter(|t| shared_themes.contains(&t.as_str())).map(|s| s.as_str()).collect();
+        let shared: Vec<&str> = b
+            .themes
+            .iter()
+            .filter(|t| shared_themes.contains(&t.as_str()))
+            .map(|s| s.as_str())
+            .collect();
         if !shared.is_empty() {
             lines.push(format!("🔗 共同主题: {}", shared.join(", ")));
         }
@@ -543,8 +622,24 @@ impl StoryWeaver {
         lines.push(format!("📅 {}: {}-{}", b.topic, b_first, b_last));
         lines.push(String::new());
         lines.push("🎭 主角发展弧线:".to_string());
-        lines.push(format!("  • {}: {}", a.topic, if !a.protagonist_arc.is_empty() { &a.protagonist_arc[..a.protagonist_arc.len().min(80)] } else { "传统方法演进" }));
-        lines.push(format!("  • {}: {}", b.topic, if !b.protagonist_arc.is_empty() { &b.protagonist_arc[..b.protagonist_arc.len().min(80)] } else { "新方法探索" }));
+        lines.push(format!(
+            "  • {}: {}",
+            a.topic,
+            if !a.protagonist_arc.is_empty() {
+                &a.protagonist_arc[..a.protagonist_arc.len().min(80)]
+            } else {
+                "传统方法演进"
+            }
+        ));
+        lines.push(format!(
+            "  • {}: {}",
+            b.topic,
+            if !b.protagonist_arc.is_empty() {
+                &b.protagonist_arc[..b.protagonist_arc.len().min(80)]
+            } else {
+                "新方法探索"
+            }
+        ));
 
         lines.join("\n")
     }
@@ -616,7 +711,8 @@ mod tests {
             PaperInput {
                 id: "p1".to_string(),
                 title: "Attention Is All You Need".to_string(),
-                abstract_text: "We propose the transformer architecture. breakthrough method.".to_string(),
+                abstract_text: "We propose the transformer architecture. breakthrough method."
+                    .to_string(),
                 year: 2017,
             },
             PaperInput {
@@ -635,14 +731,12 @@ mod tests {
     #[test]
     fn test_render_result() {
         let weaver = StoryWeaver;
-        let papers = vec![
-            PaperInput {
-                id: "p1".to_string(),
-                title: "Attention Is All You Need".to_string(),
-                abstract_text: "We propose the transformer.".to_string(),
-                year: 2017,
-            },
-        ];
+        let papers = vec![PaperInput {
+            id: "p1".to_string(),
+            title: "Attention Is All You Need".to_string(),
+            abstract_text: "We propose the transformer.".to_string(),
+            year: 2017,
+        }];
         let result = weaver.weave("transformer", papers);
         let rendered = weaver.render_result(&result);
         assert!(rendered.contains("transformer"));
@@ -651,14 +745,12 @@ mod tests {
     #[test]
     fn test_render_mermaid() {
         let weaver = StoryWeaver;
-        let papers = vec![
-            PaperInput {
-                id: "p1".to_string(),
-                title: "Attention Is All You Need".to_string(),
-                abstract_text: "We propose the transformer.".to_string(),
-                year: 2017,
-            },
-        ];
+        let papers = vec![PaperInput {
+            id: "p1".to_string(),
+            title: "Attention Is All You Need".to_string(),
+            abstract_text: "We propose the transformer.".to_string(),
+            year: 2017,
+        }];
         let result = weaver.weave("transformer", papers);
         let mermaid = weaver.render_mermaid(&result);
         assert!(mermaid.contains("mermaid"));
@@ -695,18 +787,16 @@ mod tests {
 
     #[test]
     fn test_identify_themes() {
-        let narratives = vec![
-            PaperNarrative {
-                paper_id: "p1".to_string(),
-                title: "Attention Mechanism".to_string(),
-                year: 2017,
-                role: NarrativeRole::Protagonist,
-                core_contribution: "".to_string(),
-                key_insight: "".to_string(),
-                turning_point_type: "".to_string(),
-                conflicts_with: vec![],
-            },
-        ];
+        let narratives = vec![PaperNarrative {
+            paper_id: "p1".to_string(),
+            title: "Attention Mechanism".to_string(),
+            year: 2017,
+            role: NarrativeRole::Protagonist,
+            core_contribution: "".to_string(),
+            key_insight: "".to_string(),
+            turning_point_type: "".to_string(),
+            conflicts_with: vec![],
+        }];
         let themes = identify_themes(&narratives);
         assert!(!themes.is_empty());
     }

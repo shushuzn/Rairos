@@ -111,7 +111,11 @@ mod tests {
 
     #[test]
     fn test_error_creation() {
-        let err = JsonRpcError::new(ERR_METHOD_NOT_FOUND, "Method not found", serde_json::json!(1));
+        let err = JsonRpcError::new(
+            ERR_METHOD_NOT_FOUND,
+            "Method not found",
+            serde_json::json!(1),
+        );
         assert_eq!(err.error.code, -32601);
         assert_eq!(err.error.message, "Method not found");
     }

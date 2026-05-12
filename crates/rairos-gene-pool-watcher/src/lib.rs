@@ -42,15 +42,110 @@ impl Default for WatcherState {
 }
 
 pub const FAMILY_ARXIV_CONFIG: &[(&str, &[&str], &str)] = &[
-    ("attention", &["transformer", "self-attention", "multi-head attention", "vision transformer", "ViT"], "cs.CL"),
-    ("reinforcement", &["reinforcement learning", "policy gradient", "DQN", "PPO", "A3C", "reward"], "cs.LG"),
-    ("language_model", &["language model", "LLM", "GPT", "BERT", "decoder", "autoregressive", " Transformer"], "cs.CL"),
-    ("vision", &["CNN", "image classification", "object detection", "segmentation", "ViT", "vision transformer"], "cs.CV"),
-    ("optimization", &["optimizer", "Adam", "SGD", "gradient descent", "loss landscape", "training dynamics"], "cs.LG"),
-    ("graph", &["graph neural network", "GNN", "message passing", "node classification", "graph convolution"], "cs.SD"),
-    ("reasoning", &["chain-of-thought", "reasoning", "logical inference", "planning", "theorem proving"], "cs.AI"),
-    ("embodied", &["robotics", "embodied", "navigation", "control", "motor", "reinforcement learning robot"], "cs.RO"),
-    ("other", &["neural network", "deep learning", "training", "representation learning"], "cs.LG"),
+    (
+        "attention",
+        &[
+            "transformer",
+            "self-attention",
+            "multi-head attention",
+            "vision transformer",
+            "ViT",
+        ],
+        "cs.CL",
+    ),
+    (
+        "reinforcement",
+        &[
+            "reinforcement learning",
+            "policy gradient",
+            "DQN",
+            "PPO",
+            "A3C",
+            "reward",
+        ],
+        "cs.LG",
+    ),
+    (
+        "language_model",
+        &[
+            "language model",
+            "LLM",
+            "GPT",
+            "BERT",
+            "decoder",
+            "autoregressive",
+            " Transformer",
+        ],
+        "cs.CL",
+    ),
+    (
+        "vision",
+        &[
+            "CNN",
+            "image classification",
+            "object detection",
+            "segmentation",
+            "ViT",
+            "vision transformer",
+        ],
+        "cs.CV",
+    ),
+    (
+        "optimization",
+        &[
+            "optimizer",
+            "Adam",
+            "SGD",
+            "gradient descent",
+            "loss landscape",
+            "training dynamics",
+        ],
+        "cs.LG",
+    ),
+    (
+        "graph",
+        &[
+            "graph neural network",
+            "GNN",
+            "message passing",
+            "node classification",
+            "graph convolution",
+        ],
+        "cs.SD",
+    ),
+    (
+        "reasoning",
+        &[
+            "chain-of-thought",
+            "reasoning",
+            "logical inference",
+            "planning",
+            "theorem proving",
+        ],
+        "cs.AI",
+    ),
+    (
+        "embodied",
+        &[
+            "robotics",
+            "embodied",
+            "navigation",
+            "control",
+            "motor",
+            "reinforcement learning robot",
+        ],
+        "cs.RO",
+    ),
+    (
+        "other",
+        &[
+            "neural network",
+            "deep learning",
+            "training",
+            "representation learning",
+        ],
+        "cs.LG",
+    ),
 ];
 
 pub fn build_gap_subscription(family: &str) -> GapSubscription {
@@ -72,14 +167,17 @@ pub fn diff_subscriptions(
     existing: &[GapSubscription],
     new: &[GapSubscription],
 ) -> (Vec<GapSubscription>, Vec<String>) {
-    let existing_families: std::collections::HashSet<_> = existing.iter().map(|s| s.family.clone()).collect();
+    let existing_families: std::collections::HashSet<_> =
+        existing.iter().map(|s| s.family.clone()).collect();
     let new_families: std::collections::HashSet<_> = new.iter().map(|s| s.family.clone()).collect();
 
-    let to_add: Vec<GapSubscription> = new.iter()
+    let to_add: Vec<GapSubscription> = new
+        .iter()
         .filter(|s| !existing_families.contains(&s.family))
         .cloned()
         .collect();
-    let to_remove: Vec<String> = existing_families.iter()
+    let to_remove: Vec<String> = existing_families
+        .iter()
         .filter(|f| !new_families.contains(*f))
         .cloned()
         .collect();
@@ -105,14 +203,75 @@ const EVICTION_RATE: f64 = 0.20;
 const MIN_CAPSULES_TO_EVICT: usize = 1;
 
 const FAMILY_KEYWORDS: &[(&str, &[&str])] = &[
-    ("attention", &["attention", "transformer", "multi-head", "self-attention", "cross-attention"]),
-    ("reinforcement", &["rl", "reinforcement", "policy", "reward", "agent", "DQN", "PPO", "A3C"]),
-    ("language_model", &["LM", "language model", "decoder", "autoregressive", "LLM", "GPT", "BERT"]),
-    ("vision", &["CNN", "convolution", "resnet", "image", "vision", "ViT", "classification"]),
-    ("optimization", &["optimizer", "Adam", "SGD", "gradient", "loss", "training"]),
-    ("graph", &["GNN", "graph", "node", "edge", "message passing"]),
-    ("reasoning", &["reasoning", "chain-of-thought", "logical", "inference", "planning"]),
-    ("embodied", &["embodied", "robotics", "navigation", "control", "motor"]),
+    (
+        "attention",
+        &[
+            "attention",
+            "transformer",
+            "multi-head",
+            "self-attention",
+            "cross-attention",
+        ],
+    ),
+    (
+        "reinforcement",
+        &[
+            "rl",
+            "reinforcement",
+            "policy",
+            "reward",
+            "agent",
+            "DQN",
+            "PPO",
+            "A3C",
+        ],
+    ),
+    (
+        "language_model",
+        &[
+            "LM",
+            "language model",
+            "decoder",
+            "autoregressive",
+            "LLM",
+            "GPT",
+            "BERT",
+        ],
+    ),
+    (
+        "vision",
+        &[
+            "CNN",
+            "convolution",
+            "resnet",
+            "image",
+            "vision",
+            "ViT",
+            "classification",
+        ],
+    ),
+    (
+        "optimization",
+        &["optimizer", "Adam", "SGD", "gradient", "loss", "training"],
+    ),
+    (
+        "graph",
+        &["GNN", "graph", "node", "edge", "message passing"],
+    ),
+    (
+        "reasoning",
+        &[
+            "reasoning",
+            "chain-of-thought",
+            "logical",
+            "inference",
+            "planning",
+        ],
+    ),
+    (
+        "embodied",
+        &["embodied", "robotics", "navigation", "control", "motor"],
+    ),
 ];
 
 pub struct DiversityPressureEvaluator {
@@ -125,9 +284,8 @@ impl DiversityPressureEvaluator {
     }
 
     fn family_of_keywords(&self, keywords: &[String]) -> String {
-        let kw_set: std::collections::HashSet<String> = keywords.iter()
-            .map(|k| k.to_lowercase())
-            .collect();
+        let kw_set: std::collections::HashSet<String> =
+            keywords.iter().map(|k| k.to_lowercase()).collect();
 
         for (fam, fam_kws) in FAMILY_KEYWORDS {
             if fam_kws.iter().any(|fk| kw_set.contains(&fk.to_lowercase())) {
@@ -151,7 +309,8 @@ impl DiversityPressureEvaluator {
 
         let mut family_counts: HashMap<String, usize> = HashMap::new();
         for cap in capsules {
-            let keywords: Vec<String> = cap.get("trigger_keywords")
+            let keywords: Vec<String> = cap
+                .get("trigger_keywords")
                 .and_then(|v| serde_json::from_value(v.clone()).ok())
                 .unwrap_or_default();
             let fam = self.family_of_keywords(&keywords);
@@ -183,7 +342,8 @@ impl DiversityPressureEvaluator {
             0.0
         };
 
-        let sat_pressure = ((saturation - SATURATION_THRESHOLD) / (1.0 - SATURATION_THRESHOLD)).max(0.0);
+        let sat_pressure =
+            ((saturation - SATURATION_THRESHOLD) / (1.0 - SATURATION_THRESHOLD)).max(0.0);
         let div_pressure = ((DIVERSITY_THRESHOLD - diversity_score) / DIVERSITY_THRESHOLD).max(0.0);
         let pressure_level = sat_pressure * 0.5 + div_pressure * 0.5;
 
@@ -218,9 +378,11 @@ impl DiversityPressureEvaluator {
         let mut eviction_candidates: Vec<HashMap<String, serde_json::Value>> = vec![];
 
         for fam in &overrep {
-            let fam_caps: Vec<_> = capsules.iter()
+            let fam_caps: Vec<_> = capsules
+                .iter()
                 .filter(|c| {
-                    let keywords: Vec<String> = c.get("trigger_keywords")
+                    let keywords: Vec<String> = c
+                        .get("trigger_keywords")
                         .and_then(|v| serde_json::from_value(v.clone()).ok())
                         .unwrap_or_default();
                     self.family_of_keywords(&keywords) == *fam
@@ -231,9 +393,11 @@ impl DiversityPressureEvaluator {
                 continue;
             }
 
-            let mut scored: Vec<_> = fam_caps.iter()
+            let mut scored: Vec<_> = fam_caps
+                .iter()
                 .map(|c| {
-                    let score = c.get("outcome_success_score")
+                    let score = c
+                        .get("outcome_success_score")
                         .and_then(|v| v.as_f64())
                         .unwrap_or(0.0);
                     (c, score)
@@ -241,14 +405,26 @@ impl DiversityPressureEvaluator {
                 .collect();
             scored.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
 
-            let n_evict = ((MIN_CAPSULES_TO_EVICT as f64).max(scored.len() as f64 * EVICTION_RATE)) as usize;
+            let n_evict =
+                ((MIN_CAPSULES_TO_EVICT as f64).max(scored.len() as f64 * EVICTION_RATE)) as usize;
 
             for (cap, score) in scored.into_iter().take(n_evict) {
                 let mut candidate = HashMap::new();
-                candidate.insert("capsule_id".to_string(), cap.get("capsule_id").cloned().unwrap_or(serde_json::Value::String(String::new())));
+                candidate.insert(
+                    "capsule_id".to_string(),
+                    cap.get("capsule_id")
+                        .cloned()
+                        .unwrap_or(serde_json::Value::String(String::new())),
+                );
                 candidate.insert("family".to_string(), serde_json::json!(fam));
                 candidate.insert("score".to_string(), serde_json::json!(round(score, 4)));
-                candidate.insert("reason".to_string(), serde_json::json!(format!("diversity_pressure: {} is over-represented (pressure={:.2})", fam, pressure_level)));
+                candidate.insert(
+                    "reason".to_string(),
+                    serde_json::json!(format!(
+                        "diversity_pressure: {} is over-represented (pressure={:.2})",
+                        fam, pressure_level
+                    )),
+                );
                 eviction_candidates.push(candidate);
             }
         }
@@ -296,15 +472,13 @@ mod tests {
 
     #[test]
     fn test_diff_subscriptions() {
-        let existing = vec![
-            GapSubscription {
-                family: "attention".to_string(),
-                keywords: vec!["transformer".to_string()],
-                arxiv_category: "cs.CL".to_string(),
-                enabled: true,
-                last_checked: "".to_string(),
-            },
-        ];
+        let existing = vec![GapSubscription {
+            family: "attention".to_string(),
+            keywords: vec!["transformer".to_string()],
+            arxiv_category: "cs.CL".to_string(),
+            enabled: true,
+            last_checked: "".to_string(),
+        }];
         let new = vec![
             GapSubscription {
                 family: "attention".to_string(),
@@ -329,15 +503,13 @@ mod tests {
 
     #[test]
     fn test_diff_subscriptions_remove() {
-        let existing = vec![
-            GapSubscription {
-                family: "attention".to_string(),
-                keywords: vec!["transformer".to_string()],
-                arxiv_category: "cs.CL".to_string(),
-                enabled: true,
-                last_checked: "".to_string(),
-            },
-        ];
+        let existing = vec![GapSubscription {
+            family: "attention".to_string(),
+            keywords: vec!["transformer".to_string()],
+            arxiv_category: "cs.CL".to_string(),
+            enabled: true,
+            last_checked: "".to_string(),
+        }];
         let new = vec![];
         let (to_add, to_remove) = diff_subscriptions(&existing, &new);
         assert_eq!(to_add.len(), 0);

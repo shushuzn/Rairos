@@ -192,7 +192,10 @@ impl ResearchMemory {
     }
 
     pub fn find_by_tag(&self, tag: &str) -> Vec<&ResearchStance> {
-        self.stances.iter().filter(|s| s.tags.contains(&tag.to_string())).collect()
+        self.stances
+            .iter()
+            .filter(|s| s.tags.contains(&tag.to_string()))
+            .collect()
     }
 
     pub fn update_stance(&mut self, id: &str, stance: StanceType, reasoning: &str) -> Option<()> {
@@ -215,18 +218,21 @@ impl ResearchMemory {
     }
 
     pub fn get_anomalies_by_stance(&self, stance_id: &str) -> Vec<&AnomalyAlert> {
-        self.anomalies.iter().filter(|a| a.stance_id == stance_id).collect()
+        self.anomalies
+            .iter()
+            .filter(|a| a.stance_id == stance_id)
+            .collect()
     }
 
     pub fn stats(&self) -> MemoryStats {
-        let by_stance: HashMap<String, usize> = self.stances.iter()
-            .fold(HashMap::new(), |mut acc, s| {
+        let by_stance: HashMap<String, usize> =
+            self.stances.iter().fold(HashMap::new(), |mut acc, s| {
                 *acc.entry(s.stance.to_string()).or_insert(0) += 1;
                 acc
             });
 
-        let by_severity: HashMap<String, usize> = self.anomalies.iter()
-            .fold(HashMap::new(), |mut acc, a| {
+        let by_severity: HashMap<String, usize> =
+            self.anomalies.iter().fold(HashMap::new(), |mut acc, a| {
                 *acc.entry(format!("{:?}", a.severity)).or_insert(0) += 1;
                 acc
             });
@@ -279,7 +285,7 @@ mod tests {
             "RAG vs Fine-tuning",
             "Fine-tuning is better for domain knowledge",
             StanceType::Supported,
-            "Based on experiments"
+            "Based on experiments",
         );
         assert_eq!(stance.topic, "RAG vs Fine-tuning");
         assert_eq!(stance.stance, StanceType::Supported);
@@ -300,9 +306,24 @@ mod tests {
     #[test]
     fn test_find_by_topic() {
         let mut memory = ResearchMemory::new();
-        memory.add_stance(ResearchStance::new("AI", "claim1", StanceType::Supported, "r1"));
-        memory.add_stance(ResearchStance::new("AI", "claim2", StanceType::Rejected, "r2"));
-        memory.add_stance(ResearchStance::new("ML", "claim3", StanceType::Supported, "r3"));
+        memory.add_stance(ResearchStance::new(
+            "AI",
+            "claim1",
+            StanceType::Supported,
+            "r1",
+        ));
+        memory.add_stance(ResearchStance::new(
+            "AI",
+            "claim2",
+            StanceType::Rejected,
+            "r2",
+        ));
+        memory.add_stance(ResearchStance::new(
+            "ML",
+            "claim3",
+            StanceType::Supported,
+            "r3",
+        ));
 
         let ai_stances = memory.find_by_topic("AI");
         assert_eq!(ai_stances.len(), 2);
@@ -317,7 +338,7 @@ mod tests {
             "2301.00001",
             "contradiction",
             AnomalySeverity::High,
-            "This paper shows the opposite"
+            "This paper shows the opposite",
         );
 
         assert_eq!(anomaly.topic, "topic");
@@ -340,9 +361,18 @@ mod tests {
     #[test]
     fn test_find_by_tag() {
         let mut memory = ResearchMemory::new();
-        memory.add_stance(ResearchStance::new("T1", "c1", StanceType::Supported, "r").with_tags(vec!["nlp".to_string()]));
-        memory.add_stance(ResearchStance::new("T2", "c2", StanceType::Supported, "r").with_tags(vec!["cv".to_string()]));
-        memory.add_stance(ResearchStance::new("T3", "c3", StanceType::Supported, "r").with_tags(vec!["nlp".to_string()]));
+        memory.add_stance(
+            ResearchStance::new("T1", "c1", StanceType::Supported, "r")
+                .with_tags(vec!["nlp".to_string()]),
+        );
+        memory.add_stance(
+            ResearchStance::new("T2", "c2", StanceType::Supported, "r")
+                .with_tags(vec!["cv".to_string()]),
+        );
+        memory.add_stance(
+            ResearchStance::new("T3", "c3", StanceType::Supported, "r")
+                .with_tags(vec!["nlp".to_string()]),
+        );
 
         let nlp_stances = memory.find_by_tag("nlp");
         assert_eq!(nlp_stances.len(), 2);
@@ -383,7 +413,8 @@ mod tests {
         let stance = ResearchStance::new("T", "C", StanceType::Supported, "R").with_confidence(1.5);
         assert_eq!(stance.confidence, 1.0);
 
-        let stance2 = ResearchStance::new("T", "C", StanceType::Supported, "R").with_confidence(-0.5);
+        let stance2 =
+            ResearchStance::new("T", "C", StanceType::Supported, "R").with_confidence(-0.5);
         assert_eq!(stance2.confidence, 0.0);
     }
 
@@ -400,7 +431,7 @@ mod tests {
             "2301.00001",
             "contradiction",
             AnomalySeverity::High,
-            "Shows opposite"
+            "Shows opposite",
         );
         memory.add_anomaly(anomaly);
 

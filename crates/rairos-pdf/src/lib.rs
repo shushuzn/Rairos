@@ -163,7 +163,10 @@ pub async fn download_pdf(pdf_url: &str, out_path: &Path) -> Result<()> {
 
     // Check for existing partial file
     let existing_size = if resume_path.exists() {
-        std::fs::metadata(&resume_path).ok().map(|m| m.len()).unwrap_or(0)
+        std::fs::metadata(&resume_path)
+            .ok()
+            .map(|m| m.len())
+            .unwrap_or(0)
     } else {
         0
     };
@@ -341,18 +344,21 @@ pub fn detect_block_type(line: &str) -> BlockType {
     }
 
     // Figure / Table caption pattern (case insensitive)
-    let caption_pat = Regex::new(r"(?i)^(Figure|Fig\.|Table|Alg\.?|Algorithm|Listing|Plate)\s+\d").unwrap();
+    let caption_pat =
+        Regex::new(r"(?i)^(Figure|Fig\.|Table|Alg\.?|Algorithm|Listing|Plate)\s+\d").unwrap();
     if caption_pat.is_match(s) {
         return BlockType::Caption;
     }
 
     // Footnote / reference mark
-    if Regex::new(r"^\[\d+\]$").unwrap().is_match(s) || Regex::new(r"^\^\d+$").unwrap().is_match(s) {
+    if Regex::new(r"^\[\d+\]$").unwrap().is_match(s) || Regex::new(r"^\^\d+$").unwrap().is_match(s)
+    {
         return BlockType::Footnote;
     }
 
     // List item
-    if Regex::new(r"^[-*+]\s").unwrap().is_match(s) || Regex::new(r"^\d+\.\s").unwrap().is_match(s) {
+    if Regex::new(r"^[-*+]\s").unwrap().is_match(s) || Regex::new(r"^\d+\.\s").unwrap().is_match(s)
+    {
         return BlockType::ListItem;
     }
 
@@ -386,7 +392,9 @@ const SECTION_KEYWORDS: &[&str] = &[
 
 fn is_section_keyword(s: &str) -> bool {
     let low = s.to_lowercase();
-    SECTION_KEYWORDS.iter().any(|k| low == *k || low.starts_with(&format!("{} ", k)))
+    SECTION_KEYWORDS
+        .iter()
+        .any(|k| low == *k || low.starts_with(&format!("{} ", k)))
 }
 
 /// Check if a line looks like a section heading.
@@ -396,7 +404,10 @@ pub fn looks_like_heading(line: &str) -> bool {
         return false;
     }
 
-    if Regex::new(r"^(\d+(\.\d+)*)\.?\s+[A-Za-z].{2,}$").unwrap().is_match(s) {
+    if Regex::new(r"^(\d+(\.\d+)*)\.?\s+[A-Za-z].{2,}$")
+        .unwrap()
+        .is_match(s)
+    {
         return true;
     }
     if Regex::new(r"^(I|II|III|IV|V|VI|VII|VIII|IX|X)\.?\s+[A-Za-z].{2,}$")
@@ -410,7 +421,11 @@ pub fn looks_like_heading(line: &str) -> bool {
         return true;
     }
 
-    if s.chars().all(|c| c.is_uppercase()) && s.len() >= 4 && s.len() <= 40 && s.split_whitespace().count() <= 8 {
+    if s.chars().all(|c| c.is_uppercase())
+        && s.len() >= 4
+        && s.len() <= 40
+        && s.split_whitespace().count() <= 8
+    {
         return true;
     }
 
@@ -437,7 +452,10 @@ pub fn segment_into_sections(text: &str, max_sections: usize) -> Vec<(String, St
             if !cur_buf.is_empty() {
                 sections.push((cur_title.clone(), cur_buf));
             }
-            cur_title = caps.get(2).map(|m| m.as_str().trim().to_string()).unwrap_or_default();
+            cur_title = caps
+                .get(2)
+                .map(|m| m.as_str().trim().to_string())
+                .unwrap_or_default();
             cur_buf = Vec::new();
         } else if looks_like_heading(line) {
             if !cur_buf.is_empty() {
@@ -466,7 +484,10 @@ pub fn segment_into_sections(text: &str, max_sections: usize) -> Vec<(String, St
     if merged.len() > max_sections {
         let truncated = merged[..max_sections].to_vec();
         let mut result = truncated;
-        result.push(("TRUNCATED".to_string(), "...(text truncated)...".to_string()));
+        result.push((
+            "TRUNCATED".to_string(),
+            "...(text truncated)...".to_string(),
+        ));
         result
     } else {
         merged
@@ -556,7 +577,7 @@ mod tests {
     fn make_display_math_patterns() -> Vec<Regex> {
         vec![
             Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").unwrap(),
-        Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").unwrap(),
+            Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").unwrap(),
             Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").unwrap(),
             Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").unwrap(),
             Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").unwrap(),
@@ -603,10 +624,7 @@ mod tests {
             detect_block_type("Figure 1: Architecture overview"),
             BlockType::Caption
         );
-        assert_eq!(
-            detect_block_type("TABLE 2: Results"),
-            BlockType::Caption
-        );
+        assert_eq!(detect_block_type("TABLE 2: Results"), BlockType::Caption);
         assert_eq!(
             detect_block_type("Fig. 5 Neural network"),
             BlockType::Caption
@@ -643,9 +661,11 @@ mod tests {
         assert!(is_display_math("$$ x^2 $$"));
         assert!(is_display_math("\\[ x + y \\]"));
         assert!(!is_display_math("$x^2$"));
-        assert!(is_display_math(r"$$
+        assert!(is_display_math(
+            r"$$
 a &= b + c
-$$"));
+$$"
+        ));
     }
 
     #[test]
@@ -688,7 +708,10 @@ $$"));
 
     #[test]
     fn test_block_type_body() {
-        assert_eq!(detect_block_type("This is a regular paragraph."), BlockType::Body);
+        assert_eq!(
+            detect_block_type("This is a regular paragraph."),
+            BlockType::Body
+        );
         assert_eq!(detect_block_type(""), BlockType::Body);
         assert_eq!(detect_block_type("   "), BlockType::Body);
     }
@@ -720,7 +743,10 @@ $$"));
     fn test_segment_into_sections_truncation() {
         let mut lines = Vec::new();
         for i in 0..25 {
-            lines.push(format!("{}. Section Title {}\n\nContent for section {}.", i, i, i));
+            lines.push(format!(
+                "{}. Section Title {}\n\nContent for section {}.",
+                i, i, i
+            ));
         }
         let text = lines.join("\n\n");
         let sections = segment_into_sections(&text, 5);
@@ -732,8 +758,16 @@ $$"));
     #[test]
     fn test_text_blocks_to_lines() {
         let blocks = vec![
-            TextBlock { block_type: BlockType::Heading, text: "Intro".to_string(), page: 1 },
-            TextBlock { block_type: BlockType::Body, text: "Some text".to_string(), page: 1 },
+            TextBlock {
+                block_type: BlockType::Heading,
+                text: "Intro".to_string(),
+                page: 1,
+            },
+            TextBlock {
+                block_type: BlockType::Body,
+                text: "Some text".to_string(),
+                page: 1,
+            },
         ];
         let lines = text_blocks_to_lines(&blocks);
         assert_eq!(lines, vec!["Intro", "Some text"]);

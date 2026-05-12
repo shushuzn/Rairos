@@ -121,9 +121,9 @@ fn extract_tag(xml: &str, tag: &str) -> Option<String> {
     let start = format!("<{}>", tag);
     let end = format!("</{}>", tag);
     xml.find(&start).and_then(|s| {
-        xml[s + start.len()..].find(&end).map(|e| {
-            xml[s + start.len()..s + start.len() + e].trim().to_string()
-        })
+        xml[s + start.len()..]
+            .find(&end)
+            .map(|e| xml[s + start.len()..s + start.len() + e].trim().to_string())
     })
 }
 
@@ -164,7 +164,8 @@ fn extract_categories(xml: &str) -> Vec<String> {
 }
 
 fn clean_arxiv_title(title: &str) -> String {
-    title.lines()
+    title
+        .lines()
         .map(|l| l.trim())
         .collect::<Vec<_>>()
         .join(" ")
@@ -266,11 +267,17 @@ pub async fn fetch_crossref(doi: &str) -> Result<Paper, ParseError> {
     }
 
     let data: CrossRefResponse = serde_json::from_str(&text)?;
-    let msg = data.message.ok_or_else(|| ParseError::NotFound(doi.to_string()))?;
+    let msg = data
+        .message
+        .ok_or_else(|| ParseError::NotFound(doi.to_string()))?;
 
-    let title = msg.title.and_then(|t| t.into_iter().next()).unwrap_or_default();
+    let title = msg
+        .title
+        .and_then(|t| t.into_iter().next())
+        .unwrap_or_default();
     let abstract_text = msg.abstract_text.unwrap_or_default();
-    let authors: Vec<String> = msg.authors
+    let authors: Vec<String> = msg
+        .authors
         .unwrap_or_default()
         .into_iter()
         .map(|a| {
@@ -350,8 +357,7 @@ struct SemanticAuthor {
 pub async fn fetch_semantic(paper_id: &str) -> Result<Paper, ParseError> {
     let url = format!(
         "{}/paper/{}?fields=title,abstract,authors,year,citationCount,fieldsOfStudy,externalIds",
-        SEMANTIC_API,
-        paper_id
+        SEMANTIC_API, paper_id
     );
 
     let client = reqwest::Client::builder()
@@ -371,12 +377,12 @@ pub async fn fetch_semantic(paper_id: &str) -> Result<Paper, ParseError> {
         return Err(ParseError::NotFound(paper_id.to_string()));
     }
 
-    let arxiv_id = data.external_ids.as_ref()
-        .and_then(|ids| ids.arxiv.clone());
+    let arxiv_id = data.external_ids.as_ref().and_then(|ids| ids.arxiv.clone());
 
     let abstract_text = data.abstract_text.unwrap_or_default();
 
-    let authors: Vec<String> = data.authors
+    let authors: Vec<String> = data
+        .authors
         .unwrap_or_default()
         .into_iter()
         .filter_map(|a| a.name)
@@ -428,7 +434,10 @@ impl std::fmt::Display for Source {
 pub fn detect_source(id: &str) -> Option<Source> {
     if id.starts_with("10.") {
         Some(Source::CrossRef)
-    } else if id.chars().all(|c| c.is_ascii_digit() || c == '.' || c == '-') {
+    } else if id
+        .chars()
+        .all(|c| c.is_ascii_digit() || c == '.' || c == '-')
+    {
         Some(Source::ArXiv)
     } else if id.len() == 40 && id.chars().all(|c| c.is_ascii_hexdigit()) {
         Some(Source::SemanticScholar)
@@ -465,7 +474,11 @@ pub fn normalize_doi(s: &str) -> Option<String> {
     let re_url = regex::Regex::new(r"^https?://(dx\.)?doi\.org/").unwrap();
     let normalized = re_url.replace(s.trim(), "");
     let result = normalized.trim().trim_end_matches('.').to_string();
-    if result.starts_with("10.") { Some(result) } else { None }
+    if result.starts_with("10.") {
+        Some(result)
+    } else {
+        None
+    }
 }
 
 /// Normalize an arXiv ID (handles URLs, DOIs, bare IDs)
@@ -530,7 +543,10 @@ mod tests {
 
     #[test]
     fn test_clean_arxiv_title() {
-        assert_eq!(clean_arxiv_title("Attention\nIs All\nYou Need"), "Attention Is All You Need");
+        assert_eq!(
+            clean_arxiv_title("Attention\nIs All\nYou Need"),
+            "Attention Is All You Need"
+        );
         assert_eq!(clean_arxiv_title("  Title  "), "Title");
     }
 
@@ -560,21 +576,48 @@ mod tests {
 
     #[test]
     fn test_normalize_doi() {
-        assert_eq!(normalize_doi("10.1038/nature12373"), Some("10.1038/nature12373".to_string()));
-        assert_eq!(normalize_doi("https://doi.org/10.1038/nature12373"), Some("10.1038/nature12373".to_string()));
-        assert_eq!(normalize_doi("https://dx.doi.org/10.1038/nature12373."), Some("10.1038/nature12373".to_string()));
+        assert_eq!(
+            normalize_doi("10.1038/nature12373"),
+            Some("10.1038/nature12373".to_string())
+        );
+        assert_eq!(
+            normalize_doi("https://doi.org/10.1038/nature12373"),
+            Some("10.1038/nature12373".to_string())
+        );
+        assert_eq!(
+            normalize_doi("https://dx.doi.org/10.1038/nature12373."),
+            Some("10.1038/nature12373".to_string())
+        );
         assert_eq!(normalize_doi(""), None);
         assert_eq!(normalize_doi("not-a-doi"), None);
     }
 
     #[test]
     fn test_normalize_arxiv_id() {
-        assert_eq!(normalize_arxiv_id("2301.00001"), Some("2301.00001".to_string()));
-        assert_eq!(normalize_arxiv_id("2301.00001v1"), Some("2301.00001v1".to_string()));
-        assert_eq!(normalize_arxiv_id("https://arxiv.org/abs/2301.00001v1"), Some("2301.00001v1".to_string()));
-        assert_eq!(normalize_arxiv_id("https://arxiv.org/pdf/2301.00001.pdf"), Some("2301.00001".to_string()));
-        assert_eq!(normalize_arxiv_id("cs/1234567"), Some("cs/1234567".to_string()));
-        assert_eq!(normalize_arxiv_id("10.48550/arXiv.2301.00001"), Some("2301.00001".to_string()));
+        assert_eq!(
+            normalize_arxiv_id("2301.00001"),
+            Some("2301.00001".to_string())
+        );
+        assert_eq!(
+            normalize_arxiv_id("2301.00001v1"),
+            Some("2301.00001v1".to_string())
+        );
+        assert_eq!(
+            normalize_arxiv_id("https://arxiv.org/abs/2301.00001v1"),
+            Some("2301.00001v1".to_string())
+        );
+        assert_eq!(
+            normalize_arxiv_id("https://arxiv.org/pdf/2301.00001.pdf"),
+            Some("2301.00001".to_string())
+        );
+        assert_eq!(
+            normalize_arxiv_id("cs/1234567"),
+            Some("cs/1234567".to_string())
+        );
+        assert_eq!(
+            normalize_arxiv_id("10.48550/arXiv.2301.00001"),
+            Some("2301.00001".to_string())
+        );
         assert_eq!(normalize_arxiv_id(""), None);
         assert_eq!(normalize_arxiv_id("not-an-arxiv-id"), None);
     }

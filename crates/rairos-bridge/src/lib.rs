@@ -99,10 +99,7 @@ pub fn get_bridges() -> Vec<Bridge> {
                         })
                         .unwrap_or_default();
 
-                    let shared: Vec<String> = kw_a
-                        .intersection(&kw_b)
-                        .cloned()
-                        .collect();
+                    let shared: Vec<String> = kw_a.intersection(&kw_b).cloned().collect();
 
                     if shared.len() >= 2 {
                         let title_b = cap_b
@@ -111,12 +108,9 @@ pub fn get_bridges() -> Vec<Bridge> {
                             .unwrap_or("")
                             .to_string();
 
-                        let combined: std::collections::HashSet<_> = kw_a
-                            .union(&kw_b)
-                            .cloned()
-                            .collect();
-                        let strength = (shared.len() as f64)
-                            / (combined.len().max(1) as f64);
+                        let combined: std::collections::HashSet<_> =
+                            kw_a.union(&kw_b).cloned().collect();
+                        let strength = (shared.len() as f64) / (combined.len().max(1) as f64);
 
                         bridges.push(Bridge {
                             type_a: type_a.clone(),
@@ -132,7 +126,11 @@ pub fn get_bridges() -> Vec<Bridge> {
         }
     }
 
-    bridges.sort_by(|a, b| b.strength.partial_cmp(&a.strength).unwrap_or(std::cmp::Ordering::Equal));
+    bridges.sort_by(|a, b| {
+        b.strength
+            .partial_cmp(&a.strength)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     bridges
 }
 

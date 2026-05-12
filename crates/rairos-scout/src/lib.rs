@@ -111,9 +111,8 @@ impl SearchCache {
 
     #[allow(dead_code)]
     fn clear_expired(&mut self) {
-        self.entries.retain(|_, entry| {
-            entry.timestamp.elapsed() < Duration::from_secs(CACHE_TTL_SECS)
-        });
+        self.entries
+            .retain(|_, entry| entry.timestamp.elapsed() < Duration::from_secs(CACHE_TTL_SECS));
     }
 }
 
@@ -175,18 +174,19 @@ pub async fn fetch_rss_feed(feed_url: &str, feed_name: &str, max_items: usize) -
                 .iter()
                 .filter_map(|a| a.name.clone())
                 .collect();
-            let summary = entry
-                .summary
-                .or(entry.description)
-                .unwrap_or_default();
+            let summary = entry.summary.or(entry.description).unwrap_or_default();
             let published = entry.published.unwrap_or_default();
-            let link_hash = entry.link.as_ref().map(|l| {
-                use std::collections::hash_map::DefaultHasher;
-                use std::hash::{Hash, Hasher};
-                let mut hasher = DefaultHasher::new();
-                l.hash(&mut hasher);
-                hasher.finish() % 10_000_000
-            }).unwrap_or(0);
+            let link_hash = entry
+                .link
+                .as_ref()
+                .map(|l| {
+                    use std::collections::hash_map::DefaultHasher;
+                    use std::hash::{Hash, Hasher};
+                    let mut hasher = DefaultHasher::new();
+                    l.hash(&mut hasher);
+                    hasher.finish() % 10_000_000
+                })
+                .unwrap_or(0);
             CachedPaper {
                 arxiv_id: format!("news_{}_{:07}", feed_name, link_hash),
                 title: entry.title.unwrap_or_default(),
@@ -252,7 +252,8 @@ pub fn score_article(
             .filter(|kw| text.contains(&kw.to_lowercase()))
             .count() as f64;
 
-        let mut match_score = capsule.trigger_match(topic, &capsule.trigger_gap_type, &capsule.trigger_keywords);
+        let mut match_score =
+            capsule.trigger_match(topic, &capsule.trigger_gap_type, &capsule.trigger_keywords);
         if kw_overlap > 0.0 {
             match_score = match_score.max(0.3 + kw_overlap * 0.15).min(0.8);
         }
@@ -428,7 +429,10 @@ pub fn render_scout_results(results: &[ScoutResult]) -> String {
         return "  No matching papers found.".to_string();
     }
 
-    let mut lines = vec![format!("\n  Found {} items matching Gene Pool interests:\n", results.len())];
+    let mut lines = vec![format!(
+        "\n  Found {} items matching Gene Pool interests:\n",
+        results.len()
+    )];
     for r in results {
         let sev = r.match_score;
         let icon = if sev >= 0.5 {
@@ -438,7 +442,13 @@ pub fn render_scout_results(results: &[ScoutResult]) -> String {
         } else {
             "⚪"
         };
-        let authors_str = r.authors.iter().take(2).cloned().collect::<Vec<_>>().join(", ");
+        let authors_str = r
+            .authors
+            .iter()
+            .take(2)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(", ");
         let source_tag = if r.source != "arxiv" {
             format!("[{}]", r.source)
         } else {
@@ -451,7 +461,10 @@ pub fn render_scout_results(results: &[ScoutResult]) -> String {
         };
         lines.push(format!("  {} {} [{}] {}", icon, source_tag, r.rank, title));
         lines.push(format!("       {} · {}", r.published, authors_str));
-        lines.push(format!("       Match: {:.2} ← {}", r.match_score, r.matched_gap_type));
+        lines.push(format!(
+            "       Match: {:.2} ← {}",
+            r.match_score, r.matched_gap_type
+        ));
         let gap_title = if r.matched_gap_title.len() > 50 {
             format!("{}...", &r.matched_gap_title[..50])
         } else {

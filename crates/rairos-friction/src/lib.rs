@@ -158,7 +158,9 @@ impl FrictionEvent {
             query: query.to_string(),
             step: step.to_string(),
             error: error.to_string(),
-            resolution: resolution.map(|r| r.as_str().to_string()).unwrap_or_default(),
+            resolution: resolution
+                .map(|r| r.as_str().to_string())
+                .unwrap_or_default(),
             duration_seconds,
             retry_count,
             abandoned,
@@ -282,7 +284,11 @@ impl FrictionTracker {
             notes,
         );
         let line = serde_json::to_string(&event).unwrap_or_default();
-        if let Ok(mut f) = OpenOptions::new().create(true).append(true).open(&self.events_file) {
+        if let Ok(mut f) = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&self.events_file)
+        {
             let _ = writeln!(f, "{}", line);
         }
         event
@@ -555,9 +561,45 @@ mod tests {
     fn test_get_events_filtered_by_type() {
         let tmp = tempfile::TempDir::new().unwrap();
         let tracker = FrictionTracker::new(Some(PathBuf::from(tmp.path())));
-        tracker.record(FrictionType::Command, FrictionSeverity::Low, "c1", "", "", "", None, 0, 0, false, "");
-        tracker.record(FrictionType::Workflow, FrictionSeverity::Low, "c2", "", "", "", None, 0, 0, false, "");
-        tracker.record(FrictionType::Command, FrictionSeverity::Low, "c3", "", "", "", None, 0, 0, false, "");
+        tracker.record(
+            FrictionType::Command,
+            FrictionSeverity::Low,
+            "c1",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
+        tracker.record(
+            FrictionType::Workflow,
+            FrictionSeverity::Low,
+            "c2",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
+        tracker.record(
+            FrictionType::Command,
+            FrictionSeverity::Low,
+            "c3",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
         let cmd_events = tracker.get_events(Some(FrictionType::Command), 30, 100);
         assert_eq!(cmd_events.len(), 2);
         let _ = tmp;
@@ -577,9 +619,45 @@ mod tests {
     fn test_get_summary_basic() {
         let tmp = tempfile::TempDir::new().unwrap();
         let tracker = FrictionTracker::new(Some(PathBuf::from(tmp.path())));
-        tracker.record(FrictionType::Command, FrictionSeverity::High, "search", "", "", "", None, 0, 0, false, "");
-        tracker.record(FrictionType::Command, FrictionSeverity::Low, "search", "", "", "", None, 0, 0, false, "");
-        tracker.record(FrictionType::Retrieval, FrictionSeverity::Medium, "find", "", "", "", Some(Resolution::WorkedAround), 0, 0, false, "");
+        tracker.record(
+            FrictionType::Command,
+            FrictionSeverity::High,
+            "search",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
+        tracker.record(
+            FrictionType::Command,
+            FrictionSeverity::Low,
+            "search",
+            "",
+            "",
+            "",
+            None,
+            0,
+            0,
+            false,
+            "",
+        );
+        tracker.record(
+            FrictionType::Retrieval,
+            FrictionSeverity::Medium,
+            "find",
+            "",
+            "",
+            "",
+            Some(Resolution::WorkedAround),
+            0,
+            0,
+            false,
+            "",
+        );
         let summary = tracker.get_summary(30);
         assert_eq!(summary.total_events, 3);
         assert_eq!(summary.by_type.get("command"), Some(&2));

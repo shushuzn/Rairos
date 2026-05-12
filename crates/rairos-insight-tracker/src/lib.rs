@@ -269,7 +269,10 @@ impl EvolutionTracker {
         }
 
         if !event.topic.is_empty() {
-            *profile.topic_frequency.entry(event.topic.clone()).or_insert(0) += 1;
+            *profile
+                .topic_frequency
+                .entry(event.topic.clone())
+                .or_insert(0) += 1;
             if !profile.topics_explored.contains(&event.topic) {
                 profile.topics_explored.push(event.topic.clone());
             }
@@ -280,8 +283,14 @@ impl EvolutionTracker {
 
         if !event.gap_type.is_empty() {
             let weight = self.get_event_weight(event);
-            let current = profile.gap_type_preferences.get(&event.gap_type).copied().unwrap_or(0.0);
-            profile.gap_type_preferences.insert(event.gap_type.clone(), current + weight);
+            let current = profile
+                .gap_type_preferences
+                .get(&event.gap_type)
+                .copied()
+                .unwrap_or(0.0);
+            profile
+                .gap_type_preferences
+                .insert(event.gap_type.clone(), current + weight);
         }
 
         profile.preference_tags = self.compute_preference_tags(&profile);
@@ -307,7 +316,8 @@ impl EvolutionTracker {
         let mut tags = HashMap::new();
 
         if !profile.gap_type_preferences.is_empty() {
-            let top_type = profile.gap_type_preferences
+            let top_type = profile
+                .gap_type_preferences
                 .iter()
                 .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
                 .map(|(k, _)| k.clone())
@@ -315,7 +325,13 @@ impl EvolutionTracker {
 
             let total_score: f64 = profile.gap_type_preferences.values().map(|v| v.abs()).sum();
             if total_score > 0.0 {
-                let top_confidence = (profile.gap_type_preferences.get(&top_type).unwrap_or(&0.0).abs() / total_score).min(1.0);
+                let top_confidence = (profile
+                    .gap_type_preferences
+                    .get(&top_type)
+                    .unwrap_or(&0.0)
+                    .abs()
+                    / total_score)
+                    .min(1.0);
 
                 if top_type.contains("method") {
                     tags.insert("method_focused".to_string(), top_confidence);
@@ -339,14 +355,26 @@ impl EvolutionTracker {
         }
 
         if profile.hypothesizes as f64 > profile.views as f64 * 0.2 {
-            let hypo_rate = (profile.hypothesizes as f64 / (profile.views + profile.accepts).max(1) as f64).min(1.0);
+            let hypo_rate = (profile.hypothesizes as f64
+                / (profile.views + profile.accepts).max(1) as f64)
+                .min(1.0);
             tags.insert("high_risk".to_string(), hypo_rate);
         }
 
         if profile.topics_explored.len() >= 3 {
             let topics_str = profile.topics_explored.join(" ").to_lowercase();
-            let domain_indicators = ["nlp", "vision", "audio", "graph", "reinforcement", "supervised"];
-            let detected: usize = domain_indicators.iter().filter(|d| topics_str.contains(*d)).count();
+            let domain_indicators = [
+                "nlp",
+                "vision",
+                "audio",
+                "graph",
+                "reinforcement",
+                "supervised",
+            ];
+            let detected: usize = domain_indicators
+                .iter()
+                .filter(|d| topics_str.contains(*d))
+                .count();
             if detected >= 2 {
                 let confidence = (detected as f64 / domain_indicators.len() as f64).min(1.0);
                 tags.insert("cross_domain".to_string(), confidence);
@@ -420,7 +448,8 @@ impl EvolutionTracker {
 
         let topics_set: std::collections::HashSet<_> = profile.topics_explored.iter().collect();
         if topics_set.len() > 5 {
-            *dimension_scores.entry("cross_domain").or_insert(0.0) = (topics_set.len() as f64 * 0.3).min(3.0);
+            *dimension_scores.entry("cross_domain").or_insert(0.0) =
+                (topics_set.len() as f64 * 0.3).min(3.0);
         }
 
         let method_score = gap_prefs.get("method_limitation").copied().unwrap_or(0.0);
@@ -430,7 +459,10 @@ impl EvolutionTracker {
             *dimension_scores.entry("low_risk").or_insert(0.0) = method_score.abs() * 2.0;
         }
 
-        let max_raw = dimension_scores.values().cloned().fold(0.01f64, |a, b| a.max(b));
+        let max_raw = dimension_scores
+            .values()
+            .cloned()
+            .fold(0.01f64, |a, b| a.max(b));
 
         let labels: HashMap<&str, &str> = HashMap::from([
             ("method_focused", "Method Hunter"),
@@ -457,12 +489,15 @@ impl EvolutionTracker {
         let mut dimensions = HashMap::new();
         for (dim, raw) in &dimension_scores {
             let norm = (*raw / max_raw).min(1.0);
-            dimensions.insert(dim.to_string(), serde_json::json!({
-                "raw": (*raw * 1000.0).round() / 1000.0,
-                "norm": (norm * 100.0).round() / 100.0,
-                "label": labels.get(dim).unwrap_or(dim),
-                "desc": descs.get(dim).unwrap_or(&""),
-            }));
+            dimensions.insert(
+                dim.to_string(),
+                serde_json::json!({
+                    "raw": (*raw * 1000.0).round() / 1000.0,
+                    "norm": (norm * 100.0).round() / 100.0,
+                    "label": labels.get(dim).unwrap_or(dim),
+                    "desc": descs.get(dim).unwrap_or(&""),
+                }),
+            );
         }
 
         let dominant = dimension_scores
@@ -543,7 +578,8 @@ impl EvolutionTracker {
         let scores = self.get_all_scores_cached();
         let mut sorted: Vec<_> = scores.gap_types.iter().collect();
         sorted.sort_by(|a, b| b.1.partial_cmp(a.1).unwrap());
-        sorted.into_iter()
+        sorted
+            .into_iter()
             .take(limit)
             .filter(|(_, score)| **score > 0.0)
             .map(|(gt, _)| gt.clone())
@@ -552,7 +588,9 @@ impl EvolutionTracker {
 
     pub fn get_disliked_gap_types(&mut self, limit: usize) -> Vec<String> {
         let scores = self.get_all_scores_cached();
-        scores.gap_types.iter()
+        scores
+            .gap_types
+            .iter()
             .filter(|(_, score)| **score < -0.05)
             .take(limit)
             .map(|(gt, _)| gt.clone())
@@ -566,14 +604,19 @@ impl EvolutionTracker {
 
     pub fn get_keyword_score(&mut self, keyword: &str) -> f64 {
         let scores = self.get_all_scores_cached();
-        scores.keywords.get(&keyword.to_lowercase()).copied().unwrap_or(0.0)
+        scores
+            .keywords
+            .get(&keyword.to_lowercase())
+            .copied()
+            .unwrap_or(0.0)
     }
 
     pub fn get_top_keywords(&mut self, limit: usize) -> Vec<String> {
         let scores = self.get_all_scores_cached();
         let mut sorted: Vec<_> = scores.keywords.iter().collect();
         sorted.sort_by(|a, b| b.1.partial_cmp(a.1).unwrap());
-        sorted.into_iter()
+        sorted
+            .into_iter()
             .take(limit)
             .filter(|(_, score)| **score > 0.05)
             .map(|(kw, _)| kw.clone())
@@ -589,23 +632,46 @@ impl EvolutionTracker {
         let recent = self.get_recent_events_impl(100);
 
         let mut stats = HashMap::new();
-        stats.insert("total_events".to_string(), serde_json::json!(profile.total_events));
-        stats.insert("total_sessions".to_string(), serde_json::json!(profile.total_sessions));
-        stats.insert("total_topics".to_string(), serde_json::json!(profile.topics_explored.len()));
+        stats.insert(
+            "total_events".to_string(),
+            serde_json::json!(profile.total_events),
+        );
+        stats.insert(
+            "total_sessions".to_string(),
+            serde_json::json!(profile.total_sessions),
+        );
+        stats.insert(
+            "total_topics".to_string(),
+            serde_json::json!(profile.topics_explored.len()),
+        );
         stats.insert("recent_events".to_string(), serde_json::json!(recent.len()));
-        stats.insert("preference_tags".to_string(), serde_json::json!(profile.preference_tags));
-        stats.insert("top_gap_types".to_string(), serde_json::json!(self.get_preferred_gap_types(5)));
+        stats.insert(
+            "preference_tags".to_string(),
+            serde_json::json!(profile.preference_tags),
+        );
+        stats.insert(
+            "top_gap_types".to_string(),
+            serde_json::json!(self.get_preferred_gap_types(5)),
+        );
 
         let mut topic_freq = profile.topic_frequency.iter().collect::<Vec<_>>();
         topic_freq.sort_by(|a, b| b.1.cmp(a.1));
-        stats.insert("topic_frequency".to_string(), serde_json::json!(topic_freq.into_iter().take(5).collect::<HashMap<_, _>>()));
+        stats.insert(
+            "topic_frequency".to_string(),
+            serde_json::json!(topic_freq.into_iter().take(5).collect::<HashMap<_, _>>()),
+        );
 
         if !recent.is_empty() {
             let mut action_counts: HashMap<String, i32> = HashMap::new();
             for e in &recent {
-                *action_counts.entry(e.action.as_str().to_string()).or_insert(0) += 1;
+                *action_counts
+                    .entry(e.action.as_str().to_string())
+                    .or_insert(0) += 1;
             }
-            stats.insert("recent_action_breakdown".to_string(), serde_json::json!(action_counts));
+            stats.insert(
+                "recent_action_breakdown".to_string(),
+                serde_json::json!(action_counts),
+            );
         }
 
         stats
@@ -627,15 +693,55 @@ impl EvolutionTracker {
                     timestamp: data.get("timestamp")?.as_str()?.to_string(),
                     topic: data.get("topic")?.as_str()?.to_string(),
                     action,
-                    gap_type: data.get("gap_type").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    gap_title: data.get("gap_title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    gap_description: data.get("gap_description").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    hypothesis_id: data.get("hypothesis_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    question_id: data.get("question_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    paper_ids: data.get("paper_ids").and_then(|v| v.as_array()).map(|arr| arr.iter().filter_map(|x| x.as_str()).map(|s| s.to_string()).collect()).unwrap_or_default(),
-                    duration_seconds: data.get("duration_seconds").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
-                    notes: data.get("notes").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                    insight_card_id: data.get("insight_card_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                    gap_type: data
+                        .get("gap_type")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    gap_title: data
+                        .get("gap_title")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    gap_description: data
+                        .get("gap_description")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    hypothesis_id: data
+                        .get("hypothesis_id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    question_id: data
+                        .get("question_id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    paper_ids: data
+                        .get("paper_ids")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| {
+                            arr.iter()
+                                .filter_map(|x| x.as_str())
+                                .map(|s| s.to_string())
+                                .collect()
+                        })
+                        .unwrap_or_default(),
+                    duration_seconds: data
+                        .get("duration_seconds")
+                        .and_then(|v| v.as_i64())
+                        .unwrap_or(0) as i32,
+                    notes: data
+                        .get("notes")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    insight_card_id: data
+                        .get("insight_card_id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
                 })
             })
             .collect();
@@ -664,7 +770,8 @@ impl EvolutionTracker {
         let export_path = path.unwrap_or_else(|| {
             let ts = self.get_timestamp().replace(":", "-").replace(".", "-");
             let uid = &uuid::Uuid::new_v4().to_string()[..6];
-            self.data_dir.join(format!("profile_backup_{}_{}", &ts[..19], uid))
+            self.data_dir
+                .join(format!("profile_backup_{}_{}", &ts[..19], uid))
         });
 
         if let Some(parent) = export_path.parent() {
@@ -699,17 +806,33 @@ impl EvolutionTracker {
             self.score_cache = None;
             merged
         } else {
-            let profile: UserPreferenceProfile = serde_json::from_value(serde_json::to_value(&data).unwrap_or_default()).unwrap_or_default();
+            let profile: UserPreferenceProfile =
+                serde_json::from_value(serde_json::to_value(&data).unwrap_or_default())
+                    .unwrap_or_default();
             self.save_profile(&profile);
             self.score_cache = None;
             profile
         }
     }
 
-    fn merge_profiles_impl(&self, base: &UserPreferenceProfile, incoming: &HashMap<String, serde_json::Value>) -> UserPreferenceProfile {
+    fn merge_profiles_impl(
+        &self,
+        base: &UserPreferenceProfile,
+        incoming: &HashMap<String, serde_json::Value>,
+    ) -> UserPreferenceProfile {
         let mut result = base.clone();
-        result.total_sessions = result.total_sessions.max(incoming.get("total_sessions").and_then(|v| v.as_i64()).unwrap_or(0) as i32);
-        result.total_events = result.total_events.max(incoming.get("total_events").and_then(|v| v.as_i64()).unwrap_or(0) as i32);
+        result.total_sessions = result.total_sessions.max(
+            incoming
+                .get("total_sessions")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32,
+        );
+        result.total_events = result.total_events.max(
+            incoming
+                .get("total_events")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32,
+        );
         result
     }
 }
@@ -718,11 +841,10 @@ fn extract_keywords_simple(text: &str) -> Vec<String> {
     let text_lower = text.to_lowercase();
     let words: Vec<&str> = text_lower.split_whitespace().collect();
     let stopwords = [
-        "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
-        "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
-        "being", "have", "has", "had", "do", "does", "did", "will", "would",
-        "could", "should", "may", "might", "must", "shall", "can", "need",
-        "that", "which", "who", "whom", "this", "these", "those", "it", "its",
+        "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by",
+        "from", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do",
+        "does", "did", "will", "would", "could", "should", "may", "might", "must", "shall", "can",
+        "need", "that", "which", "who", "whom", "this", "these", "those", "it", "its",
     ];
     words
         .into_iter()
@@ -751,7 +873,13 @@ mod tests {
     #[test]
     fn test_record_gap_view() {
         let (mut tracker, _temp_dir) = create_test_tracker();
-        let event = tracker.record_gap_view("NLP", "method_limitation", "Attention improvements", "Better attention", 30);
+        let event = tracker.record_gap_view(
+            "NLP",
+            "method_limitation",
+            "Attention improvements",
+            "Better attention",
+            30,
+        );
         assert_eq!(event.topic, "NLP");
         assert_eq!(event.action, ExplorationAction::Viewed);
     }
@@ -759,14 +887,24 @@ mod tests {
     #[test]
     fn test_record_gap_accept() {
         let (mut tracker, _temp_dir) = create_test_tracker();
-        let event = tracker.record_gap_accept("NLP", "method_limitation", "Attention improvements", "Better attention");
+        let event = tracker.record_gap_accept(
+            "NLP",
+            "method_limitation",
+            "Attention improvements",
+            "Better attention",
+        );
         assert_eq!(event.action, ExplorationAction::Accepted);
     }
 
     #[test]
     fn test_record_gap_reject() {
         let (mut tracker, _temp_dir) = create_test_tracker();
-        let event = tracker.record_gap_reject("NLP", "method_limitation", "Attention improvements", "Not relevant");
+        let event = tracker.record_gap_reject(
+            "NLP",
+            "method_limitation",
+            "Attention improvements",
+            "Not relevant",
+        );
         assert_eq!(event.action, ExplorationAction::Rejected);
     }
 
@@ -811,7 +949,12 @@ mod tests {
     #[test]
     fn test_get_keyword_score() {
         let (mut tracker, _temp_dir) = create_test_tracker();
-        tracker.record_gap_accept("NLP", "method_limitation", "Transformers and attention mechanism", "");
+        tracker.record_gap_accept(
+            "NLP",
+            "method_limitation",
+            "Transformers and attention mechanism",
+            "",
+        );
         let score = tracker.get_keyword_score("transformers");
         assert!(score > 0.0);
     }

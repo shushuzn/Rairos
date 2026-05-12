@@ -302,9 +302,9 @@ impl AutonomousOrchestrator {
     pub async fn check_subscriptions(&self) -> Result<HashMap<String, Vec<PaperInfo>>> {
         self.init_components().await?;
         let db_guard = self.db.read().await;
-        let db = db_guard.as_ref().ok_or_else(|| {
-            OrchestratorError::NotInitialized("database".to_string())
-        })?;
+        let db = db_guard
+            .as_ref()
+            .ok_or_else(|| OrchestratorError::NotInitialized("database".to_string()))?;
 
         let mut result: HashMap<String, Vec<PaperInfo>> = HashMap::new();
 
@@ -389,9 +389,9 @@ impl AutonomousOrchestrator {
     ) -> Result<Vec<ScoredGap>> {
         self.init_components().await?;
         let tracker_guard = self.tracker.read().await;
-        let tracker = tracker_guard.as_ref().ok_or_else(|| {
-            OrchestratorError::NotInitialized("tracker".to_string())
-        })?;
+        let tracker = tracker_guard
+            .as_ref()
+            .ok_or_else(|| OrchestratorError::NotInitialized("tracker".to_string()))?;
 
         let profile = tracker.get_profile();
 
@@ -499,9 +499,9 @@ impl AutonomousOrchestrator {
     ) -> Result<(Vec<ResearchGap>, FilterStats)> {
         self.init_components().await?;
         let db_guard = self.db.read().await;
-        let db = db_guard.as_ref().ok_or_else(|| {
-            OrchestratorError::NotInitialized("database".to_string())
-        })?;
+        let db = db_guard
+            .as_ref()
+            .ok_or_else(|| OrchestratorError::NotInitialized("database".to_string()))?;
 
         // Get all existing gaps from DB
         let existing_gaps = db
@@ -630,12 +630,8 @@ impl AutonomousOrchestrator {
 
             // Generate alerts
             let trigger = new_papers.first().unwrap();
-            let alerts = self.generate_alerts(
-                scored.clone(),
-                &research_result.session_id,
-                topic,
-                trigger,
-            );
+            let alerts =
+                self.generate_alerts(scored.clone(), &research_result.session_id, topic, trigger);
 
             for alert in &alerts {
                 self.send_webhook(alert);
@@ -667,14 +663,13 @@ impl AutonomousOrchestrator {
         for alert in &all_alerts {
             state.alerts.insert(0, alert.clone());
         }
-        state.alerts.truncate(self.config.max_alerts_stored as usize);
+        state
+            .alerts
+            .truncate(self.config.max_alerts_stored as usize);
         state.last_check = Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string();
         let _ = save_state(&state);
 
-        tracing::info!(
-            "[Orchestrator] Cycle complete: {} alerts",
-            all_alerts.len()
-        );
+        tracing::info!("[Orchestrator] Cycle complete: {} alerts", all_alerts.len());
         Ok(all_alerts)
     }
 
@@ -824,7 +819,10 @@ impl AutonomousOrchestrator {
             "interval_minutes".to_string(),
             serde_json::json!(state.interval_minutes),
         );
-        status.insert("last_check".to_string(), serde_json::json!(state.last_check));
+        status.insert(
+            "last_check".to_string(),
+            serde_json::json!(state.last_check),
+        );
         status.insert(
             "alerts_count".to_string(),
             serde_json::json!(state.alerts.len()),
@@ -934,7 +932,11 @@ mod tests {
 
     #[test]
     fn test_scored_gap_serde() {
-        let gap = ResearchGap::new("method_limitation", "Scaling law breakdown at 10B params", "HIGH");
+        let gap = ResearchGap::new(
+            "method_limitation",
+            "Scaling law breakdown at 10B params",
+            "HIGH",
+        );
         let scored = ScoredGap {
             gap: gap.clone(),
             gap_type: "method_limitation".to_string(),

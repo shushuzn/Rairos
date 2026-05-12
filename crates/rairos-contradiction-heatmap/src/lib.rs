@@ -165,10 +165,12 @@ pub fn compute_paper_contradictions() -> ContradMap {
             (neg_id, pos_id, "negative"),
         ] {
             if pid != "?" {
-                let entry = by_paper.entry(pid).or_insert_with(|| PaperContradictionInfo {
-                    count: 0,
-                    contradictions: Vec::new(),
-                });
+                let entry = by_paper
+                    .entry(pid)
+                    .or_insert_with(|| PaperContradictionInfo {
+                        count: 0,
+                        contradictions: Vec::new(),
+                    });
                 entry.count += 1;
                 entry.contradictions.push(ContradictionEntry {
                     gap_type: gap_type.clone(),
@@ -192,10 +194,7 @@ fn badge_color(count: usize) -> &'static str {
     }
 }
 
-pub fn render_heatmap_html(
-    papers: &[serde_json::Value],
-    contrad_map: &ContradMap,
-) -> String {
+pub fn render_heatmap_html(papers: &[serde_json::Value], contrad_map: &ContradMap) -> String {
     if papers.is_empty() {
         return "<p>No papers yet.</p>".to_string();
     }
@@ -215,7 +214,12 @@ pub fn render_heatmap_html(
                     .iter()
                     .take(5)
                     .map(|c| {
-                        let polarity_short = c.polarity.chars().take(3).collect::<String>().to_uppercase();
+                        let polarity_short = c
+                            .polarity
+                            .chars()
+                            .take(3)
+                            .collect::<String>()
+                            .to_uppercase();
                         let partner_short = if c.partner_id.len() > 12 {
                             format!("{}...", &c.partner_id[..12])
                         } else {
@@ -262,13 +266,7 @@ pub fn render_heatmap_html(
              <div class=\"heatmap-card-title\">{}</div>\
              <div class=\"heatmap-card-count\">{} &#128293;</div>\
              </div>",
-            bg,
-            color,
-            border_color,
-            tooltip_text,
-            primary_cat,
-            title_short,
-            count
+            bg, color, border_color, tooltip_text, primary_cat, title_short, count
         ));
     }
 
@@ -276,10 +274,15 @@ pub fn render_heatmap_html(
     lines.push("<style>".to_string());
     lines.push(".heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }".to_string());
     lines.push(".heatmap-card { border-radius: 6px; padding: 12px; border: 1.5px solid #bdc3c7; cursor: help; transition: transform 0.1s; }".to_string());
-    lines.push(".heatmap-card:hover { transform: scale(1.02); z-index: 1; position: relative; }".to_string());
+    lines.push(
+        ".heatmap-card:hover { transform: scale(1.02); z-index: 1; position: relative; }"
+            .to_string(),
+    );
     lines.push(".heatmap-card-cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; opacity: 0.8; }".to_string());
     lines.push(".heatmap-card-title { font-size: 12px; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }".to_string());
-    lines.push(".heatmap-card-count { font-size: 11px; font-weight: 700; text-align: right; }".to_string());
+    lines.push(
+        ".heatmap-card-count { font-size: 11px; font-weight: 700; text-align: right; }".to_string(),
+    );
     lines.push("</style>".to_string());
 
     lines.join("\n")

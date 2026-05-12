@@ -114,7 +114,10 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
         let mut max_overlap = 0.0_f64;
         let cap_id = cap.get("capsule_id").and_then(|v| v.as_str()).unwrap_or("");
         for other in &capsules {
-            let other_id = other.get("capsule_id").and_then(|v| v.as_str()).unwrap_or("");
+            let other_id = other
+                .get("capsule_id")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
             if other_id == cap_id {
                 continue;
             }
@@ -197,7 +200,13 @@ pub fn render_bold_vault_html() -> String {
         } else {
             &c.gap_title
         };
-        let kw_str = c.trigger_keywords.iter().take(4).map(|s| s.as_str()).collect::<Vec<_>>().join(", ");
+        let kw_str = c
+            .trigger_keywords
+            .iter()
+            .take(4)
+            .map(|s| s.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
         lines.push(format!(
             "<div class='bold-card'><div class='bold-reason'>{}</div><div class='bold-title' title='{}'>{}</div><div class='bold-meta'><code>{}</code> &middot; {} &middot; score={:.2} &middot; novelty={:.0}%</div><div class='bold-kw'>{}</div></div>",
             c.reason,
@@ -263,10 +272,7 @@ pub fn get_at_risk_capsules(threshold: i32) -> Vec<AtRiskCapsule> {
             .get("outcome_success_score")
             .and_then(|v| v.as_f64())
             .unwrap_or(0.0);
-        let pinned_ttl = cap
-            .get("pinned_ttl")
-            .and_then(|v| v.as_i64())
-            .unwrap_or(0) as i32;
+        let pinned_ttl = cap.get("pinned_ttl").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
         let trigger_keywords: Vec<String> = cap
             .get("trigger_keywords")
             .and_then(|v| v.as_array())
@@ -404,12 +410,20 @@ pub fn render_at_risk_html() -> String {
     lines.push("</tbody></table>".to_string());
     lines.push("<style>".to_string());
     lines.push(".at-risk-panel { font-family: Georgia, serif; }".to_string());
-    lines.push(".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }".to_string());
+    lines.push(
+        ".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }".to_string(),
+    );
     lines.push(".at-risk-table th, .at-risk-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }".to_string());
     lines.push(".at-risk-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }".to_string());
-    lines.push(".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }".to_string());
+    lines.push(
+        ".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }"
+            .to_string(),
+    );
     lines.push(".btn-keep { background: #7A9E7A; color: white; border: none; }".to_string());
-    lines.push(".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }".to_string());
+    lines.push(
+        ".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }"
+            .to_string(),
+    );
     lines.push("</style>".to_string());
     lines.push("</div>".to_string());
 
@@ -426,8 +440,16 @@ mod tests {
 
     #[test]
     fn test_jaccard_identical() {
-        let a: Vec<String> = vec!["transformer".to_string(), "attention".to_string(), "llm".to_string()];
-        let b: Vec<String> = vec!["transformer".to_string(), "attention".to_string(), "llm".to_string()];
+        let a: Vec<String> = vec![
+            "transformer".to_string(),
+            "attention".to_string(),
+            "llm".to_string(),
+        ];
+        let b: Vec<String> = vec![
+            "transformer".to_string(),
+            "attention".to_string(),
+            "llm".to_string(),
+        ];
         assert!((jaccard(&a, &b) - 1.0).abs() < 1e-9);
     }
 
@@ -440,8 +462,16 @@ mod tests {
 
     #[test]
     fn test_jaccard_partial() {
-        let a: Vec<String> = vec!["transformer".to_string(), "attention".to_string(), "llm".to_string()];
-        let b: Vec<String> = vec!["transformer".to_string(), "rl".to_string(), "policy".to_string()];
+        let a: Vec<String> = vec![
+            "transformer".to_string(),
+            "attention".to_string(),
+            "llm".to_string(),
+        ];
+        let b: Vec<String> = vec![
+            "transformer".to_string(),
+            "rl".to_string(),
+            "policy".to_string(),
+        ];
         let result = jaccard(&a, &b);
         assert!((result - 1.0 / 5.0).abs() < 1e-9);
     }

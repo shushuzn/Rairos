@@ -37,7 +37,10 @@ impl AsyncClient {
         let mut payload = HashMap::new();
         payload.insert("model".to_string(), self.model.clone());
         payload.insert("temperature".to_string(), "0.2".to_string());
-        payload.insert("messages".to_string(), serde_json::to_string(&msgs).unwrap_or_default());
+        payload.insert(
+            "messages".to_string(),
+            serde_json::to_string(&msgs).unwrap_or_default(),
+        );
         payload.insert("stream".to_string(), stream.to_string());
 
         if let Some(prompt) = user_prompt {
@@ -45,7 +48,10 @@ impl AsyncClient {
             user_msg.insert("role".to_string(), "user".to_string());
             user_msg.insert("content".to_string(), prompt.to_string());
             msgs.push(user_msg);
-            payload.insert("messages".to_string(), serde_json::to_string(&msgs).unwrap_or_default());
+            payload.insert(
+                "messages".to_string(),
+                serde_json::to_string(&msgs).unwrap_or_default(),
+            );
         }
 
         let client = reqwest::Client::new();
@@ -67,7 +73,8 @@ impl AsyncClient {
             .await
             .map_err(|e| format!("Failed to parse response: {}", e))?;
 
-        if let Some(content) = body.get("choices")
+        if let Some(content) = body
+            .get("choices")
             .and_then(|c| c.as_array())
             .and_then(|arr| arr.first())
             .and_then(|c| c.get("message"))
@@ -101,7 +108,10 @@ impl AsyncClient {
         let mut payload = HashMap::new();
         payload.insert("model".to_string(), self.model.clone());
         payload.insert("temperature".to_string(), "0.2".to_string());
-        payload.insert("messages".to_string(), serde_json::to_string(&msgs).unwrap_or_default());
+        payload.insert(
+            "messages".to_string(),
+            serde_json::to_string(&msgs).unwrap_or_default(),
+        );
         payload.insert("stream".to_string(), "true".to_string());
 
         if let Some(prompt) = user_prompt {
@@ -109,7 +119,10 @@ impl AsyncClient {
             user_msg.insert("role".to_string(), "user".to_string());
             user_msg.insert("content".to_string(), prompt.to_string());
             msgs.push(user_msg);
-            payload.insert("messages".to_string(), serde_json::to_string(&msgs).unwrap_or_default());
+            payload.insert(
+                "messages".to_string(),
+                serde_json::to_string(&msgs).unwrap_or_default(),
+            );
         }
 
         let client = reqwest::Client::new();
@@ -138,7 +151,8 @@ impl AsyncClient {
                                 continue;
                             }
                             if let Ok(json) = serde_json::from_str::<serde_json::Value>(data) {
-                                if let Some(content) = json.get("choices")
+                                if let Some(content) = json
+                                    .get("choices")
                                     .and_then(|c| c.as_array())
                                     .and_then(|arr| arr.first())
                                     .and_then(|c| c.get("delta"))
@@ -158,8 +172,7 @@ impl AsyncClient {
     }
 }
 
-pub async fn close_session() {
-}
+pub async fn close_session() {}
 
 #[cfg(test)]
 mod tests {

@@ -230,7 +230,11 @@ impl TrendForecaster {
                 });
             }
         }
-        predictions.sort_by(|a, b| b.combined.partial_cmp(&a.combined).unwrap_or(std::cmp::Ordering::Equal));
+        predictions.sort_by(|a, b| {
+            b.combined
+                .partial_cmp(&a.combined)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         predictions.truncate(top_k);
         predictions
     }
@@ -290,7 +294,8 @@ impl TrendForecaster {
             let path = Path::new(p);
             if path.exists() {
                 if let Ok(contents) = fs::read_to_string(path) {
-                    if let Ok(data) = serde_json::from_str::<HashMap<String, RadarScoreData>>(&contents)
+                    if let Ok(data) =
+                        serde_json::from_str::<HashMap<String, RadarScoreData>>(&contents)
                     {
                         self.record_radar_snapshot(&data);
                         return true;
@@ -462,19 +467,43 @@ mod tests {
         fc.history.insert(
             "LLM".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-01T00:00:00Z".to_string(), score: 1.0 },
-                RadarEntry { timestamp: "2024-02-01T00:00:00Z".to_string(), score: 2.0 },
-                RadarEntry { timestamp: "2024-03-01T00:00:00Z".to_string(), score: 3.0 },
-                RadarEntry { timestamp: "2024-04-01T00:00:00Z".to_string(), score: 4.0 },
+                RadarEntry {
+                    timestamp: "2024-01-01T00:00:00Z".to_string(),
+                    score: 1.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-01T00:00:00Z".to_string(),
+                    score: 2.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-01T00:00:00Z".to_string(),
+                    score: 3.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-04-01T00:00:00Z".to_string(),
+                    score: 4.0,
+                },
             ],
         );
         fc.history.insert(
             "XML".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-01T00:00:00Z".to_string(), score: 5.0 },
-                RadarEntry { timestamp: "2024-02-01T00:00:00Z".to_string(), score: 4.0 },
-                RadarEntry { timestamp: "2024-03-01T00:00:00Z".to_string(), score: 3.0 },
-                RadarEntry { timestamp: "2024-04-01T00:00:00Z".to_string(), score: 2.0 },
+                RadarEntry {
+                    timestamp: "2024-01-01T00:00:00Z".to_string(),
+                    score: 5.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-01T00:00:00Z".to_string(),
+                    score: 4.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-01T00:00:00Z".to_string(),
+                    score: 3.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-04-01T00:00:00Z".to_string(),
+                    score: 2.0,
+                },
             ],
         );
 
@@ -498,9 +527,18 @@ mod tests {
         fc.history.insert(
             "test".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-01T00:00:00Z".to_string(), score: 1.0 },
-                RadarEntry { timestamp: "2024-02-01T00:00:00Z".to_string(), score: 2.0 },
-                RadarEntry { timestamp: "2024-03-01T00:00:00Z".to_string(), score: 3.0 },
+                RadarEntry {
+                    timestamp: "2024-01-01T00:00:00Z".to_string(),
+                    score: 1.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-01T00:00:00Z".to_string(),
+                    score: 2.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-01T00:00:00Z".to_string(),
+                    score: 3.0,
+                },
             ],
         );
         let pred = fc.predict_next("test");
@@ -514,9 +552,18 @@ mod tests {
         fc.history.insert(
             "AI".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-15T10:00:00Z".to_string(), score: 1.0 },
-                RadarEntry { timestamp: "2024-02-20T10:00:00Z".to_string(), score: 2.0 },
-                RadarEntry { timestamp: "2024-03-10T10:00:00Z".to_string(), score: 3.0 },
+                RadarEntry {
+                    timestamp: "2024-01-15T10:00:00Z".to_string(),
+                    score: 1.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-20T10:00:00Z".to_string(),
+                    score: 2.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-10T10:00:00Z".to_string(),
+                    score: 3.0,
+                },
             ],
         );
         let ts = fc.build_timeseries("AI", 12);
@@ -552,17 +599,35 @@ mod tests {
         fc.history.insert(
             "A".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-01T00:00:00Z".to_string(), score: 1.0 },
-                RadarEntry { timestamp: "2024-02-01T00:00:00Z".to_string(), score: 2.0 },
-                RadarEntry { timestamp: "2024-03-01T00:00:00Z".to_string(), score: 3.0 },
+                RadarEntry {
+                    timestamp: "2024-01-01T00:00:00Z".to_string(),
+                    score: 1.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-01T00:00:00Z".to_string(),
+                    score: 2.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-01T00:00:00Z".to_string(),
+                    score: 3.0,
+                },
             ],
         );
         fc.history.insert(
             "B".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-01T00:00:00Z".to_string(), score: 10.0 },
-                RadarEntry { timestamp: "2024-02-01T00:00:00Z".to_string(), score: 9.0 },
-                RadarEntry { timestamp: "2024-03-01T00:00:00Z".to_string(), score: 8.0 },
+                RadarEntry {
+                    timestamp: "2024-01-01T00:00:00Z".to_string(),
+                    score: 10.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-01T00:00:00Z".to_string(),
+                    score: 9.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-01T00:00:00Z".to_string(),
+                    score: 8.0,
+                },
             ],
         );
         let comp = fc.compare_tags("A", "B");
@@ -580,17 +645,35 @@ mod tests {
         fc.history.insert(
             "hot".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-01T00:00:00Z".to_string(), score: 10.0 },
-                RadarEntry { timestamp: "2024-02-01T00:00:00Z".to_string(), score: 20.0 },
-                RadarEntry { timestamp: "2024-03-01T00:00:00Z".to_string(), score: 30.0 },
+                RadarEntry {
+                    timestamp: "2024-01-01T00:00:00Z".to_string(),
+                    score: 10.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-01T00:00:00Z".to_string(),
+                    score: 20.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-01T00:00:00Z".to_string(),
+                    score: 30.0,
+                },
             ],
         );
         fc.history.insert(
             "cold".to_string(),
             vec![
-                RadarEntry { timestamp: "2024-01-01T00:00:00Z".to_string(), score: 1.0 },
-                RadarEntry { timestamp: "2024-02-01T00:00:00Z".to_string(), score: 1.0 },
-                RadarEntry { timestamp: "2024-03-01T00:00:00Z".to_string(), score: 1.0 },
+                RadarEntry {
+                    timestamp: "2024-01-01T00:00:00Z".to_string(),
+                    score: 1.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-02-01T00:00:00Z".to_string(),
+                    score: 1.0,
+                },
+                RadarEntry {
+                    timestamp: "2024-03-01T00:00:00Z".to_string(),
+                    score: 1.0,
+                },
             ],
         );
         let tops = fc.get_top_predictions(2);

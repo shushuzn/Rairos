@@ -191,9 +191,13 @@ mod tests {
 
     #[test]
     fn test_keywords_disjoint_from_smart_followup() {
-        let common: Vec<_> = AI_RESEARCH_KEYWORDS.iter()
+        let common: Vec<_> = AI_RESEARCH_KEYWORDS
+            .iter()
             .filter(|k| SMART_FOLLOWUP_BASE.contains(*k))
             .collect();
-        assert!(!common.is_empty(), "Keywords should have some overlap with SmartFollowup base");
+        assert!(
+            !common.is_empty(),
+            "Keywords should have some overlap with SmartFollowup base"
+        );
     }
 }

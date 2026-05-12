@@ -288,7 +288,11 @@ pub fn parse_timeline(contents: &str) -> TimelineState {
                     };
                     TimelineEntry {
                         pnote_path,
-                        title: if title.is_empty() { rest.to_string() } else { format!("{} — {}", title, rest) },
+                        title: if title.is_empty() {
+                            rest.to_string()
+                        } else {
+                            format!("{} — {}", title, rest)
+                        },
                     }
                 } else {
                     TimelineEntry {

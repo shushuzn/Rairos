@@ -131,10 +131,7 @@ impl LitReviewAnalyzer {
                     let start = idx.saturating_sub(30);
                     let end = (idx + 100).min(abstract_text.len());
                     let context = abstract_text[start..end].trim();
-                    let cleaned: String = context
-                        .split_whitespace()
-                        .collect::<Vec<_>>()
-                        .join(" ");
+                    let cleaned: String = context.split_whitespace().collect::<Vec<_>>().join(" ");
 
                     if cleaned.len() > 20 {
                         open_problems.push(format!("_{}: ...{}...", title, cleaned));
@@ -153,70 +150,122 @@ impl LitReviewAnalyzer {
             (
                 "Transformer/Attention",
                 vec![
-                    "transformer", "attention", "self-attention", "bert", "gpt", "vit",
-                    "vision transformer", "llama", "decoder-only",
+                    "transformer",
+                    "attention",
+                    "self-attention",
+                    "bert",
+                    "gpt",
+                    "vit",
+                    "vision transformer",
+                    "llama",
+                    "decoder-only",
                 ],
             ),
             (
                 "CNN/卷积网络",
                 vec![
-                    "convolutional", "cnn", "convolution", "resnet", "vgg", "efficientnet",
-                    "mobilenet", "inception",
+                    "convolutional",
+                    "cnn",
+                    "convolution",
+                    "resnet",
+                    "vgg",
+                    "efficientnet",
+                    "mobilenet",
+                    "inception",
                 ],
             ),
             (
                 "图神经网络",
                 vec![
-                    "graph", "gnn", "gcn", "gat", "graph neural", "message passing",
+                    "graph",
+                    "gnn",
+                    "gcn",
+                    "gat",
+                    "graph neural",
+                    "message passing",
                     "graph attention",
                 ],
             ),
             (
                 "强化学习",
                 vec![
-                    "reinforcement learning", "rl ", "policy gradient", "q-learning", "ddpg",
-                    "ppo", "actor-critic", "reward", "environment interaction",
+                    "reinforcement learning",
+                    "rl ",
+                    "policy gradient",
+                    "q-learning",
+                    "ddpg",
+                    "ppo",
+                    "actor-critic",
+                    "reward",
+                    "environment interaction",
                 ],
             ),
             (
                 "扩散模型",
                 vec![
-                    "diffusion", "ddpm", "score-based", "stable diffusion", "ddim",
-                    "latent diffusion", "generative model",
+                    "diffusion",
+                    "ddpm",
+                    "score-based",
+                    "stable diffusion",
+                    "ddim",
+                    "latent diffusion",
+                    "generative model",
                 ],
             ),
             (
                 "检索增强",
                 vec![
-                    "retrieval-augmented", "rag", "knowledge retrieval", "retrieval",
-                    "dense retrieval", "bm25",
+                    "retrieval-augmented",
+                    "rag",
+                    "knowledge retrieval",
+                    "retrieval",
+                    "dense retrieval",
+                    "bm25",
                 ],
             ),
             (
                 "多模态",
                 vec![
-                    "multimodal", "vision-language", "image-text", "vqa", "visual question",
-                    "cross-modal", "clip", "flamingo",
+                    "multimodal",
+                    "vision-language",
+                    "image-text",
+                    "vqa",
+                    "visual question",
+                    "cross-modal",
+                    "clip",
+                    "flamingo",
                 ],
             ),
             (
                 "对比学习",
                 vec![
-                    "contrastive learning", "contrastive loss", "simclr", "triplet loss",
-                    "infoNCE", "momentum contrast",
+                    "contrastive learning",
+                    "contrastive loss",
+                    "simclr",
+                    "triplet loss",
+                    "infoNCE",
+                    "momentum contrast",
                 ],
             ),
             (
                 "知识蒸馏",
                 vec![
-                    "knowledge distillation", "distillation", "teacher-student",
-                    "model compression", "pruning", "quantization",
+                    "knowledge distillation",
+                    "distillation",
+                    "teacher-student",
+                    "model compression",
+                    "pruning",
+                    "quantization",
                 ],
             ),
             (
                 "自监督学习",
                 vec![
-                    "self-supervised", " pretext task", "masked", "BYOL", "SwAV",
+                    "self-supervised",
+                    " pretext task",
+                    "masked",
+                    "BYOL",
+                    "SwAV",
                     "momentum encoder",
                 ],
             ),
@@ -257,9 +306,7 @@ impl LitReviewAnalyzer {
 
     fn analyze_method_evolution(&self, papers: &[Paper]) -> Vec<String> {
         let mut sorted_papers: Vec<&Paper> = papers.iter().collect();
-        sorted_papers.sort_by(|a, b| {
-            b.published.cmp(&a.published)
-        });
+        sorted_papers.sort_by(|a, b| b.published.cmp(&a.published));
 
         let mut recent_methods: Vec<String> = Vec::new();
 

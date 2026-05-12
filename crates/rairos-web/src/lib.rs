@@ -7,15 +7,15 @@ use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::{IntoResponse, Json, Response},
-    routing::{get, post, delete},
+    routing::{delete, get, post},
     Router,
 };
-use rairos_core::{Database, Paper, DbStats, ResearchGap};
-use rairos_kg::{KnowledgeGraph, GraphAlgorithms, KgStats};
-use rairos_llm::{GenePool, Capsule, GenePoolDiversityCalculator};
-use rairos_memory::{ResearchMemory, ResearchStance, StanceType, MemoryStats};
+use rairos_core::{Database, DbStats, Paper, ResearchGap};
+use rairos_kg::{GraphAlgorithms, KgStats, KnowledgeGraph};
+use rairos_llm::{Capsule, GenePool, GenePoolDiversityCalculator};
+use rairos_memory::{MemoryStats, ResearchMemory, ResearchStance, StanceType};
 use rairos_parser::{self, detect_source, Source};
-use rairos_research::{ResearchQuery, ResearchOrchestrator};
+use rairos_research::{ResearchOrchestrator, ResearchQuery};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use thiserror::Error;
@@ -78,7 +78,9 @@ impl AppState {
         let kg = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
         Self {
             db: Arc::new(db),
-            gene_pool: Arc::new(RwLock::new(GenePool::load().unwrap_or_else(|_| GenePool::new()))),
+            gene_pool: Arc::new(RwLock::new(
+                GenePool::load().unwrap_or_else(|_| GenePool::new()),
+            )),
             knowledge_graph: Arc::new(RwLock::new(kg)),
             orchestrator: Arc::new(RwLock::new(None)),
         }
@@ -190,7 +192,11 @@ impl From<&Capsule> for GeneResponse {
             capsule_id: c.capsule_id.clone(),
             gap_type: c.action_gap_type.clone(),
             approach: c.archetype.approach_summary.clone(),
-            status: if c.archived { "archived".to_string() } else { c.status.to_string() },
+            status: if c.archived {
+                "archived".to_string()
+            } else {
+                c.status.to_string()
+            },
             impact_score: c.impact_score,
             success_count: c.success_count,
             failure_count: c.failure_count,
@@ -238,7 +244,10 @@ async fn health() -> Json<HealthResponse> {
 }
 
 async fn stats(State(state): State<Arc<AppState>>) -> Result<Json<StatsResponse>, WebError> {
-    let stats = state.db.stats().map_err(|e| WebError::Database(e.to_string()))?;
+    let stats = state
+        .db
+        .stats()
+        .map_err(|e| WebError::Database(e.to_string()))?;
     Ok(Json(StatsResponse::from(stats)))
 }
 
@@ -253,7 +262,9 @@ async fn list_papers(
     let limit = query.limit.unwrap_or(20);
     let offset = query.offset.unwrap_or(0);
 
-    let papers = state.db.list_papers(None, limit, offset)
+    let papers = state
+        .db
+        .list_papers(None, limit, offset)
         .map_err(|e| WebError::Database(e.to_string()))?;
 
     Ok(Json(papers.into_iter().map(PaperResponse::from).collect()))
@@ -264,7 +275,9 @@ async fn search_papers(
     Query(query): Query<SearchQuery>,
 ) -> Result<Json<Vec<PaperResponse>>, WebError> {
     let limit = query.limit.unwrap_or(20);
-    let papers = state.db.search_papers(&query.q, limit)
+    let papers = state
+        .db
+        .search_papers(&query.q, limit)
         .map_err(|e| WebError::Database(e.to_string()))?;
 
     Ok(Json(papers.into_iter().map(PaperResponse::from).collect()))
@@ -291,24 +304,20 @@ async fn add_paper(
         .ok_or_else(|| WebError::BadRequest(format!("Unknown ID format: {}", req.id)))?;
 
     let paper = match source {
-        Source::ArXiv => {
-            rairos_parser::fetch_arxiv(&req.id)
-                .await
-                .map_err(|e| WebError::Parse(e.to_string()))?
-        }
-        Source::CrossRef => {
-            rairos_parser::fetch_crossref(&req.id)
-                .await
-                .map_err(|e| WebError::Parse(e.to_string()))?
-        }
-        Source::SemanticScholar => {
-            rairos_parser::fetch_semantic(&req.id)
-                .await
-                .map_err(|e| WebError::Parse(e.to_string()))?
-        }
+        Source::ArXiv => rairos_parser::fetch_arxiv(&req.id)
+            .await
+            .map_err(|e| WebError::Parse(e.to_string()))?,
+        Source::CrossRef => rairos_parser::fetch_crossref(&req.id)
+            .await
+            .map_err(|e| WebError::Parse(e.to_string()))?,
+        Source::SemanticScholar => rairos_parser::fetch_semantic(&req.id)
+            .await
+            .map_err(|e| WebError::Parse(e.to_string()))?,
     };
 
-    state.db.insert_paper(&paper)
+    state
+        .db
+        .insert_paper(&paper)
         .map_err(|e| WebError::Database(e.to_string()))?;
 
     Ok(Json(PaperResponse::from(paper)))
@@ -318,7 +327,9 @@ async fn delete_paper(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<StatusCode, WebError> {
-    state.db.delete_paper(&id)
+    state
+        .db
+        .delete_paper(&id)
         .map_err(|e| WebError::Database(e.to_string()))?;
     Ok(StatusCode::NO_CONTENT)
 }
@@ -334,7 +345,9 @@ async fn list_gaps(
     let limit = params.limit.unwrap_or(20);
     let offset = params.offset.unwrap_or(0);
 
-    let gaps = state.db.list_gaps(limit, offset)
+    let gaps = state
+        .db
+        .list_gaps(limit, offset)
         .map_err(|e| WebError::Database(e.to_string()))?;
 
     Ok(Json(gaps.into_iter().map(GapResponse::from).collect()))
@@ -350,7 +363,9 @@ async fn get_gap(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<Json<GapResponse>, WebError> {
-    let gap = state.db.get_gap(&id)
+    let gap = state
+        .db
+        .get_gap(&id)
         .map_err(|e| WebError::Database(e.to_string()))?
         .ok_or_else(|| WebError::NotFound(format!("Gap not found: {}", id)))?;
 
@@ -368,7 +383,8 @@ async fn list_genes(
     let pool = state.gene_pool.read().await;
     let capsules: Vec<GeneResponse> = pool.capsules().iter().map(GeneResponse::from).collect();
 
-    let filtered: Vec<GeneResponse> = capsules.into_iter()
+    let filtered: Vec<GeneResponse> = capsules
+        .into_iter()
         .filter(|g| {
             if let Some(ref gt) = params.gap_type {
                 if &g.gap_type != gt {
@@ -409,7 +425,10 @@ async fn add_gene(
     let mut pool = state.gene_pool.write().await;
     pool.add_capsule(capsule);
 
-    let gene = pool.capsules().last().map(GeneResponse::from)
+    let gene = pool
+        .capsules()
+        .last()
+        .map(GeneResponse::from)
         .ok_or_else(|| WebError::Internal("Failed to add gene".to_string()))?;
 
     Ok(Json(gene))
@@ -420,7 +439,9 @@ async fn get_gene(
     Path(id): Path<String>,
 ) -> Result<Json<GeneResponse>, WebError> {
     let pool = state.gene_pool.read().await;
-    let capsule = pool.capsules().iter()
+    let capsule = pool
+        .capsules()
+        .iter()
         .find(|c| c.capsule_id == id || c.capsule_id.starts_with(&id))
         .map(GeneResponse::from)
         .ok_or_else(|| WebError::NotFound(format!("Gene not found: {}", id)))?;
@@ -434,7 +455,11 @@ async fn gene_feedback(
     Json(req): Json<GeneFeedbackRequest>,
 ) -> Result<Json<GeneResponse>, WebError> {
     let mut pool = state.gene_pool.write().await;
-    if let Some(cap) = pool.capsules_mut().iter_mut().find(|c| c.capsule_id == id || c.capsule_id.starts_with(&id)) {
+    if let Some(cap) = pool
+        .capsules_mut()
+        .iter_mut()
+        .find(|c| c.capsule_id == id || c.capsule_id.starts_with(&id))
+    {
         if req.positive {
             cap.record_success();
         } else {
@@ -445,7 +470,9 @@ async fn gene_feedback(
     Err(WebError::NotFound(format!("Gene not found: {}", id)))
 }
 
-async fn gene_diversity(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, WebError> {
+async fn gene_diversity(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<serde_json::Value>, WebError> {
     let pool = state.gene_pool.read().await;
     let diversity = GenePoolDiversityCalculator::calculate(pool.capsules());
 
@@ -467,14 +494,16 @@ async fn research(
     Json(req): Json<ResearchRequest>,
 ) -> Result<Json<rairos_research::ResearchResult>, WebError> {
     let orchestrator = state.orchestrator.read().await;
-    let orch = orchestrator.as_ref()
+    let orch = orchestrator
+        .as_ref()
         .ok_or_else(|| WebError::Internal("Orchestrator not initialized".to_string()))?;
 
     let query = ResearchQuery::new(&req.query)
         .with_categories(req.categories.unwrap_or_default())
         .with_max_papers(req.max_papers.unwrap_or(50));
 
-    let result = orch.research(&query)
+    let result = orch
+        .research(&query)
         .await
         .map_err(|e| WebError::Internal(e.to_string()))?;
 
@@ -490,7 +519,9 @@ async fn kg_stats(State(state): State<Arc<AppState>>) -> Result<Json<KgStats>, W
     Ok(Json(kg.stats()))
 }
 
-async fn kg_export(State(state): State<Arc<AppState>>) -> Result<Json<serde_json::Value>, WebError> {
+async fn kg_export(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<serde_json::Value>, WebError> {
     let kg = state.knowledge_graph.read().await;
     Ok(Json(kg.export_json()))
 }
@@ -501,7 +532,12 @@ async fn kg_citations(
 ) -> Result<Json<Vec<serde_json::Value>>, WebError> {
     let kg = state.knowledge_graph.read().await;
     let citing = kg.get_citing(&id);
-    Ok(Json(citing.into_iter().map(|n| serde_json::to_value(n).unwrap_or_default()).collect()))
+    Ok(Json(
+        citing
+            .into_iter()
+            .map(|n| serde_json::to_value(n).unwrap_or_default())
+            .collect(),
+    ))
 }
 
 async fn kg_references(
@@ -510,7 +546,11 @@ async fn kg_references(
 ) -> Result<Json<Vec<serde_json::Value>>, WebError> {
     let kg = state.knowledge_graph.read().await;
     let refs = kg.get_references(&id);
-    Ok(Json(refs.into_iter().map(|n| serde_json::to_value(n).unwrap_or_default()).collect()))
+    Ok(Json(
+        refs.into_iter()
+            .map(|n| serde_json::to_value(n).unwrap_or_default())
+            .collect(),
+    ))
 }
 
 async fn kg_path(
@@ -559,21 +599,34 @@ async fn add_stance(Json(req): Json<StanceAddRequest>) -> Result<Json<ResearchSt
         "rejected" => StanceType::Rejected,
         "deferred" => StanceType::Deferred,
         "qualified" => StanceType::Qualified,
-        _ => return Err(WebError::BadRequest(format!("Invalid stance: {}", req.stance))),
+        _ => {
+            return Err(WebError::BadRequest(format!(
+                "Invalid stance: {}",
+                req.stance
+            )))
+        }
     };
 
     let mut memory = ResearchMemory::load().map_err(|e| WebError::Internal(e.to_string()))?;
     let stance = ResearchStance::new(&req.topic, &req.claim, stance_type, &req.reasoning);
     memory.add_stance(stance.clone());
-    memory.save().map_err(|e| WebError::Internal(e.to_string()))?;
+    memory
+        .save()
+        .map_err(|e| WebError::Internal(e.to_string()))?;
 
     Ok(Json(stance))
 }
 
 async fn get_stance(Path(id): Path<String>) -> Result<Json<ResearchStance>, WebError> {
     let memory = ResearchMemory::load().map_err(|e| WebError::Internal(e.to_string()))?;
-    let stance = memory.get_stance(&id)
-        .or_else(|| memory.stances().iter().find(|s| s.stance_id.starts_with(&id)))
+    let stance = memory
+        .get_stance(&id)
+        .or_else(|| {
+            memory
+                .stances()
+                .iter()
+                .find(|s| s.stance_id.starts_with(&id))
+        })
         .ok_or_else(|| WebError::NotFound(format!("Stance not found: {}", id)))?;
 
     Ok(Json(stance.clone()))

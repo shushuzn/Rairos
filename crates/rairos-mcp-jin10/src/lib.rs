@@ -110,7 +110,12 @@ impl Jin10Client {
         self.initialized
     }
 
-    async fn call(&mut self, method: &str, params: Option<Value>, id: i64) -> Result<Value, MCPError> {
+    async fn call(
+        &mut self,
+        method: &str,
+        params: Option<Value>,
+        id: i64,
+    ) -> Result<Value, MCPError> {
         let mut request = JsonRpcRequest::new(method, id);
         if let Some(p) = params {
             request = request.with_params(p);
@@ -156,9 +161,7 @@ impl Jin10Client {
             let headers_map: HashMap<String, String> = response
                 .headers()
                 .iter()
-                .filter_map(|(k, v)| {
-                    v.to_str().ok().map(|s| (k.to_string(), s.to_string()))
-                })
+                .filter_map(|(k, v)| v.to_str().ok().map(|s| (k.to_string(), s.to_string())))
                 .collect();
 
             if let Some(sid) = headers_map.get("Mcp-Session-Id") {
@@ -175,10 +178,7 @@ impl Jin10Client {
                 if let Some(data_str) = line.strip_prefix("data: ") {
                     if let Ok(data) = serde_json::from_str::<Value>(data_str) {
                         if let Some(err) = data.get("error") {
-                            let code = err
-                                .get("code")
-                                .and_then(|v| v.as_i64())
-                                .unwrap_or(0) as i32;
+                            let code = err.get("code").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
                             let message = err
                                 .get("message")
                                 .and_then(|v| v.as_str())
@@ -316,7 +316,9 @@ impl Jin10Client {
     pub async fn get_quote(&mut self, code: &str) -> Result<Value, MCPError> {
         self.ensure_init().await?;
         let args = serde_json::json!({ "code": code });
-        let result = self.call_tool("get_quote", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("get_quote", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
@@ -332,7 +334,9 @@ impl Jin10Client {
             "time": time,
             "count": count
         });
-        let result = self.call_tool("get_kline", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("get_kline", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
@@ -342,14 +346,18 @@ impl Jin10Client {
         if let Some(c) = cursor {
             args["cursor"] = serde_json::json!(c);
         }
-        let result = self.call_tool("list_flash", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("list_flash", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
     pub async fn search_flash(&mut self, keyword: &str) -> Result<Value, MCPError> {
         self.ensure_init().await?;
         let args = serde_json::json!({ "keyword": keyword });
-        let result = self.call_tool("search_flash", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("search_flash", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
@@ -359,31 +367,43 @@ impl Jin10Client {
         if let Some(c) = cursor {
             args["cursor"] = serde_json::json!(c);
         }
-        let result = self.call_tool("list_news", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("list_news", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
-    pub async fn search_news(&mut self, keyword: &str, cursor: Option<&str>) -> Result<Value, MCPError> {
+    pub async fn search_news(
+        &mut self,
+        keyword: &str,
+        cursor: Option<&str>,
+    ) -> Result<Value, MCPError> {
         self.ensure_init().await?;
         let mut args = serde_json::json!({ "keyword": keyword });
         if let Some(c) = cursor {
             args["cursor"] = serde_json::json!(c);
         }
-        let result = self.call_tool("search_news", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("search_news", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
     pub async fn get_news(&mut self, id: &str) -> Result<Value, MCPError> {
         self.ensure_init().await?;
         let args = serde_json::json!({ "id": id });
-        let result = self.call_tool("get_news", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("get_news", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
     pub async fn list_calendar(&mut self) -> Result<Value, MCPError> {
         self.ensure_init().await?;
         let args = serde_json::json!({});
-        let result = self.call_tool("list_calendar", serde_json::from_value(args)?).await?;
+        let result = self
+            .call_tool("list_calendar", serde_json::from_value(args)?)
+            .await?;
         Ok(Self::extract_content(&result))
     }
 
@@ -395,7 +415,11 @@ impl Jin10Client {
             if let Some(first) = contents.first() {
                 let text = first.get("text").and_then(|v| v.as_str()).unwrap_or("{}");
                 if let Ok(parsed) = serde_json::from_str::<Value>(text) {
-                    return Ok(parsed.get("data").and_then(|v| v.as_array()).cloned().unwrap_or_default());
+                    return Ok(parsed
+                        .get("data")
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default());
                 }
             }
         }
@@ -467,7 +491,10 @@ mod tests {
 
     #[test]
     fn test_mcp_error_display() {
-        let err = MCPError::JsonRpc { code: -32600, message: "Invalid Request".to_string() };
+        let err = MCPError::JsonRpc {
+            code: -32600,
+            message: "Invalid Request".to_string(),
+        };
         assert!(err.to_string().contains("Invalid Request"));
 
         let err = MCPError::Http("Connection refused".to_string());

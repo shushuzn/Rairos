@@ -66,7 +66,12 @@ pub fn get_cache_config() -> CacheConfig {
     GLOBAL_CACHE.read().unwrap().config.clone()
 }
 
-pub fn configure_cache(cache_dir: PathBuf, ttl_seconds: u64, max_cache_files: usize, memory_cache_max_size: usize) {
+pub fn configure_cache(
+    cache_dir: PathBuf,
+    ttl_seconds: u64,
+    max_cache_files: usize,
+    memory_cache_max_size: usize,
+) {
     let mut cache = GLOBAL_CACHE.write().unwrap();
     cache.config = CacheConfig {
         cache_dir,
@@ -89,8 +94,6 @@ fn cache_path(source: &str, key: &str) -> PathBuf {
     cache_dir(source).join(format!("{}.json", safe))
 }
 
-
-
 fn evict_memory_cache_if_needed() {
     let items_to_evict: Vec<MemoryCacheKey> = {
         let cache = GLOBAL_CACHE.read().unwrap();
@@ -102,10 +105,18 @@ fn evict_memory_cache_if_needed() {
         }
 
         let mut items: Vec<_> = cache.memory.iter().collect();
-        items.sort_by(|a, b| a.1.0.partial_cmp(&b.1.0).unwrap_or(std::cmp::Ordering::Equal));
+        items.sort_by(|a, b| {
+            a.1 .0
+                .partial_cmp(&b.1 .0)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
 
         let evict_count = (memory_len / 5).max(1);
-        items.into_iter().take(evict_count).map(|(k, _)| k.clone()).collect()
+        items
+            .into_iter()
+            .take(evict_count)
+            .map(|(k, _)| k.clone())
+            .collect()
     };
 
     if !items_to_evict.is_empty() {
@@ -189,7 +200,9 @@ pub fn clear_cache(source: Option<&str>) {
     let mut cache = GLOBAL_CACHE.write().unwrap();
 
     if let Some(src) = source {
-        let keys: Vec<_> = cache.memory.keys()
+        let keys: Vec<_> = cache
+            .memory
+            .keys()
             .filter(|(s, _)| s == src)
             .cloned()
             .collect();
@@ -287,12 +300,7 @@ mod tests {
 
     #[test]
     fn test_set_and_get_memory_cache() {
-        configure_cache(
-            std::env::temp_dir().join("test_mem_cache"),
-            3600,
-            100,
-            50,
-        );
+        configure_cache(std::env::temp_dir().join("test_mem_cache"), 3600, 100, 50);
 
         let data = serde_json::json!({"key": "value"});
         set_cached("mem_test", "key1", &data);
@@ -303,12 +311,7 @@ mod tests {
 
     #[test]
     fn test_get_cached_nonexistent() {
-        configure_cache(
-            std::env::temp_dir().join("test_nonexistent"),
-            3600,
-            100,
-            50,
-        );
+        configure_cache(std::env::temp_dir().join("test_nonexistent"), 3600, 100, 50);
 
         let result = get_cached("nonexistent_source", "nonexistent_key");
         assert!(result.is_none());
@@ -316,12 +319,7 @@ mod tests {
 
     #[test]
     fn test_clear_memory_cache_source() {
-        configure_cache(
-            std::env::temp_dir().join("test_clear_mem"),
-            3600,
-            100,
-            50,
-        );
+        configure_cache(std::env::temp_dir().join("test_clear_mem"), 3600, 100, 50);
 
         let data = serde_json::json!({"test": true});
         set_cached("source_x", "key1", &data);
@@ -335,12 +333,7 @@ mod tests {
 
     #[test]
     fn test_get_cache_stats() {
-        configure_cache(
-            std::env::temp_dir().join("test_stats"),
-            3600,
-            100,
-            50,
-        );
+        configure_cache(std::env::temp_dir().join("test_stats"), 3600, 100, 50);
 
         let stats = get_cache_stats();
         assert!(stats.ttl_seconds > 0);

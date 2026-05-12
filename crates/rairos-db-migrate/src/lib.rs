@@ -63,10 +63,7 @@ fn m2_add_reading_status(conn: &Connection) -> SqliteResult<()> {
         "UPDATE papers SET reading_status = 'unread' WHERE reading_status IS NULL",
         [],
     );
-    let _ = conn.execute(
-        "ALTER TABLE papers ADD COLUMN reading_started_at TEXT",
-        [],
-    );
+    let _ = conn.execute("ALTER TABLE papers ADD COLUMN reading_started_at TEXT", []);
     let _ = conn.execute(
         "ALTER TABLE papers ADD COLUMN reading_completed_at TEXT",
         [],

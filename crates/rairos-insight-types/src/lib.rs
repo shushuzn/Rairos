@@ -327,7 +327,8 @@ impl SourceTrustTracker {
             .filter(|e| e.capsule_count >= 1)
             .collect();
         if entries.is_empty() {
-            return "<p>No trust data yet. Import papers and create capsules first.</p>".to_string();
+            return "<p>No trust data yet. Import papers and create capsules first.</p>"
+                .to_string();
         }
 
         entries.sort_by(|a, b| {
@@ -447,8 +448,7 @@ mod tests {
 
     #[test]
     fn test_source_trust_tracker_update() {
-        let mut tracker =
-            SourceTrustTracker::new(Some(PathBuf::from("/tmp/test_trust_rust.json")));
+        let mut tracker = SourceTrustTracker::new(Some(PathBuf::from("/tmp/test_trust_rust.json")));
         tracker.update_from_capsule("cap1", 0.8, 5, "cs.CL", 3, 1);
         assert!(tracker.get_trust("cs.CL") > DEFAULT_TRUST);
     }

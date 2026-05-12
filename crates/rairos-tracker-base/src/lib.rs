@@ -72,7 +72,10 @@ mod tests {
     #[test]
     fn test_save_and_load() {
         let path = std::env::temp_dir().join("test_tracker_items.json");
-        let items = vec![DummyItem::new("1", "alpha", 1.0), DummyItem::new("2", "beta", 2.0)];
+        let items = vec![
+            DummyItem::new("1", "alpha", 1.0),
+            DummyItem::new("2", "beta", 2.0),
+        ];
 
         assert!(save_jsonl(&path, &items));
 

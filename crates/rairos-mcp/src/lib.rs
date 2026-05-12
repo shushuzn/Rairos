@@ -2,9 +2,9 @@
 //!
 //! Exposes Rairos tools via the Model Context Protocol (JSON-RPC 2.0).
 
+pub mod handlers;
 pub mod protocol;
 pub mod types;
-pub mod handlers;
 
 pub use protocol::{McpServer, Tool, ToolHandler, ToolInputSchema, ToolProperty};
 pub use types::{

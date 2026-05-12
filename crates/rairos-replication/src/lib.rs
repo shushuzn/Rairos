@@ -109,15 +109,18 @@ impl ReplicationChecker {
     pub fn new() -> Self {
         Self {
             re_github: vec![
-                Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(),
+                Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?")
+                    .unwrap(),
                 Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
                 Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").unwrap(),
             ],
-            re_gitlab: vec![
-                Regex::new(r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(),
-            ],
+            re_gitlab: vec![Regex::new(
+                r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?",
+            )
+            .unwrap()],
             re_hf: vec![
-                Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
+                Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)")
+                    .unwrap(),
                 Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
             ],
             re_clean_markdown: Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").unwrap(),
@@ -156,7 +159,9 @@ impl ReplicationChecker {
         if links.is_empty() {
             report.difficulty = "No Code Found".to_string();
             report.difficulty_score = 10.0;
-            report.notes.push("No GitHub/GitLab/HuggingFace links detected in paper text.".to_string());
+            report
+                .notes
+                .push("No GitHub/GitLab/HuggingFace links detected in paper text.".to_string());
             return report;
         }
 
@@ -172,7 +177,11 @@ impl ReplicationChecker {
         });
         report.primary_link = sorted_links.into_iter().next();
 
-        let platform = report.primary_link.as_ref().map(|l| l.platform.as_str()).unwrap_or("");
+        let platform = report
+            .primary_link
+            .as_ref()
+            .map(|l| l.platform.as_str())
+            .unwrap_or("");
 
         let dep_info = self.detect_dependency_info(&text, platform);
         report.dependency_info = Some(dep_info.clone());
@@ -181,7 +190,11 @@ impl ReplicationChecker {
         report.difficulty = difficulty;
         report.difficulty_score = score;
 
-        report.notes = self.generate_notes(report.primary_link.as_ref().unwrap(), &dep_info, &report.links);
+        report.notes = self.generate_notes(
+            report.primary_link.as_ref().unwrap(),
+            &dep_info,
+            &report.links,
+        );
         report.reproducibility_issues = self.check_issues(&dep_info, &report.links);
 
         report
@@ -199,7 +212,11 @@ impl ReplicationChecker {
                 let repo_full = m.get(2).map(|g| g.as_str()).unwrap_or("");
                 let repo = repo_full.replace(".git", "");
 
-                let url = if m.get(0).map(|g| g.as_str().starts_with("http")).unwrap_or(false) {
+                let url = if m
+                    .get(0)
+                    .map(|g| g.as_str().starts_with("http"))
+                    .unwrap_or(false)
+                {
                     m.get(0).map(|g| g.as_str()).unwrap_or("").to_string()
                 } else {
                     format!("https://github.com/{}/{}", owner, repo)
@@ -211,7 +228,10 @@ impl ReplicationChecker {
                 seen.insert(url.clone());
 
                 let full_match = m.get(0);
-                let start = full_match.map(|x| x.start()).unwrap_or(0).saturating_sub(50);
+                let start = full_match
+                    .map(|x| x.start())
+                    .unwrap_or(0)
+                    .saturating_sub(50);
                 let end = (full_match.map(|x| x.end()).unwrap_or(0) + 50).min(clean.len());
                 let ctx = &clean[start..end];
 
@@ -243,7 +263,11 @@ impl ReplicationChecker {
                 let owner = m.get(1).map(|g| g.as_str()).unwrap_or("");
                 let repo = m.get(2).map(|g| g.as_str()).unwrap_or("");
 
-                let url = if m.get(0).map(|g| g.as_str().starts_with("http")).unwrap_or(false) {
+                let url = if m
+                    .get(0)
+                    .map(|g| g.as_str().starts_with("http"))
+                    .unwrap_or(false)
+                {
                     m.get(0).map(|g| g.as_str()).unwrap_or("").to_string()
                 } else {
                     format!("https://gitlab.com/{}/{}", owner, repo)
@@ -255,12 +279,16 @@ impl ReplicationChecker {
                 seen.insert(url.clone());
 
                 let full_match = m.get(0);
-                let start = full_match.map(|x| x.start()).unwrap_or(0).saturating_sub(50);
+                let start = full_match
+                    .map(|x| x.start())
+                    .unwrap_or(0)
+                    .saturating_sub(50);
                 let end = (full_match.map(|x| x.end()).unwrap_or(0) + 50).min(clean.len());
                 let ctx = &clean[start..end];
 
                 let confidence = if CONTEXT_KEYWORDS_GITLAB
-                    .iter().any(|kw| ctx.to_lowercase().contains(&kw.to_lowercase()))
+                    .iter()
+                    .any(|kw| ctx.to_lowercase().contains(&kw.to_lowercase()))
                 {
                     0.8
                 } else {
@@ -291,11 +319,15 @@ impl ReplicationChecker {
                 let repo = m.get(2).map(|g| g.as_str()).unwrap_or("");
 
                 let full_match = m.get(0);
-                let start = full_match.map(|x| x.start()).unwrap_or(0).saturating_sub(50);
+                let start = full_match
+                    .map(|x| x.start())
+                    .unwrap_or(0)
+                    .saturating_sub(50);
                 let end = (full_match.map(|x| x.end()).unwrap_or(0) + 50).min(clean.len());
                 let ctx = &clean[start..end];
 
-                let confidence = if ctx.to_lowercase().contains("huggingface") || ctx.contains('🤗') {
+                let confidence = if ctx.to_lowercase().contains("huggingface") || ctx.contains('🤗')
+                {
                     0.9
                 } else {
                     0.6
@@ -422,12 +454,21 @@ impl ReplicationChecker {
             ("poetry", 2.0),
             ("npm", 2.0),
             ("cargo", 3.0),
-        ].iter().cloned().collect();
-        score += pm_scores.get(dep_info.package_manager.as_str()).unwrap_or(&1.0);
+        ]
+        .iter()
+        .cloned()
+        .collect();
+        score += pm_scores
+            .get(dep_info.package_manager.as_str())
+            .unwrap_or(&1.0);
 
         if dep_info.files.is_empty() {
             score += 2.0;
-        } else if !dep_info.files.iter().any(|f| f == "requirements.txt" || f == "pyproject.toml") {
+        } else if !dep_info
+            .files
+            .iter()
+            .any(|f| f == "requirements.txt" || f == "pyproject.toml")
+        {
             score += 1.0;
         }
 
@@ -435,7 +476,10 @@ impl ReplicationChecker {
             ("GPU (NVIDIA recommended)", 0.5),
             ("NVIDIA CUDA", 1.0),
             ("TPU", 2.0),
-        ].iter().cloned().collect();
+        ]
+        .iter()
+        .cloned()
+        .collect();
         for hw in &dep_info.hardware {
             score += hw_penalty.get(hw.as_str()).unwrap_or(&0.5);
         }
@@ -480,18 +524,33 @@ impl ReplicationChecker {
         let platform = &primary_link.platform;
 
         match platform.as_str() {
-            "github" => notes.push(format!("GitHub repo: {}/{}", primary_link.owner, primary_link.repo)),
-            "huggingface" => notes.push(format!("HuggingFace space/model: {}/{}", primary_link.owner, primary_link.repo)),
-            "gitlab" => notes.push(format!("GitLab repo: {}/{}", primary_link.owner, primary_link.repo)),
+            "github" => notes.push(format!(
+                "GitHub repo: {}/{}",
+                primary_link.owner, primary_link.repo
+            )),
+            "huggingface" => notes.push(format!(
+                "HuggingFace space/model: {}/{}",
+                primary_link.owner, primary_link.repo
+            )),
+            "gitlab" => notes.push(format!(
+                "GitLab repo: {}/{}",
+                primary_link.owner, primary_link.repo
+            )),
             _ => {}
         }
 
         if all_links.len() > 1 {
-            notes.push(format!("Found {} code links total — verify the correct one is used.", all_links.len()));
+            notes.push(format!(
+                "Found {} code links total — verify the correct one is used.",
+                all_links.len()
+            ));
         }
 
         if dep_info.package_manager != "unknown" {
-            notes.push(format!("Package manager: {}", dep_info.package_manager.to_uppercase()));
+            notes.push(format!(
+                "Package manager: {}",
+                dep_info.package_manager.to_uppercase()
+            ));
         }
 
         if !dep_info.files.is_empty() {
@@ -503,7 +562,12 @@ impl ReplicationChecker {
         }
 
         if !dep_info.special_requirements.is_empty() {
-            let top_libs: Vec<&str> = dep_info.special_requirements.iter().take(3).map(|s| s.as_str()).collect();
+            let top_libs: Vec<&str> = dep_info
+                .special_requirements
+                .iter()
+                .take(3)
+                .map(|s| s.as_str())
+                .collect();
             notes.push(format!("Key libraries: {}", top_libs.join(", ")));
         }
 
@@ -518,7 +582,10 @@ impl ReplicationChecker {
         let mut issues = Vec::new();
 
         if dep_info.files.is_empty() {
-            issues.push("No explicit dependency files detected — manual environment setup may be required.".to_string());
+            issues.push(
+                "No explicit dependency files detected — manual environment setup may be required."
+                    .to_string(),
+            );
         }
 
         if dep_info.python_version.is_empty() {
@@ -556,9 +623,15 @@ impl ReplicationChecker {
 
         let mut lines = Vec::new();
         lines.push("=".repeat(60));
-        lines.push(format!("🔬 Replication Report: {}", &report.paper_id[..report.paper_id.len().min(8)]));
+        lines.push(format!(
+            "🔬 Replication Report: {}",
+            &report.paper_id[..report.paper_id.len().min(8)]
+        ));
         lines.push("=".repeat(60));
-        lines.push(format!("Difficulty: {} {} ({}/10)", e, report.difficulty, report.difficulty_score));
+        lines.push(format!(
+            "Difficulty: {} {} ({}/10)",
+            e, report.difficulty, report.difficulty_score
+        ));
         lines.push(String::new());
 
         if let Some(link) = &report.primary_link {
@@ -568,7 +641,11 @@ impl ReplicationChecker {
         lines.push(format!("Code links found: {}", report.links.len()));
         if report.links.len() > 1 {
             for link in report.links.iter().take(3) {
-                lines.push(format!("  - {} (confidence: {}%)", link.url, (link.confidence * 100.0).round() as i32));
+                lines.push(format!(
+                    "  - {} (confidence: {}%)",
+                    link.url,
+                    (link.confidence * 100.0).round() as i32
+                ));
             }
         }
 
@@ -586,7 +663,12 @@ impl ReplicationChecker {
                 lines.push(format!("  Hardware: {}", di.hardware.join(", ")));
             }
             if !di.special_requirements.is_empty() {
-                let libs: Vec<&str> = di.special_requirements.iter().take(3).map(|s| s.as_str()).collect();
+                let libs: Vec<&str> = di
+                    .special_requirements
+                    .iter()
+                    .take(3)
+                    .map(|s| s.as_str())
+                    .collect();
                 lines.push(format!("  Key libs: {}", libs.join(", ")));
             }
         }
@@ -663,8 +745,7 @@ mod tests {
     #[test]
     fn test_difficulty_assessment() {
         let checker = ReplicationChecker::new();
-        let text = "Our method uses PyTorch with CUDA on NVIDIA A100 GPUs. "
-            .repeat(10);
+        let text = "Our method uses PyTorch with CUDA on NVIDIA A100 GPUs. ".repeat(10);
         let report = checker.check_paper("diff_test", "Test", "", &text);
         assert!(report.difficulty_score > 3.0);
     }

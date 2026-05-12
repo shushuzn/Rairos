@@ -212,7 +212,7 @@ impl McpServer {
         }
 
         // Single response or batch
-        
+
         if responses.len() == 1 {
             serde_json::to_vec(&responses[0]).unwrap_or_default()
         } else {
@@ -243,11 +243,7 @@ impl McpServer {
         })]
     }
 
-    async fn handle_tools_call(
-        &self,
-        params: Option<Value>,
-        id: Value,
-    ) -> Vec<JsonRpcResponse> {
+    async fn handle_tools_call(&self, params: Option<Value>, id: Value) -> Vec<JsonRpcResponse> {
         let params = match params {
             Some(p) => p,
             None => {
@@ -274,27 +270,25 @@ impl McpServer {
 
         let tools = self.tools.read().await;
         match tools.get(name) {
-            Some(handler) => {
-                match handler.call(arguments).await {
-                    Ok(result) => vec![JsonRpcResponse::Success(JsonRpcSuccess {
-                        jsonrpc: "2.0".into(),
-                        result: serde_json::json!({
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".into())
-                                }
-                            ]
-                        }),
-                        id,
-                    })],
-                    Err(e) => vec![JsonRpcResponse::Error(JsonRpcError::new(
-                        ERR_INTERNAL_ERROR,
-                        e,
-                        id,
-                    ))],
-                }
-            }
+            Some(handler) => match handler.call(arguments).await {
+                Ok(result) => vec![JsonRpcResponse::Success(JsonRpcSuccess {
+                    jsonrpc: "2.0".into(),
+                    result: serde_json::json!({
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".into())
+                            }
+                        ]
+                    }),
+                    id,
+                })],
+                Err(e) => vec![JsonRpcResponse::Error(JsonRpcError::new(
+                    ERR_INTERNAL_ERROR,
+                    e,
+                    id,
+                ))],
+            },
             None => vec![JsonRpcResponse::Error(JsonRpcError::new(
                 ERR_METHOD_NOT_FOUND,
                 format!("Tool not found: {}", name),

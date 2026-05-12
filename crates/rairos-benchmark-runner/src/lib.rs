@@ -99,9 +99,22 @@ pub fn run_benchmark(config: &BenchmarkConfig) -> BenchmarkResult {
 
     // Prepend code_path parent to PYTHONPATH
     let pythonpath = if let Ok(existing) = std::env::var("PYTHONPATH") {
-        format!("{}:{}", config.code_path.parent().unwrap_or(config.code_path.as_path()).display(), existing)
+        format!(
+            "{}:{}",
+            config
+                .code_path
+                .parent()
+                .unwrap_or(config.code_path.as_path())
+                .display(),
+            existing
+        )
     } else {
-        config.code_path.parent().unwrap_or(config.code_path.as_path()).display().to_string()
+        config
+            .code_path
+            .parent()
+            .unwrap_or(config.code_path.as_path())
+            .display()
+            .to_string()
     };
 
     let mut env_vars: HashMap<String, String> = std::env::vars().collect();
@@ -132,11 +145,7 @@ pub fn run_benchmark(config: &BenchmarkConfig) -> BenchmarkResult {
         log_diagnostics(&ruff_diagnostics, &config.code_path);
     }
 
-    match cmd
-        .env_clear()
-        .envs(env_vars)
-        .output()
-    {
+    match cmd.env_clear().envs(env_vars).output() {
         Ok(output) => {
             result.duration_seconds = start.elapsed().as_secs_f64();
             let stdout = String::from_utf8_lossy(&output.stdout);
@@ -280,11 +289,10 @@ fn populate_coverage_fields(result: &mut BenchmarkResult, config: &BenchmarkConf
 /// Extract keywords from text (simple stopword-based).
 pub fn extract_keywords(text: &str) -> Vec<String> {
     let stopwords: std::collections::HashSet<&str> = [
-        "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
-        "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
-        "being", "have", "has", "had", "do", "does", "did", "will", "would",
-        "could", "should", "may", "might", "can", "this", "that", "these",
-        "those", "it", "its", "we", "our", "you", "your", "i", "my",
+        "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by",
+        "from", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do",
+        "does", "did", "will", "would", "could", "should", "may", "might", "can", "this", "that",
+        "these", "those", "it", "its", "we", "our", "you", "your", "i", "my",
     ]
     .iter()
     .cloned()
@@ -311,10 +319,7 @@ pub fn timestamp() -> String {
 }
 
 /// Run tests and return the subprocess result (for CLI use).
-pub fn run_tests_locally(
-    test_dir: &Path,
-    verbose: bool,
-) -> std::process::Command {
+pub fn run_tests_locally(test_dir: &Path, verbose: bool) -> std::process::Command {
     let python_exe = std::env::var("PYTHON").unwrap_or_else(|_| "python3".to_string());
     let mut cmd = Command::new(&python_exe);
     cmd.arg("-m")
@@ -327,13 +332,24 @@ pub fn run_tests_locally(
 
 /// Print ruff diagnostics to stderr for visibility.
 fn log_diagnostics(diagnostics: &[Diagnostic], code_path: &Path) {
-    let code_path_str = code_path.file_name()
+    let code_path_str = code_path
+        .file_name()
         .map(|s| s.to_string_lossy().to_string())
         .unwrap_or_default();
-    eprintln!("\n[ruff] {} issue(s) in {}:", diagnostics.len(), code_path_str);
+    eprintln!(
+        "\n[ruff] {} issue(s) in {}:",
+        diagnostics.len(),
+        code_path_str
+    );
     for d in diagnostics {
         let loc = format!("{}:{}:{}", d.file.display(), d.line, d.column);
-        eprintln!("  [{}] {} {}: {}", d.severity.to_uppercase(), loc, d.code, d.message);
+        eprintln!(
+            "  [{}] {} {}: {}",
+            d.severity.to_uppercase(),
+            loc,
+            d.code,
+            d.message
+        );
     }
     eprintln!("  (running pytest anyway...)");
 }
@@ -424,12 +440,15 @@ mod tests {
 
     #[test]
     fn test_extract_keywords() {
-        let text = "The transformer architecture uses self-attention mechanisms for sequence modeling";
+        let text =
+            "The transformer architecture uses self-attention mechanisms for sequence modeling";
         let keywords = extract_keywords(text);
         // Should not contain stopwords, should contain "transformer", "attention", etc.
         assert!(!keywords.contains(&"the".to_string()));
         assert!(!keywords.contains(&"for".to_string()));
-        assert!(keywords.iter().any(|k| k.contains("transformer") || k.contains("attention")));
+        assert!(keywords
+            .iter()
+            .any(|k| k.contains("transformer") || k.contains("attention")));
     }
 
     #[test]

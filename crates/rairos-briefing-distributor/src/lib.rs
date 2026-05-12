@@ -128,7 +128,12 @@ fn parse_markdown_sections(md: &str) -> HashMap<String, String> {
                 sections.insert(current.clone(), body_lines.join("\n").trim().to_string());
                 body_lines.clear();
             }
-            current = line.strip_prefix("## ").unwrap_or(line).trim().to_lowercase().replace(' ', "_");
+            current = line
+                .strip_prefix("## ")
+                .unwrap_or(line)
+                .trim()
+                .to_lowercase()
+                .replace(' ', "_");
         } else if line.starts_with("# ") {
             sections.insert("_title".to_string(), line[2..].trim().to_string());
         } else {
@@ -139,7 +144,10 @@ fn parse_markdown_sections(md: &str) -> HashMap<String, String> {
     if !body_lines.is_empty() && current != "header" {
         sections.insert(current, body_lines.join("\n").trim().to_string());
     } else if current == "header" {
-        sections.insert("_body".to_string(), body_lines.join("\n").trim().to_string());
+        sections.insert(
+            "_body".to_string(),
+            body_lines.join("\n").trim().to_string(),
+        );
     }
 
     sections
@@ -166,51 +174,97 @@ fn section_html(heading: &str, content: &str) -> String {
 }
 
 fn render_phd_advisor(sections: &HashMap<String, String>, raw: &str) -> String {
-    let extract = |key: &str| sections.get(key).map(|s| &s[..s.len().min(300)]).unwrap_or(&raw[raw.len().min(200)..raw.len().min(500)]);
+    let extract = |key: &str| {
+        sections
+            .get(key)
+            .map(|s| &s[..s.len().min(300)])
+            .unwrap_or(&raw[raw.len().min(200)..raw.len().min(500)])
+    };
 
     section_html(
         "📚 Paper Summary",
-        sections.get("_body").or_else(|| sections.get("summary")).map(|s| &s[..s.len().min(400)]).unwrap_or(&raw[..raw.len().min(400)]),
+        sections
+            .get("_body")
+            .or_else(|| sections.get("summary"))
+            .map(|s| &s[..s.len().min(400)])
+            .unwrap_or(&raw[..raw.len().min(400)]),
     ) + &section_html("🔬 Methodology Assessment", extract("methodology"))
         + &section_html("❓ Open Questions for Student", extract("research_gaps"))
 }
 
 fn render_industry_engineer(sections: &HashMap<String, String>, raw: &str) -> String {
-    let extract = |key: &str| sections.get(key).map(|s| &s[..s.len().min(300)]).unwrap_or(&raw[raw.len().min(200)..raw.len().min(500)]);
+    let extract = |key: &str| {
+        sections
+            .get(key)
+            .map(|s| &s[..s.len().min(300)])
+            .unwrap_or(&raw[raw.len().min(200)..raw.len().min(500)])
+    };
 
     section_html(
         "⚡ What It Does",
-        sections.get("_body").or_else(|| sections.get("summary")).map(|s| &s[..s.len().min(200)]).unwrap_or(&raw[..raw.len().min(200)]),
+        sections
+            .get("_body")
+            .or_else(|| sections.get("summary"))
+            .map(|s| &s[..s.len().min(200)])
+            .unwrap_or(&raw[..raw.len().min(200)]),
     ) + &section_html("🛠️ Implementation Signals", extract("methodology"))
         + &section_html("📊 Benchmark / Compute", extract("experiments"))
 }
 
 fn render_policy_maker(sections: &HashMap<String, String>, raw: &str) -> String {
-    let extract = |key: &str| sections.get(key).map(|s| &s[..s.len().min(300)]).unwrap_or(&raw[raw.len().min(300)..raw.len().min(600)]);
+    let extract = |key: &str| {
+        sections
+            .get(key)
+            .map(|s| &s[..s.len().min(300)])
+            .unwrap_or(&raw[raw.len().min(300)..raw.len().min(600)])
+    };
 
     section_html(
         "🏛️ What This Means",
-        sections.get("_body").or_else(|| sections.get("summary")).map(|s| &s[..s.len().min(300)]).unwrap_or(&raw[..raw.len().min(300)]),
+        sections
+            .get("_body")
+            .or_else(|| sections.get("summary"))
+            .map(|s| &s[..s.len().min(300)])
+            .unwrap_or(&raw[..raw.len().min(300)]),
     ) + &section_html("⚠️ Risks & Concerns", extract("limitations"))
-        + &section_html("📅 Deployment Timeline", &raw[raw.len().min(200)..raw.len().min(500)])
+        + &section_html(
+            "📅 Deployment Timeline",
+            &raw[raw.len().min(200)..raw.len().min(500)],
+        )
 }
 
 fn render_researcher(sections: &HashMap<String, String>, raw: &str) -> String {
-    let v = sections.get("verdict").map(|s| s.to_lowercase()).unwrap_or_else(|| "neutral".to_string());
+    let v = sections
+        .get("verdict")
+        .map(|s| s.to_lowercase())
+        .unwrap_or_else(|| "neutral".to_string());
     let (badge_text, badge_cls) = match v.as_str() {
         "validates" => ("✅ Validates", "verdict-validates"),
         "contradicts" => ("❌ Contradicts", "verdict-contradicts"),
         _ => ("➖ Neutral", "verdict-neutral"),
     };
 
-    let mut lines = vec![format!("<span class='verdict-badge {}'>{}</span>", badge_cls, badge_text)];
+    let mut lines = vec![format!(
+        "<span class='verdict-badge {}'>{}</span>",
+        badge_cls, badge_text
+    )];
     lines.push(format!(
         "<p style='margin-top:8px'>{}</p>",
-        sections.get("_body").or_else(|| sections.get("summary")).map(|s| &s[..s.len().min(400)]).unwrap_or(&raw[..raw.len().min(400)])
+        sections
+            .get("_body")
+            .or_else(|| sections.get("summary"))
+            .map(|s| &s[..s.len().min(400)])
+            .unwrap_or(&raw[..raw.len().min(400)])
     ));
 
-    if let Some(gaps) = sections.get("research_gaps").or_else(|| sections.get("gaps")) {
-        lines.push(section_html("🎯 Research Gaps", &gaps[..gaps.len().min(300)]));
+    if let Some(gaps) = sections
+        .get("research_gaps")
+        .or_else(|| sections.get("gaps"))
+    {
+        lines.push(section_html(
+            "🎯 Research Gaps",
+            &gaps[..gaps.len().min(300)],
+        ));
     }
 
     lines.join("\n")
@@ -255,7 +309,10 @@ Share: <code style='font-size:11px'>rairos.app/b/{}</code></span>",
     lines.push("</div>".to_string());
     lines.push(format!("<div class='digest-body'>{}</div>", body_content));
     lines.push("<details style='margin-top:20px'>".to_string());
-    lines.push("<summary style='cursor:pointer;font-size:12px;color:#A89E8C'>View Raw Briefing</summary>".to_string());
+    lines.push(
+        "<summary style='cursor:pointer;font-size:12px;color:#A89E8C'>View Raw Briefing</summary>"
+            .to_string(),
+    );
     lines.push(format!(
         "<pre style='font-size:11px;background:#f8f4ef;padding:12px;border-radius:4px;overflow:auto'>{}</pre>",
         escape_html(&markdown[..markdown.len().min(2000)])
@@ -265,11 +322,20 @@ Share: <code style='font-size:11px'>rairos.app/b/{}</code></span>",
     lines.push(".briefing-dist { font-family: Georgia, serif; max-width: 800px; }".to_string());
     lines.push(".digest-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e8e4dc; }".to_string());
     lines.push(".digest-section h4 { font-size: 13px; font-weight: 700; color: #2a4a6a; margin-bottom: 6px; }".to_string());
-    lines.push(".digest-section p { font-size: 13px; color: #444; line-height: 1.6; margin: 0; }".to_string());
+    lines.push(
+        ".digest-section p { font-size: 13px; color: #444; line-height: 1.6; margin: 0; }"
+            .to_string(),
+    );
     lines.push(".verdict-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }".to_string());
-    lines.push(".verdict-validates { background: rgba(107,191,138,0.15); color: #4a8a5a; }".to_string());
-    lines.push(".verdict-contradicts { background: rgba(196,112,106,0.15); color: #C4706A; }".to_string());
-    lines.push(".verdict-neutral { background: rgba(168,158,140,0.15); color: #7a7570; }".to_string());
+    lines.push(
+        ".verdict-validates { background: rgba(107,191,138,0.15); color: #4a8a5a; }".to_string(),
+    );
+    lines.push(
+        ".verdict-contradicts { background: rgba(196,112,106,0.15); color: #C4706A; }".to_string(),
+    );
+    lines.push(
+        ".verdict-neutral { background: rgba(168,158,140,0.15); color: #7a7570; }".to_string(),
+    );
     lines.push("</style>".to_string());
     lines.push("</div>".to_string());
 
@@ -285,17 +351,42 @@ pub fn render_distributor_panel(arxiv_id: &str, title: &str) -> String {
     lines.push("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>Render this briefing for different audiences, or share a public link.</p>".to_string());
 
     let audiences = [
-        ("researcher", "🔬 Researcher", "Concise technical summary with gap analysis"),
-        ("phd_advisor", "🎓 PhD Advisor", "Methodology critique and open questions"),
-        ("industry_engineer", "⚙️ Industry Engineer", "Practical applicability and benchmarks"),
-        ("policy_maker", "🏛️ Policy Maker", "Societal impact and regulatory implications"),
+        (
+            "researcher",
+            "🔬 Researcher",
+            "Concise technical summary with gap analysis",
+        ),
+        (
+            "phd_advisor",
+            "🎓 PhD Advisor",
+            "Methodology critique and open questions",
+        ),
+        (
+            "industry_engineer",
+            "⚙️ Industry Engineer",
+            "Practical applicability and benchmarks",
+        ),
+        (
+            "policy_maker",
+            "🏛️ Policy Maker",
+            "Societal impact and regulatory implications",
+        ),
     ];
 
     for (aud_id, aud_name, aud_desc) in &audiences {
         let s = create_share_link(arxiv_id, title, aud_id);
-        lines.push("<div style='margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>".to_string());
-        lines.push(format!("<div style='font-weight:700;font-size:13px;margin-bottom:2px'>{}</div>", aud_name));
-        lines.push(format!("<div style='font-size:12px;color:#A89E8C;margin-bottom:6px'>{}</div>", aud_desc));
+        lines.push(
+            "<div style='margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>"
+                .to_string(),
+        );
+        lines.push(format!(
+            "<div style='font-weight:700;font-size:13px;margin-bottom:2px'>{}</div>",
+            aud_name
+        ));
+        lines.push(format!(
+            "<div style='font-size:12px;color:#A89E8C;margin-bottom:6px'>{}</div>",
+            aud_desc
+        ));
         lines.push(format!(
             "<button id='btn-{}' style='background:#6B8FB5;color:white;border:none;border-radius:4px;\
 padding:5px 12px;cursor:pointer;font-size:12px'>Preview</button> ",

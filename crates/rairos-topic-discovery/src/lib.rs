@@ -91,20 +91,75 @@ impl TopicSuggestion {
 
 fn gap_type_topic_map() -> HashMap<String, Vec<String>> {
     let mut m: HashMap<String, Vec<String>> = HashMap::new();
-    m.insert("method_limitation".into(), vec!["method limitation".into(), "inefficiency".into(), "scalability".into()]);
-    m.insert("unexplored_application".into(), vec!["application".into(), "domain".into(), "new setting".into()]);
-    m.insert("evaluation_gap".into(), vec!["benchmark".into(), "evaluation".into(), "measurement".into()]);
-    m.insert("scalability_issue".into(), vec!["scaling".into(), "large-scale".into(), "efficiency".into()]);
-    m.insert("theoretical_gap".into(), vec!["theory".into(), "analysis".into(), "foundation".into()]);
-    m.insert("dataset_gap".into(), vec!["dataset".into(), "data".into(), "corpus".into()]);
-    m.insert("generalization_gap".into(), vec!["generalization".into(), "out-of-distribution".into(), "robustness".into()]);
-    m.insert("contradiction".into(), vec!["contradiction".into(), "rebuttal".into(), "counter-example".into()]);
-    m.insert("capability_missing".into(), vec!["capability".into(), "ability".into(), "missing".into()]);
-    m.insert("unknown".into(), vec!["open problem".into(), "underexplored".into()]);
+    m.insert(
+        "method_limitation".into(),
+        vec![
+            "method limitation".into(),
+            "inefficiency".into(),
+            "scalability".into(),
+        ],
+    );
+    m.insert(
+        "unexplored_application".into(),
+        vec!["application".into(), "domain".into(), "new setting".into()],
+    );
+    m.insert(
+        "evaluation_gap".into(),
+        vec![
+            "benchmark".into(),
+            "evaluation".into(),
+            "measurement".into(),
+        ],
+    );
+    m.insert(
+        "scalability_issue".into(),
+        vec!["scaling".into(), "large-scale".into(), "efficiency".into()],
+    );
+    m.insert(
+        "theoretical_gap".into(),
+        vec!["theory".into(), "analysis".into(), "foundation".into()],
+    );
+    m.insert(
+        "dataset_gap".into(),
+        vec!["dataset".into(), "data".into(), "corpus".into()],
+    );
+    m.insert(
+        "generalization_gap".into(),
+        vec![
+            "generalization".into(),
+            "out-of-distribution".into(),
+            "robustness".into(),
+        ],
+    );
+    m.insert(
+        "contradiction".into(),
+        vec![
+            "contradiction".into(),
+            "rebuttal".into(),
+            "counter-example".into(),
+        ],
+    );
+    m.insert(
+        "capability_missing".into(),
+        vec!["capability".into(), "ability".into(), "missing".into()],
+    );
+    m.insert(
+        "unknown".into(),
+        vec!["open problem".into(), "underexplored".into()],
+    );
     // Aliases
-    m.insert("capability".into(), m.get("capability_missing").cloned().unwrap_or_default());
-    m.insert("quality".into(), m.get("method_limitation").cloned().unwrap_or_default());
-    m.insert("missing".into(), m.get("unexplored_application").cloned().unwrap_or_default());
+    m.insert(
+        "capability".into(),
+        m.get("capability_missing").cloned().unwrap_or_default(),
+    );
+    m.insert(
+        "quality".into(),
+        m.get("method_limitation").cloned().unwrap_or_default(),
+    );
+    m.insert(
+        "missing".into(),
+        m.get("unexplored_application").cloned().unwrap_or_default(),
+    );
     m
 }
 
@@ -121,13 +176,48 @@ static GENERIC_TERMS: OnceLock<HashSet<&'static str>> = OnceLock::new();
 fn generic_terms() -> &'static HashSet<&'static str> {
     GENERIC_TERMS.get_or_init(|| {
         let mut s = HashSet::new();
-        ["paper", "work", "method", "approach", "result", "experiment",
-         "performance", "show", "propose", "state-of-the-art", "sota",
-         "baseline", "existing", "current", "recent", "new", "novel",
-         "task", "problem", "model", "data", "dataset", "training",
-         "evaluation", "benchmark", "learning", "system", "framework",
-         "the", "and", "for", "with", "from", "that", "this", "are",
-        ].iter().for_each(|&v| { s.insert(v); });
+        [
+            "paper",
+            "work",
+            "method",
+            "approach",
+            "result",
+            "experiment",
+            "performance",
+            "show",
+            "propose",
+            "state-of-the-art",
+            "sota",
+            "baseline",
+            "existing",
+            "current",
+            "recent",
+            "new",
+            "novel",
+            "task",
+            "problem",
+            "model",
+            "data",
+            "dataset",
+            "training",
+            "evaluation",
+            "benchmark",
+            "learning",
+            "system",
+            "framework",
+            "the",
+            "and",
+            "for",
+            "with",
+            "from",
+            "that",
+            "this",
+            "are",
+        ]
+        .iter()
+        .for_each(|&v| {
+            s.insert(v);
+        });
         s
     })
 }
@@ -219,11 +309,31 @@ fn from_gap_clusters(
             Ok(c) => c,
             Err(_) => {
                 // Fallback: try to access gaps field
-                let gaps = cluster_val.get("gaps").and_then(|v| v.as_array()).cloned().unwrap_or_default();
-                let novelty_score = cluster_val.get("novelty_score").and_then(|v| v.as_f64()).unwrap_or(0.0);
-                let gap_type = cluster_val.get("gap_type").and_then(|v| v.as_str()).unwrap_or("unknown").to_string();
-                let cluster_id = cluster_val.get("cluster_id").and_then(|v| v.as_str()).unwrap_or("").to_string();
-                GapCluster { gaps, novelty_score, gap_type, cluster_id }
+                let gaps = cluster_val
+                    .get("gaps")
+                    .and_then(|v| v.as_array())
+                    .cloned()
+                    .unwrap_or_default();
+                let novelty_score = cluster_val
+                    .get("novelty_score")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0);
+                let gap_type = cluster_val
+                    .get("gap_type")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("unknown")
+                    .to_string();
+                let cluster_id = cluster_val
+                    .get("cluster_id")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                GapCluster {
+                    gaps,
+                    novelty_score,
+                    gap_type,
+                    cluster_id,
+                }
             }
         };
 
@@ -235,38 +345,72 @@ fn from_gap_clusters(
         let mut total_novelty = 0.0;
         let mut novelty_count = 0;
         for g in &cluster.gaps {
-            let ns = g.get("novelty_score").and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let ns = g
+                .get("novelty_score")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.0);
             total_novelty += ns;
             novelty_count += 1;
         }
-        let avg_novelty = if novelty_count > 0 { total_novelty / novelty_count as f64 } else { 0.0 };
+        let avg_novelty = if novelty_count > 0 {
+            total_novelty / novelty_count as f64
+        } else {
+            0.0
+        };
 
         if avg_novelty < threshold_novelty {
             continue;
         }
 
-        let gap_type = if cluster.gap_type.is_empty() { "unknown".to_string() } else { cluster.gap_type.clone() };
+        let gap_type = if cluster.gap_type.is_empty() {
+            "unknown".to_string()
+        } else {
+            cluster.gap_type.clone()
+        };
         let cluster_id = cluster.cluster_id.clone();
 
         // Build topic from cluster keywords
-        let titles: Vec<String> = cluster.gaps.iter().filter_map(|g| {
-            g.get("title").and_then(|v| v.as_str())
-                .or_else(|| g.get("gap_title").and_then(|v| v.as_str()))
-                .map(|s| s.to_string())
-        }).collect();
+        let titles: Vec<String> = cluster
+            .gaps
+            .iter()
+            .filter_map(|g| {
+                g.get("title")
+                    .and_then(|v| v.as_str())
+                    .or_else(|| g.get("gap_title").and_then(|v| v.as_str()))
+                    .map(|s| s.to_string())
+            })
+            .collect();
 
         let keywords = extract_keywords_from_text(&titles, 5);
         let topic = if keywords.is_empty() {
-            let first_title = titles.first().map(|t| if t.len() > 60 { t[..60].to_string() } else { t.clone() }).unwrap_or_default();
+            let first_title = titles
+                .first()
+                .map(|t| {
+                    if t.len() > 60 {
+                        t[..60].to_string()
+                    } else {
+                        t.clone()
+                    }
+                })
+                .unwrap_or_default();
             format!("{}: {}", gap_type, first_title)
         } else {
             phrase_suggestion_from_keywords(&keywords)
         };
 
-        let subscription_keywords: Vec<String> = keywords.iter().take(5).map(|(k, _)| k.clone()).collect();
+        let subscription_keywords: Vec<String> =
+            keywords.iter().take(5).map(|(k, _)| k.clone()).collect();
         let confidence = (avg_novelty * 1.2).min(1.0);
-        let first_title_short = titles.first().map(|t| if t.len() > 60 { &t[..60] } else { t.as_str() }).unwrap_or("");
-        let reason = format!("Hot cluster: {} gaps (avg novelty={:.2}). Top: {}", cluster.gaps.len(), avg_novelty, first_title_short);
+        let first_title_short = titles
+            .first()
+            .map(|t| if t.len() > 60 { &t[..60] } else { t.as_str() })
+            .unwrap_or("");
+        let reason = format!(
+            "Hot cluster: {} gaps (avg novelty={:.2}). Top: {}",
+            cluster.gaps.len(),
+            avg_novelty,
+            first_title_short
+        );
 
         suggestions.push(TopicSuggestion {
             topic,
@@ -292,7 +436,8 @@ fn from_gap_type_trends(
 ) -> Vec<TopicSuggestion> {
     let mut suggestions = Vec::new();
 
-    let rising_types: Vec<String> = trends.iter()
+    let rising_types: Vec<String> = trends
+        .iter()
         .filter(|(_, v)| *v == "rising")
         .map(|(k, _)| k.clone())
         .collect();
@@ -302,18 +447,26 @@ fn from_gap_type_trends(
     }
 
     for gap_type in rising_types {
-        let type_gaps: Vec<&serde_json::Value> = gaps.iter().filter(|g| {
-            let gt = g.get("gap_type").and_then(|v| v.as_str()).unwrap_or("");
-            gt == gap_type
-        }).collect();
+        let type_gaps: Vec<&serde_json::Value> = gaps
+            .iter()
+            .filter(|g| {
+                let gt = g.get("gap_type").and_then(|v| v.as_str()).unwrap_or("");
+                gt == gap_type
+            })
+            .collect();
 
         if type_gaps.len() < threshold_count {
             continue;
         }
 
-        let titles: Vec<String> = type_gaps.iter().filter_map(|g| {
-            g.get("title").and_then(|v| v.as_str()).map(|s| s.to_string())
-        }).collect();
+        let titles: Vec<String> = type_gaps
+            .iter()
+            .filter_map(|g| {
+                g.get("title")
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.to_string())
+            })
+            .collect();
 
         let keywords = extract_keywords_from_text(&titles, 5);
         let topic = if keywords.is_empty() {
@@ -322,12 +475,22 @@ fn from_gap_type_trends(
             phrase_suggestion_from_keywords(&keywords)
         };
 
-        let novelty: f64 = type_gaps.iter()
-            .map(|g| g.get("novelty_score").and_then(|v| v.as_f64()).unwrap_or(0.0))
-            .sum::<f64>() / type_gaps.len() as f64;
+        let novelty: f64 = type_gaps
+            .iter()
+            .map(|g| {
+                g.get("novelty_score")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0)
+            })
+            .sum::<f64>()
+            / type_gaps.len() as f64;
 
         let kw: Vec<String> = keywords.iter().take(4).map(|(k, _)| k.clone()).collect();
-        let reason = format!("Gap type '{}' is trending ({} recent gaps)", gap_type, type_gaps.len());
+        let reason = format!(
+            "Gap type '{}' is trending ({} recent gaps)",
+            gap_type,
+            type_gaps.len()
+        );
 
         suggestions.push(TopicSuggestion {
             topic,
@@ -371,7 +534,13 @@ fn from_paper_keywords(
     let mut texts = Vec::new();
     for p in papers {
         let title = p.get("title").and_then(|v| v.as_str()).unwrap_or("");
-        let abstract_trunc = p.get("abstract").and_then(|v| v.as_str()).unwrap_or("").chars().take(300).collect::<String>();
+        let abstract_trunc = p
+            .get("abstract")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .chars()
+            .take(300)
+            .collect::<String>();
         texts.push(format!("{} {}", title, abstract_trunc));
     }
 
@@ -383,13 +552,18 @@ fn from_paper_keywords(
         }
 
         // Check if existing topics cover this keyword
-        let covered = existing_topics.iter().any(|t| t.to_lowercase().contains(&keyword.to_lowercase()));
+        let covered = existing_topics
+            .iter()
+            .any(|t| t.to_lowercase().contains(&keyword.to_lowercase()));
         if covered {
             continue;
         }
 
         let confidence = (freq as f64 / 10.0 + 0.3).min(0.9);
-        let reason = format!("'{}' appears in {} recent papers but has no subscription", keyword, freq);
+        let reason = format!(
+            "'{}' appears in {} recent papers but has no subscription",
+            keyword, freq
+        );
 
         suggestions.push(TopicSuggestion {
             topic: format!("{} research", keyword),
@@ -444,16 +618,26 @@ fn from_gap_subscription_map(
         let gap_type_spaced = gap_type.replace('_', " ");
         let covered = existing_topics.iter().any(|t| {
             let t_lower = t.to_lowercase();
-            t_lower.contains(&gap_type_spaced) || t_lower.contains(&mapped_keywords[0].to_lowercase())
+            t_lower.contains(&gap_type_spaced)
+                || t_lower.contains(&mapped_keywords[0].to_lowercase())
         });
         if covered {
             continue;
         }
 
         let type_gaps = type_gaps_map.get(&gap_type);
-        let avg_novelty = type_gaps.map(|gaps| {
-            gaps.iter().map(|g| g.get("novelty_score").and_then(|v| v.as_f64()).unwrap_or(0.0)).sum::<f64>() / gaps.len() as f64
-        }).unwrap_or(0.0);
+        let avg_novelty = type_gaps
+            .map(|gaps| {
+                gaps.iter()
+                    .map(|g| {
+                        g.get("novelty_score")
+                            .and_then(|v| v.as_f64())
+                            .unwrap_or(0.0)
+                    })
+                    .sum::<f64>()
+                    / gaps.len() as f64
+            })
+            .unwrap_or(0.0);
 
         let reason = format!(
             "Gap type '{}' has {} gaps but no subscription. Mapped from known gap-type patterns.",
@@ -538,7 +722,11 @@ impl TopicDiscoverer {
 
         // Sort by confidence desc
         let mut sorted: Vec<TopicSuggestion> = seen_topics.into_values().collect();
-        sorted.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap_or(std::cmp::Ordering::Equal));
+        sorted.sort_by(|a, b| {
+            b.confidence
+                .partial_cmp(&a.confidence)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         sorted.truncate(max_suggestions);
         sorted
     }
@@ -565,7 +753,11 @@ mod tests {
         let kw = extract_keywords_from_text(&texts, 5);
         assert!(!kw.is_empty());
         // "scaling" and "laws" should appear multiple times
-        let scaling_count = kw.iter().find(|(k, _)| k == "scaling").map(|(_, c)| *c).unwrap_or(0);
+        let scaling_count = kw
+            .iter()
+            .find(|(k, _)| k == "scaling")
+            .map(|(_, c)| *c)
+            .unwrap_or(0);
         assert!(scaling_count >= 2);
     }
 
@@ -650,18 +842,16 @@ mod tests {
 
     #[test]
     fn test_gap_cluster_suggestion() {
-        let clusters: Vec<serde_json::Value> = vec![
-            serde_json::json!({
-                "gaps": [
-                    {"title": "Slow inference method", "novelty_score": 0.6},
-                    {"title": "High latency approach", "novelty_score": 0.7},
-                    {"title": "Inefficient algorithm", "novelty_score": 0.5},
-                ],
-                "gap_type": "method_limitation",
-                "cluster_id": "cluster-1",
-                "novelty_score": 0.6,
-            }),
-        ];
+        let clusters: Vec<serde_json::Value> = vec![serde_json::json!({
+            "gaps": [
+                {"title": "Slow inference method", "novelty_score": 0.6},
+                {"title": "High latency approach", "novelty_score": 0.7},
+                {"title": "Inefficient algorithm", "novelty_score": 0.5},
+            ],
+            "gap_type": "method_limitation",
+            "cluster_id": "cluster-1",
+            "novelty_score": 0.6,
+        })];
         let gaps: Vec<serde_json::Value> = vec![];
 
         let suggestions = from_gap_clusters(&clusters, &gaps, 0.4);

@@ -112,7 +112,11 @@ fn default_channels() -> HashMap<String, ChannelDef> {
         "regulation".to_string(),
         ChannelDef {
             name: "AI Regulation".to_string(),
-            categories: vec!["cs.AI".to_string(), "cs.CY".to_string(), "cs.SI".to_string()],
+            categories: vec![
+                "cs.AI".to_string(),
+                "cs.CY".to_string(),
+                "cs.SI".to_string(),
+            ],
             keywords: vec![
                 "regulation".to_string(),
                 "policy".to_string(),
@@ -157,9 +161,7 @@ fn save_channels(channels: &HashMap<String, ChannelDef>) -> Result<(), std::io::
     std::fs::write(&path, json)
 }
 
-pub fn match_paper_to_channels(
-    paper: &HashMap<String, serde_json::Value>,
-) -> Vec<String> {
+pub fn match_paper_to_channels(paper: &HashMap<String, serde_json::Value>) -> Vec<String> {
     let channels = load_channels();
     let cats: std::collections::HashSet<&str> = paper
         .get("categories")
@@ -228,10 +230,16 @@ pub fn update_channel(cid: &str, updates: HashMap<String, serde_json::Value>) ->
             cfg.name = name.to_string();
         }
         if let Some(cats) = updates.get("categories").and_then(|v| v.as_array()) {
-            cfg.categories = cats.iter().filter_map(|v| v.as_str().map(String::from)).collect();
+            cfg.categories = cats
+                .iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect();
         }
         if let Some(kws) = updates.get("keywords").and_then(|v| v.as_array()) {
-            cfg.keywords = kws.iter().filter_map(|v| v.as_str().map(String::from)).collect();
+            cfg.keywords = kws
+                .iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect();
         }
         if let Some(priority) = updates.get("priority").and_then(|v| v.as_i64()) {
             cfg.priority = priority as i32;
@@ -257,7 +265,7 @@ pub fn render_channels_html(
         "<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>
         Configure multiple feed channels with different matching criteria.
         Higher priority = shown first in alerts.</p>"
-        .to_string(),
+            .to_string(),
     );
 
     lines.push(
@@ -292,7 +300,13 @@ pub fn render_channels_html(
             .map(|k| format!("<code>{}</code>", k))
             .collect::<Vec<_>>()
             .join(", ");
-        let cat_str = ch.categories.iter().take(4).map(|s| s.as_str()).collect::<Vec<_>>().join(", ");
+        let cat_str = ch
+            .categories
+            .iter()
+            .take(4)
+            .map(|s| s.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
 
         let channel_results = check_results.get(&ch.id);
         let result_rows = if let Some(results) = channel_results {
@@ -430,10 +444,7 @@ mod tests {
     #[test]
     fn test_match_paper_by_keywords() {
         let mut paper = HashMap::new();
-        paper.insert(
-            "categories".to_string(),
-            serde_json::json!(["cs.AI"]),
-        );
+        paper.insert("categories".to_string(), serde_json::json!(["cs.AI"]));
         paper.insert(
             "title".to_string(),
             serde_json::json!("Climate Impact of AI"),

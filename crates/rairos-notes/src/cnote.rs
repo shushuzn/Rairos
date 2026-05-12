@@ -1,7 +1,7 @@
 //! C-Note creation and link management.
 
-use crate::render::render_cnote;
 use crate::pnote::wikilink_for_pnote;
+use crate::render::render_cnote;
 use regex::Regex;
 use std::path::Path;
 
@@ -78,4 +78,125 @@ pub fn update_cnote_links(cnote_path: &Path, pnote_path: &Path) -> std::io::Resu
     let link_line = wikilink_for_pnote(pnote_path);
     let md2 = upsert_link_under_heading(&md, "关联笔记", &link_line);
     write_text(cnote_path, &md2)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_upsert_link_under_heading_existing_section() {
+        let md = r#"# C - Transformer
+
+## 核心定义
+
+Some content here
+
+## 关联笔记
+
+- [[P - 2017 - Attention Is All You Need]]
+
+## 技术本质
+
+Other content
+"#;
+        let result = upsert_link_under_heading(md, "关联笔记", "- [[P - 2020 - GPT-3]]");
+        // The old wikilink should be replaced
+        assert!(result.contains("[[P - 2020 - GPT-3]]"));
+        assert!(!result.contains("[[P - 2017 - Attention Is All You Need]]"));
+    }
+
+    #[test]
+    fn test_upsert_link_under_heading_no_section_creates_it() {
+        let md = r#"# C - Transformer
+
+## 核心定义
+
+Content
+"#;
+        let result = upsert_link_under_heading(md, "关联笔记", "- [[P - 2020 - GPT-3]]");
+        assert!(result.contains("## 关联笔记"));
+        assert!(result.contains("[[P - 2020 - GPT-3]]"));
+    }
+
+    #[test]
+    fn test_upsert_link_under_heading_empty_section() {
+        let md = r#"# C - Transformer
+
+## 关联笔记
+
+"#;
+        let result = upsert_link_under_heading(md, "关联笔记", "- [[P - 2020 - GPT-3]]");
+        // Should prepend the link to empty section
+        assert!(result.contains("[[P - 2020 - GPT-3]]"));
+    }
+
+    #[test]
+    fn test_upsert_link_under_heading_strips_leading_hashes() {
+        let md = r#"## 关联笔记
+
+"#;
+        let result = upsert_link_under_heading(md, "## 关联笔记", "- [[Test]]");
+        assert!(result.contains("## 关联笔记"));
+    }
+
+    #[test]
+    fn test_upsert_link_under_heading_preserves_other_sections() {
+        let md = r#"# C - Transformer
+
+## 核心定义
+
+Definition content
+
+## 关联笔记
+
+## 技术本质
+
+Technical content
+"#;
+        let result = upsert_link_under_heading(md, "关联笔记", "- [[P - Test]]");
+        assert!(result.contains("## 核心定义"));
+        assert!(result.contains("Definition content"));
+        assert!(result.contains("## 技术本质"));
+        assert!(result.contains("Technical content"));
+    }
+
+    #[test]
+    fn test_upsert_link_removes_only_wikilink_lines() {
+        let md = r#"## 关联笔记
+
+- [[P - Old]]
+Some manual note here
+- Regular bullet
+"#;
+        let result = upsert_link_under_heading(md, "关联笔记", "- [[P - New]]");
+        // Only the wikilink line should be removed, manual content preserved
+        assert!(result.contains("Some manual note here"));
+        assert!(result.contains("Regular bullet"));
+        assert!(result.contains("[[P - New]]"));
+    }
+
+    #[test]
+    fn test_ensure_cnote_creates_file() {
+        let tmp_dir = std::env::temp_dir();
+        let path = ensure_cnote(&tmp_dir, "TestConcept");
+        assert!(path.exists());
+        let content = std::fs::read_to_string(&path).unwrap();
+        assert!(content.contains("# C - TestConcept"));
+        assert!(content.contains("## 核心定义"));
+        assert!(content.contains("## 产生背景"));
+        assert!(content.contains("## 技术本质"));
+        assert!(content.contains("## 关联笔记"));
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn test_ensure_cnote_does_not_overwrite() {
+        let tmp_dir = std::env::temp_dir();
+        let path = tmp_dir.join("C - Existing.md");
+        std::fs::write(&path, "Custom content").unwrap();
+        let result = ensure_cnote(&tmp_dir, "Existing");
+        assert_eq!(std::fs::read_to_string(&result).unwrap(), "Custom content");
+        std::fs::remove_file(&path).ok();
+    }
 }

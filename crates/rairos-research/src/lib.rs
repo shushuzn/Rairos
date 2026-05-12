@@ -201,10 +201,18 @@ impl ResearchResult {
 // ============================================================================
 
 const ALL_GAP_TYPES: &[&str] = &[
-    "capability", "improvement", "contradiction",
-    "assumption", "extension", "baseline_gap",
-    "evaluation_gap", "reproducibility_gap", "embodied_planning",
-    "rl_pretraining", "scaling_laws", "reasoning",
+    "capability",
+    "improvement",
+    "contradiction",
+    "assumption",
+    "extension",
+    "baseline_gap",
+    "evaluation_gap",
+    "reproducibility_gap",
+    "embodied_planning",
+    "rl_pretraining",
+    "scaling_laws",
+    "reasoning",
 ];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -428,7 +436,8 @@ impl AdaptiveQueryStrategy {
             found_types.insert(gt);
             self.total_gaps += 1;
         }
-        self.query_gap_types.insert(query.to_string(), found_types.into_iter().collect());
+        self.query_gap_types
+            .insert(query.to_string(), found_types.into_iter().collect());
     }
 
     pub fn gap_type_coverage(&self) -> HashMap<String, f64> {
@@ -480,7 +489,10 @@ impl AdaptiveQueryStrategy {
         if !under_rep.is_empty() {
             let target = &under_rep[0];
             let productive = self.most_productive_queries(1);
-            let base = productive.first().map(|s| s.as_str()).unwrap_or(&self.topic);
+            let base = productive
+                .first()
+                .map(|s| s.as_str())
+                .unwrap_or(&self.topic);
             return format!("{} {}", base, target);
         }
 
@@ -559,7 +571,8 @@ impl DeepResearchAgent {
     }
 
     pub fn add_thought(&mut self, role: AgentRole, content: &str) {
-        self.thoughts.push(AgentThought::new(self.iterations, role, content));
+        self.thoughts
+            .push(AgentThought::new(self.iterations, role, content));
     }
 
     pub fn add_paper(&mut self, paper: &PaperSnapshot) {
@@ -574,7 +587,12 @@ impl DeepResearchAgent {
         self.query_strategy.record_search_result(query, gaps);
     }
 
-    pub fn next_query(&self, latest_gap: Option<&GapSnapshot>, gene_pool_hint: &str, confidence: f64) -> String {
+    pub fn next_query(
+        &self,
+        latest_gap: Option<&GapSnapshot>,
+        gene_pool_hint: &str,
+        confidence: f64,
+    ) -> String {
         let (title, gap_type) = match latest_gap {
             Some(g) => (g.title.as_str(), g.gap_type.as_str()),
             None => ("", ""),
@@ -592,7 +610,9 @@ impl DeepResearchAgent {
         if self.iterations >= self.config.max_iterations {
             return false;
         }
-        if papers_count >= (self.config.max_iterations as usize) * self.config.max_papers_per_iteration {
+        if papers_count
+            >= (self.config.max_iterations as usize) * self.config.max_papers_per_iteration
+        {
             return false;
         }
         if gaps_count == 0 && self.iterations > 1 {
@@ -605,7 +625,12 @@ impl DeepResearchAgent {
         self.iterations += 1;
     }
 
-    pub fn build_result(&self, report: &str, duration_secs: f64, status: ResearchStatus) -> DeepResearchResult {
+    pub fn build_result(
+        &self,
+        report: &str,
+        duration_secs: f64,
+        status: ResearchStatus,
+    ) -> DeepResearchResult {
         DeepResearchResult {
             session_id: self.session_id.clone(),
             query: self.query.clone(),
@@ -628,7 +653,12 @@ impl DeepResearchAgent {
     }
 
     /// Plan the next search query
-    pub fn plan_next_search(&mut self, latest_gap: Option<&GapSnapshot>, gene_pool_hint: &str, confidence: f64) -> String {
+    pub fn plan_next_search(
+        &mut self,
+        latest_gap: Option<&GapSnapshot>,
+        gene_pool_hint: &str,
+        confidence: f64,
+    ) -> String {
         let planned = self.next_query(latest_gap, gene_pool_hint, confidence);
 
         // Semantic deduplication: avoid near-duplicate queries
@@ -645,10 +675,15 @@ impl DeepResearchAgent {
     /// Reflect on whether to continue iterating
     pub fn reflect(&self, iteration: i32) -> (bool, String) {
         if iteration >= self.config.max_iterations {
-            return (false, format!("max iterations ({}) reached", self.config.max_iterations));
+            return (
+                false,
+                format!("max iterations ({}) reached", self.config.max_iterations),
+            );
         }
 
-        if self.found_papers.len() >= (self.config.max_iterations as usize) * self.config.max_papers_per_iteration {
+        if self.found_papers.len()
+            >= (self.config.max_iterations as usize) * self.config.max_papers_per_iteration
+        {
             return (false, "max papers reached".to_string());
         }
 
@@ -658,13 +693,24 @@ impl DeepResearchAgent {
 
         let recent_gaps: Vec<_> = self.found_gaps.iter().filter(|g| g.accepted).collect();
         if !recent_gaps.is_empty() {
-            return (false, format!("{} gaps accepted, stopping", recent_gaps.len()));
+            return (
+                false,
+                format!("{} gaps accepted, stopping", recent_gaps.len()),
+            );
         }
 
         if !self.found_gaps.is_empty() {
-            let avg_match: f64 = self.found_gaps.iter().map(|g| g.archetype_match).sum::<f64>() / self.found_gaps.len() as f64;
+            let avg_match: f64 = self
+                .found_gaps
+                .iter()
+                .map(|g| g.archetype_match)
+                .sum::<f64>()
+                / self.found_gaps.len() as f64;
             if avg_match < 0.3 && iteration >= 2 {
-                return (true, format!("low archetype match ({:.2}), broadening search", avg_match));
+                return (
+                    true,
+                    format!("low archetype match ({:.2}), broadening search", avg_match),
+                );
             }
         }
 
@@ -740,7 +786,10 @@ impl ResearchOrchestrator {
         })
     }
 
-    async fn find_relevant_papers(&self, query: &ResearchQuery) -> Result<Vec<Paper>, ResearchError> {
+    async fn find_relevant_papers(
+        &self,
+        query: &ResearchQuery,
+    ) -> Result<Vec<Paper>, ResearchError> {
         let all_papers = self
             .db
             .list_papers(None, query.max_papers, 0)
@@ -753,7 +802,11 @@ impl ResearchOrchestrator {
         papers.len()
     }
 
-    async fn detect_gaps(&self, papers: &[Paper], categories: &[String]) -> Result<Vec<ResearchGap>, ResearchError> {
+    async fn detect_gaps(
+        &self,
+        papers: &[Paper],
+        categories: &[String],
+    ) -> Result<Vec<ResearchGap>, ResearchError> {
         let keywords: Vec<&str> = categories.iter().map(|s| s.as_str()).collect();
         let gap_descriptions = GapDetector::detect_gaps(papers, &keywords);
 
@@ -776,7 +829,11 @@ impl ResearchOrchestrator {
         Ok(gaps)
     }
 
-    async fn generate_suggestions(&self, papers: &[Paper], gaps: &[ResearchGap]) -> Result<Vec<String>, ResearchError> {
+    async fn generate_suggestions(
+        &self,
+        papers: &[Paper],
+        gaps: &[ResearchGap],
+    ) -> Result<Vec<String>, ResearchError> {
         if gaps.is_empty() {
             return Ok(vec![]);
         }
@@ -886,9 +943,14 @@ pub async fn run_research_loop(
     Ok(vec![])
 }
 
-async fn download_pdf_with_retry(_pdf_url: &str, _max_retries: usize) -> Result<(PathBuf, String), ResearchError> {
+async fn download_pdf_with_retry(
+    _pdf_url: &str,
+    _max_retries: usize,
+) -> Result<(PathBuf, String), ResearchError> {
     // PdfDownloader/PdfExtractor are not available in current rairos-parser
-    Err(ResearchError::Pdf("PDF download not implemented".to_string()))
+    Err(ResearchError::Pdf(
+        "PDF download not implemented".to_string(),
+    ))
 }
 
 fn build_research_note_markdown(paper: &Paper, extracted_text: &str) -> String {
@@ -898,7 +960,10 @@ fn build_research_note_markdown(paper: &Paper, extracted_text: &str) -> String {
     lines.push(String::new());
     lines.push(format!("**ID:** `{}`", paper.id));
     if let Some(ref arxiv_id) = paper.arxiv_id {
-        lines.push(format!("**Source:** [arXiv](https://arxiv.org/abs/{})", arxiv_id));
+        lines.push(format!(
+            "**Source:** [arXiv](https://arxiv.org/abs/{})",
+            arxiv_id
+        ));
     }
     if let Some(ref pdf_url) = paper.metadata.pdf_url {
         lines.push(format!("**PDF:** [PDF]({})", pdf_url));
@@ -928,7 +993,10 @@ fn build_research_note_markdown(paper: &Paper, extracted_text: &str) -> String {
     }
 
     lines.push("---".to_string());
-    lines.push(format!("_Generated by rairos-research on {}_", chrono::Utc::now().date_naive()));
+    lines.push(format!(
+        "_Generated by rairos-research on {}_",
+        chrono::Utc::now().date_naive()
+    ));
 
     lines.join("\n")
 }
@@ -1156,7 +1224,7 @@ pub enum GapType {
     EvaluationGap,
     ReproducibilityGap,
     EmbodiedPlanning,
-   RlPretraining,
+    RlPretraining,
     ScalingLaws,
     Reasoning,
     Unknown,
@@ -1265,7 +1333,8 @@ mod tests {
     #[test]
     fn test_query_similarity() {
         let strategy = AdaptiveQueryStrategy::new("test");
-        let sim = strategy.query_similarity("attention mechanism", "attention mechanism transformer");
+        let sim =
+            strategy.query_similarity("attention mechanism", "attention mechanism transformer");
         assert!(sim > 0.5);
     }
 

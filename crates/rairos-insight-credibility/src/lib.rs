@@ -34,13 +34,31 @@ impl CredibilityScore {
     pub fn to_dict(&self) -> HashMap<String, serde_json::Value> {
         let mut map = HashMap::new();
         map.insert("capsule_id".to_string(), serde_json::json!(self.capsule_id));
-        map.insert("overall".to_string(), serde_json::json!(round(self.overall, 3)));
-        map.insert("novelty_v2".to_string(), serde_json::json!(round(self.novelty_v2, 3)));
-        map.insert("evidence_strength".to_string(), serde_json::json!(round(self.evidence_strength, 3)));
-        map.insert("source_trust".to_string(), serde_json::json!(round(self.source_trust, 3)));
-        map.insert("consistency".to_string(), serde_json::json!(round(self.consistency, 3)));
+        map.insert(
+            "overall".to_string(),
+            serde_json::json!(round(self.overall, 3)),
+        );
+        map.insert(
+            "novelty_v2".to_string(),
+            serde_json::json!(round(self.novelty_v2, 3)),
+        );
+        map.insert(
+            "evidence_strength".to_string(),
+            serde_json::json!(round(self.evidence_strength, 3)),
+        );
+        map.insert(
+            "source_trust".to_string(),
+            serde_json::json!(round(self.source_trust, 3)),
+        );
+        map.insert(
+            "consistency".to_string(),
+            serde_json::json!(round(self.consistency, 3)),
+        );
         map.insert("trendslop".to_string(), serde_json::json!(self.trendslop));
-        map.insert("trendslop_reason".to_string(), serde_json::json!(self.trendslop_reason));
+        map.insert(
+            "trendslop_reason".to_string(),
+            serde_json::json!(self.trendslop_reason),
+        );
         map.insert("badge".to_string(), serde_json::json!(self.badge));
         map
     }
@@ -62,7 +80,10 @@ impl CredibilityScorer {
         }
     }
 
-    pub fn compute_novelty_scores(&self, capsules: &[CapsuleGene]) -> HashMap<String, CredibilityScore> {
+    pub fn compute_novelty_scores(
+        &self,
+        capsules: &[CapsuleGene],
+    ) -> HashMap<String, CredibilityScore> {
         let active: Vec<&CapsuleGene> = capsules.iter().filter(|c| c.status == "active").collect();
         if active.is_empty() {
             return HashMap::new();
@@ -70,7 +91,9 @@ impl CredibilityScorer {
 
         let mut overlaps: HashMap<String, (f64, String)> = HashMap::new();
         for c in &active {
-            let kws: HashSet<String> = c.trigger_keywords.iter()
+            let kws: HashSet<String> = c
+                .trigger_keywords
+                .iter()
                 .map(|kw| kw.to_lowercase().trim().to_string())
                 .filter(|kw| !kw.is_empty())
                 .collect();
@@ -85,7 +108,9 @@ impl CredibilityScorer {
                 if other.capsule_id == c.capsule_id {
                     continue;
                 }
-                let other_kws: HashSet<String> = other.trigger_keywords.iter()
+                let other_kws: HashSet<String> = other
+                    .trigger_keywords
+                    .iter()
                     .map(|kw| kw.to_lowercase().trim().to_string())
                     .filter(|kw| !kw.is_empty())
                     .collect();
@@ -94,7 +119,11 @@ impl CredibilityScorer {
                 }
                 let intersection = kws.intersection(&other_kws).count();
                 let union = kws.union(&other_kws).count();
-                let jaccard = if union > 0 { intersection as f64 / union as f64 } else { 0.0 };
+                let jaccard = if union > 0 {
+                    intersection as f64 / union as f64
+                } else {
+                    0.0
+                };
                 if jaccard > max_overlap {
                     max_overlap = jaccard;
                     worst_match = other.capsule_id.clone();
@@ -105,7 +134,8 @@ impl CredibilityScorer {
 
         let mut similar_counts: HashMap<String, usize> = HashMap::new();
         for cid in overlaps.keys() {
-            let count = overlaps.iter()
+            let count = overlaps
+                .iter()
                 .filter(|(o_cid, (o_ov, _))| {
                     *o_ov >= TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD && *o_cid != cid
                 })
@@ -119,13 +149,17 @@ impl CredibilityScorer {
             let trendslop = overlap_ratio >= TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD;
             let novelty_v2 = (1.0 - overlap_ratio).max(0.0);
 
-            let evidence = c.outcome_success_score
-                * ((c.feedback_count as f64 + 2.0).ln() / 12.0_f64.ln());
+            let evidence =
+                c.outcome_success_score * ((c.feedback_count as f64 + 2.0).ln() / 12.0_f64.ln());
 
-            let source = self.source_trust
-                .get(&c.archetype.get("source_arxiv_category")
-                    .and_then(|v| v.as_str().map(|s| s.to_string()))
-                    .unwrap_or_default())
+            let source = self
+                .source_trust
+                .get(
+                    &c.archetype
+                        .get("source_arxiv_category")
+                        .and_then(|v| v.as_str().map(|s| s.to_string()))
+                        .unwrap_or_default(),
+                )
                 .copied()
                 .unwrap_or(0.5);
 
@@ -155,8 +189,11 @@ impl CredibilityScorer {
             let mut reason_parts: Vec<String> = Vec::new();
             if trendslop {
                 let count = similar_counts.get(&c.capsule_id).copied().unwrap_or(0);
-                reason_parts.push(format!("{}% keyword overlap with {} other capsule(s)",
-                    (overlap_ratio * 100.0) as i32, count));
+                reason_parts.push(format!(
+                    "{}% keyword overlap with {} other capsule(s)",
+                    (overlap_ratio * 100.0) as i32,
+                    count
+                ));
             }
             if evidence < 0.3 {
                 reason_parts.push("low evidence (few feedbacks)".to_string());
@@ -173,7 +210,11 @@ impl CredibilityScorer {
                 source_trust: source,
                 consistency,
                 trendslop,
-                trendslop_reason: if reason_parts.is_empty() { String::new() } else { reason_parts.join("; ") },
+                trendslop_reason: if reason_parts.is_empty() {
+                    String::new()
+                } else {
+                    reason_parts.join("; ")
+                },
                 badge,
             };
             results.insert(c.capsule_id.clone(), score);
@@ -182,8 +223,14 @@ impl CredibilityScorer {
         results
     }
 
-    pub fn is_trendslop(&self, capsule: &CapsuleGene, all_capsules: &[CapsuleGene]) -> (bool, f64, String) {
-        let kws: HashSet<String> = capsule.trigger_keywords.iter()
+    pub fn is_trendslop(
+        &self,
+        capsule: &CapsuleGene,
+        all_capsules: &[CapsuleGene],
+    ) -> (bool, f64, String) {
+        let kws: HashSet<String> = capsule
+            .trigger_keywords
+            .iter()
             .map(|kw| kw.to_lowercase().trim().to_string())
             .filter(|kw| !kw.is_empty())
             .collect();
@@ -197,7 +244,9 @@ impl CredibilityScorer {
             if other.capsule_id == capsule.capsule_id || other.status == "archived" {
                 continue;
             }
-            let other_kws: HashSet<String> = other.trigger_keywords.iter()
+            let other_kws: HashSet<String> = other
+                .trigger_keywords
+                .iter()
                 .map(|kw| kw.to_lowercase().trim().to_string())
                 .filter(|kw| !kw.is_empty())
                 .collect();
@@ -206,7 +255,11 @@ impl CredibilityScorer {
             }
             let intersection = kws.intersection(&other_kws).count();
             let union = kws.union(&other_kws).count();
-            let jaccard = if union > 0 { intersection as f64 / union as f64 } else { 0.0 };
+            let jaccard = if union > 0 {
+                intersection as f64 / union as f64
+            } else {
+                0.0
+            };
             if jaccard >= TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD {
                 similar_count += 1;
                 if jaccard > max_overlap {
@@ -217,7 +270,11 @@ impl CredibilityScorer {
 
         let trendslop = max_overlap >= TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD;
         let reason = if trendslop {
-            format!("{}% keyword overlap with {} other capsule(s)", (max_overlap * 100.0) as i32, similar_count)
+            format!(
+                "{}% keyword overlap with {} other capsule(s)",
+                (max_overlap * 100.0) as i32,
+                similar_count
+            )
         } else {
             String::new()
         };
@@ -234,9 +291,8 @@ impl CredibilityScorer {
             return "<p>No active capsules to assess.</p>".to_string();
         }
 
-        let capsule_map: HashMap<_, _> = capsules.iter()
-            .map(|c| (c.capsule_id.clone(), c))
-            .collect();
+        let capsule_map: HashMap<_, _> =
+            capsules.iter().map(|c| (c.capsule_id.clone(), c)).collect();
         let score_list: Vec<_> = scores.values().collect();
         let trendslop_count = score_list.iter().filter(|s| s.trendslop).count();
 
@@ -248,7 +304,8 @@ impl CredibilityScorer {
         ));
         lines.push(
             "<p style='color:#666;font-size:13px;'>Novelty = inverse of keyword overlap. \
-             Capsules with >70% Jaccard similarity are flagged as trendslop.</p>".to_string()
+             Capsules with >70% Jaccard similarity are flagged as trendslop.</p>"
+                .to_string(),
         );
 
         let high_count = score_list.iter().filter(|s| s.badge == "high").count();
@@ -274,7 +331,8 @@ impl CredibilityScorer {
              <th>Evidence</th>\
              <th>Badge</th>\
              <th>Status</th>\
-             </tr></thead>".to_string()
+             </tr></thead>"
+                .to_string(),
         );
         lines.push("<tbody>".to_string());
 
@@ -282,7 +340,9 @@ impl CredibilityScorer {
         sorted_scores.sort_by(|a, b| b.overall.partial_cmp(&a.overall).unwrap());
         for s in sorted_scores {
             let c = capsule_map.get(&s.capsule_id);
-            let title = c.map(|cap| &cap.action_gap_title[..cap.action_gap_title.len().min(40)]).unwrap_or(&s.capsule_id);
+            let title = c
+                .map(|cap| &cap.action_gap_title[..cap.action_gap_title.len().min(40)])
+                .unwrap_or(&s.capsule_id);
             let gap_type = c.map(|cap| cap.action_gap_type.as_str()).unwrap_or("?");
 
             let novelty_pct = (s.novelty_v2 * 100.0) as i32;
@@ -326,7 +386,10 @@ impl CredibilityScorer {
         lines.push("</tbody></table>".to_string());
         lines.push("<style>".to_string());
         lines.push(".credibility-panel { font-family: Georgia, serif; }".to_string());
-        lines.push(".credibility-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }".to_string());
+        lines.push(
+            ".credibility-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }"
+                .to_string(),
+        );
         lines.push(".credibility-table th, .credibility-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; font-size: 13px; }".to_string());
         lines.push(".credibility-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }".to_string());
         lines.push("</style>".to_string());
@@ -340,11 +403,13 @@ impl CredibilityScorer {
         capsules: &[CapsuleGene],
         top_n: usize,
     ) -> String {
-        let mut lines = vec!["=== Gene Pool Credibility Report ===".to_string(), String::new()];
+        let mut lines = vec![
+            "=== Gene Pool Credibility Report ===".to_string(),
+            String::new(),
+        ];
 
-        let capsule_map: HashMap<_, _> = capsules.iter()
-            .map(|c| (c.capsule_id.clone(), c))
-            .collect();
+        let capsule_map: HashMap<_, _> =
+            capsules.iter().map(|c| (c.capsule_id.clone(), c)).collect();
 
         let all_scores: Vec<_> = scores.values().collect();
         if all_scores.is_empty() {
@@ -369,13 +434,12 @@ impl CredibilityScorer {
             trendslop_list.sort_by(|a, b| a.overall.partial_cmp(&b.overall).unwrap());
             for s in trendslop_list.iter().take(top_n) {
                 let c = capsule_map.get(&s.capsule_id);
-                let title = c.map(|cap| &cap.action_gap_title[..cap.action_gap_title.len().min(50)]).unwrap_or(&s.capsule_id);
+                let title = c
+                    .map(|cap| &cap.action_gap_title[..cap.action_gap_title.len().min(50)])
+                    .unwrap_or(&s.capsule_id);
                 lines.push(format!(
                     "  [LOW]  {:<50}  novelty={:.2}  evidence={:.2}  {}",
-                    title,
-                    s.novelty_v2,
-                    s.evidence_strength,
-                    s.trendslop_reason
+                    title, s.novelty_v2, s.evidence_strength, s.trendslop_reason
                 ));
             }
             lines.push(String::new());
@@ -387,13 +451,12 @@ impl CredibilityScorer {
             high_list.sort_by(|a, b| b.overall.partial_cmp(&a.overall).unwrap());
             for s in high_list.iter().take(10) {
                 let c = capsule_map.get(&s.capsule_id);
-                let title = c.map(|cap| &cap.action_gap_title[..cap.action_gap_title.len().min(50)]).unwrap_or(&s.capsule_id);
+                let title = c
+                    .map(|cap| &cap.action_gap_title[..cap.action_gap_title.len().min(50)])
+                    .unwrap_or(&s.capsule_id);
                 lines.push(format!(
                     "  [HIGH] {:<50}  overall={:.3}  novelty={:.2}  evidence={:.2}",
-                    title,
-                    s.overall,
-                    s.novelty_v2,
-                    s.evidence_strength
+                    title, s.overall, s.novelty_v2, s.evidence_strength
                 ));
             }
             lines.push(String::new());
@@ -466,7 +529,12 @@ mod tests {
     #[test]
     fn test_compute_novelty_scores_single_capsule() {
         let scorer = CredibilityScorer::new(None);
-        let capsules = vec![make_capsule("cap1", vec!["transformer".to_string()], 0.8, 3)];
+        let capsules = vec![make_capsule(
+            "cap1",
+            vec!["transformer".to_string()],
+            0.8,
+            3,
+        )];
         let scores = scorer.compute_novelty_scores(&capsules);
         assert_eq!(scores.len(), 1);
         let score = scores.get("cap1").unwrap();
@@ -478,8 +546,29 @@ mod tests {
     fn test_compute_novelty_scores_trendslop_detection() {
         let scorer = CredibilityScorer::new(None);
         let capsules = vec![
-            make_capsule("cap1", vec!["transformer".to_string(), "attention".to_string(), "NLP".to_string(), "LLM".to_string()], 0.8, 3),
-            make_capsule("cap2", vec!["transformer".to_string(), "attention".to_string(), "NLP".to_string(), "LLM".to_string(), "model".to_string()], 0.7, 2),
+            make_capsule(
+                "cap1",
+                vec![
+                    "transformer".to_string(),
+                    "attention".to_string(),
+                    "NLP".to_string(),
+                    "LLM".to_string(),
+                ],
+                0.8,
+                3,
+            ),
+            make_capsule(
+                "cap2",
+                vec![
+                    "transformer".to_string(),
+                    "attention".to_string(),
+                    "NLP".to_string(),
+                    "LLM".to_string(),
+                    "model".to_string(),
+                ],
+                0.7,
+                2,
+            ),
         ];
         let scores = scorer.compute_novelty_scores(&capsules);
         let score1 = scores.get("cap1").unwrap();
@@ -500,8 +589,27 @@ mod tests {
     #[test]
     fn test_is_trendslop_with_overlap() {
         let scorer = CredibilityScorer::new(None);
-        let capsule1 = make_capsule("cap1", vec!["transformer".to_string(), "attention".to_string(), "NLP".to_string()], 0.8, 3);
-        let capsule2 = make_capsule("cap2", vec!["transformer".to_string(), "attention".to_string(), "NLP".to_string(), "LLM".to_string()], 0.7, 2);
+        let capsule1 = make_capsule(
+            "cap1",
+            vec![
+                "transformer".to_string(),
+                "attention".to_string(),
+                "NLP".to_string(),
+            ],
+            0.8,
+            3,
+        );
+        let capsule2 = make_capsule(
+            "cap2",
+            vec![
+                "transformer".to_string(),
+                "attention".to_string(),
+                "NLP".to_string(),
+                "LLM".to_string(),
+            ],
+            0.7,
+            2,
+        );
         let capsules = vec![capsule1.clone(), capsule2.clone()];
         let (is_ts, overlap, reason) = scorer.is_trendslop(&capsule1, &capsules);
         assert!(is_ts);
@@ -512,9 +620,7 @@ mod tests {
     #[test]
     fn test_credibility_high_threshold() {
         let scorer = CredibilityScorer::new(None);
-        let capsules = vec![
-            make_capsule("high1", vec!["novel".to_string()], 0.9, 10),
-        ];
+        let capsules = vec![make_capsule("high1", vec!["novel".to_string()], 0.9, 10)];
         let scores = scorer.compute_novelty_scores(&capsules);
         let score = scores.get("high1").unwrap();
         assert_eq!(score.badge, "high");
@@ -524,8 +630,28 @@ mod tests {
     fn test_credibility_low_threshold() {
         let scorer = CredibilityScorer::new(None);
         let capsules = vec![
-            make_capsule("low1", vec!["transformer".to_string(), "attention".to_string(), "NLP".to_string(), "LLM".to_string()], 0.2, 0),
-            make_capsule("low2", vec!["transformer".to_string(), "attention".to_string(), "NLP".to_string(), "LLM".to_string()], 0.2, 0),
+            make_capsule(
+                "low1",
+                vec![
+                    "transformer".to_string(),
+                    "attention".to_string(),
+                    "NLP".to_string(),
+                    "LLM".to_string(),
+                ],
+                0.2,
+                0,
+            ),
+            make_capsule(
+                "low2",
+                vec![
+                    "transformer".to_string(),
+                    "attention".to_string(),
+                    "NLP".to_string(),
+                    "LLM".to_string(),
+                ],
+                0.2,
+                0,
+            ),
         ];
         let scores = scorer.compute_novelty_scores(&capsules);
         let score = scores.get("low1").unwrap();
@@ -549,9 +675,12 @@ mod tests {
     #[test]
     fn test_render_html() {
         let scorer = CredibilityScorer::new(None);
-        let capsules = vec![
-            make_capsule("cap1", vec!["transformer".to_string()], 0.8, 3),
-        ];
+        let capsules = vec![make_capsule(
+            "cap1",
+            vec!["transformer".to_string()],
+            0.8,
+            3,
+        )];
         let html = scorer.render_html(&capsules);
         assert!(html.contains("credibility-panel"));
         assert!(html.contains("cap1"));

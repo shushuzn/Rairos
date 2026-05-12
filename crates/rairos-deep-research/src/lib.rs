@@ -299,8 +299,16 @@ impl AdaptiveQueryStrategy {
 
     /// Simple word-overlap similarity between two queries (0.0–1.0).
     pub fn query_similarity(&self, q1: &str, q2: &str) -> f64 {
-        let words1: HashSet<String> = q1.to_lowercase().split_whitespace().map(|s| s.to_string()).collect();
-        let words2: HashSet<String> = q2.to_lowercase().split_whitespace().map(|s| s.to_string()).collect();
+        let words1: HashSet<String> = q1
+            .to_lowercase()
+            .split_whitespace()
+            .map(|s| s.to_string())
+            .collect();
+        let words2: HashSet<String> = q2
+            .to_lowercase()
+            .split_whitespace()
+            .map(|s| s.to_string())
+            .collect();
         if words1.is_empty() || words2.is_empty() {
             return 0.0;
         }
@@ -526,11 +534,8 @@ impl DeepResearchAgent {
 
         *self.adaptive_strategy.write().unwrap() = strategy;
 
-        let session = ResearchSession::new(
-            &session_id,
-            &self.config.query,
-            self.config.max_iterations,
-        );
+        let session =
+            ResearchSession::new(&session_id, &self.config.query, self.config.max_iterations);
 
         self.session = Some(session.clone());
         Ok(session)
@@ -538,7 +543,10 @@ impl DeepResearchAgent {
 
     /// Resume an existing session.
     #[allow(dead_code)]
-    pub fn resume(&mut self, _session_id: &str) -> Result<Option<ResearchSession>, DeepResearchError> {
+    pub fn resume(
+        &mut self,
+        _session_id: &str,
+    ) -> Result<Option<ResearchSession>, DeepResearchError> {
         // In a real implementation, this would load from snapstate
         Ok(self.session.clone())
     }
@@ -610,8 +618,11 @@ impl DeepResearchAgent {
             self.config.query.clone()
         } else if let Some(latest_gap) = gaps.last() {
             // Get GenePool guidance
-            let (hint, confidence) =
-                self.get_search_guidance(&self.config.query, &latest_gap.gap_type, &latest_gap.title);
+            let (hint, confidence) = self.get_search_guidance(
+                &self.config.query,
+                &latest_gap.gap_type,
+                &latest_gap.title,
+            );
 
             // Use adaptive strategy to build query
             let strategy = self.adaptive_strategy.read().unwrap();
@@ -798,7 +809,11 @@ impl DeepResearchAgent {
         }
 
         let start_time = chrono::Utc::now().timestamp_millis() as f64 / 1000.0;
-        let mut iteration = self.session.as_ref().ok_or(DeepResearchError::NoSession)?.iteration;
+        let mut iteration = self
+            .session
+            .as_ref()
+            .ok_or(DeepResearchError::NoSession)?
+            .iteration;
 
         self.record_thought(
             "planner",
@@ -809,8 +824,7 @@ impl DeepResearchAgent {
             iteration,
         );
 
-        while iteration < self.config.max_iterations
-            && !self.stop_requested.load(Ordering::SeqCst)
+        while iteration < self.config.max_iterations && !self.stop_requested.load(Ordering::SeqCst)
         {
             if let Some(ref mut session) = self.session {
                 session.iteration = iteration;
@@ -1054,13 +1068,7 @@ mod tests {
                 accepted: false,
             }],
         );
-        let query = strategy.build_adaptive_query(
-            1,
-            "Neural architecture",
-            "improvement",
-            "",
-            0.0,
-        );
+        let query = strategy.build_adaptive_query(1, "Neural architecture", "improvement", "", 0.0);
         assert!(query.contains("improvement"));
     }
 

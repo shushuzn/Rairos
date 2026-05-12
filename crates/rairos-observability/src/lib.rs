@@ -110,41 +110,40 @@ pub fn correlation_context<F, R>(trace_id: Option<String>, span_id: Option<Strin
 where
     F: FnOnce() -> R,
 {
-    let (prev_trace, prev_span, prev_parent) =
-        CORRELATION.with(|c| {
-            let mut ctx = c.write().unwrap();
-            let prev_trace = ctx.trace_id.clone();
-            let prev_span = ctx.span_id.clone();
-            let prev_parent = ctx.parent_span_id.clone();
+    let (prev_trace, prev_span, prev_parent) = CORRELATION.with(|c| {
+        let mut ctx = c.write().unwrap();
+        let prev_trace = ctx.trace_id.clone();
+        let prev_span = ctx.span_id.clone();
+        let prev_parent = ctx.parent_span_id.clone();
 
-            if let Some(tid) = trace_id {
-                ctx.trace_id = Some(tid);
-            } else if ctx.trace_id.is_none() {
-                ctx.trace_id = Some(
-                    rand::thread_rng()
-                        .sample_iter(rand::distributions::Alphanumeric)
-                        .take(16)
-                        .map(char::from)
-                        .collect(),
-                );
-            }
+        if let Some(tid) = trace_id {
+            ctx.trace_id = Some(tid);
+        } else if ctx.trace_id.is_none() {
+            ctx.trace_id = Some(
+                rand::thread_rng()
+                    .sample_iter(rand::distributions::Alphanumeric)
+                    .take(16)
+                    .map(char::from)
+                    .collect(),
+            );
+        }
 
-            if let Some(sid) = span_id {
-                ctx.span_id = Some(sid);
-            } else if ctx.span_id.is_none() {
-                ctx.span_id = Some(
-                    rand::thread_rng()
-                        .sample_iter(rand::distributions::Alphanumeric)
-                        .take(8)
-                        .map(char::from)
-                        .collect(),
-                );
-            }
+        if let Some(sid) = span_id {
+            ctx.span_id = Some(sid);
+        } else if ctx.span_id.is_none() {
+            ctx.span_id = Some(
+                rand::thread_rng()
+                    .sample_iter(rand::distributions::Alphanumeric)
+                    .take(8)
+                    .map(char::from)
+                    .collect(),
+            );
+        }
 
-            ctx.parent_span_id = ctx.span_id.clone();
+        ctx.parent_span_id = ctx.span_id.clone();
 
-            (prev_trace, prev_span, prev_parent)
-        });
+        (prev_trace, prev_span, prev_parent)
+    });
 
     let result = f();
 
@@ -207,7 +206,12 @@ impl EventEmitter {
         }
     }
 
-    pub fn get_events(&self, event_type: Option<&str>, trace_id: Option<&str>, limit: usize) -> Vec<Event> {
+    pub fn get_events(
+        &self,
+        event_type: Option<&str>,
+        trace_id: Option<&str>,
+        limit: usize,
+    ) -> Vec<Event> {
         let buffer = self.buffer.read().unwrap();
         let mut events: Vec<Event> = buffer.clone();
 
@@ -269,7 +273,12 @@ impl MetricsCollector {
 
     pub fn counter(&self, subsystem: &str, name: &str) -> f64 {
         let key = format!("{}.{}", subsystem, name);
-        self.counters.read().unwrap().get(&key).copied().unwrap_or(0.0)
+        self.counters
+            .read()
+            .unwrap()
+            .get(&key)
+            .copied()
+            .unwrap_or(0.0)
     }
 
     pub fn set(&self, subsystem: &str, name: &str, value: f64) {
@@ -310,10 +319,7 @@ impl MetricsCollector {
         stats.insert("min".to_string(), sorted[0]);
         stats.insert("max".to_string(), sorted[n - 1]);
         stats.insert("mean".to_string(), sorted.iter().sum::<f64>() / n as f64);
-        stats.insert(
-            "p50".to_string(),
-            sorted[n / 2],
-        );
+        stats.insert("p50".to_string(), sorted[n / 2]);
         stats.insert(
             "p95".to_string(),
             sorted[(n as f64 * 0.95) as usize].min(sorted[n - 1]),
@@ -389,7 +395,9 @@ impl MetricsCollector {
         );
 
         let histograms = self.histograms.read().unwrap();
-        let hist_summary: HashMap<String, HashMap<String, f64>> = histograms.keys().map(|k| {
+        let hist_summary: HashMap<String, HashMap<String, f64>> = histograms
+            .keys()
+            .map(|k| {
                 let stats = Self::new().histogram_stats(
                     k.split('.').next().unwrap_or(""),
                     k.split('.').nth(1).unwrap_or(""),
@@ -442,11 +450,7 @@ impl LogSampler {
     }
 }
 
-pub fn setup_observability(
-    level: &str,
-    json_logs: bool,
-    log_file: Option<&str>,
-) {
+pub fn setup_observability(level: &str, json_logs: bool, log_file: Option<&str>) {
     let _log_level = LogLevel::from_str(level);
     let _json = json_logs;
     let _file = log_file;
@@ -458,10 +462,14 @@ mod tests {
 
     #[test]
     fn test_correlation_context() {
-        let result = correlation_context(Some("trace123".to_string()), Some("span456".to_string()), || {
-            assert_eq!(get_trace_id(), Some("trace123".to_string()));
-            "done"
-        });
+        let result = correlation_context(
+            Some("trace123".to_string()),
+            Some("span456".to_string()),
+            || {
+                assert_eq!(get_trace_id(), Some("trace123".to_string()));
+                "done"
+            },
+        );
         assert_eq!(result, "done");
     }
 

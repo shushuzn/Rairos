@@ -88,15 +88,24 @@ impl CapsuleStorage {
     ) -> Result<CapsuleGene, StorageError> {
         let mut arch = archetype.unwrap_or_default();
         if !source_paper_id.is_empty() {
-            arch.insert("source_paper_id".to_string(), serde_json::json!(source_paper_id));
+            arch.insert(
+                "source_paper_id".to_string(),
+                serde_json::json!(source_paper_id),
+            );
         }
         if !source_arxiv_category.is_empty() {
-            arch.insert("source_arxiv_category".to_string(), serde_json::json!(source_arxiv_category));
+            arch.insert(
+                "source_arxiv_category".to_string(),
+                serde_json::json!(source_arxiv_category),
+            );
         }
         arch.insert("gap_type".to_string(), serde_json::json!(gap_type));
 
         let normalized_gap_type = normalize_gap_type(gap_type);
-        arch.insert("gap_type".to_string(), serde_json::json!(normalized_gap_type));
+        arch.insert(
+            "gap_type".to_string(),
+            serde_json::json!(normalized_gap_type),
+        );
 
         let cid = capsule_id
             .map(|s| s.to_string())
@@ -263,11 +272,7 @@ impl CapsuleStorage {
 
     pub fn get_gene_pool_stats(&self) -> Result<HashMap<String, serde_json::Value>, StorageError> {
         let conn = self.conn.lock().unwrap();
-        let total: i32 = conn.query_row(
-            "SELECT COUNT(*) FROM capsules",
-            [],
-            |row| row.get(0),
-        )?;
+        let total: i32 = conn.query_row("SELECT COUNT(*) FROM capsules", [], |row| row.get(0))?;
 
         if total == 0 {
             let mut stats = HashMap::new();
@@ -284,7 +289,9 @@ impl CapsuleStorage {
         )?;
 
         let mut by_type: HashMap<String, i32> = HashMap::new();
-        let mut stmt = conn.prepare("SELECT action_gap_type, COUNT(*) as cnt FROM capsules GROUP BY action_gap_type")?;
+        let mut stmt = conn.prepare(
+            "SELECT action_gap_type, COUNT(*) as cnt FROM capsules GROUP BY action_gap_type",
+        )?;
         let rows = stmt.query_map([], |row| {
             Ok((row.get::<_, String>(0)?, row.get::<_, i32>(1)?))
         })?;
@@ -293,7 +300,9 @@ impl CapsuleStorage {
             by_type.insert(gt, cnt);
         }
 
-        let mut stmt = conn.prepare("SELECT DISTINCT evolved_generation FROM capsules ORDER BY evolved_generation")?;
+        let mut stmt = conn.prepare(
+            "SELECT DISTINCT evolved_generation FROM capsules ORDER BY evolved_generation",
+        )?;
         let generations: Vec<i32> = stmt
             .query_map([], |row| row.get(0))?
             .filter_map(|r| r.ok())
@@ -301,13 +310,18 @@ impl CapsuleStorage {
 
         let mut stats = HashMap::new();
         stats.insert("total".to_string(), serde_json::json!(total));
-        stats.insert("avg_score".to_string(), serde_json::json!((avg * 1000.0).round() / 1000.0));
+        stats.insert(
+            "avg_score".to_string(),
+            serde_json::json!((avg * 1000.0).round() / 1000.0),
+        );
         stats.insert("by_gap_type".to_string(), serde_json::json!(by_type));
         stats.insert("generations".to_string(), serde_json::json!(generations));
         Ok(stats)
     }
 
-    pub fn recompute_credibility_all(&self) -> Result<HashMap<String, serde_json::Value>, StorageError> {
+    pub fn recompute_credibility_all(
+        &self,
+    ) -> Result<HashMap<String, serde_json::Value>, StorageError> {
         use rairos_insight_credibility::CredibilityScorer;
 
         let capsules = self.load_capsules()?;
@@ -395,8 +409,7 @@ fn capsule_from_row(row: &rusqlite::Row) -> SqliteResult<CapsuleGene> {
         serde_json::from_str(&archetype_str).unwrap_or_default();
 
     let trigger_kw_str: String = row.get("trigger_keywords")?;
-    let trigger_keywords: Vec<String> =
-        serde_json::from_str(&trigger_kw_str).unwrap_or_default();
+    let trigger_keywords: Vec<String> = serde_json::from_str(&trigger_kw_str).unwrap_or_default();
 
     Ok(CapsuleGene {
         capsule_id: row.get("capsule_id")?,
@@ -422,24 +435,75 @@ fn capsule_from_row(row: &rusqlite::Row) -> SqliteResult<CapsuleGene> {
 
 fn capsule_to_dict(capsule: &CapsuleGene) -> HashMap<String, serde_json::Value> {
     let mut map = HashMap::new();
-    map.insert("capsule_id".to_string(), serde_json::json!(capsule.capsule_id));
-    map.insert("created_at".to_string(), serde_json::json!(capsule.created_at));
-    map.insert("trigger_topic".to_string(), serde_json::json!(capsule.trigger_topic));
-    map.insert("trigger_gap_type".to_string(), serde_json::json!(capsule.trigger_gap_type));
-    map.insert("trigger_keywords".to_string(), serde_json::json!(capsule.trigger_keywords));
-    map.insert("action_gap_type".to_string(), serde_json::json!(capsule.action_gap_type));
-    map.insert("action_gap_title".to_string(), serde_json::json!(capsule.action_gap_title));
-    map.insert("outcome_success_score".to_string(), serde_json::json!(capsule.outcome_success_score));
-    map.insert("feedback_count".to_string(), serde_json::json!(capsule.feedback_count));
-    map.insert("evolved_generation".to_string(), serde_json::json!(capsule.evolved_generation));
-    map.insert("archetype".to_string(), serde_json::json!(capsule.archetype));
+    map.insert(
+        "capsule_id".to_string(),
+        serde_json::json!(capsule.capsule_id),
+    );
+    map.insert(
+        "created_at".to_string(),
+        serde_json::json!(capsule.created_at),
+    );
+    map.insert(
+        "trigger_topic".to_string(),
+        serde_json::json!(capsule.trigger_topic),
+    );
+    map.insert(
+        "trigger_gap_type".to_string(),
+        serde_json::json!(capsule.trigger_gap_type),
+    );
+    map.insert(
+        "trigger_keywords".to_string(),
+        serde_json::json!(capsule.trigger_keywords),
+    );
+    map.insert(
+        "action_gap_type".to_string(),
+        serde_json::json!(capsule.action_gap_type),
+    );
+    map.insert(
+        "action_gap_title".to_string(),
+        serde_json::json!(capsule.action_gap_title),
+    );
+    map.insert(
+        "outcome_success_score".to_string(),
+        serde_json::json!(capsule.outcome_success_score),
+    );
+    map.insert(
+        "feedback_count".to_string(),
+        serde_json::json!(capsule.feedback_count),
+    );
+    map.insert(
+        "evolved_generation".to_string(),
+        serde_json::json!(capsule.evolved_generation),
+    );
+    map.insert(
+        "archetype".to_string(),
+        serde_json::json!(capsule.archetype),
+    );
     map.insert("status".to_string(), serde_json::json!(capsule.status));
-    map.insert("low_score_streak".to_string(), serde_json::json!(capsule.low_score_streak));
-    map.insert("credibility_score".to_string(), serde_json::json!(capsule.credibility_score));
-    map.insert("trendslop".to_string(), serde_json::json!(capsule.trendslop));
-    map.insert("trendslop_reason".to_string(), serde_json::json!(capsule.trendslop_reason));
-    map.insert("credibility_badge".to_string(), serde_json::json!(capsule.credibility_badge));
-    map.insert("source_arxiv_category".to_string(), serde_json::json!(capsule.source_arxiv_category));
+    map.insert(
+        "low_score_streak".to_string(),
+        serde_json::json!(capsule.low_score_streak),
+    );
+    map.insert(
+        "credibility_score".to_string(),
+        serde_json::json!(capsule.credibility_score),
+    );
+    map.insert(
+        "trendslop".to_string(),
+        serde_json::json!(capsule.trendslop),
+    );
+    map.insert(
+        "trendslop_reason".to_string(),
+        serde_json::json!(capsule.trendslop_reason),
+    );
+    map.insert(
+        "credibility_badge".to_string(),
+        serde_json::json!(capsule.credibility_badge),
+    );
+    map.insert(
+        "source_arxiv_category".to_string(),
+        serde_json::json!(capsule.source_arxiv_category),
+    );
     map
 }
 
@@ -487,12 +551,10 @@ fn extract_keywords_simple(text: &str) -> Vec<String> {
     let text_lower = text.to_lowercase();
     let words: Vec<&str> = text_lower.split_whitespace().collect();
     let stopwords = [
-        "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
-        "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
-        "being", "have", "has", "had", "do", "does", "did", "will", "would",
-        "could", "should", "may", "might", "must", "shall", "can", "need",
-        "that", "which", "who", "whom", "this", "these", "those", "it", "its",
-        "over",
+        "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by",
+        "from", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do",
+        "does", "did", "will", "would", "could", "should", "may", "might", "must", "shall", "can",
+        "need", "that", "which", "who", "whom", "this", "these", "those", "it", "its", "over",
     ];
     words
         .into_iter()
@@ -631,7 +693,9 @@ mod tests {
             )
             .unwrap();
 
-        let found = storage.get_capsule_by_title("Unique test title 123", "NLP").unwrap();
+        let found = storage
+            .get_capsule_by_title("Unique test title 123", "NLP")
+            .unwrap();
         assert!(found.is_some());
     }
 
@@ -639,7 +703,10 @@ mod tests {
     fn test_normalize_gap_type() {
         assert_eq!(normalize_gap_type("method_limitation"), "method_limitation");
         assert_eq!(normalize_gap_type("capability"), "method_limitation");
-        assert_eq!(normalize_gap_type("application_gap"), "unexplored_application");
+        assert_eq!(
+            normalize_gap_type("application_gap"),
+            "unexplored_application"
+        );
         assert_eq!(normalize_gap_type(""), "method_limitation");
     }
 

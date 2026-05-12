@@ -74,7 +74,9 @@ pub fn load_capsules(
     capsules
 }
 
-fn sync_capsules_json(capsules: &[HashMap<String, serde_json::Value>]) -> Result<(), std::io::Error> {
+fn sync_capsules_json(
+    capsules: &[HashMap<String, serde_json::Value>],
+) -> Result<(), std::io::Error> {
     let gp_dir = get_gp_dir();
     std::fs::create_dir_all(&gp_dir)?;
     let path = gp_dir.join(CAPSULE_FILE);
@@ -84,7 +86,10 @@ fn sync_capsules_json(capsules: &[HashMap<String, serde_json::Value>]) -> Result
     Ok(())
 }
 
-pub fn get_capsule_by_paper(paper_id: &str, gap_type: Option<&str>) -> Option<HashMap<String, serde_json::Value>> {
+pub fn get_capsule_by_paper(
+    paper_id: &str,
+    gap_type: Option<&str>,
+) -> Option<HashMap<String, serde_json::Value>> {
     let capsules = load_capsules(gap_type, Some("active"), None);
     let candidates: Vec<_> = capsules
         .into_iter()
@@ -128,23 +133,90 @@ pub fn get_gene_pool_diversity() -> HashMap<String, serde_json::Value> {
             "diversity_score": 0,
             "underrepresented_families": [],
             "overrepresented_families": [],
-        }).as_object().unwrap().clone()
+        })
+        .as_object()
+        .unwrap()
+        .clone()
         .into_iter()
         .collect();
     }
 
     let family_keywords: HashMap<&str, Vec<&str>> = HashMap::from([
-        ("attention", vec!["attention", "transformer", "multi-head", "self-attention", "cross-attention"]),
-        ("reinforcement", vec!["rl", "reinforcement", "policy", "reward", "agent", "DQN", "PPO", "A3C"]),
-        ("language_model", vec!["LM", "language model", "decoder", "autoregressive", "LLM", "GPT", "BERT"]),
-        ("vision", vec!["CNN", "convolution", "resnet", "image", "vision", "ViT", "classification"]),
-        ("optimization", vec!["optimizer", "Adam", "SGD", "gradient", "loss", "training"]),
-        ("graph", vec!["GNN", "graph", "node", "edge", "message passing"]),
-        ("reasoning", vec!["reasoning", "chain-of-thought", "logical", "inference", "planning"]),
-        ("embodied", vec!["embodied", "robotics", "navigation", "control", "motor"]),
+        (
+            "attention",
+            vec![
+                "attention",
+                "transformer",
+                "multi-head",
+                "self-attention",
+                "cross-attention",
+            ],
+        ),
+        (
+            "reinforcement",
+            vec![
+                "rl",
+                "reinforcement",
+                "policy",
+                "reward",
+                "agent",
+                "DQN",
+                "PPO",
+                "A3C",
+            ],
+        ),
+        (
+            "language_model",
+            vec![
+                "LM",
+                "language model",
+                "decoder",
+                "autoregressive",
+                "LLM",
+                "GPT",
+                "BERT",
+            ],
+        ),
+        (
+            "vision",
+            vec![
+                "CNN",
+                "convolution",
+                "resnet",
+                "image",
+                "vision",
+                "ViT",
+                "classification",
+            ],
+        ),
+        (
+            "optimization",
+            vec!["optimizer", "Adam", "SGD", "gradient", "loss", "training"],
+        ),
+        (
+            "graph",
+            vec!["GNN", "graph", "node", "edge", "message passing"],
+        ),
+        (
+            "reasoning",
+            vec![
+                "reasoning",
+                "chain-of-thought",
+                "logical",
+                "inference",
+                "planning",
+            ],
+        ),
+        (
+            "embodied",
+            vec!["embodied", "robotics", "navigation", "control", "motor"],
+        ),
     ]);
 
-    fn family_of(keywords: &[serde_json::Value], family_keywords: &HashMap<&str, Vec<&str>>) -> String {
+    fn family_of(
+        keywords: &[serde_json::Value],
+        family_keywords: &HashMap<&str, Vec<&str>>,
+    ) -> String {
         let kw_set: std::collections::HashSet<String> = keywords
             .iter()
             .filter_map(|k| k.as_str())
@@ -163,13 +235,15 @@ pub fn get_gene_pool_diversity() -> HashMap<String, serde_json::Value> {
     let mut gap_type_counts: HashMap<String, i32> = HashMap::new();
 
     for cap in &capsules {
-        let keywords: Vec<serde_json::Value> = cap.get("trigger_keywords")
+        let keywords: Vec<serde_json::Value> = cap
+            .get("trigger_keywords")
             .and_then(|v| serde_json::from_value(v.clone()).ok())
             .unwrap_or_default();
         let fam = family_of(&keywords, &family_keywords);
         *family_counts.entry(fam).or_insert(0) += 1;
 
-        let gt = cap.get("action_gap_type")
+        let gt = cap
+            .get("action_gap_type")
             .and_then(|v| v.as_str())
             .unwrap_or("unknown");
         *gap_type_counts.entry(gt.to_string()).or_insert(0) += 1;
@@ -185,7 +259,11 @@ pub fn get_gene_pool_diversity() -> HashMap<String, serde_json::Value> {
     }
     let num_families = family_counts.len().max(1) as f64;
     let max_entropy = num_families.ln();
-    let normalized_shannon = if max_entropy > 0.0 { shannon / max_entropy } else { 0.0 };
+    let normalized_shannon = if max_entropy > 0.0 {
+        shannon / max_entropy
+    } else {
+        0.0
+    };
 
     let family_coverage = family_counts.len() as f64 / family_keywords.len() as f64;
     let diversity_score = (normalized_shannon * 0.6 * 100.0 + family_coverage * 0.4 * 100.0) as i32;
@@ -198,26 +276,55 @@ pub fn get_gene_pool_diversity() -> HashMap<String, serde_json::Value> {
         *sorted_counts[sorted_counts.len() / 2]
     };
 
-    let underrep: Vec<String> = family_counts.iter()
+    let underrep: Vec<String> = family_counts
+        .iter()
         .filter(|(_, &c)| c < median_count / 10)
         .map(|(f, _)| f.clone())
         .collect();
-    let overrep: Vec<String> = family_counts.iter()
+    let overrep: Vec<String> = family_counts
+        .iter()
         .filter(|(_, &c)| c > median_count * 2)
         .map(|(f, _)| f.clone())
         .collect();
 
     let mut result = HashMap::new();
-    result.insert("shannon_index".to_string(), serde_json::json!(round(shannon, 4)));
-    result.insert("shannon_normalized".to_string(), serde_json::json!(round(normalized_shannon, 4)));
+    result.insert(
+        "shannon_index".to_string(),
+        serde_json::json!(round(shannon, 4)),
+    );
+    result.insert(
+        "shannon_normalized".to_string(),
+        serde_json::json!(round(normalized_shannon, 4)),
+    );
     result.insert("capsule_count".to_string(), serde_json::json!(total as i32));
-    result.insert("family_counts".to_string(), serde_json::json!(family_counts));
-    result.insert("gap_type_counts".to_string(), serde_json::json!(gap_type_counts));
-    result.insert("diversity_score".to_string(), serde_json::json!(diversity_score));
-    result.insert("underrepresented_families".to_string(), serde_json::json!(underrep));
-    result.insert("overrepresented_families".to_string(), serde_json::json!(overrep));
-    result.insert("median_family_count".to_string(), serde_json::json!(median_count));
-    result.insert("family_coverage".to_string(), serde_json::json!(round(family_coverage, 4)));
+    result.insert(
+        "family_counts".to_string(),
+        serde_json::json!(family_counts),
+    );
+    result.insert(
+        "gap_type_counts".to_string(),
+        serde_json::json!(gap_type_counts),
+    );
+    result.insert(
+        "diversity_score".to_string(),
+        serde_json::json!(diversity_score),
+    );
+    result.insert(
+        "underrepresented_families".to_string(),
+        serde_json::json!(underrep),
+    );
+    result.insert(
+        "overrepresented_families".to_string(),
+        serde_json::json!(overrep),
+    );
+    result.insert(
+        "median_family_count".to_string(),
+        serde_json::json!(median_count),
+    );
+    result.insert(
+        "family_coverage".to_string(),
+        serde_json::json!(round(family_coverage, 4)),
+    );
 
     result
 }
@@ -228,7 +335,10 @@ pub fn export_pool() -> HashMap<String, serde_json::Value> {
 
     let mut result = HashMap::new();
     result.insert("version".to_string(), serde_json::json!("1.0"));
-    result.insert("exported_at".to_string(), serde_json::json!(chrono::Utc::now().to_rfc3339()));
+    result.insert(
+        "exported_at".to_string(),
+        serde_json::json!(chrono::Utc::now().to_rfc3339()),
+    );
 
     if capsules_path.exists() {
         if let Ok(text) = std::fs::read_to_string(&capsules_path) {
@@ -264,7 +374,8 @@ pub fn import_pool(data: &HashMap<String, serde_json::Value>, merge: bool) -> Ha
     stats.insert("genes_imported".to_string(), 0);
 
     if let Some(capsules) = data.get("capsules") {
-        let capsules_arr: Vec<serde_json::Value> = serde_json::from_value(capsules.clone()).unwrap_or_default();
+        let capsules_arr: Vec<serde_json::Value> =
+            serde_json::from_value(capsules.clone()).unwrap_or_default();
 
         let mut existing_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
         if capsules_path.exists() {
@@ -284,7 +395,8 @@ pub fn import_pool(data: &HashMap<String, serde_json::Value>, merge: bool) -> Ha
         }
 
         let new_capsules: Vec<_> = if merge {
-            capsules_arr.iter()
+            capsules_arr
+                .iter()
                 .filter(|c| {
                     c.get("capsule_id")
                         .and_then(|v| v.as_str())
@@ -301,7 +413,8 @@ pub fn import_pool(data: &HashMap<String, serde_json::Value>, merge: bool) -> Ha
             let existing_capsules: Vec<_> = if capsules_path.exists() && merge {
                 if let Ok(text) = std::fs::read_to_string(&capsules_path) {
                     if let Ok(existing) = serde_json::from_str::<serde_json::Value>(&text) {
-                        existing.get("capsules")
+                        existing
+                            .get("capsules")
                             .and_then(|v| serde_json::from_value(v.clone()).ok())
                             .unwrap_or_default()
                     } else {
@@ -327,9 +440,11 @@ pub fn import_pool(data: &HashMap<String, serde_json::Value>, merge: bool) -> Ha
     }
 
     if let Some(genes) = data.get("genes") {
-        let genes_arr: Vec<serde_json::Value> = serde_json::from_value(genes.clone()).unwrap_or_default();
+        let genes_arr: Vec<serde_json::Value> =
+            serde_json::from_value(genes.clone()).unwrap_or_default();
 
-        let mut existing_gene_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut existing_gene_ids: std::collections::HashSet<String> =
+            std::collections::HashSet::new();
         if merge && jsonl_path.exists() {
             if let Ok(text) = std::fs::read_to_string(&jsonl_path) {
                 for line in text.lines() {
@@ -342,7 +457,8 @@ pub fn import_pool(data: &HashMap<String, serde_json::Value>, merge: bool) -> Ha
             }
         }
 
-        let new_genes: Vec<_> = genes_arr.iter()
+        let new_genes: Vec<_> = genes_arr
+            .iter()
             .filter(|g| {
                 g.get("gene_id")
                     .and_then(|v| v.as_str())
@@ -355,7 +471,6 @@ pub fn import_pool(data: &HashMap<String, serde_json::Value>, merge: bool) -> Ha
         if !new_genes.is_empty() {
             let mut open_result = if merge {
                 std::fs::OpenOptions::new()
-                    
                     .append(true)
                     .create(true)
                     .open(&jsonl_path)
@@ -411,7 +526,13 @@ mod tests {
     #[test]
     fn test_get_gene_pool_diversity_empty() {
         let result = get_gene_pool_diversity();
-        assert_eq!(result.get("capsule_count").and_then(|v| v.as_i64()).unwrap_or(0), 0);
+        assert_eq!(
+            result
+                .get("capsule_count")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0),
+            0
+        );
     }
 
     #[test]

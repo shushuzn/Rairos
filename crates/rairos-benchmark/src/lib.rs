@@ -43,49 +43,138 @@ pub struct BenchmarkResult {
 }
 
 const METRIC_KEYWORDS: &[&str] = &[
-    "accuracy", "bleu", "rouge", "f1", "f-score", "f-measure", "precision", "recall",
-    "perplexity", "ppl", "wer", "cer", "map", "ndcg", "auc", "mse", "mae", "rmse", "r2",
-    "psnr", "ssim", "iou", "miou", "top-1", "top-5", "top1", "top5", "error", "err",
-    "loss", "latency", "throughput", "params", "flops", "macs", "gflops", "win rate",
-    "winrate", "elo", "score", "pass@", "humaneval", "mbpp", "gsm8k", "mmlu", "hellaswag",
-    "arc", "task", "dataset", "model", "method", "result",
+    "accuracy",
+    "bleu",
+    "rouge",
+    "f1",
+    "f-score",
+    "f-measure",
+    "precision",
+    "recall",
+    "perplexity",
+    "ppl",
+    "wer",
+    "cer",
+    "map",
+    "ndcg",
+    "auc",
+    "mse",
+    "mae",
+    "rmse",
+    "r2",
+    "psnr",
+    "ssim",
+    "iou",
+    "miou",
+    "top-1",
+    "top-5",
+    "top1",
+    "top5",
+    "error",
+    "err",
+    "loss",
+    "latency",
+    "throughput",
+    "params",
+    "flops",
+    "macs",
+    "gflops",
+    "win rate",
+    "winrate",
+    "elo",
+    "score",
+    "pass@",
+    "humaneval",
+    "mbpp",
+    "gsm8k",
+    "mmlu",
+    "hellaswag",
+    "arc",
+    "task",
+    "dataset",
+    "model",
+    "method",
+    "result",
 ];
 
 const BENCHMARK_NAMES: &[&str] = &[
-    "imagenet", "cifar", "mnist", "svhn", "coco", "pascal voc", "pascal", "cityscapes",
-    "ade20k", "squad", "glue", "superglue", "xnli", "wmt", "multinli", "sst", "sst-2",
-    "cola", "mrpc", "qnli", "rte", "wnli", "wikitext", "ptb", "penn treebank", "enwik8",
-    "text8", "librispeech", "wsj", "tedlium", "voxceleb", "halalbench", "halal", "openai",
-    "truthfulqa", "gsm8k", "math", "humaneval", "mbpp", "mmlu", "arc-e", "arc-c",
-    "arc-easy", "arc-challenge", "hellaswag", "piqa", "winogrande", "boolq", "siqa",
-    "openbookqa", "anli", "storycloze", "lambada", "wikitext-103",
+    "imagenet",
+    "cifar",
+    "mnist",
+    "svhn",
+    "coco",
+    "pascal voc",
+    "pascal",
+    "cityscapes",
+    "ade20k",
+    "squad",
+    "glue",
+    "superglue",
+    "xnli",
+    "wmt",
+    "multinli",
+    "sst",
+    "sst-2",
+    "cola",
+    "mrpc",
+    "qnli",
+    "rte",
+    "wnli",
+    "wikitext",
+    "ptb",
+    "penn treebank",
+    "enwik8",
+    "text8",
+    "librispeech",
+    "wsj",
+    "tedlium",
+    "voxceleb",
+    "halalbench",
+    "halal",
+    "openai",
+    "truthfulqa",
+    "gsm8k",
+    "math",
+    "humaneval",
+    "mbpp",
+    "mmlu",
+    "arc-e",
+    "arc-c",
+    "arc-easy",
+    "arc-challenge",
+    "hellaswag",
+    "piqa",
+    "winogrande",
+    "boolq",
+    "siqa",
+    "openbookqa",
+    "anli",
+    "storycloze",
+    "lambada",
+    "wikitext-103",
 ];
 
 fn re_percent() -> &'static Regex {
-    static RE: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
-        Regex::new(r"^([\d.]+)\s*%$").unwrap()
-    });
+    static RE: std::sync::LazyLock<Regex> =
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)\s*%$").unwrap());
     &RE
 }
 
 fn re_range() -> &'static Regex {
-    static RE: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
-        Regex::new(r"^([\d.]+)±").unwrap()
-    });
+    static RE: std::sync::LazyLock<Regex> =
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)±").unwrap());
     &RE
 }
 
 fn re_fraction() -> &'static Regex {
-    static RE: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
-        Regex::new(r"^([\d.]+)/([\d.]+)$").unwrap()
-    });
+    static RE: std::sync::LazyLock<Regex> =
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)/([\d.]+)$").unwrap());
     &RE
 }
 
 fn re_suffix() -> &'static Regex {
-    static RE: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
-        Regex::new(r"^([\d.]+)([BKMG])$").unwrap()
-    });
+    static RE: std::sync::LazyLock<Regex> =
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)([BKMG])$").unwrap());
     &RE
 }
 
@@ -124,7 +213,9 @@ fn parse_numeric(value: &str) -> Option<f64> {
     }
 
     if let Some(m) = re_suffix().captures(&value.to_uppercase()) {
-        let multipliers: HashMap<char, f64> = [('B', 1e9), ('M', 1e6), ('K', 1e3), ('G', 1e9)].into_iter().collect();
+        let multipliers: HashMap<char, f64> = [('B', 1e9), ('M', 1e6), ('K', 1e3), ('G', 1e9)]
+            .into_iter()
+            .collect();
         let num: f64 = m.get(1)?.as_str().parse().ok()?;
         let suffix = m.get(2)?.as_str().chars().next()?;
         let mult = multipliers.get(&suffix).copied().unwrap_or(1.0);
@@ -140,9 +231,28 @@ fn parse_numeric(value: &str) -> Option<f64> {
 
 fn is_higher_better(metric_name: &str) -> bool {
     let lower_better: HashSet<&str> = [
-        "perplexity", "ppl", "wer", "cer", "mse", "mae", "rmse", "loss", "error", "err",
-        "latency", "flops", "macs", "gflops", "params", "token", "time", "runtime", "cost",
-        "top-1 error", "top-5 error", "word error",
+        "perplexity",
+        "ppl",
+        "wer",
+        "cer",
+        "mse",
+        "mae",
+        "rmse",
+        "loss",
+        "error",
+        "err",
+        "latency",
+        "flops",
+        "macs",
+        "gflops",
+        "params",
+        "token",
+        "time",
+        "runtime",
+        "cost",
+        "top-1 error",
+        "top-5 error",
+        "word error",
     ]
     .into_iter()
     .collect();
@@ -157,14 +267,8 @@ fn is_higher_better(metric_name: &str) -> bool {
 }
 
 fn fuzzy_match_name(name1: &str, name2: &str) -> f64 {
-    let n1 = name1
-        .to_lowercase()
-        .trim()
-        .replace(['-', '_'], " ");
-    let n2 = name2
-        .to_lowercase()
-        .trim()
-        .replace(['-', '_'], " ");
+    let n1 = name1.to_lowercase().trim().replace(['-', '_'], " ");
+    let n2 = name2.to_lowercase().trim().replace(['-', '_'], " ");
 
     if n1 == n2 {
         return 1.0;
@@ -218,7 +322,11 @@ impl BenchmarkComparator {
         Self
     }
 
-    pub fn detect_tables(&self, _paper_id: &str, _tables: Vec<(i64, String, i32, Vec<String>, Vec<Vec<String>>)>) -> Vec<BenchmarkTable> {
+    pub fn detect_tables(
+        &self,
+        _paper_id: &str,
+        _tables: Vec<(i64, String, i32, Vec<String>, Vec<Vec<String>>)>,
+    ) -> Vec<BenchmarkTable> {
         Vec::new()
     }
 
@@ -254,8 +362,17 @@ impl BenchmarkComparator {
             lines.push(format!("  ({})", direction));
             lines.push("-".repeat(70));
 
-            lines.push(format!("  {:<6} {:<16} {:<22} {:<10}", "Rank", "Paper ID", "Model", "Score"));
-            lines.push(format!("  {:<6} {:<16} {:<22} {:<10}", "-".repeat(6), "-".repeat(16), "-".repeat(22), "-".repeat(10)));
+            lines.push(format!(
+                "  {:<6} {:<16} {:<22} {:<10}",
+                "Rank", "Paper ID", "Model", "Score"
+            ));
+            lines.push(format!(
+                "  {:<6} {:<16} {:<22} {:<10}",
+                "-".repeat(6),
+                "-".repeat(16),
+                "-".repeat(22),
+                "-".repeat(10)
+            ));
 
             for (rank, (pid, val, model)) in m.entries.iter().enumerate().map(|(i, e)| (i + 1, e)) {
                 let medal = match rank {

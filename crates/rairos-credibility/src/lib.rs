@@ -52,11 +52,26 @@ impl CapsuleCredibility {
         m.insert("capsule_id".to_string(), serde_json::json!(self.capsule_id));
         m.insert("gap_title".to_string(), serde_json::json!(self.gap_title));
         m.insert("gap_type".to_string(), serde_json::json!(self.gap_type));
-        m.insert("outcome_score".to_string(), serde_json::json!(self.outcome_score));
-        m.insert("novelty_score".to_string(), serde_json::json!(self.novelty_score));
-        m.insert("max_overlap".to_string(), serde_json::json!(self.max_overlap));
-        m.insert("is_trendslop".to_string(), serde_json::json!(self.is_trendslop));
-        m.insert("trigger_keywords".to_string(), serde_json::json!(self.trigger_keywords));
+        m.insert(
+            "outcome_score".to_string(),
+            serde_json::json!(self.outcome_score),
+        );
+        m.insert(
+            "novelty_score".to_string(),
+            serde_json::json!(self.novelty_score),
+        );
+        m.insert(
+            "max_overlap".to_string(),
+            serde_json::json!(self.max_overlap),
+        );
+        m.insert(
+            "is_trendslop".to_string(),
+            serde_json::json!(self.is_trendslop),
+        );
+        m.insert(
+            "trigger_keywords".to_string(),
+            serde_json::json!(self.trigger_keywords),
+        );
         m
     }
 }
@@ -78,9 +93,7 @@ impl Default for CredibilityScorer {
 
 impl CredibilityScorer {
     pub fn new() -> Self {
-        Self {
-            _credibility: None,
-        }
+        Self { _credibility: None }
     }
 
     pub fn compute_credibility(&mut self, force: bool) -> Vec<CapsuleCredibility> {
@@ -182,7 +195,9 @@ impl CredibilityScorer {
         }
 
         results.sort_by(|a, b| {
-            b.novelty_score.partial_cmp(&a.novelty_score).unwrap_or(std::cmp::Ordering::Equal)
+            b.novelty_score
+                .partial_cmp(&a.novelty_score)
+                .unwrap_or(std::cmp::Ordering::Equal)
         });
 
         self._credibility = Some(results.clone());
@@ -225,7 +240,8 @@ impl CredibilityScorer {
              <th>Novelty</th>\
              <th>Max Overlap</th>\
              <th>Status</th>\
-             </tr></thead>".to_string(),
+             </tr></thead>"
+                .to_string(),
         );
         lines.push("<tbody>".to_string());
 
@@ -249,7 +265,10 @@ impl CredibilityScorer {
             lines.push(format!("<td><code>{}</code></td>", c.gap_type));
             lines.push(format!("<td>{:.2}</td>", c.outcome_score));
             lines.push(format!("<td>{}%</td>", novelty_pct));
-            lines.push(format!("<td>{}%</td>", (c.max_overlap * 100.0).round() as i32));
+            lines.push(format!(
+                "<td>{}%</td>",
+                (c.max_overlap * 100.0).round() as i32
+            ));
             lines.push(format!("<td>{}</td>", badge));
             lines.push("</tr>".to_string());
         }
@@ -336,8 +355,14 @@ mod tests {
             trigger_keywords: vec!["test".to_string()],
         };
         let dict = cc.to_dict();
-        assert_eq!(dict.get("capsule_id").and_then(|v| v.as_str()), Some("test"));
-        assert_eq!(dict.get("is_trendslop").and_then(|v| v.as_bool()), Some(false));
+        assert_eq!(
+            dict.get("capsule_id").and_then(|v| v.as_str()),
+            Some("test")
+        );
+        assert_eq!(
+            dict.get("is_trendslop").and_then(|v| v.as_bool()),
+            Some(false)
+        );
     }
 
     #[test]

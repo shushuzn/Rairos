@@ -116,7 +116,11 @@ pub fn check_eval_gaps() -> EvalGapResult {
                 deploying.push(DeployingPaper {
                     title: title.to_string(),
                     year: year.clone(),
-                    paper_id: p.get("id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                    paper_id: p
+                        .get("id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
                 });
             }
         }
@@ -146,7 +150,11 @@ pub fn check_eval_gaps() -> EvalGapResult {
                 headroom_years: headroom,
                 ratio: (ratio * 1000.0).round() / 1000.0,
                 deploying_papers: deploying.into_iter().take(3).collect(),
-                severity: if headroom >= 3 { "high".to_string() } else { "medium".to_string() },
+                severity: if headroom >= 3 {
+                    "high".to_string()
+                } else {
+                    "medium".to_string()
+                },
             });
         }
     }
@@ -175,7 +183,11 @@ pub fn render_eval_gap_html(data: Option<&EvalGapResult>) -> String {
         lines.push("<p>No evaluation gaps detected. Deployment timelines appear adequately covered by benchmark research.</p>".to_string());
     } else {
         for alert in &data.alerts {
-            let color = if alert.severity == "high" { "#C4706A" } else { "#D4A055" };
+            let color = if alert.severity == "high" {
+                "#C4706A"
+            } else {
+                "#D4A055"
+            };
             lines.push(format!(
                 "<div style='border-left: 4px solid {}; padding: 10px 14px; margin-bottom: 14px; background: rgba(0,0,0,0.02);'>",
                 color
@@ -189,8 +201,15 @@ pub fn render_eval_gap_html(data: Option<&EvalGapResult>) -> String {
                 alert.paper_count, alert.nearest_deployment_year, alert.headroom_years, alert.ratio
             ));
             for dep in alert.deploying_papers.iter().take(2) {
-                let title_short = if dep.title.len() > 70 { &dep.title[..70] } else { &dep.title };
-                lines.push(format!("<div style='font-size:11px;color:#A89E8C;margin-left:8px'>&bull; {}</div>", title_short));
+                let title_short = if dep.title.len() > 70 {
+                    &dep.title[..70]
+                } else {
+                    &dep.title
+                };
+                lines.push(format!(
+                    "<div style='font-size:11px;color:#A89E8C;margin-left:8px'>&bull; {}</div>",
+                    title_short
+                ));
             }
             lines.push("</div>".to_string());
         }
@@ -215,7 +234,8 @@ mod tests {
 
     #[test]
     fn test_detect_deployment_claims_with_deployment() {
-        let result = detect_deployment_claims("Deployment in 2025", "This paper discusses deployment");
+        let result =
+            detect_deployment_claims("Deployment in 2025", "This paper discusses deployment");
         assert_eq!(result, Some("2025".to_string()));
     }
 

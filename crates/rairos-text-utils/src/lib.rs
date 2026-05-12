@@ -6,12 +6,61 @@ use regex::Regex;
 use std::collections::HashSet;
 
 const KEYWORD_STOPWORDS: &[&str] = &[
-    "the", "and", "for", "are", "but", "not", "you", "all", "can", "had",
-    "her", "was", "one", "our", "out", "has", "have", "been", "with", "they",
-    "this", "that", "from", "will", "would", "there", "their", "what", "about",
-    "which", "when", "make", "just", "over", "such", "into", "than", "null",
-    "none", "also", "how", "may", "does", "method", "approach", "gap", "issue",
-    "problem", "limitation", "study", "work", "paper", "research", "based", "using",
+    "the",
+    "and",
+    "for",
+    "are",
+    "but",
+    "not",
+    "you",
+    "all",
+    "can",
+    "had",
+    "her",
+    "was",
+    "one",
+    "our",
+    "out",
+    "has",
+    "have",
+    "been",
+    "with",
+    "they",
+    "this",
+    "that",
+    "from",
+    "will",
+    "would",
+    "there",
+    "their",
+    "what",
+    "about",
+    "which",
+    "when",
+    "make",
+    "just",
+    "over",
+    "such",
+    "into",
+    "than",
+    "null",
+    "none",
+    "also",
+    "how",
+    "may",
+    "does",
+    "method",
+    "approach",
+    "gap",
+    "issue",
+    "problem",
+    "limitation",
+    "study",
+    "work",
+    "paper",
+    "research",
+    "based",
+    "using",
 ];
 
 pub fn extract_keywords(text: &str, min_len: usize) -> Vec<String> {
@@ -131,7 +180,11 @@ mod tests {
 
     #[test]
     fn test_jaccard_partial() {
-        let a = vec!["attention".to_string(), "transformer".to_string(), "NLP".to_string()];
+        let a = vec![
+            "attention".to_string(),
+            "transformer".to_string(),
+            "NLP".to_string(),
+        ];
         let b = vec!["attention".to_string(), "transformer".to_string()];
         let result = jaccard(&a, &b);
         assert!(result > 0.0 && result < 1.0);

@@ -2,8 +2,8 @@
 //!
 //! Ported from `core/smart_cache.py`.
 
-use flate2::write::ZlibEncoder;
 use flate2::read::ZlibDecoder;
+use flate2::write::ZlibEncoder;
 use flate2::Compression;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
@@ -125,7 +125,9 @@ impl SmartCache {
                     let path = self.get_cache_path(key);
                     let _ = fs::remove_file(&path);
                     if let Some(parent) = path.parent() {
-                        if parent != self.cache_dir && parent.read_dir().map_or(true, |mut d| d.next().is_none()) {
+                        if parent != self.cache_dir
+                            && parent.read_dir().map_or(true, |mut d| d.next().is_none())
+                        {
                             let _ = fs::remove_dir(parent);
                         }
                     }

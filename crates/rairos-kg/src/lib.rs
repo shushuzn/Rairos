@@ -42,7 +42,10 @@ impl KgNode {
     pub fn from_paper(paper: &Paper) -> Self {
         let mut props = HashMap::new();
         props.insert("title".to_string(), paper.title.clone());
-        props.insert("arxiv_id".to_string(), paper.arxiv_id.clone().unwrap_or_default());
+        props.insert(
+            "arxiv_id".to_string(),
+            paper.arxiv_id.clone().unwrap_or_default(),
+        );
         props.insert("cited_by".to_string(), paper.metadata.cited_by.to_string());
 
         Self {
@@ -133,8 +136,14 @@ impl KnowledgeGraph {
         }
 
         self.edges.push(edge.clone());
-        self.outgoing.entry(edge.source.clone()).or_default().push(edge.target.clone());
-        self.incoming.entry(edge.target.clone()).or_default().push(edge.source.clone());
+        self.outgoing
+            .entry(edge.source.clone())
+            .or_default()
+            .push(edge.target.clone());
+        self.incoming
+            .entry(edge.target.clone())
+            .or_default()
+            .push(edge.source.clone());
     }
 
     /// Add a citation edge
@@ -159,21 +168,24 @@ impl KnowledgeGraph {
 
     /// Get papers that cite a given paper
     pub fn get_citing(&self, paper_id: &str) -> Vec<&KgNode> {
-        self.incoming.get(paper_id)
+        self.incoming
+            .get(paper_id)
             .map(|ids| ids.iter().filter_map(|id| self.nodes.get(id)).collect())
             .unwrap_or_default()
     }
 
     /// Get papers cited by a given paper
     pub fn get_references(&self, paper_id: &str) -> Vec<&KgNode> {
-        self.outgoing.get(paper_id)
+        self.outgoing
+            .get(paper_id)
             .map(|ids| ids.iter().filter_map(|id| self.nodes.get(id)).collect())
             .unwrap_or_default()
     }
 
     /// Get papers related to a given paper
     pub fn get_related(&self, paper_id: &str) -> Vec<&KgNode> {
-        self.edges.iter()
+        self.edges
+            .iter()
             .filter(|e| e.source == paper_id && e.relation == "related_to")
             .filter_map(|e| self.nodes.get(&e.target))
             .collect()
@@ -223,8 +235,16 @@ impl KnowledgeGraph {
             0.0
         };
 
-        let paper_nodes = self.nodes.values().filter(|n| n.node_type == "paper").count();
-        let concept_nodes = self.nodes.values().filter(|n| n.node_type == "concept").count();
+        let paper_nodes = self
+            .nodes
+            .values()
+            .filter(|n| n.node_type == "paper")
+            .count();
+        let concept_nodes = self
+            .nodes
+            .values()
+            .filter(|n| n.node_type == "concept")
+            .count();
 
         KgStats {
             total_nodes: node_count,
@@ -262,12 +282,12 @@ impl KnowledgeGraph {
         let text = std::fs::read_to_string(&path)?;
         let data: serde_json::Value = serde_json::from_str(&text)
             .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
-        let nodes: Vec<KgNode> = serde_json::from_value(
-            data.get("nodes").cloned().unwrap_or_default()
-        ).unwrap_or_default();
-        let edges: Vec<KgEdge> = serde_json::from_value(
-            data.get("edges").cloned().unwrap_or_default()
-        ).unwrap_or_default();
+        let nodes: Vec<KgNode> =
+            serde_json::from_value(data.get("nodes").cloned().unwrap_or_default())
+                .unwrap_or_default();
+        let edges: Vec<KgEdge> =
+            serde_json::from_value(data.get("edges").cloned().unwrap_or_default())
+                .unwrap_or_default();
         let mut graph = Self::new();
         for node in nodes {
             graph.add_node(node);
@@ -287,7 +307,10 @@ impl KnowledgeGraph {
             "nodes": self.nodes.values().collect::<Vec<_>>(),
             "edges": self.edges,
         });
-        std::fs::write(&path, serde_json::to_string_pretty(&json).unwrap_or_default())?;
+        std::fs::write(
+            &path,
+            serde_json::to_string_pretty(&json).unwrap_or_default(),
+        )?;
         Ok(())
     }
 }
@@ -311,9 +334,8 @@ pub struct GraphAlgorithms;
 impl GraphAlgorithms {
     /// PageRank-like scoring for papers
     pub fn rank_papers(graph: &KnowledgeGraph) -> HashMap<String, f32> {
-        let mut scores: HashMap<String, f32> = graph.nodes.keys()
-            .map(|id| (id.clone(), 1.0))
-            .collect();
+        let mut scores: HashMap<String, f32> =
+            graph.nodes.keys().map(|id| (id.clone(), 1.0)).collect();
 
         let damping = 0.85;
         let iterations = 20;
@@ -334,10 +356,7 @@ impl GraphAlgorithms {
                     }
                 }
 
-                new_scores.insert(
-                    node_id.clone(),
-                    (1.0 - damping) + damping * contribution,
-                );
+                new_scores.insert(node_id.clone(), (1.0 - damping) + damping * contribution);
             }
 
             scores = new_scores;
@@ -349,12 +368,16 @@ impl GraphAlgorithms {
     /// Find the most central paper (highest score)
     pub fn most_central(graph: &KnowledgeGraph) -> Option<(String, f32)> {
         let scores = Self::rank_papers(graph);
-        scores.into_iter().max_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
+        scores
+            .into_iter()
+            .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
     }
 
     /// Community detection (simple label propagation)
     pub fn detect_communities(graph: &KnowledgeGraph) -> HashMap<String, usize> {
-        let mut communities: HashMap<String, usize> = graph.nodes.keys()
+        let mut communities: HashMap<String, usize> = graph
+            .nodes
+            .keys()
             .enumerate()
             .map(|(i, id)| (id.clone(), i))
             .collect();
@@ -368,7 +391,9 @@ impl GraphAlgorithms {
             iterations += 1;
 
             for node_id in graph.nodes.keys() {
-                let neighbors = graph.outgoing.get(node_id)
+                let neighbors = graph
+                    .outgoing
+                    .get(node_id)
                     .map(|v| v.as_slice())
                     .unwrap_or(&[]);
 

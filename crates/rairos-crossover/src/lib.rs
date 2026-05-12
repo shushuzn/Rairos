@@ -54,20 +54,50 @@ impl CapsuleGene {
             created_at: value.get("created_at")?.as_str()?.to_string(),
             trigger_topic: value.get("trigger_topic")?.as_str()?.to_string(),
             trigger_gap_type: value.get("trigger_gap_type")?.as_str()?.to_string(),
-            trigger_keywords: value.get("trigger_keywords")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+            trigger_keywords: value
+                .get("trigger_keywords")?
+                .as_array()?
+                .iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect(),
             action_gap_type: value.get("action_gap_type")?.as_str()?.to_string(),
             action_gap_title: value.get("action_gap_title")?.as_str()?.to_string(),
             outcome_success_score: value.get("outcome_success_score")?.as_f64().unwrap_or(0.0),
             feedback_count: value.get("feedback_count")?.as_i64().unwrap_or(0) as i32,
             evolved_generation: value.get("evolved_generation")?.as_i64().unwrap_or(0) as i32,
-            archetype: value.get("archetype").and_then(|v| v.as_object().cloned()).map(|m| m.into_iter().collect()).unwrap_or_default(),
+            archetype: value
+                .get("archetype")
+                .and_then(|v| v.as_object().cloned())
+                .map(|m| m.into_iter().collect())
+                .unwrap_or_default(),
             status: value.get("status")?.as_str()?.to_string(),
-            low_score_streak: value.get("low_score_streak").and_then(|v| v.as_i64()).unwrap_or(0) as i32,
-            credibility_score: value.get("credibility_score").and_then(|v| v.as_f64()).unwrap_or(0.5),
-            trendslop: value.get("trendslop").and_then(|v| v.as_bool()).unwrap_or(false),
-            trendslop_reason: value.get("trendslop_reason").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            source_arxiv_category: value.get("source_arxiv_category").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            credibility_badge: value.get("credibility_badge").and_then(|v| v.as_str()).unwrap_or("medium").to_string(),
+            low_score_streak: value
+                .get("low_score_streak")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32,
+            credibility_score: value
+                .get("credibility_score")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.5),
+            trendslop: value
+                .get("trendslop")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false),
+            trendslop_reason: value
+                .get("trendslop_reason")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            source_arxiv_category: value
+                .get("source_arxiv_category")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            credibility_badge: value
+                .get("credibility_badge")
+                .and_then(|v| v.as_str())
+                .unwrap_or("medium")
+                .to_string(),
         })
     }
 
@@ -86,9 +116,16 @@ impl CapsuleGene {
 
         // 2. trigger_topic substring match
         if !topic.is_empty() && !self.trigger_topic.is_empty() {
-            if self.trigger_topic.to_lowercase().contains(&topic.to_lowercase()) {
+            if self
+                .trigger_topic
+                .to_lowercase()
+                .contains(&topic.to_lowercase())
+            {
                 score += 0.3;
-            } else if topic.to_lowercase().contains(&self.trigger_topic.to_lowercase()) {
+            } else if topic
+                .to_lowercase()
+                .contains(&self.trigger_topic.to_lowercase())
+            {
                 score += 0.2;
             }
         }
@@ -117,8 +154,11 @@ impl CapsuleGene {
         if !keywords.is_empty() && !self.trigger_keywords.is_empty() {
             let kw_set: std::collections::HashSet<String> =
                 keywords.iter().map(|k| k.to_lowercase()).collect();
-            let trigger_set: std::collections::HashSet<String> =
-                self.trigger_keywords.iter().map(|k| k.to_lowercase()).collect();
+            let trigger_set: std::collections::HashSet<String> = self
+                .trigger_keywords
+                .iter()
+                .map(|k| k.to_lowercase())
+                .collect();
             let overlap: std::collections::HashSet<_> = kw_set.intersection(&trigger_set).collect();
             if !overlap.is_empty() {
                 let denom = keywords.len().max(self.trigger_keywords.len());
@@ -202,8 +242,16 @@ pub fn crossover(parent_a: &CapsuleGene, parent_b: &CapsuleGene) -> CrossoverRes
     let arch_b = parent_b.archetype.clone();
 
     let shared_keys: Vec<&String> = arch_a.keys().filter(|k| arch_b.contains_key(*k)).collect();
-    let private_a: HashMap<String, serde_json::Value> = arch_a.iter().filter(|(k, _)| !arch_b.contains_key(*k)).map(|(k, v)| (k.clone(), v.clone())).collect();
-    let private_b: HashMap<String, serde_json::Value> = arch_b.iter().filter(|(k, _)| !arch_a.contains_key(*k)).map(|(k, v)| (k.clone(), v.clone())).collect();
+    let private_a: HashMap<String, serde_json::Value> = arch_a
+        .iter()
+        .filter(|(k, _)| !arch_b.contains_key(*k))
+        .map(|(k, v)| (k.clone(), v.clone()))
+        .collect();
+    let private_b: HashMap<String, serde_json::Value> = arch_b
+        .iter()
+        .filter(|(k, _)| !arch_a.contains_key(*k))
+        .map(|(k, v)| (k.clone(), v.clone()))
+        .collect();
 
     let merged = if shared_keys.is_empty() {
         let mut m = arch_a.clone();
@@ -212,7 +260,8 @@ pub fn crossover(parent_a: &CapsuleGene, parent_b: &CapsuleGene) -> CrossoverRes
     } else {
         let mut rng = rand::thread_rng();
         let point = rng.gen_range(1..=shared_keys.len().max(1));
-        let swapped_keys: std::collections::HashSet<&String> = shared_keys[..point].iter().cloned().collect();
+        let swapped_keys: std::collections::HashSet<&String> =
+            shared_keys[..point].iter().cloned().collect();
 
         let mut m: HashMap<String, serde_json::Value> = HashMap::new();
         for k in &shared_keys {
@@ -240,13 +289,19 @@ pub fn crossover(parent_a: &CapsuleGene, parent_b: &CapsuleGene) -> CrossoverRes
     }
 }
 
-pub fn mutate_archetype(archetype: HashMap<String, serde_json::Value>) -> HashMap<String, serde_json::Value> {
+pub fn mutate_archetype(
+    archetype: HashMap<String, serde_json::Value>,
+) -> HashMap<String, serde_json::Value> {
     let mut rng = rand::thread_rng();
     let mut arch = archetype;
 
     if let Some(kw) = arch.get("trigger_keywords").and_then(|v| v.as_array()) {
         if rng.gen::<f64>() < MUTATION_RATE && !kw.is_empty() {
-            let kept: Vec<serde_json::Value> = kw.iter().take((kw.len() as f64 * 0.8) as usize).cloned().collect();
+            let kept: Vec<serde_json::Value> = kw
+                .iter()
+                .take((kw.len() as f64 * 0.8) as usize)
+                .cloned()
+                .collect();
             arch.insert("trigger_keywords".to_string(), serde_json::json!(kept));
         }
     }
@@ -263,14 +318,21 @@ pub fn mutate_archetype(archetype: HashMap<String, serde_json::Value>) -> HashMa
                         new_chars[idx] = alternatives[rng.gen_range(0..alternatives.len())];
                     }
                 }
-                arch.insert("algorithm_fingerprint".to_string(), serde_json::json!(new_chars.into_iter().collect::<String>()));
+                arch.insert(
+                    "algorithm_fingerprint".to_string(),
+                    serde_json::json!(new_chars.into_iter().collect::<String>()),
+                );
             }
         }
     }
 
     if let Some(refs) = arch.get("paper_section_refs").and_then(|v| v.as_array()) {
         if rng.gen::<f64>() < MUTATION_RATE && !refs.is_empty() {
-            let kept: Vec<serde_json::Value> = refs.iter().take((refs.len() as f64 * 0.8) as usize).cloned().collect();
+            let kept: Vec<serde_json::Value> = refs
+                .iter()
+                .take((refs.len() as f64 * 0.8) as usize)
+                .cloned()
+                .collect();
             arch.insert("paper_section_refs".to_string(), serde_json::json!(kept));
         }
     }
@@ -303,27 +365,42 @@ pub struct V3Capsule {
 
 pub fn get_v3_capsules() -> Vec<V3Capsule> {
     let capsules = load_capsules();
-    let mut v3: Vec<CapsuleGene> = capsules.into_iter()
+    let mut v3: Vec<CapsuleGene> = capsules
+        .into_iter()
         .filter(|c| c.evolved_generation >= 1 && c.status == "active")
         .collect();
-    v3.sort_by(|a, b| compute_fitness(b).partial_cmp(&compute_fitness(a)).unwrap_or(std::cmp::Ordering::Equal));
+    v3.sort_by(|a, b| {
+        compute_fitness(b)
+            .partial_cmp(&compute_fitness(a))
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
-    v3.into_iter().map(|c| {
-        let archetype = c.archetype.clone();
-        V3Capsule {
-            capsule_id: c.capsule_id.clone(),
-            action_gap_title: c.action_gap_title.clone(),
-            evolved_generation: c.evolved_generation,
-            success_score: c.outcome_success_score,
-            feedback_count: c.feedback_count,
-            fitness: (compute_fitness(&c) * 1000.0).round() / 1000.0,
-            parent_ids: vec![
-                archetype.get("parent_capsule_id").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                archetype.get("parent_capsule_id_b").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            ],
-            created_at: c.created_at,
-        }
-    }).collect()
+    v3.into_iter()
+        .map(|c| {
+            let archetype = c.archetype.clone();
+            V3Capsule {
+                capsule_id: c.capsule_id.clone(),
+                action_gap_title: c.action_gap_title.clone(),
+                evolved_generation: c.evolved_generation,
+                success_score: c.outcome_success_score,
+                feedback_count: c.feedback_count,
+                fitness: (compute_fitness(&c) * 1000.0).round() / 1000.0,
+                parent_ids: vec![
+                    archetype
+                        .get("parent_capsule_id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                    archetype
+                        .get("parent_capsule_id_b")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_string(),
+                ],
+                created_at: c.created_at,
+            }
+        })
+        .collect()
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -340,13 +417,20 @@ pub struct TopCandidate {
 
 pub fn get_top_candidates(limit: usize) -> Vec<TopCandidate> {
     let capsules = load_capsules();
-    let mut active: Vec<CapsuleGene> = capsules.into_iter()
+    let mut active: Vec<CapsuleGene> = capsules
+        .into_iter()
         .filter(|c| c.status == "active" && c.credibility_badge != "low")
         .collect();
-    active.sort_by(|a, b| compute_fitness(b).partial_cmp(&compute_fitness(a)).unwrap_or(std::cmp::Ordering::Equal));
+    active.sort_by(|a, b| {
+        compute_fitness(b)
+            .partial_cmp(&compute_fitness(a))
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
-    active.into_iter().take(limit).map(|c| {
-        TopCandidate {
+    active
+        .into_iter()
+        .take(limit)
+        .map(|c| TopCandidate {
             capsule_id: c.capsule_id.clone(),
             action_gap_title: c.action_gap_title.chars().take(60).collect(),
             evolved_generation: c.evolved_generation,
@@ -355,28 +439,50 @@ pub fn get_top_candidates(limit: usize) -> Vec<TopCandidate> {
             fitness: (compute_fitness(&c) * 1000.0).round() / 1000.0,
             capsule_trust: 0.0,
             credibility_badge: c.credibility_badge,
-        }
-    }).collect()
+        })
+        .collect()
 }
 
-pub fn run_evolution(offspring_count: usize, population_size: usize) -> HashMap<String, serde_json::Value> {
+pub fn run_evolution(
+    offspring_count: usize,
+    population_size: usize,
+) -> HashMap<String, serde_json::Value> {
     let capsules = load_capsules();
-    let mut parents: Vec<CapsuleGene> = capsules.into_iter()
-        .filter(|c| c.status == "active" && c.credibility_badge != "low" && compute_fitness(c) >= MIN_FITNESS_THRESHOLD)
+    let mut parents: Vec<CapsuleGene> = capsules
+        .into_iter()
+        .filter(|c| {
+            c.status == "active"
+                && c.credibility_badge != "low"
+                && compute_fitness(c) >= MIN_FITNESS_THRESHOLD
+        })
         .collect();
-    parents.sort_by(|a, b| compute_fitness(b).partial_cmp(&compute_fitness(a)).unwrap_or(std::cmp::Ordering::Equal));
+    parents.sort_by(|a, b| {
+        compute_fitness(b)
+            .partial_cmp(&compute_fitness(a))
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     parents.truncate(population_size);
 
     if parents.len() < 2 {
         let mut result = HashMap::new();
-        result.insert("error".to_string(), serde_json::json!(format!("Need at least 2 eligible parents, got {}", parents.len())));
-        result.insert("created".to_string(), serde_json::json!(Vec::<serde_json::Value>::new()));
+        result.insert(
+            "error".to_string(),
+            serde_json::json!(format!(
+                "Need at least 2 eligible parents, got {}",
+                parents.len()
+            )),
+        );
+        result.insert(
+            "created".to_string(),
+            serde_json::json!(Vec::<serde_json::Value>::new()),
+        );
         return result;
     }
 
     let mut rng = rand::thread_rng();
     let mut created = Vec::new();
-    let mut used_pairs: std::collections::HashSet<(String, String)> = std::collections::HashSet::new();
+    let mut used_pairs: std::collections::HashSet<(String, String)> =
+        std::collections::HashSet::new();
 
     for _ in 0..offspring_count {
         let p_a = parents.choose(&mut rng).unwrap();
@@ -413,14 +519,33 @@ pub fn run_evolution(offspring_count: usize, population_size: usize) -> HashMap<
     }
 
     let mut result = HashMap::new();
-    result.insert("parents_considered".to_string(), serde_json::json!(parents.len()));
-    result.insert("pairs_tried".to_string(), serde_json::json!(used_pairs.len()));
+    result.insert(
+        "parents_considered".to_string(),
+        serde_json::json!(parents.len()),
+    );
+    result.insert(
+        "pairs_tried".to_string(),
+        serde_json::json!(used_pairs.len()),
+    );
     result.insert("created".to_string(), serde_json::json!(created.clone()));
-    result.insert("generation".to_string(), serde_json::json!(created.iter().filter_map(|c| c.get("generation").and_then(|v| v.as_i64())).max().unwrap_or(0)));
+    result.insert(
+        "generation".to_string(),
+        serde_json::json!(created
+            .iter()
+            .filter_map(|c| c.get("generation").and_then(|v| v.as_i64()))
+            .max()
+            .unwrap_or(0)),
+    );
     result
 }
 
-pub fn crossover_action(action: &str, offspring_count: usize, _capsule_id: Option<&str>, _capsule_id_b: Option<&str>, _gap_type: Option<&str>) -> HashMap<String, serde_json::Value> {
+pub fn crossover_action(
+    action: &str,
+    offspring_count: usize,
+    _capsule_id: Option<&str>,
+    _capsule_id_b: Option<&str>,
+    _gap_type: Option<&str>,
+) -> HashMap<String, serde_json::Value> {
     let mut result = HashMap::new();
 
     match action {
@@ -441,7 +566,10 @@ pub fn crossover_action(action: &str, offspring_count: usize, _capsule_id: Optio
             result.insert("total".to_string(), serde_json::json!(candidates.len()));
         }
         _ => {
-            result.insert("error".to_string(), serde_json::json!(format!("Unknown action: {}", action)));
+            result.insert(
+                "error".to_string(),
+                serde_json::json!(format!("Unknown action: {}", action)),
+            );
         }
     }
 

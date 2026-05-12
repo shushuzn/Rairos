@@ -244,7 +244,9 @@ pub fn verify_lean_code(
     let temp_file = match write_temp_lean_file(lean_code) {
         Ok(p) => p,
         Err(e) => {
-            result.errors.push(format!("Failed to write temp file: {}", e));
+            result
+                .errors
+                .push(format!("Failed to write temp file: {}", e));
             return result;
         }
     };
@@ -281,10 +283,7 @@ pub fn verify_lean_code(
 
         if let Ok(msg) = serde_json::from_str::<serde_json::Value>(line) {
             let severity = msg.get("severity").and_then(|v| v.as_str()).unwrap_or("");
-            let data = msg
-                .get("data")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
+            let data = msg.get("data").and_then(|v| v.as_str()).unwrap_or("");
             let file = msg.get("file").and_then(|v| v.as_str()).unwrap_or("?");
             let pos = msg.get("pos").and_then(|v| v.as_i64()).unwrap_or(0);
 
@@ -320,10 +319,7 @@ pub fn verify_lean_code(
         result.translation_notes = "Syntax valid, type errors present".to_string();
     } else {
         result.level = VerificationLevel::L0Failed;
-        result.translation_notes = format!(
-            "Syntax/type errors: {} issue(s)",
-            result.errors.len()
-        );
+        result.translation_notes = format!("Syntax/type errors: {} issue(s)", result.errors.len());
     }
 
     let _ = fs::remove_file(temp_file.path());
@@ -430,7 +426,10 @@ mod tests {
     fn test_lean_install_status_as_str() {
         assert_eq!(LeanInstallStatus::Available.as_str(), "available");
         assert_eq!(LeanInstallStatus::NotFound.as_str(), "not_found");
-        assert_eq!(LeanInstallStatus::VersionUnknown.as_str(), "version_unknown");
+        assert_eq!(
+            LeanInstallStatus::VersionUnknown.as_str(),
+            "version_unknown"
+        );
     }
 
     #[test]
