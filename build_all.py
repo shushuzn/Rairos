@@ -62,7 +62,7 @@ for crate in crates:
 # Clean up
 try:
     os.remove(env_script)
-except:
+except Exception:
     pass
 
 print("\n=== Done ===")

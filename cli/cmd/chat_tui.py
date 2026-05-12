@@ -509,7 +509,7 @@ class ChatBubble(Static):
         return Static(colored("\n".join(lines), Colors.WARNING), classes="cite-list")
 
 
-class PaperCard(Static, can_focus=True):
+class PaperCard(Static, can_focus=True):  # type: ignore[call-arg]
     """An enhanced paper card with click-to-expand and rich metadata."""
 
     def __init__(

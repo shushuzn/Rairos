@@ -313,17 +313,17 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.subcmd == "evoskill":
         from cli.cmd.evoskill import evoskill as evoskill_cmd
 
-        return evoskill_cmd.main(args.argv if hasattr(args, "argv") else [])
+        return evoskill_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
 
     elif args.subcmd == "rag":
         from cli.cmd.rag import rag as rag_cmd
 
-        return rag_cmd.main(args.argv if hasattr(args, "argv") else [])
+        return rag_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
 
     elif args.subcmd == "slides":
         from cli.cmd.slides import slides as slides_cmd
 
-        return slides_cmd.main(args.argv if hasattr(args, "argv") else [])
+        return slides_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
 
     elif args.subcmd == "evolution":
         from cli.cmd.evolution import evolution_main

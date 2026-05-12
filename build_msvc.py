@@ -58,7 +58,7 @@ cargo_result = subprocess.run(
 # Clean up
 try:
     os.remove(env_script)
-except:
+except Exception:
     pass
 
 print("CARGO RC:", cargo_result.returncode)
