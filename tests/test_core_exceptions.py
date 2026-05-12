@@ -1,4 +1,5 @@
 """Tests for core/exceptions.py exception hierarchy."""
+
 import pytest
 
 

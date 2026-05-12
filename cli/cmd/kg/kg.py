@@ -1,4 +1,5 @@
 """CLI command: kg."""
+
 from __future__ import annotations
 
 import argparse
@@ -266,7 +267,9 @@ def _run_kg_view(args: argparse.Namespace) -> int:
         print("No nodes found in the selected scope.", file=__import__("sys").stderr)
         return 1
     # Load template
-    template_path = Path(__file__).parent.parent.parent / "viz" / "templates" / "kg_viz_template_d3.html"
+    template_path = (
+        Path(__file__).parent.parent.parent / "viz" / "templates" / "kg_viz_template_d3.html"
+    )
     html_content = template_path.read_text(encoding="utf-8")
     # Inject data — JSON-escape for safe JS embedding
     nodes_json = json.dumps(graph_data["nodes"], ensure_ascii=False)

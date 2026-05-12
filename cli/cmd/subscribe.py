@@ -65,10 +65,14 @@ def _print_gene_pool_saturation(before: str = "") -> dict:
             sat_bar = "\033[32m" + "█" * 8 + "\033[0m"
         elif saturation >= 0.5:
             sat_label = "[\033[33mMED\033[0m]"
-            sat_bar = "\033[33m" + "█" * int(saturation * 8) + "\033[0m" + "░" * (8 - int(saturation * 8))
+            sat_bar = (
+                "\033[33m" + "█" * int(saturation * 8) + "\033[0m" + "░" * (8 - int(saturation * 8))
+            )
         elif saturation > 0:
             sat_label = "[\033[31mLOW\033[0m]"
-            sat_bar = "\033[31m" + "█" * int(saturation * 8) + "\033[0m" + "░" * (8 - int(saturation * 8))
+            sat_bar = (
+                "\033[31m" + "█" * int(saturation * 8) + "\033[0m" + "░" * (8 - int(saturation * 8))
+            )
         else:
             sat_label = "[\033[90mEMPTY\033[0m]"
             sat_bar = "\033[90m░░░░░░░░\033[0m"
@@ -89,19 +93,25 @@ def _print_gene_pool_saturation(before: str = "") -> dict:
 
         # Decay risk: capsules with low score and low feedback
         decay_risk = sum(
-            1
-            for c in active
-            if c.outcome_success_score < 0.4 and c.feedback_count == 0
+            1 for c in active if c.outcome_success_score < 0.4 and c.feedback_count == 0
         )
 
-        header = f"[\033[1;36mGenePool\033[0m] \033[90m{before}\033[0m" if before else "\033[1;36mGenePool\033[0m Saturation"
+        header = (
+            f"[\033[1;36mGenePool\033[0m] \033[90m{before}\033[0m"
+            if before
+            else "\033[1;36mGenePool\033[0m Saturation"
+        )
         bar_str = f"{sat_bar} {sat_label} {n_active}/{total}"
 
         print()
         print(f"  {header}")
         print(f"  Saturation  {bar_str}")
-        print(f"  Active      {n_active}  |  Archived  {n_archived}  |  Diversity  {diversity} gap types")
-        print(f"  Avg quality {avg_score:.2f}  |  Avg hits  {avg_feedback:.1f}  |  Decay risk  {decay_risk}")
+        print(
+            f"  Active      {n_active}  |  Archived  {n_archived}  |  Diversity  {diversity} gap types"
+        )
+        print(
+            f"  Avg quality {avg_score:.2f}  |  Avg hits  {avg_feedback:.1f}  |  Decay risk  {decay_risk}"
+        )
         if top_gaps:
             top_str = "  |  ".join(f"{gt}:{cnt}" for gt, cnt in top_gaps[:4])
             print(f"  Top gaps    {top_str}")
@@ -123,8 +133,6 @@ def _print_gene_pool_saturation(before: str = "") -> dict:
 
 
 # ─── Watch loop ────────────────────────────────────────────────────────────────
-
-
 
 
 @dataclass
@@ -164,22 +172,23 @@ def compute_adaptive_interval(
 def run_cold_start_research(db: Any) -> None:
     """Populate empty GenePool by running research on all active subscriptions."""
     from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
+
     subs = db.get_active_subscriptions()
     if not subs:
-        print_info('[Scheduler] No subscriptions configured — cold-start skipped')
+        print_info("[Scheduler] No subscriptions configured — cold-start skipped")
         return
     orch = Orchestrator()
     for sub in subs:
-        sub_id = sub.get('id', sub.get('topic'))
-        topic = sub.get('topic', sub_id)
-        print_info(f'[Scheduler] Cold-start: running research for [{sub_id}]...')
+        sub_id = sub.get("id", sub.get("topic"))
+        topic = sub.get("topic", sub_id)
+        print_info(f"[Scheduler] Cold-start: running research for [{sub_id}]...")
         try:
             dr_result = orch.run_deep_research(topic, [])
-            gaps = dr_result.get('gaps', [])
-            print_success(f'[Scheduler] [{sub_id}] {len(gaps)} gaps found')
+            gaps = dr_result.get("gaps", [])
+            print_success(f"[Scheduler] [{sub_id}] {len(gaps)} gaps found")
         except Exception as e:
-            logger.error(f'[Scheduler] [{sub_id}] Cold-start failed: {e}')
-    print_info('[Scheduler] Cold-start complete')
+            logger.error(f"[Scheduler] [{sub_id}] Cold-start failed: {e}")
+    print_info("[Scheduler] Cold-start complete")
 
 
 def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
@@ -215,11 +224,14 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
 
                 # Trigger deep research for each subscription with new papers
                 from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
+
                 for sub_id, papers in all_results.items():
                     if papers:
                         sub = db.get_arxiv_subscription(sub_id)
                         topic = sub.get("topic", sub_id) if sub else sub_id
-                        print_info(f"[DeepResearch] Starting research on subscription [{sub_id}]...")
+                        print_info(
+                            f"[DeepResearch] Starting research on subscription [{sub_id}]..."
+                        )
                         orch = Orchestrator()
                         try:
                             dr_result = orch.run_deep_research(topic, papers)
@@ -315,7 +327,9 @@ def _build_subscribe_parser(subparsers) -> argparse.ArgumentParser:
     p_check.add_argument("id", nargs="?", help="Subscription ID (optional, checks all if omitted)")
     p_check.add_argument("--discord", type=str, default="", help="Discord webhook URL to test")
     p_check.add_argument("--feishu", type=str, default="", help="Feishu webhook URL to test")
-    p_check.add_argument("--deep-research", action="store_true", help="Trigger DeepResearch on new papers")
+    p_check.add_argument(
+        "--deep-research", action="store_true", help="Trigger DeepResearch on new papers"
+    )
 
     # recommendations
     p_rec = sub.add_parser("recommendations", help="Show recommended papers")
@@ -436,6 +450,7 @@ def _run_subscribe(args: argparse.Namespace) -> int:
                 if getattr(args, "deep_research", False) and results:
                     sat_before = _print_gene_pool_saturation("pre-research")
                     from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
+
                     print_info("[DeepResearch] Starting research on new papers...")
                     orch = Orchestrator()
                     dr_result = orch.run_deep_research(topic, results)
@@ -468,6 +483,7 @@ def _run_subscribe(args: argparse.Namespace) -> int:
 
                     # Trigger deep research automatically
                     from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
+
                     print_info(f"[DeepResearch] Starting research on {len(papers)} new papers...")
                     orch = Orchestrator()
                     dr_result = orch.run_deep_research(topic, papers)

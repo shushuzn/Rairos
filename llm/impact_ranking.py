@@ -58,12 +58,12 @@ def render_impact_html(data: List[Dict[str, Any]]) -> str:
         title = item.get("title", "Unknown")[:70]
         pub = item.get("published", "")[:4]
         rows.append(
-            f'<tr>'
+            f"<tr>"
             f'<td style="text-align:center">{i}</td>'
             f'<td><a href="{item.get("abs_url", "#")}">{title}</a></td>'
             f'<td style="text-align:center">{pub}</td>'
             f'<td style="text-align:right;font-weight:600">{score}</td>'
-            f'</tr>'
+            f"</tr>"
         )
 
     return (
@@ -73,7 +73,7 @@ def render_impact_html(data: List[Dict[str, Any]]) -> str:
         '<th style="padding:8px 12px;text-align:left">Title</th>'
         '<th style="padding:8px 12px;text-align:center">Year</th>'
         '<th style="padding:8px 12px;text-align:right">Impact</th>'
-        '</tr></thead>'
-        '<tbody>' + "".join(rows) + '</tbody>'
-        '</table>'
+        "</tr></thead>"
+        "<tbody>" + "".join(rows) + "</tbody>"
+        "</table>"
     )

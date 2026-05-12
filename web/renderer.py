@@ -1,4 +1,5 @@
 """Web renderers — HTML generation for various visualizations."""
+
 from __future__ import annotations
 
 import json
@@ -80,7 +81,7 @@ def render_gene_pool_graph_html() -> str:
         ".node text { fill: #c9d1d9; font-size: 11px; font-family: monospace; }\n"
         ".link { stroke-opacity: 0.6; }\n"
         "</style>\n</head>\n<body>\n"
-        f'<h2>Gene Pool — {len(capsules)} capsules · force-directed by gap type</h2>\n'
+        f"<h2>Gene Pool — {len(capsules)} capsules · force-directed by gap type</h2>\n"
         "<svg></svg>\n<script>\n"
         f"const nodes = {nodes_json};\n"
         f"const links = {links_json};\n"
@@ -220,14 +221,16 @@ def render_gene_pool_family_tree_html() -> str:
     for n in nodes:
         if n["parent_id"] and n["parent_id"] in id_to_node:
             parent = id_to_node[n["parent_id"]]
-            links.append({
-                "x1": parent["x"] + BOX_W,
-                "y1": parent["y"] + BOX_H // 2,
-                "x2": n["x"],
-                "y2": n["y"] + BOX_H // 2,
-                "color": n["color"],
-                "opacity": min(n["opacity"], parent["opacity"]),
-            })
+            links.append(
+                {
+                    "x1": parent["x"] + BOX_W,
+                    "y1": parent["y"] + BOX_H // 2,
+                    "x2": n["x"],
+                    "y2": n["y"] + BOX_H // 2,
+                    "color": n["color"],
+                    "opacity": min(n["opacity"], parent["opacity"]),
+                }
+            )
 
     # ── SVG dimensions ────────────────────────────────────────────────────
     all_y = [n["y"] for n in nodes]
@@ -237,25 +240,28 @@ def render_gene_pool_family_tree_html() -> str:
 
     nodes_json = json.dumps(nodes, ensure_ascii=False)
     links_json = json.dumps(links, ensure_ascii=False)
-    gen_labels_json = json.dumps([
-        {"x": PAD_LEFT + g * (BOX_W + GAP_X) - 8, "y": 20, "label": f"Gen {g}"}
-        for g in range(max_gen + 1)
-    ], ensure_ascii=False)
+    gen_labels_json = json.dumps(
+        [
+            {"x": PAD_LEFT + g * (BOX_W + GAP_X) - 8, "y": 20, "label": f"Gen {g}"}
+            for g in range(max_gen + 1)
+        ],
+        ensure_ascii=False,
+    )
 
     # ── Build HTML without f-string JS conflicts ──────────────────────────
     # Use regular string concatenation for the script block
     head = (
         '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n'
-        '<title>Gene Pool Family Tree</title>\n<style>\n'
-        'body { margin: 0; background: #0d1117; font-family: monospace; }\n'
-        'h2 { color: #c9d1d9; margin: 16px 0 4px 20px; font-size: 14px; }\n'
-        '.subtitle { color: #484f58; margin: 0 0 12px 20px; font-size: 11px; }\n'
-        '.legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 20px 12px; }\n'
-        '.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #8b949e; }\n'
-        '.legend-dot { width: 9px; height: 9px; border-radius: 2px; }\n'
-        '.gen-label { font-size: 10px; fill: #484f58; }\n'
-        '</style>\n</head>\n<body>\n'
-        f'<h2>Gene Pool Family Tree</h2>\n'
+        "<title>Gene Pool Family Tree</title>\n<style>\n"
+        "body { margin: 0; background: #0d1117; font-family: monospace; }\n"
+        "h2 { color: #c9d1d9; margin: 16px 0 4px 20px; font-size: 14px; }\n"
+        ".subtitle { color: #484f58; margin: 0 0 12px 20px; font-size: 11px; }\n"
+        ".legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 20px 12px; }\n"
+        ".legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #8b949e; }\n"
+        ".legend-dot { width: 9px; height: 9px; border-radius: 2px; }\n"
+        ".gen-label { font-size: 10px; fill: #484f58; }\n"
+        "</style>\n</head>\n<body>\n"
+        f"<h2>Gene Pool Family Tree</h2>\n"
         f'<div class="subtitle">{len(nodes)} capsules across {max_gen + 1} generations · horizontal = time (left=oldest)</div>\n'
         '<div class="legend">\n'
         '  <div class="legend-item"><div class="legend-dot" style="background:#7A9E7A"></div>embodied_planning</div>\n'
@@ -269,20 +275,20 @@ def render_gene_pool_family_tree_html() -> str:
         '  <div class="legend-item"><div style="width:20px;height:10px;background:#238636;border-radius:2px"></div>high credibility</div>\n'
         '  <div class="legend-item"><div style="width:20px;height:10px;background:#9e6a03;border-radius:2px"></div>medium</div>\n'
         '  <div class="legend-item"><div style="width:20px;height:10px;background:#da3633;border-radius:2px"></div>low</div>\n'
-        '</div>\n'
+        "</div>\n"
         f'<svg width="{total_width}" height="{svg_height}" xmlns="http://www.w3.org/2000/svg">\n'
         '  <g id="links"></g>\n'
         '  <g id="nodes"></g>\n'
         '  <g id="gen-labels"></g>\n'
-        '</svg>\n'
+        "</svg>\n"
     )
 
     script = (
-        '<script>\n'
-        'const nodes = ' + nodes_json + ';\n'
-        'const links = ' + links_json + ';\n'
-        'const genLabels = ' + gen_labels_json + ';\n'
-        'const BOX_W = ' + str(BOX_W) + ', BOX_H = ' + str(BOX_H) + ';\n'
+        "<script>\n"
+        "const nodes = " + nodes_json + ";\n"
+        "const links = " + links_json + ";\n"
+        "const genLabels = " + gen_labels_json + ";\n"
+        "const BOX_W = " + str(BOX_W) + ", BOX_H = " + str(BOX_H) + ";\n"
         # Render links
         "d3.select('#links').selectAll('line').data(links).join('line')\n"
         "  .attr('x1', function(d) { return d.x1; })\n"
@@ -323,7 +329,7 @@ def render_gene_pool_family_tree_html() -> str:
         "</script>\n"
     )
 
-    return head + script + '</body>\n</html>\n'
+    return head + script + "</body>\n</html>\n"
 
 
 # ─── Contradiction Heatmap ─────────────────────────────────────────────────────

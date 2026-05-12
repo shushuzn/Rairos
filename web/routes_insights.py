@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-from web.suggestions import _mark_suggestion_consumed, mark_capsule_consumed, get_experiment_queue, render_experiments_html, save_experiment as _save_experiment
+from web.suggestions import (
+    _mark_suggestion_consumed,
+    mark_capsule_consumed,
+    get_experiment_queue,
+    render_experiments_html,
+    save_experiment as _save_experiment,
+)
 from datetime import datetime as _datetime
 from typing import Any, Dict, List
 from web.shared import templates, get_db

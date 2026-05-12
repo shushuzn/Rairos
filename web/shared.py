@@ -21,6 +21,7 @@ WEB_DIR = Path(__file__).parent
 _templates_instance = None
 _filters_registered = False
 
+
 def _get_templates():
     global _templates_instance, _filters_registered
     if _templates_instance is None:
@@ -34,10 +35,13 @@ def _get_templates():
             _filters_registered = True
     return _templates_instance
 
+
 class _TemplatesProxy:
     """Proxy that lazy-loads Jinja2Templates on first attribute access."""
+
     def __getattr__(self, name):
         return getattr(_get_templates(), name)
+
 
 templates = _TemplatesProxy()
 

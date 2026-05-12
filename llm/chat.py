@@ -53,12 +53,12 @@ _RETRIEVAL_CACHE_TTL = 3600  # 1 hour TTL
 _RETRIEVAL_CACHE_MAX = 500
 
 
-
 # Precompiled follow-up detection patterns (used by RagChat._rewrite_followup)
 _FOLLOWUP_PATTERNS = [
     re.compile(r"^(它|它们|这个|那|这些|那些|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有啥)"),
     re.compile(r"^(what about|and how|what are|which ones|how about|and the|also|but|what if)"),
 ]
+
 
 def _get_retrieval_cache_key(query: str, concept: Optional[str], limit: int) -> str:
     """Generate cache key for retrieval results."""
@@ -67,7 +67,6 @@ def _get_retrieval_cache_key(query: str, concept: Optional[str], limit: int) -> 
 
 def _get_cached_retrieval(cache_key: str) -> Optional[List]:
     """Get cached retrieval results if valid."""
-
 
     if cache_key in _RETRIEVAL_CACHE:
         timestamp, contexts = _RETRIEVAL_CACHE[cache_key]
@@ -80,7 +79,6 @@ def _get_cached_retrieval(cache_key: str) -> Optional[List]:
 
 def _cache_retrieval(cache_key: str, contexts: List) -> None:
     """Cache retrieval results with LRU eviction."""
-
 
     while len(_RETRIEVAL_CACHE) >= _RETRIEVAL_CACHE_MAX:
         oldest_key = min(_RETRIEVAL_CACHE, key=lambda k: _RETRIEVAL_CACHE[k][0])
@@ -322,7 +320,9 @@ class RagChat:
             return question
 
         # Only rewrite if this looks like a follow-up (precompiled at module load)
-        is_followup = any(_followup_pattern.match(question.lower()) for _followup_pattern in _FOLLOWUP_PATTERNS)
+        is_followup = any(
+            _followup_pattern.match(question.lower()) for _followup_pattern in _FOLLOWUP_PATTERNS
+        )
         if not is_followup:
             return question
 

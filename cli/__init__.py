@@ -135,7 +135,6 @@ _LAZY_EXPORTS = {
     "_run_visual": ("cli.cmd.visual", "visual_extract"),
     "_run_paper2code": ("cli.cmd.paper.paper2code", "paper2code"),
     "_run_validate": ("cli.cmd.validate", "_run_validate"),
-
     "_run_narrative": ("cli.cmd.narrative", "_run_narrative"),
     "_build_narrative_parser": ("cli.cmd.narrative", "_build_narrative_parser"),
     "_run_route": ("cli.cmd.route", "_run_route"),

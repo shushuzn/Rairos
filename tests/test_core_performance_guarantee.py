@@ -36,11 +36,7 @@ class TestPerformanceGuarantee:
         assert isinstance(pg.status, str)
 
     def test_measured_impact_range(self):
-        pg = PerformanceGuarantee(
-            name="X", promise="Y", measured_impact=0.0, status="OK"
-        )
+        pg = PerformanceGuarantee(name="X", promise="Y", measured_impact=0.0, status="OK")
         assert pg.measured_impact == 0.0
-        pg2 = PerformanceGuarantee(
-            name="X", promise="Y", measured_impact=99.9, status="CRITICAL"
-        )
+        pg2 = PerformanceGuarantee(name="X", promise="Y", measured_impact=99.9, status="CRITICAL")
         assert pg2.measured_impact == 99.9

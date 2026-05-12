@@ -50,9 +50,9 @@ class ResearchGapV2:
     feasibility_score: float = 0.0
     priority: int = 0
     # Confidence scoring fields
-    confidence: float = 0.0          # Bayesian P(is_real_gap | evidence)
-    support_score: float = 0.0        # Support ratio (0-1)
-    novelty_bayes: float = 0.0         # Bayesian posterior novelty component
+    confidence: float = 0.0  # Bayesian P(is_real_gap | evidence)
+    support_score: float = 0.0  # Support ratio (0-1)
+    novelty_bayes: float = 0.0  # Bayesian posterior novelty component
 
     # Preference learning
     preference_boost: bool = False  # True if matches user preferences
@@ -82,8 +82,6 @@ class GapAnalysisResultV2:
 
     # Summary
     summary: str = ""
-
-
 
 
 def _title_similarity(t1: str, t2: str) -> float:
@@ -873,6 +871,7 @@ def render_combined_report(
         parts.append(capture.get().rstrip("\n"))
     return "\n".join(parts)
 
+
 # ─── Insight Confidence Scorer (Bayesian) ────────────────────────────────────
 
 
@@ -906,7 +905,9 @@ class ConfidenceScorer:
         type_sim = 1.0 if gap_a.gap_type == gap_b.gap_type else 0.0
         return title_sim * 0.6 + type_sim * 0.4
 
-    def _avg_similarity_to_known(self, gap: ResearchGapV2, known_gaps: List[ResearchGapV2], top_k: int = 10) -> float:
+    def _avg_similarity_to_known(
+        self, gap: ResearchGapV2, known_gaps: List[ResearchGapV2], top_k: int = 10
+    ) -> float:
         """Average similarity to top-k most-similar known gaps."""
         if not known_gaps:
             return 0.0
@@ -990,10 +991,7 @@ class ConfidenceScorer:
 
     def is_low_quality(self, confidence_data: Dict[str, float]) -> bool:
         """Return True if gap should be suppressed as low-quality."""
-        return (
-            confidence_data["confidence"] < 0.3
-            and confidence_data["novelty"] < 0.2
-        )
+        return confidence_data["confidence"] < 0.3 and confidence_data["novelty"] < 0.2
 
     def filter_gaps(
         self,
@@ -1035,10 +1033,10 @@ class ConfidenceScorer:
             "total": len(gaps),
             "avg_confidence": sum(confidences) / len(confidences) if confidences else 0.0,
             "avg_novelty": sum(novelties) / len(novelties) if novelties else 0.0,
-            "low_quality_count": sum(1 for g in gaps if hasattr(g, "confidence") and g.confidence < 0.3),
+            "low_quality_count": sum(
+                1 for g in gaps if hasattr(g, "confidence") and g.confidence < 0.3
+            ),
         }
-
-
 
 
 # ─── Gap Semantic Clustering ─────────────────────────────────────────────────────
@@ -1056,8 +1054,8 @@ class GapClusterer:
     - Trend detection: which gap types are growing/shrinking over time
     """
 
-    SIMILARITY_THRESHOLD = 0.60   # gaps above this similarity → same cluster
-    MIN_CLUSTER_SIZE = 1          # single-element clusters are valid (singleton)
+    SIMILARITY_THRESHOLD = 0.60  # gaps above this similarity → same cluster
+    MIN_CLUSTER_SIZE = 1  # single-element clusters are valid (singleton)
 
     def __init__(self, confidence_scorer: "ConfidenceScorer"):
         self.scorer = confidence_scorer
@@ -1163,17 +1161,20 @@ class GapClusterer:
             top_keywords = sorted(word_counts.items(), key=lambda x: -x[1])[:5]
             top_keywords = [w for w, _ in top_keywords]  # type: ignore[misc]
 
-            stats.append({
-                "cluster_id": cid,
-                "size": len(cluster),
-                "gap_types": all_types,
-                "avg_novelty": sum(g.novelty_score for g in cluster) / len(cluster),
-                "avg_confidence": sum(g.confidence for g in cluster) / len(cluster)
-                    if all(hasattr(g, 'confidence') for g in cluster) else 0.0,
-                "titles_sample": all_titles[:3],
-                "top_keywords": top_keywords,
-                "is_hot": len(cluster) >= 3,  # 3+ gaps = hot cluster
-            })
+            stats.append(
+                {
+                    "cluster_id": cid,
+                    "size": len(cluster),
+                    "gap_types": all_types,
+                    "avg_novelty": sum(g.novelty_score for g in cluster) / len(cluster),
+                    "avg_confidence": sum(g.confidence for g in cluster) / len(cluster)
+                    if all(hasattr(g, "confidence") for g in cluster)
+                    else 0.0,
+                    "titles_sample": all_titles[:3],
+                    "top_keywords": top_keywords,
+                    "is_hot": len(cluster) >= 3,  # 3+ gaps = hot cluster
+                }
+            )
         return stats
 
     def detect_trends(self, clusters: List[List["ResearchGapV2"]]) -> Dict[str, Any]:
@@ -1226,7 +1227,6 @@ class GapClusterer:
         representatives = []
         for cluster in clusters:
             # Pick gap with highest novelty_score as representative
-            rep = max(cluster, key=lambda g: getattr(g, 'novelty_score', 0.0))
+            rep = max(cluster, key=lambda g: getattr(g, "novelty_score", 0.0))
             representatives.append(rep)
         return representatives
-

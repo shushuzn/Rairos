@@ -305,7 +305,9 @@ class BriefingGenerator:
         # Check Gene Pool gaps
         # OPPORTUNITY_SEIZED: paper's gap type matches a Gene Pool entry (directly addresses a known gap)
         gap_type_matches = [
-            m for m in gene_pool_matches if m.get("gap_type") and m.get("gap_type") in text  # type: ignore[operator]
+            m
+            for m in gene_pool_matches
+            if m.get("gap_type") and m.get("gap_type") in text  # type: ignore[operator]
         ]
         if gap_type_matches:
             return (

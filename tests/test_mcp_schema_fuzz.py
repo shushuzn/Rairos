@@ -11,6 +11,7 @@ Usage:
     pytest tests/test_mcp_schema_fuzz.py -v
     python tests/test_mcp_schema_fuzz.py --report   # print summary
 """
+
 from __future__ import annotations
 
 import random
@@ -122,14 +123,20 @@ def _call_tool(name: str, arguments: Dict) -> Dict[str, Any]:
     """Call handle_call_tool and return result dict with error info."""
     try:
         from rairos_mcp import handle_call_tool
+
         result = handle_call_tool(name, arguments)
-        is_error = (
-            result.get("is_error") is True
-            or (result.get("error") and "error" in str(result.get("error", "")).lower())
+        is_error = result.get("is_error") is True or (
+            result.get("error") and "error" in str(result.get("error", "")).lower()
         )
         return {"ok": True, "is_error": is_error, "result": result, "exception": None}
     except Exception as e:
-        return {"ok": False, "is_error": False, "result": None, "exception": e, "traceback": traceback.format_exc()}
+        return {
+            "ok": False,
+            "is_error": False,
+            "result": None,
+            "exception": e,
+            "traceback": traceback.format_exc(),
+        }
 
 
 # ─── Test Fixtures ────────────────────────────────────────────────────────────
@@ -203,7 +210,7 @@ class TestMCPFuzz:
                     errors.append((tool_name, args))
 
         total_calls = sum(len(v) for v in fuzz_results.values())
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Fuzz Results: {len(ALL_TOOLS)} tools, {total_calls} total calls")
         print(f"Crashes (exceptions): {len(crashes)}")
         print(f"Handled errors: {len(errors)}")
@@ -234,8 +241,7 @@ class TestMCPFuzz:
             mode = args.get("__fuzz_mode__", "")
             if "missing" in mode:
                 assert call_res["ok"], (
-                    f"Tool '{name}' crashed when required fields missing: "
-                    f"{call_res['exception']}"
+                    f"Tool '{name}' crashed when required fields missing: {call_res['exception']}"
                 )
 
 
@@ -260,9 +266,11 @@ if __name__ == "__main__":
             results[name].append((a, _call_tool(name, a)))
 
     # Print report
-    crashes = [(n, a, c["exception"]) for n, entries in results.items() for a, c in entries if not c["ok"]]
+    crashes = [
+        (n, a, c["exception"]) for n, entries in results.items() for a, c in entries if not c["ok"]
+    ]
     total = sum(len(v) for v in results.values())
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"MCP Schema Fuzzer: {len(ALL_TOOLS)} tools, {total} total calls")
     print(f"Crashes: {len(crashes)}")
     for name, args, exc in crashes[:20]:

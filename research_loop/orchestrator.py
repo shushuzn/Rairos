@@ -401,7 +401,9 @@ class AutonomousOrchestrator:
             seen_count = filter_stats["seen"]
             suppressed = filter_stats["suppressed"]
             if suppressed > 0:
-                logger.info(f"[Orchestrator] Suppressed {suppressed} already-seen gaps (total seen: {seen_count})")
+                logger.info(
+                    f"[Orchestrator] Suppressed {suppressed} already-seen gaps (total seen: {seen_count})"
+                )
             if not gaps:
                 logger.info(f"[Orchestrator] All gaps already known for '{topic}' — skipping")
                 continue

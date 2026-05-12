@@ -98,7 +98,14 @@ class TestIngestParser:
         assert fmt.choices == ["text", "warp"]
         # Verify --stages choices
         stages = actions["stages"]
-        assert stages.choices == ["paper_analysis", "benchmark", "cross_reference", "insight", "kg_sync", "pnote_update"]
+        assert stages.choices == [
+            "paper_analysis",
+            "benchmark",
+            "cross_reference",
+            "insight",
+            "kg_sync",
+            "pnote_update",
+        ]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

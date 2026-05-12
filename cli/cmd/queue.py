@@ -1,4 +1,5 @@
 """CLI command: queue."""
+
 from __future__ import annotations
 
 import argparse
@@ -10,12 +11,17 @@ def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("queue", help="Manage job queue")
     p.add_argument("--add", metavar="UID", help="Add a paper UID to the queue")
     p.add_argument("--list", action="store_true", help="List queued jobs from job_queue table")
-    p.add_argument("--pending", action="store_true", help="Show papers awaiting processing (parse_status=pending)")
+    p.add_argument(
+        "--pending",
+        action="store_true",
+        help="Show papers awaiting processing (parse_status=pending)",
+    )
     p.add_argument("--dequeue", action="store_true", help="Pop next job from queue")
     p.add_argument("--cancel", metavar="JOB_ID", type=int, help="Cancel a queued job by id")
     p.add_argument("--clear", action="store_true", help="Clear all queued jobs")
     p.add_argument(
-        "--format", "-f",
+        "--format",
+        "-f",
         choices=["text", "warp"],
         default="text",
         help="Output format (default: text)",
@@ -34,10 +40,12 @@ def _run_queue(args: argparse.Namespace) -> int:
             _run_queue_warp_jq(rows)
         elif rows:
             for r in rows:
-                print(f"[{r['id']}] {r['paper_id']} ({r['job_type']}) priority={r['priority']} status={r['status']}")
+                print(
+                    f"[{r['id']}] {r['paper_id']} ({r['job_type']}) priority={r['priority']} status={r['status']}"
+                )
         else:
             print("Queue empty")
-    elif getattr(args, 'pending', False):
+    elif getattr(args, "pending", False):
         # Show papers with pending parse_status (not in job_queue)
         with db.conn as conn:
             cur = conn.execute(
@@ -83,25 +91,32 @@ def _run_queue_warp(pending: list, total: int) -> None:
 
     # Header panel
     status = "[#B4FA72]✓ Empty[#/]" if not pending else f"[#FEFDC2]{len(pending)} pending[#/]"
-    blocks.append(WarpBlocks.panel(
-        "Job Queue",
-        f"Status: {status} · {total} papers total",
-    ))
+    blocks.append(
+        WarpBlocks.panel(
+            "Job Queue",
+            f"Status: {status} · {total} papers total",
+        )
+    )
 
     if pending:
         rows = [[uid, "pending", "parse"] for uid in pending]
-        blocks.append(WarpBlocks.table(
-            ["Paper ID", "Status", "Job Type"],
-            rows,
-            title=f"Pending ({len(pending)})",
-        ))
+        blocks.append(
+            WarpBlocks.table(
+                ["Paper ID", "Status", "Job Type"],
+                rows,
+                title=f"Pending ({len(pending)})",
+            )
+        )
     else:
-        blocks.append(WarpBlocks.panel(
-            "Queue Empty",
-            "[#8E8E8E]No pending jobs in the queue.[#8E8E8E]",
-        ))
+        blocks.append(
+            WarpBlocks.panel(
+                "Queue Empty",
+                "[#8E8E8E]No pending jobs in the queue.[#8E8E8E]",
+            )
+        )
 
     print("\n\n".join(blocks))
+
 
 def _run_queue_warp_jq(rows: list) -> None:
     """Render queue status from job_queue table using Warp-style blocks."""
@@ -111,23 +126,31 @@ def _run_queue_warp_jq(rows: list) -> None:
 
     # Header panel
     status = "[#B4FA72]✓ Empty[#/]" if not rows else f"[#FEFDC2]{len(rows)} job(s)[#/]"
-    blocks.append(WarpBlocks.panel(
-        "Job Queue",
-        f"Status: {status}",
-    ))
+    blocks.append(
+        WarpBlocks.panel(
+            "Job Queue",
+            f"Status: {status}",
+        )
+    )
 
     if rows:
-        table_rows = [[str(r['id']), r['paper_id'], r['job_type'], str(r['priority']), r['status']] for r in rows]
-        blocks.append(WarpBlocks.table(
-            ["ID", "Paper ID", "Type", "Priority", "Status"],
-            table_rows,
-            title=f"Jobs ({len(rows)})",
-        ))
+        table_rows = [
+            [str(r["id"]), r["paper_id"], r["job_type"], str(r["priority"]), r["status"]]
+            for r in rows
+        ]
+        blocks.append(
+            WarpBlocks.table(
+                ["ID", "Paper ID", "Type", "Priority", "Status"],
+                table_rows,
+                title=f"Jobs ({len(rows)})",
+            )
+        )
     else:
-        blocks.append(WarpBlocks.panel(
-            "Queue Empty",
-            "[#8E8E8E]No jobs in the queue.[#8E8E8E]",
-        ))
+        blocks.append(
+            WarpBlocks.panel(
+                "Queue Empty",
+                "[#8E8E8E]No jobs in the queue.[#8E8E8E]",
+            )
+        )
 
     print("\n\n".join(blocks))
-

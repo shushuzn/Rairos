@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 
-
 from llm.insight.gene import CapsuleGene
 
 

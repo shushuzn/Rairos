@@ -51,7 +51,13 @@ class TestProgressStore:
     def test_update_multiple_fields(self):
         store = ProgressStore()
         store.create("job-1")
-        store.update("job-1", status="running", stage="extracting", message="Extracting text", progress_pct=25)
+        store.update(
+            "job-1",
+            status="running",
+            stage="extracting",
+            message="Extracting text",
+            progress_pct=25,
+        )
         job = store.get("job-1")
         assert job["status"] == "running"
         assert job["stage"] == "extracting"

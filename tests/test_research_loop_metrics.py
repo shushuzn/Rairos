@@ -6,6 +6,7 @@ class TestMetrics:
 
     def _metrics(self):
         from research_loop.core import Metrics
+
         return Metrics()
 
     def test_init_defaults(self):

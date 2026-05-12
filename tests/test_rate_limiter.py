@@ -53,11 +53,13 @@ class TestRateLimiterAcquire:
 
     def test_acquire_false_on_timeout(self):
         # Extremely restrictive limiter should timeout
-        rl = RateLimiter(RateLimitConfig(
-            requests_per_second=0.0001,
-            requests_per_minute=0.0001,
-            requests_per_hour=0.0001,
-        ))
+        rl = RateLimiter(
+            RateLimitConfig(
+                requests_per_second=0.0001,
+                requests_per_minute=0.0001,
+                requests_per_hour=0.0001,
+            )
+        )
         # Very short timeout should fail
         result = rl.acquire(blocking=True, timeout=0.001)
         assert isinstance(result, bool)

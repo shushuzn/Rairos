@@ -238,7 +238,6 @@ def _register_gap_subscription(sub: GapSubscription) -> Optional[str]:
     try:
         from db.database import Database
 
-
         db = Database()
         db.init()
 
@@ -398,6 +397,7 @@ class GenePoolWatcher:
         ev = DiversityPressureEvaluator(capacity=50)
         try:
             from llm.insight.tracker import EvolutionTracker
+
             tracker = EvolutionTracker()
             active_capsules = [c for c in tracker._load_capsules() if c.status == "active"]
             pres = ev.evaluate(active_capsules, self.state.gap_subscriptions)
@@ -409,6 +409,7 @@ class GenePoolWatcher:
                 summary["eviction_candidates"] = [c["capsule_id"] for c in pres.eviction_candidates]
         except Exception as e:
             import logging
+
             logging.getLogger("gene_pool_watcher").warning(f"Diversity pressure check failed: {e}")
 
         _save_watcher_state(self.state)
@@ -472,7 +473,7 @@ class DiversityPressureResult:
     """Result of a diversity pressure evaluation."""
 
     triggered: bool
-    pressure_level: float          # 0.0–1.0 (how much pressure)
+    pressure_level: float  # 0.0–1.0 (how much pressure)
     overrepresented_families: List[str]
     underrepresented_families: List[str]
     eviction_candidates: List[Dict]  # [{capsule_id, family, score, reason}]
@@ -501,17 +502,31 @@ class DiversityPressureEvaluator:
     """
 
     # ── Configuration ─────────────────────────────────────────────────────────
-    SATURATION_THRESHOLD = 0.80     # trigger at 80% gene pool saturation
-    DIVERSITY_THRESHOLD = 40        # trigger when diversity_score < 40
-    EVICTION_RATE = 0.20            # evict bottom 20% of over-represented family capsules
-    MIN_CAPSULES_TO_EVICT = 1      # minimum capsules to actually evict
-    CAPACITY_MARGIN = 0.90         # target capacity after eviction
+    SATURATION_THRESHOLD = 0.80  # trigger at 80% gene pool saturation
+    DIVERSITY_THRESHOLD = 40  # trigger when diversity_score < 40
+    EVICTION_RATE = 0.20  # evict bottom 20% of over-represented family capsules
+    MIN_CAPSULES_TO_EVICT = 1  # minimum capsules to actually evict
+    CAPACITY_MARGIN = 0.90  # target capacity after eviction
 
     # Family keyword map (mirrors gene_pool_io.py for consistency)
     FAMILY_KEYWORDS = {
-        "attention": ["attention", "transformer", "multi-head", "self-attention", "cross-attention"],
+        "attention": [
+            "attention",
+            "transformer",
+            "multi-head",
+            "self-attention",
+            "cross-attention",
+        ],
         "reinforcement": ["rl", "reinforcement", "policy", "reward", "agent", "DQN", "PPO", "A3C"],
-        "language_model": ["LM", "language model", "decoder", "autoregressive", "LLM", "GPT", "BERT"],
+        "language_model": [
+            "LM",
+            "language model",
+            "decoder",
+            "autoregressive",
+            "LLM",
+            "GPT",
+            "BERT",
+        ],
         "vision": ["CNN", "convolution", "resnet", "image", "vision", "ViT", "classification"],
         "optimization": ["optimizer", "Adam", "SGD", "gradient", "loss", "training"],
         "graph": ["GNN", "graph", "node", "edge", "message passing"],
@@ -532,7 +547,11 @@ class DiversityPressureEvaluator:
 
     def _family_of_capsule(self, capsule: Any) -> str:
         """Infer algorithm family from a capsule dict/object."""
-        kws = capsule.get("trigger_keywords", []) if hasattr(capsule, "get") else getattr(capsule, "trigger_keywords", [])
+        kws = (
+            capsule.get("trigger_keywords", [])
+            if hasattr(capsule, "get")
+            else getattr(capsule, "trigger_keywords", [])
+        )
         return self._family_of_keywords(kws)
 
     def _compute_saturation(self, total: int) -> float:
@@ -565,13 +584,16 @@ class DiversityPressureEvaluator:
         underrep = diversity.get("underrepresented_families", [])
 
         # ── Compute pressure level ────────────────────────────────────────────
-        sat_pressure = max(0.0, (saturation - self.SATURATION_THRESHOLD) / (1.0 - self.SATURATION_THRESHOLD))
-        div_pressure = max(0.0, (self.DIVERSITY_THRESHOLD - diversity_score) / self.DIVERSITY_THRESHOLD)
+        sat_pressure = max(
+            0.0, (saturation - self.SATURATION_THRESHOLD) / (1.0 - self.SATURATION_THRESHOLD)
+        )
+        div_pressure = max(
+            0.0, (self.DIVERSITY_THRESHOLD - diversity_score) / self.DIVERSITY_THRESHOLD
+        )
         pressure_level = sat_pressure * 0.5 + div_pressure * 0.5  # combined 0–1
 
         triggered = (
-            saturation >= self.SATURATION_THRESHOLD
-            and diversity_score < self.DIVERSITY_THRESHOLD
+            saturation >= self.SATURATION_THRESHOLD and diversity_score < self.DIVERSITY_THRESHOLD
         )
 
         if not triggered:
@@ -615,21 +637,34 @@ class DiversityPressureEvaluator:
 
             # Sort by outcome_success_score ascending (lowest first)
             scored = [
-                (c, c.get("outcome_success_score", 0.0) if hasattr(c, "get") else getattr(c, "outcome_success_score", 0.0))
+                (
+                    c,
+                    c.get("outcome_success_score", 0.0)
+                    if hasattr(c, "get")
+                    else getattr(c, "outcome_success_score", 0.0),
+                )
                 for c in fam_caps
             ]
             scored.sort(key=lambda x: x[1])
 
             n_evict = max(self.MIN_CAPSULES_TO_EVICT, int(len(scored) * self.EVICTION_RATE))
             for cap, score in scored[:n_evict]:
-                cid = cap.get("capsule_id", "") if hasattr(cap, "get") else getattr(cap, "capsule_id", "")
-                eviction_candidates.append({
-                    "capsule_id": cid,
-                    "family": fam,
-                    "score": round(score, 4),
-                    "reason": f"diversity_pressure: {fam} is over-represented (pressure={pressure_level:.2f})",
-                    "gap_type": cap.get("action_gap_type", "unknown") if hasattr(cap, "get") else getattr(cap, "action_gap_type", "unknown"),
-                })
+                cid = (
+                    cap.get("capsule_id", "")
+                    if hasattr(cap, "get")
+                    else getattr(cap, "capsule_id", "")
+                )
+                eviction_candidates.append(
+                    {
+                        "capsule_id": cid,
+                        "family": fam,
+                        "score": round(score, 4),
+                        "reason": f"diversity_pressure: {fam} is over-represented (pressure={pressure_level:.2f})",
+                        "gap_type": cap.get("action_gap_type", "unknown")
+                        if hasattr(cap, "get")
+                        else getattr(cap, "action_gap_type", "unknown"),
+                    }
+                )
 
         return DiversityPressureResult(
             triggered=True,
@@ -672,5 +707,3 @@ class DiversityPressureEvaluator:
 
         result.archived_capsule_ids = archived
         return result
-
-

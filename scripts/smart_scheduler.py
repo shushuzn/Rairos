@@ -2,6 +2,7 @@
 
 Implements adaptive polling interval and proactive GenePool refilling.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,20 +11,21 @@ from typing import Any
 
 # ─── Thresholds ────────────────────────────────────────────────────────────────
 
-HIGH_SATURATION = 0.80   # GenePool nearly full — slow down
-LOW_SATURATION = 0.20    # GenePool depleted — speed up
-EMPTY_SATURATION = 0.05   # GenePool empty — trigger cold-start research
+HIGH_SATURATION = 0.80  # GenePool nearly full — slow down
+LOW_SATURATION = 0.20  # GenePool depleted — speed up
+EMPTY_SATURATION = 0.05  # GenePool empty — trigger cold-start research
 
 # Interval multipliers
-SLOW_FACTOR = 2.0         # Multiply interval when HIGH
-FAST_FACTOR = 0.5         # Multiply interval when LOW/EMPTY
-DAEMON_INTERVAL_MIN = 5   # Minimum check interval (minutes)
+SLOW_FACTOR = 2.0  # Multiply interval when HIGH
+FAST_FACTOR = 0.5  # Multiply interval when LOW/EMPTY
+DAEMON_INTERVAL_MIN = 5  # Minimum check interval (minutes)
 DAEMON_INTERVAL_MAX = 120  # Maximum check interval (minutes)
 
 
 @dataclass
 class SchedulerDecision:
     """What the scheduler decided to do."""
+
     interval_minutes: float
     reason: str
     sat_before: float
@@ -84,7 +86,9 @@ def run_cold_start_research(db, topic: str | None = None) -> dict:
         subs = db.list_arxiv_subscriptions(limit=10)
         if subs:
             # Use the one with most papers or most recent
-            topic = subs[0].get("topic") if hasattr(subs[0], "get") else getattr(subs[0], "topic", None)
+            topic = (
+                subs[0].get("topic") if hasattr(subs[0], "get") else getattr(subs[0], "topic", None)
+            )
         if not topic:
             topic = "machine learning research frontier"
 

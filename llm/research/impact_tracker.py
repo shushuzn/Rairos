@@ -59,9 +59,9 @@ class GapImpactEvent:
     gap_hash: str
     paper_id: str
     paper_title: str
-    event_type: str           # 'addresses' | 'partially_addresses' | 'contradicts'
-    confidence: float          # 0.0–1.0
-    addressed_at: str         # ISO timestamp
+    event_type: str  # 'addresses' | 'partially_addresses' | 'contradicts'
+    confidence: float  # 0.0–1.0
+    addressed_at: str  # ISO timestamp
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -81,10 +81,12 @@ class GapImpactSummary:
     gap_hash: str
     topic: str
     gap_type: str
-    first_identified: str      # ISO timestamp when gap was first recorded
+    first_identified: str  # ISO timestamp when gap was first recorded
     first_addressed: str = ""  # ISO timestamp
     resolved_at: str = ""
-    resolution_type: str = ""   # 'fully_resolved' | 'partially_resolved' | 'ceded' | 'contradicted' | ''
+    resolution_type: str = (
+        ""  # 'fully_resolved' | 'partially_resolved' | 'ceded' | 'contradicted' | ''
+    )
     num_addressing: int = 0
     resolution_confidence: float = 0.0
     impact_score: float = 0.0
@@ -104,6 +106,7 @@ def _load_impact_events() -> List[GapImpactEvent]:
     events = []
     try:
         import json
+
         with open(IMPACT_EVENTS_FILE, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -119,6 +122,7 @@ def _load_impact_events() -> List[GapImpactEvent]:
 def _append_event(event: GapImpactEvent) -> None:
     GP_DIR.mkdir(parents=True, exist_ok=True)
     import json
+
     with open(IMPACT_EVENTS_FILE, "a", encoding="utf-8") as f:
         f.write(json.dumps(event.to_dict(), ensure_ascii=False) + "\n")
 
@@ -128,6 +132,7 @@ def _load_summaries() -> Dict[str, GapImpactSummary]:
         return {}
     try:
         import json
+
         data = json.loads(IMPACT_SUMMARY_FILE.read_text(encoding="utf-8"))
         return {k: GapImpactSummary(**v) for k, v in data.items()}
     except Exception:
@@ -137,6 +142,7 @@ def _load_summaries() -> Dict[str, GapImpactSummary]:
 def _save_summaries(summaries: Dict[str, GapImpactSummary]) -> None:
     GP_DIR.mkdir(parents=True, exist_ok=True)
     import json
+
     IMPACT_SUMMARY_FILE.write_text(
         json.dumps({k: v.__dict__ for k, v in summaries.items()}, ensure_ascii=False),
         encoding="utf-8",
@@ -152,7 +158,7 @@ def _compute_resolution_confidence(events: List[GapImpactEvent]) -> float:
         if e.event_type == "contradicts":
             # Contradiction resets confidence to 0
             return 0.0
-        p *= (1.0 - e.confidence)
+        p *= 1.0 - e.confidence
     return 1.0 - p
 
 
@@ -175,7 +181,7 @@ def _compute_impact_score(
     strength_weight = 0.25
     speed_weight = 0.25
 
-    depth_score = min(1.0, num_addressing / 5.0)   # 5+ papers = full depth
+    depth_score = min(1.0, num_addressing / 5.0)  # 5+ papers = full depth
     speed_score = math.exp(-0.01 * max(0, days_to_first_addressing))  # ~69-day half-life
 
     return round(
@@ -205,7 +211,10 @@ def record_addressing_event(
     This is called from paper ingestion or gap extraction pipelines.
     Returns the updated impact summary for this gap.
     """
-    if confidence < MIN_ADDRESSING_CONFIDENCE and event_type in ("addresses", "partially_addresses"):
+    if confidence < MIN_ADDRESSING_CONFIDENCE and event_type in (
+        "addresses",
+        "partially_addresses",
+    ):
         return {"skipped": True, "reason": f"confidence {confidence} below minimum"}
 
     event = GapImpactEvent(
@@ -225,9 +234,8 @@ def record_addressing_event(
     summaries = _load_summaries()
     existing = summaries.get(gap_hash)
 
-    first_identified_iso = (
-        first_identified
-        or (existing.first_identified if existing else _now_iso())
+    first_identified_iso = first_identified or (
+        existing.first_identified if existing else _now_iso()
     )
 
     # Compute resolution confidence
@@ -250,9 +258,7 @@ def record_addressing_event(
     # Days from first identified to first addressing
     try:
         first_id_time = datetime.fromisoformat(first_identified_iso)
-        first_addr_time = datetime.fromisoformat(
-            min(e.addressed_at for e in gap_events)
-        )
+        first_addr_time = datetime.fromisoformat(min(e.addressed_at for e in gap_events))
         days_to_first = (first_addr_time - first_id_time).total_seconds() / 86400.0
     except Exception:
         days_to_first = 0.0

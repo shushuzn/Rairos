@@ -76,12 +76,11 @@ def _gap_hash(gap: Any) -> str:
     """Compute a hash key for a gap to deduplicate across agents."""
     try:
         title = getattr(gap, "title", "") or getattr(gap, "gap_title", "") or ""
-        gap_type = (
-            getattr(gap, "gap_type", "") or ""
-        )
+        gap_type = getattr(gap, "gap_type", "") or ""
         if hasattr(gap_type, "value"):
             gap_type = gap_type.value
         import hashlib
+
         return hashlib.sha256(f"{gap_type}:{title}".encode()).hexdigest()[:16]
     except Exception:
         return str(uuid.uuid4())
@@ -162,7 +161,9 @@ def _run_single_agent(
         try:
             if gaps:
                 # Insight class moved/deleted from research_loop.core — use dict instead
-                insights = [{"title": str(g), "summary": "", "sources": [], "confidence": 0.5} for g in gaps]
+                insights = [
+                    {"title": str(g), "summary": "", "sources": [], "confidence": 0.5} for g in gaps
+                ]
         except Exception:
             pass
 
@@ -262,20 +263,24 @@ class ParallelResearchCoordinator:
                 continue
 
             # Build a focused sub-topic from the gap cluster
-            gap_titles = [getattr(g, "title", "") or getattr(g, "gap_title", "") or "" for g in gaps]
+            gap_titles = [
+                getattr(g, "title", "") or getattr(g, "gap_title", "") or "" for g in gaps
+            ]
             sub_topic = f"{topic} — {gap_type}"
             if keywords:
                 sub_topic += f": {', '.join(keywords[:3])}"
             else:
                 sub_topic += f": {gap_titles[0][:80]}"
 
-            agent_tasks.append({
-                "cluster_id": cluster_id,
-                "sub_topic": sub_topic,
-                "gaps": gaps,
-                "gap_type": gap_type,
-                "initial_papers": existing_papers[:5],  # limit papers per agent
-            })
+            agent_tasks.append(
+                {
+                    "cluster_id": cluster_id,
+                    "sub_topic": sub_topic,
+                    "gaps": gaps,
+                    "gap_type": gap_type,
+                    "initial_papers": existing_papers[:5],  # limit papers per agent
+                }
+            )
 
         if not agent_tasks:
             return ParallelResearchResult(
@@ -290,7 +295,9 @@ class ParallelResearchCoordinator:
         results: List[AgentResult] = []
         # thread_local = threading.local()  # reserved for future use
 
-        def run_with_semaphore(task: Dict[str, Any], agent_id: str, barrier: threading.Barrier) -> AgentResult:
+        def run_with_semaphore(
+            task: Dict[str, Any], agent_id: str, barrier: threading.Barrier
+        ) -> AgentResult:
             return _run_single_agent(
                 cluster_id=task["cluster_id"],
                 gap_sub_topic=task["sub_topic"],
@@ -303,7 +310,9 @@ class ParallelResearchCoordinator:
         barrier = threading.Barrier(len(agent_tasks))
         semaphore = threading.Semaphore(self.max_concurrency)
 
-        def throttled_run(task: Dict[str, Any], agent_id: str, barrier: threading.Barrier) -> AgentResult:
+        def throttled_run(
+            task: Dict[str, Any], agent_id: str, barrier: threading.Barrier
+        ) -> AgentResult:
             with semaphore:
                 return run_with_semaphore(task, agent_id, barrier)
 

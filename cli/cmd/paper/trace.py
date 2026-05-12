@@ -6,6 +6,7 @@ Usage:
     airos paper trace --list            # show recent traces across all papers
     airos paper trace 2106.09685 --refs # show paper_section_refs details
 """
+
 from __future__ import annotations
 
 import sys
@@ -114,9 +115,7 @@ def paper_trace(arxiv_id: str | None, list: bool, refs: bool, limit: int):
     print()
     for i, t in enumerate(traces):
         coverage = (
-            f"{t['tagged_lines']}/{t['total_code_lines']}"
-            if t["total_code_lines"] > 0
-            else "N/A"
+            f"{t['tagged_lines']}/{t['total_code_lines']}" if t["total_code_lines"] > 0 else "N/A"
         )
         pr = f"{t['benchmark_pass_rate']:.0%}" if t["benchmark_pass_rate"] else "—"
         untagged = t.get("untagged_ranges") or []

@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
-
 @dataclass
 class PaperSnapshot:
     """A paper captured during research."""

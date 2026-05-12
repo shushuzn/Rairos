@@ -98,16 +98,56 @@ def test_upsert_papers_bulk_mixed(bulk_db: Database) -> None:
     """Test bulk with mix of insert and update."""
     # Insert 2
     papers = [
-        {"paper_id": "2201.00004", "title": "A", "authors": [], "abstract": "", "published": "", "abs_url": "", "pdf_url": "", "primary_category": "", "doi": ""},
-        {"paper_id": "2201.00005", "title": "B", "authors": [], "abstract": "", "published": "", "abs_url": "", "pdf_url": "", "primary_category": "", "doi": ""},
+        {
+            "paper_id": "2201.00004",
+            "title": "A",
+            "authors": [],
+            "abstract": "",
+            "published": "",
+            "abs_url": "",
+            "pdf_url": "",
+            "primary_category": "",
+            "doi": "",
+        },
+        {
+            "paper_id": "2201.00005",
+            "title": "B",
+            "authors": [],
+            "abstract": "",
+            "published": "",
+            "abs_url": "",
+            "pdf_url": "",
+            "primary_category": "",
+            "doi": "",
+        },
     ]
     i, u = bulk_db.upsert_papers_bulk(papers, "test")
     assert i == 2 and u == 0
 
     # Insert 1, update 1
     mixed = [
-        {"paper_id": "2201.00004", "title": "A-updated", "authors": [], "abstract": "", "published": "", "abs_url": "", "pdf_url": "", "primary_category": "", "doi": ""},
-        {"paper_id": "2201.00006", "title": "C", "authors": [], "abstract": "", "published": "", "abs_url": "", "pdf_url": "", "primary_category": "", "doi": ""},
+        {
+            "paper_id": "2201.00004",
+            "title": "A-updated",
+            "authors": [],
+            "abstract": "",
+            "published": "",
+            "abs_url": "",
+            "pdf_url": "",
+            "primary_category": "",
+            "doi": "",
+        },
+        {
+            "paper_id": "2201.00006",
+            "title": "C",
+            "authors": [],
+            "abstract": "",
+            "published": "",
+            "abs_url": "",
+            "pdf_url": "",
+            "primary_category": "",
+            "doi": "",
+        },
     ]
     i2, u2 = bulk_db.upsert_papers_bulk(mixed, "test")
     assert i2 == 1 and u2 == 1
@@ -126,7 +166,17 @@ def test_upsert_papers_bulk_empty(bulk_db: Database) -> None:
 def test_upsert_papers_bulk_idempotent(bulk_db: Database) -> None:
     """Test running bulk upsert twice with same data is idempotent."""
     papers = [
-        {"paper_id": "2201.00007", "title": "X", "authors": [], "abstract": "", "published": "", "abs_url": "", "pdf_url": "", "primary_category": "", "doi": ""},
+        {
+            "paper_id": "2201.00007",
+            "title": "X",
+            "authors": [],
+            "abstract": "",
+            "published": "",
+            "abs_url": "",
+            "pdf_url": "",
+            "primary_category": "",
+            "doi": "",
+        },
     ]
     bulk_db.upsert_papers_bulk(papers, "test")
     bulk_db.upsert_papers_bulk(papers, "test")

@@ -14,6 +14,7 @@ class TestCLIDispatchComplete:
     @pytest.fixture
     def subcmd_table(self):
         from cli._registry import _SUBCOMMAND_TABLE
+
         return _SUBCOMMAND_TABLE
 
     @pytest.fixture
@@ -47,8 +48,17 @@ class TestCLIDispatchComplete:
         """
         subcmd_names = {name for name, _, _ in subcmd_table}
         known_gaps = {
-            "agent", "evolution", "evoskill", "paper2code", "path",
-            "rag", "repl", "story", "trace", "validate", "visual",
+            "agent",
+            "evolution",
+            "evoskill",
+            "paper2code",
+            "path",
+            "rag",
+            "repl",
+            "story",
+            "trace",
+            "validate",
+            "visual",
         }
         missing_new = subcmd_names - known_gaps - set(dispatch_dict.keys())
         assert not missing_new, f"New missing dispatch entries (regression): {sorted(missing_new)}"
@@ -95,6 +105,7 @@ class TestDemoCommand:
 
     def test_demo_module_importable(self):
         from cli.cmd.demo import run_demo
+
         assert callable(run_demo)
 
     def test_demo_parser_builds(self):

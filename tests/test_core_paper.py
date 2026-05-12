@@ -30,20 +30,45 @@ class TestPaperIsDataclass:
 
     def test_field_names(self):
         expected = [
-            "source", "uid", "title", "authors", "abstract",
-            "published", "updated", "abs_url", "pdf_url",
-            "primary_category", "journal", "volume", "issue", "page",
-            "doi", "comment", "journal_ref", "categories",
+            "source",
+            "uid",
+            "title",
+            "authors",
+            "abstract",
+            "published",
+            "updated",
+            "abs_url",
+            "pdf_url",
+            "primary_category",
+            "journal",
+            "volume",
+            "issue",
+            "page",
+            "doi",
+            "comment",
+            "journal_ref",
+            "categories",
             "reference_count",
         ]
         actual = [f.name for f in fields(Paper)]
         assert actual == expected
 
+
 class TestRequiredFields:
-    @pytest.mark.parametrize("field", [
-        "source", "uid", "title", "authors", "abstract",
-        "published", "updated", "abs_url", "pdf_url"
-    ])
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "source",
+            "uid",
+            "title",
+            "authors",
+            "abstract",
+            "published",
+            "updated",
+            "abs_url",
+            "pdf_url",
+        ],
+    )
     def test_required_field_presence(self, field):
         p = make_minimal_paper()
         assert hasattr(p, field)
@@ -69,6 +94,7 @@ class TestRequiredFields:
         p = make_minimal_paper()
         assert isinstance(p.abs_url, str)
         assert isinstance(p.pdf_url, str)
+
 
 class TestOptionalFieldDefaults:
     def test_primary_category_default(self):
@@ -100,6 +126,7 @@ class TestOptionalFieldDefaults:
 
     def test_reference_count_default(self):
         assert make_minimal_paper().reference_count == 0
+
 
 class TestOptionalFieldExplicitValues:
     def test_primary_category(self):
@@ -137,6 +164,7 @@ class TestOptionalFieldExplicitValues:
 
     def test_reference_count_large(self):
         assert make_minimal_paper(reference_count=1_000_000).reference_count == 1_000_000
+
 
 class TestAuthorsField:
     def test_single_author(self):
@@ -194,49 +222,78 @@ class TestDataclassBehaviours:
         assert p.primary_category == "cs.AI"
         assert p2.primary_category == "cs.LG"
 
+
 class TestFieldTypes:
     def test_source_is_str(self):
         assert type(make_minimal_paper().source) is str
+
     def test_uid_is_str(self):
         assert type(make_minimal_paper().uid) is str
+
     def test_title_is_str(self):
         assert type(make_minimal_paper().title) is str
+
     def test_abstract_is_str(self):
         assert type(make_minimal_paper().abstract) is str
+
     def test_published_is_str(self):
         assert type(make_minimal_paper().published) is str
+
     def test_updated_is_str(self):
         assert type(make_minimal_paper().updated) is str
+
     def test_abs_url_is_str(self):
         assert type(make_minimal_paper().abs_url) is str
+
     def test_pdf_url_is_str(self):
         assert type(make_minimal_paper().pdf_url) is str
+
     def test_primary_category_is_str(self):
         assert type(make_minimal_paper().primary_category) is str
+
     def test_journal_is_str(self):
         assert type(make_minimal_paper().journal) is str
+
     def test_volume_is_str(self):
         assert type(make_minimal_paper().volume) is str
+
     def test_issue_is_str(self):
         assert type(make_minimal_paper().issue) is str
+
     def test_page_is_str(self):
         assert type(make_minimal_paper().page) is str
+
     def test_doi_is_str(self):
         assert type(make_minimal_paper().doi) is str
+
     def test_comment_is_str(self):
         assert type(make_minimal_paper().comment) is str
+
     def test_journal_ref_is_str(self):
         assert type(make_minimal_paper().journal_ref) is str
+
     def test_categories_is_str(self):
         assert type(make_minimal_paper().categories) is str
+
     def test_reference_count_is_int(self):
         assert type(make_minimal_paper().reference_count) is int
 
+
 class TestOptionalFieldsAcceptEmptyStrings:
-    @pytest.mark.parametrize("field", [
-        "primary_category", "journal", "volume", "issue", "page",
-        "doi", "comment", "journal_ref", "categories"
-    ])
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "primary_category",
+            "journal",
+            "volume",
+            "issue",
+            "page",
+            "doi",
+            "comment",
+            "journal_ref",
+            "categories",
+        ],
+    )
     def test_optional_field_empty_string(self, field):
         p = make_minimal_paper(**{field: ""})
         assert getattr(p, field) == ""
@@ -248,15 +305,25 @@ class TestOptionalFieldsAcceptEmptyStrings:
 class TestDictRoundTrip:
     def test_asdict_complete(self):
         p = make_minimal_paper(
-            source="doi", uid="10.1234/test", title="Dict Test",
-            authors=["X", "Y"], abstract="A",
-            published="2020-01-01", updated="2020-01-02",
-            abs_url="https://doi.org/10.1234/test", pdf_url="",
-            primary_category="eess", journal="J",
-            volume="1", issue="1", page="1",
-            doi="10.1234/test", comment="note",
+            source="doi",
+            uid="10.1234/test",
+            title="Dict Test",
+            authors=["X", "Y"],
+            abstract="A",
+            published="2020-01-01",
+            updated="2020-01-02",
+            abs_url="https://doi.org/10.1234/test",
+            pdf_url="",
+            primary_category="eess",
+            journal="J",
+            volume="1",
+            issue="1",
+            page="1",
+            doi="10.1234/test",
+            comment="note",
             journal_ref="J 1:1 (2020)",
-            categories="eess", reference_count=5,
+            categories="eess",
+            reference_count=5,
         )
         d = asdict(p)
         assert d["source"] == "doi"

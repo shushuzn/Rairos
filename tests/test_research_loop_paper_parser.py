@@ -6,6 +6,7 @@ class TestPaperContent:
 
     def _paper_content(self):
         from research_loop.paper_parser import PaperContent
+
         return PaperContent
 
     def test_init_attributes(self):

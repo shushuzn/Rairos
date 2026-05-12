@@ -10,6 +10,7 @@ class TestNotificationStore:
 
     def _get_store(self):
         from web.shared import _notification_store
+
         return _notification_store
 
     def test_store_starts_as_list(self):
@@ -83,6 +84,7 @@ class TestRenderGapAnalysisHtml:
 
     def _render(self, result, papers):
         from web.shared import _render_gap_analysis_html
+
         return _render_gap_analysis_html(result, papers)
 
     def test_empty_result_shows_empty_message(self):
@@ -104,10 +106,13 @@ class TestRenderGapAnalysisHtml:
                 }
             ]
         }
-        html = self._render(result, [
-            {"id": "2201.00001", "title": "Paper A"},
-            {"id": "2201.00002", "title": "Paper B"},
-        ])
+        html = self._render(
+            result,
+            [
+                {"id": "2201.00001", "title": "Paper A"},
+                {"id": "2201.00002", "title": "Paper B"},
+            ],
+        )
         assert "Scaling laws" in html
         assert "Shared Themes (1)" in html
 
@@ -142,8 +147,12 @@ class TestRenderGapAnalysisHtml:
 
     def test_multiple_sections(self):
         result = {
-            "shared_themes": [{"theme": "Theme A", "papers": [], "strength": "weak", "description": ""}],
-            "frontier_gaps": [{"gap_title": "Gap A", "gap_type": "other", "keywords": [], "summary": ""}],
+            "shared_themes": [
+                {"theme": "Theme A", "papers": [], "strength": "weak", "description": ""}
+            ],
+            "frontier_gaps": [
+                {"gap_title": "Gap A", "gap_type": "other", "keywords": [], "summary": ""}
+            ],
             "contradictions": [{"gap_type": "contradiction", "description": "C1"}],
         }
         html = self._render(result, [])
@@ -158,6 +167,7 @@ class TestRenderRQHtml:
 
     def _render(self, result, frontier_gaps, paper_titles):
         from web.shared import _render_rq_html
+
         return _render_rq_html(result, frontier_gaps, paper_titles)
 
     def test_empty_questions_shows_empty_message(self):
@@ -185,8 +195,22 @@ class TestRenderRQHtml:
     def test_multiple_questions_numbered(self):
         result = {
             "questions": [
-                {"question": "Q1", "difficulty": "easy", "gap_title": "", "gap_type": "", "keywords": [], "hypothesis": ""},
-                {"question": "Q2", "difficulty": "medium", "gap_title": "", "gap_type": "", "keywords": [], "hypothesis": ""},
+                {
+                    "question": "Q1",
+                    "difficulty": "easy",
+                    "gap_title": "",
+                    "gap_type": "",
+                    "keywords": [],
+                    "hypothesis": "",
+                },
+                {
+                    "question": "Q2",
+                    "difficulty": "medium",
+                    "gap_title": "",
+                    "gap_type": "",
+                    "keywords": [],
+                    "hypothesis": "",
+                },
             ]
         }
         html = self._render(result, [], {})

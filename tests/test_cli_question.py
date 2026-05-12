@@ -45,8 +45,20 @@ class TestQuestionParser:
                 break
         assert action_sub is not None, "No action subparser found"
         # Verify all 9 expected actions exist
-        expected_actions = {"list", "add", "get", "update", "link", "unlink", "delete", "sync", "stats"}
-        assert expected_actions == set(action_sub.keys()), f"Missing actions: {expected_actions - set(action_sub.keys())}"
+        expected_actions = {
+            "list",
+            "add",
+            "get",
+            "update",
+            "link",
+            "unlink",
+            "delete",
+            "sync",
+            "stats",
+        }
+        assert expected_actions == set(action_sub.keys()), (
+            f"Missing actions: {expected_actions - set(action_sub.keys())}"
+        )
         # Verify list subparser has expected arguments
         list_parser = action_sub["list"]
         list_actions = {a.dest: a for a in list_parser._actions}

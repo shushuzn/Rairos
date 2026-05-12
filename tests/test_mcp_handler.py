@@ -137,9 +137,12 @@ class TestToolRouting:
     def test_all_handler_tools_have_impl(self):
         """Every tool routed in handle_call_tool must have a corresponding tool_* function."""
         import rairos_mcp
+
         for name in self.TOOL_NAMES_IN_HANDLER:
             func_name = f"tool_{name}"
-            assert hasattr(rairos_mcp, func_name), f"Missing function: {func_name} for tool '{name}'"
+            assert hasattr(rairos_mcp, func_name), (
+                f"Missing function: {func_name} for tool '{name}'"
+            )
             func = getattr(rairos_mcp, func_name)
             assert callable(func), f"tool_{name} is not callable"
 

@@ -1,4 +1,5 @@
 """Parse vcvarsall output and build with proper env."""
+
 import subprocess
 import os
 import json
@@ -16,12 +17,14 @@ with open(env_script, "w") as f:
 cmd = [vcvars, "x64", "&&", "python", env_script]
 full_cmd = '"' + vcvars + '" x64 && python "' + env_script + '"'
 
-result = subprocess.run(full_cmd, shell=True, capture_output=True, text=True, timeout=30, cwd=workdir)
+result = subprocess.run(
+    full_cmd, shell=True, capture_output=True, text=True, timeout=30, cwd=workdir
+)
 
 # Parse env from output
 env = None
 for line in result.stdout.splitlines():
-    if line.startswith('ENVJSON'):
+    if line.startswith("ENVJSON"):
         env = json.loads(line[7:])
         break
 
@@ -32,13 +35,13 @@ if not env:
     sys.exit(1)
 
 # Print key paths
-for k in ['INCLUDE', 'LIB', 'PATH']:
+for k in ["INCLUDE", "LIB", "PATH"]:
     if k in env:
         print(f"{k}={env[k][:300]}")
 
 # Now run cargo with this environment
 env_clean = {}
-for k in ['INCLUDE', 'LIB', 'PATH', 'SYSTEMROOT', 'TEMP', 'TMP', 'USERPROFILE']:
+for k in ["INCLUDE", "LIB", "PATH", "SYSTEMROOT", "TEMP", "TMP", "USERPROFILE"]:
     if k in env:
         env_clean[k] = env[k]
 
@@ -49,10 +52,7 @@ for k, v in os.environ.items():
 
 print("\n=== Running cargo build ===")
 cargo_result = subprocess.run(
-    ['cargo', 'build', '--package', 'rairos-core'],
-    cwd=workdir,
-    env=env_clean,
-    timeout=600
+    ["cargo", "build", "--package", "rairos-core"], cwd=workdir, env=env_clean, timeout=600
 )
 
 # Clean up

@@ -41,6 +41,7 @@ def jaccard(a: List[str], b: List[str]) -> float:
         return 0.0
     return len(s_a & s_b) / len(s_a | s_b)
 
+
 _jaccard = jaccard  # backward compatibility alias
 
 

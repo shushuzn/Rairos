@@ -49,6 +49,7 @@ Generate a concise strategic research survey."""
 
 # ─── Survey Generation ─────────────────────────────────────────────────────────
 
+
 def _gap_sort_key(gap: dict) -> tuple:
     """Sort gaps: HIGH severity first, then by novelty_score desc."""
     sev_rank = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
@@ -66,9 +67,7 @@ def _build_gap_list(scored_gaps: list) -> str:
         gap_type = g.get("gap_type", "unknown")
         title = g.get("title", "Untitled")[:80]
         gene_score = f"{g.get('gene_pool_score', 0.0):.2f}"
-        lines.append(
-            f"- [{sev}] ({gap_type}) novelty={novelty} gp_score={gene_score} | {title}"
-        )
+        lines.append(f"- [{sev}] ({gap_type}) novelty={novelty} gp_score={gene_score} | {title}")
     return "\n".join(lines) if lines else "No gaps found."
 
 
@@ -120,14 +119,19 @@ def generate_research_survey(
     llm_markdown: str | None = None
     try:
         import os as _os
+
         try:
             from llm.chat import call_llm_chat_completions
         except ImportError:
             from llm.client import call_llm_chat_completions
 
         llm_markdown = call_llm_chat_completions(
-            base_url=base_url or _os.getenv("OPENAI_BASE_URL", "") or "https://api.minimaxi.chat/v1",
-            api_key=api_key or _os.getenv("MINIMAX_API_KEY", "") or _os.getenv("OPENAI_API_KEY", ""),
+            base_url=base_url
+            or _os.getenv("OPENAI_BASE_URL", "")
+            or "https://api.minimaxi.chat/v1",
+            api_key=api_key
+            or _os.getenv("MINIMAX_API_KEY", "")
+            or _os.getenv("OPENAI_API_KEY", ""),
             model=model or _os.getenv("LLM_MODEL", "") or "MiniMax-M2.7",
             system_prompt=_SURVEY_SYSTEM_PROMPT,
             user_prompt=user_prompt,
@@ -152,9 +156,7 @@ def generate_research_survey(
         pref = "✓" if g.get("preference_boost") else ""
         gap_type = g.get("gap_type", "unknown")
         title = g.get("title", "Untitled")[:70]
-        gap_rows.append(
-            f"| {sev_badge(sev)} | {gap_type} | {novelty} | {gp} | {pref} | {title} |"
-        )
+        gap_rows.append(f"| {sev_badge(sev)} | {gap_type} | {novelty} | {gp} | {pref} | {title} |")
     gap_table = "\n".join(gap_rows)
 
     # Gap type distribution
@@ -162,10 +164,15 @@ def generate_research_survey(
     type_dist = "\n".join(type_lines) if type_lines else "—"
 
     # Severity distribution
-    sev_lines = [f"- **{sev_badge(s)}**: {c}" for s, c in
-                 [("HIGH", sev_counts.get("HIGH", 0)),
-                  ("MEDIUM", sev_counts.get("MEDIUM", 0)),
-                  ("LOW", sev_counts.get("LOW", 0))] if c > 0]
+    sev_lines = [
+        f"- **{sev_badge(s)}**: {c}"
+        for s, c in [
+            ("HIGH", sev_counts.get("HIGH", 0)),
+            ("MEDIUM", sev_counts.get("MEDIUM", 0)),
+            ("LOW", sev_counts.get("LOW", 0)),
+        ]
+        if c > 0
+    ]
     sev_dist = "\n".join(sev_lines) if sev_lines else "—"
 
     # If LLM succeeded, merge its content

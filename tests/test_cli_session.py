@@ -1,4 +1,5 @@
 """Tests for session command — parser and subcommand functions."""
+
 import argparse
 from unittest.mock import MagicMock
 

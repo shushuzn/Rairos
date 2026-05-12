@@ -1,6 +1,5 @@
 """Tests for parsers/crossref.py — CrossRef API metadata fetcher."""
 
-
 from parsers.crossref import (
     _best_effort_date_from_crossref,
     _authors_from_crossref,
@@ -12,6 +11,7 @@ from parsers.crossref import (
 
 
 # ─── _best_effort_date_from_crossref ─────────────────────────────────────────
+
 
 class TestBestEffortDateFromCrossref:
     def _call(self, item):
@@ -38,11 +38,16 @@ class TestBestEffortDateFromCrossref:
         assert self._call(item) == ""
 
     def test_empty_date_parts_dict_skips_to_empty(self):
-        item = {"issued": {}}  # date-parts is {}, not a list, so key is skipped; no more keys -> returns ""
+        item = {
+            "issued": {}
+        }  # date-parts is {}, not a list, so key is skipped; no more keys -> returns ""
         assert self._call(item) == ""
 
     def test_prefers_published_over_issued(self):
-        item = {"published": {"date-parts": [[2021, 3, 1]]}, "issued": {"date-parts": [[2020, 1, 1]]}}
+        item = {
+            "published": {"date-parts": [[2021, 3, 1]]},
+            "issued": {"date-parts": [[2020, 1, 1]]},
+        }
         assert self._call(item) == "2021-03-01"
 
     def test_only_created(self):
@@ -59,12 +64,15 @@ class TestBestEffortDateFromCrossref:
 
 # ─── _authors_from_crossref ──────────────────────────────────────────────────
 
+
 class TestAuthorsFromCrossref:
     def _call(self, item):
         return _authors_from_crossref(item)
 
     def test_full_names(self):
-        item = {"author": [{"given": "John", "family": "Doe"}, {"given": "Jane", "family": "Smith"}]}
+        item = {
+            "author": [{"given": "John", "family": "Doe"}, {"given": "Jane", "family": "Smith"}]
+        }
         assert self._call(item) == ["John Doe", "Jane Smith"]
 
     def test_given_only(self):
@@ -98,6 +106,7 @@ class TestAuthorsFromCrossref:
 
 # ─── _title_from_crossref ────────────────────────────────────────────────────
 
+
 class TestTitleFromCrossref:
     def _call(self, item):
         return _title_from_crossref(item)
@@ -129,6 +138,7 @@ class TestTitleFromCrossref:
 
 # ─── _abstract_from_crossref ────────────────────────────────────────────────
 
+
 class TestAbstractFromCrossref:
     def _call(self, item):
         return _abstract_from_crossref(item)
@@ -159,6 +169,7 @@ class TestAbstractFromCrossref:
 
 
 # ─── _try_find_arxiv_id_in_crossref ────────────────────────────────────────
+
 
 class TestTryFindArxivIdInCrossref:
     def _call(self, item, doi):
@@ -197,6 +208,7 @@ class TestTryFindArxivIdInCrossref:
 
 
 # ─── DOI_RESOLVER ────────────────────────────────────────────────────────────
+
 
 class TestDOIRESOLVER:
     def test_doi_resolver_default(self):

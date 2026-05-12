@@ -611,14 +611,31 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
             for p in papers:
                 pid = p["paper_id"]
                 authors = p.get("authors", [])
-                authors_json = orjson.dumps(authors).decode("utf-8") if isinstance(authors, list) else authors
+                authors_json = (
+                    orjson.dumps(authors).decode("utf-8") if isinstance(authors, list) else authors
+                )
                 params = (
-                    pid, source, p.get("title", ""), authors_json, p.get("abstract", ""),
-                    p.get("published", ""), p.get("updated", ""), p.get("abs_url", ""),
-                    p.get("pdf_url", ""), p.get("primary_category", ""), p.get("journal", ""),
-                    p.get("volume", ""), p.get("issue", ""), p.get("page", ""), p.get("doi", ""),
-                    p.get("categories", ""), p.get("reference_count", 0),
-                    now, now, p.get("pdf_path", ""), p.get("pdf_hash", ""),
+                    pid,
+                    source,
+                    p.get("title", ""),
+                    authors_json,
+                    p.get("abstract", ""),
+                    p.get("published", ""),
+                    p.get("updated", ""),
+                    p.get("abs_url", ""),
+                    p.get("pdf_url", ""),
+                    p.get("primary_category", ""),
+                    p.get("journal", ""),
+                    p.get("volume", ""),
+                    p.get("issue", ""),
+                    p.get("page", ""),
+                    p.get("doi", ""),
+                    p.get("categories", ""),
+                    p.get("reference_count", 0),
+                    now,
+                    now,
+                    p.get("pdf_path", ""),
+                    p.get("pdf_hash", ""),
                 )
                 if pid in existing_ids:
                     cur.execute(
@@ -631,15 +648,25 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
                         WHERE id=:id
                         """,
                         {
-                            "id": pid, "t": p.get("title", ""), "a": authors_json,
-                            "ab": p.get("abstract", ""), "p": p.get("published", ""),
-                            "u": p.get("updated", ""), "au": p.get("abs_url", ""),
-                            "pu": p.get("pdf_url", ""), "pc": p.get("primary_category", ""),
-                            "j": p.get("journal", ""), "v": p.get("volume", ""),
-                            "i": p.get("issue", ""), "pg": p.get("page", ""),
-                            "d": p.get("doi", ""), "c": p.get("categories", ""),
-                            "rc": p.get("reference_count", 0), "ua": now,
-                            "pp": p.get("pdf_path", ""), "ph": p.get("pdf_hash", ""),
+                            "id": pid,
+                            "t": p.get("title", ""),
+                            "a": authors_json,
+                            "ab": p.get("abstract", ""),
+                            "p": p.get("published", ""),
+                            "u": p.get("updated", ""),
+                            "au": p.get("abs_url", ""),
+                            "pu": p.get("pdf_url", ""),
+                            "pc": p.get("primary_category", ""),
+                            "j": p.get("journal", ""),
+                            "v": p.get("volume", ""),
+                            "i": p.get("issue", ""),
+                            "pg": p.get("page", ""),
+                            "d": p.get("doi", ""),
+                            "c": p.get("categories", ""),
+                            "rc": p.get("reference_count", 0),
+                            "ua": now,
+                            "pp": p.get("pdf_path", ""),
+                            "ph": p.get("pdf_hash", ""),
                         },
                     )
                     updated += 1
@@ -675,44 +702,61 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         """Upsert a paper-code traceability record. Returns trace id."""
         try:
             cur = self.conn.cursor()
-            cur.execute("SELECT id FROM paper_code_trace WHERE paper_id = ? AND code_path = ?",
-                        (paper_id, code_path))
+            cur.execute(
+                "SELECT id FROM paper_code_trace WHERE paper_id = ? AND code_path = ?",
+                (paper_id, code_path),
+            )
             row = cur.fetchone()
             now = datetime.now(timezone.utc).isoformat()
             if row:
-                cur.execute("""
+                cur.execute(
+                    """
                     UPDATE paper_code_trace SET
                         module_name = ?, framework = ?, total_code_lines = ?,
                         tagged_lines = ?, untagged_ranges = ?,
                         unreferenced_sources = ?, paper_section_refs = ?,
                         gap_ids = ?, benchmark_pass_rate = ?
                     WHERE id = ?
-                """, (
-                    module_name, framework, total_code_lines, tagged_lines,
-                    orjson.dumps(untagged_ranges or []).decode(),
-                    orjson.dumps(unreferenced_sources or []).decode(),
-                    orjson.dumps(paper_section_refs or []).decode(),
-                    orjson.dumps(gap_ids or []).decode(),
-                    benchmark_pass_rate, row["id"]
-                ))
+                """,
+                    (
+                        module_name,
+                        framework,
+                        total_code_lines,
+                        tagged_lines,
+                        orjson.dumps(untagged_ranges or []).decode(),
+                        orjson.dumps(unreferenced_sources or []).decode(),
+                        orjson.dumps(paper_section_refs or []).decode(),
+                        orjson.dumps(gap_ids or []).decode(),
+                        benchmark_pass_rate,
+                        row["id"],
+                    ),
+                )
                 trace_id = row["id"]
             else:
-                cur.execute("""
+                cur.execute(
+                    """
                     INSERT INTO paper_code_trace
                         (paper_id, code_path, module_name, framework,
                          total_code_lines, tagged_lines, untagged_ranges,
                          unreferenced_sources, paper_section_refs,
                          gap_ids, benchmark_pass_rate, created_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    paper_id, code_path, module_name, framework,
-                    total_code_lines, tagged_lines,
-                    orjson.dumps(untagged_ranges or []).decode(),
-                    orjson.dumps(unreferenced_sources or []).decode(),
-                    orjson.dumps(paper_section_refs or []).decode(),
-                    orjson.dumps(gap_ids or []).decode(),
-                    benchmark_pass_rate, now
-                ))
+                """,
+                    (
+                        paper_id,
+                        code_path,
+                        module_name,
+                        framework,
+                        total_code_lines,
+                        tagged_lines,
+                        orjson.dumps(untagged_ranges or []).decode(),
+                        orjson.dumps(unreferenced_sources or []).decode(),
+                        orjson.dumps(paper_section_refs or []).decode(),
+                        orjson.dumps(gap_ids or []).decode(),
+                        benchmark_pass_rate,
+                        now,
+                    ),
+                )
                 trace_id = cur.lastrowid
             return cast(int, trace_id)
         except sqlite3.Error as exc:
@@ -724,14 +768,18 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
             cur = self.conn.cursor()
             cur.execute(
                 "SELECT * FROM paper_code_trace WHERE paper_id = ? ORDER BY created_at DESC",
-                (paper_id,)
+                (paper_id,),
             )
             rows = cur.fetchall()
             result = []
             for row in rows:
                 d = dict(row)
-                for col in ("untagged_ranges", "unreferenced_sources",
-                             "paper_section_refs", "gap_ids"):
+                for col in (
+                    "untagged_ranges",
+                    "unreferenced_sources",
+                    "paper_section_refs",
+                    "gap_ids",
+                ):
                     raw = d.get(col)
                     if raw and isinstance(raw, str):
                         try:
@@ -762,21 +810,30 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
         conn = self.conn
         for gap in gaps:
-            if not getattr(gap, 'accepted', False):
+            if not getattr(gap, "accepted", False):
                 continue
-            title = getattr(gap, 'title', '') or str(gap)
-            gap_type = str(getattr(gap, 'gap_type', '') or '')
+            title = getattr(gap, "title", "") or str(gap)
+            gap_type = str(getattr(gap, "gap_type", "") or "")
             title_hash = hashlib.sha256(title.encode()).hexdigest()[:16]
             gap_hash = hashlib.sha256(f"{topic}{gap_type}{title}".encode()).hexdigest()[:16]
-            novelty = getattr(gap, 'novelty_score', 0.0) or 0.0
-            priority = getattr(gap, 'priority', 0) or 0
+            novelty = getattr(gap, "novelty_score", 0.0) or 0.0
+            priority = getattr(gap, "priority", 0) or 0
             try:
                 conn.execute(
                     """INSERT INTO gap_history
                        (topic, session_id, gap_type, gap_title_hash, gap_title, gap_hash, novelty_score, priority, created_at)
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (topic, session_id, gap_type, title_hash, title, gap_hash,
-                     novelty, priority, now),
+                    (
+                        topic,
+                        session_id,
+                        gap_type,
+                        title_hash,
+                        title,
+                        gap_hash,
+                        novelty,
+                        priority,
+                        now,
+                    ),
                 )
                 count += 1
             except Exception:
@@ -823,12 +880,12 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         new_gaps = []
         suppressed = 0
         for gap in gaps:
-            if not getattr(gap, 'accepted', False):
+            if not getattr(gap, "accepted", False):
                 continue
-            title = getattr(gap, 'title', '') or str(gap)
-            gap_type = str(getattr(gap, 'gap_type', '') or '')
+            title = getattr(gap, "title", "") or str(gap)
+            gap_type = str(getattr(gap, "gap_type", "") or "")
             gap_hash = hashlib.sha256(f"{topic}{gap_type}{title}".encode()).hexdigest()[:16]
-            novelty = getattr(gap, 'novelty_score', 0.0) or 0.0
+            novelty = getattr(gap, "novelty_score", 0.0) or 0.0
 
             is_new = gap_hash not in known_hashes
             is_top_novelty = novelty >= novelty_threshold and novelty > 0.0
@@ -870,14 +927,18 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
                 "SELECT t.*, p.title as paper_title FROM paper_code_trace t "
                 "LEFT JOIN papers p ON t.paper_id = p.id "
                 "ORDER BY t.created_at DESC LIMIT ?",
-                (limit,)
+                (limit,),
             )
             rows = cur.fetchall()
             result = []
             for row in rows:
                 d = dict(row)
-                for col in ("untagged_ranges", "unreferenced_sources",
-                             "paper_section_refs", "gap_ids"):
+                for col in (
+                    "untagged_ranges",
+                    "unreferenced_sources",
+                    "paper_section_refs",
+                    "gap_ids",
+                ):
                     raw = d.get(col)
                     if raw and isinstance(raw, str):
                         try:
@@ -888,7 +949,6 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
             return result
         except sqlite3.Error as exc:
             raise DatabaseError(f"list_paper_code_traces failed: {exc}") from exc
-
 
     # list_papers is defined in the Search section above (with filters + sort)
 

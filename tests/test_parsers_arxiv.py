@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 
-
 class TestLazyImports:
     """Test that lazy import pattern works correctly."""
 
@@ -75,16 +74,12 @@ class TestArxivIdFromInput:
     def test_strips_abs_url_version(self):
         import parsers.arxiv as arxiv_parser
 
-        assert arxiv_parser.arxiv_id_from_input(
-            "http://arxiv.org/abs/2301.00001v3"
-        ) == "2301.00001"
+        assert arxiv_parser.arxiv_id_from_input("http://arxiv.org/abs/2301.00001v3") == "2301.00001"
 
     def test_strips_pdf_url_version(self):
         import parsers.arxiv as arxiv_parser
 
-        assert arxiv_parser.arxiv_id_from_input(
-            "http://arxiv.org/pdf/2301.00001v2"
-        ) == "2301.00001"
+        assert arxiv_parser.arxiv_id_from_input("http://arxiv.org/pdf/2301.00001v2") == "2301.00001"
 
     def test_raw_id_with_version_strips_suffix(self):
         import parsers.arxiv as arxiv_parser
@@ -99,9 +94,10 @@ class TestArxivIdFromInput:
     def test_doi_arxiv_form(self):
         import parsers.arxiv as arxiv_parser
 
-        assert arxiv_parser.arxiv_id_from_input(
-            "http://doi.org/10.48550/arXiv.2601.00155"
-        ) == "2601.00155"
+        assert (
+            arxiv_parser.arxiv_id_from_input("http://doi.org/10.48550/arXiv.2601.00155")
+            == "2601.00155"
+        )
 
     def test_arxiv_capital_prefix(self):
         import parsers.arxiv as arxiv_parser

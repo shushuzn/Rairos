@@ -1,4 +1,5 @@
 """Build all rairos crates with proper MSVC environment."""
+
 import subprocess
 import os
 import json
@@ -14,12 +15,14 @@ with open(env_script, "w") as f:
 # Run vcvarsall then our script
 full_cmd = '"' + vcvars + '" x64 && python "' + env_script + '"'
 
-result = subprocess.run(full_cmd, shell=True, capture_output=True, text=True, timeout=30, cwd=workdir)
+result = subprocess.run(
+    full_cmd, shell=True, capture_output=True, text=True, timeout=30, cwd=workdir
+)
 
 # Parse env from output
 env = None
 for line in result.stdout.splitlines():
-    if line.startswith('ENVJSON'):
+    if line.startswith("ENVJSON"):
         env = json.loads(line[7:])
         break
 
@@ -31,7 +34,7 @@ if not env:
 
 # Build clean env with MSVC paths
 env_clean = {}
-for k in ['INCLUDE', 'LIB', 'PATH', 'SYSTEMROOT', 'TEMP', 'TMP', 'USERPROFILE']:
+for k in ["INCLUDE", "LIB", "PATH", "SYSTEMROOT", "TEMP", "TMP", "USERPROFILE"]:
     if k in env:
         env_clean[k] = env[k]
 
@@ -41,16 +44,20 @@ for k, v in os.environ.items():
 
 # Build all crates
 print("=== Building all crates ===")
-crates = ['rairos-core', 'rairos-parser', 'rairos-llm', 'rairos-cli',
-          'rairos-research', 'rairos-web', 'rairos-kg']
+crates = [
+    "rairos-core",
+    "rairos-parser",
+    "rairos-llm",
+    "rairos-cli",
+    "rairos-research",
+    "rairos-web",
+    "rairos-kg",
+]
 
 for crate in crates:
     print(f"\n--- Building {crate} ---")
     r = subprocess.run(
-        ['cargo', 'build', '--package', crate],
-        cwd=workdir,
-        env=env_clean,
-        timeout=600
+        ["cargo", "build", "--package", crate], cwd=workdir, env=env_clean, timeout=600
     )
     if r.returncode == 0:
         print(f"  {crate}: OK")

@@ -12,12 +12,14 @@ from web.shared import _notification_store
 def _get_global_rep_type_counts() -> Dict[str, int]:
     """Return aggregate representation type counts from the Gene Pool."""
     from llm.gene_pool_io import load_capsules
+
     capsules = load_capsules(gap_type="embodied_planning")
     counts: Dict[str, int] = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
     for c in capsules:
         rt = c.get("representation_type", c.get("action_gap_type", "unknown"))
         counts[rt] = counts.get(rt, 0) + 1
     return counts
+
 
 router = APIRouter()
 

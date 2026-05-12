@@ -252,7 +252,9 @@ class TestSetupObservability:
             root.handlers[:] = original_handlers
             obs._observability_configured = False
 
-    def test_setup_with_log_file(self, monkeypatch: pytest.MonkeyPatch, tmp_path: pytest.TempPathFactory) -> None:
+    def test_setup_with_log_file(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pytest.TempPathFactory
+    ) -> None:
         import core.observability as obs
 
         monkeypatch.setattr(obs, "_observability_configured", False)

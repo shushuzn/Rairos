@@ -70,20 +70,38 @@ class TestCacheEntry:
 
     def test_priority_range(self):
         e1 = CacheEntry(
-            key="k", data=b"d", created_at=1.0, accessed_at=1.0,
-            access_count=0, size_bytes=1, priority=0, compressed=False,
+            key="k",
+            data=b"d",
+            created_at=1.0,
+            accessed_at=1.0,
+            access_count=0,
+            size_bytes=1,
+            priority=0,
+            compressed=False,
         )
         assert e1.priority == 0
         e2 = CacheEntry(
-            key="k", data=b"d", created_at=1.0, accessed_at=1.0,
-            access_count=0, size_bytes=1, priority=100, compressed=False,
+            key="k",
+            data=b"d",
+            created_at=1.0,
+            accessed_at=1.0,
+            access_count=0,
+            size_bytes=1,
+            priority=100,
+            compressed=False,
         )
         assert e2.priority == 100
 
     def test_access_count(self):
         entry = CacheEntry(
-            key="k", data=b"d", created_at=1.0, accessed_at=1.0,
-            access_count=99, size_bytes=1, priority=0, compressed=False,
+            key="k",
+            data=b"d",
+            created_at=1.0,
+            accessed_at=1.0,
+            access_count=99,
+            size_bytes=1,
+            priority=0,
+            compressed=False,
         )
         assert entry.access_count == 99
 

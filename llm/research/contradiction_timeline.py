@@ -59,8 +59,15 @@ class ContradictionEvent:
     """A single contradiction event."""
 
     __slots__ = (
-        "contradiction_key", "gap_type", "field", "paper_a", "paper_b",
-        "polarity_a", "polarity_b", "detected_at", "source",
+        "contradiction_key",
+        "gap_type",
+        "field",
+        "paper_a",
+        "paper_b",
+        "polarity_a",
+        "polarity_b",
+        "detected_at",
+        "source",
     )
 
     def __init__(
@@ -103,9 +110,19 @@ class ContradictionRecord:
     """Aggregated contradiction record from DB."""
 
     __slots__ = (
-        "contradiction_key", "gap_type", "field", "paper_a", "paper_b",
-        "polarity_a", "polarity_b", "first_detected_at", "last_updated_at",
-        "status", "event_count", "resolution_type", "resolution_paper",
+        "contradiction_key",
+        "gap_type",
+        "field",
+        "paper_a",
+        "paper_b",
+        "polarity_a",
+        "polarity_b",
+        "first_detected_at",
+        "last_updated_at",
+        "status",
+        "event_count",
+        "resolution_type",
+        "resolution_paper",
     )
 
     def __init__(
@@ -143,8 +160,12 @@ class ParadigmShiftAlert:
     """Alert when a paradigm shift signal is detected."""
 
     __slots__ = (
-        "alert_type", "gap_type", "message", "contradictions",
-        "severity", "detected_at",
+        "alert_type",
+        "gap_type",
+        "message",
+        "contradictions",
+        "severity",
+        "detected_at",
     )
 
     def __init__(
@@ -200,9 +221,7 @@ def _ensure_schema(conn) -> None:
 # ─── Key computation ──────────────────────────────────────────────────────────
 
 
-def _make_contradiction_key(
-    gap_type: str, field: str, paper_a: str, paper_b: str
-) -> str:
+def _make_contradiction_key(gap_type: str, field: str, paper_a: str, paper_b: str) -> str:
     """Create a stable primary key for a contradiction.
 
     The key is order-independent for paper_a/paper_b.
@@ -377,7 +396,7 @@ def detect_paradigm_shifts(
         (cutoff, min_contradictions),
     ).fetchall()
 
-    for (gt, cnt) in recent:
+    for gt, cnt in recent:
         key_rows = conn.execute(
             "SELECT contradiction_key FROM gap_contradiction_timeline "
             "WHERE gap_type = ? AND first_detected_at >= ?",
@@ -385,11 +404,16 @@ def detect_paradigm_shifts(
         ).fetchall()
         keys = [r[0] for r in key_rows]
 
-        records = conn.execute(
-            "SELECT * FROM gap_contradiction_timeline WHERE contradiction_key IN ("
-            + ",".join("?" * len(keys)) + ")",
-            keys,
-        ).fetchall() if keys else []
+        records = (
+            conn.execute(
+                "SELECT * FROM gap_contradiction_timeline WHERE contradiction_key IN ("
+                + ",".join("?" * len(keys))
+                + ")",
+                keys,
+            ).fetchall()
+            if keys
+            else []
+        )
 
         contradictions = [
             {
@@ -406,16 +430,18 @@ def detect_paradigm_shifts(
             for r in records
         ]
 
-        alerts.append(ParadigmShiftAlert(
-            alert_type="contradiction_cluster",
-            gap_type=str(gt),
-            message=(
-                f"Paradigm tension: {cnt} new contradictions in '{gt}' "
-                f"in the last {window_days} days — field may be contested"
-            ),
-            contradictions=contradictions,
-            severity="high" if cnt >= 5 else "medium",
-        ))
+        alerts.append(
+            ParadigmShiftAlert(
+                alert_type="contradiction_cluster",
+                gap_type=str(gt),
+                message=(
+                    f"Paradigm tension: {cnt} new contradictions in '{gt}' "
+                    f"in the last {window_days} days — field may be contested"
+                ),
+                contradictions=contradictions,
+                severity="high" if cnt >= 5 else "medium",
+            )
+        )
 
     # Signal 2: Polarity reversal (escalated contradictions)
     escalated = conn.execute(
@@ -423,24 +449,28 @@ def detect_paradigm_shifts(
     ).fetchall()
 
     for r in escalated:
-        alerts.append(ParadigmShiftAlert(
-            alert_type="polarity_reversal",
-            gap_type=str(r[1] or ""),
-            message=(
-                f"Polarity reversal in '{r[1]}': "
-                f"{r[5]}/{r[6]} — existing consensus may be breaking"
-            ),
-            contradictions=[{
-                "contradiction_key": str(r[0]),
-                "gap_type": str(r[1] or ""),
-                "paper_a": str(r[3] or ""),
-                "paper_b": str(r[4] or ""),
-                "polarity_a": str(r[5] or "open"),
-                "polarity_b": str(r[6] or "open"),
-                "last_updated_at": str(r[8] or ""),
-            }],
-            severity="medium",
-        ))
+        alerts.append(
+            ParadigmShiftAlert(
+                alert_type="polarity_reversal",
+                gap_type=str(r[1] or ""),
+                message=(
+                    f"Polarity reversal in '{r[1]}': "
+                    f"{r[5]}/{r[6]} — existing consensus may be breaking"
+                ),
+                contradictions=[
+                    {
+                        "contradiction_key": str(r[0]),
+                        "gap_type": str(r[1] or ""),
+                        "paper_a": str(r[3] or ""),
+                        "paper_b": str(r[4] or ""),
+                        "polarity_a": str(r[5] or "open"),
+                        "polarity_b": str(r[6] or "open"),
+                        "last_updated_at": str(r[8] or ""),
+                    }
+                ],
+                severity="medium",
+            )
+        )
 
     return alerts
 
@@ -478,8 +508,5 @@ def summarize_timeline(conn) -> Dict[str, Any]:
         "active": active,
         "escalated": escalated,
         "resolved": resolved,
-        "by_gap_type": [
-            {"gap_type": str(r[0]), "total": r[1], "active": r[2]}
-            for r in by_type
-        ],
+        "by_gap_type": [{"gap_type": str(r[0]), "total": r[1], "active": r[2]} for r in by_type],
     }

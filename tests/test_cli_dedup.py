@@ -1,4 +1,5 @@
 """Tests for cli/cmd/dedup.py _pick_keep function."""
+
 import pytest
 from dataclasses import dataclass
 

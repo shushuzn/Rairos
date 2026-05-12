@@ -152,10 +152,9 @@ def _record_gap_addressing(paper_id: str, title: str, abstract: str) -> None:
 
         # Compute gap_hash for lookup in gap_history
         import hashlib
+
         topic = ""  # topic unknown at this level — use empty, filtered by hash
-        gap_hash = hashlib.sha256(
-            f"{topic}{gap_type}{gap_title}".encode()
-        ).hexdigest()[:16]
+        gap_hash = hashlib.sha256(f"{topic}{gap_type}{gap_title}".encode()).hexdigest()[:16]
 
         record_addressing_event(
             gap_hash=gap_hash,
@@ -2244,6 +2243,7 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
     try:
         # ── Schema validation ────────────────────────────────────────────────
         from mcp.tools_defs import get_tools
+
         tools = {t["name"]: t for t in get_tools()}
         tool_def = tools.get(name)
         if tool_def:
@@ -2275,7 +2275,12 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                         arguments[field] = int(val)
                     except (ValueError, TypeError):
                         return {
-                            "content": [{"type": "text", "text": f"Field '{field}' must be integer, got: {actual}"}],
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": f"Field '{field}' must be integer, got: {actual}",
+                                }
+                            ],
                             "isError": True,
                         }
                 elif expected == "number" and isinstance(val, str):
@@ -2283,7 +2288,12 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                         arguments[field] = float(val)
                     except (ValueError, TypeError):
                         return {
-                            "content": [{"type": "text", "text": f"Field '{field}' must be number, got: {actual}"}],
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": f"Field '{field}' must be number, got: {actual}",
+                                }
+                            ],
                             "isError": True,
                         }
                 elif expected == "boolean" and not isinstance(val, bool):
@@ -2293,7 +2303,12 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                         arguments[field] = bool(val)
                 elif expected == "array" and not isinstance(val, (list, tuple)):
                     return {
-                        "content": [{"type": "text", "text": f"Field '{field}' must be array, got: {actual}"}],
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": f"Field '{field}' must be array, got: {actual}",
+                            }
+                        ],
                         "isError": True,
                     }
 

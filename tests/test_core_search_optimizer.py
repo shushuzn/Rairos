@@ -93,7 +93,11 @@ class TestSearchOptimizer:
 
     def test_get_suggestions_from_history(self):
         opt = SearchOptimizer()
-        opt.search_history = ["machine learning basics", "machine learning advanced", "deep learning"]
+        opt.search_history = [
+            "machine learning basics",
+            "machine learning advanced",
+            "deep learning",
+        ]
         suggestions = opt.get_suggestions("machine")
         assert len(suggestions) <= 5
         assert "machine learning basics" in suggestions

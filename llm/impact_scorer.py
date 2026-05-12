@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Any
 
 
-
 @dataclass
 class ImpactScore:
     """Composite impact score for a paper."""

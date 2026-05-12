@@ -553,8 +553,7 @@ class InsightManager:
         section_text = ""
         if sections:
             section_text = "\n\nPaper sections:\n" + "\n".join(
-                f"[{s.get('title', 'Section')}]\n{s.get('text', '')[:300]}"
-                for s in sections[:5]
+                f"[{s.get('title', 'Section')}]\n{s.get('text', '')[:300]}" for s in sections[:5]
             )
 
         user_prompt = f"Paper: {paper_title}\n\nAbstract: {paper_abstract}\n{section_text}\n\nExtract 5-8 key insights from this paper."
@@ -572,9 +571,11 @@ class InsightManager:
             parts = line[7:].split("|")
             if len(parts) < 3:
                 continue
-            insight_type = parts[0].strip() if parts[0].strip() in (
-                "finding", "method", "limitation", "future_work", "result"
-            ) else "finding"
+            insight_type = (
+                parts[0].strip()
+                if parts[0].strip() in ("finding", "method", "limitation", "future_work", "result")
+                else "finding"
+            )
             content = parts[1].strip()
             tags_raw = parts[2].strip() if len(parts) > 2 else ""
             tags = [t.strip() for t in tags_raw.split(",") if t.strip()]

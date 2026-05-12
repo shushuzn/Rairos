@@ -538,7 +538,9 @@ async def submit_verdict(request: Request):
     for cap in capsules:
         if cap.get("capsule_id", "") == capsule_id:
             tracker = EvolutionTracker()
-            tracker.record_gap_accept(topic=capsule_id, gap_type="queued_capsule", gap_title=capsule_id)
+            tracker.record_gap_accept(
+                topic=capsule_id, gap_type="queued_capsule", gap_title=capsule_id
+            )
             break
 
     return {"success": True}

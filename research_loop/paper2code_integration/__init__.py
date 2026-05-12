@@ -296,6 +296,7 @@ class PaperPipeline:
                         # Build bidirectional trace and persist to DB for provenance queries
                         try:
                             from research_loop.code_trace import code_to_paper_trace
+
                             if code:
                                 trace_data = code_to_paper_trace(code, content)
                                 db = self._get_db()
@@ -311,9 +312,10 @@ class PaperPipeline:
                                         unreferenced_sources=trace_data["unreferenced_sources"],
                                         paper_section_refs=trace_data["paper_section_refs"],
                                         benchmark_pass_rate=(
-                                            benchmark_result.passed /
-                                            (benchmark_result.passed + benchmark_result.failed)
-                                            if (benchmark_result.passed + benchmark_result.failed) > 0
+                                            benchmark_result.passed
+                                            / (benchmark_result.passed + benchmark_result.failed)
+                                            if (benchmark_result.passed + benchmark_result.failed)
+                                            > 0
                                             else 0.0
                                         ),
                                     )
@@ -413,6 +415,7 @@ class PaperPipeline:
         """Get Database instance for lineage tracking."""
         try:
             from db.database import Database
+
             db = Database()
             db.init()
             return db

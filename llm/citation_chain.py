@@ -527,7 +527,9 @@ class CitationChainBuilder:
         seen_pairs: set = set()
         unique = []
         for f in families:
-            pair_key = tuple(sorted([f.ancestor_id, f.papers[1]["paper_id"] if len(f.papers) > 1 else ""]))
+            pair_key = tuple(
+                sorted([f.ancestor_id, f.papers[1]["paper_id"] if len(f.papers) > 1 else ""])
+            )
             if pair_key not in seen_pairs:
                 seen_pairs.add(pair_key)
                 unique.append(f)
@@ -593,7 +595,10 @@ class CitationChainBuilder:
         node_terms: Dict[str, Tuple[Set[str], Set[str]]] = {}
         for node in nodes:
             if node.abstract:
-                node_terms[node.paper_id] = (self._extract_terms(node.abstract), set(node.citations))
+                node_terms[node.paper_id] = (
+                    self._extract_terms(node.abstract),
+                    set(node.citations),
+                )
             else:
                 node_terms[node.paper_id] = (set(), set(node.citations))
 

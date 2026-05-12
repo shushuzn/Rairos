@@ -78,7 +78,13 @@ def stage_citation_analysis(paper: dict) -> dict:
     ]
     print_info(f"  Found : {len(citations)} related papers")
     for cid, title, rel in citations:
-        marker = {"self": "←", "background": "←", "methodology": "├─", "follows": "└─", "improvement": "★"}.get(rel, "?")
+        marker = {
+            "self": "←",
+            "background": "←",
+            "methodology": "├─",
+            "follows": "└─",
+            "improvement": "★",
+        }.get(rel, "?")
         print_info(f"    {marker} {cid}  {title}  [{rel}]")
     return {**paper, "citations": citations}
 
@@ -177,7 +183,7 @@ def run_demo(args: argparse.Namespace) -> int:
     n_papers = getattr(args, "papers", 1) or 1
     for i in range(n_papers):
         if n_papers > 1:
-            print_header(f"  Paper {i+1}/{n_papers}")
+            print_header(f"  Paper {i + 1}/{n_papers}")
         paper = stage_ingest(paper)
         paper = stage_parse(paper)
         stage_citation_analysis(paper)

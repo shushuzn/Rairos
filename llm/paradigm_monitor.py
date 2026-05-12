@@ -86,19 +86,26 @@ def check_paradigm_concentration(category: str = "all") -> Dict[str, Any]:
 
         alerts: List[Dict[str, Any]] = []
         if concentration > ALERT_THRESHOLD:
-            alerts.append({
-                "type": "paradigm_concentration",
-                "severity": "high",
-                "message": (
-                    f"{round(concentration * 100)}% of citations in "
-                    f"{category!r} domain cluster around {TOP_N} papers "
-                    f"(threshold: {round(ALERT_THRESHOLD * 100)}%). "
-                    "Consider diversifying reading to reduce generalization gap risk."
-                ),
-                "top_papers": [r[0] for r in top_n],
-            })
+            alerts.append(
+                {
+                    "type": "paradigm_concentration",
+                    "severity": "high",
+                    "message": (
+                        f"{round(concentration * 100)}% of citations in "
+                        f"{category!r} domain cluster around {TOP_N} papers "
+                        f"(threshold: {round(ALERT_THRESHOLD * 100)}%). "
+                        "Consider diversifying reading to reduce generalization gap risk."
+                    ),
+                    "top_papers": [r[0] for r in top_n],
+                }
+            )
 
-        return {"categories": categories, "alerts": alerts, "total_papers": len(rows), "total_citations": total_citations}
+        return {
+            "categories": categories,
+            "alerts": alerts,
+            "total_papers": len(rows),
+            "total_citations": total_citations,
+        }
     except Exception:
         return {"categories": [], "alerts": [], "error": "db unavailable"}
     finally:
@@ -125,9 +132,9 @@ def render_html(data: Dict[str, Any]) -> str:
             parts.append(
                 f'<div style="background:#fff3cd;border:1px solid #ffc107;'
                 f'border-radius:6px;padding:12px;margin-bottom:12px;font-size:13px">'
-                f'<strong>⚠️ Paradigm Concentration Alert</strong><br>'
-                f'{alert.get("message", "")}'
-                f'</div>'
+                f"<strong>⚠️ Paradigm Concentration Alert</strong><br>"
+                f"{alert.get('message', '')}"
+                f"</div>"
             )
 
     if categories:
@@ -135,8 +142,8 @@ def render_html(data: Dict[str, Any]) -> str:
         for i, cat in enumerate(categories, 1):
             rows.append(
                 f'<tr><td style="padding:6px 12px">{i}</td>'
-                f'<td style="padding:6px 12px">{cat.get("title","")}</td>'
-                f'<td style="padding:6px 12px;text-align:center">{cat.get("share_pct","")}%</td></tr>'
+                f'<td style="padding:6px 12px">{cat.get("title", "")}</td>'
+                f'<td style="padding:6px 12px;text-align:center">{cat.get("share_pct", "")}%</td></tr>'
             )
         parts.append(
             '<table style="width:100%;border-collapse:collapse;font-size:13px">'
@@ -144,7 +151,7 @@ def render_html(data: Dict[str, Any]) -> str:
             '<th style="padding:8px 12px">#</th>'
             '<th style="padding:8px 12px;text-align:left">Paper</th>'
             '<th style="padding:8px 12px;text-align:center">Citation Share</th>'
-            '</tr>' + "".join(rows) + '</table>'
+            "</tr>" + "".join(rows) + "</table>"
         )
 
     return "".join(parts)

@@ -615,4 +615,3 @@ class BenchmarkComparator:
                 for rank, (pid, val, model) in enumerate(match.entries, 1)
             ]
         return json.dumps(output, indent=2, ensure_ascii=False)
-

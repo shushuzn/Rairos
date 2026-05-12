@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 
-
 def test_get_client_returns_singleton():
     """Multiple calls to _get_client() return the same instance."""
     import parsers.semantic_scholar as s2

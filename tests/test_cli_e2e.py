@@ -103,7 +103,9 @@ def _seed_search_db(db_path: Path, papers: list[dict]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _run_cli(argv: list[str], timeout: int = 60, env: dict | None = None) -> subprocess.CompletedProcess:
+def _run_cli(
+    argv: list[str], timeout: int = 60, env: dict | None = None
+) -> subprocess.CompletedProcess:
     """Run the CLI via subprocess and return the result."""
     cmd = [str(PYTHON_BIN), "-m", "cli"] + argv
     base_env = dict(os.environ)
@@ -124,6 +126,7 @@ def _run_cli(argv: list[str], timeout: int = 60, env: dict | None = None) -> sub
 # ---------------------------------------------------------------------------
 # Test 1: rairos search  (seeded temp DB)
 # ---------------------------------------------------------------------------
+
 
 def test_search_returns_json_results(tmp_db_path):
     """'rairos search' should query the seeded DB and return matching papers as JSON."""
@@ -240,6 +243,7 @@ def test_search_csv_format(tmp_db_path):
 # Test 2: rairos cite-graph  (cite command — mocked DB BFS in-process)
 # ---------------------------------------------------------------------------
 
+
 def test_cite_graph_db_mode_returns_text():
     """'rairos cite-graph run --paper <id>' should render citation graph from DB."""
     mock_nodes = {
@@ -279,9 +283,7 @@ def test_cite_graph_json_format():
     mock_edges = []
 
     with patch("cli.cmd.cite_graph._db_citation_bfs", return_value=(mock_nodes, mock_edges)):
-        proc = _run_cli(
-            ["cite-graph", "run", "--paper", "arXiv:2301.00001", "--format", "json"]
-        )
+        proc = _run_cli(["cite-graph", "run", "--paper", "arXiv:2301.00001", "--format", "json"])
 
     assert proc.returncode == 0
     output = json.loads(proc.stdout)
@@ -292,6 +294,7 @@ def test_cite_graph_json_format():
 # ---------------------------------------------------------------------------
 # Test 3: rairos daemon --help  (verify it starts / parses correctly)
 # ---------------------------------------------------------------------------
+
 
 def test_daemon_help_shows_usage():
     """'rairos daemon --help' should exit 0 and list subcommands."""
@@ -319,6 +322,7 @@ def test_daemon_unknown_subcommand_exits_nonzero():
 # Test 4: rairos doctor  (local checks only — no network / no mock needed)
 # ---------------------------------------------------------------------------
 
+
 def test_doctor_runs_without_errors():
     """'rairos doctor' should execute all local checks and exit 0 (no issues)
     or exit 1 (issues found) — but must NOT crash.
@@ -342,7 +346,7 @@ def test_doctor_produces_expected_sections():
 
     output = proc.stdout + proc.stderr
     # The doctor command prints section headers in rich format
-    assert ("Python" in output or "Executables" in output or "Summary" in output), (
+    assert "Python" in output or "Executables" in output or "Summary" in output, (
         f"Unexpected doctor output:\n{output}"
     )
     assert "Traceback" not in proc.stderr
@@ -351,6 +355,7 @@ def test_doctor_produces_expected_sections():
 # ---------------------------------------------------------------------------
 # Test 5: Invalid / unknown subcommand
 # ---------------------------------------------------------------------------
+
 
 def test_unknown_subcommand_exits_nonzero():
     """An unknown subcommand should result in a non-zero exit code."""
@@ -365,6 +370,7 @@ def test_unknown_subcommand_exits_nonzero():
 # ---------------------------------------------------------------------------
 # Test 6: search with table format (default)
 # ---------------------------------------------------------------------------
+
 
 def test_search_table_format_shows_results(tmp_db_path):
     """'rairos search' (default table format) should display paper titles."""

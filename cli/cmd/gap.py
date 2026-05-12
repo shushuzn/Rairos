@@ -830,7 +830,6 @@ def _collect_gap_feedback(topic: str, gaps, tracker: EvolutionTracker) -> None:
     and these signals feed back into gap_type_preferences.
     """
 
-
     if not gaps:
         print("  (无 gaps 可反馈)")
         return

@@ -1,4 +1,5 @@
 """Tests for core/i18n.py internationalization."""
+
 import pytest
 import os
 

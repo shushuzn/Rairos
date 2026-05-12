@@ -1,4 +1,5 @@
 """doctor command — diagnose environment and report issues."""
+
 from __future__ import annotations
 
 import argparse

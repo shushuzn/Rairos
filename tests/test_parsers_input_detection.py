@@ -7,6 +7,7 @@ from parsers.input_detection import is_probably_doi, normalize_doi, normalize_ar
 # is_probably_doi
 # =============================================================================
 
+
 class TestIsProbablyDoi:
     def test_bare_doi(self):
         assert is_probably_doi("10.1234/test.article")
@@ -42,6 +43,7 @@ class TestIsProbablyDoi:
 # =============================================================================
 # normalize_doi
 # =============================================================================
+
 
 class TestNormalizeDoi:
     def test_bare_doi(self):
@@ -82,6 +84,7 @@ class TestNormalizeDoi:
 # =============================================================================
 # normalize_arxiv_id
 # =============================================================================
+
 
 class TestNormalizeArxivId:
     # ---- New-style numeric ID (YYMM.NNNNN) ---------------------------------

@@ -125,21 +125,26 @@ def _entry_to_paper(e) -> Paper:
         doi=doi,
     )
 
+
 # ─── ArXiv Search Cache ────────────────────────────────────────────────────────
 
 _CACHE_TTL = timedelta(hours=24)
 
+
 def _get_cache_db():
     """Get a DB connection for cache (lazy init to avoid import cycles)."""
     from db.database import Database
+
     db = Database()
     db.init()
     return db
+
 
 def _query_hash(query: str) -> str:
     """Normalize and hash a query for cache key."""
     normalized = " ".join(query.lower().split())
     return hashlib.sha256(normalized.encode()).hexdigest()[:32]
+
 
 def _paper_to_dict(paper) -> dict:
     """Serialize a Paper object to dict for JSON storage."""
@@ -157,14 +162,19 @@ def _paper_to_dict(paper) -> dict:
         "categories": paper.categories,
     }
 
+
 def _dict_to_paper(d: dict):
     """Restore a Paper object from dict (e.g. from cache)."""
     from dataclasses import fields as _fields
     from core import Paper
+
     valid = {f.name for f in _fields(Paper)}
     return Paper(**{k: v for k, v in d.items() if k in valid})
 
-def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl_hours: int = 24) -> List:
+
+def search_arxiv_cached(
+    query: str, max_results: int = 5, timeout: int = 30, ttl_hours: int = 24
+) -> List:
     """Cached arXiv search.
 
     1. Check local SQLite cache for this query
@@ -213,7 +223,11 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
     except RuntimeError as e:
         error_msg = str(e)
         # 429 or network error → try stale cache
-        if "429" in error_msg or "timeout" in error_msg.lower() or "connection" in error_msg.lower():
+        if (
+            "429" in error_msg
+            or "timeout" in error_msg.lower()
+            or "connection" in error_msg.lower()
+        ):
             if row:
                 # Return stale cache (even if expired)
                 results = json.loads(row[0])  # type: ignore[arg-type]

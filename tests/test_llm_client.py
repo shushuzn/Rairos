@@ -108,6 +108,7 @@ class TestCacheStats:
     def _reset_cache(self):
         """Reset module-level cache counters and cache files before each test."""
         from llm.client import reset_cache_stats, clear_llm_cache
+
         clear_llm_cache()
         reset_cache_stats()
         yield

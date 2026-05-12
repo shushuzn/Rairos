@@ -1,6 +1,5 @@
 """Tests for llm/research/gap_configs.py — Q1-Q10 GAP_ANALYZER_CONFIGS."""
 
-
 from llm.research.gap_configs import GAP_ANALYZER_CONFIGS
 
 

@@ -101,7 +101,6 @@ class DeepResearchResult:
     status: str  # completed | paused | failed
 
 
-
 class _AdaptiveQueryStrategy:
     """Adaptive query planning: evolve search strategy based on gap coverage.
 
@@ -110,12 +109,22 @@ class _AdaptiveQueryStrategy:
     weight future query construction.
     """
 
-    ALL_GAP_TYPES = frozenset([
-        "capability", "improvement", "contradiction",
-        "assumption", "extension", "baseline_gap",
-        "evaluation_gap", "reproducibility_gap", "embodied_planning",
-        "rl_pretraining", "scaling_laws", "reasoning",
-    ])
+    ALL_GAP_TYPES = frozenset(
+        [
+            "capability",
+            "improvement",
+            "contradiction",
+            "assumption",
+            "extension",
+            "baseline_gap",
+            "evaluation_gap",
+            "reproducibility_gap",
+            "embodied_planning",
+            "rl_pretraining",
+            "scaling_laws",
+            "reasoning",
+        ]
+    )
 
     def __init__(self, topic: str):
         self.topic = topic
@@ -131,7 +140,11 @@ class _AdaptiveQueryStrategy:
             return
         found_types = set()
         for g in gaps:
-            gt = g.gap_type if isinstance(g.gap_type, str) else str(getattr(g.gap_type, 'value', g.gap_type))
+            gt = (
+                g.gap_type
+                if isinstance(g.gap_type, str)
+                else str(getattr(g.gap_type, "value", g.gap_type))
+            )
             found_types.add(gt)
             self._gap_type_counts[gt] = self._gap_type_counts.get(gt, 0) + 1
             self._total_gaps += 1
@@ -142,8 +155,7 @@ class _AdaptiveQueryStrategy:
         if self._total_gaps == 0:
             return {gt: 0.0 for gt in self.ALL_GAP_TYPES}
         return {
-            gt: self._gap_type_counts.get(gt, 0) / self._total_gaps
-            for gt in self.ALL_GAP_TYPES
+            gt: self._gap_type_counts.get(gt, 0) / self._total_gaps for gt in self.ALL_GAP_TYPES
         }
 
     def under_represented_types(self, threshold: float = 0.15) -> list[str]:
@@ -200,8 +212,14 @@ class _AdaptiveQueryStrategy:
         # Case 3: latest gap context — normalize unknown types to "improvement"
         if latest_gap_type == "Contradiction":
             return f"{self.topic} {latest_gap_title} disagreement"
-        elif latest_gap_type in ("improvement", "capability", "extension",
-                                  "Missing", "Unknown", ""):
+        elif latest_gap_type in (
+            "improvement",
+            "capability",
+            "extension",
+            "Missing",
+            "Unknown",
+            "",
+        ):
             return f"{self.topic} {latest_gap_title} improvement"
         elif latest_gap_title:
             return f"{self.topic} {latest_gap_title}"
@@ -217,7 +235,6 @@ class _AdaptiveQueryStrategy:
         intersection = words1 & words2
         union = words1 | words2
         return len(intersection) / len(union) if union else 0.0
-
 
 
 class DeepResearchAgent:
@@ -482,8 +499,8 @@ class DeepResearchAgent:
         if self.on_thought:
             self.on_thought(role, content, iteration)
         # Real-time streaming print for every thought (typewriter effect)
-        prefix = f'[[36m{role.upper():10s}[0m] '
-        self._stream_print(f'iter{iteration} | {content}', prefix=prefix)
+        prefix = f"[[36m{role.upper():10s}[0m] "
+        self._stream_print(f"iter{iteration} | {content}", prefix=prefix)
 
     def _call_mcp_tool(self, name: str, arguments: Dict[str, Any]) -> Any:
         """Dispatch an MCP tool call by name.
@@ -732,7 +749,9 @@ class DeepResearchAgent:
                     from research_loop.core import Paper
 
                     for p in result["papers"][: self.max_papers_per_iteration]:
-                        self._stream_print(f'  + {p.get("arxiv_id","?")}: {p.get("title","")[:60]}', prefix="")
+                        self._stream_print(
+                            f"  + {p.get('arxiv_id', '?')}: {p.get('title', '')[:60]}", prefix=""
+                        )
                         papers.append(
                             Paper(
                                 uid=p.get("arxiv_id", ""),
@@ -794,7 +813,7 @@ class DeepResearchAgent:
             )
 
             snapshots.append(snapshot)
-            self._stream_print(f'  ✓ {paper.uid}: {paper.title[:55]}', prefix="")
+            self._stream_print(f"  ✓ {paper.uid}: {paper.title[:55]}", prefix="")
             # Store in DB
             self.db.upsert_paper(
                 paper_id=paper.uid,
@@ -858,7 +877,10 @@ class DeepResearchAgent:
                             matched_papers=[s.arxiv_id for s in snapshots],
                             archetype_match=match_score,
                         )
-                        self._stream_print(f'  ◆ [{g.get("gap_type","?").upper()}] {g.get("title","")[:55]}', prefix="")
+                        self._stream_print(
+                            f"  ◆ [{g.get('gap_type', '?').upper()}] {g.get('title', '')[:55]}",
+                            prefix="",
+                        )
                         gap_snapshots.append(gs)
                     self._record_thought(
                         "analyzer",

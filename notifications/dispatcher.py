@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 class NotificationType(Enum):
-    GAP_ALERT = "gap_alert"          # New high-novelty gap discovered
+    GAP_ALERT = "gap_alert"  # New high-novelty gap discovered
     PARADIGM_SHIFT = "paradigm_shift"  # Paradigm shift alert detected
     PAPER_INGESTED = "paper_ingested"  # New paper added to DB
     RESEARCH_COMPLETE = "research_complete"  # Deep research round finished
@@ -96,9 +96,9 @@ class DiscordRenderer:
 
     # Severity → Discord color (integer)
     SEVERITY_COLORS = {
-        "high": 0xFF4444,      # Red
-        "medium": 0xFFAA00,   # Orange
-        "low": 0x44FF44,      # Green
+        "high": 0xFF4444,  # Red
+        "medium": 0xFFAA00,  # Orange
+        "low": 0x44FF44,  # Green
     }
 
     GAP_TYPE_COLORS = {
@@ -137,28 +137,34 @@ class DiscordRenderer:
         ]
 
         if payload.confidence > 0:
-            fields.append({
-                "name": "Confidence",
-                "value": f"{int(payload.confidence * 100)}%",
-                "inline": True,
-            })
+            fields.append(
+                {
+                    "name": "Confidence",
+                    "value": f"{int(payload.confidence * 100)}%",
+                    "inline": True,
+                }
+            )
 
         if payload.impact_score > 0:
-            fields.append({
-                "name": "Impact Score",
-                "value": f"{payload.impact_score:.2f}",
-                "inline": True,
-            })
+            fields.append(
+                {
+                    "name": "Impact Score",
+                    "value": f"{payload.impact_score:.2f}",
+                    "inline": True,
+                }
+            )
 
         if payload.supporting_papers:
             papers_str = ", ".join(payload.supporting_papers[:3])
             if len(payload.supporting_papers) > 3:
                 papers_str += f" +{len(payload.supporting_papers) - 3} more"
-            fields.append({
-                "name": "Supporting Papers",
-                "value": papers_str,
-                "inline": False,
-            })
+            fields.append(
+                {
+                    "name": "Supporting Papers",
+                    "value": papers_str,
+                    "inline": False,
+                }
+            )
 
         embed: Dict[str, Any] = {
             "title": f"🔬 {payload.title[:256]}",
@@ -203,16 +209,20 @@ class DiscordRenderer:
 
         if payload.contradictions:
             c = payload.contradictions[0]
-            embed["fields"].append({
-                "name": "Sample Contradiction",
-                "value": f"Paper A: `{c.get('paper_a', '?')[:32]}`\nPaper B: `{c.get('paper_b', '?')[:32]}`",
-                "inline": False,
-            })
+            embed["fields"].append(
+                {
+                    "name": "Sample Contradiction",
+                    "value": f"Paper A: `{c.get('paper_a', '?')[:32]}`\nPaper B: `{c.get('paper_b', '?')[:32]}`",
+                    "inline": False,
+                }
+            )
 
         return {"embeds": [embed]}
 
     @classmethod
-    def render_paper_ingested(cls, paper_title: str, arxiv_id: str, tags: List[str]) -> Dict[str, Any]:
+    def render_paper_ingested(
+        cls, paper_title: str, arxiv_id: str, tags: List[str]
+    ) -> Dict[str, Any]:
         """Render a paper ingestion notification."""
         embed: Dict[str, Any] = {
             "title": f"📄 {paper_title[:256]}",
@@ -225,11 +235,13 @@ class DiscordRenderer:
         }
 
         if tags:
-            embed["fields"].append({
-                "name": "Tags",
-                "value": " ".join(f"`{t}`" for t in tags[:8]),
-                "inline": False,
-            })
+            embed["fields"].append(
+                {
+                    "name": "Tags",
+                    "value": " ".join(f"`{t}`" for t in tags[:8]),
+                    "inline": False,
+                }
+            )
 
         return {"embeds": [embed]}
 
@@ -262,32 +274,38 @@ class FeishuRenderer:
         ]
 
         if payload.confidence > 0:
-            elements.append({
-                "tag": "markdown",
-                "content": f"**Confidence:** {int(payload.confidence * 100)}%",
-            })
+            elements.append(
+                {
+                    "tag": "markdown",
+                    "content": f"**Confidence:** {int(payload.confidence * 100)}%",
+                }
+            )
 
         if payload.impact_score > 0:
-            elements.append({
-                "tag": "markdown",
-                "content": f"**Impact Score:** {payload.impact_score:.2f}",
-            })
+            elements.append(
+                {
+                    "tag": "markdown",
+                    "content": f"**Impact Score:** {payload.impact_score:.2f}",
+                }
+            )
 
         if payload.supporting_papers:
-            papers_md = "\n".join(
-                f"- `{pid}`" for pid in payload.supporting_papers[:5]
+            papers_md = "\n".join(f"- `{pid}`" for pid in payload.supporting_papers[:5])
+            elements.append(
+                {
+                    "tag": "markdown",
+                    "content": f"**Supporting Papers:**\n{papers_md}",
+                }
             )
-            elements.append({
-                "tag": "markdown",
-                "content": f"**Supporting Papers:**\n{papers_md}",
-            })
 
-        elements.append({
-            "tag": "note",
-            "elements": [
-                {"tag": "plain_text", "content": f"Source: {payload.source}"},
-            ],
-        })
+        elements.append(
+            {
+                "tag": "note",
+                "elements": [
+                    {"tag": "plain_text", "content": f"Source: {payload.source}"},
+                ],
+            }
+        )
 
         return {
             "msg_type": "interactive",
@@ -363,8 +381,7 @@ class WebhookDispatcher:
                 return True
 
             logger.warning(
-                f"Webhook POST to {self.label} returned {resp.status_code}: "
-                f"{resp.text[:200]}"
+                f"Webhook POST to {self.label} returned {resp.status_code}: {resp.text[:200]}"
             )
             return False
 
@@ -449,17 +466,23 @@ class WebhookDispatcher:
         if self.platform == Platform.DISCORD:
             rendered = DiscordRenderer.render_paper_ingested(paper_title, arxiv_id, tags or [])
         elif self.platform == Platform.FEISHU:
-            rendered = self._render_generic("paper_ingested", {
-                "title": paper_title,
-                "arxiv_id": arxiv_id,
-                "tags": tags or [],
-            })
+            rendered = self._render_generic(
+                "paper_ingested",
+                {
+                    "title": paper_title,
+                    "arxiv_id": arxiv_id,
+                    "tags": tags or [],
+                },
+            )
         else:
-            rendered = self._render_generic("paper_ingested", {
-                "title": paper_title,
-                "arxiv_id": arxiv_id,
-                "tags": tags or [],
-            })
+            rendered = self._render_generic(
+                "paper_ingested",
+                {
+                    "title": paper_title,
+                    "arxiv_id": arxiv_id,
+                    "tags": tags or [],
+                },
+            )
 
         return self._send_payload(rendered)
 
@@ -517,10 +540,14 @@ class NotificationCenter:
         return {d.label: d.send_gap_alert(**kwargs) for d in self._dispatchers if d.webhook_url}
 
     def send_paradigm_shift(self, **kwargs) -> Dict[str, bool]:
-        return {d.label: d.send_paradigm_shift(**kwargs) for d in self._dispatchers if d.webhook_url}
+        return {
+            d.label: d.send_paradigm_shift(**kwargs) for d in self._dispatchers if d.webhook_url
+        }
 
     def send_paper_ingested(self, **kwargs) -> Dict[str, bool]:
-        return {d.label: d.send_paper_ingested(**kwargs) for d in self._dispatchers if d.webhook_url}
+        return {
+            d.label: d.send_paper_ingested(**kwargs) for d in self._dispatchers if d.webhook_url
+        }
 
     def test_all(self) -> Dict[str, bool]:
         return {d.label: d.test() for d in self._dispatchers if d.webhook_url}

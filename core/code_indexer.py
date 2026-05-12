@@ -8,6 +8,7 @@ import os
 import re
 import threading
 import urllib.request
+
 MAX_EMBEDDINGS_CACHE = 1000  # Bound to prevent unbounded memory growth
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -363,6 +364,7 @@ class CodeIndexer:
     def _keyword_search(self, query: str, limit: int) -> List[CodeChunk]:
         """Fallback keyword search using jieba."""
         import jieba
+
         query_tokens = set(jieba.cut(query.lower()))
         query_tokens = {t for t in query_tokens if len(t) >= 2 and t not in _STOPWORDS}
 

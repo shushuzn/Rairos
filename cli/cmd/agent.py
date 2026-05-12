@@ -440,7 +440,6 @@ def _list_checkpoints(args) -> int:
     )
     print("-" * 60)
 
-
     for ck in checkpoints:
         import datetime
 

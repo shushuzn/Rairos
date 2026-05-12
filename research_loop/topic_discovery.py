@@ -41,13 +41,13 @@ logger = logging.getLogger(__name__)
 class TopicSuggestion:
     """A suggested new subscription topic."""
 
-    topic: str               # e.g. "scaling laws for reasoning"
-    source: str             # 'gap_cluster' | 'gap_type_trend' | 'paper_keyword' | 'gap_subscription_map'
-    confidence: float       # 0.0–1.0
-    reason: str             # human-readable explanation
-    gap_type: str = ""      # associated gap type if applicable
+    topic: str  # e.g. "scaling laws for reasoning"
+    source: str  # 'gap_cluster' | 'gap_type_trend' | 'paper_keyword' | 'gap_subscription_map'
+    confidence: float  # 0.0–1.0
+    reason: str  # human-readable explanation
+    gap_type: str = ""  # associated gap type if applicable
     keywords: List[str] = field(default_factory=list)
-    cluster_id: str = ""     # if from gap cluster
+    cluster_id: str = ""  # if from gap cluster
     novelty_score: float = 0.0  # average novelty of source gaps
 
 
@@ -61,12 +61,42 @@ def _extract_keywords_from_text(texts: List[str], top_n: int = 10) -> List[tuple
     Filters out generic academic terms.
     """
     generic = {
-        "paper", "work", "method", "approach", "result", "experiment",
-        "performance", "show", "propose", "state-of-the-art", "sota",
-        "baseline", "existing", "current", "recent", "new", "novel",
-        "task", "problem", "model", "data", "dataset", "training",
-        "evaluation", "benchmark", "learning", "system", "framework",
-        "the", "and", "for", "with", "from", "that", "this", "are",
+        "paper",
+        "work",
+        "method",
+        "approach",
+        "result",
+        "experiment",
+        "performance",
+        "show",
+        "propose",
+        "state-of-the-art",
+        "sota",
+        "baseline",
+        "existing",
+        "current",
+        "recent",
+        "new",
+        "novel",
+        "task",
+        "problem",
+        "model",
+        "data",
+        "dataset",
+        "training",
+        "evaluation",
+        "benchmark",
+        "learning",
+        "system",
+        "framework",
+        "the",
+        "and",
+        "for",
+        "with",
+        "from",
+        "that",
+        "this",
+        "are",
     }
 
     # Split into tokens
@@ -105,9 +135,7 @@ def _from_gap_clusters(
         if len(gaps) < 2:
             continue
 
-        avg_novelty = sum(
-            getattr(g, "novelty_score", 0.0) or 0.0 for g in gaps
-        ) / len(gaps)
+        avg_novelty = sum(getattr(g, "novelty_score", 0.0) or 0.0 for g in gaps) / len(gaps)
 
         if avg_novelty < thresholdNovelty:
             continue
@@ -126,19 +154,21 @@ def _from_gap_clusters(
         # Extract keywords for subscription
         subscription_keywords = [k for k, _ in keywords[:5]]
 
-        suggestions.append(TopicSuggestion(
-            topic=topic,
-            source="gap_cluster",
-            confidence=min(1.0, avg_novelty * 1.2),
-            reason=(
-                f"Hot cluster: {len(gaps)} gaps (avg novelty={avg_novelty:.2f}). "
-                f"Top: {titles[0][:60]}"
-            ),
-            gap_type=gap_type,
-            keywords=subscription_keywords,
-            cluster_id=cluster_id,
-            novelty_score=avg_novelty,
-        ))
+        suggestions.append(
+            TopicSuggestion(
+                topic=topic,
+                source="gap_cluster",
+                confidence=min(1.0, avg_novelty * 1.2),
+                reason=(
+                    f"Hot cluster: {len(gaps)} gaps (avg novelty={avg_novelty:.2f}). "
+                    f"Top: {titles[0][:60]}"
+                ),
+                gap_type=gap_type,
+                keywords=subscription_keywords,
+                cluster_id=cluster_id,
+                novelty_score=avg_novelty,
+            )
+        )
 
     return suggestions
 
@@ -160,10 +190,14 @@ def _from_gap_type_trends(
         return suggestions
 
     for gap_type in rising_types:
-        type_gaps = [g for g in gaps if (
-            getattr(g, "gap_type", "") == gap_type or
-            (hasattr(g.gap_type, "value") and g.gap_type.value == gap_type)
-        )]
+        type_gaps = [
+            g
+            for g in gaps
+            if (
+                getattr(g, "gap_type", "") == gap_type
+                or (hasattr(g.gap_type, "value") and g.gap_type.value == gap_type)
+            )
+        ]
 
         if len(type_gaps) < threshold_count:
             continue
@@ -172,15 +206,18 @@ def _from_gap_type_trends(
         keywords = _extract_keywords_from_text(titles, top_n=5)
         topic = _phrase_suggestion_from_keywords(keywords) or f"rising {gap_type} research"
 
-        suggestions.append(TopicSuggestion(
-            topic=topic,
-            source="gap_type_trend",
-            confidence=0.6,
-            reason=f"Gap type '{gap_type}' is trending ({len(type_gaps)} recent gaps)",
-            gap_type=gap_type,
-            keywords=[k for k, _ in keywords[:4]],
-            novelty_score=sum(getattr(g, "novelty_score", 0.0) or 0.0 for g in type_gaps) / len(type_gaps),
-        ))
+        suggestions.append(
+            TopicSuggestion(
+                topic=topic,
+                source="gap_type_trend",
+                confidence=0.6,
+                reason=f"Gap type '{gap_type}' is trending ({len(type_gaps)} recent gaps)",
+                gap_type=gap_type,
+                keywords=[k for k, _ in keywords[:4]],
+                novelty_score=sum(getattr(g, "novelty_score", 0.0) or 0.0 for g in type_gaps)
+                / len(type_gaps),
+            )
+        )
 
     return suggestions
 
@@ -216,13 +253,15 @@ def _from_paper_keywords(
         if covered:
             continue
 
-        suggestions.append(TopicSuggestion(
-            topic=f"{keyword} research",
-            source="paper_keyword",
-            confidence=min(0.9, freq / 10.0 + 0.3),
-            reason=f"'{keyword}' appears in {freq} recent papers but has no subscription",
-            keywords=[keyword],
-        ))
+        suggestions.append(
+            TopicSuggestion(
+                topic=f"{keyword} research",
+                source="paper_keyword",
+                confidence=min(0.9, freq / 10.0 + 0.3),
+                reason=f"'{keyword}' appears in {freq} recent papers but has no subscription",
+                keywords=[keyword],
+            )
+        )
 
     return suggestions[:5]
 
@@ -291,18 +330,20 @@ def _from_gap_subscription_map(
             getattr(g, "novelty_score", 0.0) or 0.0 for g in type_gaps[gap_type]
         ) / len(type_gaps[gap_type])
 
-        suggestions.append(TopicSuggestion(
-            topic=topic,
-            source="gap_subscription_map",
-            confidence=min(0.8, avg_novelty + 0.2),
-            reason=(
-                f"Gap type '{gap_type}' has {count} gaps but no subscription. "
-                f"Mapped from known gap-type patterns."
-            ),
-            gap_type=gap_type,
-            keywords=mapped_keywords[:3],
-            novelty_score=avg_novelty,
-        ))
+        suggestions.append(
+            TopicSuggestion(
+                topic=topic,
+                source="gap_subscription_map",
+                confidence=min(0.8, avg_novelty + 0.2),
+                reason=(
+                    f"Gap type '{gap_type}' has {count} gaps but no subscription. "
+                    f"Mapped from known gap-type patterns."
+                ),
+                gap_type=gap_type,
+                keywords=mapped_keywords[:3],
+                novelty_score=avg_novelty,
+            )
+        )
 
     return suggestions
 
@@ -377,9 +418,7 @@ class TopicDiscoverer:
                 seen_topics[key] = s
 
         # Sort by confidence desc
-        sorted_suggestions = sorted(
-            seen_topics.values(), key=lambda x: x.confidence, reverse=True
-        )
+        sorted_suggestions = sorted(seen_topics.values(), key=lambda x: x.confidence, reverse=True)
 
         return sorted_suggestions[:max_suggestions]
 
@@ -394,11 +433,14 @@ class TopicDiscoverer:
 
         try:
             keywords_str = ", ".join(suggestion.keywords[:5])
-            sub_id = cast(int, self.db.add_arxiv_subscription(
-                topic=suggestion.topic,
-                categories="",
-                keywords=keywords_str,
-            ))
+            sub_id = cast(
+                int,
+                self.db.add_arxiv_subscription(
+                    topic=suggestion.topic,
+                    categories="",
+                    keywords=keywords_str,
+                ),
+            )
             logger.info(f"Created subscription [{sub_id}]: {suggestion.topic}")
             return sub_id
         except Exception as e:

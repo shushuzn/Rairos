@@ -22,6 +22,7 @@ class TestMigrationType:
         # Migration is a type alias; check it's used correctly
         # The actual migrations are functions matching the signature
         from db.migrate import _m1_add_citations_and_tables
+
         assert callable(_m1_add_citations_and_tables)
 
 

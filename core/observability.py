@@ -419,7 +419,7 @@ class MetricsCollector:
                     n = len(sorted_vals)
                     for boundary, _bucket_label in [(0.5, "0.5"), (0.95, "0.95"), (0.99, "0.99")]:
                         idx = int(n * boundary) if int(n * boundary) < n else n - 1
-                        lines.append(f'{key}_bucket{boundary} {sorted_vals[idx]} {int(ts * 1000)}')
+                        lines.append(f"{key}_bucket{boundary} {sorted_vals[idx]} {int(ts * 1000)}")
                     lines.append(f"{key}_sum {sum(sorted_vals)} {int(ts * 1000)}")
                     lines.append(f"{key}_count {n} {int(ts * 1000)}")
         return "\n".join(lines)
@@ -429,10 +429,7 @@ class MetricsCollector:
         with self._lock:
             counters = dict(self._counters)
             gauges = dict(self._gauges)
-            histograms = {
-                k: self.histogram_stats(*k.split(".", 1))
-                for k in self._histograms
-            }
+            histograms = {k: self.histogram_stats(*k.split(".", 1)) for k in self._histograms}
         return {
             "counters": counters,
             "gauges": gauges,
@@ -452,6 +449,7 @@ def get_metrics() -> MetricsCollector:
 
 def track_duration(subsystem: str, metric_name: Optional[str] = None) -> Callable:
     """Decorator to track function duration as a histogram metric."""
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -467,7 +465,9 @@ def track_duration(subsystem: str, metric_name: Optional[str] = None) -> Callabl
             else:
                 duration = time.perf_counter() - start
                 _metrics.observe(subsystem, f"{name}.duration", duration)
+
         return wrapper
+
     return decorator
 
 
@@ -572,4 +572,6 @@ def setup_observability(
     for noisy in ("urllib3", "requests", "httpx", "aiohttp", "asyncio"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    get_logger("observability").info("observability_configured", log_level=level, json_logs=json_logs)
+    get_logger("observability").info(
+        "observability_configured", log_level=level, json_logs=json_logs
+    )

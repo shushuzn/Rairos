@@ -22,7 +22,9 @@ class RetryStats:
         self._stats: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.Lock()
 
-    def record_attempt(self, func_name: str, attempt: int, success: bool, error: Exception | str | None = None) -> None:  # type: ignore[assignment]
+    def record_attempt(
+        self, func_name: str, attempt: int, success: bool, error: Exception | str | None = None
+    ) -> None:  # type: ignore[assignment]
         """Record a retry attempt."""
         with self._lock:
             if func_name not in self._stats:
@@ -134,7 +136,9 @@ def retry(
             # Re-raise the last exception with original traceback
             if last_exc is not None:
                 raise last_exc from last_exc.__cause__
-            raise RuntimeError("retry exhausted all attempts without capturing an exception") from None
+            raise RuntimeError(
+                "retry exhausted all attempts without capturing an exception"
+            ) from None
 
         return wrapper
 

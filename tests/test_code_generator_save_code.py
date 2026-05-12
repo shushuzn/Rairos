@@ -10,7 +10,6 @@ Covers:
 import ast
 
 
-
 class TestSaveCodePlainTextPreamble:
     """Regression: MiniMax model outputs plain-text description before Python code."""
 
