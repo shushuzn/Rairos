@@ -10,6 +10,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from typing import Any, cast
 
 from cli._shared import get_db, print_info, print_error, print_success
 from cli.warp import WarpBlocks
@@ -190,15 +191,16 @@ def _run_list(args: argparse.Namespace, comparator: BenchmarkComparator) -> int:
     # Group by paper, count benchmark-like
     from collections import defaultdict
 
-    paper_stats: dict = defaultdict(lambda: {"total": 0, "benchmark": 0, "benchmarks": []})
+    paper_stats: dict = defaultdict(lambda: {"total": 0, "benchmark": 0, "benchmarks": []})  # type: ignore[var-annotated]
     for t in tables:
-        stats = paper_stats[t.paper_id]
+        _t = cast(Any, t)
+        stats = paper_stats[_t.paper_id]
         stats["total"] += 1
-        if comparator._is_benchmark_like(t):
+        if comparator._is_benchmark_like(_t):
             stats["benchmark"] += 1
             from llm.benchmark import _guess_benchmark_name
 
-            name = _guess_benchmark_name(t.table_caption, t.headers)
+            name = _guess_benchmark_name(_t.table_caption, _t.headers)
             if name not in stats["benchmarks"]:
                 stats["benchmarks"].append(name)
 

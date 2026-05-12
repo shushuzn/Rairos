@@ -12,7 +12,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, cast
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -299,7 +299,7 @@ def visual_query(paper_id: str, page: int, keyword: str, format: str):
     """Query stored tables from database."""
     db = Database()
     try:
-        tables = db.get_experiment_tables(paper_id)
+        tables = cast(List["ExperimentTableRecord"], db.get_experiment_tables(paper_id))
 
         if not tables:
             print_error(f"No tables found for paper: {paper_id}")
@@ -415,7 +415,7 @@ def visual_export(paper_id: str, output: str, format: str, page: int, keyword: s
     """Export stored tables to a file."""
     db = Database()
     try:
-        tables = db.get_experiment_tables(paper_id)
+        tables = cast(List["ExperimentTableRecord"], db.get_experiment_tables(paper_id))
 
         if not tables:
             print_error(f"No tables found for paper: {paper_id}")

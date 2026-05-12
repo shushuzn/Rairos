@@ -137,29 +137,29 @@ def _work_to_paper_record(work: dict, source: str = "openalex") -> Optional["Pap
     elif isinstance(topics, dict):
         topic_ids = topics.get("display_name", "") or ""
 
-    return PaperRecord(
-        id=paper_id,
-        source=source,
-        title=work.get("title", "") or "",
-        authors=authors,
-        abstract="",
-        published=year,
-        updated="",
-        abs_url=landing,
-        pdf_url=best_oa.get("pdf_url") or "",
-        primary_category="",
-        journal=work.get("host_venue", {}).get("display_name", "")
+    return PaperRecord({
+        "id": paper_id,
+        "source": source,
+        "title": work.get("title", "") or "",
+        "authors": authors,
+        "abstract": "",
+        "published": year,
+        "updated": "",
+        "abs_url": landing,
+        "pdf_url": best_oa.get("pdf_url") or "",
+        "primary_category": "",
+        "journal": work.get("host_venue", {}).get("display_name", "")
         if isinstance(work.get("host_venue"), dict)
         else "",
-        volume="",
-        issue="",
-        page="",
-        doi=ids.get("doi", "") or "",
-        categories=topic_ids,
-        reference_count=work.get("referenced_works_count", 0),
-        pdf_path="",
-        pdf_hash="",
-    )
+        "volume": "",
+        "issue": "",
+        "page": "",
+        "doi": ids.get("doi", "") or "",
+        "categories": topic_ids,
+        "reference_count": work.get("referenced_works_count", 0),
+        "pdf_path": "",
+        "pdf_hash": "",
+    })
 
 
 def _build_cite_fetch_parser(subparsers) -> argparse.ArgumentParser:

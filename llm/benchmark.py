@@ -16,7 +16,7 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, cast
 
 from db.database import Database, ExperimentTableRecord
 
@@ -338,7 +338,7 @@ class BenchmarkComparator:
 
     def detect_tables(self, paper_id: str) -> List[BenchmarkTable]:
         """Detect benchmark-like tables from a paper's experiment_tables."""
-        tables = self.db.get_experiment_tables(paper_id)
+        tables = cast(List["ExperimentTableRecord"], self.db.get_experiment_tables(paper_id))
         result = []
 
         for tbl in tables:

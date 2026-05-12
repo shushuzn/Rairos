@@ -15,7 +15,7 @@ import struct
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from rairos_db_py import PyDatabase
 
@@ -94,57 +94,64 @@ class PaperRecord:
     def __init__(self, data: dict):
         self._data = data
 
+    @classmethod
+    def from_row(cls, row: Any) -> "PaperRecord":
+        """Create PaperRecord from a sqlite3.Row (or any dict-like)."""
+        if isinstance(row, dict):
+            return cls(dict(row))
+        return cls(dict(zip([c[0] for c in row.cursor_description], row)))
+
     @property
     def id(self) -> str:
-        return self._data.get("id", "")
+        return self._data.get("id", "")  # type: ignore[no-any-return]
 
     @property
     def paper_id(self) -> str:
-        return self._data.get("paper_id") or self._data.get("id", "")
+        return self._data.get("paper_id") or self._data.get("id", "")  # type: ignore[no-any-return]
 
     @property
     def title(self) -> str:
-        return self._data.get("title", "")
+        return self._data.get("title", "")  # type: ignore[no-any-return]
 
     @property
     def authors(self) -> List[str]:
-        return self._data.get("authors", [])
+        return self._data.get("authors", [])  # type: ignore[no-any-return]
 
     @property
     def abstract(self) -> str:
-        return self._data.get("abstract", "")
+        return self._data.get("abstract", "")  # type: ignore[no-any-return]
 
     @property
     def published(self) -> str:
-        return self._data.get("published", "")
+        return self._data.get("published", "")  # type: ignore[no-any-return]
 
     @property
     def updated(self) -> str:
-        return self._data.get("updated", "")
+        return self._data.get("updated", "")  # type: ignore[no-any-return]
 
     @property
     def source(self) -> str:
-        return self._data.get("source", "")
+        return self._data.get("source", "")  # type: ignore[no-any-return]
 
     @property
     def parse_status(self) -> str:
-        return self._data.get("parse_status", "")
+        return self._data.get("parse_status", "")  # type: ignore[no-any-return]
 
     @property
     def primary_category(self) -> str:
-        return self._data.get("primary_category", "")
+        return self._data.get("primary_category", "")  # type: ignore[no-any-return]
 
     @property
     def added_at(self) -> str:
-        return self._data.get("added_at", "")
+        return self._data.get("added_at", "")  # type: ignore[no-any-return]
 
     @property
     def abs_url(self) -> str:
-        return self._data.get("abs_url", "")
+        return self._data.get("abs_url", "")  # type: ignore[no-any-return]
 
     @property
     def pdf_url(self) -> str:
-        return self._data.get("pdf_url", "")
+        return self._data.get("pdf_url", "")  # type: ignore[no-any-return]
 
     def __getitem__(self, key: str) -> Any:
         return self._data.get(key)
@@ -169,23 +176,23 @@ class SearchResult:
 
     @property
     def paper_id(self) -> str:
-        return self._data.get("paper_id", "")
+        return self._data.get("paper_id", "")  # type: ignore[no-any-return]
 
     @property
     def id(self) -> str:
-        return self._data.get("paper_id", "")
+        return self._data.get("paper_id", "")  # type: ignore[no-any-return]
 
     @property
     def title(self) -> str:
-        return self._data.get("title", "")
+        return self._data.get("title", "")  # type: ignore[no-any-return]
 
     @property
     def score(self) -> float:
-        return self._data.get("score", 0.0)
+        return self._data.get("score", 0.0)  # type: ignore[no-any-return]
 
     @property
     def snippet(self) -> str:
-        return self._data.get("snippet", "")
+        return self._data.get("snippet", "")  # type: ignore[no-any-return]
 
     def __getattr__(self, name: str) -> Any:
         return self._data.get(name)
@@ -390,11 +397,11 @@ class Database:
         except Exception:
             pass  # FTS virtual table may not exist
         self._conn.commit()
-        return self._inner.delete_paper(paper_id)
+        return self._inner.delete_paper(paper_id)  # type: ignore[no-any-return]
 
     def paper_exists(self, paper_id: str) -> bool:
         """Check if a paper exists."""
-        return self._inner.paper_exists(paper_id)
+        return self._inner.paper_exists(paper_id)  # type: ignore[no-any-return]
 
     # -------------------------------------------------------------------------
     # Search
@@ -684,11 +691,11 @@ class Database:
             # Papers not yet in mirror are implicitly pending
             missing = max(0, rust_total - self._conn.execute("SELECT COUNT(*) FROM papers").fetchone()[0])
             if status == "pending":
-                return mirror_count + missing
-            return mirror_count
+                return mirror_count + missing  # type: ignore[no-any-return]
+            return mirror_count  # type: ignore[no-any-return]
         else:
             rust_total = self._inner.get_stats().get("total_papers", 0)
-            return rust_total
+            return rust_total  # type: ignore[no-any-return]
 
     def get_stats(self) -> dict:
         """Return database statistics."""
@@ -870,7 +877,7 @@ class Database:
     ) -> str:
         """Export papers in specified format (stub JSON)."""
         papers = self.get_papers_bulk(paper_ids)
-        return json.dumps([p._data for p in papers], ensure_ascii=False)
+        return json.dumps([papers[pid]._data for pid in paper_ids], ensure_ascii=False)
 
     # Chat sessions
 
@@ -1045,16 +1052,16 @@ class Database:
 
     def get_citations(
         self, paper_id: str, direction: str = "outgoing", **kwargs
-    ) -> List[dict]:
+    ) -> List[CitationRecord]:
         """Get citations for a paper."""
         if direction == "from":
-            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")
+            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")  # type: ignore[misc]
                     for i, c in enumerate(self._citations) if c["source_id"] == paper_id]
         elif direction == "to":
-            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")
+            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")  # type: ignore[misc]
                     for i, c in enumerate(self._citations) if c["target_id"] == paper_id]
         else:
-            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")
+            return [CitationRecord(id=i, source_id=c["source_id"], target_id=c["target_id"], created_at="")  # type: ignore[misc]
                     for i, c in enumerate(self._citations) if c["source_id"] == paper_id or c["target_id"] == paper_id]
 
     def get_citation_count(self, paper_id: str) -> dict[str, int]:
@@ -1375,7 +1382,7 @@ class _LegacyCursor:
                 self._last = None
                 return _MockResult()
             self._last = self._conn.execute(query, params)
-            self._cols = [d[0] for d in self._last.description] if self._last.description else []
+            self._cols = [d[0] for d in self._last.description] if self._last and self._last.description else []
             return self
         else:
             # INSERT/UPDATE/DELETE — route through mirror only
