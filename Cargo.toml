@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/rairos-db-py",
     "crates/rairos-core",
     "crates/rairos-cli",
     "crates/rairos-scout",

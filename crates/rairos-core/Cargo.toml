@@ -3,6 +3,9 @@ name = "rairos-core"
 version = "0.1.0"
 edition = "2021"
 
+[dev-dependencies]
+tempfile = "3"
+
 [dependencies]
 rusqlite = { version = "0.32", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }

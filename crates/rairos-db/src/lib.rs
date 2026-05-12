@@ -289,6 +289,16 @@ impl Database {
         Ok(())
     }
 
+    /// Delete all papers and embeddings (for test isolation).
+    pub fn clear_all(&self) -> Result<()> {
+        self.with_conn(|conn| {
+            conn.execute("DELETE FROM papers", [])?;
+            conn.execute("DELETE FROM embeddings", [])?;
+            Ok(())
+        })?;
+        Ok(())
+    }
+
     /// Execute a transaction.
     #[allow(dead_code)]
     pub fn transaction<T, F>(&self, f: F) -> Result<T>
@@ -1589,6 +1599,10 @@ mod py_bindings {
             map.insert("queue_queued".to_string(), stats.queue_queued);
             map.insert("queue_running".to_string(), stats.queue_running);
             Ok(map)
+        }
+
+        fn clear_all(&self) -> PyResult<()> {
+            self.inner.clear_all().map_err(db_err_to_py)
         }
     }
 
