@@ -260,6 +260,13 @@ class Database:
         path_str = str(self._db_path) if self._db_path else ":memory:"
         conn = sqlite3.connect(path_str)
         conn.execute("PRAGMA journal_mode=WAL")
+        # Drop Rust-created tables that conflict with _SCHEMA definitions.
+        # Rust PyDatabase uses different table schemas (e.g. tags(id,name) vs
+        # our tags(paper_id,tag)). CREATE TABLE IF NOT EXISTS won't fix this.
+        for tbl in ("tags", "paper_tags", "paper_cache", "dedup_log",
+                    "citations", "experiment_tables", "paper_code_trace",
+                    "gap_history", "arxiv_search_cache"):
+            conn.execute(f"DROP TABLE IF EXISTS {tbl}")
         # Execute full schema (regular tables only; FTS5 needs special handling)
         conn.executescript(_SCHEMA)
         # FTS5 virtual table must be created outside transaction
@@ -421,7 +428,20 @@ class Database:
         return PaperRecord(json.loads(result))
 
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
-        """Get a paper by ID."""
+        """Get a paper by ID. Checks local mirror first (most up-to-date)."""
+        # Check local mirror first — it has the latest parse_status etc.
+        row = self._conn.execute("SELECT * FROM papers WHERE id = ?", (paper_id,)).fetchone()
+        if row:
+            cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
+            d = dict(zip(cols, row))
+            for field in ("authors", "latex_blocks"):
+                if d.get(field):
+                    try:
+                        d[field] = json.loads(d[field])
+                    except Exception:
+                        pass
+            return PaperRecord(d)
+        # Fall back to Rust (initial insert source)
         result = self._inner.get_paper(paper_id)
         if result is None:
             return None
