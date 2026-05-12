@@ -97,7 +97,7 @@ class TestFTS5Insert:
         # Check existing state
         r_all, t_all = db.search_papers("deep")
         if t_all > 0:
-            for r in r_all:
+            for _r in r_all:
                 pass
         db.upsert_paper("2312.00002", "arxiv", title="Machine Learning")
         db.upsert_paper("2312.00002", "arxiv", title="Deep Learning")
@@ -128,8 +128,8 @@ class TestSearchPapersQuery:
 
     def test_search_returns_snippet(self, db):
         # Check what's already in the Rust DB
-        cur = db._conn.execute("SELECT COUNT(*) FROM papers").fetchone()
-        cur2 = db._conn.execute("SELECT COUNT(*) FROM papers_fts").fetchone()
+        db._conn.execute("SELECT COUNT(*) FROM papers").fetchone()
+        db._conn.execute("SELECT COUNT(*) FROM papers_fts").fetchone()
         r_before, t_before = db.search_papers("neural")
         db.upsert_paper("2312.00006", "arxiv", title="Deep Neural Networks")
         results, total = db.search_papers("neural")
