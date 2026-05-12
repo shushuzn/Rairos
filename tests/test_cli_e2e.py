@@ -121,6 +121,7 @@ def _run_cli(
 def test_search_returns_json_results(tmp_db_path):
     """'rairos search' should query the seeded DB and return matching papers as JSON."""
     import os
+
     papers = [
         {
             "id": "arXiv:2301.00001",
@@ -151,6 +152,7 @@ def test_search_returns_json_results(tmp_db_path):
 
     # Verify seed worked from THIS process
     import rairos_db_py
+
     py_db_seed = rairos_db_py.PyDatabase(str(tmp_db_path))
     py_db_seed.init_()
     py_db_seed.get_paper("arXiv:2301.00001")
@@ -163,6 +165,7 @@ def test_search_returns_json_results(tmp_db_path):
     )
     # Verify file has content AFTER CLI ran
     import rairos_db_py
+
     py_verify = rairos_db_py.PyDatabase(str(tmp_db_path))
     py_verify.init_()
     py_verify.get_paper("arXiv:2301.00001")
