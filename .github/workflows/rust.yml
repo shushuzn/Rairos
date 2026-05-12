@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'crates/**'
+      - 'benches/**'
       - 'Cargo.toml'
   pull_request:
     branches: [main]
     paths:
       - 'crates/**'
+      - 'benches/**'
       - 'Cargo.toml'
 
 jobs:
@@ -73,3 +75,38 @@ jobs:
 
       - name: Show sccache stats
         run: sccache --show-stats
+
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Build benchmarks
+        run: cargo bench --no-run --workspace
+
+      - name: Run benchmarks
+        run: cargo bench --workspace 2>&1 | tee benchmark_output.txt
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-results
+          path: benchmark_output.txt
+          retention-days: 7
