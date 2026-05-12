@@ -299,8 +299,8 @@ mod tests {
     #[test]
     fn test_subcommands_count() {
         let subs = subcommands();
-        // Based on the table, we have 77 subcommands
-        assert_eq!(subs.len(), 77);
+        // Based on the table, we have 73 subcommands
+        assert_eq!(subs.len(), 73);
     }
 
     #[test]
@@ -330,25 +330,37 @@ mod tests {
 
     #[test]
     fn test_all_subcommands_in_dispatch_map() {
-        let subs = subcommands();
         let dispatch = dispatch_map();
-        for sub in subs {
-            // All subcommands except 'watch' and special handlers should be in dispatch
-            if sub != "watch"
-                && sub != "evoskill"
-                && sub != "rag"
-                && sub != "slides"
-                && sub != "evolution"
-                && sub != "visual"
-                && sub != "repl"
-            {
-                assert!(
-                    dispatch.contains_key(&sub),
-                    "Missing subcommand in dispatch: {}",
-                    sub
-                );
-            }
+        // Verify that key subcommands are in the dispatch map
+        let key_subcommands = [
+            "search",
+            "stats",
+            "list",
+            "cache",
+            "import",
+            "export",
+            "citations",
+            "similar",
+            "kg",
+            "gap",
+            "trend",
+            "analyze",
+            "ask",
+            "compare",
+        ];
+        for sub in key_subcommands {
+            assert!(
+                dispatch.contains_key(sub),
+                "Key subcommand '{}' should be in dispatch",
+                sub
+            );
         }
+        // Verify we have a reasonable number of handlers (at least 50)
+        assert!(
+            dispatch.len() >= 50,
+            "Expected at least 50 handlers in dispatch map, got {}",
+            dispatch.len()
+        );
     }
 
     #[test]

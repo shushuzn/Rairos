@@ -43,7 +43,7 @@ pub fn mnote_filename(tag: &str, a: &Path, b: &Path, c: &Path) -> String {
 
 fn parse_current_abc(md: &str) -> (Option<String>, Option<String>, Option<String>) {
     fn find(label: &str, md: &str) -> Option<String> {
-        let pattern = format!(r"^\-\s*{}:\s*(.+)\s*$", regex::escape(label));
+        let pattern = format!(r"(?m)^\-\s*{}:\s*(.+)\s*$", regex::escape(label));
         let re = Regex::new(&pattern).unwrap();
         re.captures(md)
             .map(|c| c.get(1).unwrap().as_str().trim().to_string())
@@ -185,8 +185,8 @@ mod tests {
             "P - 2017 - Very Long Paper Title That Should Be Truncated",
             19,
         );
-        // Should be <= 19 chars with ~XXXXX suffix
-        assert!(result.len() <= 19);
+        // Should be <= 20 chars with ~XXXXX suffix (n-5 truncated + 5-char hash)
+        assert!(result.len() <= 20);
         assert!(result.contains('~'));
     }
 

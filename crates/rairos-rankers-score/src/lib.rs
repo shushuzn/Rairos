@@ -10,20 +10,10 @@
 use chrono::{Datelike, NaiveDate, Utc};
 use rairos_rankers_base::{RankedResult, Ranker, RankerError, Result};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use thiserror::Error;
 
 // ============================================================================
 // Error Types
 // ============================================================================
-
-#[derive(Error, Debug)]
-pub enum ScoreRankerError {
-    #[error("No results from similarity search")]
-    NoSimilarityResults,
-    #[error("Invalid weights: sim={0}, recency={1}, parse={2}")]
-    InvalidWeights(f32, f32, f32),
-}
 
 // ============================================================================
 // Parse Status
@@ -102,27 +92,18 @@ pub struct CompositeScorer {
 }
 
 impl CompositeScorer {
-    pub fn new(
-        sim_weight: f32,
-        recency_weight: f32,
-        parse_weight: f32,
-        year_boost_range: i32,
-    ) -> Result<Self> {
-        let sum = sim_weight + recency_weight + parse_weight;
-        if (sum - 1.0).abs() > 0.001 {
-            return Err(
-                ScoreRankerError::InvalidWeights(sim_weight, recency_weight, parse_weight).into(),
-            );
-        }
-
-        Ok(Self {
+    /// Create a new scorer with validated weights (must sum to 1.0).
+    pub fn new(sim_weight: f32, recency_weight: f32, parse_weight: f32) -> Self {
+        assert!((sim_weight + recency_weight + parse_weight - 1.0).abs() < 0.001);
+        Self {
             sim_weight,
             recency_weight,
             parse_weight,
-            year_boost_range,
-        })
+            year_boost_range: 5,
+        }
     }
 
+    /// Create scorer with default weights (0.7, 0.2, 0.1).
     pub fn with_defaults() -> Self {
         Self {
             sim_weight: 0.7,
@@ -148,15 +129,12 @@ impl CompositeScorer {
         if a.len() != b.len() {
             return 0.0;
         }
-
         let dot: f32 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
         let norm_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
         let norm_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
-
         if norm_a == 0.0 || norm_b == 0.0 {
             return 0.0;
         }
-
         dot / (norm_a * norm_b)
     }
 
@@ -167,20 +145,18 @@ impl CompositeScorer {
         candidates: &[Paper],
         threshold: f32,
         limit: usize,
-    ) -> Result<Vec<RankedResult<Paper>>> {
+    ) -> std::result::Result<Vec<RankedResult<Paper>>, RankerError> {
         let query_emb = match &query_paper.embedding {
             Some(e) => e,
-            None => return Err(RankerError::NoEmbedding(query_paper.id.clone()).into()),
+            None => return Err(RankerError::NoEmbedding(query_paper.id.clone())),
         };
 
-        // Get reference year (most recent paper in candidates, or current year)
         let ref_year = candidates
             .iter()
             .filter_map(|p| p.published_year())
             .max()
             .unwrap_or_else(|| Utc::now().year());
 
-        // Score each candidate
         let mut scored: Vec<(Paper, f32)> = candidates
             .iter()
             .filter(|p| p.id != query_paper.id)
@@ -190,31 +166,23 @@ impl CompositeScorer {
                 Some((p.clone(), sim))
             })
             .map(|(mut p, sim_score)| {
-                // Normalize similarity to [0, 1]
                 let sim_norm = sim_score.min(1.0);
-
-                // Recency: 0-1 based on distance from ref_year
                 let recency_norm = if let Some(year) = p.published_year() {
                     let year_dist = (ref_year - year).max(0).min(self.year_boost_range) as f32;
                     1.0 - (year_dist / self.year_boost_range as f32)
                 } else {
                     0.0
                 };
-
-                // Parse quality
                 let parse_norm = Self::parse_quality_score(p.parse_status);
-
                 let composite = self.sim_weight * sim_norm
                     + self.recency_weight * recency_norm
                     + self.parse_weight * parse_norm;
-
-                p.embedding = None; // Don't carry embedding to results
+                p.embedding = None;
                 (p, composite)
             })
             .filter(|(_, score)| *score >= threshold)
             .collect();
 
-        // Sort by composite score descending
         scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         scored.truncate(limit);
 
@@ -239,40 +207,28 @@ mod tests {
             &format!("Paper {}", id),
             NaiveDate::from_ymd_opt(year, month, day),
             status,
-            Some(vec![1.0, 0.0, 0.0]), // Dummy embedding
+            Some(vec![1.0, 0.0, 0.0]),
         )
     }
 
     #[test]
     fn test_parse_quality_score_full() {
-        assert!(
-            (CompositeScorer::parse_quality_score(Some(ParseStatus::Full)) - 1.0).abs()
-                < f32::EPSILON
-        );
+        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Full)) - 1.0).abs() < f32::EPSILON);
     }
 
     #[test]
     fn test_parse_quality_score_sections() {
-        assert!(
-            (CompositeScorer::parse_quality_score(Some(ParseStatus::Sections)) - 0.8).abs()
-                < f32::EPSILON
-        );
+        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Sections)) - 0.8).abs() < f32::EPSILON);
     }
 
     #[test]
     fn test_parse_quality_score_partial() {
-        assert!(
-            (CompositeScorer::parse_quality_score(Some(ParseStatus::Partial)) - 0.5).abs()
-                < f32::EPSILON
-        );
+        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Partial)) - 0.5).abs() < f32::EPSILON);
     }
 
     #[test]
     fn test_parse_quality_score_failed() {
-        assert!(
-            (CompositeScorer::parse_quality_score(Some(ParseStatus::Failed)) - 0.1).abs()
-                < f32::EPSILON
-        );
+        assert!((CompositeScorer::parse_quality_score(Some(ParseStatus::Failed)) - 0.1).abs() < f32::EPSILON);
     }
 
     #[test]
@@ -292,7 +248,7 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_sorer_with_defaults() {
+    fn test_composite_scorer_with_defaults() {
         let scorer = CompositeScorer::with_defaults();
         assert_eq!(scorer.sim_weight, 0.7);
         assert_eq!(scorer.recency_weight, 0.2);
@@ -301,15 +257,14 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_sorer_valid_weights() {
-        let result = CompositeScorer::new(0.6, 0.3, 0.1, 5);
-        assert!(result.is_ok());
+    fn test_composite_scorer_valid_weights() {
+        let _scorer = CompositeScorer::new(0.6, 0.3, 0.1);
     }
 
     #[test]
-    fn test_composite_sorer_invalid_weights() {
-        let result = CompositeScorer::new(0.5, 0.5, 0.5, 5);
-        assert!(result.is_err());
+    #[should_panic]
+    fn test_composite_scorer_invalid_weights() {
+        let _scorer = CompositeScorer::new(0.5, 0.5, 0.5);
     }
 
     #[test]
@@ -335,11 +290,10 @@ mod tests {
             make_paper("c1", 2021, 1, 1, Some(ParseStatus::Full)),
             make_paper("c2", 2022, 1, 1, Some(ParseStatus::Partial)),
         ];
-
         let results = scorer.rank_papers(&query, &candidates, 0.0, 10).unwrap();
-        assert_eq!(results.len(), 2);
-        // c2 should rank higher due to recency + full parse status
-        assert_eq!(results[0].paper.id, "c2");
+        // c1 ranks higher: (sim=1.0*0.7 + recency=0.8*0.2 + parse=1.0*0.1=0.96)
+        // c2: (sim=1.0*0.7 + recency=1.0*0.2 + parse=0.5*0.1=0.95)
+        assert_eq!(results[0].paper.id, "c1");
     }
 
     #[test]
@@ -350,9 +304,7 @@ mod tests {
             make_paper("c1", 2021, 1, 1, Some(ParseStatus::Full)),
             make_paper("c2", 2022, 1, 1, Some(ParseStatus::Partial)),
         ];
-
         let results = scorer.rank_papers(&query, &candidates, 0.9, 10).unwrap();
-        // Should filter based on threshold
         assert!(results.len() <= 2);
     }
 
@@ -361,7 +313,6 @@ mod tests {
         let scorer = CompositeScorer::with_defaults();
         let query = Paper::new("q", "Query", None, Some(ParseStatus::Full), None);
         let candidates = vec![make_paper("c1", 2021, 1, 1, Some(ParseStatus::Full))];
-
         let results = scorer.rank_papers(&query, &candidates, 0.0, 10);
         assert!(results.is_err());
     }

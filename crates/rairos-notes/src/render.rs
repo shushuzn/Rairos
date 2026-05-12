@@ -3,7 +3,7 @@
 use crate::frontmatter::Frontmatter;
 use regex::Regex;
 
-const RE_TITLE: &str = r"^#\s+(.+)$";
+const RE_TITLE: &str = r"(?m)^#\s+(.+)$";
 const RE_SOURCE: &str = r"\*\*Source:\*\*\s+(\w+):\s+(\S+)";
 
 pub struct PnoteMetadata {

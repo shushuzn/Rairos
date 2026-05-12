@@ -27,6 +27,11 @@ impl Frontmatter {
         let re_key = Regex::new(r#"^\s*([A-Za-z0-9_\-]+)\s*:\s*(.*)\s*$"#).unwrap();
         let re_list_item = Regex::new(r#"^\s+-\s+(.*)\s*$"#).unwrap();
 
+        // Skip opening ------------------ delimiter if present
+        if lines.first().map(|l| l.trim() == "------------------").unwrap_or(false) {
+            i = 1;
+        }
+
         while i < lines.len() {
             let line = lines[i];
             if line.trim() == "------------------" {

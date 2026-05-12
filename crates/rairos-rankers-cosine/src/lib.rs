@@ -8,19 +8,6 @@
 use ndarray::arr1;
 use rairos_rankers_base::{RankedResult, Ranker, RankerError, Result};
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
-
-// ============================================================================
-// Error Types
-// ============================================================================
-
-#[derive(Error, Debug)]
-pub enum CosineRankerError {
-    #[error("Embedding error: {0}")]
-    Embedding(String),
-    #[error("Vector operation error: {0}")]
-    VectorOp(String),
-}
 
 // ============================================================================
 // Paper (simplified for this crate)
@@ -51,24 +38,13 @@ impl Paper {
 ///
 /// Uses ndarray for batch vector operations — O(n) scan with all similarity
 /// computation happening in a single vectorized pass.
-pub struct CosineSimilarityRanker<P>
-where
-    P: Clone,
-{
-    papers: Vec<P>,
-    get_embedding: fn(&P) -> Option<Vec<f32>>,
+pub struct CosineSimilarityRanker {
+    papers: Vec<Paper>,
 }
 
-impl<P> CosineSimilarityRanker<P>
-where
-    P: Clone,
-{
-    /// Create a new CosineSimilarityRanker
-    pub fn new(papers: Vec<P>, get_embedding: fn(&P) -> Option<Vec<f32>>) -> Self {
-        Self {
-            papers,
-            get_embedding,
-        }
+impl CosineSimilarityRanker {
+    pub fn new(papers: Vec<Paper>) -> Self {
+        Self { papers }
     }
 
     /// Compute cosine similarity between two vectors
@@ -91,47 +67,35 @@ where
     }
 }
 
-impl<P> Ranker<P> for CosineSimilarityRanker<P>
-where
-    P: Clone,
-{
-    fn rank(&self, paper_id: &str, threshold: f32, limit: usize) -> Result<Vec<RankedResult<P>>> {
+impl Ranker<Paper> for CosineSimilarityRanker {
+    fn rank(
+        &self,
+        paper_id: &str,
+        threshold: f32,
+        limit: usize,
+    ) -> Result<Vec<RankedResult<Paper>>> {
         // Find the query paper
-        let query_paper = self.papers.iter().find(|p| {
-            let id = (p as &dyn std::any::Any)
-                .downcast_ref::<Paper>()
-                .map(|pp| pp.id.as_str())
-                .unwrap_or("");
-            id == paper_id
-        });
+        let query_paper = self.papers.iter().find(|p| p.id == paper_id);
 
         let query_paper = match query_paper {
             Some(p) => p,
             None => return Err(RankerError::PaperNotFound(paper_id.to_string())),
         };
 
-        let query_emb = (self.get_embedding)(query_paper);
-        let query_emb = match query_emb {
+        let query_emb = match &query_paper.embedding {
             Some(e) => e,
             None => return Err(RankerError::NoEmbedding(paper_id.to_string())),
         };
 
         // Compute similarities to all other papers
-        let mut scored: Vec<(P, f32)> = self
+        let mut scored: Vec<(Paper, f32)> = self
             .papers
             .iter()
-            .filter(|p| {
-                let id = (p as &dyn std::any::Any)
-                    .downcast_ref::<Paper>()
-                    .map(|pp| pp.id.as_str())
-                    .unwrap_or("");
-                id != paper_id
-            })
+            .filter(|p| p.id != paper_id)
             .filter_map(|p| {
-                (self.get_embedding)(p).map(|emb| {
-                    let sim = Self::cosine_similarity(&query_emb, &emb);
-                    (p.clone(), sim)
-                })
+                let emb = p.embedding.as_ref()?;
+                let sim = Self::cosine_similarity(query_emb, emb);
+                Some((p.clone(), sim))
             })
             .collect();
 
@@ -139,7 +103,7 @@ where
         scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
         // Filter by threshold and limit
-        let results: Vec<RankedResult<P>> = scored
+        let results: Vec<RankedResult<Paper>> = scored
             .into_iter()
             .filter(|(_, score)| *score >= threshold)
             .take(limit)
@@ -155,7 +119,7 @@ where
 }
 
 // ============================================================================
-// Simpler Concrete Implementation
+// Simple Cosine Ranker (standalone)
 // ============================================================================
 
 /// Simple concrete implementation with Vec<f32> embeddings
@@ -233,38 +197,36 @@ mod tests {
     #[test]
     fn test_cosine_similarity_identical() {
         let v = vec![1.0, 0.0, 0.0];
-        assert!((CosineSimilarityRanker::<Paper>::cosine_similarity(&v, &v) - 1.0).abs() < 1e-6);
+        assert!((CosineSimilarityRanker::cosine_similarity(&v, &v) - 1.0).abs() < 1e-6);
     }
 
     #[test]
     fn test_cosine_similarity_orthogonal() {
         let v1 = vec![1.0, 0.0, 0.0];
         let v2 = vec![0.0, 1.0, 0.0];
-        assert!((CosineSimilarityRanker::<Paper>::cosine_similarity(&v1, &v2)).abs() < 1e-6);
+        assert!((CosineSimilarityRanker::cosine_similarity(&v1, &v2)).abs() < 1e-6);
     }
 
     #[test]
     fn test_cosine_similarity_opposite() {
         let v1 = vec![1.0, 0.0, 0.0];
         let v2 = vec![-1.0, 0.0, 0.0];
-        assert!(
-            (CosineSimilarityRanker::<Paper>::cosine_similarity(&v1, &v2) - (-1.0)).abs() < 1e-6
-        );
+        assert!((CosineSimilarityRanker::cosine_similarity(&v1, &v2) - (-1.0)).abs() < 1e-6);
     }
 
     #[test]
     fn test_cosine_similarity_different_lengths() {
         let v1 = vec![1.0, 0.0];
         let v2 = vec![1.0, 0.0, 0.0];
-        assert!((CosineSimilarityRanker::<Paper>::cosine_similarity(&v1, &v2)).abs() < 1e-6);
+        assert!((CosineSimilarityRanker::cosine_similarity(&v1, &v2)).abs() < 1e-6);
     }
 
     #[test]
     fn test_cosine_similarity_zero_vector() {
         let zero = vec![0.0, 0.0, 0.0];
         let v = vec![1.0, 0.0, 0.0];
-        assert!((CosineSimilarityRanker::<Paper>::cosine_similarity(&zero, &v)).abs() < 1e-6);
-        assert!((CosineSimilarityRanker::<Paper>::cosine_similarity(&v, &zero)).abs() < 1e-6);
+        assert!((CosineSimilarityRanker::cosine_similarity(&zero, &v)).abs() < 1e-6);
+        assert!((CosineSimilarityRanker::cosine_similarity(&v, &zero)).abs() < 1e-6);
     }
 
     #[test]
@@ -328,5 +290,28 @@ mod tests {
 
         let results = ranker.rank("p0", 0.0, 2);
         assert_eq!(results.len(), 2);
+    }
+
+    #[test]
+    fn test_cosine_similarity_ranker_rank() {
+        let papers = vec![
+            Paper::new("p1", "Paper 1", Some(vec![1.0, 0.0, 0.0])),
+            Paper::new("p2", "Paper 2", Some(vec![0.0, 1.0, 0.0])),
+            Paper::new("p3", "Paper 3", Some(vec![0.9, 0.1, 0.0])),
+        ];
+        let ranker = CosineSimilarityRanker::new(papers);
+
+        let results = ranker.rank("p1", 0.0, 10).unwrap();
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].paper.id, "p3");
+    }
+
+    #[test]
+    fn test_cosine_similarity_ranker_not_found() {
+        let papers = vec![Paper::new("p1", "Paper 1", Some(vec![1.0, 0.0, 0.0]))];
+        let ranker = CosineSimilarityRanker::new(papers);
+
+        let results = ranker.rank("nonexistent", 0.0, 10);
+        assert!(results.is_err());
     }
 }

@@ -4,7 +4,8 @@
 //!
 //! Provides terminal colors, formatted output helpers, and Warp-style panels.
 
-use serde::{Deserialize, Serialize};
+use serde;
+
 use std::io::{self, IsTerminal};
 
 // ============================================================================
@@ -211,7 +212,7 @@ pub fn load_dotenv() -> io::Result<()> {
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
-            if let Some((key, _, value)) = line.split_once('=') {
+            if let Some((key, value)) = line.split_once('=') {
                 let key = key.trim();
                 let value = value.trim();
                 if std::env::var(key).is_err() {
@@ -304,7 +305,7 @@ mod tests {
 
     #[test]
     fn test_center_text() {
-        assert_eq!(center_text("hi", 5), "  hi");
+        assert_eq!(center_text("hi", 5), " hi"); // 2 spaces on right in width 5
         assert_eq!(center_text("hello", 5), "hello");
         assert_eq!(center_text("toolong", 3), "too");
     }
