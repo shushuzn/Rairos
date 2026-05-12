@@ -38,6 +38,7 @@ members = [
     "crates/rairos-value-quantifier",
     "crates/rairos-retry",
     "crates/rairos-perf",
+    "crates/rairos-ecosystem",
     "crates/rairos-batch-optimizer",
     "crates/rairos-skill-discovery",
     "crates/rairos-user-helpers",
