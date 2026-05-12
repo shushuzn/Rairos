@@ -33,6 +33,7 @@ members = [
     "crates/rairos-auth",
     "crates/rairos-i18n",
     "crates/rairos-identifiers",
+    "crates/rairos-batch-optimizer",
     "crates/rairos-skill-discovery",
     "crates/rairos-user-helpers",
     "crates/rairos-replication",
