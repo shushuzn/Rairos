@@ -172,6 +172,7 @@ members = [
     "crates/rairos-at-risk-scanner",
     "crates/rairos-impact-scorer",
     "crates/rairos-progress-tracker",
+    "crates/rairos-impact-ranking",
     "crates/rairos-db",
     "benches",
 ]
