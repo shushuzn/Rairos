@@ -224,7 +224,7 @@ class Database:
             fd, tmp_path = tempfile.mkstemp(suffix=".db")
             os.close(fd)
             self._inner = PyDatabase(tmp_path)
-        self._inner.init_()
+        self._inner.init()
         self._db_path: Optional[str] = path_str
         self._conn: Optional[sqlite3.Connection] = None  # Local mirror
         self._dedup_log: list = []
@@ -433,7 +433,23 @@ class Database:
 
         if result is None:
             return PaperRecord({})
-        return PaperRecord(json.loads(result))
+        # result is a PyPaper from Rust; convert to dict via its properties
+        if hasattr(result, 'to_dict'):
+            return PaperRecord(result.to_dict())
+        return PaperRecord({
+            "id": result.id,
+            "paper_id": result.id,
+            "source": result.source,
+            "title": result.title,
+            "authors": result.authors,
+            "abstract": result.abstract_text,
+            "published": result.published,
+            "updated": result.updated,
+            "abs_url": result.abs_url,
+            "pdf_url": result.pdf_url,
+            "primary_category": result.primary_category,
+            "parse_status": result.parse_status,
+        })
 
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
         """Get a paper by ID. Checks local mirror first (most up-to-date)."""
@@ -458,16 +474,34 @@ class Database:
         result = self._inner.get_paper(paper_id)
         if result is None:
             return None
-        return PaperRecord(json.loads(result))
+        # Convert PyPaper to dict
+        if hasattr(result, 'to_dict'):
+            d = result.to_dict()
+        else:
+            d = {
+                "id": result.id,
+                "paper_id": result.id,
+                "source": result.source,
+                "title": result.title,
+                "authors": result.authors if hasattr(result, 'authors') else [],
+                "abstract": result.abstract_text,
+                "published": result.published,
+                "primary_category": result.primary_category,
+                "parse_status": result.parse_status,
+            }
+        return PaperRecord(d)
 
     def delete_paper(self, paper_id: str) -> bool:
         """Delete a paper. Returns True if a row was deleted."""
-        # Delete from Python mirror first (if mirror exists)
+        # Commit Python mirror to release lock before Rust operation
         if self._conn is not None:
+            self._conn.commit()
+        result = self._inner.delete_paper(paper_id)
+        # Sync Python mirror after successful Rust delete
+        if result and self._conn is not None:
             self._conn.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
             self._conn.commit()
-        # Rust handles papers + embeddings + FTS deletion
-        return self._inner.delete_paper(paper_id)  # type: ignore[no-any-return]
+        return result
 
     def paper_exists(self, paper_id: str) -> bool:
         """Check if a paper exists."""
@@ -537,10 +571,18 @@ class Database:
             return sliced, total
 
         # No filtering — use Rust FTS directly
-        result = self._inner.search_papers(query, limit, offset, None, None, None)
-        data = json.loads(result)
-        records = [PaperRecord(r) for r in data.get("results", [])]
-        return records, data.get("total", 0)
+        (fts_results, total) = self._inner.search_papers(query, limit, offset, None, None, None)
+        records = []
+        for r in fts_results:
+            records.append(PaperRecord({
+                "id": r.paper_id,
+                "paper_id": r.paper_id,
+                "title": r.title,
+                "authors": r.authors,
+                "score": r.score,
+                "snippet": r.snippet,
+            }))
+        return records, total
 
     def rebuild_fts_index(self) -> None:
         """Rebuild the mirror FTS index from current papers table (removes orphans)."""
@@ -935,6 +977,9 @@ class Database:
                 "UPDATE job_queue SET paper_id = ? WHERE paper_id = ? AND status = 'queued'",
                 (primary_id, dup_id),
             )
+
+            # Commit mirror writes before Rust delete to avoid lock contention
+            self._conn.commit()
 
             # Delete duplicate
             self.delete_paper(dup_id)

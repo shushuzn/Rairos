@@ -2,11 +2,12 @@
 
 use std::collections::HashMap;
 
+use pyo3::conversion::IntoPy;
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
-use rairos_db::{Database, Paper, SearchResult};
+use pyo3::types::{PyBytes, PyDict, PyList};
+use rairos_db::{DbError, Database, Paper, SearchResult};
 
-fn db_err_to_py(err: rairos_db::DbError) -> PyErr {
+fn db_err_to_py(err: DbError) -> PyErr {
     PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(err.to_string())
 }
 
@@ -81,6 +82,10 @@ impl PySearchResult {
     #[getter]
     fn title(&self) -> &str {
         &self.inner.title
+    }
+    #[getter]
+    fn authors(&self) -> Vec<String> {
+        self.inner.authors.clone()
     }
     #[getter]
     fn score(&self) -> f64 {
@@ -203,7 +208,7 @@ impl PyDatabase {
                 "",
             )
             .map_err(db_err_to_py)?;
-        Ok(result.map(|p| PyPaper { inner: p }))
+        Ok(Some(PyPaper { inner: result }))
     }
 
     fn search_papers(
@@ -251,9 +256,7 @@ impl PyDatabase {
         let offset = offset.unwrap_or(0);
         let (papers, total) = self
             .inner
-            .list_papers(
-                limit, offset, source, category, None, None, parse_status, "added_at", "desc",
-            )
+            .list_papers(limit, offset, source, category, None, None, parse_status, "added_at", "desc")
             .map_err(db_err_to_py)?;
         Ok((
             papers
@@ -285,16 +288,15 @@ impl PyDatabase {
         Ok(map)
     }
 
-    fn execute_query(&self, query: &str, params: &Bound<'_, PyList>) -> PyResult<Vec<HashMap<String, Py<PyAny>>>> {
-        use pyo3::types::PyTuple;
-
+fn execute_query(
+        &self,
+        query: &str,
+        params: &Bound<'_, PyList>,
+    ) -> PyResult<Vec<HashMap<String, Py<PyAny>>>> {
         let sql = query.to_lowercase();
         if sql.contains("papers_fts") {
             return Ok(vec![]);
         }
-
-        let gil = Python::acquire_gil();
-        let py = gil.python();
 
         // Convert PyAny params to rusqlite::types::Value
         let values: Vec<rusqlite::types::Value> = params
@@ -318,27 +320,26 @@ impl PyDatabase {
             })
             .collect();
 
-        let conn = self.inner.raw_conn().map_err(db_err_to_py)?;
-        let mut stmt = conn.prepare(query).map_err(db_err_to_py)?;
+        let rows = self.inner.query_raw(query, values).map_err(db_err_to_py)?;
 
-        let column_count = stmt.column_count();
-        let column_names: Vec<String> = (0..column_count)
-            .map(|i| stmt.column_name(i).unwrap_or("?").to_string())
-            .collect();
-
-        let mut results = vec![];
-        let mut rows = stmt.query(rusqlite::params_from_iter(&values)).map_err(db_err_to_py)?;
-
-        while let Some(row) = rows.next().map_err(db_err_to_py)? {
-            let mut map = HashMap::new();
-            for (i, name) in column_names.iter().enumerate() {
-                let value: rusqlite::types::Value = row.get(i).map_err(db_err_to_py)?;
-                map.insert(name.clone(), value);
+        Python::with_gil(|py| {
+            let mut results = Vec::new();
+            for row_map in rows {
+                let mut map: HashMap<String, Py<PyAny>> = HashMap::new();
+                for (k, v) in row_map {
+                    let val: Py<PyAny> = match v {
+                        rusqlite::types::Value::Null => py.None().into(),
+                        rusqlite::types::Value::Integer(i) => i.into_py(py).into(),
+                        rusqlite::types::Value::Real(f) => f.into_py(py).into(),
+                        rusqlite::types::Value::Text(s) => s.into_py(py).into(),
+                        rusqlite::types::Value::Blob(b) => PyBytes::new_bound(py, &b).into(),
+                    };
+                    map.insert(k, val);
+                }
+                results.push(map);
             }
-            results.push(map);
-        }
-
-        Ok(results)
+            Ok(results)
+        })
     }
 }
 

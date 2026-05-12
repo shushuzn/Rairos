@@ -232,7 +232,7 @@ impl Database {
         Ok(Self { db_path })
     }
 
-    /// Open database from RAIROS_DB env var, falling back to ~/.rairos/rairos.db
+/// Open database from RAIROS_DB env var, falling back to ~/.rairos/rairos.db
     pub fn open_default() -> Result<Self> {
         let db_path = std::env::var("RAIROS_DB")
             .or_else(|_| std::env::var("AIROS_DB"))
@@ -245,9 +245,35 @@ impl Database {
     }
 
     /// Open an in-memory database (useful for testing).
-    #[allow(dead_code)]
     pub fn open_in_memory() -> Result<Self> {
         Self::open(":memory:")
+    }
+
+    /// Execute a raw SQL query with values and return results as maps.
+    pub fn query_raw(
+        &self,
+        sql: &str,
+        params: Vec<rusqlite::types::Value>,
+    ) -> Result<Vec<HashMap<String, rusqlite::types::Value>>> {
+        self.with_conn(|conn| {
+            let mut stmt = conn.prepare(sql)?;
+            let column_count = stmt.column_count();
+            let column_names: Vec<String> = (0..column_count)
+                .map(|i| stmt.column_name(i).unwrap_or("?").to_string())
+                .collect();
+
+            let mut results = Vec::new();
+            let mut rows = stmt.query(rusqlite::params_from_iter(&params))?;
+            while let Some(row) = rows.next()? {
+                let mut map = HashMap::new();
+                for (i, name) in column_names.iter().enumerate() {
+                    let value: rusqlite::types::Value = row.get(i)?;
+                    map.insert(name.clone(), value);
+                }
+                results.push(map);
+            }
+            Ok(results)
+        })
     }
 
     /// Initialize the database schema and FTS5 virtual table.
