@@ -225,23 +225,40 @@ class Database:
             os.close(fd)
             self._inner = PyDatabase(tmp_path)
         self._inner.init_()
+        self._db_path: Optional[str] = path_str
         self._conn: Optional[sqlite3.Connection] = None  # Local mirror
         self._dedup_log: list = []
         self._citations: list = []
 
     def init(self) -> None:
-        self._inner.init_()
+        # __init__ already called _inner.init_() to set up schema.
+        # Always rebuild mirror FTS from Rust papers so that any seed data
+        # written via PyDatabase (e.g. by _seed_search_db) is visible in the
+        # mirror FTS.  CREATE TABLE IF NOT EXISTS preserves existing tables.
+        self._init_mirror()
+        self._sync_fts_from_rust()
+
+    def _sync_fts_from_rust(self) -> None:
+        """Rebuild mirror papers_fts from Rust papers table (idempotent).
+
+        Only inserts missing entries; does NOT delete existing FTS entries
+        (upsert_paper writes FTS entries directly and would be overridden).
+        """
+        if self._conn is None:
+            return
         try:
-            self._inner.clear_all()
+            self._conn.execute(
+                "INSERT OR IGNORE INTO papers_fts(paper_id, title, abstract, plain_text) "
+                "SELECT id, title, abstract, '' FROM papers"
+            )
+            self._conn.commit()
         except Exception:
             pass
-        self._init_mirror()
 
     def _init_mirror(self):
-        """Initialize local SQLite mirror from _SCHEMA + _FTS_SCHEMA."""
-        fd, path = tempfile.mkstemp(suffix=".db")
-        os.close(fd)
-        conn = sqlite3.connect(path)
+        """Initialize local SQLite mirror — shares the same file as self._inner."""
+        path_str = str(self._db_path) if self._db_path else ":memory:"
+        conn = sqlite3.connect(path_str)
         conn.execute("PRAGMA journal_mode=WAL")
         # Execute full schema (regular tables only; FTS5 needs special handling)
         conn.executescript(_SCHEMA)
@@ -259,6 +276,16 @@ class Database:
         conn.execute("CREATE INDEX IF NOT EXISTS idx_job_queue_status ON job_queue(status)")
         conn.execute("CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)")
         conn.commit()
+        # Sync FTS entries from papers table (upsert_paper only handles new inserts,
+        # not pre-existing papers created via CREATE TABLE IF NOT EXISTS)
+        try:
+            conn.execute(
+                "INSERT OR IGNORE INTO papers_fts(paper_id, title, abstract, plain_text) "
+                "SELECT id, title, abstract, plain_text FROM papers"
+            )
+            conn.commit()
+        except Exception:
+            pass
 
         def cleanup():
             try:
@@ -351,7 +378,7 @@ class Database:
             "published, updated, abs_url, pdf_url, primary_category, journal, volume, "
             "issue, page, doi, categories, reference_count, added_at, updated_at, "
             "parse_status, pdf_path, pdf_hash) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)",
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 paper_id,
                 source,
@@ -372,15 +399,17 @@ class Database:
                 reference_count,
                 now,
                 now,
+                "",
                 pdf_path,
                 pdf_hash,
             ),
         )
-        # Also populate FTS
+        # Keep FTS in sync: delete old entry, insert new one
+        # (upsert_paper may be called multiple times for same paper)
         try:
+            self._conn.execute("DELETE FROM papers_fts WHERE paper_id = ?", (paper_id,))
             self._conn.execute(
-                "INSERT OR REPLACE INTO papers_fts (paper_id, title, abstract, plain_text) "
-                "VALUES (?, ?, ?, '')",
+                "INSERT INTO papers_fts (paper_id, title, abstract, plain_text) VALUES (?, ?, ?, '')",
                 (paper_id, title, abstract),
             )
             self._conn.commit()

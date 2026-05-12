@@ -41,8 +41,6 @@ def get_db():
 
     db_path = os.environ.get("AIROS_DB") or os.environ.get("RAIROS_DB") or None
     db = cli.Database(db_path)
-    if hasattr(db, '_inner') and db._inner is not None:
-        db._inner.init_()
     return db
 
 

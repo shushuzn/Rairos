@@ -18,6 +18,11 @@ def db():
     tmp.close()
     db = Database(path)
     db.init()
+    # Clear any residual Rust state (PyDatabase connection pool may persist across fixture boundaries)
+    try:
+        db._inner.clear_all()
+    except Exception:
+        pass
     yield db
     db.close()
     try:
@@ -89,10 +94,15 @@ class TestFTS5Insert:
         assert results[0].paper_id == "2312.00001"
 
     def test_upsert_updates_fts(self, db):
+        # Check existing state
+        r_all, t_all = db.search_papers("deep")
+        if t_all > 0:
+            for r in r_all:
+                pass
         db.upsert_paper("2312.00002", "arxiv", title="Machine Learning")
         db.upsert_paper("2312.00002", "arxiv", title="Deep Learning")
         results, total = db.search_papers("deep")
-        assert total == 1
+        assert total == 1, f"total={total}"
         assert results[0].title == "Deep Learning"
 
 
@@ -117,6 +127,10 @@ class TestSearchPapersQuery:
         assert total >= 1
 
     def test_search_returns_snippet(self, db):
+        # Check what's already in the Rust DB
+        cur = db._conn.execute("SELECT COUNT(*) FROM papers").fetchone()
+        cur2 = db._conn.execute("SELECT COUNT(*) FROM papers_fts").fetchone()
+        r_before, t_before = db.search_papers("neural")
         db.upsert_paper("2312.00006", "arxiv", title="Deep Neural Networks")
         results, total = db.search_papers("neural")
         assert total == 1

@@ -57,7 +57,6 @@ Examples:
 
 def _run_search(args: argparse.Namespace) -> int:
     db = get_db()
-    db.init()
 
     results, total = db.search_papers(
         query=args.query or "",

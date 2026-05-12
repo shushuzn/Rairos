@@ -87,23 +87,8 @@ def _seed_search_db(db_path: Path, papers: list[dict]) -> None:
         }
         py_db.upsert_paper(paper_input)
 
-    # Seed FTS entries (search requires FTS, and upsert_paper doesn't create them)
-    conn = sqlite3.connect(str(db_path))
-    conn.execute("""
-        CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
-            paper_id UNINDEXED, title, abstract, plain_text
-        );
-    """)
-    for p in papers:
-        conn.execute(
-            "INSERT INTO papers_fts(paper_id, title, abstract, plain_text) VALUES (?, ?, ?, '')",
-            (p["id"], p.get("title", ""), p.get("abstract", "")),
-        )
-    conn.commit()
-    conn.close()
 
-
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -135,6 +120,7 @@ def _run_cli(
 
 def test_search_returns_json_results(tmp_db_path):
     """'rairos search' should query the seeded DB and return matching papers as JSON."""
+    import os
     papers = [
         {
             "id": "arXiv:2301.00001",
@@ -163,10 +149,25 @@ def test_search_returns_json_results(tmp_db_path):
     ]
     _seed_search_db(tmp_db_path, papers)
 
+    # Verify seed worked from THIS process
+    import rairos_db_py
+    py_db_seed = rairos_db_py.PyDatabase(str(tmp_db_path))
+    py_db_seed.init_()
+    result = py_db_seed.get_paper("arXiv:2301.00001")
+    # Count papers via search
+    search_result = py_db_seed.search_papers("attention", limit=5)
+
     proc = _run_cli(
         ["search", "attention", "--limit", "5", "--format", "json"],
         env={"AIROS_DB": str(tmp_db_path)},
     )
+    # Debug: verify the file actually has data and check AIROS_DB received
+    # Verify file has content AFTER CLI ran
+    import rairos_db_py
+    py_verify = rairos_db_py.PyDatabase(str(tmp_db_path))
+    py_verify.init_()
+    vr = py_verify.get_paper("arXiv:2301.00001")
+    vs = py_verify.search_papers("attention")
 
     assert proc.returncode == 0, f"stderr: {proc.stderr}\nstdout: {proc.stdout}"
     output = json.loads(proc.stdout)
