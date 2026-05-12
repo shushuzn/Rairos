@@ -1,6 +1,13 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+//! rairos-impact-ranking — Compute and render paper impact scores from the database.
+//!
+//! Impact score = citation_count (from CrossRef/OpenAlex) + reference_count.
+//!
+//! Reference: Python llm/impact_ranking.py
 
+use rusqlite::Connection;
+use serde::{Deserialize, Serialize};
+
+/// Impact entry for a single paper.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImpactEntry {
     pub paper_id: String,
@@ -12,37 +19,60 @@ pub struct ImpactEntry {
     pub abs_url: String,
 }
 
-pub fn compute_impact(db: Option<()>) -> Vec<HashMap<String, serde_json::Value>> {
-    if db.is_none() {
+/// Compute impact ranking for all papers in the database.
+///
+/// Impact score = citation_count (from CrossRef/OpenAlex) + reference_count.
+///
+/// Returns a vector of ImpactEntry sorted by impact_score descending.
+pub fn compute_impact(db: &Connection) -> Vec<ImpactEntry> {
+    let Ok(mut stmt) = db.prepare(
+        r#"
+        SELECT id, title, citation_count, reference_count, published, abs_url
+        FROM papers
+        WHERE title IS NOT NULL AND title != ''
+        ORDER BY (COALESCE(citation_count, 0) + COALESCE(reference_count, 0)) DESC
+        LIMIT 100
+        "#,
+    ) else {
         return vec![];
+    };
+
+    let rows = stmt.query_map([], |row| {
+        let citations: Option<i32> = row.get(2)?;
+        let references: Option<i32> = row.get(3)?;
+        let citations = citations.unwrap_or(0);
+        let references = references.unwrap_or(0);
+        Ok(ImpactEntry {
+            paper_id: row.get(0)?,
+            title: row.get(1)?,
+            citation_count: citations,
+            reference_count: references,
+            impact_score: citations + references,
+            published: row.get::<_, Option<String>>(4)?.unwrap_or_default(),
+            abs_url: row.get::<_, Option<String>>(5)?.unwrap_or_default(),
+        })
+    });
+
+    match rows {
+        Ok(iter) => iter.filter_map(|r| r.ok()).collect(),
+        Err(_) => vec![],
     }
-    vec![]
 }
 
-pub fn render_impact_html(data: &[HashMap<String, serde_json::Value>]) -> String {
+/// Render impact ranking as an HTML table.
+pub fn render_impact_html(data: &[ImpactEntry]) -> String {
     if data.is_empty() {
         return "<p>No impact data available.</p>".to_string();
     }
 
     let mut rows = Vec::new();
     for (i, item) in data.iter().take(20).enumerate() {
-        let score = item
-            .get("impact_score")
-            .and_then(|v| v.as_i64())
-            .unwrap_or(0);
-        let title = item
-            .get("title")
-            .and_then(|v| v.as_str())
-            .unwrap_or("Unknown");
-        let title = &title[..title.len().min(70)];
-        let pub_year = item
-            .get("published")
-            .and_then(|v| v.as_str())
-            .unwrap_or("")
-            .chars()
-            .take(4)
-            .collect::<String>();
-        let url = item.get("abs_url").and_then(|v| v.as_str()).unwrap_or("#");
+        let title = if item.title.len() > 70 {
+            &item.title[..70]
+        } else {
+            &item.title
+        };
+        let pub_year = item.published.chars().take(4).collect::<String>();
 
         rows.push(format!(
             "<tr>\
@@ -52,10 +82,10 @@ pub fn render_impact_html(data: &[HashMap<String, serde_json::Value>]) -> String
              <td style=\"text-align:right;font-weight:600\">{}</td>\
              </tr>",
             i + 1,
-            url,
+            html_escape(&item.abs_url),
             html_escape(title),
-            pub_year,
-            score
+            html_escape(&pub_year),
+            item.impact_score
         ));
     }
 
@@ -80,6 +110,10 @@ fn html_escape(s: &str) -> String {
         .replace('"', "&quot;")
 }
 
+// ============================================================================
+// Tests
+// ============================================================================
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -92,19 +126,16 @@ mod tests {
 
     #[test]
     fn test_render_impact_html_with_data() {
-        let mut item = HashMap::new();
-        item.insert("paper_id".to_string(), serde_json::json!("1"));
-        item.insert("title".to_string(), serde_json::json!("Test Paper"));
-        item.insert("citation_count".to_string(), serde_json::json!(100));
-        item.insert("reference_count".to_string(), serde_json::json!(50));
-        item.insert("impact_score".to_string(), serde_json::json!(150));
-        item.insert("published".to_string(), serde_json::json!("2020-01-01"));
-        item.insert(
-            "abs_url".to_string(),
-            serde_json::json!("https://example.com"),
-        );
-
-        let result = render_impact_html(&[item]);
+        let data = vec![ImpactEntry {
+            paper_id: "1".to_string(),
+            title: "Test Paper".to_string(),
+            citation_count: 100,
+            reference_count: 50,
+            impact_score: 150,
+            published: "2020-01-01".to_string(),
+            abs_url: "https://example.com".to_string(),
+        }];
+        let result = render_impact_html(&data);
         assert!(result.contains("<table"));
         assert!(result.contains("Test Paper"));
         assert!(result.contains("150"));
@@ -115,5 +146,57 @@ mod tests {
         assert_eq!(html_escape("a & b"), "a &amp; b");
         assert_eq!(html_escape("a < b"), "a &lt; b");
         assert_eq!(html_escape("a > b"), "a &gt; b");
+        assert_eq!(html_escape("a \"b\""), "a &quot;b&quot;");
+    }
+
+    #[test]
+    fn test_impact_entry_fields() {
+        let entry = ImpactEntry {
+            paper_id: "p1".to_string(),
+            title: "A Test Paper".to_string(),
+            citation_count: 10,
+            reference_count: 5,
+            impact_score: 15,
+            published: "2023-06-15".to_string(),
+            abs_url: "https://arxiv.org/abs/2301.00001".to_string(),
+        };
+        assert_eq!(entry.impact_score, 15);
+        assert_eq!(entry.citation_count, 10);
+        assert_eq!(entry.reference_count, 5);
+    }
+
+    #[test]
+    fn test_render_truncates_to_20() {
+        let data: Vec<ImpactEntry> = (0..25)
+            .map(|i| ImpactEntry {
+                paper_id: i.to_string(),
+                title: format!("Paper {}", i),
+                citation_count: i,
+                reference_count: 0,
+                impact_score: i,
+                published: "2020".to_string(),
+                abs_url: "#".to_string(),
+            })
+            .collect();
+        let result = render_impact_html(&data);
+        // Should not contain row 21 (index 20)
+        assert!(!result.contains(">21</td>"));
+    }
+
+    #[test]
+    fn test_render_truncates_title() {
+        let long_title = "A".repeat(100);
+        let data = vec![ImpactEntry {
+            paper_id: "1".to_string(),
+            title: long_title,
+            citation_count: 0,
+            reference_count: 0,
+            impact_score: 0,
+            published: "2020".to_string(),
+            abs_url: "#".to_string(),
+        }];
+        let result = render_impact_html(&data);
+        // Title should be truncated to 70 chars
+        assert!(!result.contains(&"A".repeat(71)));
     }
 }
