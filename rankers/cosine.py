@@ -52,7 +52,6 @@ class CosineSimilarityRanker(Ranker):
             return []
 
         cur = self._db.conn.cursor()
-        # Fetch embeddings + all paper columns in a single query — no per-result round-trip
         cur.execute(
             """SELECT id, embed_vector, *
                FROM papers
@@ -63,7 +62,13 @@ class CosineSimilarityRanker(Ranker):
         if not rows:
             return []
 
-        col_names = [d[0] for d in cur.description]
+        col_names = list(cur.description)
+        if col_names and isinstance(col_names[0], str):
+            # description returned a flat list of strings (LegacyCursor format)
+            pass
+        else:
+            # standard sqlite3 description format: list of (name, ...) tuples
+            col_names = [d[0] for d in col_names]
         idx_emb = col_names.index("embed_vector")
 
         # Batch unpack all embeddings into a 2D numpy array

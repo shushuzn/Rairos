@@ -99,7 +99,11 @@ class PaperRecord:
         """Create PaperRecord from a sqlite3.Row (or any dict-like)."""
         if isinstance(row, dict):
             return cls(dict(row))
-        return cls(dict(zip([c[0] for c in row.cursor_description], row)))
+        if hasattr(row, "cursor_description"):
+            # standard sqlite3.Row
+            return cls(dict(zip([c[0] for c in row.cursor_description], row)))
+        # _SqliteRow: use keys()
+        return cls(dict(zip(row.keys(), row)))
 
     @property
     def id(self) -> str:
@@ -215,7 +219,11 @@ class Database:
         elif path_str == ":memory:":
             self._inner = PyDatabase(":memory:")
         else:
-            self._inner = PyDatabase()
+            # No path given — create an isolated temp file for the Rust DB
+            # to avoid polluting the shared default (~/.rairos/rairos.db)
+            fd, tmp_path = tempfile.mkstemp(suffix=".db")
+            os.close(fd)
+            self._inner = PyDatabase(tmp_path)
         self._inner.init_()
         self._conn: Optional[sqlite3.Connection] = None  # Local mirror
         self._dedup_log: list = []
@@ -223,6 +231,11 @@ class Database:
 
     def init(self) -> None:
         self._inner.init_()
+        # Clear residual data from Rust DB (same temp file as mirror)
+        try:
+            self._inner.clear_all()
+        except Exception:
+            pass
         self._init_mirror()
 
     def _init_mirror(self):
@@ -484,6 +497,16 @@ class Database:
         data = json.loads(result)
         records = [PaperRecord(r) for r in data.get("results", [])]
         return records, data.get("total", 0)
+
+    def rebuild_fts_index(self) -> None:
+        """Rebuild the mirror FTS index from current papers table (removes orphans)."""
+        conn = self._conn
+        conn.execute("DELETE FROM papers_fts")
+        conn.execute(
+            "INSERT INTO papers_fts(paper_id, title, abstract, plain_text) "
+            "SELECT id, title, abstract, plain_text FROM papers"
+        )
+        conn.commit()
 
     def list_papers(
         self,
@@ -1433,8 +1456,9 @@ class _LegacyCursor:
 
     def execute(self, query: str, params: tuple = ()):
         q = query.strip().upper()
-        if q.startswith("SELECT"):
-            if "papers_fts" in query.lower():
+        if q.startswith("SELECT") or q.startswith("PRAGMA"):
+            if "papers_fts" in query.lower() and "FROM papers_fts" in query.upper():
+                # Only mock actual FTS virtual table searches, not existence checks
                 self._last = None
                 return _MockResult()
             self._last = self._conn.execute(query, params)
@@ -1469,6 +1493,10 @@ class _LegacyCursor:
 
     def close(self):
         pass
+
+    @property
+    def description(self):
+        return self._cols
 
     def cursor(self):
         return self
