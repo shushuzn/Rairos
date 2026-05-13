@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use pyo3::conversion::IntoPyObject;
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList};
 use rairos_db::{DbError, Database, Paper, SearchResult};
@@ -327,10 +328,10 @@ fn execute_query(
                 let mut map: HashMap<String, Py<PyAny>> = HashMap::new();
                 for (k, v) in row_map {
                     let val: Py<PyAny> = match v {
-                        rusqlite::types::Value::Null => py.None().into_py_any(py).unwrap(),
-                        rusqlite::types::Value::Integer(i) => i.into_py_any(py).unwrap(),
-                        rusqlite::types::Value::Real(f) => f.into_py_any(py).unwrap(),
-                        rusqlite::types::Value::Text(s) => s.into_py_any(py).unwrap(),
+                        rusqlite::types::Value::Null => py.None().into(),
+                        rusqlite::types::Value::Integer(i) => i.into_py_object(py).unwrap().into_any().unbind(),
+                        rusqlite::types::Value::Real(f) => f.into_py_object(py).unwrap().into_any().unbind(),
+                        rusqlite::types::Value::Text(s) => s.into_py_object(py).unwrap().into_any().unbind(),
                         rusqlite::types::Value::Blob(b) => PyBytes::new(py, &b).into_any().unbind(),
                     };
                     map.insert(k, val);
