@@ -12,7 +12,7 @@ chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
 
 [target.'cfg(not(target_os = "windows"))'.dependencies]
-pyo3 = { version = "0.23", features = ["extension-module"] }
+pyo3 = { version = "0.24.1", features = ["extension-module"] }
 
 [dev-dependencies]
 tempfile = "3"
