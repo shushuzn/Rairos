@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::sync::LazyLock;
 
 pub const LLM_BASE_URL: &str = "https://api.openai.com/v1";
 pub const LLM_MODEL: &str = "gpt-4o-mini";
@@ -8,9 +9,8 @@ pub const OLLAMA_EMBEDDING_MODEL: &str = "nomic-embed-text";
 pub const OLLAMA_API_EMBEDDINGS_ENDPOINT: &str = "/api/embeddings";
 pub const ENV_AIROS_USE_EMBEDDING: &str = "AIROS_USE_EMBEDDING";
 
-pub static AI_RESEARCH_KEYWORDS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+pub static AI_RESEARCH_KEYWORDS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     let mut s = HashSet::new();
-    // Core NLP/LLM
     s.insert("transformer");
     s.insert("attention");
     s.insert("bert");
@@ -29,7 +29,6 @@ pub static AI_RESEARCH_KEYWORDS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     s.insert("gan");
     s.insert("clip");
     s.insert("vit");
-    // RL
     s.insert("reinforcement");
     s.insert("policy");
     s.insert("reward");
@@ -37,33 +36,28 @@ pub static AI_RESEARCH_KEYWORDS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     s.insert("dpo");
     s.insert("ppo");
     s.insert("reward model");
-    // Training
     s.insert("training");
     s.insert("optimization");
     s.insert("pre-training");
     s.insert("instruction");
     s.insert("alignment");
-    // Multimodal
     s.insert("multimodal");
     s.insert("vision");
     s.insert("language");
     s.insert("speech");
     s.insert("audio");
-    // Reasoning
     s.insert("constitutional");
     s.insert("reasoning");
     s.insert("chain-of-thought");
     s.insert("cot");
     s.insert("synthetic data");
-    // Generic
     s.insert("model");
     s.insert("learning");
     s
 });
 
-pub static SMART_FOLLOWUP_BASE: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+pub static SMART_FOLLOWUP_BASE: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     let mut s = HashSet::new();
-    // Core NLP/LLM
     s.insert("attention");
     s.insert("transformer");
     s.insert("bert");
@@ -93,30 +87,25 @@ pub static SMART_FOLLOWUP_BASE: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     s.insert("dot");
     s.insert("product");
     s.insert("mechanism");
-    // RL
     s.insert("reinforcement");
     s.insert("policy");
     s.insert("reward");
     s.insert("rl");
     s.insert("dpo");
     s.insert("ppo");
-    // Training
     s.insert("training");
     s.insert("pre-training");
     s.insert("instruction");
     s.insert("alignment");
-    // Multimodal
     s.insert("multimodal");
     s.insert("vision");
     s.insert("language");
     s.insert("speech");
     s.insert("audio");
-    // Reasoning
     s.insert("constitutional");
     s.insert("reasoning");
     s.insert("chain-of-thought");
     s.insert("cot");
-    // Implementation
     s.insert("implement");
     s.insert("code");
     s.insert("function");
@@ -127,7 +116,6 @@ pub static SMART_FOLLOWUP_BASE: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     s.insert("tensorflow");
     s.insert("module");
     s.insert("algorithm");
-    // Comparison
     s.insert("vs");
     s.insert("versus");
     s.insert("better");
@@ -135,7 +123,6 @@ pub static SMART_FOLLOWUP_BASE: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     s.insert("compare");
     s.insert("advantage");
     s.insert("disadvantage");
-    // Evolution
     s.insert("based on");
     s.insert("follow");
     s.insert("extend");
@@ -147,7 +134,6 @@ pub static SMART_FOLLOWUP_BASE: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     s.insert("evolution");
     s.insert("derived");
     s.insert("succeed");
-    // Application
     s.insert("apply");
     s.insert("use");
     s.insert("application");
@@ -159,8 +145,6 @@ pub static SMART_FOLLOWUP_BASE: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     s.insert("benchmark");
     s
 });
-
-use once_cell::sync::Lazy;
 
 #[cfg(test)]
 mod tests {

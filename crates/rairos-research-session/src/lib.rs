@@ -538,7 +538,7 @@ impl ResearchSessionTracker {
         }
 
         // Build keywords set from rairos-constants
-        let keywords: HashSet<&'static str> = rairos_constants::AI_RESEARCH_KEYWORDS
+        let keywords: HashSet<&'static str> = rairos_core::constants::AI_RESEARCH_KEYWORDS
             .iter()
             .copied()
             .collect();

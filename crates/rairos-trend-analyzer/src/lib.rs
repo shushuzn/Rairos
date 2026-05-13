@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use thiserror::Error;
 
-pub use rairos_constants::AI_RESEARCH_KEYWORDS;
+pub use rairos_core::constants::AI_RESEARCH_KEYWORDS;
 
 // ============================================================================
 // Errors
