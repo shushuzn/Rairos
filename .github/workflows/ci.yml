@@ -54,10 +54,10 @@ jobs:
         run: uv run python -m py_compile ai_research_os.py
 
       - name: Ruff check
-        run: uvx ruff check . --exclude neuraloperator_fork/
+        run: uvx ruff check .
 
       - name: Ruff format check
-        run: uvx ruff format --check . --exclude neuraloperator_fork/ --exclude db/
+        run: uvx ruff format --check . --exclude db/
 
       - name: Run mypy
         run: uvx mypy core parsers db llm research_loop cli --ignore-missing-imports

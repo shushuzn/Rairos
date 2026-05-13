@@ -11,11 +11,11 @@ py-deps: ## Install Python dependencies
 	uv sync --extra dev
 
 py-lint: ## Run ruff linter
-	uvx ruff check . --exclude neuraloperator_fork/
+	uvx ruff check .
 
 py-fmt: ## Format Python code
-	uvx ruff format . --exclude neuraloperator_fork/
-	uvx ruff check --fix . --exclude neuraloperator_fork/
+	uvx ruff format .
+	uvx ruff check --fix .
 
 py-typecheck: ## Run mypy type checker
 	uvx mypy core parsers db llm research_loop cli --ignore-missing-imports
@@ -56,8 +56,8 @@ dev-verify: py-all rust-build ## Verify full dev setup
 
 ci-python: ## Run CI Python checks (lint + typecheck)
 	uv sync --extra dev
-	uvx ruff check . --exclude neuraloperator_fork/
-	uvx ruff format --check . --exclude neuraloperator_fork/
+	uvx ruff check .
+	uvx ruff format --check .
 	uvx mypy core parsers db llm research_loop cli --ignore-missing-imports
 
 ci-rust: ## Run CI Rust checks

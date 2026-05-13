@@ -6,35 +6,35 @@ default:
 
 # Run full test suite (quiet, skip neuraloperator ns shadowing)
 test:
-    python -B -m pytest tests/ --ignore=neuraloperator_fork -q
+    python -B -m pytest tests/ -q
 
 # Run tests with coverage
 test-cov:
-    python -B -m pytest tests/ --ignore=neuraloperator_fork --cov=. --cov-report=term-missing:skip-covered
+    python -B -m pytest tests/ --cov=. --cov-report=term-missing:skip-covered
 
 # Run only a specific test file
 test FILE:
-    python -B -m pytest tests/{{FILE}} --ignore=neuraloperator_fork -v
+    python -B -m pytest tests/{{FILE}} -v
 
 # Show test count
 test-count:
-    python -B -m pytest tests/ --ignore=neuraloperator_fork --collect-only -q
+    python -B -m pytest tests/ --collect-only -q
 
 # Lint check only
 lint:
-    ruff check . --exclude neuraloperator_fork/
+    ruff check .
 
 # Lint auto-fix
 lint-fix:
-    ruff check --fix . --exclude neuraloperator_fork/
+    ruff check --fix .
 
 # Format code
 fmt:
-    ruff format . --exclude neuraloperator_fork/
+    ruff format .
 
 # Format check (CI gate)
 fmt-check:
-    ruff format --check . --exclude neuraloperator_fork/
+    ruff format --check .
 
 # Type check (mypy on core modules)
 typecheck:
