@@ -112,3 +112,17 @@ GIT_ASKPASS=echo timeout 55 git push
 - Gene Pool: add gene, list, feedback
 - Knowledge Graph: stats, path finding, rankings
 - Memory: research stances, anomaly detection
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard labels. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context. See `docs/agents/domain.md`.
