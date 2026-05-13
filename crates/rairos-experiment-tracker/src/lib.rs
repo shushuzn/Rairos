@@ -27,7 +27,7 @@ impl ExperimentStatus {
         }
     }
 
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn parse(s: &str) -> Option<Self> {
         match s {
             "running" => Some(ExperimentStatus::Running),
             "completed" => Some(ExperimentStatus::Completed),
@@ -453,14 +453,9 @@ mod tests {
     #[test]
     fn test_experiment_status_from_str() {
         assert_eq!(
-            ExperimentStatus::from_str("running"),
-            Some(ExperimentStatus::Running)
-        );
-        assert_eq!(
-            ExperimentStatus::from_str("completed"),
-            Some(ExperimentStatus::Completed)
-        );
-        assert_eq!(ExperimentStatus::from_str("invalid"), None);
+            ExperimentStatus::parse("running"),
+            ExperimentStatus::parse("completed"),
+        assert_eq!(ExperimentStatus::parse("invalid"), None);
     }
 
     #[test]
