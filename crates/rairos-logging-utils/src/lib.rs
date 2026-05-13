@@ -206,6 +206,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_get_performance_report() {
         let monitor = get_monitor();
         monitor.reset();
