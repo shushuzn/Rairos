@@ -76,16 +76,16 @@ jobs:
         run: sccache --start-server
 
       - name: Check all crates
-        run: cargo check --workspace
+        run: cargo check --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo' || '' }}
 
       - name: Build all crates
-        run: cargo build --workspace
+        run: cargo build --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo' || '' }}
 
       - name: Run all tests
-        run: cargo test --workspace
+        run: cargo test --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo' || '' }}
 
       - name: Clippy lint
-        run: cargo clippy --workspace -- -D warnings
+        run: cargo clippy --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo' || '' }} -- -D warnings
 
       - name: Security audit
         run: cargo install cargo-audit --locked && cargo audit

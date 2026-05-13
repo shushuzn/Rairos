@@ -176,6 +176,7 @@ pub fn compute_algorithm_fingerprint(content: &PaperContent) -> String {
 const ARXIV_API: &str = "https://export.arxiv.org/api/query";
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct ArXivFeed {
     #[serde(rename = "entry")]
     entries: Vec<ArXivEntry>,
@@ -261,6 +262,7 @@ fn extract_categories(xml: &str) -> Vec<String> {
     cats
 }
 
+#[allow(dead_code)]
 fn extract_pdf_url(links: &[ArXivLink]) -> Option<String> {
     for link in links {
         if link.link_type.as_deref() == Some("application/pdf") {

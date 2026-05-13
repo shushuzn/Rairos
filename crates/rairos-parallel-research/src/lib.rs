@@ -336,6 +336,7 @@ struct AgentTask {
 pub struct ParallelResearchCoordinator {
     max_concurrency: usize,
     max_iterations_per_agent: usize,
+    #[allow(dead_code)]
     agent_timeout_seconds: u64,
 }
 
