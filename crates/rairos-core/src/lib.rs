@@ -1223,7 +1223,7 @@ pub fn safe_uid(s: &str) -> String {
         .to_string()
 }
 
-/// Default research directory names (canonical order).
+// Default research directory names (canonical order).
 // ============================================================================
 // API Endpoints
 
