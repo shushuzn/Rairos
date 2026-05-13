@@ -633,7 +633,6 @@ impl Database {
                     },
                 )
                 .optional()?
-                .map(|(v, t, a)| (v, t, a))
                 .unwrap_or((0, String::new(), String::new()));
 
             let new_version = version + 1;
@@ -710,6 +709,7 @@ impl Database {
     }
 
     /// List papers with filters and sort.
+    #[allow(clippy::too_many_arguments)]
     pub fn list_papers(
         &self,
         limit: i64,
@@ -803,6 +803,7 @@ impl Database {
     }
 
     /// Full-text search with BM25 ranking.
+    #[allow(clippy::too_many_arguments)]
     pub fn search_papers(
         &self,
         query: &str,
@@ -879,7 +880,7 @@ impl Database {
             );
             let mut all_params: Vec<Box<dyn rusqlite::ToSql>> =
                 std::iter::once(Box::new(fts_query.to_string()) as Box<dyn rusqlite::ToSql>)
-                    .chain(params_vec.into_iter())
+                    .chain(params_vec)
                     .collect();
             all_params.push(Box::new(limit));
             all_params.push(Box::new(offset));
@@ -993,6 +994,7 @@ impl Database {
     }
 
     /// LIKE-based fallback search.
+    #[allow(clippy::too_many_arguments)]
     fn _search_like(
         &self,
         query: &str,
@@ -1163,6 +1165,7 @@ impl Database {
     }
 
     /// Export papers as (header_fields, rows).
+    #[allow(clippy::type_complexity)]
     pub fn export_papers(
         &self,
         _format: &str,
@@ -1275,6 +1278,7 @@ fn build_fts_query(query: &str) -> String {
 // ============================================================================
 
 /// Input for bulk upsert.
+#[derive(Default)]
 pub struct PaperInput {
     pub paper_id: String,
     pub title: String,
@@ -1294,31 +1298,6 @@ pub struct PaperInput {
     pub reference_count: i64,
     pub pdf_path: String,
     pub pdf_hash: String,
-}
-
-impl Default for PaperInput {
-    fn default() -> Self {
-        Self {
-            paper_id: String::new(),
-            title: String::new(),
-            authors: Vec::new(),
-            abstract_text: String::new(),
-            published: String::new(),
-            updated: String::new(),
-            abs_url: String::new(),
-            pdf_url: String::new(),
-            primary_category: String::new(),
-            journal: String::new(),
-            volume: String::new(),
-            issue: String::new(),
-            page: String::new(),
-            doi: String::new(),
-            categories: String::new(),
-            reference_count: 0,
-            pdf_path: String::new(),
-            pdf_hash: String::new(),
-        }
-    }
 }
 
 // ============================================================================
