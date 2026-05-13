@@ -1,5 +1,7 @@
 //! rairos-db-py — PyO3 bindings for rairos-db
 
+#![allow(deprecated)]
+
 use std::collections::HashMap;
 
 use pyo3::conversion::IntoPy;
