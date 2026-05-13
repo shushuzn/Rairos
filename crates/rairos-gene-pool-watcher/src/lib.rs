@@ -657,6 +657,7 @@ impl Default for WatcherCheckResult {
 
 /// GenePoolWatcher periodically checks Gene Pool diversity and auto-creates gap subscriptions.
 pub struct GenePoolWatcher {
+    #[allow(dead_code)]
     interval_seconds: u64,
     min_diversity_score: f64,
     enabled: bool,
@@ -751,7 +752,7 @@ impl GenePoolWatcher {
             for gs in &mut self.state.gap_subscriptions {
                 if gs.family == *fam {
                     gs.enabled = false;
-                    let _ = disable_subscription(&gs);
+                    let _ = disable_subscription(gs);
                     result.gap_subscriptions_removed.push(fam.clone());
                 }
             }
@@ -886,9 +887,11 @@ pub fn render_watcher_status_html(opt_state: Option<&WatcherState>) -> String {
     lines.push(format!(
         "<p style='font-size:12px;color:#888;margin-top:12px'>\
          Last checked: {}</p>",
-        state.last_diversity_check.is_empty()
-            .then(|| "never".to_string())
-            .unwrap_or_else(|| state.last_diversity_check.clone())
+        if state.last_diversity_check.is_empty() {
+            "never".to_string()
+        } else {
+            state.last_diversity_check.clone()
+        }
     ));
     lines.push("</div>".to_string());
 

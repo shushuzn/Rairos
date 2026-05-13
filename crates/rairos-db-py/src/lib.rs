@@ -332,10 +332,10 @@ fn execute_query(
                 for (k, v) in row_map {
                     #[allow(deprecated)]
                     let val: Py<PyAny> = match v {
-                        rusqlite::types::Value::Null => py.None().into(),
-                        rusqlite::types::Value::Integer(i) => i.into_py(py).into(),
-                        rusqlite::types::Value::Real(f) => f.into_py(py).into(),
-                        rusqlite::types::Value::Text(s) => s.into_py(py).into(),
+                        rusqlite::types::Value::Null => py.None(),
+                        rusqlite::types::Value::Integer(i) => i.into_py(py),
+                        rusqlite::types::Value::Real(f) => f.into_py(py),
+                        rusqlite::types::Value::Text(s) => s.into_py(py),
                         rusqlite::types::Value::Blob(b) => PyBytes::new_bound(py, &b).into(),
                     };
                     map.insert(k, val);
