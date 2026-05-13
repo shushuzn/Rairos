@@ -116,7 +116,7 @@ fn parse_value(bytes: &[u8]) -> Option<(String, &[u8])> {
         return None;
     }
     match bytes[0] {
-        b'"' => parse_string(bytes).map(|(s, rest)| (s, rest)),
+        b'"' => parse_string(bytes),
         b'n' if bytes.starts_with(b"null") => Some((String::new(), &bytes[4..])),
         b't' if bytes.starts_with(b"true") => Some(("true".to_string(), &bytes[4..])),
         b'f' if bytes.starts_with(b"false") => Some(("false".to_string(), &bytes[5..])),

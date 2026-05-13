@@ -344,7 +344,7 @@ impl Database {
             } else {
                 tx.rollback()?;
             }
-            Ok(result?)
+            result
         })
     }
 
