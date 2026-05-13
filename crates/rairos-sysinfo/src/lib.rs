@@ -1,10 +1,12 @@
 //! rairos-sysinfo — Rust alternative to psutil for system monitoring.
 //! Replaces psutil dependency in core/resource_monitor.py, core/profiler.py.
 
+#![allow(deprecated)]
+
 use pyo3::prelude::*;
 use std::collections::HashMap;
 use std::sync::Mutex;
-use sysinfo::{Disks, Pid, ProcessRefreshKind, RefreshKind, System};
+use sysinfo::{Disks, Pid, System};
 
 /// psutil-compatible system info wrapper.
 #[pyclass]
