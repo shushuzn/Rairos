@@ -2838,6 +2838,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-code-indexer"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rairos-code-trace"
 version = "0.1.0"
 dependencies = [
@@ -4016,6 +4024,13 @@ version = "0.1.0"
 [[package]]
 name = "rairos-signal"
 version = "0.1.0"
+
+[[package]]
+name = "rairos-simple-cli"
+version = "0.1.0"
+dependencies = [
+ "clap",
+]
 
 [[package]]
 name = "rairos-skill-discovery"
