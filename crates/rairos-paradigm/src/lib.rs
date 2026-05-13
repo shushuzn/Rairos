@@ -4,6 +4,7 @@
 //! Flags a generalization_gap risk alert.
 
 use serde::{Deserialize, Serialize};
+use serde_json;
 
 const ALERT_THRESHOLD: f64 = 0.60;
 const TOP_N: usize = 3;

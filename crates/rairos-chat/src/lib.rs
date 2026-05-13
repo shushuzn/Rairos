@@ -604,7 +604,7 @@ impl RagChat {
 pub fn get_embedding_cache_key(model: &str, text: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(format!("{}:{}", model, text.trim()));
-    format!("{:x}", hasher.finalize())
+    hex::encode(hasher.finalize())
 }
 
 #[cfg(test)]

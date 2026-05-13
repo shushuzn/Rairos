@@ -2600,7 +2600,7 @@ dependencies = [
  "rand 0.8.6",
  "serde",
  "serde_json",
- "sha2 0.11.0",
+ "sha2 0.10.9",
  "thiserror 2.0.18",
  "tokio-test",
 ]
@@ -2702,6 +2702,7 @@ dependencies = [
 name = "rairos-chat"
 version = "0.1.0"
 dependencies = [
+ "hex",
  "regex",
  "serde",
  "serde_json",
@@ -2997,6 +2998,7 @@ name = "rairos-db"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "log",
  "pyo3",
  "regex",
  "rusqlite",
@@ -3624,6 +3626,7 @@ name = "rairos-paradigm"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3709,6 +3712,7 @@ dependencies = [
 name = "rairos-pdf-parser"
 version = "0.1.0"
 dependencies = [
+ "hex",
  "lazy_static",
  "rairos-core",
  "regex",

@@ -183,7 +183,7 @@ pub fn compute_pdf_hash(pdf_path: &Path) -> Result<String> {
         hasher.update(&buffer[..bytes_read]);
     }
 
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(hex::encode(hasher.finalize()))
 }
 
 // ============================================================================
