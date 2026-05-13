@@ -16,26 +16,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Cache cargo registry and build dependencies
-COPY Cargo.toml Cargo.lock ./
-COPY rust-toolchain.toml rustsec.toml ./
+COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
+COPY audit.toml ./
 
 # Pre-build dependency crates (faster incremental builds)
 RUN mkdir -p crates && \
-    # Touch all lib.rs files to prevent missing file errors
-    find crates -name 'lib.rs' -exec touch {} \; && \
     cargo fetch --locked 2>/dev/null || true
 
 # Copy source
 COPY . .
 
-# Build all binary targets (cli + web server)
-RUN cargo build --release --bin rairos-cli --bin rairos-web && \
-    cargo build --release --bin rairos-mcp
-
-# Strip debug symbols (reduce binary size by ~40%)
-RUN strip --strip-unneeded /app/target/release/rairos-cli && \
-    strip --strip-unneeded /app/target/release/rairos-web && \
-    strip --strip-unneeded /app/target/release/rairos-mcp 2>/dev/null || true
+# Build all binary targets
+RUN cargo build --release --bin rairos-cli --bin rairos-web --bin rairos-mcp
 
 # ==============================================================================
 # Stage 2: Runtime — rairos-cli
