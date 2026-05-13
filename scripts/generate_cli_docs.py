@@ -13,16 +13,16 @@ def extract_commands():
     """Parse all cli/cmd/*.py files and extract command metadata."""
     commands = []
 
-    for py_file in sorted(CMD_DIR.glob("*.py")):
-        if py_file.name.startswith("_"):
+    for py_path in sorted(CMD_DIR.rglob("*.py")):
+        if py_path.name.startswith("_"):
             continue
 
-        module_name = py_file.stem
+        module_name = py_path.stem
         if module_name in ("__init__",):
             continue
 
-        source = py_file.read_text(encoding="utf-8")
-        tree = ast.parse(source, filename=str(py_file))
+        source = py_path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(py_path))
 
         # Find the _build_*_parser function
         builder_name = f"_build_{module_name}_parser"
@@ -97,7 +97,7 @@ def extract_commands():
                 "module": module_name,
                 "help": help_text or desc_text,
                 "subcommands": subcommands,
-                "file": f"cli/cmd/{module_name}.py",
+                "file": str(py_path.relative_to(ROOT)),
             }
         )
 
@@ -293,7 +293,7 @@ def generate_html(commands):
     html.append("<footer>")
     html.append(f"Auto-generated · {len(commands)} commands · AI Research OS<br>")
     html.append(
-        "<a href='https://github.com/shushuzn/Rairos'>GitHub</a> · <a href='./architecture.html'>Architecture</a>"
+        "<a href='https://github.com/shushuzn/Rairos'>GitHub</a>"
     )
     html.append("</footer>")
     html.append("<script>")
