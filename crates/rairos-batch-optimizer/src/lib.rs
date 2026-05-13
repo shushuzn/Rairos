@@ -50,6 +50,7 @@ impl BatchOptimizer {
     /// The `error_handler` is optional `Fn(E, &T)`.
     ///
     /// Returns `BatchResult<U>` with all results (both success and failure preserved via `Ok`/`Err`).
+    #[allow(clippy::type_complexity)]
     pub fn process_batch<T, U, F, E>(
         &self,
         items: &[T],
@@ -70,7 +71,7 @@ impl BatchOptimizer {
             .par_iter() // rayon parallel iterator
             .with_max_len((len / self.max_workers).max(1))
             .map_init(
-                || rayon::current_thread_index(),
+                rayon::current_thread_index,
                 |_idx, item| processor(item).map_err(|e| (e.to_string(), 0)),
             )
             .collect();
@@ -109,6 +110,7 @@ impl BatchOptimizer {
     }
 
     /// Process items sequentially with timing.
+    #[allow(clippy::type_complexity)]
     pub fn process_sequential<T, U, F, E>(
         &self,
         items: &[T],

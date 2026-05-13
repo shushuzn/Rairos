@@ -171,7 +171,7 @@ pub fn format_section_snippets(
     let mut budget = max_chars_total;
 
     for (orig_idx, title, content, priority) in &indexed {
-        if budget <= 0 {
+        if budget == 0 {
             break;
         }
 
