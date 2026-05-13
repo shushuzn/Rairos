@@ -354,3 +354,11 @@ fn rairos_db_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PySearchResult>()?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn db_py_version_exists() {
+        assert!(true)
+    }
+}

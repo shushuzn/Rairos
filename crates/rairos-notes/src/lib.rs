@@ -17,3 +17,21 @@ pub use keyword_tags::{get_all_tags, get_keywords_signature, get_tags_count, inf
 pub use mnote::{ensure_or_update_mnote, mnote_filename};
 pub use pnote::{collect_pnotes, pnotes_by_tag, read_pnote_metadata, wikilink_for_pnote};
 pub use render::{render_cnote, render_mnote, render_pnote, PnoteMetadata};
+
+#[cfg(test)]
+mod tests {
+    use crate::frontmatter::Frontmatter;
+    use crate::keyword_tags::get_tags_count;
+
+    #[test]
+    fn test_frontmatter_parse_roundtrip() {
+        let md = "title: Test\n------------------\n# Content";
+        let fm = Frontmatter::parse(md);
+        assert_eq!(fm.get_str("title"), Some("Test".to_string()));
+    }
+
+    #[test]
+    fn test_keyword_tags_nonempty() {
+        assert!(get_tags_count() > 30);
+    }
+}

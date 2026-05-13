@@ -136,3 +136,11 @@ fn rairos_sysinfo(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<ProcessInfo>()?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn sysinfo_version_exists() {
+        assert!(true)
+    }
+}

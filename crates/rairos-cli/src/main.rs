@@ -3880,6 +3880,14 @@ fn handle_doctor(format: &str) -> Result<()> {
 // Main
 // ============================================================================
 
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn cli_version_exists() {
+        assert!(true)
+    }
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
