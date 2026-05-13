@@ -10,8 +10,10 @@
 //!
 //! Python original: `research_loop/paper_parser.py` (325 lines)
 
+pub mod provenance;
+
 use rairos_code_generator::PaperContent as CodeGenPaperContent;
-use rairos_provenance::{AlgorithmSource, ClaimSource, EquationSource, PaperLocation};
+use provenance::{AlgorithmSource, ClaimSource, EquationSource, PaperLocation};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
