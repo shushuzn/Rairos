@@ -1,4 +1,6 @@
 //! rairos-lean-verifier — Lean 4 Theorem Prover Integration.
+
+#![allow(dead_code)]
 //!
 //! Ported from `llm/lean_verifier.py`.
 

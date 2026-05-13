@@ -167,7 +167,7 @@ pub fn get_review_queue() -> Vec<QueuedCapsule> {
     // Build set of capsules that have received a verdict
     let mut verdicted: std::collections::HashSet<String> = std::collections::HashSet::new();
     for entry in feedback.values() {
-        if entry.verdict.as_ref().map_or(false, |v| !v.is_empty()) {
+        if entry.verdict.as_ref().is_some_and(|v| !v.is_empty()) {
             if let Some(ref cid) = entry.capsule_id {
                 if !cid.is_empty() {
                     verdicted.insert(_short_id(cid));
@@ -180,7 +180,7 @@ pub fn get_review_queue() -> Vec<QueuedCapsule> {
 
     for cap in capsules {
         let status = cap.status.as_deref().unwrap_or("");
-        if status != "" && status != "active" {
+        if !status.is_empty() && status != "active" {
             continue;
         }
 

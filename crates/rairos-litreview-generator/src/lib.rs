@@ -1,4 +1,6 @@
 //! rairos-litreview-generator — LLM-powered literature review generator.
+#![allow(dead_code)]
+#![allow(clippy::too_many_arguments)]
 //!
 //! Ported from `llm/litreview_generator.py`.
 

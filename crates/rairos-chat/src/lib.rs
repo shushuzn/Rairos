@@ -1,3 +1,7 @@
+#![allow(dead_code)]
+#![allow(
+    clippy::manual_clamp,
+)]
 use regex::Regex;
 use sha2::{Digest, Sha256};
 use std::collections::{HashMap, HashSet};

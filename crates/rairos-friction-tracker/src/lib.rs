@@ -1,12 +1,15 @@
 //! rairos-friction-tracker — Research Friction Tracker for AI Research OS.
+
+#![allow(clippy::should_implement_trait, clippy::sort_by_key, unused_imports)]
+#![allow(dead_code)]
 //!
 //! Ported from `llm/friction_tracker.py` (248 LOC, pure stdlib).
 
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs::{File, OpenOptions};
-use std::io::{BufRead, BufReader, Write};
+use std::fs::OpenOptions;
+use std::io::{BufRead, Write};
 use std::path::PathBuf;
 
 // ─── Enums ─────────────────────────────────────────────────────────────────────
@@ -136,7 +139,7 @@ impl FrictionEvent {
     pub fn new(friction_type: &str, severity: &str) -> Self {
         let now = Local::now().to_rfc3339();
         Self {
-            id: format!("fr_{}", uuid::Uuid::new_v4().to_string()[..8].to_string()),
+            id: format!("fr_{}", &uuid::Uuid::new_v4().to_string()[..8]),
             timestamp: now,
             friction_type: friction_type.to_string(),
             severity: severity.to_string(),

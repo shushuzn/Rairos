@@ -62,7 +62,9 @@ pub enum ResearchSessionError {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum ResearchIntent {
+    #[default]
     Learning,    // 理解概念、学习原理
     Reproducing, // 复现代码、复现实验
     Improving,   // 改进方法、创新
@@ -71,11 +73,6 @@ pub enum ResearchIntent {
     Citing,      // 引用写作、文献整理
 }
 
-impl Default for ResearchIntent {
-    fn default() -> Self {
-        ResearchIntent::Learning
-    }
-}
 
 impl ResearchIntent {
     pub fn as_str(&self) -> &'static str {

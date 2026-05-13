@@ -1,4 +1,6 @@
 //! rairos-eval-gap-monitor — Evaluation Gap Monitor for AI Research OS.
+
+#![allow(clippy::sort_by_key)]
 //!
 //! Ported from `llm/eval_gap_monitor.py` (150 LOC, pure stdlib).
 //!
@@ -43,8 +45,7 @@ fn load_papers() -> Vec<serde_json::Value> {
         return vec![];
     };
     data.get("papers")
-        .and_then(|v| v.as_array())
-        .map(|a| a.clone())
+        .and_then(|v| v.as_array()).cloned()
         .unwrap_or_default()
 }
 

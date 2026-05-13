@@ -1,4 +1,6 @@
 //! Test Extractor — generate pytest test suite from paper content + generated code.
+
+#![allow(clippy::regex_creation_in_loops)]
 //!
 //! Python original: `research_loop/test_extractor.py` (492 lines)
 

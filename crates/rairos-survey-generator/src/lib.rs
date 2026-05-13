@@ -1,4 +1,6 @@
 use chrono::Local;
+
+#![allow(clippy::sort_by_key)]
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;

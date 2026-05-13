@@ -1,4 +1,6 @@
 //! rairos-research-log — Per-paper research notes stored in JSONL.
+
+#![allow(clippy::unwrap_used)]
 //!
 //! Ported from `llm/research_log.py`.
 

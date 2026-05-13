@@ -1,4 +1,6 @@
 //! rairos-signal — Pattern-based signal system for matching live events against historical Gene Pool patterns.
+
+#![allow(clippy::manual_clamp)]
 //!
 //! Ported from `llm/signal.py`.
 //!
@@ -114,6 +116,12 @@ impl SignalLevel {
 /// This stub returns empty/mock data for testing purposes.
 pub struct Jin10Client;
 
+impl Default for Jin10Client {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Jin10Client {
     pub fn new() -> Self {
         Jin10Client
@@ -174,6 +182,12 @@ impl Jin10Client {
 /// Stub EvolutionTracker for loading Gene Pool capsules.
 /// In production this would load from persistent storage (~/.ai_research_os/evolution/gene_pool.jsonl).
 pub struct EvolutionTracker;
+
+impl Default for EvolutionTracker {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl EvolutionTracker {
     pub fn new() -> Self {
@@ -325,7 +339,7 @@ pub fn signal(event_keyword: &str) -> SignalReport {
     let high_matches: Vec<&Match> = matches.iter().filter(|m| m.total >= 0.5).collect();
     let signal_level = if high_matches.len() >= 2 {
         SignalLevel::High
-    } else if high_matches.len() >= 1 {
+    } else if !high_matches.is_empty() {
         SignalLevel::Medium
     } else {
         SignalLevel::Low
@@ -335,33 +349,27 @@ pub fn signal(event_keyword: &str) -> SignalReport {
     let mut impact_sectors: Vec<String> = Vec::new();
     for m in matches.iter().take(3) {
         let title_lower = m.title.to_lowercase();
-        if title_lower.contains("oil")
+        if (title_lower.contains("oil")
             || title_lower.contains("石油")
             || title_lower.contains("hormuz")
-            || title_lower.contains("energy")
-        {
-            if !impact_sectors.contains(&"energy".to_string()) {
+            || title_lower.contains("energy"))
+            && !impact_sectors.contains(&"energy".to_string()) {
                 impact_sectors.push("energy".to_string());
             }
-        }
-        if title_lower.contains("military")
+        if (title_lower.contains("military")
             || title_lower.contains("ceasefire")
             || title_lower.contains("missile")
-            || title_lower.contains("导弹")
-        {
-            if !impact_sectors.contains(&"defense".to_string()) {
+            || title_lower.contains("导弹"))
+            && !impact_sectors.contains(&"defense".to_string()) {
                 impact_sectors.push("defense".to_string());
             }
-        }
-        if title_lower.contains("inflation")
+        if (title_lower.contains("inflation")
             || title_lower.contains("rate")
             || title_lower.contains("加息")
-            || title_lower.contains("finance")
-        {
-            if !impact_sectors.contains(&"finance".to_string()) {
+            || title_lower.contains("finance"))
+            && !impact_sectors.contains(&"finance".to_string()) {
                 impact_sectors.push("finance".to_string());
             }
-        }
     }
 
     let top_matches_for_rec: Vec<&Match> = matches.iter().take(3).collect();
@@ -454,7 +462,7 @@ pub fn render_signal(result: &SignalReport) -> String {
     };
 
     let mut lines = Vec::new();
-    lines.push(format!("\n  === Signal Analysis ==="));
+    lines.push("\n  === Signal Analysis ===".to_string());
     lines.push(format!("  Event: {}", result.event));
     lines.push(format!(
         "  Signal: {}{}{}  |  {}",
@@ -463,7 +471,7 @@ pub fn render_signal(result: &SignalReport) -> String {
     lines.push(String::new());
 
     if !result.capsule_matches.is_empty() {
-        lines.push(format!("  Historical Pattern Matches"));
+        lines.push("  Historical Pattern Matches".to_string());
         for m in result.capsule_matches.iter().take(3) {
             let credibility_upper = m.credibility.to_uppercase();
             lines.push(format!(
@@ -477,7 +485,7 @@ pub fn render_signal(result: &SignalReport) -> String {
     }
 
     if !result.markets.is_empty() {
-        lines.push(format!("  Current Markets"));
+        lines.push("  Current Markets".to_string());
         for (k, v) in &result.markets {
             lines.push(format!("  {:<8} {:>8}  {}", k, v.price, v.change));
         }
@@ -485,12 +493,12 @@ pub fn render_signal(result: &SignalReport) -> String {
     }
 
     if !result.impact_sectors.is_empty() {
-        lines.push(format!("  Impact Sectors"));
+        lines.push("  Impact Sectors".to_string());
         lines.push(format!("  {}", result.impact_sectors.join(", ")));
         lines.push(String::new());
     }
 
-    lines.push(format!("  Recommendation"));
+    lines.push("  Recommendation".to_string());
     lines.push(format!("  {}", result.recommendation));
     lines.push(String::from("  =============================="));
 

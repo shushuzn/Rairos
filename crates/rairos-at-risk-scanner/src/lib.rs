@@ -1,4 +1,8 @@
 //! rairos-at-risk-scanner — At-Risk Capsule Scanner for AI Research OS.
+
+#![allow(
+    clippy::sort_by_key,
+)]
 //!
 //! Ported from `llm/at_risk_scanner.py` (166 LOC, pure stdlib).
 //!
@@ -50,8 +54,7 @@ fn load_capsules() -> Vec<serde_json::Value> {
         return vec![];
     };
     data.get("capsules")
-        .and_then(|v| v.as_array())
-        .map(|a| a.clone())
+        .and_then(|v| v.as_array()).cloned()
         .unwrap_or_default()
 }
 
@@ -73,7 +76,7 @@ pub fn get_at_risk_capsules(threshold: u32) -> Vec<AtRiskCapsule> {
 
     for cap in &all_caps {
         let status = cap.get("status").and_then(|v| v.as_str()).unwrap_or("");
-        if status != "active" && status != "" {
+        if status != "active" && !status.is_empty() {
             continue;
         }
         let streak = cap

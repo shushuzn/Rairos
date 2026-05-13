@@ -1,4 +1,5 @@
 //! Rairos Parsers — Extended paper metadata fetching from multiple sources
+#![allow(dead_code)]
 //!
 //! This crate extends `rairos-parser` with search functionality:
 //! - `arxiv_search`: Search arXiv by keyword query

@@ -1,4 +1,6 @@
 //! rairos-evolution — Evolution Memory: User Feedback & Pattern Learning.
+
+#![allow(dead_code)]
 //!
 //! Ported from `llm/evolution.py`.
 

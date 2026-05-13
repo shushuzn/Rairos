@@ -1,4 +1,5 @@
 //! rairos-bold-vault — Bold Hypothesis Vault for AI Research OS.
+#![allow(dead_code)]
 //!
 //! Ported from `llm/bold_vault.py` (148 LOC, pure stdlib).
 //!
@@ -60,8 +61,7 @@ fn load_capsules() -> Vec<serde_json::Value> {
         return vec![];
     };
     data.get("capsules")
-        .and_then(|v| v.as_array())
-        .map(|a| a.clone())
+        .and_then(|v| v.as_array()).cloned()
         .unwrap_or_default()
 }
 
@@ -71,7 +71,7 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
 
     for cap in &capsules {
         let status = cap.get("status").and_then(|v| v.as_str()).unwrap_or("");
-        if status != "active" && status != "" {
+        if status != "active" && !status.is_empty() {
             continue;
         }
 

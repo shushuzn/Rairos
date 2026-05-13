@@ -1,4 +1,6 @@
 //! rairos-ecosystem — Digital ecosystem component registry.
+
+#![allow(clippy::vec_init_then_push)]
 //!
 //! Ported from `core/ecosystem.py`.
 //!
@@ -30,6 +32,12 @@ pub struct EcosystemComponent {
 #[derive(Debug)]
 pub struct Ecosystem {
     components: Mutex<HashMap<String, EcosystemComponent>>,
+}
+
+impl Default for Ecosystem {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Ecosystem {

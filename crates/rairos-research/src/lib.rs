@@ -1,4 +1,5 @@
 //! Rairos Research — Deep research orchestration and gap detection
+#![allow(dead_code)]
 //!
 //! Coordinates the full research pipeline: fetch → analyze → detect gaps → evolve.
 //! Replaces: research_loop/core.py, research_loop/orchestrator.py, research_loop/deep_research.py

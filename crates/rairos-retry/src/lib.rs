@@ -1,4 +1,6 @@
 //! rairos-retry — Retry utilities with exponential backoff and circuit breaker.
+
+#![allow(clippy::type_repetition_in_bounds)]
 //!
 //! Ported from `core/retry.py`.
 //!

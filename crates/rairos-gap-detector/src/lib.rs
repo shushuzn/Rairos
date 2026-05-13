@@ -1,4 +1,6 @@
 //! rairos-gap-detector — Gap Detector re-export.
+
+#![allow(clippy::should_implement_trait)]
 //!
 //! Ported from `llm/gap_detector.py`.
 

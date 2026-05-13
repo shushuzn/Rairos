@@ -3,7 +3,6 @@
 //! Ported from `core/notifications.py`.
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::sync::LazyLock;
 use std::sync::Mutex as StdMutex;
 

@@ -97,11 +97,11 @@ impl ResearchMemory {
     pub fn new() -> Self {
         let stances = load_stances_raw()
             .into_iter()
-            .filter_map(|d| stance_from_dict(d))
+            .filter_map(stance_from_dict)
             .collect();
         let anomalies = load_anomalies_raw()
             .into_iter()
-            .filter_map(|d| anomaly_from_dict(d))
+            .filter_map(anomaly_from_dict)
             .collect();
         Self { stances, anomalies }
     }
@@ -118,9 +118,9 @@ impl ResearchMemory {
 
     /// Persist stances and anomalies to disk.
     fn persist(&self) {
-        let stances: Vec<_> = self.stances.iter().map(|s| stance_to_dict(s)).collect();
+        let stances: Vec<_> = self.stances.iter().map(stance_to_dict).collect();
         let _ = save_stances_raw(&stances);
-        let anomalies: Vec<_> = self.anomalies.iter().map(|a| anomaly_to_dict(a)).collect();
+        let anomalies: Vec<_> = self.anomalies.iter().map(anomaly_to_dict).collect();
         let _ = save_anomalies_raw(&anomalies);
     }
 
@@ -181,7 +181,7 @@ impl ResearchMemory {
         topic: Option<&str>,
         stance_type: Option<StanceType>,
     ) -> Vec<ResearchStance> {
-        let mut results: Vec<ResearchStance> = self.stances.iter().cloned().collect();
+        let mut results: Vec<ResearchStance> = self.stances.to_vec();
         if let Some(t) = topic {
             let t_lower = t.to_lowercase();
             results.retain(|s| s.topic.to_lowercase().contains(&t_lower));
@@ -324,7 +324,7 @@ impl ResearchMemory {
 
     /// Get most recent anomaly alerts, up to `limit`.
     pub fn get_recent_anomalies(&self, limit: usize) -> Vec<AnomalyAlert> {
-        let mut sorted: Vec<_> = self.anomalies.iter().cloned().collect();
+        let mut sorted: Vec<_> = self.anomalies.to_vec();
         sorted.sort_by(|a, b| b.created_at.partial_cmp(&a.created_at).unwrap());
         sorted.into_iter().take(limit).collect()
     }

@@ -1,4 +1,6 @@
 //! rairos-replication-checker — Experiment Replication Checker for AI Research OS.
+
+#![allow(clippy::regex_creation_in_loops)]
 //!
 //! Ported from `llm/replication_checker.py` (568 LOC, pure stdlib).
 //!
@@ -696,7 +698,7 @@ impl ReplicationChecker {
             lines.push("✅ Smoke test passed".to_string());
         }
 
-        lines.push(format!("============================================================"));
+        lines.push("============================================================".to_string());
         lines.join("\n")
     }
 }

@@ -1,4 +1,6 @@
 //! Rairos Rankers Score — Composite scoring strategy
+
+#![allow(clippy::should_implement_trait)]
 //!
 //! Reference: Python rankers/score.py
 //!
@@ -8,7 +10,7 @@
 //! - Parse quality bonus (papers with better parse_status rank higher)
 
 use chrono::{Datelike, NaiveDate, Utc};
-use rairos_rankers_base::{RankedResult, Ranker, RankerError, Result};
+use rairos_rankers_base::{RankedResult, RankerError};
 use serde::{Deserialize, Serialize};
 
 // ============================================================================

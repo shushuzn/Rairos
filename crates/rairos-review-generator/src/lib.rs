@@ -1,4 +1,6 @@
 //! rairos-review-generator — Literature Review Generator
+
+#![allow(clippy::too_many_arguments)]
 //!
 //! Ported from `llm/review_generator.py` (329 LOC, pure stdlib).
 //!

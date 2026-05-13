@@ -1,4 +1,5 @@
 //! rairos-scout — Paper scout that proactively finds papers matching Gene Pool interests.
+#![allow(dead_code)]
 //!
 //! Scans ArXiv and news RSS feeds for papers, scores them against Gene Pool capsules,
 //! and returns ranked results.

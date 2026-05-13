@@ -4,7 +4,6 @@
 //!
 //! Provides terminal colors, formatted output helpers, and Warp-style panels.
 
-use serde;
 
 use std::io::{self, IsTerminal};
 
@@ -147,7 +146,7 @@ pub fn warp_table(headers: &[&str], rows: &[Vec<&str>], width: usize) -> String 
         for (i, cell) in row.iter().enumerate() {
             result.push_str(&format!("{:<width$} │ ", cell, width = col_widths[i]));
         }
-        result.push_str("\n");
+        result.push('\n');
     }
     result.push_str(&format!("└{}┘", horizontal));
     result
@@ -180,7 +179,7 @@ fn wrap_text(text: &str, width: usize) -> String {
     let mut current_line = String::new();
 
     for word in words {
-        if current_line.len() + word.len() + 1 <= width {
+        if current_line.len() + word.len() < width {
             if !current_line.is_empty() {
                 current_line.push(' ');
             }
@@ -195,7 +194,7 @@ fn wrap_text(text: &str, width: usize) -> String {
     if !current_line.is_empty() {
         lines.push(current_line);
     }
-    lines.join(&format!("\n│ "))
+    lines.join("\n│ ")
 }
 
 // ============================================================================

@@ -1,4 +1,6 @@
 //! Rairos Review Simulator — LLM-powered adversarial peer reviewer simulator
+
+#![allow(clippy::sort_by_key, clippy::type_repetition_in_bounds)]
 //!
 //! Simulates adversarial peer reviewers stress-testing a paper or proposal.
 //! Plays hostile reviewer personas to surface weaknesses before submission.
@@ -672,7 +674,7 @@ Only include annotations for genuine issues. Maximum 6 annotations per review. I
         let annotations: Vec<ReviewAnnotation> = parsed
             .get("annotations")
             .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().filter_map(|a| parse_annotation(a)).collect())
+            .map(|arr| arr.iter().filter_map(parse_annotation).collect())
             .unwrap_or_default();
 
         Ok(SimulatedReview {

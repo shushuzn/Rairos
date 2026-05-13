@@ -10,7 +10,7 @@
 //!         + radar_heat * 0.1
 //! All components are normalised to [0, 100].
 
-use chrono::{DateTime, Datelike, Utc};
+use chrono::{Datelike, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use thiserror::Error;
@@ -46,19 +46,12 @@ struct RadarEntry {
 // ============================================================================
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct PaperMetadata {
     pub cited_by: usize,
     pub references: usize,
 }
 
-impl Default for PaperMetadata {
-    fn default() -> Self {
-        Self {
-            cited_by: 0,
-            references: 0,
-        }
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Paper {

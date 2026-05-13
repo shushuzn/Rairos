@@ -1,4 +1,6 @@
 //! Research Session Snapstate — pause/resume for deep research agent workflows.
+
+#![allow(clippy::ptr_arg)]
 //!
 //! Save, load, list, checkpoint, rollback, fork, and compare research sessions.
 //!

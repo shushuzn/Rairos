@@ -10,10 +10,8 @@
 
 use rairos_pdf::{
     looks_like_heading as pdf_looks_like_heading,
-    segment_into_sections as pdf_segment_into_sections, MathBlock, StructuredPdfContent,
-    TableBlock, TextBlock,
+    segment_into_sections as pdf_segment_into_sections, MathBlock, StructuredPdfContent, TextBlock,
 };
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 // ============================================================================
@@ -160,7 +158,7 @@ pub fn format_section_snippets(
 
     // Sort by priority desc, then by original index asc
     indexed.sort_by(|a, b| {
-        let prio_cmp = b.2.cmp(&a.2);
+        let prio_cmp = b.2.cmp(a.2);
         if prio_cmp != std::cmp::Ordering::Equal {
             return prio_cmp;
         }

@@ -57,7 +57,7 @@ impl WorkspaceSnapshot {
             return String::new();
         };
         let hash = Sha256::digest(&data);
-        hex::encode(&hash)[..16].to_string()
+        hex::encode(hash)[..16].to_string()
     }
 
     pub fn capture(

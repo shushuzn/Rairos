@@ -1,4 +1,6 @@
 //! rairos-watch-papers — Watch papers.json for changes and trigger KG rebuilds.
+
+#![allow(dead_code)]
 //!
 //! Ported from `core/watch_papers.py`.
 //!
@@ -52,7 +54,7 @@ impl Watcher {
 
     /// Detect whether the file has changed since last check.
     fn detect_change(&mut self) -> bool {
-        let current = match self.hash() {
+        let _current = match self.hash() {
             Some(h) => h,
             None => return false,
         };

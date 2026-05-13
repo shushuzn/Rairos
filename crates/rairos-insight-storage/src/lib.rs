@@ -1,4 +1,6 @@
 //! rairos-insight-storage — Capsule storage mixin for EvolutionTracker — gene_pool.db (SQLite).
+#![allow(dead_code)]
+#![allow(clippy::too_many_arguments)]
 //!
 //! Ported from `llm/insight/storage.py`.
 

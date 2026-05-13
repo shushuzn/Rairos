@@ -34,18 +34,15 @@ pub type Result<T> = std::result::Result<T, ArgumentBuilderError>;
 /// Type of evidence for or against a claim.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum EvidenceType {
+    #[default]
     Support,        // 支持证据
     Contradict,     // 反驳证据
     Qualify,        // 限定条件
     Methodological, // 方法论问题
 }
 
-impl Default for EvidenceType {
-    fn default() -> Self {
-        EvidenceType::Support
-    }
-}
 
 /// Standard argument sections in a research paper.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -280,7 +277,7 @@ impl ArgumentBuilder {
         );
 
         // Suggest sections
-        let paper_suggestions = Self::suggest_sections(contradicting_evidence.len() > 0);
+        let paper_suggestions = Self::suggest_sections(!contradicting_evidence.is_empty());
 
         let argument = Argument {
             thesis: thesis.to_string(),
@@ -418,11 +415,10 @@ impl ArgumentBuilder {
                 }
             }
 
-            if !matched {
-                if let Some(_) = current_section {
+            if !matched
+                && current_section.is_some() {
                     current_content.push(line.to_string());
                 }
-            }
         }
 
         // Save last section

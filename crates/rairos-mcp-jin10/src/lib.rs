@@ -1,4 +1,6 @@
 //! rairos-mcp-jin10 — Jin10 Financial Data MCP Client.
+
+#![allow(dead_code)]
 //!
 //! Ported from `llm/tool/mcp_jin10.py`.
 

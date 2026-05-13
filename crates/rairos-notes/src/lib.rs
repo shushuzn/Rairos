@@ -1,4 +1,5 @@
 //! Rairos Notes — C/M/P Note System
+#![allow(dead_code)]
 //!
 //! C-Note: Concept note (core definitions, background, technical nature)
 //! M-Note: Comparison note (comparing 3 P-Notes on the same topic)

@@ -1,4 +1,8 @@
 use chrono::Utc;
+
+#![allow(
+    clippy::too_many_arguments,
+)]
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fs;

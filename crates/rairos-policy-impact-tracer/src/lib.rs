@@ -236,7 +236,7 @@ pub fn render_policy_tracer_html<C: CapsuleProvider>(provider: Option<&C>) -> St
     );
 
     // Regulation list
-    for (_rid, reg) in &regs {
+    for reg in regs.values() {
         lines.push(format!(
             "<div style='border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:10px;border-left:4px solid #D4A055'>\
               <div style='display:flex;justify-content:space-between'>\

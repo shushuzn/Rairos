@@ -1,4 +1,6 @@
 //! rairos-perf — Performance monitoring and timing utilities.
+
+#![allow(dead_code)]
 //!
 //! Ported from `core/logging_utils.py`.
 //!
@@ -183,7 +185,7 @@ pub fn time_scope_with_result<F, T>(name: &str, f: F) -> T
 where
     F: FnOnce() -> T,
 {
-    let timer = GlobalTimer::new(name);
+    let _timer = GlobalTimer::new(name);
     f()
 }
 

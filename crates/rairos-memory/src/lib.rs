@@ -1,4 +1,5 @@
 //! Rairos Memory — Research stance tracking and anomaly detection
+#![allow(dead_code)]
 //!
 //! Tracks research decisions over time and detects contradictions.
 //! Replaces: llm/research_memory.py

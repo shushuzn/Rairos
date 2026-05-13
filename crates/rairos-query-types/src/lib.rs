@@ -219,6 +219,7 @@ impl Default for ConfidenceScore {
 
 /// Cross-paper synthesis insight.
 #[derive(Debug, Clone)]
+#[derive(Default)]
 pub struct CrossPaperInsight {
     /// "comparison", "connection", "contradiction", "evolution"
     pub insight_type: String,
@@ -230,19 +231,10 @@ pub struct CrossPaperInsight {
     pub detail: String,
 }
 
-impl Default for CrossPaperInsight {
-    fn default() -> Self {
-        Self {
-            insight_type: String::new(),
-            summary: String::new(),
-            papers: Vec::new(),
-            detail: String::new(),
-        }
-    }
-}
 
 /// Result of a RAG chat interaction.
 #[derive(Debug, Clone)]
+#[derive(Default)]
 pub struct ChatResult {
     pub answer: String,
     pub citations: Vec<Citation>,
@@ -259,20 +251,6 @@ pub struct ChatResult {
     pub cross_paper_insights: Vec<CrossPaperInsight>,
 }
 
-impl Default for ChatResult {
-    fn default() -> Self {
-        Self {
-            answer: String::new(),
-            citations: Vec::new(),
-            papers_used: Vec::new(),
-            session_id: None,
-            resolved_context: None,
-            probing_questions: Vec::new(),
-            confidence: None,
-            cross_paper_insights: Vec::new(),
-        }
-    }
-}
 
 // ============================================================================
 // Tests

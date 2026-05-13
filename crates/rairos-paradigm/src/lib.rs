@@ -1,10 +1,11 @@
 //! Rairos Paradigm — Paradigm Concentration Monitor
+
+#![allow(clippy::sort_by_key)]
 //!
 //! Detects when >60% of citations in a domain cluster around ≤3 references.
 //! Flags a generalization_gap risk alert.
 
 use serde::{Deserialize, Serialize};
-use serde_json;
 
 const ALERT_THRESHOLD: f64 = 0.60;
 const TOP_N: usize = 3;
@@ -165,8 +166,8 @@ pub fn render_paradigm_html(data: &serde_json::Value) -> String {
         return "<p>Paradigm concentration monitor temporarily unavailable</p>".to_string();
     }
 
-    let alerts = data.get("alerts").and_then(|v| v.as_array()).map(|a| a.clone()).unwrap_or_default();
-    let categories = data.get("categories").and_then(|v| v.as_array()).map(|a| a.clone()).unwrap_or_default();
+    let alerts = data.get("alerts").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+    let categories = data.get("categories").and_then(|v| v.as_array()).cloned().unwrap_or_default();
 
     if categories.is_empty() && alerts.is_empty() {
         return "<p>No paradigm concentration detected.</p>".to_string();

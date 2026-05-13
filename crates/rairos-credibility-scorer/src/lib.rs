@@ -97,7 +97,7 @@ impl CredibilityScorer {
         let Ok(data) = serde_json::from_str::<serde_json::Value>(&contents) else {
             return results;
         };
-        let capsules = data.get("capsules").and_then(|v| v.as_array()).map(|a| a.clone());
+        let capsules = data.get("capsules").and_then(|v| v.as_array()).cloned();
 
         let Some(capsules) = capsules else {
             return results;

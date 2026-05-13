@@ -67,16 +67,12 @@ pub struct Paper {
 
 /// Internal storage wrapper.
 #[derive(Debug, Deserialize)]
+#[derive(Default)]
 struct PapersDb {
     #[serde(default)]
     papers: Vec<Paper>,
 }
 
-impl Default for PapersDb {
-    fn default() -> Self {
-        Self { papers: vec![] }
-    }
-}
 
 fn load_papers() -> Vec<Paper> {
     let path = papers_db_path();

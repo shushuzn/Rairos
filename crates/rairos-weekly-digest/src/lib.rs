@@ -1,4 +1,6 @@
 //! rairos-weekly-digest — Generate weekly research summaries.
+
+#![allow(clippy::sort_by_key)]
 //!
 //! Ported from `llm/weekly_digest.py`.
 //!
@@ -104,7 +106,7 @@ fn parse_date_to_timestamp(date_str: &str) -> Option<u64> {
 }
 
 fn is_leap(year: u32) -> bool {
-    (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+    (year.is_multiple_of(4) && !year.is_multiple_of(100)) || year.is_multiple_of(400)
 }
 
 /// Compute days elapsed since Unix epoch for the given Gregorian date.

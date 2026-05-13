@@ -1,4 +1,6 @@
 //! rairos-value-quantifier — Value Quantifier for AI Research OS.
+
+#![allow(clippy::vec_init_then_push)]
 //!
 //! Ported from `core/value_quantifier.py` (175 LOC, pure stdlib).
 
@@ -103,7 +105,7 @@ impl ValueQuantifier {
         lines.push(String::new());
         lines.push("-".repeat(60));
 
-        for (_key, metric) in &values {
+        for metric in values.values() {
             if metric.value > 0.0 {
                 lines.push(format!(
                     "📊 {}: {:.1} {}",

@@ -1,4 +1,8 @@
 //! Benchmark Runner — run pytest tests and encode results to Gene Pool.
+
+#![allow(
+    clippy::regex_creation_in_loops,
+)]
 //!
 //!闭环核心:
 //! - 运行 pytest 测试

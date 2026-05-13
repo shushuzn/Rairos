@@ -1,4 +1,9 @@
 use serde::{Deserialize, Serialize};
+
+#![allow(
+    clippy::vec_init_then_push,
+    dead_code,
+)]
 use std::collections::HashMap;
 use std::path::PathBuf;
 
@@ -315,7 +320,7 @@ pub fn render_channels_html(
                 let title = rp.get("title").and_then(|v| v.as_str()).unwrap_or("");
                 let published = rp.get("published").and_then(|v| v.as_str()).unwrap_or("");
                 let score = rp.get("score").and_then(|v| v.as_f64()).unwrap_or(0.0);
-                rows.push_str(&"<div style=\"display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0ebe5;\">".to_string());
+                rows.push_str("<div style=\"display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0ebe5;\">");
                 rows.push_str("<span style=\"color:#4CAF50;font-size:12px;\">●</span>");
                 rows.push_str("<div style=\"flex:1;\">");
                 rows.push_str(&format!(

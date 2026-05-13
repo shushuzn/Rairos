@@ -1,4 +1,7 @@
 //! Deep Research Agent — iterative research with gap detection and archetype-aware refinement.
+
+#![allow(clippy::default_constructed_unit_structs, clippy::sort_by_key)]
+#![allow(dead_code)]
 //!
 //! Architecture inspired by:
 //! - gpt-researcher: multi-agent research with planning

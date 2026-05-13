@@ -1,4 +1,7 @@
 //! rairos-observability — Structured logging, correlation IDs, event tracking, and metrics.
+
+#![allow(clippy::should_implement_trait)]
+#![allow(dead_code)]
 //!
 //! Ported from `core/observability.py`.
 

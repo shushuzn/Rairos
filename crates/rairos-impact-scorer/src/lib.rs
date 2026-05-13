@@ -92,7 +92,7 @@ impl ImpactScorer {
         "D".to_string()
     }
 
-    fn compute_pagerank(&self, paper_id: &str, citing_papers: &[serde_json::Value]) -> f64 {
+    fn compute_pagerank(&self, _paper_id: &str, citing_papers: &[serde_json::Value]) -> f64 {
         if citing_papers.is_empty() {
             return 0.1;
         }
@@ -114,7 +114,7 @@ impl ImpactScorer {
             }
             let total: f64 = new_scores.values().sum();
             if total > 0.0 {
-                for (k, v) in &mut new_scores {
+                for v in new_scores.values_mut() {
                     *v /= total;
                 }
                 scores = new_scores;

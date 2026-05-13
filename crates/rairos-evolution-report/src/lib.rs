@@ -1,4 +1,5 @@
-
+#![allow(dead_code)]
+#![allow(clippy::manual_filter_map)]
 //! rairos-evolution-report — Evolution Report Generator.
 //!
 //! Ported from `llm/evolution_report.py`.
@@ -340,7 +341,7 @@ impl EvolutionReporter {
     ) -> Vec<String> {
         let all_text: String = feedbacks
             .iter()
-            .filter_map(|fb| {
+            .map(|fb| {
                 let query = fb.get("query").and_then(|v| v.as_str()).unwrap_or("");
                 let papers: String = fb
                     .get("paper_ids")

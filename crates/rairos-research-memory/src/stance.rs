@@ -7,18 +7,15 @@ use uuid::Uuid;
 /// Research stance type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[derive(Default)]
 pub enum StanceType {
+    #[default]
     Supported,
     Rejected,
     Deferred,
     Qualified,
 }
 
-impl Default for StanceType {
-    fn default() -> Self {
-        StanceType::Supported
-    }
-}
 
 impl std::fmt::Display for StanceType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -34,17 +31,14 @@ impl std::fmt::Display for StanceType {
 /// Anomaly severity level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[derive(Default)]
 pub enum AnomalySeverity {
     High,
+    #[default]
     Medium,
     Low,
 }
 
-impl Default for AnomalySeverity {
-    fn default() -> Self {
-        AnomalySeverity::Medium
-    }
-}
 
 impl std::fmt::Display for AnomalySeverity {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

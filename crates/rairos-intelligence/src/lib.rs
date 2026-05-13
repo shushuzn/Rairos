@@ -1,4 +1,5 @@
 //! rairos-intelligence — Unified situation report from all data sources.
+#![allow(dead_code)]
 //!
 //! Ported from `llm/intelligence.py`.
 

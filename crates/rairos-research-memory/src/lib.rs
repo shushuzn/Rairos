@@ -1,4 +1,6 @@
 //! Rairos Research Memory — Research stance tracking and anomaly detection
+#![allow(dead_code)]
+#![allow(clippy::too_many_arguments)]
 //!
 //! Translates: llm/research_memory.py (410 LOC)
 //!

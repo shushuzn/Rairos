@@ -1,3 +1,7 @@
+#![allow(dead_code)]
+#![allow(
+    clippy::type_complexity,
+)]
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};

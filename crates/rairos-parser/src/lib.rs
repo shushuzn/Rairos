@@ -1,4 +1,5 @@
 //! Rairos Parser — Paper metadata fetching from multiple sources
+#![allow(dead_code)]
 //!
 //! Supported sources: arXiv, CrossRef, Semantic Scholar, PDF extraction
 //! Replaces: parsers/arxiv.py, parsers/cross_search.py, pdf/parser.py

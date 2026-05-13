@@ -1,4 +1,5 @@
 //! Rairos Rankers — Paper ranking strategies
+#![allow(dead_code)]
 //!
 //! Implements semantic similarity ranking, composite scoring, and research momentum.
 //! Reference: Python rankers/ and scoring/ modules.

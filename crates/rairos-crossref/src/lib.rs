@@ -1,4 +1,7 @@
 //! rairos-crossref — Crossref API metadata fetching.
+
+#![allow(clippy::regex_creation_in_loops, clippy::upper_case_acronyms)]
+#![allow(dead_code)]
 //!
 //! Ported from `parsers/crossref.py` (228 LOC).
 //!

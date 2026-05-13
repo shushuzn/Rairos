@@ -1,4 +1,7 @@
 //! Rairos PDF Parser — Structured PDF parsing with caching
+
+#![allow(clippy::regex_creation_in_loops)]
+#![allow(dead_code)]
 //!
 //! Ports `pdf/parser.py` and `pdf/extract.py`.
 //!

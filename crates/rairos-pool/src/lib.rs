@@ -1,4 +1,5 @@
 //! rairos-pool — Gene Pool I/O
+#![allow(dead_code)]
 //!
 //! Unified read/write for capsules.json + gene_pool.jsonl, import/export, and backup.
 //!

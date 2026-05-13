@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(clippy::sort_by_key)]
+#![allow(clippy::too_many_arguments)]
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+
+#![allow(dead_code)]
 use std::collections::HashSet;
 use std::path::Path;
 
@@ -81,7 +83,7 @@ impl CodeIndexer {
         let mut chunks = Vec::new();
         let lines: Vec<&str> = content.lines().collect();
         let path = Path::new(file_path);
-        let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+        let _ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
         let file_stem = path.file_stem().and_then(|s| s.to_str()).unwrap_or("unknown");
 
         let mut i = 0;
@@ -106,7 +108,7 @@ impl CodeIndexer {
             };
 
             let mut j = start + 1;
-            let mut depth = 1;
+            let _depth = 1;
             while j < lines.len() {
                 let line = lines[j];
                 if line.starts_with("def ")

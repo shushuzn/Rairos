@@ -1,4 +1,6 @@
 //! Topic Discovery — intelligently suggest new arXiv subscription topics from gaps and papers.
+
+#![allow(clippy::sort_by_key)]
 //!
 //! Given recent research output (gaps, papers), this module identifies research areas
 //! that are active but not yet subscribed to, so the system can proactively expand

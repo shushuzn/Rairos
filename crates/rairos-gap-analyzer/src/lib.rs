@@ -1,4 +1,6 @@
 //! rairos-gap-analyzer — Gap Analyzer re-export.
+
+#![allow(clippy::should_implement_trait)]
 //!
 //! Ported from `llm/gap_analyzer.py`.
 

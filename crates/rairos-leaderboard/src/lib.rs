@@ -1,4 +1,6 @@
 //! Benchmark Leaderboard — ranked paper2code implementations.
+
+#![allow(dead_code)]
 //!
 //! Persists benchmark results keyed by arxiv_id, ranks by combined score:
 //!   combined_score = pass_rate × 0.7 + coverage_ratio × 0.3
