@@ -1,4 +1,11 @@
 """Re-export from llm.research.gap_detector for backward compatibility."""
+import warnings
+warnings.warn(
+    f"Import from llm.gap_detector is deprecated, use llm.research.gap_detector instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 from llm.research.gap_detector import (
     GapType,

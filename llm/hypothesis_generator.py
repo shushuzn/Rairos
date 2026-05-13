@@ -1,4 +1,11 @@
 """Re-export from llm.research.hypothesis_generator for backward compatibility."""
+import warnings
+warnings.warn(
+    f"Import from llm.hypothesis_generator is deprecated, use llm.research.hypothesis_generator instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 from llm.research.hypothesis_generator import (
     HypothesisType,

@@ -1,4 +1,11 @@
 """Re-export from llm.research.gap_analyzer for backward compatibility."""
+import warnings
+warnings.warn(
+    f"Import from llm.gap_analyzer is deprecated, use llm.research.gap_analyzer instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 
 from llm.research.gap_analyzer import (
     ResearchGapV2,
