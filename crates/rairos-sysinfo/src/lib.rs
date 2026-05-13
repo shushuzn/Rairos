@@ -107,6 +107,7 @@ struct ProcessInfo {
 #[pymethods]
 impl ProcessInfo {
     #[new]
+    #[pyo3(signature = (pid=None))]
     fn new(pid: Option<u32>) -> PyResult<Self> {
         let actual_pid = pid
             .map(Pid::from_u32)
