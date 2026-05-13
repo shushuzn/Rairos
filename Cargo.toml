@@ -17,6 +17,7 @@ members = [
     "crates/rairos-channels",
     "crates/rairos-chat",
     "crates/rairos-citation-chain",
+    "crates/rairos-claim-graph",
     "crates/rairos-citation-pathfinder-web",
     "crates/rairos-citations",
     "crates/rairos-claimgraph",
