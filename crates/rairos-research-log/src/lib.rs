@@ -8,9 +8,12 @@ use std::io::Write;
 use std::path::PathBuf;
 
 fn log_path() -> PathBuf {
-    dirs::home_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join(".ai_research_os")
+    let base = if let Ok(home) = std::env::var("RAIROS_HOME") {
+        PathBuf::from(home)
+    } else {
+        dirs::home_dir().unwrap_or_else(|| PathBuf::from("."))
+    };
+    base.join(".ai_research_os")
         .join("gene_pool")
         .join("research_log.jsonl")
 }
@@ -144,6 +147,8 @@ mod tests {
 
     #[test]
     fn test_add_note_and_get() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        std::env::set_var("RAIROS_HOME", temp_dir.path());
         let paper_id = "test_paper_123";
         let result = add_note(
             paper_id,
@@ -157,6 +162,8 @@ mod tests {
         assert_eq!(notes[0].paper_id, paper_id);
         assert_eq!(notes[0].note, "This is a test note.");
         assert_eq!(notes[0].tags, vec!["test"]);
+        std::env::remove_var("RAIROS_HOME");
+        temp_dir.close().unwrap();
     }
 
     #[test]
