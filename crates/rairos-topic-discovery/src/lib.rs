@@ -64,6 +64,7 @@ pub struct TopicSuggestion {
 }
 
 impl TopicSuggestion {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         topic: String,
         source: &str,
@@ -241,6 +242,7 @@ fn extract_keywords_from_text(texts: &[String], top_n: usize) -> Vec<(String, us
     }
 
     let mut all: Vec<(String, usize)> = token_counter.into_iter().collect();
+    #[allow(clippy::sort_by_key)]
     all.sort_by(|a, b| b.1.cmp(&a.1));
     all.truncate(top_n * 2);
     all
