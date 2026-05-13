@@ -87,6 +87,10 @@ ai_research.db
 
 data/extable.db
 
+# Generated data files
+data/briefings/
+data/semantic_router_index.json
+
 # Experiment files (local only)
 
 galerkin_experiment.py
