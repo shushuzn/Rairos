@@ -180,7 +180,8 @@ mod tests {
     fn test_global_monitor() {
         let monitor = get_monitor();
         monitor.record("global_test", 42.0);
-        let stats = monitor.get_stats("global_test").unwrap();
+        let stats = monitor.get_stats("global_test")
+            .expect("global_test metric should exist after record()");
         assert_eq!(stats.count, 1);
     }
 
