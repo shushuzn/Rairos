@@ -889,7 +889,7 @@ Rewrite as a standalone question (in the same language as the original question)
                     # Cosine similarity: dot / (norm_a * norm_b)
                     norm = sum(x * x for x in paper_emb) ** 0.5
                     if norm > 0:
-                        dot = sum(a * b for a, b in zip(query_emb, paper_emb))
+                        dot = sum(a * b for a, b in zip(query_emb, paper_emb, strict=True))
                         sem_score = dot / (query_norm * norm)
                     else:
                         sem_score = 0.5
@@ -992,7 +992,7 @@ Rewrite as a standalone question (in the same language as the original question)
                             sel_emb = embeddings.get(sel_r.paper_id)
                             if sel_emb and emb_norms.get(sel_r.paper_id):
                                 norm_s = emb_norms[sel_r.paper_id]
-                                dot = sum(a * b for a, b in zip(paper_emb, sel_emb))
+                                dot = sum(a * b for a, b in zip(paper_emb, sel_emb, strict=True))
                                 sim = dot / (norm_r * norm_s)
                                 max_sim = max(max_sim, sim)
 

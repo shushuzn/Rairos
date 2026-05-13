@@ -203,7 +203,7 @@ def _run_postprocess(args: argparse.Namespace) -> int:
             for s in result.stages_failed
             if (cast(dict, result.stage_results).get(s, {}) or {}).get("error")
         ]
-        for stage, err in zip(result.stages_failed, last_errors):
+        for stage, err in zip(result.stages_failed, last_errors, strict=True):
             print_error(f"  x {stage}: {err}")
     if result.pnote_updated and pnote_path:
         print_info(f"  -> P-note: {pnote_path.name}")

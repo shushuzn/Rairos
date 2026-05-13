@@ -101,9 +101,9 @@ class PaperRecord:
             return cls(dict(row))
         if hasattr(row, "cursor_description"):
             # standard sqlite3.Row
-            return cls(dict(zip([c[0] for c in row.cursor_description], row)))
+            return cls(dict(zip([c[0] for c in row.cursor_description], row, strict=True)))
         # _SqliteRow: use keys()
-        return cls(dict(zip(row.keys(), row)))
+        return cls(dict(zip(row.keys(), row, strict=True)))
 
     @property
     def id(self) -> str:
@@ -462,7 +462,7 @@ class Database:
                     self._conn.commit()
                     return None
                 cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
-                d = dict(zip(cols, row))
+                d = dict(zip(cols, row, strict=True))
                 for field in ("authors", "latex_blocks"):
                     if d.get(field):
                         try:
@@ -543,7 +543,7 @@ class Database:
                 if not row:
                     continue
                 cols = [d[1] for d in self._conn.execute("PRAGMA table_info(papers)").fetchall()]
-                d = dict(zip(cols, row))
+                d = dict(zip(cols, row, strict=True))
                 for field in ("authors", "latex_blocks"):
                     if d.get(field):
                         try:
@@ -632,7 +632,7 @@ class Database:
         cols = [d[1] for d in conn.execute("PRAGMA table_info(papers)").fetchall()]
         records = []
         for row in rows:
-            d = dict(zip(cols, row))
+            d = dict(zip(cols, row, strict=True))
             if d.get("authors"):
                 try:
                     d["authors"] = json.loads(d["authors"])

@@ -346,7 +346,7 @@ def tmp_db(tmp_path):
         if row is None:
             return None
         columns = [desc[0] for desc in cur.description]
-        return dict(zip(columns, row))
+        return dict(zip(columns, row, strict=True))
 
     def update_parse_status(
         paper_id,

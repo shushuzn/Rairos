@@ -342,13 +342,13 @@ class PaperSlidesGenerator:
 
         lines = []
         # 表头
-        header_line = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
+        header_line = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths, strict=True))
         lines.append(header_line)
         lines.append("|" + "|".join("-" * w for w in col_widths) + "|")
 
         # 数据行
         for row in rows:
-            lines.append(" | ".join(str(cell).ljust(w) for cell, w in zip(row, col_widths)))
+            lines.append(" | ".join(str(cell).ljust(w) for cell, w in zip(row, col_widths, strict=True)))
 
         return "\n".join(lines)
 

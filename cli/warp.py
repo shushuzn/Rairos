@@ -519,7 +519,7 @@ class WarpBlocks:
         result_lines = [top]
         if show_line_numbers:
             num_width = len(str(len(lines)))
-            for i, (orig, hl) in enumerate(zip(lines, highlighted)):
+            for i, (orig, hl) in enumerate(zip(lines, highlighted, strict=True)):
                 line_num = str(i + 1).rjust(num_width)
                 max_content = width - num_width - 4  # " │ "
                 if len(orig) > max_content:
@@ -676,7 +676,7 @@ class WarpBlocks:
         header_sep = "├".join("─" * w for w in col_widths)
 
         def fmt_row(cells: List[str]) -> str:
-            padded = [str(c).ljust(w) for c, w in zip(cells, col_widths)]
+            padded = [str(c).ljust(w) for c, w in zip(cells, col_widths, strict=True)]
             return "│ " + " │ ".join(padded) + " │"
 
         lines = []

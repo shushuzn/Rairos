@@ -161,7 +161,7 @@ def run_ablation():
     scores_full = compute_scores(gaps)
     print("Per-gap 6-tuple scores (for reference):")
     print(f"  {'Gap':<22} (trend, gene, kw, pref, sev, pri)")
-    for g, sc in zip(gaps, scores_full):
+    for g, sc in zip(gaps, scores_full, strict=True):
         print(f"  {g.title:<22} {sc}")
     print()
 
@@ -180,7 +180,7 @@ def run_ablation():
     for dim_name, dim_idx in dimensions:
         # Zero that dimension for all gaps and sort
         zeroed_scores = [zero_tuple_at(sc, dim_idx) for sc in scores_full]
-        indexed = list(zip(gaps, zeroed_scores))
+        indexed = list(zip(gaps, zeroed_scores, strict=True))
         indexed.sort(key=lambda x: x[1], reverse=True)
         order = [g.title for g, _ in indexed]
         changed = order[0] != full_order[0]

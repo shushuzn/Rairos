@@ -71,7 +71,7 @@ class TrendForecaster:
             ts = self.build_timeseries(tag, months=6)
             if len(ts) < 2:
                 continue
-            _, scores = zip(*ts)
+            _, scores = zip(*ts, strict=True)
             slope = self._linear_slope(list(scores))
             if slope > threshold:
                 results.append((tag, round(slope, 4)))
@@ -90,7 +90,7 @@ class TrendForecaster:
                 "trend": "unknown",
             }
 
-        timestamps, scores = zip(*ts)
+        timestamps, scores = zip(*ts, strict=True)
         scores = list(scores)  # type: ignore[assignment]
 
         # Holt's linear exponential smoothing

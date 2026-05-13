@@ -343,7 +343,7 @@ class TestCheckDBCache:
                 if row is None:
                     return None
                 columns = [desc[0] for desc in cur.description]
-                return dict(zip(columns, row))
+                return dict(zip(columns, row, strict=True))
 
         # Use a fresh DB for this sub-test
         conn2 = sqlite3.connect(str(db_path))
@@ -399,7 +399,7 @@ class TestCheckDBCache:
                 if row is None:
                     return None
                 columns = [desc[0] for desc in cur.description]
-                return dict(zip(columns, row))
+                return dict(zip(columns, row, strict=True))
 
         db = _FakeDB(conn)
         parser = PDFParser(db=db)
@@ -464,7 +464,7 @@ class TestCheckDBCache:
                 if row is None:
                     return None
                 columns = [desc[0] for desc in cur.description]
-                result = dict(zip(columns, row))
+                result = dict(zip(columns, row, strict=True))
                 # latex_blocks is stored as a JSON string; parse it here so
                 # from_cache_dict receives a list (not a string) when iterating.
                 result["latex_blocks"] = json.loads(result["latex_blocks"])
@@ -543,7 +543,7 @@ class TestSaveDBCache:
                 if row is None:
                     return None
                 columns = [desc[0] for desc in cur.description]
-                return dict(zip(columns, row))
+                return dict(zip(columns, row, strict=True))
 
             def update_parse_status(
                 self,

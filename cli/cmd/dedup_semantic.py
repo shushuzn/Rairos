@@ -157,7 +157,7 @@ def _generate_missing_embeddings(
         nonlocal generated, failed
         embeddings = _get_ollama_embedding_batch(batch_texts, batch_size=batch_size)
         local_gen, local_fail = 0, 0
-        for pid, emb in zip(batch_ids, embeddings):
+        for pid, emb in zip(batch_ids, embeddings, strict=True):
             if emb is not None:
                 try:
                     db.set_embedding(pid, emb)

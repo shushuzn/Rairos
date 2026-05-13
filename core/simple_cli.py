@@ -247,7 +247,7 @@ class SimpleCLI:
         fields, rows = db.export_papers(format=args.format)
 
         if args.format == "json":
-            data = [dict(zip(fields, row)) for row in rows]
+            data = [dict(zip(fields, row, strict=True)) for row in rows]
             print(json.dumps(data, indent=2, ensure_ascii=False)[:500])
         else:
             print(", ".join(fields))
