@@ -48,7 +48,7 @@ jobs:
           enable-cache: true
 
       - name: Sync dependencies
-        run: uv sync --extra dev --refresh
+        run: uv sync --extra dev
 
       - name: Syntax check
         run: uv run python -m py_compile ai_research_os.py

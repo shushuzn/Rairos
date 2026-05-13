@@ -19,8 +19,11 @@ CARGO_BUILD_JOBS=1 cargo test
 sccache speeds up Rust builds by caching compilation results.
 
 ```bash
-# Install (or use prebuilt from /tmp/sccache-v0.11.0-x86_64-unknown-linux-musl/sccache)
-cp /tmp/sccache-v0.11.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/
+# Download prebuilt sccache binary (avoid compiling from source)
+SCCACHE_VERSION="v0.11.0"
+curl -sL "https://github.com/mozilla/sccache/releases/download/${SCCACHE_VERSION}/sccache-${SCCACHE_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+  | tar xz -C /tmp
+cp "/tmp/sccache-${SCCACHE_VERSION}-x86_64-unknown-linux-musl/sccache" /usr/local/bin/
 
 # Start server
 sccache --start-server
