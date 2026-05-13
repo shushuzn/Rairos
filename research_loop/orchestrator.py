@@ -554,16 +554,9 @@ class AutonomousOrchestrator:
     # ── Evolution cycle ───────────────────────────────────────────────────
 
     def run_evolution_cycle(self, topic: str = "") -> Dict[str, Any]:
-        """Run one InsightEvolution cycle on the Gene Pool.
-
-        Args:
-            topic: Optional topic to focus evolution on. If empty, evolves
-                   the highest-scoring topic from recent user activity.
-
-        Returns:
-            Dict with evolution cycle summary.
-        """
+        """Run one InsightEvolution cycle on the Gene Pool."""
         try:
+            self._init_components()
             from llm.insight.evolution import InsightEvolution
 
             evolver = InsightEvolution(tracker=self._tracker)
@@ -577,6 +570,7 @@ class AutonomousOrchestrator:
     def _get_best_evolution_topic(self) -> str:
         """Pick the best topic for evolution from user history."""
         try:
+            self._init_components()
             profile = self._tracker.get_profile()  # type: ignore[union-attr]
             topics = list(profile.topic_frequency.keys())
             if topics:
@@ -588,6 +582,7 @@ class AutonomousOrchestrator:
     def generate_credibility_report(self) -> str:
         """Generate a credibility report for the Web UI."""
         try:
+            self._init_components()
             from llm.insight.evolution import InsightEvolution
 
             evolver = InsightEvolution(tracker=self._tracker)
@@ -596,11 +591,10 @@ class AutonomousOrchestrator:
             logger.error(f"Credibility report failed: {e}")
             return f"<p>Error generating report: {e}</p>"
 
-    # ── Combined status ────────────────────────────────────────────────
-
     def get_status(self) -> Dict[str, Any]:
         """Get orchestrator status with evolution stats."""
         state = _load_state()
+        self._init_components()
 
         # Gene Pool stats
         pool_stats: Dict[str, Any] = {}
