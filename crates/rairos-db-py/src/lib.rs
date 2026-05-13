@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use pyo3::conversion::IntoPyObject;
+use pyo3::conversion::IntoPy;
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList};
 use rairos_db::{DbError, Database, Paper, SearchResult};
@@ -55,7 +55,8 @@ impl PyPaper {
         &self.inner.added_at
     }
     fn to_dict(&self, py: Python<'_>) -> PyResult<Py<PyDict>> {
-        let dict = PyDict::new(py);
+        #[allow(deprecated)]
+        let dict = PyDict::new_bound(py);
         dict.set_item("id", &self.inner.id)?;
         dict.set_item("title", &self.inner.title)?;
         dict.set_item("authors", &self.inner.authors)?;
@@ -327,12 +328,13 @@ fn execute_query(
             for row_map in rows {
                 let mut map: HashMap<String, Py<PyAny>> = HashMap::new();
                 for (k, v) in row_map {
+                    #[allow(deprecated)]
                     let val: Py<PyAny> = match v {
                         rusqlite::types::Value::Null => py.None().into(),
-                        rusqlite::types::Value::Integer(i) => i.into_py_object(py).unwrap().into_any().unbind(),
-                        rusqlite::types::Value::Real(f) => f.into_py_object(py).unwrap().into_any().unbind(),
-                        rusqlite::types::Value::Text(s) => s.into_py_object(py).unwrap().into_any().unbind(),
-                        rusqlite::types::Value::Blob(b) => PyBytes::new(py, &b).into_any().unbind(),
+                        rusqlite::types::Value::Integer(i) => i.into_py(py).into(),
+                        rusqlite::types::Value::Real(f) => f.into_py(py).into(),
+                        rusqlite::types::Value::Text(s) => s.into_py(py).into(),
+                        rusqlite::types::Value::Blob(b) => PyBytes::new_bound(py, &b).into(),
                     };
                     map.insert(k, val);
                 }
