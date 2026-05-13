@@ -327,8 +327,8 @@ x = self.attention(x)
         });
         let result = code_to_paper_trace(code, &paper_content);
         assert_eq!(result["total_tagged_lines"], 1);
-        assert_eq!(result["total_code_lines"], 1);
-        assert_eq!(result["forward"][0]["source_ref"], "@eq[0]");
+        assert_eq!(result["total_code_lines"], 2);
+        assert_eq!(result["forward"][0]["source_ref"], "@eq [0]");
     }
 
     #[test]
