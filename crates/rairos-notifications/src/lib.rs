@@ -4,8 +4,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::LazyLock;
 use std::sync::Mutex as StdMutex;
-use std::time::Instant;
 
 /// Notification levels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -96,8 +96,10 @@ impl NotificationManager {
 }
 
 /// Global notification manager.
+static MANAGER: LazyLock<StdMutex<NotificationManager>> =
+    LazyLock::new(|| StdMutex::new(NotificationManager::new()));
+
 fn get_global_manager() -> &'static StdMutex<NotificationManager> {
-    static MANAGER: StdMutex<NotificationManager> = StdMutex::new(NotificationManager::new());
     &MANAGER
 }
 
