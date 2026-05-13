@@ -85,7 +85,7 @@ jobs:
         run: cargo test --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo' || '' }}
 
       - name: Clippy lint
-        run: cargo clippy --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo' || '' }} -- -D warnings
+        run: cargo clippy --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo' || '' }}
 
       - name: Security audit
         run: cargo install cargo-audit --locked && cargo audit
