@@ -6,7 +6,7 @@
 //! Python original: `research_loop/lsp_diagnostics.py` (175 lines)
 
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 // ─── Diagnostic ────────────────────────────────────────────────────────────────
@@ -46,7 +46,7 @@ fn ruff_executable() -> Option<PathBuf> {
 }
 
 /// Run ruff linter synchronously. Returns immediately — typically < 1s.
-pub fn check_ruff(code_path: &PathBuf) -> Vec<Diagnostic> {
+pub fn check_ruff(code_path: &Path) -> Vec<Diagnostic> {
     let ruff = match ruff_executable() {
         Some(p) => p,
         None => return vec![],
@@ -120,7 +120,7 @@ fn pyright_executable() -> Option<PathBuf> {
 }
 
 /// Run pyright type checker. May take 10-60s depending on codebase size.
-pub fn check_pyright(code_path: &PathBuf) -> Vec<Diagnostic> {
+pub fn check_pyright(code_path: &Path) -> Vec<Diagnostic> {
     let pyright = match pyright_executable() {
         Some(p) => p,
         None => return vec![],
