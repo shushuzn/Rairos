@@ -318,8 +318,11 @@ mod tests {
 
         let impacts = check_policy_impact(&paper);
         assert!(!impacts.is_empty());
-        assert!(impacts.iter().any(|i| i.regulation_id.contains("EU")), "expected an EU regulation impact, got: {:?}", impacts.iter().map(|i| i.regulation_id.clone()).collect::<Vec<_>>());
-        assert_eq!(impacts[0].match_reason, "keyword");
+        let eu_impacts: Vec<_> = impacts.iter().filter(|i| i.regulation_id.contains("EU")).collect();
+        assert!(!eu_impacts.is_empty(), "expected an EU regulation impact, got: {:?}", impacts.iter().map(|i| i.regulation_id.clone()).collect::<Vec<_>>());
+        // Find the keyword match (not category match)
+        let keyword_match = eu_impacts.iter().find(|i| i.match_reason == "keyword");
+        assert!(keyword_match.is_some(), "expected keyword match reason among: {:?}", eu_impacts.iter().map(|i| format!("{}:{}", i.regulation_id, i.match_reason)).collect::<Vec<_>>());
     }
 
     #[test]

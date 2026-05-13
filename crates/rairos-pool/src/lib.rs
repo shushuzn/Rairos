@@ -15,10 +15,11 @@ use std::path::PathBuf;
 const MAX_BACKUPS: usize = 30;
 
 fn gp_dir() -> PathBuf {
-    dirs::home_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join(".ai_research_os")
-        .join("evolution")
+    std::env::var("RAIROS_HOME")
+        .ok()
+        .map(PathBuf::from)
+        .or_else(|| dirs::home_dir().map(|p| p.join(".ai_research_os").join("evolution")))
+        .unwrap_or_else(|| PathBuf::from(".ai_research_os").join("evolution"))
 }
 
 fn capsule_path() -> PathBuf {
@@ -30,10 +31,11 @@ fn jsonl_path() -> PathBuf {
 }
 
 fn backup_dir() -> PathBuf {
-    dirs::home_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join(".ai_research_os")
-        .join("backups")
+    std::env::var("RAIROS_HOME")
+        .ok()
+        .map(PathBuf::from)
+        .or_else(|| dirs::home_dir().map(|p| p.join(".ai_research_os").join("backups")))
+        .unwrap_or_else(|| PathBuf::from(".ai_research_os").join("backups"))
 }
 
 fn family_of(keywords: &[String]) -> String {
@@ -729,8 +731,11 @@ mod tests {
 
     #[test]
     fn test_load_capsules_missing_dir() {
+        let tmp = tempfile::tempdir().unwrap();
+        std::env::set_var("RAIROS_HOME", tmp.path());
         let result = load_capsules(None, None, None);
         assert!(result.is_empty());
+        std::env::remove_var("RAIROS_HOME");
     }
 
     #[test]
@@ -745,9 +750,12 @@ mod tests {
 
     #[test]
     fn test_get_gene_pool_diversity_empty() {
+        let tmp = tempfile::tempdir().unwrap();
+        std::env::set_var("RAIROS_HOME", tmp.path());
         let div = get_gene_pool_diversity();
         assert_eq!(div.capsule_count, 0);
         assert_eq!(div.diversity_score, 0);
+        std::env::remove_var("RAIROS_HOME");
     }
 
     #[test]

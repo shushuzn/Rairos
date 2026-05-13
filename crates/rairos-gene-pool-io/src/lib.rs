@@ -7,8 +7,10 @@ const CAPSULE_FILE: &str = "capsules.json";
 const JSONL_FILE: &str = "gene_pool.jsonl";
 
 fn get_gp_dir() -> PathBuf {
-    dirs::home_dir()
-        .map(|p| p.join(GP_DIR_NAME))
+    std::env::var("RAIROS_HOME")
+        .ok()
+        .map(PathBuf::from)
+        .or_else(|| dirs::home_dir().map(|p| p.join(GP_DIR_NAME)))
         .unwrap_or_else(|| PathBuf::from(GP_DIR_NAME))
 }
 
@@ -513,8 +515,11 @@ mod tests {
 
     #[test]
     fn test_load_capsules_empty_dir() {
+        let tmp = tempfile::tempdir().unwrap();
+        std::env::set_var("RAIROS_HOME", tmp.path());
         let capsules = load_capsules(None, None, None);
         assert!(capsules.is_empty());
+        std::env::remove_var("RAIROS_HOME");
     }
 
     #[test]
@@ -525,6 +530,8 @@ mod tests {
 
     #[test]
     fn test_get_gene_pool_diversity_empty() {
+        let tmp = tempfile::tempdir().unwrap();
+        std::env::set_var("RAIROS_HOME", tmp.path());
         let result = get_gene_pool_diversity();
         assert_eq!(
             result
@@ -533,6 +540,7 @@ mod tests {
                 .unwrap_or(0),
             0
         );
+        std::env::remove_var("RAIROS_HOME");
     }
 
     #[test]
