@@ -1,21 +1,23 @@
 # Architecture
 
-## System Diagram
-
-![AI Research OS Architecture](../assets/architecture.html)
-
-*Open [architecture.html](../assets/architecture.html) in a browser for the interactive/zoomable version.*
-
 ## Overview
 
 ```
-CLI (python -m cli)
+CLI (python -m cli)  /  rairos-cli (Rust)
     │
-    ├── parsers/           # arXiv, DOI, OpenAlex, PDF
-    ├── database.py        # SQLite + FTS5
-    ├── embed.py           # Ollama embedding client
-    ├── citation.py        # OpenAlex citation API
-    └── llm/insight/      # Gene Pool + CapsuleGene lifecycle
+    ├── cli/              # Python CLI (argparse-based subcommands)
+    ├── core/             # Core Python modules (database, embedding, KG)
+    ├── llm/              # LLM clients, gap detection, gene pool, evolution
+    ├── parsers/          # arXiv, DOI, PDF parsing
+    ├── db/               # SQLite database layer (Rust pyo3 extension)
+    ├── research_loop/    # Deep research agent, paper2code, RAG pipeline
+    ├── web/              # FastAPI web UI
+    └── crates/           # Rust rewrite (103 crates, ~50k+ LOC)
+        ├── rairos-core   # Core data structures + database
+        ├── rairos-llm    # LLM clients, gene pool, evolution
+        ├── rairos-cli    # Rust CLI (48 commands)
+        ├── rairos-web    # Rust web server
+        └── ...
 ```
 
 AI Research OS is a **local-first** research tool. No cloud dependency — all data stays in `~/.ai_research_os/`.
