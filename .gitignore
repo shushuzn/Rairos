@@ -106,3 +106,13 @@ wiki_temp/
 *.tmp
 coverage_report.txt
 target/
+
+# Performance profiling artifacts
+perf.data
+perf.data.old
+flamegraph.svg
+
+# Analysis / PR artifacts
+modules_analysis.json
+pr_result.txt
+papers.json
