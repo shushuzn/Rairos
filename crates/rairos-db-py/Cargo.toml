@@ -9,6 +9,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rairos-db = { path = "../rairos-db" }
-rusqlite = { version = "0.32", features = ["bundled"] }
+rusqlite = { version = "0.39", features = ["bundled"] }
 pyo3 = { version = "0.24.1", features = ["extension-module"] }
 serde_json = "1"

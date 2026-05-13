@@ -7,7 +7,7 @@ edition = "2021"
 tempfile = "3"
 
 [dependencies]
-rusqlite = { version = "0.32", features = ["bundled"] }
+rusqlite = { version = "0.39", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 parking_lot = "0.12"
