@@ -70,7 +70,7 @@ ocr = ["pytesseract>=0.3.13", "pillow>=12.2.0"]
 
 ai = ["openai>=2.36.0"]
 
-dev = ["pytest>=9.0.3", "pytest-cov>=7.1.0", "pytest-xdist>=3.8.0", "pytest-split>=0.10.0", "pytest-timeout>=2.4.0", "freezegun>=1.5.5"]
+dev = ["pytest>=9.0.3", "pytest-cov>=7.1.0", "pytest-xdist>=3.8.0", "pytest-split>=0.11.0", "pytest-timeout>=2.4.0", "freezegun>=1.5.5"]
 
 slides = ["python-pptx>=1.0.2"]
 
