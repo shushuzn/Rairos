@@ -112,6 +112,7 @@ members = [
     "crates/rairos-rate-limiter",
     "crates/rairos-render",
     "crates/rairos-replication",
+    "crates/rairos-resource-monitor",
     "crates/rairos-replication-checker",
     "crates/rairos-research",
     "crates/rairos-research-log",

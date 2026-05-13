@@ -3899,6 +3899,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-resource-monitor"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "sysinfo",
+ "tempfile",
+]
+
+[[package]]
 name = "rairos-retry"
 version = "0.1.0"
 dependencies = [
