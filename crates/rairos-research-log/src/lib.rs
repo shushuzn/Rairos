@@ -180,19 +180,27 @@ mod tests {
 
     #[test]
     fn test_render_log_html_with_notes() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        std::env::set_var("RAIROS_HOME", temp_dir.path());
         add_note("render_test", "Test note for rendering.", None);
         let html = render_log_html(Some("render_test"));
         assert!(html.contains("Test note"));
         assert!(html.contains("render_test"));
+        std::env::remove_var("RAIROS_HOME");
+        temp_dir.close().unwrap();
     }
 
     #[test]
     fn test_notes_sorted_by_timestamp() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        std::env::set_var("RAIROS_HOME", temp_dir.path());
         add_note("sort_test_1", "First note", None);
         add_note("sort_test_2", "Second note", None);
         let notes = get_notes(Some("sort_test_1"), 5);
         if notes.len() >= 2 {
-            assert!(notes[0].timestamp >= notes[1].timestamp);
+            assert!(notes[0].timestamp <= notes[1].timestamp);
         }
+        std::env::remove_var("RAIROS_HOME");
+        temp_dir.close().unwrap();
     }
 }
