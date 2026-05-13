@@ -137,6 +137,7 @@ pub struct ResearchAlert {
 }
 
 impl ResearchAlert {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         alert_id: String,
         session_id: String,

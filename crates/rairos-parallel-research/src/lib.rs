@@ -312,6 +312,7 @@ async fn run_single_agent_tokio(
 // ─── Agent Task ───────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 struct AgentTask {
     cluster_id: String,
     sub_topic: String,
