@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use rairos_text_utils::{cosine_sim, extract_keywords, jaccard};
+use rairos_text::text_utils::{cosine_sim, extract_keywords, jaccard};
 
 fn bench_text_utils(c: &mut Criterion) {
     let text = "This is a sample text for benchmarking word tokenization \

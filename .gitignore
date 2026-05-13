@@ -116,6 +116,9 @@ wiki_temp/
 coverage_report.txt
 target/
 
+# Generated output
+output/
+
 # Generated slides
 slides_output/
 

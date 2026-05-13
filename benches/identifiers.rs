@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use rairos_identifiers::{classify, is_probably_doi, normalize_arxiv_id};
+use rairos_core::identifiers::{classify, is_probably_doi, normalize_arxiv_id};
 
 fn bench_identifiers(c: &mut Criterion) {
     let mut group = c.benchmark_group("identifiers");

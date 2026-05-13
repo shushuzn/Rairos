@@ -145,6 +145,9 @@ members = [
     "crates/rairos-watch-papers",
     "crates/rairos-web",
     "crates/rairos-weekly-digest",
+    "crates/rairos-workspace-snapshot",
+    "crates/rairos-survey-generator",
+    "crates/rairos-lsp-diagnostics",
 ]
 
 [profile.dev]

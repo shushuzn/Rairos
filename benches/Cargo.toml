@@ -5,8 +5,8 @@ edition = "2021"
 publish = false
 
 [dependencies]
-rairos-identifiers = { path = "../crates/rairos-identifiers" }
-rairos-text-utils = { path = "../crates/rairos-text-utils" }
+rairos-core = { path = "../crates/rairos-core" }
+rairos-text = { path = "../crates/rairos-text" }
 rairos-batch-optimizer = { path = "../crates/rairos-batch-optimizer" }
 
 [dev-dependencies]
