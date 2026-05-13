@@ -147,8 +147,9 @@ mod tests {
 
     #[test]
     fn test_add_note_and_get() {
-        let temp_dir = tempfile::tempdir().unwrap();
-        std::env::set_var("RAIROS_HOME", temp_dir.path());
+        let temp_base = std::env::temp_dir().join("rairos_test_notes");
+        std::fs::create_dir_all(&temp_base).unwrap();
+        std::env::set_var("RAIROS_HOME", &temp_base);
         let paper_id = "test_paper_123";
         let result = add_note(
             paper_id,
@@ -158,12 +159,12 @@ mod tests {
         assert!(result);
 
         let notes = get_notes(Some(paper_id), 10);
-        assert!(!notes.is_empty());
+        assert!(!notes.is_empty(), "notes should not be empty after add_note");
         assert_eq!(notes[0].paper_id, paper_id);
         assert_eq!(notes[0].note, "This is a test note.");
         assert_eq!(notes[0].tags, vec!["test"]);
         std::env::remove_var("RAIROS_HOME");
-        temp_dir.close().unwrap();
+        let _ = std::fs::remove_dir_all(&temp_base);
     }
 
     #[test]
@@ -180,20 +181,22 @@ mod tests {
 
     #[test]
     fn test_render_log_html_with_notes() {
-        let temp_dir = tempfile::tempdir().unwrap();
-        std::env::set_var("RAIROS_HOME", temp_dir.path());
+        let temp_base = std::env::temp_dir().join("rairos_test_render");
+        std::fs::create_dir_all(&temp_base).unwrap();
+        std::env::set_var("RAIROS_HOME", &temp_base);
         add_note("render_test", "Test note for rendering.", None);
         let html = render_log_html(Some("render_test"));
         assert!(html.contains("Test note"));
         assert!(html.contains("render_test"));
         std::env::remove_var("RAIROS_HOME");
-        temp_dir.close().unwrap();
+        let _ = std::fs::remove_dir_all(&temp_base);
     }
 
     #[test]
     fn test_notes_sorted_by_timestamp() {
-        let temp_dir = tempfile::tempdir().unwrap();
-        std::env::set_var("RAIROS_HOME", temp_dir.path());
+        let temp_base = std::env::temp_dir().join("rairos_test_sort");
+        std::fs::create_dir_all(&temp_base).unwrap();
+        std::env::set_var("RAIROS_HOME", &temp_base);
         add_note("sort_test_1", "First note", None);
         add_note("sort_test_2", "Second note", None);
         let notes = get_notes(Some("sort_test_1"), 5);
@@ -201,6 +204,6 @@ mod tests {
             assert!(notes[0].timestamp <= notes[1].timestamp);
         }
         std::env::remove_var("RAIROS_HOME");
-        temp_dir.close().unwrap();
+        let _ = std::fs::remove_dir_all(&temp_base);
     }
 }
