@@ -3,6 +3,9 @@
 //! Provides unified interface to multiple LLM providers.
 //! Replaces: llm/client.py, llm/citation_chain.py, llm/gap_detector.py
 
+pub mod client_async;
+pub mod claude_cli;
+
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

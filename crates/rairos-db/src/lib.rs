@@ -6,6 +6,8 @@
 //!
 //! Thread-local connection management (one connection per thread).
 
+pub mod db_optimize;
+
 use chrono::Utc;
 use regex::Regex;
 use rusqlite::{Connection, OptionalExtension};

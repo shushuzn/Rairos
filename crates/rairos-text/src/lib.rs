@@ -2,6 +2,8 @@
 //!
 //! Ported from `llm/text_utils.py`.
 
+pub mod text_utils;
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 

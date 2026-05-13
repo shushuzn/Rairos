@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+pub mod hypothesis_generator;
 //! Rairos Research — Deep research orchestration and gap detection
 //!
 //! Coordinates the full research pipeline: fetch → analyze → detect gaps → evolve.
