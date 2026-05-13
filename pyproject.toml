@@ -116,7 +116,7 @@ version_files = ["pyproject.toml"]
 
 [tool.ruff]
 
-target-version = "py39"
+target-version = "py310"
 
 line-length = 100
 
