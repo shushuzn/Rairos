@@ -422,20 +422,20 @@ mod tests {
     }
 
     #[test]
-    fn test_feedback_type_from_str() {
+    fn test_feedback_type_parse_from_str() {
         assert_eq!(
-            FeedbackType::from_str("positive"),
+            FeedbackType::parse_from_str("positive"),
             Some(FeedbackType::Positive)
         );
         assert_eq!(
-            FeedbackType::from_str("negative"),
+            FeedbackType::parse_from_str("negative"),
             Some(FeedbackType::Negative)
         );
         assert_eq!(
-            FeedbackType::from_str("neutral"),
+            FeedbackType::parse_from_str("neutral"),
             Some(FeedbackType::Neutral)
         );
-        assert_eq!(FeedbackType::from_str("invalid"), None);
+        assert_eq!(FeedbackType::parse_from_str("invalid"), None);
     }
 
     #[test]
