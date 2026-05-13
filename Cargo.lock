@@ -2894,6 +2894,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-core-utils"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "sysinfo",
+ "tempfile",
+]
+
+[[package]]
 name = "rairos-credibility"
 version = "0.1.0"
 dependencies = [
@@ -3997,6 +4008,10 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.18",
 ]
+
+[[package]]
+name = "rairos-setup"
+version = "0.1.0"
 
 [[package]]
 name = "rairos-signal"
