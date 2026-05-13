@@ -1,0 +1,20 @@
+# Rairos git-blame-ignore-revs
+# Formatted with `ruff format` — blame ignores for formatting-only changes.
+#
+# Use: git blame --ignore-revs-file .git-blame-ignore-revs
+# Or configure globally: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# perf: sort workspace members, remove suppress of dead_code warnings
+396138d
+
+# perf: batch merge 10 shallow crates into parents, drop duplicate CI workflow
+c73afc6
+
+# perf: merge 3 shallow crates into parents, delete 1 redundant
+564b8cd
+
+# perf: merge rairos-bridge/provenance into parents, drop MSVC scripts
+8fd14bd
+
+# perf: remove dead shadowed Python files, clean up tracked artifacts
+40e49d8

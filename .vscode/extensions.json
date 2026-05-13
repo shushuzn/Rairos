@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "astral-sh.ruff",
+    "charliermarsh.ruff",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.mypy-type-checker",
+    "rust-lang.rust-analyzer",
+    "tamasfe.even-better-toml",
+    "redhat.vscode-yaml",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+    "github.vscode-github-actions",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

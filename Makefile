@@ -81,6 +81,18 @@ sccache-start: ## Start sccache server
 		echo "sccache not installed"; \
 	fi
 
+blame: ## Configure git to ignore reformatting commits
+	git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+hooks: ## Install pre-commit hooks
+	@if command -v pre-commit >/dev/null 2>&1; then \
+		pre-commit install && echo "pre-commit hooks installed"; \
+	else \
+		echo "pip install pre-commit first"; \
+	fi
+
+setup: py-deps hooks sccache-start ## Full dev setup
+
 git-commit: ## Stage and commit (usage: make git-commit MSG="your message")
 	@if [ -z "$(MSG)" ]; then \
 		echo "Usage: make git-commit MSG='Your commit message'"; \
