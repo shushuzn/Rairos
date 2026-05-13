@@ -230,6 +230,13 @@ class AutonomousOrchestrator:
             result = agent.run()
         except Exception as e:
             logger.error(f"DeepResearchAgent failed: {e}")
+            emit_research_event(
+                EventType.SESSION_END,
+                topic=topic,
+                trace_id=trace_id,
+                papers_analyzed=len(new_papers),
+                error=str(e),
+            )
             return {
                 "gaps": [],
                 "papers_analyzed": len(new_papers),
@@ -237,18 +244,19 @@ class AutonomousOrchestrator:
                 "error": str(e),
             }
 
+        emit_research_event(
+            EventType.SESSION_END,
+            topic=topic,
+            trace_id=trace_id,
+            papers_analyzed=len(new_papers),
+            iterations=result.iterations if hasattr(result, "iterations") else 0,
+        )
         return {
             "gaps": result.gaps if hasattr(result, "gaps") else [],
             "papers_analyzed": len(new_papers),
             "session_id": session.session_id,
             "iterations": result.iterations if hasattr(result, "iterations") else 0,
         }
-        emit_research_event(
-            EventType.SESSION_END,
-            topic=topic,
-            trace_id=trace_id,
-            papers_analyzed=len(new_papers),
-        )
 
     # ── Gene Pool scoring ────────────────────────────────────────────────────
 
