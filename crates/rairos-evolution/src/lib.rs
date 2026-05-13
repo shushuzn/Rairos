@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 pub mod bridge;
 //! rairos-evolution — Evolution Memory: User Feedback & Pattern Learning.
 //!

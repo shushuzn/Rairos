@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+
 //! rairos-evolution-report — Evolution Report Generator.
 //!
 //! Ported from `llm/evolution_report.py`.

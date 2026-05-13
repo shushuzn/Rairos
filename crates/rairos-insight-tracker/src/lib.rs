@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+
 //! rairos-insight-tracker — EvolutionTracker core insight evolution engine.
 //!
 //! Ported from `llm/insight/tracker.py`.
