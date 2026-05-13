@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 sysinfo = "0.34"
-pyo3 = { version = "0.23", features = ["extension-module"] }
+pyo3 = { version = "0.24", features = ["extension-module"] }
 
 [profile.release]
 lto = true
