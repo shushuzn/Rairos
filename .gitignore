@@ -91,6 +91,11 @@ data/extable.db
 data/briefings/
 data/semantic_router_index.json
 
+# Generated documentation
+docs/cli_reference.html
+docs/kg_map.html
+docs/assets/architecture.html
+
 # Experiment files (local only)
 
 galerkin_experiment.py
