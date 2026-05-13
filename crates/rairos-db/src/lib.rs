@@ -353,6 +353,7 @@ impl Database {
     // -------------------------------------------------------------------------
 
     /// Insert or replace a paper. Returns the paper.
+    #[allow(clippy::too_many_arguments)]
     pub fn upsert_paper(
         &self,
         paper_id: &str,
@@ -603,6 +604,7 @@ impl Database {
     }
 
     /// Update the parse status and parsed content fields.
+    #[allow(clippy::too_many_arguments)]
     pub fn update_parse_status(
         &self,
         paper_id: &str,
@@ -1521,6 +1523,7 @@ mod py_bindings {
     #[pymethods]
     impl PyDatabase {
         #[new]
+        #[pyo3(signature = (db_path=None))]
         fn new(db_path: Option<String>) -> PyResult<Self> {
             let inner = match db_path {
                 Some(p) => crate::Database::open(p).map_err(db_err_to_py)?,

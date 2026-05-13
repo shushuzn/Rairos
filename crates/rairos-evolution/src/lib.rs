@@ -77,6 +77,7 @@ pub struct Feedback {
 }
 
 impl Feedback {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         id: &str,
         feedback_type: FeedbackType,
@@ -116,6 +117,7 @@ pub struct EvolutionEvent {
 }
 
 impl EvolutionEvent {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         id: &str,
         signal_type: SignalType,
