@@ -3692,6 +3692,7 @@ name = "rairos-pdf"
 version = "0.1.0"
 dependencies = [
  "futures",
+ "hex",
  "lazy_static",
  "regex",
  "reqwest",
@@ -4099,6 +4100,7 @@ dependencies = [
 name = "rairos-text"
 version = "0.1.0"
 dependencies = [
+ "regex",
  "serde",
 ]
 

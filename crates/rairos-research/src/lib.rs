@@ -1,8 +1,9 @@
-pub mod hypothesis_generator;
 //! Rairos Research — Deep research orchestration and gap detection
 //!
 //! Coordinates the full research pipeline: fetch → analyze → detect gaps → evolve.
 //! Replaces: research_loop/core.py, research_loop/orchestrator.py, research_loop/deep_research.py
+
+pub mod hypothesis_generator;
 
 use rairos_core::{Database, Paper, ResearchGap};
 use rairos_llm::{CostTracker, GapDetector, LlmClient, Message};

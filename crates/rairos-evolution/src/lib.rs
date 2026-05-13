@@ -1,7 +1,8 @@
-pub mod bridge;
 //! rairos-evolution — Evolution Memory: User Feedback & Pattern Learning.
 //!
 //! Ported from `llm/evolution.py`.
+
+pub mod bridge;
 
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
