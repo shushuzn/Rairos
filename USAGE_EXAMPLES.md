@@ -170,19 +170,16 @@ print(f"命中率: {stats['hit_rate_percent']:.1f}%")
 ### 使用资源监控
 
 ```python
-from core.resource_monitor import get_resource_monitor
+from core.profiler import get_profiler
 
-# 获取资源监控器
-monitor = get_resource_monitor()
+# 获取分析器
+profiler = get_profiler()
 
-# 收集资源统计
-stats = monitor.collect_stats()
+# CPU和内存信息
+stats = profiler.get_stats()
 print(f"CPU: {stats.cpu_percent:.1f}%")
 print(f"内存: {stats.memory_percent:.1f}%")
 print(f"磁盘: {stats.disk_percent:.1f}%")
-
-# 生成资源报告
-print(monitor.get_resource_report())
 ```
 
 ---
@@ -360,14 +357,12 @@ for source, count in source_counter.most_common():
 ### 示例3: 性能监控脚本
 
 ```python
-from core.resource_monitor import get_resource_monitor
 from core.profiler import get_profiler
 
-monitor = get_resource_monitor()
 profiler = get_profiler()
 
 # 收集初始状态
-initial_stats = monitor.collect_stats()
+initial_stats = profiler.get_stats()
 
 # 执行操作
 profiler.enable()

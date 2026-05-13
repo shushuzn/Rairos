@@ -83,7 +83,4 @@ rairos benchmark --time-import 2601.00155
 
 # Compare two papers' benchmark tables
 python -m llm.benchmark 2601.00155 2302.00763
-
-# Measure search latency
-python -c "from core.search_optimizer import SearchOptimizer; ..."
 ```

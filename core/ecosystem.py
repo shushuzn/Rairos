@@ -47,13 +47,6 @@ class Ecosystem:
                 status="ready",
                 url="python cli.py --help",
             ),
-            "simple_cli": EcosystemComponent(
-                name="简化CLI",
-                description="新手友好的命令行界面",
-                icon="🚀",
-                status="ready",
-                url="python -m core.simple_cli help",
-            ),
             "api": EcosystemComponent(
                 name="Python API",
                 description="完整的Python API",
@@ -68,26 +61,12 @@ class Ecosystem:
                 status="ready",
                 url="python -m core.achievements",
             ),
-            "performance": EcosystemComponent(
-                name="性能监控",
-                description="实时性能保证",
-                icon="🛡️",
-                status="ready",
-                url="python -m core.performance_guarantee",
-            ),
             "value": EcosystemComponent(
                 name="价值量化",
                 description="VW式价值计算",
                 icon="💰",
                 status="ready",
                 url="python -m core.value_quantifier",
-            ),
-            "setup_wizard": EcosystemComponent(
-                name="快速设置",
-                description="5分钟完成设置（VW需8-10周）",
-                icon="⚡",
-                status="ready",
-                url="python -m core.setup_wizard",
             ),
             "gui": EcosystemComponent(
                 name="图形界面", description="Web界面规划中", icon="🌐", status="coming_soon"
