@@ -107,6 +107,9 @@ wiki_temp/
 coverage_report.txt
 target/
 
+# Generated slides
+slides_output/
+
 # Performance profiling artifacts
 perf.data
 perf.data.old
