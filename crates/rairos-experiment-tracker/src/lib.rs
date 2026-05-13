@@ -451,10 +451,15 @@ mod tests {
     }
 
     #[test]
-    fn test_experiment_status_from_str() {
+    fn test_experiment_status_parse() {
         assert_eq!(
             ExperimentStatus::parse("running"),
+            Some(ExperimentStatus::Running)
+        );
+        assert_eq!(
             ExperimentStatus::parse("completed"),
+            Some(ExperimentStatus::Completed)
+        );
         assert_eq!(ExperimentStatus::parse("invalid"), None);
     }
 
