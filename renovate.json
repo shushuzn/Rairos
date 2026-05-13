@@ -19,10 +19,10 @@
       "matchTypes": ["minor", "patch"]
     },
     {
-      "description": "Auto-merge pip dependencies for patch/minor",
-      "matchManagers": ["pip_requirements"],
+      "description": "Auto-merge Python dependencies for patch updates",
+      "matchManagers": ["pep621"],
       "automerge": true,
-      "matchTypes": ["minor", "patch"]
+      "matchTypes": ["patch"]
     },
     {
       "description": "Schedule weekly updates",
