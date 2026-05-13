@@ -1659,6 +1659,7 @@ mod py_bindings {
             }
         }
 
+        #[pyo3(signature = (query, limit=None, offset=None, source=None, category=None, parse_status=None))]
         fn search_papers(
             &self,
             query: &str,
@@ -1698,6 +1699,7 @@ mod py_bindings {
             Ok(serde_json::to_string(&json).unwrap_or_default())
         }
 
+        #[pyo3(signature = (limit=None, offset=None, source=None, category=None, parse_status=None))]
         fn list_papers(
             &self,
             limit: Option<i64>,
