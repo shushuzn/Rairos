@@ -43,7 +43,7 @@ classifiers = [
 
 dependencies = [
     "urllib3>=2.7.0",
-    "requests>=2.33.1",
+    "requests>=2.34.0",
     "feedparser>=6.0.12",
     "pymupdf>=1.27.2.3",
     "pillow>=12.2.0",
@@ -52,7 +52,7 @@ dependencies = [
     "numpy>=2.2.6",
     "orjson>=3.11.9",
     "httpx>=0.28.1",
-    "textual>=8.2.5",
+    "textual>=8.2.6",
     "rich>=15.0.0",
     "jieba>=0.42.1",
     "pymilvus>=3.0.0",
