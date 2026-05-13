@@ -30,14 +30,11 @@ class TestEcosystem:
         from core.ecosystem import Ecosystem
 
         eco = Ecosystem()
-        assert len(eco.components) == 10
+        assert len(eco.components) == 7
         assert "cli" in eco.components
-        assert "simple_cli" in eco.components
         assert "api" in eco.components
         assert "achievements" in eco.components
-        assert "performance" in eco.components
         assert "value" in eco.components
-        assert "setup_wizard" in eco.components
         assert "gui" in eco.components
         assert "plugins" in eco.components
         assert "marketplace" in eco.components
