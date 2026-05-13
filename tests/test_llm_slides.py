@@ -186,7 +186,9 @@ class TestComparisonTable:
         lines.append("|" + "|".join("-" * w for w in col_widths) + "|")
 
         for row in rows:
-            lines.append(" | ".join(str(cell).ljust(w) for cell, w in zip(row, col_widths, strict=True)))
+            lines.append(
+                " | ".join(str(cell).ljust(w) for cell, w in zip(row, col_widths, strict=True))
+            )
 
         return "\n".join(lines)
 

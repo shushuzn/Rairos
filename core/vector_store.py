@@ -122,7 +122,9 @@ class ZillizStore:
                 "file": file_,
                 "line": line,
             }
-            for id_, vec, content, file_, line in zip(ids, vectors, contents, files, lines, strict=True)
+            for id_, vec, content, file_, line in zip(
+                ids, vectors, contents, files, lines, strict=True
+            )
         ]
 
         self.client.upsert(
