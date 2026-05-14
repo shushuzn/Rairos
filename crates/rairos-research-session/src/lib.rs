@@ -344,6 +344,7 @@ fn get_template_probing_questions(intent: ResearchIntent, topics: &[String]) -> 
 // Parse probing questions from LLM response text
 // ============================================================================
 
+#[allow(dead_code)]
 fn parse_questions_from_response(response: &str) -> Vec<String> {
     let mut questions = Vec::new();
     for line in response.lines() {
@@ -511,6 +512,7 @@ fn render_sessions_list(sessions: &[ChatResearchSession]) -> String {
 // ============================================================================
 
 pub struct ResearchSessionTracker {
+    #[allow(dead_code)]
     memory_dir: PathBuf,
     sessions_file: PathBuf,
     current_session: Option<ChatResearchSession>,
@@ -668,14 +670,17 @@ impl ResearchSessionTracker {
         Some(session)
     }
 
+    #[allow(dead_code)]
     fn extract_tags(&self, question: &str, paper_titles: &[String]) -> Vec<String> {
         extract_tags(question, paper_titles, &self.keywords)
     }
 
+    #[allow(dead_code)]
     fn detect_intent(&self, question: &str) -> ResearchIntent {
         IntentDetector::new().detect(question)
     }
 
+    #[allow(dead_code)]
     fn generate_insights(&self, session: &ChatResearchSession) -> Vec<String> {
         generate_insights(session)
     }
@@ -790,6 +795,7 @@ pub fn get_session_tracker() -> MutexGuard<'static, Option<ResearchSessionTracke
 
 /// Initialize and get the global tracker.
 pub fn init_session_tracker(
+    #[allow(dead_code)]
     memory_dir: Option<PathBuf>,
 ) -> &'static Mutex<Option<ResearchSessionTracker>> {
     let mut guard = SESSION_TRACKER.lock().unwrap();

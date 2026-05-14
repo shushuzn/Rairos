@@ -3,7 +3,6 @@
 //! Mirrors GapDetector._detect_gaps_rules() from llm/research/gap_detector.py
 
 use crate::{GapSnapshot, PaperSnapshot};
-use std::collections::HashMap;
 
 // ─── Gap type patterns (keyword/substring based) ───────────────────────────────
 
@@ -101,11 +100,11 @@ struct RawGap {
 // ─── Detect gaps from paper summaries ──────────────────────────────────────────
 
 pub fn analyze_gaps(
-    snapshots: &[PaperSnapshot],
+    _snapshots: &[PaperSnapshot],
     topic: &str,
 ) -> Vec<GapSnapshot> {
-    let raw = detect_gaps_raw(snapshots);
-    let mut enriched = enrich_gaps(raw, snapshots, topic);
+    let raw = detect_gaps_raw(_snapshots);
+    let mut enriched = enrich_gaps(raw, _snapshots, topic);
     enriched.truncate(5);
     enriched
 }
@@ -187,7 +186,7 @@ fn detect_gaps_raw(snapshots: &[PaperSnapshot]) -> Vec<RawGap> {
 
 fn enrich_gaps(
     raw: Vec<RawGap>,
-    snapshots: &[PaperSnapshot],
+    _snapshots: &[PaperSnapshot],
     topic: &str,
 ) -> Vec<GapSnapshot> {
     let pool = crate::gene_pool::GenePool::new();

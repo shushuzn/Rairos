@@ -40,7 +40,7 @@ pub struct RetryStats {
 }
 
 #[derive(Debug, Clone, Default)]
-struct FuncStats {
+pub struct FuncStats {
     total_attempts: u64,
     total_failures: u64,
     total_retries: u64,

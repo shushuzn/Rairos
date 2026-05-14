@@ -24,12 +24,14 @@ pub enum StreamEvent {
     Content(String),
 }
 
+#[allow(dead_code)]
 const KNOWN_PHASES: &[&str] = &[
     "decomposition", "analysis", "search", "retrieval", "reasoning",
     "planning", "synthesis", "reflection", "verification", "conclusion",
 ];
 
 /// Infer the reasoning phase from the start of a text chunk
+#[allow(dead_code)]
 fn infer_phase(text: &str) -> &'static str {
     let lowered = text.to_lowercase().trim().to_string();
     for phase in KNOWN_PHASES {
@@ -83,6 +85,7 @@ impl ThinkingState {
     }
 
     /// Process a delta from a thinking-aware stream (content_type: reasoning)
+    #[allow(dead_code)]
     fn process_thinking_delta(&mut self, content_type: &str, text: &str) -> Vec<StreamEvent> {
         let mut events = Vec::new();
 

@@ -302,7 +302,7 @@ pub fn update_step(plan_id: &str, step_id: &str, status: &str, result: &str, not
     Some(result)
 }
 
-pub fn revise_plan(plan_id: &str, reason: &str) -> Option<ResearchPlan> {
+pub fn revise_plan(plan_id: &str, _reason: &str) -> Option<ResearchPlan> {
     let mut plans = load_plans();
     let old_idx = plans.iter().position(|p| p.plan_id == plan_id)?;
     let old = &plans[old_idx];
@@ -325,6 +325,7 @@ pub fn revise_plan(plan_id: &str, reason: &str) -> Option<ResearchPlan> {
 
 // ─── LLM-based plan creation ──────────────────────────────────────────────
 
+#[allow(dead_code)]
 const PLAN_SYSTEM: &str = r#"You are a research strategy planner. Given a hypothesis and goal, create a concrete, dependency-ordered research plan.
 
 Respond ONLY with valid JSON (no markdown, no explanation):

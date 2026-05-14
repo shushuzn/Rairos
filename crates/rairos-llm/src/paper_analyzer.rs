@@ -42,6 +42,7 @@ pub const METHOD_KEYWORDS: &[&str] = &[
 
 // ─── System Prompt ────────────────────────────────────────────────────────────
 
+#[allow(dead_code)]
 const SYSTEM_PROMPT: &str = r#"你是一个严谨的 AI 研究助理，擅长对抗式审稿和深度论文分析。
 
 任务：分析论文，按指定格式输出各章节内容。

@@ -2,12 +2,12 @@ use pyo3::prelude::*;
 use rairos_core::Paper;
 use rairos_research::{DeepResearchAgent, DeepResearchConfig, GapSnapshot, PaperSnapshot, ResearchBackend, AgentThought};
 
-fn call_json_fn(py: Python<'_>, func: &Bound<'_, PyAny>, args_json: &str) -> PyResult<String> {
+fn call_json_fn(_py: Python<'_>, func: &Bound<'_, PyAny>, args_json: &str) -> PyResult<String> {
     let result = func.call1((args_json,))?;
     result.extract::<String>()
 }
 
-fn call_void_fn(py: Python<'_>, func: &Bound<'_, PyAny>, args_json: &str) -> PyResult<()> {
+fn call_void_fn(_py: Python<'_>, func: &Bound<'_, PyAny>, args_json: &str) -> PyResult<()> {
     func.call1((args_json,))?;
     Ok(())
 }

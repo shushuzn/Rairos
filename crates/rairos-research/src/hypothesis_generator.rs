@@ -265,7 +265,7 @@ impl HypothesisGenerator {
         creative: bool,
     ) -> HypothesisResult {
         let gap_type = self.infer_gap_type(gap_context);
-        let mut hypotheses = self.generate_from_templates(topic, gap_context, &gap_type, creative);
+        let hypotheses = self.generate_from_templates(topic, gap_context, &gap_type, creative);
         // Sort so templates come first, then creative
         let result = HypothesisResult {
             topic: topic.to_string(),

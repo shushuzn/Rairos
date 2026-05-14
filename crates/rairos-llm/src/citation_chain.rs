@@ -50,6 +50,7 @@ pub async fn fetch_paper(paper_id: &str) -> Result<CitationNode, String> {
     #[derive(Deserialize)]
     struct S2Ref {
         paper_id: Option<String>,
+        #[allow(dead_code)]
         title: Option<String>,
     }
 

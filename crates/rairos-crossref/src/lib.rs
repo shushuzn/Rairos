@@ -86,7 +86,8 @@ struct CrossrefItem {
     issued: Option<CrossrefDate>,
     created: Option<CrossrefDate>,
     deposited: Option<CrossrefDate>,
-    URL: Option<String>,
+    #[serde(rename = "URL")]
+    pub url: Option<String>,
     #[serde(rename = "container-title")]
     container_title: Option<Vec<String>>,
     volume: Option<String>,
@@ -118,7 +119,8 @@ struct CrossrefDate {
 struct CrossrefLink {
     #[serde(rename = "content-type")]
     content_type: Option<String>,
-    URL: Option<String>,
+    #[serde(rename = "URL")]
+    pub url: Option<String>,
 }
 
 // ─── Parsing Helpers ──────────────────────────────────────────────────────────
@@ -373,7 +375,7 @@ pub fn fetch_crossref_metadata(
     let abstract_text = parse_abstract(&item);
     let published = best_effort_date(&item);
     let abs_url = item
-        .URL
+        .url
         .clone()
         .unwrap_or_else(|| format!("{}{}", DOI_RESOLVER, doi));
     let pdf_url = item
@@ -383,7 +385,7 @@ pub fn fetch_crossref_metadata(
             links
                 .iter()
                 .find(|l| l.content_type.as_deref() == Some("application/pdf"))
-                .and_then(|l| l.URL.clone())
+                .and_then(|l| l.url.clone())
         })
         .unwrap_or_default();
 

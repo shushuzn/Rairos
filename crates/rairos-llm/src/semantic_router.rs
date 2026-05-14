@@ -137,7 +137,7 @@ pub async fn route_by_llm(
 
     let capabilities = capability_lines.join("\n");
 
-    let system_prompt = format!(
+    let _system_prompt = format!(
         "You are a CLI research-command classifier. Given a user's query, classify it into one type.\n\n\
         Available types:\n{}\n\n\
         Return ONLY valid JSON: {{\"query_type\": \"...\", \"confidence\": 0.0-1.0, \"reasoning\": \"...\"}}",

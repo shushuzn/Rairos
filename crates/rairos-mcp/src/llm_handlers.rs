@@ -1018,7 +1018,7 @@ impl ToolHandler for ImpactLeaderboardHandler {
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
         let limit = params.get("limit").and_then(|v| v.as_u64()).unwrap_or(20) as usize;
-        let year_min = params.get("year_min").and_then(|v| v.as_u64()).unwrap_or(2020) as i32;
+        let _year_min = params.get("year_min").and_then(|v| v.as_u64()).unwrap_or(2020) as i32;
         // Use the Rust impact module from rairos-llm
         // For now, delegate to the leaderboard handler with rankings action
         Ok(rairos_leaderboard::leaderboard_action("rankings", None, "combined", limit))

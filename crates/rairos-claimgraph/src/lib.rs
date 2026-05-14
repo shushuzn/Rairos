@@ -1,4 +1,5 @@
-//! Claim Graph — cross-paper numerical claim tracking and contradiction detection.
+#![allow(deprecated)]
+//! Cross-paper numerical claim tracking and contradiction detection
 #![allow(dead_code)]
 #![allow(clippy::too_many_arguments)]
 //!

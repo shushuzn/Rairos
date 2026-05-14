@@ -5,6 +5,7 @@
 use crate::{LlmClient, Message};
 use serde::{Deserialize, Serialize};
 
+#[allow(dead_code)]
 const BRIEFING_SYSTEM: &str = r#"You are a research briefing assistant. Generate a concise, structured briefing for a research paper.
 
 Output format (Markdown):

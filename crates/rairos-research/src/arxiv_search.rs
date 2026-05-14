@@ -1,6 +1,5 @@
 use rairos_core::{Paper, PaperMetadata, ParseStatus};
 use chrono::{DateTime, Utc, NaiveDate};
-use std::collections::HashMap;
 
 const ARXIV_API: &str = "http://export.arxiv.org/api/query";
 

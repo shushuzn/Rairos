@@ -9,6 +9,7 @@ use regex::Regex;
 
 // ─── Prompt Templates ─────────────────────────────────────────────────────────
 
+#[allow(dead_code)]
 const SYSTEM_PROMPT: &str = r#"你是一个研究空白检测专家。分析给定领域的论文列表，识别：
 1. 未充分探索的应用场景
 2. 方法的局限性
@@ -172,7 +173,7 @@ pub async fn generate_questions_llm(
     topic: &str,
     gaps_text: &str,
 ) -> Vec<String> {
-    let system = "基于研究空白，生成3-5个具体、可验证的研究问题。\
+    let _system = "基于研究空白，生成3-5个具体、可验证的研究问题。\
     每个问题应该：1. 明确说明要研究什么 2. 有清晰的研究假设 \
     3. 包含方法建议 4. 说明预期影响\n\n\
     输出格式（每行一个问题）：\n\
