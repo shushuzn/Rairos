@@ -263,95 +263,6 @@ def tool_chart_query(paper_id: str, action: str, label: Optional[str] = None) ->
         return error_response("CHART_ERROR", str(e))
 
 
-def tool_paper2code_run(
-    arxiv_id: str,
-    framework: str = "pytorch",
-    skip_gene_pool: bool = False,
-    continuous: bool = False,
-    interval_minutes: int = 15,
-) -> Dict:
-    """Run full paper2code pipeline: download → parse → generate → test → benchmark → Gene Pool.
-
-    If continuous=True, starts a background thread that polls ArXiv subscriptions
-    every interval_minutes and runs the pipeline for each new paper discovered.
-    """
-    try:
-        from research_loop.paper2code_integration import PaperPipeline
-        import tempfile
-        from llm.subscription_monitor import SubscriptionMonitor
-        from db.database import Database
-
-        if not continuous:
-            pipeline = PaperPipeline(work_dir=tempfile.mkdtemp())
-            result = pipeline.run(
-                arxiv_id=arxiv_id,
-                mode="minimal",
-                framework=framework,
-                skip_gene_pool=skip_gene_pool,
-            )
-            return success_response(
-                {
-                    "arxiv_id": result["arxiv_id"],
-                    "paper_dir": result["paper_dir"],
-                    "src_dir": result["src_dir"],
-                    "test_dir": result["test_dir"],
-                    "readme": result["readme"],
-                    "benchmark": result.get("benchmark"),
-                    "ruff_diagnostics": result.get("ruff_diagnostics", []),
-                }
-            )
-
-        # Continuous mode: daemon thread polling ArXiv channels
-        def _continuous_loop(stop_event):
-            db = Database()
-            db.init()
-            monitor = SubscriptionMonitor(db)
-            seen = set()
-            while not stop_event.is_set():
-                try:
-                    results = monitor.check_all()
-                    total_new = 0
-                    for _sub_id, papers in results.items():
-                        for paper in papers:
-                            paper_id = paper.get("arxiv_id", "")
-                            if paper_id and paper_id not in seen:
-                                seen.add(paper_id)
-                                total_new += 1
-                                logger.info(f"[paper2code continuous] New paper: {paper_id}")
-                                p = PaperPipeline(work_dir=tempfile.mkdtemp())
-                                p.run(
-                                    arxiv_id=paper_id,
-                                    mode="minimal",
-                                    framework=framework,
-                                    skip_gene_pool=skip_gene_pool,
-                                )
-                    if total_new > 0:
-                        logger.info(f"[paper2code continuous] Processed {total_new} new papers")
-                except Exception as e:
-                    logger.error(f"[paper2code continuous] Cycle error: {e}")
-                stop_event.wait(timeout=interval_minutes * 60)
-
-        stop_event = threading.Event()
-        thread = threading.Thread(
-            target=_continuous_loop, args=(stop_event,), daemon=True, name="paper2code-continuous"
-        )
-        thread.start()
-        return success_response(
-            {
-                "status": "started",
-                "mode": "continuous",
-                "interval_minutes": interval_minutes,
-                "message": f"paper2code continuous mode started. Polling every {interval_minutes}min.",
-            }
-        )
-
-    except Exception as e:
-        logger.error(f"paper2code_run error: {e}")
-        return error_response("PAPER2CODE_ERROR", str(e))
-
-
-
-
 def tool_hypothesis_list() -> Dict:
     """List all tracked hypotheses with verdict status."""
     try:
@@ -550,14 +461,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                 paper_id=arguments.get("paper_id"),
                 action=arguments.get("action"),
                 label=arguments.get("label"),
-            )
-        elif name == "paper2code_run":
-            result = tool_paper2code_run(  # type: ignore[arg-type]
-                arxiv_id=arguments.get("arxiv_id"),
-                framework=arguments.get("framework", "pytorch"),
-                skip_gene_pool=arguments.get("skip_gene_pool", False),
-                continuous=arguments.get("continuous", False),
-                interval_minutes=arguments.get("interval_minutes", 15),
             )
         elif name == "hypothesis_list":
             # type: ignore[arg-type]

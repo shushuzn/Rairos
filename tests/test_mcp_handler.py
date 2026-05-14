@@ -126,7 +126,6 @@ class TestToolRouting:
         "slides_generate",
         "cite_fetch",
         "paper_analyze",
-        "paper2code_run",
         "citation_graph",
         "gap_detect",
         "gap_submit",

@@ -128,7 +128,7 @@ git push
 |--------|-------|-------|
 | Core Rust | 24 | paper_search/ingest/query/chat/recommend, tag_add/remove/list/tag_all, trends_detect_trending/predict_next/top_predictions/compare_tags, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch |
 | LLM-backed Rust | 35 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create/list/update_step/revise, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, research_run, hypothesis_generate |
-| Python fallback | 3 | chart_query, paper2code_run, hypothesis_list |
+| Python fallback | 2 | chart_query, hypothesis_list |
 
 rairos_mcp.py: **1971 → 652 行** (1319 行死代码已清理)<br>整体 Python 死代码清理: **~5200+ 行已删除**
 
@@ -170,4 +170,4 @@ rairos_mcp.py: **1971 → 652 行** (1319 行死代码已清理)<br>整体 Pytho
 | ~~`gene_pool_decay`~~ / ~~`crossover`~~ | Medium | rairos-evolution |
 | ~~`hypothesis_generate`~~ | HIGH | ✅ Ported to Rust (rairos-research) |
 
-Note: `research_run`, `paper2code_run` are pipeline orchestrators calling 7+ modules — NOT suitable for standalone port.
+Note: `research_run` is a pipeline orchestrator calling 7+ modules — NOT suitable for standalone port.
