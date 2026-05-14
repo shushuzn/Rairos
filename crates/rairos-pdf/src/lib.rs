@@ -223,15 +223,38 @@ pub async fn download_pdf(pdf_url: &str, out_path: &Path) -> Result<()> {
 }
 
 // ============================================================================
-// Text Extraction (basic placeholder — full implementation requires native PDF lib)
+// Text Extraction (lopdf-based)
 // ============================================================================
 
-/// Extract plain text from a PDF file.
-/// Note: Full implementation requires native PDF parsing library integration.
-pub fn extract_pdf_text(_pdf_path: &Path) -> Result<String> {
-    // The actual PDF text extraction requires native PDF parsing libraries.
-    // This is a simplified synchronous interface placeholder.
-    Ok(String::new())
+/// Extract plain text from a PDF file using lopdf.
+///
+/// Iterates over all pages and concatenates extracted text with newline
+/// separators. Per-page extraction failures are silently skipped (graceful
+/// degradation) — callers should check the returned length to detect
+/// complete extraction failure.
+pub fn extract_pdf_text(pdf_path: &Path) -> Result<String> {
+    if !pdf_path.exists() {
+        return Err(PdfError::NotFound(format!(
+            "PDF not found: {}",
+            pdf_path.display()
+        )));
+    }
+    let doc = lopdf::Document::load(pdf_path).map_err(|e| {
+        PdfError::ParseFailed(format!("Failed to load PDF: {}", e))
+    })?;
+    let mut text = String::new();
+    for page_num in doc.get_pages().into_keys() {
+        if let Ok(page_text) = doc.extract_text(&[page_num]) {
+            if !text.is_empty() {
+                text.push('\n');
+            }
+            text.push_str(&page_text);
+        }
+    }
+    if text.is_empty() {
+        return Err(PdfError::ParseFailed("No text extracted from PDF".into()));
+    }
+    Ok(text)
 }
 
 /// Compute SHA256 hash of a PDF file for cache validation.
