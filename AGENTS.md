@@ -94,7 +94,7 @@ uv run pytest tests/test_workflow.py -v --timeout=15
 ## Git Push
 
 ```bash
-GIT_ASKPASS=echo timeout 55 git push
+git push
 ```
 
 ## Persistence Paths (Rust)
@@ -122,13 +122,13 @@ GIT_ASKPASS=echo timeout 55 git push
 - Knowledge Graph: stats, path finding, rankings
 - Memory: research stances, anomaly detection
 
-## Rust MCP Tools (32 Rust + 36 Python fallback)
+## Rust MCP Tools (36 Rust + 34 Python fallback)
 
 | Source | Count | Tools |
 |--------|-------|-------|
 | Core Rust | 17 | paper_search/ingest/query/chat/recommend, tag_add/remove/list, trends_detect_trending, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download, pdf_extract_text, pdf_extract_structured |
-| LLM-backed Rust | 15 | briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare, paper_analyze, trust_scorer_compute, routeplan_create |
-| Python fallback | 36 | trends_predict_next/top_predictions/compare_tags, chart_query, research_run, cite_fetch, paper2code_run, gap_submit/evolve, research_agent_*, hypothesis_generate/list, experiment_record, litreview_list, research_memory_*, review_*, routeplan_list/update_step/revise, impact_leaderboard, replication_compare, tag_all, crossover, leaderboard, gene_pool_decay/watcher, claim_graph |
+| LLM-backed Rust | 16 | briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare, paper_analyze, trust_scorer_compute, routeplan_create, **gap_submit**, **gap_evolve** |
+| Python fallback | 34 | trends_predict_next/top_predictions/compare_tags, chart_query, research_run, paper2code_run, research_agent_*, hypothesis_generate/list, experiment_record, litreview_list, research_memory_*, review_*, routeplan_list/update_step/revise, impact_leaderboard, replication_compare, tag_all, crossover, leaderboard, gene_pool_decay/watcher, claim_graph |
 
 ### Performance Benchmarks
 
@@ -159,12 +159,12 @@ GIT_ASKPASS=echo timeout 55 git push
 
 ### Remaining Python Fallback MCP Tools for Rust Porting
 
-36 Python fallback tools remain at `rairos_mcp.py:handle_call_tool`. Highest-ROI candidates:
+34 Python fallback tools remain at `rairos_mcp.py:handle_call_tool`. Highest-ROI candidates:
 
 | Tool | Complexity | Deps |
 |------|-----------|------|
-| `cite_fetch` | Low | rairos-parser |
-| `gap_submit` / `gap_evolve` | Medium | rairos-core + rairos-llm |
+| ~~`cite_fetch`~~ | Low | rairos-parser |
+| ~~`gap_submit` / `gap_evolve`~~ | Medium | rairos-core + rairos-llm |
 | `gene_pool_decay` / `crossover` | Medium | rairos-evolution |
 
 Note: `research_run`, `paper2code_run`, `research_agent_*` are pipeline orchestrators calling 7+ modules — NOT suitable for standalone port.

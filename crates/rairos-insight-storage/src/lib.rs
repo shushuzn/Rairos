@@ -402,6 +402,20 @@ impl CapsuleStorage {
         Ok(capsules)
     }
 
+    /// Load all capsules (public wrapper).
+    pub fn load_all_capsules(&self) -> Result<Vec<CapsuleGene>, StorageError> {
+        self.load_capsules()
+    }
+
+    /// Save (insert or replace) a batch of capsules.
+    /// Used after evolution to persist the evolved gene pool.
+    pub fn save_capsules(&self, capsules: &[CapsuleGene]) -> Result<(), StorageError> {
+        for c in capsules {
+            self.insert_capsule(c)?;
+        }
+        Ok(())
+    }
+
     pub fn close(&self) {}
 }
 

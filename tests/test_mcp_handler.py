@@ -89,7 +89,7 @@ class TestToolRouting:
         "gap_detect", "litreview_generate", "slides_generate", "replication_check",
         "pdf_download", "pdf_extract_text", "pdf_extract_structured",
         "trends_predict_next", "trends_top_predictions", "trends_compare_tags",
-        "cite_fetch",
+        "cite_fetch", "gap_submit", "gap_evolve",
     }
 
     TOOL_NAMES_IN_HANDLER = [
