@@ -594,6 +594,21 @@ enum Commands {
         format: String,
     },
 
+    /// Show citation relationships for a paper
+    Citations {
+        /// Paper ID to find citations FROM (papers this paper cites)
+        #[arg(long)]
+        from: Option<String>,
+
+        /// Paper ID to find citations TO (papers that cite this paper)
+        #[arg(long)]
+        to: Option<String>,
+
+        /// Output format (table/csv/json)
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
     /// Show citation statistics
     CiteStats {
         /// Show stats for a specific paper
@@ -2311,6 +2326,118 @@ fn handle_memory_stats(format: &str) -> Result<()> {
         for (sev, count) in &stats.by_severity {
             println!("  {}: {}", sev, count);
         }
+    }
+    Ok(())
+}
+
+fn handle_citations(
+    db: &Database,
+    from: Option<&str>,
+    to: Option<&str>,
+    format: &str,
+) -> Result<()> {
+    if from.is_none() && to.is_none() {
+        eprintln!("Error: must specify --from or --to");
+        std::process::exit(1);
+    }
+
+    match (from, to) {
+        // Bridge mode: --from A --to B
+        (Some(f), Some(t)) => {
+            let from_title = db.get_paper(f)?.title;
+            let to_title = db.get_paper(t)?.title;
+
+            let citations_from = db.get_citations(f)?;
+            let citations_to = db.get_citations(t)?;
+
+            let direct = citations_from.references.contains(&t.to_string());
+            let citing_to_sources: std::collections::HashSet<String> =
+                citations_to.citing.into_iter().collect();
+            let via_papers: Vec<&String> = citations_from
+                .references
+                .iter()
+                .filter(|id| citing_to_sources.contains(*id))
+                .collect();
+
+            if format == "json" {
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&serde_json::json!({
+                        "from": f,
+                        "from_title": from_title,
+                        "to": t,
+                        "to_title": to_title,
+                        "direct": direct,
+                        "via_papers": via_papers,
+                    }))?
+                );
+                return Ok(());
+            }
+
+            println!("Citation Bridge — {} ↔ {}", f, t);
+            println!("  From: {}", from_title.chars().take(60).collect::<String>());
+            println!("  To:   {}", to_title.chars().take(60).collect::<String>());
+            if direct {
+                println!("  ✅ DIRECT: {} cites {}", f, t);
+            }
+            if !via_papers.is_empty() {
+                println!("  ⚡ INDIRECT ({} connections):", via_papers.len());
+                for v in &via_papers {
+                    println!("    {} → {} → {}", f, v, t);
+                }
+            }
+            if !direct && via_papers.is_empty() {
+                println!("  No citation path found between these papers");
+            }
+        }
+        // Single direction mode
+        (Some(pid), None) | (None, Some(pid)) => {
+            let direction = if from.is_some() { "from" } else { "to" };
+            let paper_result = db.get_paper(pid);
+            let title = paper_result
+                .as_ref()
+                .map(|p| p.title.clone())
+                .unwrap_or_else(|_| "?".to_string());
+
+            let citations = db.get_citations(pid)?;
+
+            let ids: Vec<String> = if direction == "from" {
+                citations.references
+            } else {
+                citations.citing
+            };
+
+            if format == "json" {
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&serde_json::json!({
+                        "paper_id": pid,
+                        "direction": direction,
+                        "count": ids.len(),
+                        "citations": ids,
+                    }))?
+                );
+                return Ok(());
+            }
+
+            let label = if direction == "from" {
+                "References"
+            } else {
+                "Cited by"
+            };
+
+            println!("{} — {}", label, pid);
+            println!("  {}", title.chars().take(60).collect::<String>());
+            if ids.is_empty() {
+                println!("  No citations found");
+            } else {
+                println!("  Found {} citation(s):", ids.len());
+                for cid in &ids {
+                    println!("    {}", cid);
+                }
+            }
+        }
+        (None, None) => unreachable!(), // already checked above
     }
     Ok(())
 }
@@ -4334,6 +4461,10 @@ fn main() -> Result<()> {
         }
         Commands::MemoryStats { format } => {
             handle_memory_stats(&format)?;
+        }
+        Commands::Citations { from, to, format } => {
+            let db = open_db(&cli.db)?;
+            handle_citations(&db, from.as_deref(), to.as_deref(), &format)?;
         }
         Commands::CiteStats { paper, top, format } => {
             let db = open_db(&cli.db)?;
