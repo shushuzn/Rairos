@@ -1,4 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use rairos_llm::{citation_chain, impact};
 use rairos_research::gap_analysis;
 use rairos_research::snapstate::{SnapSession, Snapstate};
 use rairos_research::PaperSnapshot;
@@ -125,5 +126,75 @@ fn bench_snapstate_save_load(c: &mut Criterion) {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
-criterion_group!(benches, bench_arxiv_parse, bench_gap_analysis, bench_trigger_match, bench_snapstate_save_load);
+fn bench_impact_scoring(c: &mut Criterion) {
+    let papers: Vec<(String, String, u32, i32)> = (0..1000).map(|i| {
+        (format!("p{:04}", i), format!("Paper Title {}", i), (i as u32) % 500, 2015 + (i % 10))
+    }).collect();
+
+    let mut group = c.benchmark_group("impact_score");
+    group.bench_function("score_1000", |b| {
+        b.iter(|| {
+            for p in &papers {
+                impact::score_paper(&p.0, &p.1, p.2, p.3, 2026);
+            }
+        });
+    });
+    group.bench_function("rank_1000", |b| {
+        b.iter(|| impact::rank_papers(black_box(&papers), 2026, black_box(100)));
+    });
+    group.finish();
+}
+
+fn bench_citation_families(c: &mut Criterion) {
+    let nodes: Vec<citation_chain::CitationNode> = (0..100).map(|i| {
+        let mut citations = Vec::new();
+        let mut references = Vec::new();
+        for j in 1..=5 {
+            let other = (i + j) % 100;
+            citations.push(format!("p{:04}", other));
+            references.push(format!("p{:04}", (i + 100 - j) % 100));
+        }
+        citation_chain::CitationNode {
+            paper_id: format!("p{:04}", i),
+            title: format!("Paper {}", i),
+            year: Some(2020 + (i % 5) as i32),
+            citations,
+            references,
+        }
+    }).collect();
+    let edges: Vec<(String, String, String)> = nodes.iter().flat_map(|n| {
+        n.citations.iter().map(|c| (n.paper_id.clone(), c.clone(), "cites".to_string()))
+            .chain(n.references.iter().map(|r| (r.clone(), n.paper_id.clone(), "cites".to_string())))
+    }).collect();
+    let chain = citation_chain::CitationChain {
+        root_id: "p0000".to_string(),
+        nodes: nodes.clone(),
+        edges,
+    };
+
+    let empty_chain = citation_chain::CitationChain {
+        root_id: "empty".to_string(),
+        nodes: vec![],
+        edges: vec![],
+    };
+
+    let mut group = c.benchmark_group("citation");
+    group.bench_function("find_families_100", |b| {
+        b.iter(|| citation_chain::find_families(black_box(&chain)));
+    });
+    group.bench_function("find_silent_100", |b| {
+        b.iter(|| citation_chain::find_silent(black_box(&chain)));
+    });
+    group.bench_function("render_100", |b| {
+        b.iter(|| citation_chain::render_text(black_box(&chain), black_box(50)));
+    });
+    group.bench_function("render_empty", |b| {
+        b.iter(|| citation_chain::render_text(black_box(&empty_chain), black_box(50)));
+    });
+    group.finish();
+}
+
+criterion_group!(benches, bench_arxiv_parse, bench_gap_analysis,
+    bench_trigger_match, bench_snapstate_save_load,
+    bench_impact_scoring, bench_citation_families);
 criterion_main!(benches);

@@ -2619,6 +2619,7 @@ dependencies = [
  "criterion",
  "rairos-batch-optimizer",
  "rairos-core",
+ "rairos-llm",
  "rairos-mcp",
  "rairos-research",
  "rairos-text",
