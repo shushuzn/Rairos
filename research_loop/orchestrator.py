@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from llm.subscription_monitor import SubscriptionMonitor
     from llm.subscription_scorer import SubscriptionScorer
     from llm.research.gap_analyzer import GapAnalyzerV2
-    from research_loop.deep_research import DeepResearchAgent
+    from research_loop.agent_shim import AgentShim as DeepResearchAgent
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +151,7 @@ class AutonomousOrchestrator:
         from llm.subscription_monitor import SubscriptionMonitor
         from llm.subscription_scorer import SubscriptionScorer
         from llm.insight.tracker import EvolutionTracker
-        from research_loop.deep_research import DeepResearchAgent
+        from research_loop.agent_shim import AgentShim as DeepResearchAgent
         from llm.research.gap_analyzer import GapAnalyzerV2
 
         from db.database import Database

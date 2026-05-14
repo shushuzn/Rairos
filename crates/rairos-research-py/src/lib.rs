@@ -119,6 +119,7 @@ struct PyResearchAgent {
     agent: DeepResearchAgent,
     backend: Option<PyResearchBackend>,
     stop_requested: bool,
+    py_db: Option<Py<PyAny>>,
 }
 
 #[pymethods]
@@ -158,6 +159,7 @@ impl PyResearchAgent {
                 new_session: new_session.unwrap(),
             }),
             stop_requested: false,
+            py_db: None,
         })
     }
 
@@ -183,6 +185,32 @@ impl PyResearchAgent {
     #[getter] fn verbose(&self) -> bool { self.agent.deep_config().verbose }
     #[getter] fn max_iterations(&self) -> i32 { self.agent.deep_config().max_iterations }
     #[getter] fn max_papers_per_iteration(&self) -> usize { self.agent.deep_config().max_papers_per_iteration }
+
+    #[getter]
+    fn session_id(&self) -> String {
+        self.agent.session_id().to_string()
+    }
+
+    #[getter]
+    fn get_db(&self, py: Python<'_>) -> Option<PyObject> {
+        self.py_db.as_ref().map(|d| d.clone_ref(py))
+    }
+
+    #[setter]
+    fn set_db(&mut self, val: Option<PyObject>) {
+        self.py_db = val;
+    }
+
+    fn start(&self) -> String {
+        use rairos_research::snapstate::Snapstate;
+        let store = Snapstate::new(None);
+        let session = store.new_session(
+            &self.agent.query,
+            self.agent.deep_config().max_iterations,
+        );
+        let _ = store.save(&session);
+        session.session_id
+    }
 }
 
 #[pymodule]
