@@ -1,25 +1,21 @@
+use rairos_llm::{LlmClient, Message};
 use serde::{Deserialize, Serialize};
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum HypothesisType {
-    #[serde(rename = "exploration")]
-    Exploration,
-    #[serde(rename = "exploitation")]
-    Exploitation,
-    #[serde(rename = "verification")]
-    Verification,
-    #[serde(rename = "generalization")]
-    Generalization,
+    #[serde(rename = "exploration")] Exploration,
+    #[serde(rename = "exploitation")] Exploitation,
+    #[serde(rename = "verification")] Verification,
+    #[serde(rename = "generalization")] Generalization,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum RiskLevel {
-    #[serde(rename = "low")]
-    Low,
-    #[serde(rename = "medium")]
-    Medium,
-    #[serde(rename = "high")]
-    High,
+    #[serde(rename = "low")] Low,
+    #[serde(rename = "medium")] Medium,
+    #[serde(rename = "high")] High,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -65,14 +61,67 @@ pub struct HypothesisResult {
     pub evidence: Vec<String>,
 }
 
+// ─── Prompt Templates ─────────────────────────────────────────────────────────
+
+const SYSTEM_PROMPT: &str = r#"You are a research hypothesis generation and experiment design expert.
+
+Given a research context, generate a specific, testable hypothesis with:
+1. A clear statement
+2. Type classification (exploration/exploitation/verification/generalization)
+3. Null and alternative hypotheses
+4. Confidence level estimate (0.0-1.0)
+
+Format your response as JSON:
+{
+  "hypothesis_type": "exploration",
+  "statement": "...",
+  "null_hypothesis": "...",
+  "alternative_hypothesis": "...",
+  "confidence_level": 0.95
+}"#;
+
+const EXPERIMENT_SYSTEM: &str = r#"You are an experiment design expert.
+Design a controlled experiment to test the given hypothesis. Include:
+1. Experiment type (controlled_trial / ablation / comparative / case_study)
+2. Variables (independent, dependent, controlled)
+3. Whether a control group is needed
+4. Recommended sample size
+
+Format as JSON."#;
+
+// ─── HypothesisGenerator ──────────────────────────────────────────────────────
+
 pub struct HypothesisGenerator;
 
 impl HypothesisGenerator {
-    pub fn new() -> Self {
-        Self
+    pub fn new() -> Self { Self }
+
+    /// Generate a hypothesis using LLM, with placeholder fallback
+    pub async fn generate_hypothesis_llm(
+        &self,
+        llm: &dyn LlmClient,
+        model: &str,
+        context: &str,
+    ) -> ResearchHypothesis {
+        let msg = Message {
+            role: "user".to_string(),
+            content: format!("Research context: {}\n\nGenerate a specific, testable hypothesis based on this context.", context),
+        };
+
+        match llm.complete(vec![msg], model, 0.3, 1000).await {
+            Ok(rairos_llm::LlmResponse::NonStream(ns)) => {
+                serde_json::from_str(&ns.content).unwrap_or_else(|_| self.fallback_hypothesis(context))
+            }
+            _ => self.fallback_hypothesis(context),
+        }
     }
 
+    /// Generate hypothesis without LLM (placeholder)
     pub fn generate_hypothesis(&self, context: &str) -> ResearchHypothesis {
+        self.fallback_hypothesis(context)
+    }
+
+    fn fallback_hypothesis(&self, context: &str) -> ResearchHypothesis {
         ResearchHypothesis {
             hypothesis_type: HypothesisType::Exploration,
             statement: format!("Based on: {}", context),
@@ -82,7 +131,30 @@ impl HypothesisGenerator {
         }
     }
 
+    pub async fn design_experiment_llm(
+        &self,
+        llm: &dyn LlmClient,
+        model: &str,
+        hypothesis: &ResearchHypothesis,
+    ) -> ExperimentDesign {
+        let msg = Message {
+            role: "user".to_string(),
+            content: format!("Design an experiment to test this hypothesis: {}", hypothesis.statement),
+        };
+
+        match llm.complete(vec![msg], model, 0.3, 1000).await {
+            Ok(rairos_llm::LlmResponse::NonStream(ns)) => {
+                serde_json::from_str(&ns.content).unwrap_or_else(|_| self.fallback_experiment(hypothesis))
+            }
+            _ => self.fallback_experiment(hypothesis),
+        }
+    }
+
     pub fn design_experiment(&self, hypothesis: &ResearchHypothesis) -> ExperimentDesign {
+        self.fallback_experiment(hypothesis)
+    }
+
+    fn fallback_experiment(&self, hypothesis: &ResearchHypothesis) -> ExperimentDesign {
         ExperimentDesign {
             experiment_type: "controlled_trial".to_string(),
             hypothesis: hypothesis.statement.clone(),
@@ -103,16 +175,8 @@ impl HypothesisGenerator {
 }
 
 impl Default for HypothesisGenerator {
-    fn default() -> Self {
-        Self::new()
-    }
+    fn default() -> Self { Self::new() }
 }
-
-pub const _HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT: &str =
-    "You are a research hypothesis enhancement assistant.";
-
-pub const _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE: &str =
-    "Enhance the following hypothesis: {hypothesis}";
 
 #[cfg(test)]
 mod tests {
