@@ -112,6 +112,19 @@ assert len(tools) >= 10, f'Expected >= 10 tools, got {len(tools)}'
 print(f'PyO3 OK: {len(tools)} Rust MCP tools')
 "
 
+      - name: Install test dependencies
+        if: runner.os == 'ubuntu-latest'
+        run: |
+          python3 -m pip install pytest pytest-timeout pytest-asyncio --quiet
+
+      - name: Run Python regression tests
+        if: runner.os == 'ubuntu-latest'
+        run: |
+          python3 -m pytest tests/ \
+            --ignore=tests/test_llm_lean_verifier.py \
+            --ignore=tests/test_mcp_schema_fuzz.py \
+            -q --tb=short --timeout=30 2>&1 | tail -15
+
       - name: Security audit
         run: |
           cargo install cargo-audit --locked
