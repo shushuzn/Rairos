@@ -193,20 +193,19 @@ restore_backup(stamp)
 ## Deep Research Agent
 
 ```python
-from research_loop.deep_research import DeepResearchAgent, AgentThought, DeepResearchResult
+from research_loop.agent_shim import AgentShim
 
-agent = DeepResearchAgent(
-    model="qwen3.5-plus",
+agent = AgentShim(
+    query="RAG with agent tools in long context",
     max_iterations=10,
     verbose=True,
 )
 
-result: DeepResearchResult = agent.run(
-    topic="RAG with agent tools in long context",
-    papers=[paper1, paper2],
-)
-for thought in result.thoughts:
-    print(thought.role, thought.content)
+session = agent.start()
+result = agent.run()
+print(f"Completed {result.iterations} iterations, {len(result.papers)} papers")
+for gap in result.gaps:
+    print(f"  Gap: [{gap.gap_type}] {gap.title}")
 ```
 
 ## Gap Clustering & Analysis
