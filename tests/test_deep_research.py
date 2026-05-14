@@ -122,7 +122,7 @@ def _reset_mocks():
         core.search_arxiv.reset_mock()
     if hasattr(core.extract_pdf_text, "reset_mock"):
         core.extract_pdf_text.reset_mock()
-    evo = sys.modules["llm.insight_evolution"]
+    evo = sys.modules.get("llm.insight") or sys.modules["llm.insight_evolution"]
     if hasattr(evo.get_evolution_tracker, "reset_mock"):
         evo.get_evolution_tracker.reset_mock()
     yield

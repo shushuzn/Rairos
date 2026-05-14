@@ -1,4 +1,4 @@
-"""Tier 2 unit tests — llm/gap_analyzer.py, pure functions, no I/O."""
+"""Tier 2 unit tests — llm/research/gap_analyzer, pure functions, no I/O."""
 
 from llm.research.gap_analyzer import (
     ResearchGapV2,
@@ -566,7 +566,7 @@ class TestRenderCombinedReport:
 
     def test_includes_statistics(self):
         """Includes gap analysis statistics."""
-        from llm.hypothesis_generator import HypothesisResult
+        from llm.research.hypothesis_generator import HypothesisResult
 
         gap_result = GapAnalysisResultV2(
             topic="Transformer",

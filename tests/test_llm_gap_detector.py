@@ -1,4 +1,4 @@
-"""Tier 2 unit tests — llm/gap_detector.py, pure functions, no I/O."""
+"""Tier 2 unit tests — llm/research/gap_detector, pure functions, no I/O."""
 
 from llm.research.gap_detector import (
     GapType,

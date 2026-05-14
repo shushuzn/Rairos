@@ -1,4 +1,4 @@
-"""Tier 2 unit tests — llm/hypothesis_generator.py, pure functions, no I/O."""
+"""Tier 2 unit tests — llm/research/hypothesis_generator, pure functions, no I/O."""
 
 from llm.research.hypothesis_generator import (
     HypothesisType,
