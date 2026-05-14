@@ -34,28 +34,144 @@ impl From<rusqlite::Error> for KgError {
 // Node Types
 // ============================================================================
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum KgNodeType {
+    Paper,
+    Tag,
+    Author,
+    PNote,
+    CNote,
+    MNote,
+    Figure,
+    Table,
+}
+
+impl KgNodeType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            KgNodeType::Paper => "paper",
+            KgNodeType::Tag => "tag",
+            KgNodeType::Author => "author",
+            KgNodeType::PNote => "p_note",
+            KgNodeType::CNote => "c_note",
+            KgNodeType::MNote => "m_note",
+            KgNodeType::Figure => "figure",
+            KgNodeType::Table => "table",
+        }
+    }
+
+    pub fn from_str(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "paper" => KgNodeType::Paper,
+            "tag" => KgNodeType::Tag,
+            "author" => KgNodeType::Author,
+            "p_note" | "p-note" => KgNodeType::PNote,
+            "c_note" | "c-note" => KgNodeType::CNote,
+            "m_note" | "m-note" => KgNodeType::MNote,
+            "figure" => KgNodeType::Figure,
+            "table" => KgNodeType::Table,
+            _ => KgNodeType::Paper,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum KgEdgeType {
+    Cite,
+    Derive,
+    SameTag,
+    InComparison,
+    HasNote,
+    AboutTag,
+    HasFigure,
+    HasTable,
+}
+
+impl KgEdgeType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            KgEdgeType::Cite => "cite",
+            KgEdgeType::Derive => "derive",
+            KgEdgeType::SameTag => "same_tag",
+            KgEdgeType::InComparison => "in_comparison",
+            KgEdgeType::HasNote => "has_note",
+            KgEdgeType::AboutTag => "about_tag",
+            KgEdgeType::HasFigure => "has_figure",
+            KgEdgeType::HasTable => "has_table",
+        }
+    }
+
+    pub fn from_str(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "cite" => KgEdgeType::Cite,
+            "derive" => KgEdgeType::Derive,
+            "same_tag" => KgEdgeType::SameTag,
+            "in_comparison" => KgEdgeType::InComparison,
+            "has_note" => KgEdgeType::HasNote,
+            "about_tag" => KgEdgeType::AboutTag,
+            "has_figure" => KgEdgeType::HasFigure,
+            "has_table" => KgEdgeType::HasTable,
+            _ => KgEdgeType::Cite,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct KgNode {
     pub id: String,
-    pub paper_id: String,
+    pub entity_id: String,
     pub label: String,
     pub node_type: String,
-    pub properties: HashMap<String, String>,
+    pub properties: serde_json::Value,
 }
 
 impl KgNode {
     pub fn from_paper(paper: &Paper) -> Self {
-        let mut props = HashMap::new();
-        props.insert("title".to_string(), paper.title.clone());
-        props.insert("arxiv_id".to_string(), paper.arxiv_id.clone().unwrap_or_default());
-        props.insert("cited_by".to_string(), paper.metadata.cited_by.to_string());
         Self {
             id: paper.id.clone(),
-            paper_id: paper.id.clone(),
+            entity_id: paper.arxiv_id.clone().unwrap_or_else(|| paper.id.clone()),
             label: paper.title.clone(),
-            node_type: "paper".to_string(),
-            properties: props,
+            node_type: KgNodeType::Paper.as_str().to_string(),
+            properties: serde_json::json!({
+                "title": paper.title,
+                "arxiv_id": paper.arxiv_id,
+                "cited_by": paper.metadata.cited_by,
+            }),
         }
+    }
+
+    pub fn new_tag(id: &str, label: &str) -> Self {
+        Self {
+            id: id.to_string(),
+            entity_id: id.to_string(),
+            label: label.to_string(),
+            node_type: KgNodeType::Tag.as_str().to_string(),
+            properties: serde_json::Value::Object(serde_json::Map::new()),
+        }
+    }
+
+    pub fn new_author(id: &str, name: &str) -> Self {
+        Self {
+            id: id.to_string(),
+            entity_id: id.to_string(),
+            label: name.to_string(),
+            node_type: KgNodeType::Author.as_str().to_string(),
+            properties: serde_json::json!({"name": name}),
+        }
+    }
+
+    pub fn new_note(id: &str, note_type: KgNodeType, label: &str) -> Self {
+        Self {
+            id: id.to_string(),
+            entity_id: id.to_string(),
+            label: label.to_string(),
+            node_type: note_type.as_str().to_string(),
+            properties: serde_json::Value::Object(serde_json::Map::new()),
+        }
+    }
+
+    pub fn node_type_enum(&self) -> KgNodeType {
+        KgNodeType::from_str(&self.node_type)
     }
 }
 
@@ -66,30 +182,39 @@ pub struct KgEdge {
     pub target: String,
     pub relation: String,
     pub weight: f32,
-    pub properties: HashMap<String, String>,
+    pub properties: serde_json::Value,
 }
 
 impl KgEdge {
-    pub fn cites(source: &str, target: &str) -> Self {
+    pub fn new(source: &str, target: &str, rel_type: KgEdgeType, weight: f32) -> Self {
         Self {
-            id: format!("{}->{}", source, target),
+            id: format!("{}-{}-{:x}", source, target, rand::random::<u32>()),
             source: source.to_string(),
             target: target.to_string(),
-            relation: "cites".to_string(),
-            weight: 1.0,
-            properties: HashMap::new(),
+            relation: rel_type.as_str().to_string(),
+            weight,
+            properties: serde_json::Value::Object(serde_json::Map::new()),
         }
     }
 
+    pub fn cites(source: &str, target: &str) -> Self {
+        Self::new(source, target, KgEdgeType::Cite, 1.0)
+    }
+
     pub fn related_to(source: &str, target: &str, weight: f32) -> Self {
-        Self {
-            id: format!("{}~{}", source, target),
-            source: source.to_string(),
-            target: target.to_string(),
-            relation: "related_to".to_string(),
-            weight,
-            properties: HashMap::new(),
-        }
+        Self::new(source, target, KgEdgeType::Derive, weight)
+    }
+
+    pub fn same_tag(source: &str, target: &str) -> Self {
+        Self::new(source, target, KgEdgeType::SameTag, 1.0)
+    }
+
+    pub fn has_note(source: &str, target: &str) -> Self {
+        Self::new(source, target, KgEdgeType::HasNote, 1.0)
+    }
+
+    pub fn relation_enum(&self) -> KgEdgeType {
+        KgEdgeType::from_str(&self.relation)
     }
 }
 
@@ -154,17 +279,17 @@ impl KgDatabase {
         chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string()
     }
 
-    fn props_to_json(props: &HashMap<String, String>) -> String {
+    fn props_to_json(props: &serde_json::Value) -> String {
         serde_json::to_string(props).unwrap_or_else(|_| "{}".to_string())
     }
 
-    fn json_to_props(json: &str) -> HashMap<String, String> {
+    fn json_to_props(json: &str) -> serde_json::Value {
         serde_json::from_str(json).unwrap_or_default()
     }
 
     // ── Node CRUD ──────────────────────────────────────────────────────────
 
-    pub fn add_node(&self, node_type: &str, entity_id: &str, label: &str, properties: HashMap<String, String>) -> Result<String, KgError> {
+    pub fn add_node(&self, node_type: &str, entity_id: &str, label: &str, properties: serde_json::Value) -> Result<String, KgError> {
         let id = Self::gen_id();
         let props_json = Self::props_to_json(&properties);
         let now = Self::now();
@@ -181,7 +306,7 @@ impl KgDatabase {
     }
 
     /// Add a node with an explicit ID. Used by KnowledgeGraph to sync IDs.
-    fn add_node_with_id(&self, node_id: &str, node_type: &str, entity_id: &str, label: &str, properties: HashMap<String, String>) -> Result<(), KgError> {
+    fn add_node_with_id(&self, node_id: &str, node_type: &str, entity_id: &str, label: &str, properties: serde_json::Value) -> Result<(), KgError> {
         let props_json = Self::props_to_json(&properties);
         let now = Self::now();
         self.conn.execute(
@@ -191,7 +316,7 @@ impl KgDatabase {
         Ok(())
     }
 
-    pub fn upsert_node(&self, node_type: &str, entity_id: &str, label: &str, properties: HashMap<String, String>) -> Result<String, KgError> {
+    pub fn upsert_node(&self, node_type: &str, entity_id: &str, label: &str, properties: serde_json::Value) -> Result<String, KgError> {
         let id = Self::gen_id();
         let props_json = Self::props_to_json(&properties);
         let now = Self::now();
@@ -214,7 +339,7 @@ impl KgDatabase {
         match rows.next()? {
             Some(row) => Ok(Some(KgNode {
                 id: row.get(0)?,
-                paper_id: row.get::<_, String>(2)?, // entity_id as paper_id
+                entity_id: row.get::<_, String>(2)?,
                 label: row.get(3)?,
                 node_type: row.get(1)?,
                 properties: Self::json_to_props(&row.get::<_, String>(4)?),
@@ -229,7 +354,7 @@ impl KgDatabase {
         match rows.next()? {
             Some(row) => Ok(Some(KgNode {
                 id: row.get(0)?,
-                paper_id: row.get::<_, String>(2)?,
+                entity_id: row.get::<_, String>(2)?,
                 label: row.get(3)?,
                 node_type: row.get(1)?,
                 properties: Self::json_to_props(&row.get::<_, String>(4)?),
@@ -249,7 +374,7 @@ impl KgDatabase {
         let map_fn = |row: &rusqlite::Row| -> rusqlite::Result<KgNode> {
             Ok(KgNode {
                 id: row.get(0)?,
-                paper_id: row.get::<_, String>(2)?,
+                entity_id: row.get::<_, String>(2)?,
                 label: row.get(3)?,
                 node_type: row.get(1)?,
                 properties: KgDatabase::json_to_props(&row.get::<_, String>(4)?),
@@ -265,7 +390,7 @@ impl KgDatabase {
 
     // ── Edge CRUD ──────────────────────────────────────────────────────────
 
-    pub fn add_edge(&self, source_id: &str, target_id: &str, relation_type: &str, weight: f64, properties: HashMap<String, String>) -> Result<String, KgError> {
+    pub fn add_edge(&self, source_id: &str, target_id: &str, relation_type: &str, weight: f64, properties: serde_json::Value) -> Result<String, KgError> {
         let id = format!("{}-{}-{}", source_id, target_id, Self::gen_id().chars().take(8).collect::<String>());
         let props_json = Self::props_to_json(&properties);
         self.conn.execute(
@@ -413,7 +538,7 @@ impl KnowledgeGraph {
 
     pub fn add_node(&mut self, node: KgNode) {
         if let Some(ref db) = self.db {
-            let _ = db.add_node_with_id(&node.id, &node.node_type, &node.paper_id, &node.label, node.properties.clone());
+            let _ = db.add_node_with_id(&node.id, &node.node_type, &node.entity_id, &node.label, node.properties.clone());
         }
         self.nodes.insert(node.id.clone(), node);
     }
@@ -511,6 +636,53 @@ impl KnowledgeGraph {
         self.db.as_ref()
     }
 
+    /// Get the ego subgraph for a paper (paper + neighbors up to depth)
+    pub fn get_paper_subgraph(&self, paper_id: &str, depth: u32, include_notes: bool) -> Result<KgSubgraph, KgError> {
+        let db = self.db.as_ref().ok_or_else(|| KgError::Database("No database connected".into()))?;
+        let center = db.get_node_by_entity(KgNodeType::Paper.as_str(), paper_id)?
+            .ok_or_else(|| KgError::NodeNotFound(paper_id.to_string()))?;
+        let mut sub_nodes: HashMap<String, KgNode> = HashMap::new();
+        let mut sub_edges: Vec<KgEdge> = Vec::new();
+        sub_nodes.insert(center.id.clone(), center.clone());
+
+        let neighbors = db.get_neighbors(&center.id, depth, None)?;
+        for (node, edge, _) in &neighbors {
+            if !include_notes {
+                let nt = KgNodeType::from_str(&node.node_type);
+                if matches!(nt, KgNodeType::PNote | KgNodeType::CNote | KgNodeType::MNote) {
+                    continue;
+                }
+            }
+            sub_nodes.insert(node.id.clone(), node.clone());
+            sub_edges.push(edge.clone());
+        }
+
+        let mut nodes: Vec<KgNode> = sub_nodes.into_values().collect();
+        nodes.sort_by(|a, b| a.id.cmp(&b.id));
+        sub_edges.sort_by(|a, b| a.id.cmp(&b.id));
+
+        Ok(KgSubgraph { nodes, edges: sub_edges, center_id: center.id })
+    }
+
+    /// Get the subgraph for a tag (all papers + notes connected by same_tag edges)
+    pub fn get_tag_ecosystem(&self, tag: &str) -> Result<KgSubgraph, KgError> {
+        let db = self.db.as_ref().ok_or_else(|| KgError::Database("No database connected".into()))?;
+        let tag_node = db.get_node_by_entity(KgNodeType::Tag.as_str(), tag)?
+            .ok_or_else(|| KgError::NodeNotFound(format!("Tag: {}", tag)))?;
+
+        let edges = db.get_edges_by_node(&tag_node.id, "both", Some(KgEdgeType::SameTag.as_str()))?;
+        let mut node_ids: HashSet<String> = HashSet::new();
+        node_ids.insert(tag_node.id.clone());
+        for edge in &edges {
+            node_ids.insert(edge.source.clone());
+            node_ids.insert(edge.target.clone());
+        }
+
+        let nodes = db.get_all_nodes(None)?;
+        let sub_nodes: Vec<KgNode> = nodes.into_iter().filter(|n| node_ids.contains(&n.id)).collect();
+        Ok(KgSubgraph { nodes: sub_nodes, edges, center_id: tag_node.id })
+    }
+
     pub fn default_path() -> std::path::PathBuf {
         dirs::home_dir()
             .unwrap_or_else(|| std::path::PathBuf::from("."))
@@ -571,6 +743,14 @@ pub struct KgStats {
     pub concept_nodes: usize,
 }
 
+/// Subgraph result (for paper subgraph / tag ecosystem queries)
+#[derive(Debug, Clone, Serialize)]
+pub struct KgSubgraph {
+    pub nodes: Vec<KgNode>,
+    pub edges: Vec<KgEdge>,
+    pub center_id: String,
+}
+
 // ============================================================================
 // Graph Algorithms (unchanged)
 // ============================================================================
@@ -582,7 +762,7 @@ impl GraphAlgorithms {
         let mut scores: HashMap<String, f32> = graph.nodes.keys().map(|id| (id.clone(), 1.0)).collect();
         let damping = 0.85;
         for _ in 0..20 {
-            let mut new_scores: HashMap<String, f32> = HashMap::new();
+            let mut new_scores: HashMap<String, f32> = std::collections::HashMap::new();
             for node_id in scores.keys() {
                 let incoming = graph.incoming.get(node_id);
                 let mut contribution = 0.0;
@@ -615,7 +795,7 @@ impl GraphAlgorithms {
             for node_id in graph.nodes.keys() {
                 let neighbors = graph.outgoing.get(node_id).map(|v| v.as_slice()).unwrap_or(&[]);
                 if neighbors.is_empty() { continue; }
-                let mut label_counts: HashMap<usize, usize> = HashMap::new();
+                let mut label_counts: HashMap<usize, usize> = std::collections::HashMap::new();
                 for neighbor_id in neighbors {
                     if let Some(&label) = communities.get(neighbor_id) {
                         *label_counts.entry(label).or_insert(0) += 1;
@@ -708,7 +888,7 @@ mod tests {
     #[test]
     fn test_db_add_get_node() {
         let (db, dir) = test_db();
-        let id = db.add_node("paper", "2401.00001", "Test Paper", HashMap::new()).unwrap();
+        let id = db.add_node("paper", "2401.00001", "Test Paper", serde_json::json!({})).unwrap();
         let node = db.get_node(&id).unwrap().unwrap();
         assert_eq!(node.label, "Test Paper");
         let _ = std::fs::remove_dir_all(&dir);
@@ -717,7 +897,7 @@ mod tests {
     #[test]
     fn test_db_get_node_by_entity() {
         let (db, dir) = test_db();
-        db.add_node("paper", "2401.00001", "Test Paper", HashMap::new()).unwrap();
+        db.add_node("paper", "2401.00001", "Test Paper", serde_json::json!({})).unwrap();
         let node = db.get_node_by_entity("paper", "2401.00001").unwrap().unwrap();
         assert_eq!(node.label, "Test Paper");
         let _ = std::fs::remove_dir_all(&dir);
@@ -726,9 +906,9 @@ mod tests {
     #[test]
     fn test_db_add_edge() {
         let (db, dir) = test_db();
-        let n1 = db.add_node("paper", "2401.00001", "Paper A", HashMap::new()).unwrap();
-        let n2 = db.add_node("paper", "2401.00002", "Paper B", HashMap::new()).unwrap();
-        db.add_edge(&n1, &n2, "cites", 1.0, HashMap::new()).unwrap();
+        let n1 = db.add_node("paper", "2401.00001", "Paper A", serde_json::json!({})).unwrap();
+        let n2 = db.add_node("paper", "2401.00002", "Paper B", serde_json::json!({})).unwrap();
+        db.add_edge(&n1, &n2, "cites", 1.0, serde_json::json!({})).unwrap();
         let edges = db.get_edges_by_node(&n1, "out", None).unwrap();
         assert_eq!(edges.len(), 1);
         assert_eq!(edges[0].relation, "cites");
@@ -738,8 +918,7 @@ mod tests {
     #[test]
     fn test_db_upsert_node() {
         let (db, dir) = test_db();
-        let mut props = HashMap::new();
-        props.insert("key".into(), "value".into());
+        let props = serde_json::json!({"key": "value"});
         let id1 = db.upsert_node("paper", "2401.00001", "Original", props.clone()).unwrap();
         // Upsert same entity — should update, not create new
         let id2 = db.upsert_node("paper", "2401.00001", "Updated", props).unwrap();
@@ -752,11 +931,11 @@ mod tests {
     #[test]
     fn test_db_get_neighbors() {
         let (db, dir) = test_db();
-        let n1 = db.add_node("paper", "2401.00001", "Paper A", HashMap::new()).unwrap();
-        let n2 = db.add_node("paper", "2401.00002", "Paper B", HashMap::new()).unwrap();
-        let n3 = db.add_node("paper", "2401.00003", "Paper C", HashMap::new()).unwrap();
-        db.add_edge(&n1, &n2, "cites", 1.0, HashMap::new()).unwrap();
-        db.add_edge(&n2, &n3, "cites", 1.0, HashMap::new()).unwrap();
+        let n1 = db.add_node("paper", "2401.00001", "Paper A", serde_json::json!({})).unwrap();
+        let n2 = db.add_node("paper", "2401.00002", "Paper B", serde_json::json!({})).unwrap();
+        let n3 = db.add_node("paper", "2401.00003", "Paper C", serde_json::json!({})).unwrap();
+        db.add_edge(&n1, &n2, "cites", 1.0, serde_json::json!({})).unwrap();
+        db.add_edge(&n2, &n3, "cites", 1.0, serde_json::json!({})).unwrap();
 
         // Depth 1: only n2
         let neighbors = db.get_neighbors(&n1, 1, None).unwrap();
@@ -772,9 +951,9 @@ mod tests {
     #[test]
     fn test_db_stats() {
         let (db, dir) = test_db();
-        db.add_node("paper", "1", "Paper 1", HashMap::new()).unwrap();
-        db.add_node("paper", "2", "Paper 2", HashMap::new()).unwrap();
-        db.add_node("concept", "ml", "Machine Learning", HashMap::new()).unwrap();
+        db.add_node("paper", "1", "Paper 1", serde_json::json!({})).unwrap();
+        db.add_node("paper", "2", "Paper 2", serde_json::json!({})).unwrap();
+        db.add_node("concept", "ml", "Machine Learning", serde_json::json!({})).unwrap();
         let stats = db.stats().unwrap();
         assert_eq!(stats.total_nodes, 3);
         assert_eq!(stats.paper_nodes, 2);
@@ -785,7 +964,7 @@ mod tests {
     #[test]
     fn test_db_export_json() {
         let (db, dir) = test_db();
-        db.add_node("paper", "1", "Paper", HashMap::new()).unwrap();
+        db.add_node("paper", "1", "Paper", serde_json::json!({})).unwrap();
         let json = db.export_json().unwrap();
         assert!(json["nodes"].as_array().unwrap().len() >= 1);
         let _ = std::fs::remove_dir_all(&dir);
@@ -793,7 +972,10 @@ mod tests {
 
     #[test]
     fn test_knowledge_graph_with_db() {
-        let dir = std::env::temp_dir().join(format!("rairos_kg_integration_{}", std::process::id()));
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_int_{}_{}", std::process::id(), unique));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         let db_path = dir.join("test_kg.db");
@@ -814,6 +996,72 @@ mod tests {
         assert_eq!(nodes.len(), 2, "should have 2 nodes in SQLite");
         let edges = db.get_edges_by_node(nodes[0].id.as_str(), "both", None).unwrap();
         assert!(!edges.is_empty(), "should have edges in SQLite");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_node_type_enum() {
+        assert_eq!(KgNodeType::Paper.as_str(), "paper");
+        assert_eq!(KgNodeType::Tag.as_str(), "tag");
+        assert_eq!(KgNodeType::Author.as_str(), "author");
+        assert_eq!(KgNodeType::from_str("paper"), KgNodeType::Paper);
+        assert_eq!(KgNodeType::from_str("TAG"), KgNodeType::Tag);
+        assert_eq!(KgNodeType::from_str("p_note"), KgNodeType::PNote);
+    }
+
+    #[test]
+    fn test_edge_type_enum() {
+        assert_eq!(KgEdgeType::Cite.as_str(), "cite");
+        assert_eq!(KgEdgeType::SameTag.as_str(), "same_tag");
+        assert_eq!(KgEdgeType::from_str("cite"), KgEdgeType::Cite);
+        assert_eq!(KgEdgeType::from_str("same_tag"), KgEdgeType::SameTag);
+    }
+
+    #[test]
+    fn test_constructor_helpers() {
+        let tag = KgNode::new_tag("test_tag", "Test Tag");
+        assert_eq!(tag.node_type, "tag");
+        assert_eq!(tag.label, "Test Tag");
+
+        let author = KgNode::new_author("auth1", "John Doe");
+        assert_eq!(author.node_type, "author");
+
+        let note = KgNode::new_note("note1", KgNodeType::PNote, "A note");
+        assert_eq!(note.node_type, "p_note");
+    }
+
+    #[test]
+    fn test_edge_constructors() {
+        let e = KgEdge::cites("a", "b");
+        assert_eq!(e.relation, "cite");
+        assert_eq!(e.source, "a");
+
+        let e2 = KgEdge::same_tag("a", "b");
+        assert_eq!(e2.relation, "same_tag");
+
+        let e3 = KgEdge::has_note("a", "b");
+        assert_eq!(e3.relation, "has_note");
+    }
+
+    #[test]
+    fn test_get_paper_subgraph() {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_sub_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let db_path = dir.join("subgraph_test.db");
+
+        let mut graph = KnowledgeGraph::with_db(db_path.clone()).unwrap();
+        let p1 = Paper::new(Some("sub1".into()), "Paper 1".into(), "Abstract 1".into());
+        let p2 = Paper::new(Some("sub2".into()), "Paper 2".into(), "Abstract 2".into());
+        graph.add_paper(&p1);
+        graph.add_paper(&p2);
+        graph.add_citation(&p2.id, &p1.id);
+
+        let subgraph = graph.get_paper_subgraph("sub1", 1, false).unwrap();
+        assert!(subgraph.nodes.iter().any(|n| n.label == "Paper 1"), "subgraph should contain center");
         let _ = std::fs::remove_dir_all(&dir);
     }
 }
