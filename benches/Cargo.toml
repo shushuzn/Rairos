@@ -12,6 +12,7 @@ rairos-research = { path = "../crates/rairos-research" }
 rairos-mcp = { path = "../crates/rairos-mcp" }
 rairos-llm = { path = "../crates/rairos-llm" }
 serde_json = "1.0"
+tokio = { version = "1", features = ["full"] }
 
 [dev-dependencies]
 criterion = "0.8"
@@ -35,3 +36,8 @@ path = "batch_optimizer.rs"
 name = "research_core"
 harness = false
 path = "research_core.rs"
+
+[[bench]]
+name = "mcp_dispatch"
+harness = false
+path = "mcp_dispatch.rs"
