@@ -727,10 +727,31 @@ impl DeepResearchAgent {
 pub trait ResearchBackend {
     fn stream_plan(&self, query: &str, iteration: i32) -> Result<String, String>;
     fn search_papers(&self, query: &str, max: usize) -> Result<Vec<rairos_core::Paper>, String> {
-        // Default implementation: use arXiv search
         crate::arxiv_search::search(query, max)
     }
-    fn extract_paper(&self, paper: &rairos_core::Paper) -> Result<PaperSnapshot, String>;
+    fn extract_paper(&self, paper: &rairos_core::Paper) -> Result<PaperSnapshot, String> {
+        let url = &paper.metadata.pdf_url.clone().unwrap_or_default();
+        if url.is_empty() {
+            return Ok(PaperSnapshot::from_paper(paper));
+        }
+
+        let resp = reqwest::blocking::get(url).map_err(|e| format!("PDF download failed: {}", e))?;
+        let bytes = resp.bytes().map_err(|e| format!("PDF read failed: {}", e))?;
+
+        // Write to temp file
+        let tmp_dir = std::env::temp_dir().join("rairos_pdf");
+        std::fs::create_dir_all(&tmp_dir).ok();
+        let tmp_path = tmp_dir.join(format!("{}.pdf", paper.id));
+        std::fs::write(&tmp_path, &bytes).ok();
+
+        // Extract text
+        let text = rairos_pdf::extract_pdf_text(&tmp_path).unwrap_or_default();
+        let _ = std::fs::remove_file(&tmp_path);
+
+        let mut snap = PaperSnapshot::from_paper(paper);
+        snap.extracted_text = Some(text.chars().take(5000).collect());
+        Ok(snap)
+    }
     fn analyze_gaps(&self, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String>;
     fn get_search_guidance(
         &self, topic: &str, gap_type: &str, gap_title: &str,
