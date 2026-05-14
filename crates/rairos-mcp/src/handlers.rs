@@ -898,4 +898,71 @@ mod tests {
         assert_eq!(papers.len(), 1);
         assert_eq!(papers[0]["arxiv_id"], "2401.12345");
     }
+
+    // ─── PDF Handler Tests ─────────────────────────────────────────────────
+
+    #[test]
+    fn test_pdf_handlers_schema_requires_arxiv_id() {
+        let req = |h: &dyn ToolHandler| h.input_schema().required.unwrap_or_default();
+        assert!(req(&PdfDownloadHandler).contains(&"arxiv_id".into()));
+        assert!(req(&PdfExtractTextHandler).contains(&"arxiv_id".into()));
+        assert!(req(&PdfExtractStructuredHandler).contains(&"arxiv_id".into()));
+    }
+
+    #[test]
+    fn test_pdf_download_error_missing_arxiv_id() {
+        let result = futures::executor::block_on(PdfDownloadHandler.call(serde_json::json!({})));
+        assert_eq!(result, Err("Missing arxiv_id".to_string()));
+    }
+
+    #[test]
+    fn test_pdf_extract_text_error_missing_arxiv_id() {
+        let result = futures::executor::block_on(PdfExtractTextHandler.call(serde_json::json!({})));
+        assert_eq!(result, Err("Missing arxiv_id".to_string()));
+    }
+
+    #[test]
+    fn test_pdf_extract_structured_error_missing_arxiv_id() {
+        let result = futures::executor::block_on(PdfExtractStructuredHandler.call(serde_json::json!({})));
+        assert_eq!(result, Err("Missing arxiv_id".to_string()));
+    }
+
+    // ─── Trends Handler Tests ──────────────────────────────────────────────
+
+    #[test]
+    fn test_trends_predict_next_schema_requires_tag() {
+        let req = TrendsPredictNextHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"tag".into()));
+    }
+
+    #[test]
+    fn test_trends_predict_next_error_missing_tag() {
+        let result = futures::executor::block_on(TrendsPredictNextHandler.call(serde_json::json!({})));
+        assert_eq!(result, Err("Missing tag".to_string()));
+    }
+
+    #[test]
+    fn test_trends_top_predictions_no_required() {
+        let schema = TrendsTopPredictionsHandler.input_schema();
+        assert!(schema.required.is_none() || schema.required.as_ref().unwrap().is_empty());
+    }
+
+    #[test]
+    fn test_trends_compare_tags_schema_requires_both() {
+        let req = TrendsCompareTagsHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"tag_a".into()));
+        assert!(req.contains(&"tag_b".into()));
+    }
+
+    #[test]
+    fn test_trends_compare_tags_error_missing_tag_a() {
+        let result = futures::executor::block_on(TrendsCompareTagsHandler.call(serde_json::json!({"tag_b": "test"})));
+        assert_eq!(result, Err("Missing tag_a".to_string()));
+    }
+
+    #[test]
+    fn test_trends_compare_tags_error_missing_tag_b() {
+        let result = futures::executor::block_on(TrendsCompareTagsHandler.call(serde_json::json!({"tag_a": "test"})));
+        assert_eq!(result, Err("Missing tag_b".to_string()));
+    }
 }
