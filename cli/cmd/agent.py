@@ -15,10 +15,11 @@ import argparse
 
 from pathlib import Path
 
-
 from cli._shared import Colors, colored, print_error, print_success
 
-from research_loop.deep_research import DeepResearchAgent
+import json
+
+from rairos_research_py import PyResearchAgent as DeepResearchAgent
 from research_loop.snapstate import Snapstate
 
 
@@ -236,46 +237,43 @@ def _run_deep_research(args) -> int:
 
     agent = DeepResearchAgent(
         query=args.query,
-        max_iterations=iterations,
-        max_papers_per_iteration=args.papers,
-        verbose=args.verbose,
-        mode=args.mode,
-        snapstate_dir=snapstate_dir,
-        on_thought=_on_thought,
+        config_json=json.dumps({
+            "max_iterations": iterations,
+            "max_papers_per_iteration": args.papers,
+            "verbose": args.verbose,
+            "mode": args.mode,
+            "use_streaming_reasoning": False,
+            "auto_checkpoint": True,
+            "checkpoint_every_n_steps": 1,
+            "checkpoint_interval_seconds": 60,
+        }),
     )
 
-    if args.resume:
-        session = agent.resume(args.resume)
-        if not session:
-            print_error(f"Session not found: {args.resume}")
-            return 1
-        print_success(f"Resumed session {args.resume} (iteration {session.iteration})")
-    else:
-        if not args.query:
-            print_error("query is required for new sessions")
-            return 1
-        agent.start()
+    if not args.query and not args.resume:
+        print_error("query is required for new sessions")
+        return 1
 
-    result = agent.run()
+    result_json = agent.run(mode=args.mode)
+    result = json.loads(result_json)
 
     # Output
     if args.output:
-        Path(args.output).write_text(result.report, encoding="utf-8")
+        Path(args.output).write_text(result.get("report", ""), encoding="utf-8")
         print_success(f"Report written to {args.output}")
     else:
         print()
         print(colored("=" * 60, Colors.CYAN))
         print(colored("  Deep Research Complete", Colors.BOLD))
         print(colored("=" * 60, Colors.CYAN))
-        print(f"  Session: {result.session_id}")
-        print(f"  Iterations: {result.iterations}")
-        print(f"  Papers analyzed: {len(result.papers)}")
-        print(f"  Gaps found: {len(result.gaps)}")
-        print(f"  Duration: {result.duration_seconds:.1f}s")
+        print(f"  Session: {result.get('session_id', '?')}")
+        print(f"  Iterations: {result.get('iterations', 0)}")
+        print(f"  Papers analyzed: {len(result.get('papers', []))}")
+        print(f"  Gaps found: {len(result.get('gaps', []))}")
+        print(f"  Duration: {result.get('duration_seconds', 0):.1f}s")
         print()
-        print(result.report)
+        print(result.get("report", ""))
 
-    print_success(f"\nSession saved: {result.session_id}")
+    print_success(f"\nSession saved: {result.get('session_id', '?')}")
     return 0
 
 

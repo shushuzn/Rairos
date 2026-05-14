@@ -733,7 +733,9 @@ impl DeepResearchAgent {
 // ─── Research Backend Trait ─────────────────────────────────────────────────────
 
 pub trait ResearchBackend {
-    fn stream_plan(&self, query: &str, iteration: i32) -> Result<String, String>;
+    fn stream_plan(&self, query: &str, _iteration: i32) -> Result<String, String> {
+        Ok(query.to_string())
+    }
     fn search_papers(&self, query: &str, max: usize) -> Result<Vec<rairos_core::Paper>, String> {
         crate::arxiv_search::search(query, max)
     }
