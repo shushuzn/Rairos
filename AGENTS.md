@@ -127,8 +127,8 @@ git push
 | Source | Count | Tools |
 |--------|-------|-------|
 | Core Rust | 17 | paper_search/ingest/query/chat/recommend, tag_add/remove/list, trends_detect_trending, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download, pdf_extract_text, pdf_extract_structured |
-| LLM-backed Rust | 16 | briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare, paper_analyze, trust_scorer_compute, routeplan_create, **gap_submit**, **gap_evolve** |
-| Python fallback | 34 | trends_predict_next/top_predictions/compare_tags, chart_query, research_run, paper2code_run, research_agent_*, hypothesis_generate/list, experiment_record, litreview_list, research_memory_*, review_*, routeplan_list/update_step/revise, impact_leaderboard, replication_compare, tag_all, crossover, leaderboard, gene_pool_decay/watcher, claim_graph |
+| LLM-backed Rust | 18 | briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare, paper_analyze, trust_scorer_compute, routeplan_create, gap_submit, gap_evolve, **gene_pool_decay**, **crossover** |
+| Python fallback | 32 | trends_predict_next/top_predictions/compare_tags, chart_query, research_run, paper2code_run, research_agent_*, hypothesis_generate/list, experiment_record, litreview_list, research_memory_*, review_*, routeplan_list/update_step/revise, impact_leaderboard, replication_compare, tag_all, leaderboard, gene_pool_watcher, claim_graph |
 
 ### Performance Benchmarks
 
@@ -165,6 +165,6 @@ git push
 |------|-----------|------|
 | ~~`cite_fetch`~~ | Low | rairos-parser |
 | ~~`gap_submit` / `gap_evolve`~~ | Medium | rairos-core + rairos-llm |
-| `gene_pool_decay` / `crossover` | Medium | rairos-evolution |
+| ~~`gene_pool_decay`~~ / ~~`crossover`~~ | Medium | rairos-evolution |
 
 Note: `research_run`, `paper2code_run`, `research_agent_*` are pipeline orchestrators calling 7+ modules — NOT suitable for standalone port.
