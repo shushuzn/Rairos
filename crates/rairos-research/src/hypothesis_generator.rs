@@ -185,6 +185,9 @@ Creative mode: {creative}
 Related papers from knowledge graph:
 {kg_context}
 
+Gene Pool context (related prior hypotheses):
+{genepool_context}
+
 Generate specific, testable research hypotheses."#;
 
 // ============================================================================
@@ -287,6 +290,64 @@ pub fn fetch_relevant_papers(topic: &str, limit: usize) -> Vec<String> {
     result
 }
 
+/// Fetch related capsule context from the Gene Pool for a topic.
+/// Returns a human-readable summary of related capsule success/failure history.
+/// Gracefully degrades if Gene Pool is unavailable or empty.
+pub fn fetch_gene_pool_context(topic: &str) -> String {
+    let pool = crate::gene_pool::GenePool::new();
+    let capsules = pool.load_capsules();
+    if capsules.is_empty() {
+        return "(Gene Pool is empty — no prior hypothesis data available)".to_string();
+    }
+
+    // Find capsules whose trigger_topic overlaps with the query topic
+    let keywords = crate::gene_pool::extract_keywords(topic);
+    if keywords.is_empty() {
+        return String::new();
+    }
+
+    let related: Vec<_> = capsules.iter()
+        .filter(|c| {
+            keywords.iter().any(|kw| {
+                c.trigger_topic.to_lowercase().contains(&kw.to_lowercase())
+                    || c.action_gap_title.to_lowercase().contains(&kw.to_lowercase())
+                    || c.trigger_keywords.iter().any(|k| k.to_lowercase().contains(&kw.to_lowercase()))
+            })
+        })
+        .collect();
+
+    if related.is_empty() {
+        return "(No directly related hypotheses found in Gene Pool)".to_string();
+    }
+
+    // Compute aggregate stats
+    let total = related.len();
+    let avg_success: f64 = related.iter().map(|c| c.outcome_success_score).sum::<f64>() / total as f64;
+    let total_feedback: i32 = related.iter().map(|c| c.feedback_count).sum();
+    let high_success = related.iter().filter(|c| c.outcome_success_score >= 0.7).count();
+    let low_success = related.iter().filter(|c| c.outcome_success_score < 0.3).count();
+    let newest = related.iter().map(|c| &c.created_at).max().cloned().unwrap_or_default();
+
+    // Show top 3 most successful capsules
+    let mut sorted = related.clone();
+    sorted.sort_by(|a, b| b.outcome_success_score.partial_cmp(&a.outcome_success_score).unwrap_or(std::cmp::Ordering::Equal));
+
+    let top_examples: Vec<String> = sorted.iter().take(3).map(|c| {
+        let title = if c.action_gap_title.len() > 80 { &c.action_gap_title[..77] } else { &c.action_gap_title };
+        format!("  - \"{}\" (success: {:.0}%, feedback: {})", title, c.outcome_success_score * 100.0, c.feedback_count)
+    }).collect();
+
+    format!(
+        "{} related prior {} in Gene Pool:\n- Average success rate: {:.0}%\n- High-success: {}  |  Low-success: {}  |  Total feedback events: {}\n- Most recent: {}\n- Examples:\n{}",
+        total,
+        if total == 1 { "hypothesis" } else { "hypotheses" },
+        avg_success * 100.0,
+        high_success, low_success, total_feedback,
+        if newest.len() > 10 { &newest[..10] } else { &newest },
+        top_examples.join("\n"),
+    )
+}
+
 /// Submit high-scoring hypotheses to the GenePool as capsules.
 /// Returns IDs of submitted capsules.
 pub fn submit_hypotheses_to_genepool(
@@ -370,11 +431,15 @@ impl HypothesisGenerator {
             kg_papers.join("\n- ")
         };
 
+        // Fetch Gene Pool context
+        let genepool_context = fetch_gene_pool_context(topic);
+
         // Enhance with LLM
         let user_prompt = USER_PROMPT_TEMPLATE
             .replace("{topic}", topic)
             .replace("{gap_context}", &if gap_context.len() > 200 { &gap_context[..200] } else { gap_context })
             .replace("{kg_context}", &kg_context)
+            .replace("{genepool_context}", &genepool_context)
             .replace("{creative}", if creative { "yes" } else { "no" });
 
         let msg = Message {

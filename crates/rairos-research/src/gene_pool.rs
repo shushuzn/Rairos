@@ -65,7 +65,7 @@ fn normalize_gap_type(gap_type: &str) -> String {
 // ─── CapsuleGene (read + write) ────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct CapsuleGene {
+pub struct CapsuleGene {
     #[serde(default)]
     pub capsule_id: String,
     #[serde(default)]
@@ -235,7 +235,7 @@ impl GenePool {
         &self.base_dir
     }
 
-    fn load_capsules(&self) -> Vec<CapsuleGene> {
+    pub fn load_capsules(&self) -> Vec<CapsuleGene> {
         let content = match std::fs::read_to_string(&self.jsonl_path) {
             Ok(c) => c,
             Err(_) => return Vec::new(),

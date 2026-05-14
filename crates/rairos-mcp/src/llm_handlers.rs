@@ -1070,7 +1070,7 @@ pub struct HypothesisGenerateHandler;
 #[async_trait]
 impl ToolHandler for HypothesisGenerateHandler {
     fn name(&self) -> &str { "hypothesis_generate" }
-    fn description(&self) -> &str { "Generate testable research hypotheses from topic + gap context with experiment designs, risk assessment, and scoring" }
+    fn description(&self) -> &str { "Generate testable research hypotheses from topic + gap context with KG paper context, Gene Pool prior success/failure signal, experiment designs, risk assessment, and scoring" }
     fn input_schema(&self) -> ToolInputSchema {
         ToolInputSchema::object(
             vec![
