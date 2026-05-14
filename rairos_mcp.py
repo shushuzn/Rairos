@@ -2312,6 +2312,23 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                         "isError": True,
                     }
 
+        # ── Try Rust MCP server first (faster, no dynamic import) ────────────
+        try:
+            import json as _json
+            from rairos_mcp_py import call_tool_rs
+
+            _result_json = call_tool_rs(name, _json.dumps(arguments))
+            if _result_json is not None:
+                _parsed = _json.loads(_result_json)
+                # Rust MCP returns {"content": [{"type": "text", "text": "..."}]}
+                _content = _parsed.get("content", [])
+                if _content and isinstance(_content, list):
+                    _text = _content[0].get("text", "{}")
+                    return _json.loads(_text)
+                return _parsed
+        except Exception:
+            pass
+
         if name == "paper_ingest":
             result = tool_paper_ingest(  # type: ignore[arg-type]
                 identifier=arguments.get("identifier"), tags=arguments.get("tags")
