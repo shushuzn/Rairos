@@ -188,6 +188,9 @@ Related papers from knowledge graph:
 Gene Pool context (related prior hypotheses):
 {genepool_context}
 
+Trend context (research tag heat):
+{trend_context}
+
 Generate specific, testable research hypotheses."#;
 
 // ============================================================================
@@ -348,6 +351,63 @@ pub fn fetch_gene_pool_context(topic: &str) -> String {
     )
 }
 
+/// Fetch KG trend context for a topic: which research tags are heating up or cooling down.
+/// Returns a human-readable summary of trending tags relevant to the topic.
+/// Gracefully degrades if trend data is unavailable.
+pub fn fetch_trend_context(topic: &str) -> String {
+    let forecaster = rairos_trends::TrendForecaster::with_path("data/radar_history.json");
+    if forecaster.history().is_empty() {
+        return "(Trend data unavailable — no radar history found)".to_string();
+    }
+
+    let trending = forecaster.detect_trending(0.05);
+    if trending.is_empty() {
+        return "(No trending tags detected above noise threshold)".to_string();
+    }
+
+    // Filter trending tags relevant to the topic
+    let keywords = crate::gene_pool::extract_keywords(topic);
+    let relevant: Vec<_> = trending.iter()
+        .filter(|(tag, _)| {
+            keywords.is_empty() || keywords.iter().any(|kw| {
+                tag.to_lowercase().contains(&kw.to_lowercase())
+                    || kw.to_lowercase().contains(&tag.to_lowercase())
+            })
+        })
+        .collect();
+
+    let mut lines = Vec::new();
+
+    if !relevant.is_empty() {
+        lines.push(format!(
+            "Relevant trending tags (top {} of {} total trending):",
+            relevant.len().min(5),
+            trending.len(),
+        ));
+        for (tag, slope) in relevant.iter().take(5) {
+            lines.push(format!("  - {} (slope: {:.3})", tag, slope));
+        }
+    }
+
+    // Show top 3 overall trending tags (for cross-domain awareness)
+    let global_top: Vec<_> = trending.iter().take(3).collect();
+    lines.push(format!(
+        "\nTop trending across all research: {}",
+        global_top.iter().map(|(t, s)| format!("{} ({:.3})", t, s)).collect::<Vec<_>>().join(", ")
+    ));
+
+    // Show 3 fastest-declining tags
+    let mut all_sorted = trending.clone();
+    all_sorted.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+    let bottom: Vec<_> = all_sorted.iter().take(3).collect();
+    lines.push(format!(
+        "Fastest declining: {}",
+        bottom.iter().map(|(t, s)| format!("{} ({:.3})", t, s)).collect::<Vec<_>>().join(", ")
+    ));
+
+    lines.join("\n")
+}
+
 /// Submit high-scoring hypotheses to the GenePool as capsules.
 /// Returns IDs of submitted capsules.
 pub fn submit_hypotheses_to_genepool(
@@ -434,12 +494,16 @@ impl HypothesisGenerator {
         // Fetch Gene Pool context
         let genepool_context = fetch_gene_pool_context(topic);
 
+        // Fetch KG trend context
+        let trend_context = fetch_trend_context(topic);
+
         // Enhance with LLM
         let user_prompt = USER_PROMPT_TEMPLATE
             .replace("{topic}", topic)
             .replace("{gap_context}", &if gap_context.len() > 200 { &gap_context[..200] } else { gap_context })
             .replace("{kg_context}", &kg_context)
             .replace("{genepool_context}", &genepool_context)
+            .replace("{trend_context}", &trend_context)
             .replace("{creative}", if creative { "yes" } else { "no" });
 
         let msg = Message {
