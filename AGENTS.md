@@ -1,5 +1,12 @@
 # Rairos Agents
 
+## Superpowers
+
+Superpowers (obra/superpowers) is installed via OpenCode plugin. Skills available
+after restart: brainstorming, test-driven-development, writing-plans,
+subagent-driven-development, requesting-code-review, finishing-a-development-branch.
+Verify: "Tell me about your superpowers"
+
 ## Project
 
 Self-Evolving Research OS — two codebases coexist:
