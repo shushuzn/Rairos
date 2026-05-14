@@ -64,48 +64,6 @@ def _ensure_data_dir():
     return data_dir
 
 
-def _record_gap_addressing(paper_id: str, title: str, abstract: str) -> None:
-    """Check if a newly ingested paper addresses any known gaps and record the event.
-
-    Uses semantic gap extraction to determine gap type and confidence,
-    then calls impact_tracker.record_addressing_event().
-    """
-    try:
-        from llm.research.gap_extract import extract_gap_from_paper
-        from llm.research.impact_tracker import record_addressing_event
-
-        gap_info = extract_gap_from_paper(
-            paper_id=paper_id,
-            title=title,
-            abstract=abstract,
-        )
-        if not gap_info or not gap_info.get("gap_type"):
-            return
-
-        gap_type = gap_info.get("gap_type", "")
-        gap_title = gap_info.get("gap_title", "")
-        confidence = gap_info.get("confidence", 0.5)
-
-        # Compute gap_hash for lookup in gap_history
-        import hashlib
-
-        topic = ""  # topic unknown at this level — use empty, filtered by hash
-        gap_hash = hashlib.sha256(f"{topic}{gap_type}{gap_title}".encode()).hexdigest()[:16]
-
-        record_addressing_event(
-            gap_hash=gap_hash,
-            topic=topic,
-            gap_type=gap_type,
-            paper_id=paper_id,
-            paper_title=title,
-            confidence=confidence,
-            event_type="addresses",
-            first_identified=None,
-        )
-    except Exception:
-        pass  # Non-critical — don't fail paper ingestion
-
-
 def tool_pdf_download(arxiv_id: str, out_path: Optional[str] = None) -> Dict:
     """Download PDF for a paper from DB pdf_url or arXiv fallback."""
     try:
@@ -394,79 +352,6 @@ def tool_paper2code_run(
 
 
 
-def tool_research_agent_start(interval_minutes: int = 30) -> Dict:
-    """Start the autonomous research agent in background watch mode."""
-    try:
-        from research_loop.orchestrator import AutonomousOrchestrator
-
-        orch = AutonomousOrchestrator(webhook_enabled=True)
-        orch.start_watch(interval_minutes=interval_minutes)
-        status = orch.get_status()
-        return success_response(
-            {
-                "status": "started",
-                "interval_minutes": interval_minutes,
-                "running": status["running"],
-                "message": f"Autonomous research agent started. Will check subscriptions every {interval_minutes} minutes.",
-            }
-        )
-    except Exception as e:
-        logger.error(f"research_agent_start error: {e}")
-        return error_response("AGENT_ERROR", str(e))
-
-
-def tool_research_agent_stop() -> Dict:
-    """Stop the autonomous research agent watch loop."""
-    try:
-        from research_loop.orchestrator import AutonomousOrchestrator
-
-        orch = AutonomousOrchestrator()
-        orch.stop_watch()
-        return success_response(
-            {"status": "stopped", "message": "Autonomous research agent stopped."}
-        )
-    except Exception as e:
-        logger.error(f"research_agent_stop error: {e}")
-        return error_response("AGENT_ERROR", str(e))
-
-
-def tool_research_agent_status() -> Dict:
-    """Get status of the autonomous research agent."""
-    try:
-        from research_loop.orchestrator import AutonomousOrchestrator
-
-        orch = AutonomousOrchestrator()
-        status = orch.get_status()
-        recent_alerts = orch.get_recent_alerts(limit=10)
-        return success_response(
-            {"status": status, "recent_alerts": [a.to_dict() for a in recent_alerts]}
-        )
-    except Exception as e:
-        logger.error(f"research_agent_status error: {e}")
-        return error_response("AGENT_ERROR", str(e))
-
-
-def tool_research_agent_trigger(topic: Optional[str] = None) -> Dict:
-    """Manually trigger one cycle of the autonomous research agent."""
-    try:
-        from research_loop.orchestrator import AutonomousOrchestrator
-
-        orch = AutonomousOrchestrator(webhook_enabled=True)
-        alerts = orch.run_cycle()
-        return success_response(
-            {
-                "status": "cycle_complete",
-                "alerts_generated": len(alerts),
-                "alerts": [a.to_dict() for a in alerts],
-            }
-        )
-    except Exception as e:
-        logger.error(f"research_agent_trigger error: {e}")
-        return error_response("AGENT_ERROR", str(e))
-
-
-
-
 def tool_hypothesis_list() -> Dict:
     """List all tracked hypotheses with verdict status."""
     try:
@@ -674,20 +559,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                 continuous=arguments.get("continuous", False),
                 interval_minutes=arguments.get("interval_minutes", 15),
             )
-        elif name == "research_agent_start":
-            # type: ignore[arg-type]
-            result = tool_research_agent_start(
-                interval_minutes=arguments.get("interval_minutes", 30)
-            )
-        elif name == "research_agent_stop":
-            # type: ignore[arg-type]
-            result = tool_research_agent_stop()
-        elif name == "research_agent_status":
-            # type: ignore[arg-type]
-            result = tool_research_agent_status()
-        elif name == "research_agent_trigger":
-            # type: ignore[arg-type]
-            result = tool_research_agent_trigger(topic=arguments.get("topic"))
         elif name == "hypothesis_list":
             # type: ignore[arg-type]
             result = tool_hypothesis_list()
@@ -779,37 +650,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-def _handle_sampling(params: Dict) -> dict:
-    """Handle MCP sampling/createMessage via protocol (no API key needed)."""
-    messages = params.get("messages", [])
-    if not messages:
-        return error_response("INVALID_PARAMS", "No messages provided")
-    system_prompt = params.get("systemPrompt", "")
-    try:
-        from llm.client import call_llm_chat_completions
-
-        result = call_llm_chat_completions(
-            messages=messages,
-            model="minimax-m2.7-highspeed",
-            system_prompt=system_prompt,
-            timeout=60,
-        )
-        return success_response(
-            {
-                "model": result.get("model", "mcp"),
-                "role": "assistant",
-                "content": result.get("content", ""),
-            }
-        )
-    except Exception as e:
-        logger.warning(f"LLM via key failed, using MCP degraded: {e}")
-        last = messages[-1].get("content", "") if messages else ""
-        return success_response(
-            {
-                "model": "mcp-degraded",
-                "role": "assistant",
-                "content": f"[MCP degraded - no API key needed] Query: {last[:200]}",
-            }
-        )

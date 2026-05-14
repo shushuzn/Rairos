@@ -23,14 +23,6 @@ from llm.research.research_path import (
     PaperNode,
     ReadingLevel,
 )
-from llm.research.research_narrative_tracker import (
-    ResearchNarrativeTracker,
-    ResearchNarrativeService,
-    ResearchThread,
-    NarrativePhase,
-    render_thread,
-    render_dashboard,
-)
 
 __all__ = [
     # gap_analyzer
@@ -61,11 +53,4 @@ __all__ = [
     "ReadingStep",
     "PaperNode",
     "ReadingLevel",
-    # research_narrative_tracker
-    "ResearchNarrativeTracker",
-    "ResearchNarrativeService",
-    "ResearchThread",
-    "NarrativePhase",
-    "render_thread",
-    "render_dashboard",
 ]

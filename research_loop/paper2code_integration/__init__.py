@@ -19,13 +19,9 @@ Usage:
     # Or step-by-step:
     from research_loop.paper_parser import download_and_parse
     from research_loop.code_generator import generate_code
-    from research_loop.test_extractor import extract_tests
-    from research_loop.benchmark_runner import run_benchmark, BenchmarkConfig
 
     content = download_and_parse("1706.03762")
-    code = generate_code(content)
-    tests = extract_tests(content, code)
-    result = run_benchmark(BenchmarkConfig(...))
+    code = generate_code(content)"
 """
 
 from __future__ import annotations
