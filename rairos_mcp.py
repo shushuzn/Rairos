@@ -423,24 +423,6 @@ def tool_research_run(topic: str, limit: int = 5) -> Dict:
         return error_response("RESEARCH_ERROR", str(e))
 
 
-def tool_slides_generate(paper_id: str, output_path: Optional[str] = None) -> Dict:
-    """Generate slides."""
-    try:
-        from llm.slides import PaperSlidesGenerator
-
-        if not output_path:
-            output_path = str(PROJECT_ROOT / f"{paper_id}_slides.pptx")
-
-        gen = PaperSlidesGenerator()
-        gen.generate(paper_ids=[paper_id], config=None)
-
-        return success_response({"paper_id": paper_id, "output_path": output_path})
-
-    except Exception as e:
-        logger.error(f"slides_generate error: {e}")
-        return error_response("SLIDES_ERROR", str(e))
-
-
 def tool_cite_fetch(paper_id: str, direction: str = "both") -> Dict:
     """Fetch citations."""
     try:
@@ -598,51 +580,6 @@ def tool_paper2code_run(
         return error_response("PAPER2CODE_ERROR", str(e))
 
 
-
-
-def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
-    """Detect research gaps in a topic using the paper corpus."""
-    try:
-        from llm.research.gap_detector import GapDetector
-        from db.database import Database
-
-        db = Database()
-        db.init()
-
-        detector = GapDetector(db=db)
-        result = detector.analyze(topic=topic, use_llm=use_llm)
-
-        db.close()
-
-        return success_response(
-            {
-                "topic": topic,
-                "analyzed_papers_count": result.analyzed_papers_count,
-                "coverage_score": result.coverage_score,
-                "gaps": [
-                    {
-                        "type": str(g.gap_type),
-                        "description": g.description,
-                        "evidence": g.evidence_papers,
-                        "confidence": g.confidence,
-                        "severity": str(g.severity),
-                    }
-                    for g in result.gaps
-                ],
-                "questions": [
-                    {
-                        "question": q.question,
-                        "gap_type": str(q.gap.gap_type) if q.gap else "",
-                        "verifiability": q.feasibility,
-                    }
-                    for q in result.questions
-                ],
-            }
-        )
-
-    except Exception as e:
-        logger.error(f"gap_detect error: {e}")
-        return error_response("GAP_ERROR", str(e))
 
 
 def tool_gap_submit(
@@ -1110,37 +1047,6 @@ def tool_experiment_record(
         return error_response("EXPERIMENT_ERROR", str(e))
 
 
-def tool_litreview_generate(topic: str, limit: int = 30, use_llm: bool = True) -> Dict:
-    """Generate a literature review for a topic."""
-    try:
-        from llm.litreview_generator import LitReviewGenerator
-
-        generator = LitReviewGenerator()
-        result = generator.generate(
-            topic=topic,
-            limit=limit,
-            use_llm=use_llm,
-            output_dir=PROJECT_ROOT / "data" / "litreviews",
-        )
-
-        if result.success:
-            return success_response(
-                {
-                    "topic": topic,
-                    "total_papers": result.review.total_papers if result.review else 0,
-                    "sections_count": len(result.review.sections) if result.review else 0,
-                    "markdown": result.markdown,
-                    "generated_at": result.review.generated_at if result.review else "",
-                }
-            )
-        else:
-            return error_response("LITREVIEW_ERROR", result.error)
-
-    except Exception as e:
-        logger.error(f"litreview_generate error: {e}")
-        return error_response("LITREVIEW_ERROR", str(e))
-
-
 def tool_litreview_list() -> Dict:
     """List all saved literature reviews."""
     try:
@@ -1550,71 +1456,6 @@ def tool_routeplan_revise(plan_id: str, reason: str) -> Dict:
         return error_response("PLAN_ERROR", str(e))
 
 
-def tool_briefing_generate(arxiv_id: str, use_llm: bool = True) -> Dict:
-    """Generate a research briefing for a paper."""
-    try:
-        from llm.briefing_generator import BriefingGenerator
-
-        generator = BriefingGenerator()
-        result = generator.generate(
-            arxiv_id=arxiv_id,
-            use_llm=use_llm,
-            output_dir=PROJECT_ROOT / "data" / "briefings",
-        )
-
-        if result.success:
-            return success_response(
-                {
-                    "arxiv_id": arxiv_id,
-                    "title": result.briefing.paper_title,
-                    "verdict": result.briefing.verdict,
-                    "verdict_reason": result.briefing.verdict_reason,
-                    "sections_count": len(result.briefing.sections),
-                    "gene_pool_matches": len(result.briefing.gene_pool_matches),
-                    "memory_stances": len(result.briefing.memory_stances),
-                    "markdown": result.markdown,
-                    "generated_at": result.briefing.generated_at,
-                }
-            )
-        else:
-            return error_response("BRIEFING_ERROR", result.error)
-
-    except Exception as e:
-        logger.error(f"briefing_generate error: {e}")
-        return error_response("BRIEFING_ERROR", str(e))
-
-
-def tool_replication_check(arxiv_id: str, include_abstract: bool = True) -> Dict:
-    """Check paper reproducibility."""
-    try:
-        from llm.replication_checker import ReplicationChecker
-        from parsers.semantic_scholar import get_paper_by_id
-
-        paper = get_paper_by_id(arxiv_id)
-        if not paper:
-            return error_response("NOT_FOUND", f"Paper not found: {arxiv_id}")
-
-        title = paper.title or arxiv_id
-        abstract = paper.abstract or "" if include_abstract else ""
-
-        checker = ReplicationChecker()
-        report = checker.check_paper(
-            paper_id=arxiv_id,
-            title=title,
-            abstract=abstract,
-        )
-
-        return success_response(
-            {
-                **report.to_dict(),
-                "rendered": checker.render_report(report),
-            }
-        )
-    except Exception as e:
-        logger.error(f"replication_check error: {e}")
-        return error_response("REPLICATION_ERROR", str(e))
-
-
 def tool_replication_compare(arxiv_id_1: str, arxiv_id_2: str) -> Dict:
     """Compare reproducibility of two papers."""
     try:
@@ -1871,10 +1712,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
             result = tool_research_run(  # type: ignore[arg-type]
                 topic=arguments.get("topic"), limit=arguments.get("limit", 5)
             )
-        elif name == "slides_generate":
-            result = tool_slides_generate(  # type: ignore[arg-type]
-                paper_id=arguments.get("paper_id"), output_path=arguments.get("output_path")
-            )
         elif name == "cite_fetch":
             result = tool_cite_fetch(  # type: ignore[arg-type]
                 paper_id=arguments.get("paper_id"), direction=arguments.get("direction", "both")
@@ -1888,10 +1725,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                 skip_gene_pool=arguments.get("skip_gene_pool", False),
                 continuous=arguments.get("continuous", False),
                 interval_minutes=arguments.get("interval_minutes", 15),
-            )
-        elif name == "gap_detect":
-            result = tool_gap_detect(  # type: ignore[arg-type]
-                topic=arguments.get("topic"), use_llm=arguments.get("use_llm", True)
             )
         elif name == "gap_submit":
             result = tool_gap_submit(  # type: ignore[arg-type]
@@ -1935,12 +1768,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                 name=arguments.get("name"),
                 result=arguments.get("result"),
                 metrics=arguments.get("metrics"),
-            )
-        elif name == "litreview_generate":
-            result = tool_litreview_generate(  # type: ignore[arg-type]
-                topic=arguments.get("topic"),
-                limit=arguments.get("limit", 30),
-                use_llm=arguments.get("use_llm", True),
             )
         elif name == "litreview_list":
             # type: ignore[arg-type]
@@ -1995,53 +1822,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
             result = tool_routeplan_revise(  # type: ignore[arg-type]
                 plan_id=arguments.get("plan_id"),
                 reason=arguments.get("reason"),
-            )
-        elif name == "briefing_generate":
-            result = tool_briefing_generate(  # type: ignore[arg-type]
-                arxiv_id=arguments.get("arxiv_id"),
-                use_llm=arguments.get("use_llm", True),
-            )
-        elif name == "citation_chain_build":
-            result = tool_citation_chain_build(  # type: ignore[arg-type]
-                arxiv_id=arguments.get("arxiv_id"),
-                max_depth=arguments.get("max_depth", 2),
-            )
-        elif name == "citation_chain_families":
-            result = tool_citation_chain_families(  # type: ignore[arg-type]
-                arxiv_id=arguments.get("arxiv_id"),
-            )
-        elif name == "citation_chain_silent":
-            result = tool_citation_chain_silent(  # type: ignore[arg-type]
-                arxiv_id=arguments.get("arxiv_id"),
-            )
-        elif name == "citation_chain_render":
-            result = tool_citation_chain_render(  # type: ignore[arg-type]
-                arxiv_id=arguments.get("arxiv_id"),
-                format=arguments.get("format", "text"),
-            )
-        elif name == "impact_rank":
-            # type: ignore[arg-type]
-            result = tool_impact_rank(
-                topic=arguments.get("topic", ""),
-                top_k=arguments.get("top_k", 10),
-                min_citations=arguments.get("min_citations", 0),
-            )
-        elif name == "impact_score_paper":
-            # type: ignore[arg-type]
-            result = tool_impact_score_paper(
-                arxiv_id=arguments.get("arxiv_id"),
-            )
-        elif name == "impact_leaderboard":
-            # type: ignore[arg-type]
-            result = tool_impact_leaderboard(
-                limit=arguments.get("limit", 20),
-                year_min=arguments.get("year_min", 2020),
-            )
-        elif name == "replication_check":
-            # type: ignore[arg-type]
-            result = tool_replication_check(
-                arxiv_id=arguments.get("arxiv_id"),
-                include_abstract=arguments.get("include_abstract", True),
             )
         elif name == "replication_compare":
             # type: ignore[arg-type]
@@ -2137,194 +1917,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-def tool_citation_chain_build(arxiv_id: str = "", max_depth: int = 2) -> Dict:
-    """Build a citation chain using Semantic Scholar API."""
-    try:
-        from llm.citation_chain import CitationChainBuilder
-
-        builder = CitationChainBuilder()
-        # Strip version suffix (v1, v2...) and add arXiv: prefix for S2 API
-        s2_id = (
-            arxiv_id.split("v")[0]
-            if "v" in arxiv_id and arxiv_id.rsplit("v", 1)[-1].isdigit()
-            else arxiv_id
-        )
-        s2_id = (
-            f"arXiv:{s2_id}"
-            if not s2_id.startswith("arXiv:") and not s2_id.startswith("CorpusId:")
-            else s2_id
-        )
-        _chain = builder.build_chain(seed_arxiv_id=s2_id, max_depth=max_depth)
-
-        return success_response(
-            {
-                "arxiv_id": arxiv_id,
-                "nodes_count": len(_chain.nodes),
-                "edges_count": len(_chain.edges),
-                "nodes": [
-                    {
-                        "paper_id": n.paper_id,
-                        "title": n.title,
-                        "year": n.year,
-                        "citations": n.citations,
-                        "cited_by": n.cited_by,
-                        "citation_count": n.citation_count,
-                    }
-                    for n in _chain.nodes
-                ],
-                "edges": [{"from": e[0], "to": e[1]} for e in _chain.edges],
-            }
-        )
-    except Exception as e:
-        logger.error(f"citation_chain_build error: {e}")
-        return error_response("CHAIN_ERROR", str(e))
-
-
-def tool_citation_chain_families(arxiv_id: str) -> Dict:
-    """Cluster papers in a citation chain into research families."""
-    try:
-        from llm.citation_chain import CitationChainBuilder
-
-        builder = CitationChainBuilder()
-        _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
-        _ = _chain  # consumed by cluster_families internally
-        families = builder.cluster_families()
-
-        return success_response(
-            {
-                "arxiv_id": arxiv_id,
-                "families_count": len(families),
-                "families": [f.to_dict() for f in families],
-            }
-        )
-    except Exception as e:
-        logger.error(f"citation_chain_families error: {e}")
-        return error_response("CHAIN_ERROR", str(e))
-
-
-def tool_citation_chain_silent(arxiv_id: str) -> Dict:
-    """Detect potential silent citations in a citation chain."""
-    try:
-        from llm.citation_chain import CitationChainBuilder
-
-        builder = CitationChainBuilder()
-        _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
-        _ = _chain  # consumed by detect_silent_citations internally
-        silent = builder.detect_silent_citations()
-
-        return success_response(
-            {
-                "arxiv_id": arxiv_id,
-                "silent_count": len(silent),
-                "silent_citations": silent,
-            }
-        )
-    except Exception as e:
-        logger.error(f"citation_chain_silent error: {e}")
-        return error_response("CHAIN_ERROR", str(e))
-
-
-def tool_citation_chain_render(arxiv_id: str, format: str = "text") -> Dict:
-    """Render a citation chain in text, mermaid, or graphviz format."""
-    try:
-        from llm.citation_chain import CitationChainBuilder
-
-        builder = CitationChainBuilder()
-        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
-
-        if format == "mermaid":
-            rendered = builder.render_mermaid(chain)
-        elif format == "graphviz":
-            rendered = builder.render_graphviz(chain)
-        else:
-            rendered = builder.render_text(chain)
-
-        return success_response(
-            {
-                "arxiv_id": arxiv_id,
-                "format": format,
-                "rendered": rendered,
-                "nodes_count": len(chain.nodes),
-                "edges_count": len(chain.edges),
-            }
-        )
-    except Exception as e:
-        logger.error(f"citation_chain_render error: {e}")
-        return error_response("CHAIN_ERROR", str(e))
-
-
-def tool_impact_rank(topic: str, top_k: int = 10, min_citations: int = 0) -> Dict:
-    """Rank papers by composite impact score."""
-    try:
-        from llm.impact_scorer import ImpactScorer
-        from db.database import Database
-
-        db = Database()
-        db.init()
-
-        rows, _ = db.search_papers(topic, limit=top_k * 3)
-        if not rows:
-            return error_response("NOT_FOUND", f"No papers found for topic: {topic}")
-
-        papers = []
-        for r in rows:
-            cid = getattr(r, "citation_count", 0) or 0
-            if cid < min_citations:
-                continue
-            papers.append(
-                {
-                    "paper_id": getattr(r, "paper_id", "") or getattr(r, "arxiv_id", ""),
-                    "title": getattr(r, "title", ""),
-                    "year": getattr(r, "year", 2020) or 2020,
-                    "citation_count": cid,
-                }
-            )
-
-        scorer = ImpactScorer(db=db)
-        ranking = scorer.rank_papers(papers, top_k=top_k)
-
-        return success_response(
-            {
-                "topic": topic,
-                "total_ranked": len(ranking),
-                "ranking": ranking,
-                "rendered": scorer.render_ranking(ranking),
-            }
-        )
-    except Exception as e:
-        logger.error(f"impact_rank error: {e}")
-        return error_response("IMPACT_ERROR", str(e))
-
-
-def tool_impact_score_paper(arxiv_id: str) -> Dict:
-    """Get detailed impact score for a specific paper."""
-    try:
-        from llm.impact_scorer import ImpactScorer
-        from parsers.semantic_scholar import get_paper_by_id
-
-        paper = get_paper_by_id(arxiv_id)
-        if not paper:
-            return error_response("NOT_FOUND", f"Paper not found: {arxiv_id}")
-
-        scorer = ImpactScorer()
-        score = scorer.score_paper(
-            paper_id=arxiv_id,
-            title=paper.title or arxiv_id,
-            year=paper.year or 2020,
-            raw_citations=paper.citation_count or 0,
-        )
-
-        return success_response(
-            {
-                **score.to_dict(),
-                "explanation": scorer._explain_score(score),
-            }
-        )
-    except Exception as e:
-        logger.error(f"impact_score_paper error: {e}")
-        return error_response("IMPACT_ERROR", str(e))
 
 
 def tool_impact_leaderboard(limit: int = 20, year_min: int = 2020) -> Dict:
