@@ -395,4 +395,27 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(ImpactScorePaperHandler).await;
     server.register(ImpactRankHandler).await;
     server.register(ReplicationCheckHandler).await;
+    server.register(RouteQueryHandler).await;
+}
+
+// ─── Route Query (semantic router) ──────────────────────────────────────────
+
+pub struct RouteQueryHandler;
+
+#[async_trait]
+impl ToolHandler for RouteQueryHandler {
+    fn name(&self) -> &str { "routeplan_create" }
+    fn description(&self) -> &str { "Route a natural-language query to the appropriate research command" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![("query".into(), ToolProperty::string("Natural-language research query"))].into_iter().collect(),
+            vec!["query".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let query = params["query"].as_str().ok_or("Missing query")?;
+        // Fast path: keyword routing (always succeeds)
+        let route = rairos_llm::semantic_router::route_by_keyword(query);
+        Ok(serde_json::json!(route))
+    }
 }

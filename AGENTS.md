@@ -55,7 +55,7 @@ sccache --show-stats
 | rairos-viz | Chart and visualization generation |
 | rairos-trends | Research trend analysis |
 | rairos-render | Lite review, paper rendering |
-| rairos-mcp | Model Context Protocol server |
+| rairos-mcp | MCP protocol server (25 Rust tools, JSON-RPC 2.0) |
 
 ## Rust Commands
 
@@ -105,8 +105,8 @@ GIT_ASKPASS=echo timeout 55 git push
 
 ## Stats
 
-- Rust: **120 crates**, ~50k+ lines, 48 CLI commands
-- Python: ~90k lines, 5156 tests
+- Rust: **153 crates**, ~55k+ lines, 48 CLI commands, 175+ tests
+- Python: ~90k lines, 4882 tests, 19 skipped
 
 ## Web UI
 
@@ -115,3 +115,48 @@ GIT_ASKPASS=echo timeout 55 git push
 - Gene Pool: add gene, list, feedback
 - Knowledge Graph: stats, path finding, rankings
 - Memory: research stances, anomaly detection
+
+## Rust MCP Tools (25 Rust + 39 Python fallback)
+
+| Source | Count | Tools |
+|--------|-------|-------|
+| Original Rust | 14 | paper_search/ingest/query/chat/recommend, tag_add/remove/list, trends_detect_trending, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query |
+| Mapped Rust (Phase 4) | 11 | briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check |
+| Python fallback | 39 | pdf_download/extract_*/extract_structured, trends_predict_next/top_predictions/compare_tags, chart_query, research_run, cite_fetch, paper_analyze, paper2code_run, gap_submit/evolve, research_agent_*, hypothesis_generate/list, experiment_record, litreview_list, research_memory_*, review_*, routeplan_*, impact_leaderboard, replication_compare, tag_all, crossover, leaderboard, gene_pool_decay/watcher, claim_graph |
+
+### Performance Benchmarks
+
+| Benchmark | Result |
+|-----------|--------|
+| cargo bench impact_score (1000 papers) | 23 µs (23 ns/paper) |
+| cargo bench impact_rank (1000 papers) | 138 µs |
+| cargo bench citation find_families (100 nodes) | 109 µs |
+| cargo bench citation find_silent (100 nodes) | 49 µs |
+| MCP dispatch (OnceLock cached) | ~10 µs baseline |
+| MCP dispatch (before caching) | ~130 µs |
+
+### Test Structure
+
+`tests/test_mcp_handler.py`: 27 tests, 5 classes
+- `TestProtocolHandlers` (7): initialize, list_tools, request routing
+- `TestToolRouting` (4): every routed tool has impl/schema, unknown tool returns error
+- `TestMcpJsonRpc` (5): JSON-RPC round-trip, serialization
+- `TestRustToolIntegration` (10): 11 Rust tools return expected keys, ranking ordering, graceful LLM-key handling
+- `TestPythonFallback` (1): Python-only tools still work via fallback
+
+### Key Decisions
+
+- `OnceLock` caches `McpServer` + tokio `Runtime` — avoids rebuilding both on every call (17-37x speedup)
+- Rust-first dispatch: `handle_call_tool` tries `call_tool_rs()` first, falls back to Python on `None`
+- Backward-compatible params: Rust handlers accept both `paper_id` and `arxiv_id`
+- Schema validation in Python runs before Rust dispatch, so Rust handler params must match tools_defs.py schemas
+
+### Remaining High-ROI Modules for Rust Porting
+
+| Module | Lines | Why |
+|--------|-------|-----|
+| `semantic_router.py` | 499 | Per-call routing, self-contained logic |
+| `route_planner.py` | 578 | LLM call chain planning |
+| `trust_scorer.py` | 211 | Pure computation, no deps |
+
+Note: `postprocess.py` (561 lines) is a pipeline orchestrator calling 7+ other modules — NOT suitable for standalone port.

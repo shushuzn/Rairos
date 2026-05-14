@@ -13,6 +13,7 @@ pub mod impact;
 pub mod lit_review;
 pub mod slides;
 pub mod replication;
+pub mod semantic_router;
 pub mod experiment_tracker;
 pub mod ollama;
 pub mod paper_analyzer;
