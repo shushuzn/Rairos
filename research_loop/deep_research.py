@@ -663,8 +663,9 @@ class DeepResearchAgent:
             checkpoint=with_self(cb_checkpoint),
             new_session=with_self(cb_new_session),
         )
+        agent._stop_requested = self._stop_requested
 
-        result_json = agent.run(mode=self.mode, stop_requested=self._stop_requested)
+        result_json = agent.run(mode=self.mode)
         result_data = json.loads(result_json)
 
         from research_loop.snapstate import PaperSnapshot, GapSnapshot

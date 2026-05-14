@@ -660,6 +660,10 @@ impl DeepResearchAgent {
         self.found_gaps.len()
     }
 
+    pub fn deep_config(&self) -> &DeepResearchConfig {
+        &self.config
+    }
+
     /// Plan the next search query
     pub fn plan_next_search(
         &mut self,

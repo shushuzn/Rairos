@@ -2,7 +2,6 @@ use pyo3::prelude::*;
 use rairos_core::Paper;
 use rairos_research::{DeepResearchAgent, DeepResearchConfig, GapSnapshot, PaperSnapshot, ResearchBackend, AgentThought};
 
-/// Calls a Python callback with given args, returns JSON string result.
 fn call_json_fn(py: Python<'_>, func: &Bound<'_, PyAny>, args_json: &str) -> PyResult<String> {
     let result = func.call1((args_json,))?;
     result.extract::<String>()
@@ -13,7 +12,6 @@ fn call_void_fn(py: Python<'_>, func: &Bound<'_, PyAny>, args_json: &str) -> PyR
     Ok(())
 }
 
-/// PyResearchBackend — calls Python functions for each backend operation.
 struct PyResearchBackend {
     stream_plan: PyObject,
     search_papers: PyObject,
@@ -57,7 +55,7 @@ impl ResearchBackend for PyResearchBackend {
     fn analyze_gaps(&self, topic: &str, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String> {
         Python::with_gil(|py| {
             let args = serde_json::json!({"topic": topic, "snapshots": snapshots}).to_string();
-            let json_str = call_json_fn(py, self.analyze_gaps.bind(py), &args)
+            let json_str = call_json_fn(py, self.analyze_gaps.bind(py), &args.to_string())
                 .map_err(|e| e.to_string())?;
             serde_json::from_str(&json_str).map_err(|e| e.to_string())
         })
@@ -119,6 +117,7 @@ impl ResearchBackend for PyResearchBackend {
 struct PyResearchAgent {
     agent: DeepResearchAgent,
     backend: PyResearchBackend,
+    stop_requested: bool,
 }
 
 #[pymethods]
@@ -144,25 +143,53 @@ impl PyResearchAgent {
         Ok(Self {
             agent: DeepResearchAgent::new(query, config),
             backend: PyResearchBackend {
-                stream_plan,
-                search_papers,
-                extract_paper,
-                analyze_gaps,
-                get_search_guidance,
-                encode_accepted_gap,
-                on_thought,
-                find_skills,
-                checkpoint,
-                new_session,
+                stream_plan, search_papers, extract_paper, analyze_gaps,
+                get_search_guidance, encode_accepted_gap, on_thought,
+                find_skills, checkpoint, new_session,
             },
+            stop_requested: false,
         })
     }
 
-    #[pyo3(signature = (mode="agent", stop_requested=false))]
-    fn run(&mut self, mode: &str, stop_requested: bool) -> PyResult<String> {
-        let result = self.agent.run(&self.backend, mode, stop_requested);
+    #[pyo3(signature = (mode="agent"))]
+    fn run(&mut self, mode: &str) -> PyResult<String> {
+        let result = self.agent.run(&self.backend, mode, self.stop_requested);
         serde_json::to_string(&result)
             .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))
+    }
+
+    fn stop(&mut self) {
+        self.stop_requested = true;
+    }
+
+    #[getter(_stop_requested)]
+    fn get_stop_requested(&self) -> bool {
+        self.stop_requested
+    }
+
+    #[setter(_stop_requested)]
+    fn set_stop_requested(&mut self, val: bool) {
+        self.stop_requested = val;
+    }
+
+    #[getter]
+    fn query(&self) -> &str {
+        &self.agent.query
+    }
+
+    #[getter]
+    fn verbose(&self) -> bool {
+        self.agent.deep_config().verbose
+    }
+
+    #[getter]
+    fn max_iterations(&self) -> i32 {
+        self.agent.deep_config().max_iterations
+    }
+
+    #[getter]
+    fn max_papers_per_iteration(&self) -> usize {
+        self.agent.deep_config().max_papers_per_iteration
     }
 }
 
