@@ -266,7 +266,7 @@ impl AgentThought {
 // Paper & Gap Snapshots
 // ============================================================================
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct PaperSnapshot {
     pub paper_id: String,
     pub arxiv_id: Option<String>,
@@ -291,7 +291,7 @@ impl PaperSnapshot {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct GapSnapshot {
     pub gap_id: String,
     pub gap_type: String,
@@ -1611,5 +1611,76 @@ mod tests {
         assert!(!output.contains(':'));
         assert!(!output.contains('<'));
         assert!(!output.contains('>'));
+    }
+
+    // ── Integration tests for DeepResearchAgent ─────────────────────────────
+
+    struct MockBackend;
+    impl ResearchBackend for MockBackend {}
+
+    #[test]
+    fn test_plan_next_search_basic() {
+        let config = DeepResearchConfig::default();
+        let mut agent = DeepResearchAgent::new("deep learning", config);
+        // No gaps → returns original query
+        let q = agent.plan_next_search(None, "", 0.0);
+        assert_eq!(q, "deep learning");
+    }
+
+    #[test]
+    fn test_plan_next_search_with_gap() {
+        let mut agent = DeepResearchAgent::new("transformer", DeepResearchConfig::default());
+        let gap = GapSnapshot { gap_type: "contradiction".to_string(), ..Default::default() };
+        agent.add_gap(&gap);
+        // With a gap, should produce a non-empty adaptive query
+        let q = agent.plan_next_search(Some(&gap), "", 0.0);
+        assert!(!q.is_empty());
+    }
+
+    #[test]
+    fn test_reflect_stops_at_max_iterations() {
+        let config = DeepResearchConfig { max_iterations: 3, ..Default::default() };
+        let agent = DeepResearchAgent::new("q", config);
+        let (should, reason) = agent.reflect(3);
+        assert!(!should, "should stop at max iterations");
+        assert!(reason.contains("max iterations"), "reason: {reason}");
+    }
+
+    #[test]
+    fn test_reflect_continues_with_unaccepted_gaps() {
+        let mut agent = DeepResearchAgent::new("q", DeepResearchConfig::default());
+        agent.add_gap(&GapSnapshot { gap_type: "improvement".to_string(), accepted: false, ..Default::default() });
+        let (should, _) = agent.reflect(0);
+        assert!(should, "should continue with unaccepted gaps");
+    }
+
+    #[test]
+    fn test_build_report_basic() {
+        let mut agent = DeepResearchAgent::new("my topic", DeepResearchConfig::default());
+        agent.add_paper(&PaperSnapshot {
+            paper_id: "2401.00001".to_string(),
+            title: "Test Paper".to_string(),
+            ..Default::default()
+        });
+        agent.add_gap(&GapSnapshot {
+            gap_type: "method_limitation".to_string(),
+            title: "Gap 1".to_string(),
+            ..Default::default()
+        });
+        let report = agent.build_report();
+        assert!(report.contains("my topic"), "report should contain topic");
+        assert!(report.contains("2401.00001"), "report should contain paper id");
+        assert!(report.contains("method_limitation"), "report should contain gap type");
+    }
+
+    #[test]
+    fn test_run_loop_with_mock_backend() {
+        let config = DeepResearchConfig { max_iterations: 2, ..Default::default() };
+        let mut agent = DeepResearchAgent::new("test query", config);
+        let result = agent.run(&MockBackend, "agent", false);
+        assert_eq!(result.status, ResearchStatus::Completed);
+        assert!(result.iterations > 0, "should have completed iterations");
+        assert!(!result.report.is_empty(), "should have generated a report");
+        assert_eq!(result.query, "test query");
     }
 }
