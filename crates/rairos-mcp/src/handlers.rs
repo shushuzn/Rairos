@@ -653,6 +653,91 @@ impl ToolHandler for PdfExtractStructuredHandler {
     }
 }
 
+// ─── Trends Predict Next ────────────────────────────────────────────────────
+
+pub struct TrendsPredictNextHandler;
+
+#[async_trait]
+impl ToolHandler for TrendsPredictNextHandler {
+    fn name(&self) -> &str { "trends_predict_next" }
+    fn description(&self) -> &str { "Predict the next heat score for a given tag using Holt's exponential smoothing" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![("tag".into(), ToolProperty::string("Research tag to forecast"))].into_iter().collect(),
+            vec!["tag".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let tag = params["tag"].as_str().ok_or("Missing tag")?;
+        let path = data_dir().join("radar_history.json");
+        let forecaster = if path.exists() {
+            rairos_trends::TrendForecaster::with_path(&path)
+        } else {
+            rairos_trends::TrendForecaster::new()
+        };
+        let prediction = forecaster.predict_next(tag);
+        serde_json::to_value(&prediction).map_err(|e| format!("Serialize error: {}", e))
+    }
+}
+
+// ─── Trends Top Predictions ──────────────────────────────────────────────────
+
+pub struct TrendsTopPredictionsHandler;
+
+#[async_trait]
+impl ToolHandler for TrendsTopPredictionsHandler {
+    fn name(&self) -> &str { "trends_top_predictions" }
+    fn description(&self) -> &str { "Get top-k predicted trending tags ranked by predicted_score * confidence" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![("k".into(), ToolProperty::integer("Number of predictions (default 5)"))].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let k = params["k"].as_i64().unwrap_or(5) as usize;
+        let path = data_dir().join("radar_history.json");
+        let forecaster = if path.exists() {
+            rairos_trends::TrendForecaster::with_path(&path)
+        } else {
+            rairos_trends::TrendForecaster::new()
+        };
+        let predictions = forecaster.get_top_predictions(k);
+        serde_json::to_value(&predictions).map_err(|e| format!("Serialize error: {}", e))
+    }
+}
+
+// ─── Trends Compare Tags ────────────────────────────────────────────────────
+
+pub struct TrendsCompareTagsHandler;
+
+#[async_trait]
+impl ToolHandler for TrendsCompareTagsHandler {
+    fn name(&self) -> &str { "trends_compare_tags" }
+    fn description(&self) -> &str { "Compare trends trajectories of two tags side by side" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("tag_a".into(), ToolProperty::string("First tag")),
+                ("tag_b".into(), ToolProperty::string("Second tag")),
+            ].into_iter().collect(),
+            vec!["tag_a".into(), "tag_b".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let tag_a = params["tag_a"].as_str().ok_or("Missing tag_a")?;
+        let tag_b = params["tag_b"].as_str().ok_or("Missing tag_b")?;
+        let path = data_dir().join("radar_history.json");
+        let forecaster = if path.exists() {
+            rairos_trends::TrendForecaster::with_path(&path)
+        } else {
+            rairos_trends::TrendForecaster::new()
+        };
+        let comparison = forecaster.compare_tags(tag_a, tag_b);
+        serde_json::to_value(&comparison).map_err(|e| format!("Serialize error: {}", e))
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
@@ -673,6 +758,9 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(PdfDownloadHandler).await;
     server.register(PdfExtractTextHandler).await;
     server.register(PdfExtractStructuredHandler).await;
+    server.register(TrendsPredictNextHandler).await;
+    server.register(TrendsTopPredictionsHandler).await;
+    server.register(TrendsCompareTagsHandler).await;
     crate::llm_handlers::register_llm_handlers(server).await;
 }
 
@@ -794,6 +882,9 @@ mod tests {
         assert!(PdfDownloadHandler.name() == "pdf_download");
         assert!(PdfExtractTextHandler.name() == "pdf_extract_text");
         assert!(PdfExtractStructuredHandler.name() == "pdf_extract_structured");
+        assert!(TrendsPredictNextHandler.name() == "trends_predict_next");
+        assert!(TrendsTopPredictionsHandler.name() == "trends_top_predictions");
+        assert!(TrendsCompareTagsHandler.name() == "trends_compare_tags");
     }
 
     #[test]
