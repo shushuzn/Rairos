@@ -1783,7 +1783,7 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
             result = tool_pdf_extract_structured(  # type: ignore[arg-type]
                 pdf_path=arguments.get("pdf_path"), max_pages=arguments.get("max_pages")
             )
-        elif name == "pdf_extract_structured":
+        elif name == "trends_predict_next":
             result = tool_trends_predict_next(tag=arguments.get("tag"))  # type: ignore[arg-type]
         elif name == "trends_top_predictions":
             # type: ignore[arg-type]
@@ -1792,6 +1792,9 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
             result = tool_trends_compare_tags(  # type: ignore[arg-type]
                 tag_a=arguments.get("tag_a"), tag_b=arguments.get("tag_b")
             )
+        elif name == "tag_all":
+            # type: ignore[arg-type]
+            result = tool_tag_all()
         elif name == "chart_query":
             result = tool_chart_query(  # type: ignore[arg-type]
                 paper_id=arguments.get("paper_id"),
