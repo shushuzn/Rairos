@@ -26,8 +26,7 @@ Architecture inspired by:
 
 from __future__ import annotations
 
-
-
+import json
 import time
 
 
@@ -629,68 +628,12 @@ class DeepResearchAgent:
     # -------------------------------------------------------------------------
 
     def run(self) -> DeepResearchResult:
-        import json as _json
         from rairos_research_py import PyResearchAgent
-
-        def cb_stream_plan(json_str):
-            args = _json.loads(json_str)
-            if self.use_streaming_reasoning:
-                result = self._stream_plan_search(args["iteration"])
-            return result
-
-        def cb_search_papers(json_str):
-            args = _json.loads(json_str)
-            papers = self._search_papers(args["query"], args["iteration"])
-            return _json.dumps([p.__dict__ for p in papers])
-
-        def cb_extract_paper(json_str):
-            paper_dict = _json.loads(json_str)
-            paper = Paper(**paper_dict)
-            snap = self._extract_papers([paper], 0)
-            if snap:
-                s = snap[0]
-                return _json.dumps({"arxiv_id": s.arxiv_id, "title": s.title, "abstract": s.abstract,
-                                    "url": s.url, "extracted_text": s.extracted_text[:5000] if s.extracted_text else ""})
-            return "{}"
-
-        def cb_analyze_gaps(json_str):
-            args = _json.loads(json_str)
-            snaps = [PaperSnapshot(**s) for s in args.get("snapshots", [])]
-            gaps = self._analyze_gaps(snaps, 0)
-            return _json.dumps([g.__dict__ for g in gaps])
-
-        def cb_get_search_guidance(json_str):
-            args = _json.loads(json_str)
-            hint, confidence = self._get_search_guidance(args["topic"], args.get("gap_type", ""), args.get("gap_title", ""))
-            return _json.dumps({"hint": hint, "confidence": confidence})
-
-        def cb_encode_accepted_gap(json_str):
-            gap_dict = _json.loads(json_str)
-            self.tracker.record_gap_accept(
-                topic=self.query,
-                gap_type=gap_dict.get("gap_type", ""),
-                gap_title=gap_dict.get("title", ""),
-                gap_description=gap_dict.get("description", ""),
-            )
-            return ""
-
-        def cb_on_thought(json_str):
-            thought = _json.loads(json_str)
-            self._record_thought(thought.get("role", "planner"), thought.get("content", ""), thought.get("iteration", 0))
-            return ""
-
-        def cb_find_skills(json_str):
-            results = self._find_skills(json_str)
-            return _json.dumps([r.name if hasattr(r, 'name') else str(r) for r in results])
-
-        def cb_checkpoint(json_str):
-            self._auto_checkpoint()
-            return ""
-
-        def cb_new_session(json_str):
-            args = _json.loads(json_str)
-            session = self.start()
-            return _json.dumps({"session_id": session.session_id})
+        from research_loop.research_backend import (
+            cb_stream_plan, cb_search_papers, cb_extract_paper,
+            cb_analyze_gaps, cb_get_search_guidance, cb_encode_accepted_gap,
+            cb_on_thought, cb_find_skills, cb_checkpoint, cb_new_session,
+        )
 
         config = {
             "max_iterations": self.max_iterations,
@@ -702,23 +645,27 @@ class DeepResearchAgent:
             "checkpoint_interval_seconds": self.checkpoint_interval_seconds,
         }
 
+        # Wrap callbacks to inject self
+        def with_self(fn):
+            return lambda s: fn(self, s)
+
         agent = PyResearchAgent(
             query=self.query,
-            config_json=_json.dumps(config),
-            stream_plan=cb_stream_plan,
-            search_papers=cb_search_papers,
-            extract_paper=cb_extract_paper,
-            analyze_gaps=cb_analyze_gaps,
-            get_search_guidance=cb_get_search_guidance,
-            encode_accepted_gap=cb_encode_accepted_gap,
-            on_thought=cb_on_thought,
-            find_skills=cb_find_skills,
-            checkpoint=cb_checkpoint,
-            new_session=cb_new_session,
+            config_json=json.dumps(config),
+            stream_plan=with_self(cb_stream_plan),
+            search_papers=with_self(cb_search_papers),
+            extract_paper=with_self(cb_extract_paper),
+            analyze_gaps=with_self(cb_analyze_gaps),
+            get_search_guidance=with_self(cb_get_search_guidance),
+            encode_accepted_gap=with_self(cb_encode_accepted_gap),
+            on_thought=with_self(cb_on_thought),
+            find_skills=with_self(cb_find_skills),
+            checkpoint=with_self(cb_checkpoint),
+            new_session=with_self(cb_new_session),
         )
 
         result_json = agent.run(mode=self.mode, stop_requested=self._stop_requested)
-        result_data = _json.loads(result_json)
+        result_data = json.loads(result_json)
 
         from research_loop.snapstate import PaperSnapshot, GapSnapshot
         papers = [PaperSnapshot(**p) for p in result_data.get("papers", [])]
