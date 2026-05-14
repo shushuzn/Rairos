@@ -5,6 +5,7 @@
 //! Replaces: research_loop/core.py, research_loop/orchestrator.py, research_loop/deep_research.py
 
 pub mod arxiv_search;
+pub mod gap_analysis;
 pub mod gene_pool;
 pub mod hypothesis_generator;
 pub mod skill_discovery;
@@ -755,7 +756,9 @@ pub trait ResearchBackend {
         snap.extracted_text = Some(text.chars().take(5000).collect());
         Ok(snap)
     }
-    fn analyze_gaps(&self, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String>;
+    fn analyze_gaps(&self, topic: &str, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String> {
+        Ok(crate::gap_analysis::analyze_gaps(snapshots, topic))
+    }
     fn get_search_guidance(
         &self, topic: &str, gap_type: &str, gap_title: &str,
     ) -> Result<(Option<String>, f64), String> {
@@ -921,7 +924,7 @@ impl DeepResearchAgent {
 
             // Step 4: Analyze gaps
             if !snapshots.is_empty() {
-                let gaps = backend.analyze_gaps(&snapshots).unwrap_or_default();
+                let gaps = backend.analyze_gaps(&self.query, &snapshots).unwrap_or_default();
                 for gap in &gaps {
                     self.add_gap(gap);
                 }

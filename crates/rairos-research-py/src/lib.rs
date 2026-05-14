@@ -54,9 +54,9 @@ impl ResearchBackend for PyResearchBackend {
         })
     }
 
-    fn analyze_gaps(&self, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String> {
+    fn analyze_gaps(&self, topic: &str, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String> {
         Python::with_gil(|py| {
-            let args = serde_json::to_string(snapshots).unwrap_or_default();
+            let args = serde_json::json!({"topic": topic, "snapshots": snapshots}).to_string();
             let json_str = call_json_fn(py, self.analyze_gaps.bind(py), &args)
                 .map_err(|e| e.to_string())?;
             serde_json::from_str(&json_str).map_err(|e| e.to_string())

@@ -1063,8 +1063,8 @@ def run(self) -> DeepResearchResult:
         return "{}"
 
     def cb_analyze_gaps(json_str):
-        snap_dicts = _json.loads(json_str)
-        snaps = [PaperSnapshot(**s) for s in snap_dicts]
+        args = _json.loads(json_str)
+        snaps = [PaperSnapshot(**s) for s in args.get("snapshots", [])]
         gaps = self._analyze_gaps(snaps, 0)
         return _json.dumps([g.__dict__ for g in gaps])
 
