@@ -19,6 +19,7 @@ pub mod semantic_router;
 pub mod experiment_tracker;
 pub mod ollama;
 pub mod paper_analyzer;
+pub mod paper_comparison;
 pub mod reasoning;
 pub mod retry;
 

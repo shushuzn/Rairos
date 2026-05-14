@@ -6,6 +6,7 @@
 
 use crate::{LlmClient, Message};
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 // ─── Section Keys ─────────────────────────────────────────────────────────────
@@ -63,7 +64,7 @@ const SYSTEM_PROMPT: &str = r#"你是一个严谨的 AI 研究助理，擅长对
 
 // ─── Result Types ─────────────────────────────────────────────────────────────
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PaperAnalysisResult {
     pub sections: HashMap<String, String>,
     pub rubric: HashMap<String, u32>,
