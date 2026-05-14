@@ -408,6 +408,65 @@ pub fn fetch_trend_context(topic: &str) -> String {
     lines.join("\n")
 }
 
+/// Re-rank hypotheses by adjusting novelty/feasibility scores based on research trend data.
+///
+/// Logic:
+/// - Hot-trending tags → novelty penalty (crowded area), feasibility boost (more resources)
+/// - Cold/declining tags → novelty boost (underexplored), feasibility penalty (harder path)
+/// - Each matched tag adjusts by 0.05 (capped at 3 matches), clamped to [0.0, 1.0]
+///
+/// Gracefully degrades if trend data is unavailable.
+pub fn re_rank_by_trends(hypotheses: &mut [ResearchHypothesis], topic: &str) {
+    let forecaster = rairos_trends::TrendForecaster::with_path("data/radar_history.json");
+    if forecaster.history().is_empty() {
+        return;
+    }
+
+    // Get ALL tags with their slopes (very low threshold = no filter)
+    let all_tags = forecaster.detect_trending(-999.0);
+    if all_tags.is_empty() {
+        return;
+    }
+
+    // Hot = top 5 highest-slope tags; Cold = bottom 5 (most negative)
+    let hot: Vec<&str> = all_tags.iter().take(5).map(|(t, _)| t.as_str()).collect();
+    let cold: Vec<&str> = all_tags.iter().rev().take(5).map(|(t, _)| t.as_str()).collect();
+
+    let topic_keywords = crate::gene_pool::extract_keywords(topic);
+
+    for h in hypotheses.iter_mut() {
+        let kw_text = format!("{} {}", h.title, h.core_statement);
+        let hy_kw = crate::gene_pool::extract_keywords(&kw_text);
+        // Combine topic and hypothesis keywords for matching
+        let all_kw: Vec<&str> = topic_keywords.iter().map(|s| s.as_str())
+            .chain(hy_kw.iter().map(|s| s.as_str()))
+            .collect();
+
+        // Count hot-tag matches
+        let hot_matches = hot.iter().filter(|tag| {
+            all_kw.iter().any(|kw| tag.contains(kw) || kw.contains(*tag))
+        }).count();
+
+        // Count cold-tag matches
+        let cold_matches = cold.iter().filter(|tag| {
+            all_kw.iter().any(|kw| tag.contains(kw) || kw.contains(*tag))
+        }).count();
+
+        // Apply adjustments
+        if hot_matches > 0 {
+            let adj = 0.05 * hot_matches.min(3) as f64;
+            h.novelty_score = (h.novelty_score - adj).max(0.0);
+            h.feasibility_score = (h.feasibility_score + adj * 0.5).min(1.0);
+        }
+
+        if cold_matches > 0 {
+            let adj = 0.05 * cold_matches.min(3) as f64;
+            h.novelty_score = (h.novelty_score + adj).min(1.0);
+            h.feasibility_score = (h.feasibility_score - adj * 0.5).max(0.0);
+        }
+    }
+}
+
 /// Submit high-scoring hypotheses to the GenePool as capsules.
 /// Returns IDs of submitted capsules.
 pub fn submit_hypotheses_to_genepool(
@@ -455,13 +514,17 @@ impl HypothesisGenerator {
         let gap_type = self.infer_gap_type(gap_context);
         let hypotheses = self.generate_from_templates(topic, gap_context, &gap_type, creative);
         // Enrich: experiment designs, risk assessments, scores
-        let hypotheses: Vec<ResearchHypothesis> = hypotheses.into_iter().map(|mut h| {
+        let mut hypotheses: Vec<ResearchHypothesis> = hypotheses.into_iter().map(|mut h| {
             h.experiment_design = self.generate_experiment_design(&h, topic);
             h.risk = Some(self.assess_risk(&h));
             h.novelty_score = self.calculate_novelty(&h, creative);
             h.feasibility_score = self.calculate_feasibility(&h);
             h
         }).collect();
+
+        // Re-rank by trend data: adjust scores based on hot/cold research tags
+        re_rank_by_trends(&mut hypotheses, topic);
+
         let result = HypothesisResult {
             topic: topic.to_string(),
             summary: self.generate_summary(&hypotheses),
@@ -522,7 +585,7 @@ impl HypothesisGenerator {
         hypotheses.truncate(5);
 
         // Generate experiment designs, risk assessments, scores for all
-        let hypotheses: Vec<ResearchHypothesis> = hypotheses.into_iter().map(|mut h| {
+        let mut hypotheses: Vec<ResearchHypothesis> = hypotheses.into_iter().map(|mut h| {
             // Fill experiment design if empty
             if h.experiment_design.baseline.is_empty() || h.experiment_design.baseline == "待确定" {
                 h.experiment_design = self.generate_experiment_design(&h, topic);
@@ -540,6 +603,9 @@ impl HypothesisGenerator {
             }
             h
         }).collect();
+
+        // Re-rank by trend data: adjust scores based on hot/cold research tags
+        re_rank_by_trends(&mut hypotheses, topic);
 
         let result = HypothesisResult {
             topic: topic.to_string(),
