@@ -9,6 +9,7 @@ pub mod client_async;
 pub mod claude_cli;
 pub mod gap_detector;
 pub mod ollama;
+pub mod paper_analyzer;
 pub mod reasoning;
 pub mod retry;
 
