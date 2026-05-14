@@ -1629,8 +1629,8 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                 _content = _parsed.get("content", [])
                 if _content and isinstance(_content, list):
                     _text = _content[0].get("text", "{}")
-                    return _json.loads(_text)
-                return _parsed
+                    return success_response(_json.loads(_text))
+                return success_response(_parsed)
         except Exception:
             pass
 

@@ -260,14 +260,13 @@ class TestRustToolIntegration:
     def test_rust_tool_returns_expected_keys(self, tool_name, args, expected_keys):
         """Each Rust tool returns a dict with the expected top-level keys."""
         resp = handle_call_tool(tool_name, args)
-        # Should NOT be UNKNOWN_TOOL (means Rust didn't handle it)
         assert "error" not in resp, (
             f"{tool_name} returned error: {resp.get('error')}"
         )
-        # Rust dispatch returns the result directly (no {result: ...} wrapper)
+        result = resp.get("result", {})
         for key in expected_keys:
-            assert key in resp, (
-                f"{tool_name} result missing key '{key}': {resp}"
+            assert key in result, (
+                f"{tool_name} result missing key '{key}': {result}"
             )
 
     def test_rust_dispatch_takes_priority(self):
@@ -276,7 +275,7 @@ class TestRustToolIntegration:
             "paper_id": "2301.00001", "title": "T", "citation_count": 10, "year": 2023,
         })
         assert "error" not in resp, f"Rust dispatch failed: {resp}"
-        assert "composite" in resp
+        assert "composite" in resp.get("result", {})
 
     def test_briefing_generate_skipped_without_llm_key(self):
         """briefing_generate needs LLM key; without it should fail gracefully."""
@@ -294,7 +293,7 @@ class TestRustToolIntegration:
                     "citation_count": i, "year": 2020} for i in range(10)]
         resp = handle_call_tool("impact_rank", {"topic": "t", "top_k": 10, "papers": papers})
         assert "error" not in resp, str(resp)
-        ranked = resp.get("ranked", [])
+        ranked = resp.get("result", {}).get("ranked", [])
         assert len(ranked) >= 2
         scores = [r["composite"] for r in ranked]
         assert scores == sorted(scores, reverse=True), "not sorted descending"
