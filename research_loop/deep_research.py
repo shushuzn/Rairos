@@ -274,6 +274,18 @@ class DeepResearchAgent:
         if not tool_def:
             return {"error": f"Unknown tool: {name}", "available": list(self._mcp_tool_map.keys())}
 
+        # Try Rust MCP server first (faster, no dynamic import)
+        try:
+            from rairos_mcp_py import call_tool_rs
+            import json
+
+            result_json = call_tool_rs(name, json.dumps(arguments))
+            if result_json is not None:
+                return json.loads(result_json)
+        except Exception:
+            pass
+
+        # Fallback to Python MCP server
         try:
             # Dynamically resolve tool: try rairos_mcp handler dispatch
             # We use the same tool name → handler mapping as the MCP server

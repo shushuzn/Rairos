@@ -3516,6 +3516,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-mcp-py"
+version = "0.1.0"
+dependencies = [
+ "pyo3",
+ "rairos-mcp",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "rairos-memory"
 version = "0.1.0"
 dependencies = [

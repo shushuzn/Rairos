@@ -86,6 +86,7 @@ members = [
     "crates/rairos-llm",
     "crates/rairos-mcp",
     "crates/rairos-mcp-jin10",
+    "crates/rairos-mcp-py",
     "crates/rairos-memory",
     "crates/rairos-notes",
     "crates/rairos-notifications",
