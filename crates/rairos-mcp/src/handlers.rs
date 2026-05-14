@@ -496,6 +496,36 @@ impl ToolHandler for KgFullGraphHandler {
     }
 }
 
+// ─── KG: Query by keyword ─────────────────────────────────────────────────────
+
+pub struct KgQueryHandler;
+
+#[async_trait]
+impl ToolHandler for KgQueryHandler {
+    fn name(&self) -> &str { "kg_query" }
+    fn description(&self) -> &str { "Query the knowledge graph by keyword — searches node labels and entity IDs" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("keyword".into(), ToolProperty::string("Keyword to search for in node labels/IDs")),
+                ("limit".into(), ToolProperty::integer("Maximum results (default 20)")),
+            ].into_iter().collect(),
+            vec!["keyword".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let keyword = params["keyword"].as_str().ok_or("Missing keyword")?;
+        let limit = params["limit"].as_u64().unwrap_or(20).min(100) as usize;
+        let db_path = rairos_kg::KnowledgeGraph::db_path();
+        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
+            .map_err(|e| format!("KG init: {}", e))?;
+        let db = graph.database().ok_or("No database connected")?;
+        let results = db.query_by_keyword(keyword, limit)
+            .map_err(|e| format!("KG query: {}", e))?;
+        Ok(serde_json::json!({"results": results, "total": results.len(), "keyword": keyword}))
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
@@ -512,6 +542,7 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(KgPaperSubgraphHandler).await;
     server.register(KgTagGraphHandler).await;
     server.register(KgFullGraphHandler).await;
+    server.register(KgQueryHandler).await;
 }
 
 // ─── arXiv XML Parser ─────────────────────────────────────────────────────────
@@ -628,6 +659,7 @@ mod tests {
         assert!(KgPaperSubgraphHandler.name() == "kg_paper_subgraph");
         assert!(KgTagGraphHandler.name() == "kg_tag_graph");
         assert!(KgFullGraphHandler.name() == "kg_full_graph");
+        assert!(KgQueryHandler.name() == "kg_query");
     }
 
     #[test]

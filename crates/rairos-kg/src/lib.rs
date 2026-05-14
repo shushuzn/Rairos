@@ -493,6 +493,99 @@ impl KgDatabase {
     pub fn path(&self) -> &std::path::Path {
         &self.path
     }
+
+    // ── Integration Pipeline ────────────────────────────────────────────────
+
+    /// Process a new paper: create Paper node, Tag nodes, Author nodes, and connections.
+    /// Mirrors kg/integration.py::on_paper_processed()
+    pub fn on_paper_processed(
+        &self,
+        paper_uid: &str,
+        title: &str,
+        authors: &[String],
+        tags: &[String],
+        year: &str,
+    ) -> Result<String, KgError> {
+        // Create Paper node
+        let mut props = serde_json::json!({"title": title, "year": year});
+        if let Some(obj) = props.as_object_mut() {
+            obj.insert("year".into(), serde_json::json!(year));
+        }
+        let paper_id = self.upsert_node(KgNodeType::Paper.as_str(), paper_uid, title, props)?;
+
+        // Create Tag nodes + same_tag edges
+        for tag in tags {
+            let tag_label = tag.trim();
+            if tag_label.is_empty() { continue; }
+            let tag_id = self.upsert_node(KgNodeType::Tag.as_str(), tag_label, tag_label, serde_json::json!({}))?;
+            self.add_edge(&paper_id, &tag_id, KgEdgeType::SameTag.as_str(), 1.0, serde_json::json!({}))?;
+        }
+
+        // Create Author nodes + derive edges
+        for author in authors {
+            let author_id = self.add_node(KgNodeType::Author.as_str(), author, author, serde_json::json!({"name": author}))?;
+            self.add_edge(&paper_id, &author_id, KgEdgeType::Derive.as_str(), 1.0, serde_json::json!({}))?;
+        }
+
+        Ok(paper_id)
+    }
+
+    /// Record citation relationships between papers.
+    /// Mirrors kg/integration.py::on_citations_fetched()
+    pub fn on_citations_fetched(
+        &self,
+        paper_uid: &str,
+        cited: &[String],
+        citing: &[String],
+    ) -> Result<(), KgError> {
+        // Get or create the paper node
+        let center = match self.get_node_by_entity(KgNodeType::Paper.as_str(), paper_uid)? {
+            Some(n) => n,
+            None => return Err(KgError::NodeNotFound(paper_uid.to_string())),
+        };
+
+        // Add cite edges: center ← cited (center cites these)
+        for cited_id in cited {
+            let target = match self.get_node_by_entity(KgNodeType::Paper.as_str(), cited_id)? {
+                Some(n) => n,
+                None => continue,
+            };
+            self.add_edge(&center.id, &target.id, KgEdgeType::Cite.as_str(), 1.0, serde_json::json!({}))?;
+        }
+
+        // Add cite edges: center → citing (these cite center)
+        for citing_id in citing {
+            let source = match self.get_node_by_entity(KgNodeType::Paper.as_str(), citing_id)? {
+                Some(n) => n,
+                None => continue,
+            };
+            self.add_edge(&source.id, &center.id, KgEdgeType::Cite.as_str(), 1.0, serde_json::json!({}))?;
+        }
+
+        Ok(())
+    }
+
+    /// Query the graph by keyword against node labels.
+    pub fn query_by_keyword(&self, keyword: &str, limit: usize) -> Result<Vec<KgNode>, KgError> {
+        let pattern = format!("%{}%", keyword);
+        let mut stmt = self.conn.prepare(
+            "SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE label LIKE ?1 OR entity_id LIKE ?1 LIMIT ?2"
+        )?;
+        let rows = stmt.query_map(rusqlite::params![pattern, limit as i64], |row| {
+            Ok(KgNode {
+                id: row.get(0)?,
+                entity_id: row.get::<_, String>(2)?,
+                label: row.get(3)?,
+                node_type: row.get(1)?,
+                properties: KgDatabase::json_to_props(&row.get::<_, String>(4)?),
+            })
+        })?;
+        let mut result = Vec::new();
+        for row in rows {
+            result.push(row?);
+        }
+        Ok(result)
+    }
 }
 
 // ============================================================================
@@ -1062,6 +1155,88 @@ mod tests {
 
         let subgraph = graph.get_paper_subgraph("sub1", 1, false).unwrap();
         assert!(subgraph.nodes.iter().any(|n| n.label == "Paper 1"), "subgraph should contain center");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_on_paper_processed() {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_int_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let db_path = dir.join("integration_test.db");
+        let db = KgDatabase::new(db_path).unwrap();
+
+        let authors = vec!["John Doe".to_string(), "Jane Smith".to_string()];
+        let tags = vec!["transformer".to_string(), "attention".to_string()];
+        let paper_id = db.on_paper_processed("2401.00001", "Test Paper", &authors, &tags, "2024").unwrap();
+
+        // Verify paper node exists
+        let paper = db.get_node_by_entity("paper", "2401.00001").unwrap().unwrap();
+        assert_eq!(paper.label, "Test Paper");
+
+        // Verify tags exist
+        let tag = db.get_node_by_entity("tag", "transformer").unwrap().unwrap();
+        assert_eq!(tag.label, "transformer");
+
+        // Verify edges exist (paper → tag via same_tag)
+        let edges = db.get_edges_by_node(&paper.id, "out", Some("same_tag")).unwrap();
+        assert_eq!(edges.len(), 2, "should have 2 same_tag edges (one per tag)");
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_on_citations_fetched() {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_cit_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let db_path = dir.join("citation_test.db");
+        let db = KgDatabase::new(db_path).unwrap();
+
+        // Setup: create 3 paper nodes
+        db.on_paper_processed("center", "Center Paper", &[], &[], "2024").unwrap();
+        db.on_paper_processed("cited1", "Cited Paper 1", &[], &[], "2023").unwrap();
+        db.on_paper_processed("cited2", "Cited Paper 2", &[], &[], "2023").unwrap();
+
+        // Record citations
+        let cited = vec!["cited1".to_string(), "cited2".to_string()];
+        db.on_citations_fetched("center", &cited, &[]).unwrap();
+
+        // Verify edges
+        let center = db.get_node_by_entity("paper", "center").unwrap().unwrap();
+        let edges = db.get_edges_by_node(&center.id, "out", Some("cite")).unwrap();
+        assert_eq!(edges.len(), 2, "center should cite 2 papers");
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_query_by_keyword() {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_q_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let db_path = dir.join("query_test.db");
+        let db = KgDatabase::new(db_path).unwrap();
+
+        db.on_paper_processed("2401.00001", "Transformer Attention", &[], &["transformer".into(), "attention".into()], "2024").unwrap();
+        db.on_paper_processed("2401.00002", "CNN Vision", &[], &["vision".into()], "2023").unwrap();
+
+        let results = db.query_by_keyword("transformer", 10).unwrap();
+        assert!(!results.is_empty(), "should find transformer in at least one node");
+        assert_eq!(results[0].entity_id, "2401.00001");
+
+        let results = db.query_by_keyword("attention", 10).unwrap();
+        assert!(!results.is_empty(), "should match attention keyword");
+
         let _ = std::fs::remove_dir_all(&dir);
     }
 }
