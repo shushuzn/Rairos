@@ -2,11 +2,9 @@
 
 ## Superpowers
 
-Superpowers (obra/superpowers) installed via project-level `.opencode/opencode.json`.
+Superpowers (obra/superpowers) local config at `Rairos/.opencode/opencode.json` (gitignored).
 Plugin: `/root/superpowers/.opencode/plugins/superpowers.js`
 Skills: `/root/superpowers/skills/` — 15 skills auto-registered on OpenCode startup.
-Skills auto-trigger on relevant tasks (brainstorming before code, TDD before impl, etc).
-No manual loading needed.
 
 ## Project
 

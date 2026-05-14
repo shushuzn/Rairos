@@ -53,6 +53,8 @@ cache/
 
 .claude/
 
+.opencode/
+
 .claude/memory.db
 
 .claude/settings.local.json
