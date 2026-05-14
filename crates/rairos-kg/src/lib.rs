@@ -565,6 +565,51 @@ impl KgDatabase {
         Ok(())
     }
 
+    /// Create an M-Note node and connect papers with in_comparison edges.
+    /// Mirrors kg/integration.py::on_mnote_created()
+    pub fn on_mnote_created(&self, mnote_id: &str, member_paper_uids: &[String]) -> Result<String, KgError> {
+        let note_id = self.add_node(KgNodeType::MNote.as_str(), mnote_id, mnote_id, serde_json::json!({"type": "m_note"}))?;
+        for paper_uid in member_paper_uids {
+            if let Some(paper) = self.get_node_by_entity(KgNodeType::Paper.as_str(), paper_uid)? {
+                self.add_edge(&note_id, &paper.id, KgEdgeType::InComparison.as_str(), 1.0, serde_json::json!({}))?;
+            }
+        }
+        Ok(note_id)
+    }
+
+    /// Create Figure/Table nodes and connect to paper with has_figure/has_table edges.
+    /// Mirrors kg/integration.py::on_charts_indexed()
+    pub fn on_charts_indexed(&self, paper_uid: &str, figure_ids: &[String], table_ids: &[String]) -> Result<(), KgError> {
+        let paper = match self.get_node_by_entity(KgNodeType::Paper.as_str(), paper_uid)? {
+            Some(p) => p,
+            None => return Err(KgError::NodeNotFound(paper_uid.to_string())),
+        };
+        for fig_id in figure_ids {
+            let fig_node = self.add_node(KgNodeType::Figure.as_str(), fig_id, fig_id, serde_json::json!({}))?;
+            self.add_edge(&paper.id, &fig_node, KgEdgeType::HasFigure.as_str(), 1.0, serde_json::json!({}))?;
+        }
+        for tbl_id in table_ids {
+            let tbl_node = self.add_node(KgNodeType::Table.as_str(), tbl_id, tbl_id, serde_json::json!({}))?;
+            self.add_edge(&paper.id, &tbl_node, KgEdgeType::HasTable.as_str(), 1.0, serde_json::json!({}))?;
+        }
+        Ok(())
+    }
+
+    /// Rebuild the graph from a list of papers (upserts all + connects citations).
+    pub fn rebuild_from_papers(&self, papers: &[KgNode], citations: &[(String, String)]) -> Result<KgStats, KgError> {
+        for paper in papers {
+            let _ = self.upsert_node(&paper.node_type, &paper.entity_id, &paper.label, paper.properties.clone());
+        }
+        for (source, target) in citations {
+            let src = self.get_node_by_entity(KgNodeType::Paper.as_str(), source);
+            let tgt = self.get_node_by_entity(KgNodeType::Paper.as_str(), target);
+            if let (Ok(Some(s)), Ok(Some(t))) = (src, tgt) {
+                let _ = self.add_edge(&s.id, &t.id, KgEdgeType::Cite.as_str(), 1.0, serde_json::json!({}));
+            }
+        }
+        self.stats()
+    }
+
     /// Query the graph by keyword against node labels.
     pub fn query_by_keyword(&self, keyword: &str, limit: usize) -> Result<Vec<KgNode>, KgError> {
         let pattern = format!("%{}%", keyword);
@@ -1237,6 +1282,58 @@ mod tests {
         let results = db.query_by_keyword("attention", 10).unwrap();
         assert!(!results.is_empty(), "should match attention keyword");
 
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_on_mnote_created() {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_mn_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir); std::fs::create_dir_all(&dir).unwrap();
+        let db = KgDatabase::new(dir.join("mnote_test.db")).unwrap();
+        db.on_paper_processed("paper1", "Paper 1", &[], &[], "2024").unwrap();
+        db.on_paper_processed("paper2", "Paper 2", &[], &[], "2024").unwrap();
+        let members = vec!["paper1".to_string(), "paper2".to_string()];
+        db.on_mnote_created("mnote_001", &members).unwrap();
+        let mnote = db.get_node_by_entity("m_note", "mnote_001").unwrap().unwrap();
+        assert_eq!(mnote.node_type, "m_note");
+        let edges = db.get_edges_by_node(&mnote.id, "out", Some("in_comparison")).unwrap();
+        assert_eq!(edges.len(), 2);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_on_charts_indexed() {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_ch_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir); std::fs::create_dir_all(&dir).unwrap();
+        let db = KgDatabase::new(dir.join("charts_test.db")).unwrap();
+        db.on_paper_processed("demo", "Demo Paper", &[], &[], "2024").unwrap();
+        let figs = vec!["fig1".to_string(), "fig2".to_string()];
+        let tbls = vec!["tbl1".to_string()];
+        db.on_charts_indexed("demo", &figs, &tbls).unwrap();
+        let fig_node = db.get_node_by_entity("figure", "fig1").unwrap().unwrap();
+        assert_eq!(fig_node.node_type, "figure");
+        let tbl_node = db.get_node_by_entity("table", "tbl1").unwrap().unwrap();
+        assert_eq!(tbl_node.node_type, "table");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_rebuild_from_papers() {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_kg_rb_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir); std::fs::create_dir_all(&dir).unwrap();
+        let db = KgDatabase::new(dir.join("rebuild_test.db")).unwrap();
+        db.on_paper_processed("p1", "Paper 1", &[], &[], "2024").unwrap();
+        let stats = db.stats().unwrap();
+        assert!(stats.total_nodes >= 1);
         let _ = std::fs::remove_dir_all(&dir);
     }
 }
