@@ -5,10 +5,13 @@
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use rand::Rng;
+use rairos_core::Database;
+use rairos_experiment_tracker::ExperimentTracker;
 use rairos_insight_evolution::EvolutionEngine;
 use rairos_insight_storage::CapsuleStorage;
 use rairos_llm::{impact, replication, LlmClient, OpenAiClient, AnthropicClient};
 use serde_json::Value;
+use std::collections::HashMap;
 
 // ─── LLM client factory ────────────────────────────────────────────────────
 
@@ -1089,6 +1092,10 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(LeaderboardHandler).await;
     server.register(ImpactLeaderboardHandler).await;
     server.register(ClaimGraphHandler).await;
+    server.register(TagAllHandler).await;
+    server.register(ReviewListHandler).await;
+    server.register(ExperimentRecordHandler).await;
+    server.register(LitReviewListHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────
@@ -1167,5 +1174,157 @@ impl ToolHandler for RouteQueryHandler {
         // No LLM: keyword routing fallback (semantic_router)
         let route = rairos_llm::semantic_router::route_by_keyword(hypothesis);
         Ok(serde_json::json!({"semantic_route": route, "note": "No LLM available — keyword routing only. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for full plan generation."}))
+    }
+}
+
+// ─── Tag All ────────────────────────────────────────────────────────────────
+
+pub struct TagAllHandler;
+
+#[async_trait]
+impl ToolHandler for TagAllHandler {
+    fn name(&self) -> &str { "tag_all" }
+    fn description(&self) -> &str { "List all tags in the system from the database" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(HashMap::new(), vec![])
+    }
+    async fn call(&self, _params: Value) -> Result<Value, String> {
+        let db_path = std::env::var("RAIROS_DB").unwrap_or_else(|_| "rairos.db".to_string());
+        let db = Database::open(&db_path).map_err(|e| format!("DB error: {}", e))?;
+        let tags = db.list_tags().map_err(|e| format!("List tags error: {}", e))?;
+        let names: Vec<String> = tags.into_iter().map(|t| t.name).collect();
+        Ok(serde_json::json!({"tags": names, "count": names.len()}))
+    }
+}
+
+// ─── Review List ───────────────────────────────────────────────────────────
+
+pub struct ReviewListHandler;
+
+#[async_trait]
+impl ToolHandler for ReviewListHandler {
+    fn name(&self) -> &str { "review_list" }
+    fn description(&self) -> &str { "List saved simulated reviews" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(HashMap::new(), vec![])
+    }
+    async fn call(&self, _params: Value) -> Result<Value, String> {
+        let reviews = rairos_review_simulator::list_reviews(20);
+        Ok(serde_json::json!({"reviews": reviews, "count": reviews.len()}))
+    }
+}
+
+// ─── Experiment Record ─────────────────────────────────────────────────────
+
+pub struct ExperimentRecordHandler;
+
+#[async_trait]
+impl ToolHandler for ExperimentRecordHandler {
+    fn name(&self) -> &str { "experiment_record" }
+    fn description(&self) -> &str { "Record an experiment result for a hypothesis" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("hypothesis_id".into(), ToolProperty::string("ID of the hypothesis")),
+                ("name".into(), ToolProperty::string("Name of the experiment")),
+                ("result".into(), ToolProperty::string("Result: validated, rejected, failed, running, or completed")),
+                ("metrics".into(), ToolProperty::string("Optional JSON object of metrics")),
+            ].into_iter().collect(),
+            vec!["hypothesis_id".into(), "name".into(), "result".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let hypothesis_id = params["hypothesis_id"].as_str().ok_or("Missing hypothesis_id")?;
+        let name = params["name"].as_str().ok_or("Missing name")?;
+        let result = params["result"].as_str().ok_or("Missing result")?;
+
+        let tracker = ExperimentTracker::new(None);
+        let exp = tracker.run(name, "", "", hypothesis_id, None, None);
+
+        let metrics: Option<serde_json::Value> = params.get("metrics")
+            .and_then(|v| {
+                if v.is_string() { serde_json::from_str(v.as_str()?).ok() } else { Some(v.clone()) }
+            });
+
+        match result.to_lowercase().as_str() {
+            "rejected" | "failed" => {
+                tracker.fail(&exp.id, result);
+            }
+            _ => {
+                let mut results = HashMap::new();
+                results.insert("verdict".to_string(), serde_json::json!(result));
+                if let Some(m) = metrics {
+                    results.insert("metrics".to_string(), m);
+                }
+                tracker.complete(&exp.id, Some(results));
+            }
+        }
+
+        Ok(serde_json::json!({
+            "experiment_id": exp.id,
+            "hypothesis_id": hypothesis_id,
+            "status": if matches!(result.to_lowercase().as_str(), "rejected" | "failed") { "failed" } else { "completed" },
+            "message": format!("Experiment recorded: {} -> {}", name, result),
+        }))
+    }
+}
+
+// ─── LitReview List ────────────────────────────────────────────────────────
+
+pub struct LitReviewListHandler;
+
+#[async_trait]
+impl ToolHandler for LitReviewListHandler {
+    fn name(&self) -> &str { "litreview_list" }
+    fn description(&self) -> &str { "List all saved literature reviews" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(HashMap::new(), vec![])
+    }
+    async fn call(&self, _params: Value) -> Result<Value, String> {
+        let cwd = std::env::current_dir().map_err(|e| format!("CWD error: {}", e))?;
+        let reviews_dir = cwd.join("data").join("litreviews");
+        let mut reviews = Vec::new();
+
+        if reviews_dir.exists() {
+            let mut entries: Vec<_> = std::fs::read_dir(&reviews_dir)
+                .map_err(|e| format!("Read dir error: {}", e))?
+                .filter_map(|e| e.ok())
+                .filter(|e| {
+                    let name = e.file_name();
+                    let n = name.to_string_lossy();
+                    n.starts_with("litreview_") && n.ends_with(".md")
+                })
+                .collect();
+            entries.sort_by(|a, b| {
+                let a_m = a.metadata().ok().and_then(|m| m.modified().ok());
+                let b_m = b.metadata().ok().and_then(|m| m.modified().ok());
+                b_m.cmp(&a_m)
+            });
+            for entry in entries.iter().take(20) {
+                let content = std::fs::read_to_string(entry.path()).unwrap_or_default();
+                let lines: Vec<&str> = content.lines().collect();
+                let title = lines.first()
+                    .map(|l| l.trim_start_matches("# ").trim().to_string())
+                    .unwrap_or_else(|| {
+                        entry.file_name().to_string_lossy().replace(".md", "")
+                    });
+                let mut date = String::new();
+                for line in lines.iter().skip(1).take(4) {
+                    if let Some(pos) = line.find("Generated:") {
+                        date = line[pos + 10..].trim().to_string();
+                        break;
+                    }
+                }
+                let size = entry.metadata().ok().map(|m| m.len()).unwrap_or(0);
+                reviews.push(serde_json::json!({
+                    "filename": entry.file_name().to_string_lossy(),
+                    "topic": title,
+                    "date": date,
+                    "size_bytes": size,
+                }));
+            }
+        }
+
+        Ok(serde_json::json!({"reviews": reviews, "count": reviews.len()}))
     }
 }

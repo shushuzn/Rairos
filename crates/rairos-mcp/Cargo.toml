@@ -18,6 +18,8 @@ rairos-crossover = { path = "../rairos-crossover" }
 rairos-research-memory = { path = "../rairos-research-memory" }
 rairos-leaderboard = { path = "../rairos-leaderboard" }
 rairos-claimgraph = { path = "../rairos-claimgraph" }
+rairos-experiment-tracker = { path = "../rairos-experiment-tracker" }
+rairos-review-simulator = { path = "../rairos-review-simulator" }
 dirs = "5"
 uuid = { version = "1.0", features = ["v4"] }
 rand = "0.8"

@@ -897,13 +897,13 @@ pub fn load_review(review_id: &str) -> Option<SimulatedReview> {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ReviewListItem {
-    review_id: String,
-    persona: String,
-    overall_score: f64,
-    recommendation: String,
-    created_at: String,
-    annotation_count: usize,
+pub struct ReviewListItem {
+    pub review_id: String,
+    pub persona: String,
+    pub overall_score: f64,
+    pub recommendation: String,
+    pub created_at: String,
+    pub annotation_count: usize,
 }
 
 /// List saved reviews.

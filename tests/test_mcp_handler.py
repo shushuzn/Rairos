@@ -93,6 +93,7 @@ class TestToolRouting:
         "research_memory_add_stance", "research_memory_list_stances",
         "research_memory_check_paper", "research_memory_anomalies",
         "leaderboard", "impact_leaderboard", "claim_graph",
+        "review_list", "experiment_record", "litreview_list",
     }
 
     TOOL_NAMES_IN_HANDLER = [
