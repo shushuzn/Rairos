@@ -214,6 +214,7 @@ impl PyDatabase {
         Ok(Some(PyPaper { inner: result }))
     }
 
+    #[pyo3(signature = (query, limit=None, offset=None, source=None, category=None, parse_status=None))]
     fn search_papers(
         &self,
         query: &str,

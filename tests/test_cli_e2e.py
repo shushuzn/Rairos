@@ -49,9 +49,9 @@ def _seed_search_db(db_path: Path, papers: list[dict]) -> None:
 
     import rairos_db_py
 
-    # Create schema using PyDatabase.init_() (does NOT clear data)
+    # Create schema using PyDatabase.init() (does NOT clear data)
     py_db = rairos_db_py.PyDatabase(str(db_path))
-    py_db.init_()
+    py_db.init()
 
     # Build paper inputs and insert via upsert_paper
     now = "2024-01-01T00:00:00Z"
@@ -154,7 +154,7 @@ def test_search_returns_json_results(tmp_db_path):
     import rairos_db_py
 
     py_db_seed = rairos_db_py.PyDatabase(str(tmp_db_path))
-    py_db_seed.init_()
+    py_db_seed.init()
     py_db_seed.get_paper("arXiv:2301.00001")
     # Count papers via search
     py_db_seed.search_papers("attention", limit=5)
@@ -167,7 +167,7 @@ def test_search_returns_json_results(tmp_db_path):
     import rairos_db_py
 
     py_verify = rairos_db_py.PyDatabase(str(tmp_db_path))
-    py_verify.init_()
+    py_verify.init()
     py_verify.get_paper("arXiv:2301.00001")
     py_verify.search_papers("attention")
 

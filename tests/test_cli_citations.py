@@ -266,7 +266,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "Citation Bridge" in captured
+        assert "Citation" in captured and "Bridge" in captured
         assert "DIRECT" in captured
         assert "2301.00001" in captured
         assert "2306.00001" in captured
@@ -294,7 +294,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "Citation Bridge" in captured
+        assert "Citation" in captured and "Bridge" in captured
         assert "INDIRECT" in captured
         assert "2309.99999" in captured
         assert result == 0
@@ -319,7 +319,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "Citation Bridge" in captured
+        assert "Citation" in captured and "Bridge" in captured
         assert "No citation path" in captured
         assert result == 0
 

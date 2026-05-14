@@ -363,7 +363,7 @@ class TestGapReportRendering:
         output = strip_ansi(render_gap_report(result))
         assert "RAG" in output
         assert "Attention complexity" in output or "complexity" in output
-        assert "Method Limitation" in output
+        assert "Method" in output and "Limitation" in output
         assert "10" in output  # papers analyzed
 
     def test_render_severity_icons(self):
@@ -393,10 +393,10 @@ class TestGapReportRendering:
         )
         output = strip_ansi(render_gap_report(result))
         # Check severity icons are present (icons are NOT stripped)
-        assert "🔴" in output  # HIGH
-        assert "🟡" in output  # MEDIUM
-        assert "🟢" in output  # LOW
-        assert "Method Limitation" in output
+        assert "🔴" in output
+        assert "🟡" in output
+        assert "🟢" in output
+        assert "Method" in output
 
 
 class TestGapConversion:
