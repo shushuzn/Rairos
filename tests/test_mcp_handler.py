@@ -87,6 +87,8 @@ class TestToolRouting:
         "citation_chain_silent", "citation_chain_render",
         "impact_rank", "impact_score_paper",
         "gap_detect", "litreview_generate", "slides_generate", "replication_check",
+        "pdf_download", "pdf_extract_text", "pdf_extract_structured",
+        "trends_predict_next", "trends_top_predictions", "trends_compare_tags",
     }
 
     TOOL_NAMES_IN_HANDLER = [

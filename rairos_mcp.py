@@ -1634,31 +1634,7 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
         except Exception:
             pass
 
-        if name == "pdf_download":
-            result = tool_pdf_download(  # type: ignore[arg-type]
-                arxiv_id=arguments.get("arxiv_id"), out_path=arguments.get("out_path")
-            )
-        elif name == "pdf_extract_text":
-            result = tool_pdf_extract_text(  # type: ignore[arg-type]
-                pdf_path=arguments.get("pdf_path"),
-                max_pages=arguments.get("max_pages"),
-                ocr=arguments.get("ocr", False),
-                use_pdfminer_fallback=arguments.get("use_pdfminer_fallback", True),
-            )
-        elif name == "pdf_extract_structured":
-            result = tool_pdf_extract_structured(  # type: ignore[arg-type]
-                pdf_path=arguments.get("pdf_path"), max_pages=arguments.get("max_pages")
-            )
-        elif name == "trends_predict_next":
-            result = tool_trends_predict_next(tag=arguments.get("tag"))  # type: ignore[arg-type]
-        elif name == "trends_top_predictions":
-            # type: ignore[arg-type]
-            result = tool_trends_top_predictions(top_k=arguments.get("top_k", 5))
-        elif name == "trends_compare_tags":
-            result = tool_trends_compare_tags(  # type: ignore[arg-type]
-                tag_a=arguments.get("tag_a"), tag_b=arguments.get("tag_b")
-            )
-        elif name == "tag_all":
+        if name == "tag_all":
             # type: ignore[arg-type]
             result = tool_tag_all()
         elif name == "chart_query":
