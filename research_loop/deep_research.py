@@ -27,8 +27,6 @@ Architecture inspired by:
 from __future__ import annotations
 
 
-import signal
-
 
 import time
 
@@ -100,141 +98,6 @@ class DeepResearchResult:
 
     status: str  # completed | paused | failed
 
-
-class _AdaptiveQueryStrategy:
-    """Adaptive query planning: evolve search strategy based on gap coverage.
-
-    Tracks gap_type coverage across iterations and adjusts query to explore
-    under-represented gap types. Also tracks query→gaps success rate to
-    weight future query construction.
-    """
-
-    ALL_GAP_TYPES = frozenset(
-        [
-            "capability",
-            "improvement",
-            "contradiction",
-            "assumption",
-            "extension",
-            "baseline_gap",
-            "evaluation_gap",
-            "reproducibility_gap",
-            "embodied_planning",
-            "rl_pretraining",
-            "scaling_laws",
-            "reasoning",
-        ]
-    )
-
-    def __init__(self, topic: str):
-        self.topic = topic
-        # query → list of gap_type found
-        self._query_gap_types: dict[str, list[str]] = {}
-        # gap_type → how many times it appeared
-        self._gap_type_counts: dict[str, int] = {}
-        self._total_gaps = 0
-
-    def record_search_result(self, query: str, gaps: list) -> None:
-        """Record gap types found from a search result."""
-        if not gaps:
-            return
-        found_types = set()
-        for g in gaps:
-            gt = (
-                g.gap_type
-                if isinstance(g.gap_type, str)
-                else str(getattr(g.gap_type, "value", g.gap_type))
-            )
-            found_types.add(gt)
-            self._gap_type_counts[gt] = self._gap_type_counts.get(gt, 0) + 1
-            self._total_gaps += 1
-        self._query_gap_types[query] = list(found_types)
-
-    def gap_type_coverage(self) -> dict[str, float]:
-        """Return coverage ratio for each gap type (0.0–1.0)."""
-        if self._total_gaps == 0:
-            return {gt: 0.0 for gt in self.ALL_GAP_TYPES}
-        return {
-            gt: self._gap_type_counts.get(gt, 0) / self._total_gaps for gt in self.ALL_GAP_TYPES
-        }
-
-    def under_represented_types(self, threshold: float = 0.15) -> list[str]:
-        """Return gap types that appear in < threshold of all gaps."""
-        coverage = self.gap_type_coverage()
-        return [gt for gt, ratio in coverage.items() if ratio > 0 and ratio < threshold]
-
-    def most_productive_queries(self, top_k: int = 3) -> list[str]:
-        """Return queries that produced the most diverse gap types."""
-        scored = []
-        for q, types in self._query_gap_types.items():
-            scored.append((q, len(set(types))))
-        scored.sort(key=lambda x: x[1], reverse=True)
-        return [q for q, _ in scored[:top_k]]
-
-    def build_adaptive_query(
-        self,
-        iteration: int,
-        latest_gap_title: str = "",
-        latest_gap_type: str = "",
-        gene_pool_hint: str = "",
-        confidence: float = 0.0,
-    ) -> str:
-        """Build next search query adaptively.
-
-        Strategy:
-        - iter 0: use topic directly
-        - under-represented gap types exist: target them explicitly
-        - high confidence GenePool hint: blend with gap context
-        - otherwise: expand topic with gap type direction
-        """
-        under_rep = self.under_represented_types()
-
-        if iteration == 0:
-            return self.topic
-
-        # Case 1: have under-represented types → target them
-        if under_rep:
-            target = under_rep[0]
-            # Pick a productive query from history and extend with target type
-            productive = self.most_productive_queries(1)
-            if productive:
-                base = productive[0]
-            else:
-                base = self.topic
-            return f"{base} {target}"
-
-        # Case 2: high-confidence GenePool hint
-        if gene_pool_hint and confidence >= 0.4:
-            if latest_gap_title:
-                return f"{gene_pool_hint} {latest_gap_title}"
-            return gene_pool_hint
-
-        # Case 3: latest gap context — normalize unknown types to "improvement"
-        if latest_gap_type == "Contradiction":
-            return f"{self.topic} {latest_gap_title} disagreement"
-        elif latest_gap_type in (
-            "improvement",
-            "capability",
-            "extension",
-            "Missing",
-            "Unknown",
-            "",
-        ):
-            return f"{self.topic} {latest_gap_title} improvement"
-        elif latest_gap_title:
-            return f"{self.topic} {latest_gap_title}"
-
-        return self.topic
-
-    def query_similarity(self, q1: str, q2: str) -> float:
-        """Simple word-overlap similarity between two queries (0.0–1.0)."""
-        words1 = set(q1.lower().split())
-        words2 = set(q2.lower().split())
-        if not words1 or not words2:
-            return 0.0
-        intersection = words1 & words2
-        union = words1 | words2
-        return len(intersection) / len(union) if union else 0.0
 
 
 class DeepResearchAgent:
@@ -309,7 +172,6 @@ class DeepResearchAgent:
         self.workspace_snapshot = WorkspaceSnapshot()
 
         self.tracker = get_evolution_tracker()
-        self._adaptive_strategy = _AdaptiveQueryStrategy(topic=query)
 
         self.gap_analyzer = GapAnalyzerV2()
 
@@ -362,125 +224,22 @@ class DeepResearchAgent:
             return []
 
     def _find_skills(self, query: str) -> List[Any]:
-        """Find skills matching a query string (keyword match in name + description).
-
-        Returns skills sorted by relevance: name match > description match.
-        """
-        try:
-            from research_loop.skill_discovery import match_skills
-
-            return match_skills(query, self._skills)
-        except Exception:
-            return []
-
-    def _get_skill(self, name: str) -> Optional[Any]:
-        """Get a skill by exact name. Returns Skill object or None."""
-        return self._skill_map.get(name)
-
-    def _log(self, msg: str):
-
         if self.verbose:
             print(f"[DeepResearchAgent] {msg}")
 
-    def _stream_print(self, msg: str, prefix: str = " ", file=None, flush: bool = True):
-        """Print a streaming line — no newline, overwriteable. Supports carriage-return for live updates.
-
-        In non-TTY environments (CI/redirected), falls back to normal print with prefix.
-        """
-        import sys
-
-        if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
-            print(f"{prefix}{msg}", file=file, flush=flush)
-            return
-
-        # \r overwrites the current line; ANSI clear prevents ghosting
-        ANSI_CLEAR = "\033[2K\r"
-        print(f"{ANSI_CLEAR}{prefix}{msg}", end="", file=file, flush=flush)
-
-    def _print_step(self, step: str, msg: str):
-        """Print a step progress line (always visible, not gated by verbose)."""
-        print(f"[DR] [{step}] {msg}", flush=True)
-
-    def _print_summary(self, result: "DeepResearchResult"):
-        """Print final metrics summary after run completes."""
-        papers = len(result.papers)
-        gaps = len(result.gaps)
-        accepted = sum(1 for g in result.gaps if g.accepted)
-        duration = result.duration_seconds
-        print()
-        print("=" * 60)
-        print(f"  DeepResearch Complete — {result.status.upper()}")
-        print(f"  Iterations : {result.iterations}")
-        print(f"  Papers     : {papers} found, {papers} extracted")
-        print(f"  Gaps       : {gaps} found, {accepted} accepted")
-        print(f"  Duration   : {duration:.1f}s")
-        print("=" * 60)
-
     def _auto_checkpoint(self) -> None:
-        """Save a named checkpoint for the current iteration state.
-
-        Saves after each Plan+Analyze phase with session_id, step, timestamp, query.
-        """
+        """Save a named checkpoint for the current iteration state."""
         if not self.session or not self.auto_checkpoint:
             return
         ck_name = f"iter{self.session.iteration:03d}"
         ck_id = self.snapstate.create_checkpoint(self.session)
         self._log(f"[checkpoint] {ck_name} ({ck_id}) saved")
 
-    def _setup_signal_handlers(self):
-        """Register signal handlers for graceful shutdown with checkpointing."""
-
-        def handler(sig, frame):
-            self._log("Received shutdown signal, checkpointing...")
-            if self.session:
-                self.snapstate.save(self.session)
-                self._auto_checkpoint()
-            self._stop_requested = True
-
-        signal.signal(signal.SIGINT, handler)
-        signal.signal(signal.SIGTERM, handler)
-
     # -------------------------------------------------------------------------
-
     # Session lifecycle
-
     # -------------------------------------------------------------------------
 
     def start(self) -> ResearchSession:
-        """Start a new research session."""
-
-        self.session = self.snapstate.new_session(
-            query=self.query,
-            max_iterations=self.max_iterations,
-        )
-
-        self.snapstate.save(self.session)
-
-        self._log(f"Session started: {self.session.session_id}")
-
-        return self.session
-
-    def resume(self, session_id: str) -> Optional[ResearchSession]:
-        """Resume an existing session."""
-
-        self.session = self.snapstate.load(session_id)
-
-        if self.session:
-            self._log(f"Session resumed: {session_id}, iteration {self.session.iteration}")
-
-        return self.session
-
-    def pause(self):
-        """Pause and persist current session state."""
-
-        if self.session:
-            self.session.status = "paused"
-
-            self.snapstate.save(self.session)
-
-            self._log(f"Session paused at iteration {self.session.iteration}")
-
-    def _record_thought(self, role: str, content: str, iteration: int):
 
         thought = AgentThought(
             iteration=iteration,
@@ -569,23 +328,6 @@ class DeepResearchAgent:
             self._log(f"MCP tool error {name}: {e}")
             return {"error": str(e)}
 
-    def _approve_step(self, iteration: int, step: str, detail: str) -> bool:
-        """Ask the caller to approve the next step (plan mode confirmation).
-
-        In plan mode, calls on_thought with step info and waits.
-        Returns True to proceed, False to abort.
-        """
-        if self.on_thought:
-            result = self.on_thought(step, f"[PLAN] {detail}", iteration)
-            return result is not False
-        return True
-
-    # -------------------------------------------------------------------------
-
-    # Core iteration steps
-
-    # -------------------------------------------------------------------------
-
     def _get_search_guidance(
         self, topic: str, gap_type: str, gap_title: str
     ) -> Tuple[Optional[str], float]:
@@ -633,64 +375,6 @@ class DeepResearchAgent:
 
         except Exception:
             return None, 0.0
-
-    def _plan_next_search(self, iteration: int) -> str:
-        """PLANNER: decide next search query using adaptive strategy + GenePool."""
-
-        gaps = self.session.gaps if self.session else []
-        search_history = self.session.search_history if self.session else []
-
-        if iteration == 0:
-            planned = self.query
-        elif gaps:
-            latest_gap = gaps[-1]
-
-            # Get GenePool guidance
-            hint, confidence = self._get_search_guidance(
-                topic=self.query,
-                gap_type=latest_gap.gap_type if latest_gap else "",
-                gap_title=latest_gap.title if latest_gap else "",
-            )
-
-            # Use adaptive strategy to build query
-            planned = self._adaptive_strategy.build_adaptive_query(
-                iteration=iteration,
-                latest_gap_title=latest_gap.title if latest_gap else "",
-                latest_gap_type=latest_gap.gap_type if latest_gap else "",
-                gene_pool_hint=hint or "",
-                confidence=confidence,
-            )
-
-            # Semantic deduplication: avoid near-duplicate queries
-            for prev_q in search_history:
-                sim = self._adaptive_strategy.query_similarity(planned, prev_q)
-                if sim > 0.75:
-                    planned = f"{planned} variant{iteration}"
-                    break
-
-            # Log decision
-            if hint and confidence >= 0.3:
-                self._record_thought(
-                    "planner",
-                    f"GenePool-guided (conf={confidence:.2f}): {planned}",
-                    iteration,
-                )
-            else:
-                under_rep = self._adaptive_strategy.under_represented_types()
-                self._record_thought(
-                    "planner",
-                    f"Adaptive search: {planned} | under_rep={under_rep[:2]}",
-                    iteration,
-                )
-        else:
-            planned = self.query
-
-        # Fallback duplicate guard
-        if planned in search_history:
-            planned = f"{self.query} exploration{iteration}"
-
-        self._record_thought("planner", f"Planned search: {planned}", iteration)
-        return planned
 
     def _stream_plan_search(self, iteration: int) -> str:
         """PLANNER with streaming extended thinking (DeepSeek V3 / MiniMax)."""
@@ -938,253 +622,119 @@ class DeepResearchAgent:
 
         return gap_snapshots
 
-    def _reflect(self, iteration: int) -> Tuple[bool, str]:
-        """REFLECTOR: decide whether to continue iterating or stop.
-
-
-
-
-
-
-
-        Returns: (should_continue, reason)
-
-
-
-        """
-
-        if self.session is None:
-            return False, "no session"
-
-        gaps = self.session.gaps
-
-        papers = self.session.papers
-
-        # Stop conditions
-
-        if iteration >= self.max_iterations:
-            return False, f"max iterations ({self.max_iterations}) reached"
-
-        if len(papers) >= self.max_iterations * self.max_papers_per_iteration:
-            return False, "max papers reached"
-
-        if not gaps and iteration > 1:
-            return False, "no gaps found after thorough search"
-
-        # Continue conditions
-
-        recent_gaps = [g for g in gaps if g.accepted]
-
-        if recent_gaps:
-            return False, f"{len(recent_gaps)} gaps accepted, stopping"
-
-        # Check archetype alignment
-
-        if gaps:
-            avg_match = sum(g.archetype_match for g in gaps) / len(gaps)
-
-            if avg_match < 0.3 and iteration >= 2:
-                self._record_thought(
-                    "reflector",
-                    f"Low archetype match ({avg_match:.2f}), broadening search",
-                    iteration,
-                )
-
-        return True, "continue iterating"
-
-    def _encode_accepted_gaps(self):
-        """GENETIC: encode all accepted gaps into the Gene Pool."""
-
-        if self.session is None:
-            return
-
-        for gap in self.session.gaps:
-            if gap.accepted and gap.archetype_match > 0:
-                self.tracker.record_gap_accept(
-                    topic=self.query,
-                    gap_type=gap.gap_type,
-                    gap_title=gap.title,
-                    gap_description=gap.description,
-                )
-
-                self._log(f"Encoded gap into Gene Pool: {gap.title}")
-
     # -------------------------------------------------------------------------
-
     # Main run loop
+    # -------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------
 
-def _make_json_callback(self, method):
-    import json
-    def cb(json_str):
-        args = json.loads(json_str) if json_str else {}
-        if isinstance(args, dict):
-            result = method(**args)
-        else:
-            result = method(args)
-        return json.dumps(result) if not isinstance(result, str) else result
-    return cb
+    def run(self) -> DeepResearchResult:
+        import json as _json
+        from rairos_research_py import PyResearchAgent
 
-def _make_json_list_callback(self, method):
-    import json
-    def cb(json_str):
-        items = json.loads(json_str) if json_str else []
-        result = method(items)
-        return json.dumps([item._asdict() if hasattr(item, '_asdict') else item.__dict__ for item in result])
-    return cb
+        def cb_stream_plan(json_str):
+            args = _json.loads(json_str)
+            if self.use_streaming_reasoning:
+                result = self._stream_plan_search(args["iteration"])
+            return result
 
-import json as _json
+        def cb_search_papers(json_str):
+            args = _json.loads(json_str)
+            papers = self._search_papers(args["query"], args["iteration"])
+            return _json.dumps([p.__dict__ for p in papers])
 
-def run(self) -> DeepResearchResult:
-    from rairos_research_py import PyResearchAgent
+        def cb_extract_paper(json_str):
+            paper_dict = _json.loads(json_str)
+            paper = Paper(**paper_dict)
+            snap = self._extract_papers([paper], 0)
+            if snap:
+                s = snap[0]
+                return _json.dumps({"arxiv_id": s.arxiv_id, "title": s.title, "abstract": s.abstract,
+                                    "url": s.url, "extracted_text": s.extracted_text[:5000] if s.extracted_text else ""})
+            return "{}"
 
-    def cb_stream_plan(json_str):
-        args = _json.loads(json_str)
-        if self.use_streaming_reasoning:
-            result = self._stream_plan_search(args["iteration"])
-        else:
-            result = self._plan_next_search(args["iteration"])
-        return result
+        def cb_analyze_gaps(json_str):
+            args = _json.loads(json_str)
+            snaps = [PaperSnapshot(**s) for s in args.get("snapshots", [])]
+            gaps = self._analyze_gaps(snaps, 0)
+            return _json.dumps([g.__dict__ for g in gaps])
 
-    def cb_search_papers(json_str):
-        args = _json.loads(json_str)
-        papers = self._search_papers(args["query"], args["iteration"])
-        return _json.dumps([p.__dict__ for p in papers])
+        def cb_get_search_guidance(json_str):
+            args = _json.loads(json_str)
+            hint, confidence = self._get_search_guidance(args["topic"], args.get("gap_type", ""), args.get("gap_title", ""))
+            return _json.dumps({"hint": hint, "confidence": confidence})
 
-    def cb_extract_paper(json_str):
-        paper_dict = _json.loads(json_str)
-        paper = Paper(**paper_dict)
-        snap = self._extract_papers([paper], 0)
-        if snap:
-            s = snap[0]
-            return _json.dumps({"arxiv_id": s.arxiv_id, "title": s.title, "abstract": s.abstract,
-                                "url": s.url, "extracted_text": s.extracted_text[:5000] if s.extracted_text else ""})
-        return "{}"
+        def cb_encode_accepted_gap(json_str):
+            gap_dict = _json.loads(json_str)
+            self.tracker.record_gap_accept(
+                topic=self.query,
+                gap_type=gap_dict.get("gap_type", ""),
+                gap_title=gap_dict.get("title", ""),
+                gap_description=gap_dict.get("description", ""),
+            )
+            return ""
 
-    def cb_analyze_gaps(json_str):
-        args = _json.loads(json_str)
-        snaps = [PaperSnapshot(**s) for s in args.get("snapshots", [])]
-        gaps = self._analyze_gaps(snaps, 0)
-        return _json.dumps([g.__dict__ for g in gaps])
+        def cb_on_thought(json_str):
+            thought = _json.loads(json_str)
+            self._record_thought(thought.get("role", "planner"), thought.get("content", ""), thought.get("iteration", 0))
+            return ""
 
-    def cb_get_search_guidance(json_str):
-        args = _json.loads(json_str)
-        hint, confidence = self._get_search_guidance(args["topic"], args.get("gap_type", ""), args.get("gap_title", ""))
-        return _json.dumps({"hint": hint, "confidence": confidence})
+        def cb_find_skills(json_str):
+            results = self._find_skills(json_str)
+            return _json.dumps([r.name if hasattr(r, 'name') else str(r) for r in results])
 
-    def cb_encode_accepted_gap(json_str):
-        gap_dict = _json.loads(json_str)
-        self.tracker.record_gap_accept(
-            topic=self.query,
-            gap_type=gap_dict.get("gap_type", ""),
-            gap_title=gap_dict.get("title", ""),
-            gap_description=gap_dict.get("description", ""),
+        def cb_checkpoint(json_str):
+            self._auto_checkpoint()
+            return ""
+
+        def cb_new_session(json_str):
+            args = _json.loads(json_str)
+            session = self.start()
+            return _json.dumps({"session_id": session.session_id})
+
+        config = {
+            "max_iterations": self.max_iterations,
+            "max_papers_per_iteration": self.max_papers_per_iteration,
+            "verbose": self.verbose,
+            "use_streaming_reasoning": self.use_streaming_reasoning,
+            "auto_checkpoint": self.auto_checkpoint,
+            "checkpoint_every_n_steps": self.checkpoint_every_n_steps,
+            "checkpoint_interval_seconds": self.checkpoint_interval_seconds,
+        }
+
+        agent = PyResearchAgent(
+            query=self.query,
+            config_json=_json.dumps(config),
+            stream_plan=cb_stream_plan,
+            search_papers=cb_search_papers,
+            extract_paper=cb_extract_paper,
+            analyze_gaps=cb_analyze_gaps,
+            get_search_guidance=cb_get_search_guidance,
+            encode_accepted_gap=cb_encode_accepted_gap,
+            on_thought=cb_on_thought,
+            find_skills=cb_find_skills,
+            checkpoint=cb_checkpoint,
+            new_session=cb_new_session,
         )
-        return ""
 
-    def cb_on_thought(json_str):
-        thought = _json.loads(json_str)
-        self._record_thought(thought.get("role", "planner"), thought.get("content", ""), thought.get("iteration", 0))
-        return ""
+        result_json = agent.run(mode=self.mode, stop_requested=self._stop_requested)
+        result_data = _json.loads(result_json)
 
-    def cb_find_skills(json_str):
-        results = self._find_skills(json_str)
-        return _json.dumps([r.name if hasattr(r, 'name') else str(r) for r in results])
-
-    def cb_checkpoint(json_str):
-        self._auto_checkpoint()
-        return ""
-
-    def cb_new_session(json_str):
-        args = _json.loads(json_str)
-        session = self.start()
-        return _json.dumps({"session_id": session.session_id})
-
-    config = {
-        "max_iterations": self.max_iterations,
-        "max_papers_per_iteration": self.max_papers_per_iteration,
-        "verbose": self.verbose,
-        "use_streaming_reasoning": self.use_streaming_reasoning,
-        "auto_checkpoint": self.auto_checkpoint,
-        "checkpoint_every_n_steps": self.checkpoint_every_n_steps,
-        "checkpoint_interval_seconds": self.checkpoint_interval_seconds,
-    }
-
-    agent = PyResearchAgent(
-        query=self.query,
-        config_json=_json.dumps(config),
-        stream_plan=cb_stream_plan,
-        search_papers=cb_search_papers,
-        extract_paper=cb_extract_paper,
-        analyze_gaps=cb_analyze_gaps,
-        get_search_guidance=cb_get_search_guidance,
-        encode_accepted_gap=cb_encode_accepted_gap,
-        on_thought=cb_on_thought,
-        find_skills=cb_find_skills,
-        checkpoint=cb_checkpoint,
-        new_session=cb_new_session,
-    )
-
-    result_json = agent.run(mode=self.mode, stop_requested=self._stop_requested)
-    result_data = _json.loads(result_json)
-
-    # Convert dict back to DeepResearchResult
-    from research_loop.snapstate import PaperSnapshot, GapSnapshot
-    papers = [PaperSnapshot(**p) for p in result_data.get("papers", [])]
-    gaps = [GapSnapshot(**g) for g in result_data.get("gaps", [])]
-    thoughts = [AgentThought(**t) for t in result_data.get("thoughts", [])]
-    return DeepResearchResult(
-        session_id=result_data.get("session_id", ""),
-        query=result_data.get("query", ""),
-        iterations=result_data.get("iterations", 0),
-        papers=papers,
-        gaps=gaps,
-        thoughts=thoughts,
-        report=result_data.get("report", ""),
-        duration_seconds=result_data.get("duration_seconds", 0.0),
-        status=result_data.get("status", "completed"),
-    )
-
-    def _build_report(self) -> str:
-        """Build a markdown report from the research session."""
-
-        if self.session is None:
-            return "No session"
-
-        s = self.session
-
-        lines = [
-            f"# Deep Research Report: {s.query}",
-            "",
-            f"**Session**: {s.session_id} | **Iterations**: {s.iteration} | **Duration**: {s.duration():.1f}s",
-            f"**Status**: {s.status}",
-            "",
-            "## Papers Analyzed",
-        ]
-
-        for p in s.papers:
-            lines.append(f"- [{p.arxiv_id}] {p.title} — {p.gaps_found} gaps")
-
-        lines.append("")
-
-        lines.append("## Research Gaps")
-
-        for g in s.gaps:
-            status = "✅" if g.accepted else "⬜"
-
-            lines.append(f"- {status} [{g.gap_type}] {g.title}")
-
-            lines.append(f"  {g.description[:100]}")
-
-        lines.append("")
-
-        lines.append("## Findings")
-
-        for f in s.findings[-10:]:
-            lines.append(f"- {f}")
-
-        return "\n".join(lines)
+        from research_loop.snapstate import PaperSnapshot, GapSnapshot
+        papers = [PaperSnapshot(**p) for p in result_data.get("papers", [])]
+        gaps = [GapSnapshot(**g) for g in result_data.get("gaps", [])]
+        thoughts = [AgentThought(**t) for t in result_data.get("thoughts", [])]
+        return DeepResearchResult(
+            session_id=result_data.get("session_id", ""),
+            query=result_data.get("query", ""),
+            iterations=result_data.get("iterations", 0),
+            papers=papers,
+            gaps=gaps,
+            thoughts=thoughts,
+            report=result_data.get("report", ""),
+            duration_seconds=result_data.get("duration_seconds", 0.0),
+            status=result_data.get("status", "completed"),
+        )
 
     def stop(self):
         """Request the agent to stop at next reflection point."""
