@@ -209,9 +209,9 @@ impl CapsuleGene {
 // ─── GenePool Manager ──────────────────────────────────────────────────────────
 
 pub struct GenePool {
-    base_dir: PathBuf,
-    jsonl_path: PathBuf,
-    events_path: PathBuf,
+    pub base_dir: PathBuf,
+    pub jsonl_path: PathBuf,
+    pub events_path: PathBuf,
 }
 
 impl Default for GenePool {

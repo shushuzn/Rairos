@@ -975,6 +975,7 @@ impl Default for HypothesisGenerator {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::atomic::{AtomicU64, Ordering::Relaxed};
 
     #[test]
     fn test_generate_hypotheses() {
@@ -1398,5 +1399,152 @@ mod tests {
             assert!(!h.id.is_empty());
             assert!(h.novelty_score > 0.0);
         }
+    }
+
+    // ─── Hypothesis Lifecycle E2E ──────────────────────────────────────────
+
+    #[test]
+    fn test_hypothesis_lifecycle_e2e() {
+        // Use temp dir to avoid touching real data
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Relaxed);
+        let tid = std::thread::current().id();
+        let dir = std::env::temp_dir().join(format!("rairos_e2e_{:?}_{}_{}", tid, std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir);
+        let gp_dir = dir.join("evolution");
+        std::fs::create_dir_all(&gp_dir).unwrap();
+
+        let pool = crate::gene_pool::GenePool {
+            base_dir: gp_dir.clone(),
+            jsonl_path: gp_dir.join("gene_pool.jsonl"),
+            events_path: gp_dir.join("events.jsonl"),
+        };
+
+        let gen = HypothesisGenerator::new();
+
+        // ── Phase 1: Generate hypotheses ──────────────────────────────────
+        let result = gen.generate(
+            "attention mechanism in transformers",
+            "Current methods have scalability limitations when handling long sequences",
+            false,
+        );
+        assert!(!result.hypotheses.is_empty(), "Should generate hypotheses");
+        assert!(result.hypotheses.len() <= 5, "Max 5 hypotheses");
+        for h in &result.hypotheses {
+            assert!(!h.id.is_empty(), "Each hypothesis needs an ID");
+            assert!(h.novelty_score >= 0.0 && h.novelty_score <= 1.0);
+            assert!(h.feasibility_score >= 0.0 && h.feasibility_score <= 1.0);
+        }
+
+        // ── Phase 2: Submit first hypothesis to GenePool ──────────────────
+        let hid = &result.hypotheses[0].id;
+        pool.encode_capsule(
+            "attention mechanism in transformers",
+            "method_limitation",
+            &result.hypotheses[0].title,
+            &result.hypotheses[0].core_statement,
+            (result.hypotheses[0].novelty_score + result.hypotheses[0].feasibility_score) / 2.0,
+            hid,
+        ).expect("encode_capsule");
+
+        // ── Phase 3: Verify hypothesis_id stored on capsule ───────────────
+        let capsules = pool.load_capsules();
+        let found: Vec<_> = capsules.iter().filter(|c| !c.hypothesis_id.is_empty()).collect();
+        assert_eq!(found.len(), 1, "Exactly one capsule with hypothesis_id");
+        assert_eq!(found[0].hypothesis_id, *hid, "hypothesis_id should match");
+
+        let initial_score = found[0].outcome_success_score;
+        let initial_feedback = found[0].feedback_count;
+
+        // ── Phase 4: Update capsule score (simulate validated experiment) ─
+        pool.update_capsule_by_hypothesis_id(hid, 0.9, 1)
+            .expect("update_capsule_by_hypothesis_id");
+
+        // ── Phase 5: Verify score update ──────────────────────────────────
+        let capsules_after = pool.load_capsules();
+        let updated: Vec<_> = capsules_after.iter()
+            .filter(|c| c.hypothesis_id == *hid)
+            .collect();
+        assert_eq!(updated.len(), 1, "Found capsule after update");
+        let expected = initial_score * 0.7 + 0.9 * 0.3;
+        assert!((updated[0].outcome_success_score - expected).abs() < 0.001,
+            "Score EMA: expected {:.4}, got {:.4}",
+            expected, updated[0].outcome_success_score);
+        assert_eq!(updated[0].feedback_count, initial_feedback + 1,
+            "Feedback should increment");
+
+        // ── Phase 6: Simulate rejection update ────────────────────────────
+        let score_before_rejection = updated[0].outcome_success_score;
+        pool.update_capsule_by_hypothesis_id(hid, 0.2, 1)
+            .expect("Second update");
+        let final_capsules = pool.load_capsules();
+        let rejected: Vec<_> = final_capsules.iter()
+            .filter(|c| c.hypothesis_id == *hid)
+            .collect();
+        assert_eq!(rejected.len(), 1, "Found after rejection");
+        let expected2 = score_before_rejection * 0.7 + 0.2 * 0.3;
+        assert!((rejected[0].outcome_success_score - expected2).abs() < 0.001,
+            "Rejection EMA: expected {:.4}, got {:.4}",
+            expected2, rejected[0].outcome_success_score);
+
+        // ── Phase 7: Lifecycle event recorded ────────────────────────────
+        let lc = std::fs::read_to_string(gp_dir.join("lifecycle_events.jsonl")).unwrap_or_default();
+        assert!(lc.contains("experiment_feedback"), "Lifecycle event recorded");
+        assert!(lc.contains(hid), "Lifecycle event references hypothesis_id");
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn test_hypothesis_e2e_submit_and_update() {
+        // Tests: generate → encode_capsule with hypothesis_id → update_capsule → lifecycle
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Relaxed);
+        let tid = std::thread::current().id();
+        let dir = std::env::temp_dir().join(format!("rairos_e2e_{:?}_{}_{}", tid, std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir);
+        let gp_dir = dir.join("evolution");
+        std::fs::create_dir_all(&gp_dir).unwrap();
+
+        let pool = crate::gene_pool::GenePool {
+            base_dir: gp_dir.clone(),
+            jsonl_path: gp_dir.join("gene_pool.jsonl"),
+            events_path: gp_dir.join("events.jsonl"),
+        };
+
+        let gen = HypothesisGenerator::new();
+        let result = gen.generate("deep learning optimization", "Memory limitation", false);
+        assert!(!result.hypotheses.is_empty());
+
+        // Submit hypothesis to GenePool with hypothesis_id
+        let hid = &result.hypotheses[0].id;
+        pool.encode_capsule("deep learning optimization", "method_limitation",
+            &result.hypotheses[0].title, &result.hypotheses[0].core_statement,
+            (result.hypotheses[0].novelty_score + result.hypotheses[0].feasibility_score) / 2.0,
+            hid,
+        ).expect("encode_capsule");
+
+        // Verify capsule has hypothesis_id
+        let before = pool.load_capsules();
+        let cap = before.iter().find(|c| c.hypothesis_id == *hid).expect("Capsule should exist");
+        let score_before = cap.outcome_success_score;
+        let fb_before = cap.feedback_count;
+
+        // Simulate experiment feedback (validated → score 0.9)
+        pool.update_capsule_by_hypothesis_id(hid, 0.9, 1).expect("update_capsule");
+
+        let after = pool.load_capsules();
+        let updated = after.iter().find(|c| c.hypothesis_id == *hid).expect("Should still exist");
+        let expected = score_before * 0.7 + 0.9 * 0.3;
+        assert!((updated.outcome_success_score - expected).abs() < 0.001,
+            "Score EMA: {:.4} != {:.4}", updated.outcome_success_score, expected);
+        assert_eq!(updated.feedback_count, fb_before + 1, "Feedback ++");
+
+        // Lifecycle event recorded
+        let lc = std::fs::read_to_string(gp_dir.join("lifecycle_events.jsonl")).unwrap_or_default();
+        assert!(lc.contains("experiment_feedback"), "Should have lifecycle event");
+        assert!(lc.contains(hid), "Should reference hypothesis_id");
+
+        std::fs::remove_dir_all(&dir).ok();
     }
 }
