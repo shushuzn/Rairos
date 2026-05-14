@@ -1151,6 +1151,7 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(RoutePlanReviseHandler).await;
     server.register(ResearchRunHandler).await;
     server.register(HypothesisGenerateHandler).await;
+    server.register(HypothesisListHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────
@@ -1266,6 +1267,110 @@ impl ToolHandler for ReviewListHandler {
     async fn call(&self, _params: Value) -> Result<Value, String> {
         let reviews = rairos_review_simulator::list_reviews(20);
         Ok(serde_json::json!({"reviews": reviews, "count": reviews.len()}))
+    }
+}
+
+// ─── Hypothesis List ──────────────────────────────────────────────────────
+
+pub struct HypothesisListHandler;
+
+#[async_trait]
+impl ToolHandler for HypothesisListHandler {
+    fn name(&self) -> &str { "hypothesis_list" }
+    fn description(&self) -> &str { "List all tracked hypotheses with verdict status, success scores, and linked experiments" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("status".into(), ToolProperty::string("Optional filter: validated, rejected, mixed, inconclusive")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let status_filter = params.get("status").and_then(|v| v.as_str());
+
+        // 1. Load capsules with hypothesis_ids from GenePool
+        let pool = rairos_research::gene_pool::GenePool::new();
+        let all_capsules = pool.load_capsules();
+        let hypothesis_capsules: Vec<_> = all_capsules.iter()
+            .filter(|c| !c.hypothesis_id.is_empty())
+            .collect();
+
+        // 2. Load experiments from ExperimentTracker
+        let tracker = ExperimentTracker::new(None);
+        let all_experiments = tracker.list_experiments(None, None, None);
+
+        // 3. Map experiments by hypothesis_id
+        let mut exp_by_hid: HashMap<&str, Vec<&rairos_experiment_tracker::Experiment>> = HashMap::new();
+        for exp in &all_experiments {
+            if !exp.hypothesis_id.is_empty() {
+                exp_by_hid.entry(exp.hypothesis_id.as_str())
+                    .or_default()
+                    .push(exp);
+            }
+        }
+
+        // 4. Build result rows
+        let mut rows: Vec<serde_json::Value> = Vec::new();
+        for cap in &hypothesis_capsules {
+            let hid = &cap.hypothesis_id;
+            let experiments = exp_by_hid.get(hid.as_str()).cloned().unwrap_or_default();
+
+            let (verdict, detail) = compute_hypothesis_verdict(&experiments);
+            let linked_count = experiments.len();
+
+            // Apply optional status filter
+            if let Some(filter) = status_filter {
+                if filter.to_uppercase() != verdict { continue; }
+            }
+
+            rows.push(serde_json::json!({
+                "hypothesis_id": hid,
+                "title": cap.action_gap_title,
+                "gap_type": cap.action_gap_type,
+                "success_score": cap.outcome_success_score,
+                "feedback_count": cap.feedback_count,
+                "created_at": cap.created_at,
+                "verdict": verdict,
+                "detail": detail,
+                "linked_experiments": linked_count,
+                "experiments": experiments.iter().map(|e| serde_json::json!({
+                    "id": e.id,
+                    "name": e.name,
+                    "status": e.status,
+                })).collect::<Vec<_>>(),
+            }));
+        }
+
+        Ok(serde_json::json!({
+            "total": rows.len(),
+            "hypotheses": rows,
+        }))
+    }
+}
+
+/// Compute hypothesis verdict from linked experiments.
+fn compute_hypothesis_verdict(experiments: &[&rairos_experiment_tracker::Experiment]) -> (String, String) {
+    if experiments.is_empty() {
+        return ("INCONCLUSIVE".into(), "no experiments recorded".into());
+    }
+
+    let has_validated = experiments.iter().any(|e| {
+        e.status == "completed"
+            && e.results.get("verdict")
+                .and_then(|v| v.as_str())
+                .map_or(false, |v| v == "validated")
+    });
+    let has_rejected = experiments.iter().any(|e| e.status == "failed");
+
+    if has_validated && has_rejected {
+        ("MIXED".into(), "both validated and rejected experiments exist".into())
+    } else if has_validated {
+        ("VALIDATED".into(), "all experiments succeeded".into())
+    } else if has_rejected {
+        ("REJECTED".into(), "all experiments failed".into())
+    } else {
+        ("INCONCLUSIVE".into(), "no completed experiments yet".into())
     }
 }
 

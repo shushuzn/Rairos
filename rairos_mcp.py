@@ -462,9 +462,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                 action=arguments.get("action"),
                 label=arguments.get("label"),
             )
-        elif name == "hypothesis_list":
-            # type: ignore[arg-type]
-            result = tool_hypothesis_list()
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 

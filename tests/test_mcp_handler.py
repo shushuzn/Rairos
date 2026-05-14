@@ -99,6 +99,7 @@ class TestToolRouting:
         "research_run",
         "paper_analyze", "routeplan_create",
         "hypothesis_generate",
+        "hypothesis_list",
     }
 
     TOOL_NAMES_IN_HANDLER = [
