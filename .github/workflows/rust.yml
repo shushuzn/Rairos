@@ -89,15 +89,28 @@ jobs:
       - name: Clippy lint
         run: cargo clippy --tests --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo --exclude rairos-research-py --exclude rairos-claimgraph --exclude rairos-survey-generator --exclude rairos-lsp-diagnostics --exclude rairos-workspace-snapshot' || '' }} -- -D warnings
 
-      - name: Verify PyO3 cdylib builds
+      - name: Verify PyO3 cdylib builds + Python import
         if: runner.os == 'ubuntu-latest'
         run: |
-          cargo build --release -p rairos-research-py -p rairos-claimgraph -p rairos-survey-generator -p rairos-lsp-diagnostics -p rairos-workspace-snapshot
-          test -f target/release/librairos_research_py.so
-          test -f target/release/librairos_claimgraph_py.so
-          test -f target/release/librairos_survey_generator_py.so
-          test -f target/release/librairos_lsp_diagnostics_py.so
-          test -f target/release/librairos_workspace_snapshot_py.so
+          cargo build --release -p rairos-research-py -p rairos-mcp-py \
+            -p rairos-claimgraph -p rairos-survey-generator \
+            -p rairos-lsp-diagnostics -p rairos-workspace-snapshot
+
+          # Copy .so files to project root for Python import
+          for so in target/release/librairos_*.py.so; do
+            cp "$so" "$(basename "$so" | sed 's/^lib//')"
+          done
+          cp target/release/librairos_sysinfo.so . 2>/dev/null || true
+          cp target/release/librairos_db_py.so . 2>/dev/null || true
+
+          # Verify Python can import the Rust modules
+          python3 -c "
+import rairos_research_py
+import rairos_mcp_py
+tools = rairos_mcp_py.list_tools_rs()
+assert len(tools) >= 10, f'Expected >= 10 tools, got {len(tools)}'
+print(f'PyO3 OK: {len(tools)} Rust MCP tools')
+"
 
       - name: Security audit
         run: |
