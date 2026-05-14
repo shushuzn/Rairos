@@ -427,6 +427,7 @@ pub fn submit_hypotheses_to_genepool(
                 &h.title,
                 &h.core_statement,
                 combined / 2.0, // average score
+                &h.id,
             ) {
                 submitted.push(id);
             }

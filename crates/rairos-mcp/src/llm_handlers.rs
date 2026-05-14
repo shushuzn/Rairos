@@ -1276,7 +1276,7 @@ pub struct ExperimentRecordHandler;
 #[async_trait]
 impl ToolHandler for ExperimentRecordHandler {
     fn name(&self) -> &str { "experiment_record" }
-    fn description(&self) -> &str { "Record an experiment result for a hypothesis" }
+    fn description(&self) -> &str { "Record an experiment result for a hypothesis — also updates the GenePool capsule's success score when completed" }
     fn input_schema(&self) -> ToolInputSchema {
         ToolInputSchema::object(
             vec![
@@ -1304,6 +1304,9 @@ impl ToolHandler for ExperimentRecordHandler {
         match result.to_lowercase().as_str() {
             "rejected" | "failed" => {
                 tracker.fail(&exp.id, result);
+                // Update GenePool: experiment failed → low success score
+                let pool = rairos_research::gene_pool::GenePool::new();
+                let _ = pool.update_capsule_by_hypothesis_id(hypothesis_id, 0.2, 1);
             }
             _ => {
                 let mut results = HashMap::new();
@@ -1312,6 +1315,15 @@ impl ToolHandler for ExperimentRecordHandler {
                     results.insert("metrics".to_string(), m);
                 }
                 tracker.complete(&exp.id, Some(results));
+
+                // Update GenePool: experiment validated/completed → boost score
+                let pool = rairos_research::gene_pool::GenePool::new();
+                let score = match result.to_lowercase().as_str() {
+                    "validated" => 0.9,
+                    "completed" => 0.8,
+                    _ => 0.6,
+                };
+                let _ = pool.update_capsule_by_hypothesis_id(hypothesis_id, score, 1);
             }
         }
 
@@ -1319,7 +1331,7 @@ impl ToolHandler for ExperimentRecordHandler {
             "experiment_id": exp.id,
             "hypothesis_id": hypothesis_id,
             "status": if matches!(result.to_lowercase().as_str(), "rejected" | "failed") { "failed" } else { "completed" },
-            "message": format!("Experiment recorded: {} -> {}", name, result),
+            "message": format!("Experiment recorded: {} -> {}. GenePool capsule updated.", name, result),
         }))
     }
 }

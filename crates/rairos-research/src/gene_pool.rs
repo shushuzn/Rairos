@@ -102,6 +102,8 @@ pub struct CapsuleGene {
     pub credibility_badge: String,
     #[serde(default)]
     pub source_arxiv_category: String,
+    #[serde(default)]
+    pub hypothesis_id: String,
 }
 
 // ─── Category grouping ─────────────────────────────────────────────────────────
@@ -305,6 +307,7 @@ impl GenePool {
         gap_title: &str,
         _gap_description: &str,
         success_score: f64,
+        hypothesis_id: &str,
     ) -> Result<String, String> {
         let normalized_gap = normalize_gap_type(gap_type);
         let keywords = extract_keywords(gap_title);
@@ -333,6 +336,7 @@ impl GenePool {
             trendslop_reason: String::new(),
             credibility_badge: "medium".to_string(),
             source_arxiv_category: String::new(),
+            hypothesis_id: hypothesis_id.to_string(),
         };
 
         // Ensure directory exists
@@ -392,6 +396,50 @@ impl GenePool {
 
         use std::io::Write;
         writeln!(file, "{}", evt).map_err(|e| format!("Failed to write lifecycle event: {}", e))?;
+        Ok(())
+    }
+
+    /// Update a capsule's outcome_success_score and feedback_count by hypothesis_id.
+    /// Loads all capsules, finds the matching one, updates it, and rewrites the entire JSONL.
+    /// Returns Ok(()) if found and updated, Err if not found.
+    pub fn update_capsule_by_hypothesis_id(
+        &self,
+        hypothesis_id: &str,
+        new_score: f64,
+        feedback_delta: i32,
+    ) -> Result<(), String> {
+        let capsules = self.load_capsules();
+        if capsules.is_empty() {
+            return Err("Gene Pool is empty".into());
+        }
+
+        let target_idx = capsules.iter().position(|c| c.hypothesis_id == hypothesis_id);
+        let idx = match target_idx {
+            Some(i) => i,
+            None => return Err(format!("No capsule found with hypothesis_id '{}'", hypothesis_id)),
+        };
+
+        let mut updated = capsules[idx].clone();
+        // Exponential moving average: blend old score with new feedback
+        updated.outcome_success_score =
+            updated.outcome_success_score * 0.7 + new_score * 0.3;
+        updated.feedback_count += feedback_delta;
+
+        let mut all_capsules = capsules;
+        all_capsules[idx] = updated.clone();
+        self.write_all_capsules(&all_capsules)?;
+
+        self.record_capsule_lifecycle(
+            &updated.capsule_id,
+            "experiment_feedback",
+            &updated.action_gap_title,
+            &updated.action_gap_type,
+            &format!(
+                "Score updated to {:.2} (delta: +{}) via hypothesis '{}'",
+                updated.outcome_success_score, feedback_delta, hypothesis_id,
+            ),
+        )?;
+
         Ok(())
     }
 
@@ -461,7 +509,7 @@ impl GenePool {
             )?;
         } else {
             // Create new capsule
-            self.encode_capsule(topic, gap_type, gap_title, gap_description, new_score)?;
+            self.encode_capsule(topic, gap_type, gap_title, gap_description, new_score, "")?;
         }
 
         Ok(())
@@ -537,13 +585,14 @@ mod tests {
             trendslop_reason: String::new(),
             credibility_badge: "medium".to_string(),
             source_arxiv_category: String::new(),
+            hypothesis_id: String::new(),
         }
     }
 
     #[test]
     fn test_new_capsule_creation() {
         let (pool, dir) = make_pool();
-        let result = pool.encode_capsule("test topic", "method_gap", "test capsule", "desc", 0.7);
+        let result = pool.encode_capsule("test topic", "method_gap", "test capsule", "desc", 0.7, "");
         assert!(result.is_ok());
         let content = std::fs::read_to_string(pool.jsonl_path).unwrap_or_default();
         assert!(content.contains("test topic"));
@@ -554,7 +603,7 @@ mod tests {
     #[test]
     fn test_get_capsule_by_title_found() {
         let (pool, dir) = make_pool();
-        pool.encode_capsule("test topic", "method_gap", "My Gap Title", "desc", 0.7).unwrap();
+        pool.encode_capsule("test topic", "method_gap", "My Gap Title", "desc", 0.7, "").unwrap();
         let found = pool.get_capsule_by_title("My Gap Title", "test topic");
         assert!(found.is_some());
         assert_eq!(found.unwrap().action_gap_title, "My Gap Title");
@@ -564,7 +613,7 @@ mod tests {
     #[test]
     fn test_get_capsule_by_title_not_found() {
         let (pool, dir) = make_pool();
-        pool.encode_capsule("test topic", "method_gap", "Existing Title", "desc", 0.7).unwrap();
+        pool.encode_capsule("test topic", "method_gap", "Existing Title", "desc", 0.7, "").unwrap();
         let found = pool.get_capsule_by_title("Nonexistent", "");
         assert!(found.is_none());
         let _ = std::fs::remove_dir_all(&dir);
@@ -583,7 +632,7 @@ mod tests {
     #[test]
     fn test_enhanced_record_gap_accept_updates_existing() {
         let (pool, dir) = make_pool();
-        pool.encode_capsule("topic", "method_gap", "Existing Gap", "desc", 0.5).unwrap();
+        pool.encode_capsule("topic", "method_gap", "Existing Gap", "desc", 0.5, "").unwrap();
         let initial_count = pool.load_capsules().len();
         assert_eq!(initial_count, 1);
 
