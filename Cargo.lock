@@ -3473,6 +3473,7 @@ dependencies = [
  "futures-util",
  "mockito",
  "rairos-core",
+ "regex",
  "reqwest",
  "serde",
  "serde_json",

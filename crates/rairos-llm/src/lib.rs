@@ -7,6 +7,7 @@ pub mod anthropic_stream;
 pub mod cache;
 pub mod client_async;
 pub mod claude_cli;
+pub mod gap_detector;
 pub mod ollama;
 pub mod reasoning;
 pub mod retry;
