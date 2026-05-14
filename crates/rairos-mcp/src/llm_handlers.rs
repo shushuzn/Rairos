@@ -967,10 +967,102 @@ make_research_memory_handler!(ResearchMemoryListStancesHandler, "research_memory
 make_research_memory_handler!(ResearchMemoryCheckPaperHandler, "research_memory_check_paper", "Check a paper against prior research stances", research_memory_check_paper_impl);
 make_research_memory_handler!(ResearchMemoryAnomaliesHandler, "research_memory_anomalies", "List recent research memory anomalies", research_memory_anomalies_impl);
 
+// ─── Leaderboard ───────────────────────────────────────────────────────────
+
+pub struct LeaderboardHandler;
+
+#[async_trait]
+impl ToolHandler for LeaderboardHandler {
+    fn name(&self) -> &str { "leaderboard" }
+    fn description(&self) -> &str { "Benchmark Leaderboard: ranked paper2code implementations by pass_rate + coverage" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("action".into(), ToolProperty::string("Action: status, rankings, entry (default: status)")),
+                ("arxiv_id".into(), ToolProperty::string("arXiv ID for entry action")),
+                ("sort_by".into(), ToolProperty::string("Sort: combined, pass_rate, coverage (default: combined)")),
+                ("limit".into(), ToolProperty::integer("Max results (default: 20)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let action = params.get("action").and_then(|v| v.as_str()).unwrap_or("status");
+        let arxiv_id = params.get("arxiv_id").and_then(|v| v.as_str());
+        let sort_by = params.get("sort_by").and_then(|v| v.as_str()).unwrap_or("combined");
+        let limit = params.get("limit").and_then(|v| v.as_u64()).unwrap_or(20) as usize;
+        Ok(rairos_leaderboard::leaderboard_action(action, arxiv_id, sort_by, limit))
+    }
+}
+
+// ─── Impact Leaderboard ────────────────────────────────────────────────────
+
+pub struct ImpactLeaderboardHandler;
+
+#[async_trait]
+impl ToolHandler for ImpactLeaderboardHandler {
+    fn name(&self) -> &str { "impact_leaderboard" }
+    fn description(&self) -> &str { "Get overall impact leaderboard from local database" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("limit".into(), ToolProperty::integer("Max results (default: 20)")),
+                ("year_min".into(), ToolProperty::integer("Minimum year (default: 2020)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let limit = params.get("limit").and_then(|v| v.as_u64()).unwrap_or(20) as usize;
+        let year_min = params.get("year_min").and_then(|v| v.as_u64()).unwrap_or(2020) as i32;
+        // Use the Rust impact module from rairos-llm
+        // For now, delegate to the leaderboard handler with rankings action
+        Ok(rairos_leaderboard::leaderboard_action("rankings", None, "combined", limit))
+    }
+}
+
+// ─── Claim Graph ───────────────────────────────────────────────────────────
+
+pub struct ClaimGraphHandler;
+
+#[async_trait]
+impl ToolHandler for ClaimGraphHandler {
+    fn name(&self) -> &str { "claim_graph" }
+    fn description(&self) -> &str { "Cross-paper numerical claim tracking with contradiction detection" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("action".into(), ToolProperty::string("Action: status, add_claim, add_edge, contradictions (default: status)")),
+                ("paper_id".into(), ToolProperty::string("Paper ID for add_claim")),
+                ("claim_type".into(), ToolProperty::string("Claim type: accuracy, efficiency, scalability, etc.")),
+                ("value".into(), ToolProperty::string("Numeric value of the claim")),
+                ("source_text".into(), ToolProperty::string("Source text for the claim")),
+                ("from_paper".into(), ToolProperty::string("Source paper ID for edge")),
+                ("to_paper".into(), ToolProperty::string("Target paper ID for edge")),
+                ("improvement_ratio".into(), ToolProperty::string("Improvement ratio for improvement edges")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let action = params.get("action").and_then(|v| v.as_str()).unwrap_or("status");
+        let paper_id = params.get("paper_id").and_then(|v| v.as_str());
+        let claim_type = params.get("claim_type").and_then(|v| v.as_str());
+        let value = params.get("value").and_then(|v| v.as_f64());
+        let source_text = params.get("source_text").and_then(|v| v.as_str());
+        let from_paper = params.get("from_paper").and_then(|v| v.as_str());
+        let to_paper = params.get("to_paper").and_then(|v| v.as_str());
+        let improvement_ratio = params.get("improvement_ratio").and_then(|v| v.as_f64());
+        Ok(rairos_claimgraph_py::claim_graph_action(
+            action, paper_id, claim_type, value, source_text, from_paper, to_paper, improvement_ratio,
+        ))
+    }
+}
+
 // ─── Register ───────────────────────────────────────────────────────────────
 
 pub async fn register_llm_handlers(server: &crate::McpServer) {
-    tracing::debug!("registering 20 llm-backed MCP tool handlers");
+    tracing::debug!("registering 23 llm-backed MCP tool handlers");
     server.register(BriefingGenerateHandler).await;
     server.register(LitReviewGenerateHandler).await;
     server.register(SlidesGenerateHandler).await;
@@ -994,6 +1086,9 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(ResearchMemoryListStancesHandler).await;
     server.register(ResearchMemoryCheckPaperHandler).await;
     server.register(ResearchMemoryAnomaliesHandler).await;
+    server.register(LeaderboardHandler).await;
+    server.register(ImpactLeaderboardHandler).await;
+    server.register(ClaimGraphHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────

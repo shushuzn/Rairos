@@ -16,6 +16,8 @@ rairos-insight-evolution = { path = "../rairos-insight-evolution" }
 rairos-insight-tracker = { path = "../rairos-insight-tracker" }
 rairos-crossover = { path = "../rairos-crossover" }
 rairos-research-memory = { path = "../rairos-research-memory" }
+rairos-leaderboard = { path = "../rairos-leaderboard" }
+rairos-claimgraph = { path = "../rairos-claimgraph" }
 dirs = "5"
 uuid = { version = "1.0", features = ["v4"] }
 rand = "0.8"
