@@ -126,9 +126,11 @@ git push
 
 | Source | Count | Tools |
 |--------|-------|-------|
-| Core Rust | 24 | paper_search/ingest/query/chat/recommend, tag_add/remove/list/**tag_all**, trends_detect_trending/**predict_next/top_predictions/compare_tags**, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch |
-| LLM-backed Rust | 34 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create/list/update_step/revise, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, **research_run** |
+| Core Rust | 24 | paper_search/ingest/query/chat/recommend, tag_add/remove/list/tag_all, trends_detect_trending/predict_next/top_predictions/compare_tags, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch |
+| LLM-backed Rust | 34 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create/list/update_step/revise, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, research_run |
 | Python fallback | 8 | chart_query, paper2code_run, research_agent_*, hypothesis_generate/list |
+
+rairos_mcp.py: **1971 → 879 行** (1092 行死代码已清理)
 
 ### Performance Benchmarks
 

@@ -97,6 +97,7 @@ class TestToolRouting:
         "review_simulate", "gene_pool_watcher", "replication_compare",
         "routeplan_list", "routeplan_update_step", "routeplan_revise",
         "research_run",
+        "paper_analyze", "routeplan_create",
     }
 
     TOOL_NAMES_IN_HANDLER = [
@@ -313,9 +314,9 @@ class TestPythonFallback:
     """Verify Python-only tools still work through the fallback dispatch."""
 
     def test_python_fallback_still_works(self):
-        """Python-only tools (like tag_all) should return results, not UNKNOWN_TOOL."""
-        resp = handle_call_tool("tag_all", {})
-        # tag_all is Python-only — should not return UNKNOWN_TOOL
+        """Python-only tools (like chart_query) should return results, not UNKNOWN_TOOL."""
+        resp = handle_call_tool("chart_query", {"paper_id": "test", "action": "list"})
+        # chart_query is Python-only — should not return UNKNOWN_TOOL
         assert "error" not in resp or resp.get("error", {}).get("code") != "UNKNOWN_TOOL", (
             f"Python fallback failed: {resp}"
         )
