@@ -1063,10 +1063,54 @@ impl ToolHandler for ClaimGraphHandler {
     }
 }
 
+// ─── Hypothesis Generate ──────────────────────────────────────────────────
+
+pub struct HypothesisGenerateHandler;
+
+#[async_trait]
+impl ToolHandler for HypothesisGenerateHandler {
+    fn name(&self) -> &str { "hypothesis_generate" }
+    fn description(&self) -> &str { "Generate testable research hypotheses from topic + gap context with experiment designs, risk assessment, and scoring" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("topic".into(), ToolProperty::string("Research topic")),
+                ("gap_context".into(), ToolProperty::string("Context from gap detection (optional)")),
+                ("gap_type".into(), ToolProperty::string("Type of gap (optional, auto-detected from context)")),
+                ("creative".into(), ToolProperty::string("Generate creative cross-domain hypotheses (true/false, default false)")),
+            ].into_iter().collect(),
+            vec!["topic".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let topic = params["topic"].as_str().ok_or("Missing required parameter: topic")?;
+        let gap_context = params.get("gap_context").and_then(|v| v.as_str()).unwrap_or("");
+        let creative = params.get("creative").and_then(|v| v.as_str()).unwrap_or("false") == "true";
+
+        // Try LLM-enhanced path if client available
+        if let Some(client) = llm_client() {
+            let gen = rairos_research::hypothesis_generator::HypothesisGenerator::new();
+            let result = gen.generate_llm(
+                client.as_ref(), llm_model(), topic, gap_context, creative,
+            ).await;
+            return Ok(serde_json::to_value(result).unwrap_or_else(|_| serde_json::json!({
+                "topic": topic, "summary": "Error serializing result", "hypotheses": []
+            })));
+        }
+
+        // No LLM: template-only fallback
+        let gen = rairos_research::hypothesis_generator::HypothesisGenerator::new();
+        let result = gen.generate(topic, gap_context, creative);
+        Ok(serde_json::to_value(result).unwrap_or_else(|_| serde_json::json!({
+            "topic": topic, "summary": "Error serializing result", "hypotheses": []
+        })))
+    }
+}
+
 // ─── Register ───────────────────────────────────────────────────────────────
 
 pub async fn register_llm_handlers(server: &crate::McpServer) {
-    tracing::debug!("registering 23 llm-backed MCP tool handlers");
+    tracing::debug!("registering 24 llm-backed MCP tool handlers");
     server.register(BriefingGenerateHandler).await;
     server.register(LitReviewGenerateHandler).await;
     server.register(SlidesGenerateHandler).await;
@@ -1104,6 +1148,7 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(RoutePlanUpdateStepHandler).await;
     server.register(RoutePlanReviseHandler).await;
     server.register(ResearchRunHandler).await;
+    server.register(HypothesisGenerateHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────

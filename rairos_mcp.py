@@ -465,63 +465,6 @@ def tool_research_agent_trigger(topic: Optional[str] = None) -> Dict:
         return error_response("AGENT_ERROR", str(e))
 
 
-def tool_hypothesis_generate(
-    topic: str,
-    gap_context: str = "",
-    gap_type: str = "",
-    creative: bool = False,
-) -> Dict:
-    """Generate testable research hypotheses from gap + topic."""
-    try:
-        from llm.research.hypothesis_generator import HypothesisGenerator
-
-        gen = HypothesisGenerator()
-        result = gen.generate(
-            topic=topic,
-            gap_context=gap_context,
-            use_llm=True,
-            creative=creative,
-        )
-
-        return success_response(
-            {
-                "topic": topic,
-                "summary": result.summary,
-                "hypotheses": [
-                    {
-                        "id": h.id,
-                        "title": h.title,
-                        "type": h.hypothesis_type.value,
-                        "core_statement": h.core_statement,
-                        "based_on": h.based_on,
-                        "novelty_score": h.novelty_score,
-                        "feasibility_score": h.feasibility_score,
-                        "experiment_design": {
-                            "baseline": h.experiment_design.baseline,
-                            "variables": h.experiment_design.variables,
-                            "controls": h.experiment_design.controls,
-                            "evaluation_metrics": h.experiment_design.evaluation_metrics,
-                            "expected_results": h.experiment_design.expected_results,
-                        },
-                        "risk": {
-                            "technical": h.risk_assessment.technical_risk.value
-                            if h.risk_assessment
-                            else "unknown",
-                            "hypothesis": h.risk_assessment.hypothesis_risk.value
-                            if h.risk_assessment
-                            else "unknown",
-                        }
-                        if h.risk_assessment
-                        else None,
-                    }
-                    for h in result.hypotheses
-                ],
-            }
-        )
-
-    except Exception as e:
-        logger.error(f"hypothesis_generate error: {e}")
-        return error_response("HYPOTHESIS_ERROR", str(e))
 
 
 def tool_hypothesis_list() -> Dict:
@@ -745,13 +688,6 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
         elif name == "research_agent_trigger":
             # type: ignore[arg-type]
             result = tool_research_agent_trigger(topic=arguments.get("topic"))
-        elif name == "hypothesis_generate":
-            result = tool_hypothesis_generate(  # type: ignore[arg-type]
-                topic=arguments.get("topic"),
-                gap_context=arguments.get("gap_context", ""),
-                gap_type=arguments.get("gap_type", ""),
-                creative=arguments.get("creative", False),
-            )
         elif name == "hypothesis_list":
             # type: ignore[arg-type]
             result = tool_hypothesis_list()

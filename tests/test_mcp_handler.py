@@ -98,6 +98,7 @@ class TestToolRouting:
         "routeplan_list", "routeplan_update_step", "routeplan_revise",
         "research_run",
         "paper_analyze", "routeplan_create",
+        "hypothesis_generate",
     }
 
     TOOL_NAMES_IN_HANDLER = [
@@ -139,7 +140,6 @@ class TestToolRouting:
         "claim_graph",
         "research_agent_status",
         "research_agent_trigger",
-        "hypothesis_generate",
         "hypothesis_list",
         "experiment_record",
         "litreview_generate",

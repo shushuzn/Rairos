@@ -3521,6 +3521,7 @@ dependencies = [
  "rairos-parser",
  "rairos-pdf",
  "rairos-replication-checker",
+ "rairos-research",
  "rairos-research-memory",
  "rairos-review-simulator",
  "rairos-trends",
