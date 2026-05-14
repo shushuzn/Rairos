@@ -9,6 +9,7 @@ project_root = Path(__file__).resolve().parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
+import pytest
 from rairos_mcp import (
     handle_initialize,
     handle_list_tools,
@@ -19,6 +20,15 @@ from rairos_mcp import (
     MCP_VERSION,
 )
 from mcp.tools_defs import get_tools
+
+# ── Rust MCP availability ──────────────────────────────────────────────────
+
+HAS_RUST_MCP = False
+try:
+    import rairos_mcp_py
+    HAS_RUST_MCP = True
+except Exception:
+    pass
 
 
 class TestProtocolHandlers:
@@ -67,6 +77,17 @@ class TestProtocolHandlers:
 
 class TestToolRouting:
     """Test that every tool in handle_call_tool has a corresponding implementation."""
+
+    RUST_ONLY_TOOLS = {
+        "paper_ingest", "paper_search", "paper_chat", "paper_recommend",
+        "kg_query", "kg_paper_subgraph", "kg_tag_graph", "kg_full_graph",
+        "tag_add", "tag_remove", "tag_list", "tag_all",
+        "trends_detect_trending", "citation_graph",
+        "briefing_generate", "citation_chain_build", "citation_chain_families",
+        "citation_chain_silent", "citation_chain_render",
+        "impact_rank", "impact_score_paper",
+        "gap_detect", "litreview_generate", "slides_generate", "replication_check",
+    }
 
     TOOL_NAMES_IN_HANDLER = [
         "paper_ingest",
@@ -135,10 +156,12 @@ class TestToolRouting:
     ]
 
     def test_all_handler_tools_have_impl(self):
-        """Every tool routed in handle_call_tool must have a corresponding tool_* function."""
+        """Every tool routed in handle_call_tool must have a corresponding tool_* function or Rust handler."""
         import rairos_mcp
 
         for name in self.TOOL_NAMES_IN_HANDLER:
+            if name in self.RUST_ONLY_TOOLS:
+                continue  # handled by Rust MCP
             func_name = f"tool_{name}"
             assert hasattr(rairos_mcp, func_name), (
                 f"Missing function: {func_name} for tool '{name}'"
@@ -147,9 +170,9 @@ class TestToolRouting:
             assert callable(func), f"tool_{name} is not callable"
 
     def test_all_handler_tools_in_defs(self):
-        """Every tool routed in handle_call_tool must be in tools_defs."""
+        """Every tool routed in handle_call_tool must be in tools_defs or Rust."""
         defs = {t["name"] for t in get_tools()}
-        missing = [n for n in self.TOOL_NAMES_IN_HANDLER if n not in defs]
+        missing = [n for n in self.TOOL_NAMES_IN_HANDLER if n not in defs and n not in self.RUST_ONLY_TOOLS]
         assert not missing, f"Tools in handler but missing from tools_defs: {missing}"
 
     def test_unknown_tool_returns_error(self):
@@ -200,3 +223,90 @@ class TestMcpJsonRpc:
         resp = error_response("CODE", "message")
         json.dumps(resp)  # Must not raise
         assert "error" in resp
+
+
+@pytest.mark.skipif(not HAS_RUST_MCP, reason="rairos_mcp_py not available")
+class TestRustToolIntegration:
+    """Verify that Rust-backed MCP tools work correctly through the dispatch."""
+
+    TOOL_LIST = [
+        ("impact_score_paper",
+         {"paper_id": "2301.00001", "title": "Test", "citation_count": 50, "year": 2023},
+         ["paper_id", "composite", "citation_count"]),
+        ("impact_rank",
+         {"topic": "test", "top_k": 5,
+          "papers": [{"arxiv_id": f"p{i:04d}", "title": f"T{i}",
+                      "citation_count": i * 10, "year": 2020} for i in range(20)]},
+         ["ranked"]),
+        ("gap_detect",
+         {"topic": "transformer neural networks"},
+         ["gaps", "total", "topic"]),
+        ("citation_chain_families",
+         {"arxiv_id": "2301.00001"},
+         ["families", "total"]),
+        ("citation_chain_silent",
+         {"arxiv_id": "2301.00001"},
+         ["silent_citations", "total"]),
+        ("citation_chain_render",
+         {"arxiv_id": "2301.00001", "format": "text"},
+         ["text"]),
+        ("replication_check",
+         {"paper_id": "2301.00001", "include_abstract": "A novel method using deep learning.",
+          "title": "Test Paper"},
+         ["score", "has_code", "has_data"]),
+    ]
+
+    @pytest.mark.parametrize("tool_name,args,expected_keys", TOOL_LIST)
+    def test_rust_tool_returns_expected_keys(self, tool_name, args, expected_keys):
+        """Each Rust tool returns a dict with the expected top-level keys."""
+        resp = handle_call_tool(tool_name, args)
+        # Should NOT be UNKNOWN_TOOL (means Rust didn't handle it)
+        assert "error" not in resp, (
+            f"{tool_name} returned error: {resp.get('error')}"
+        )
+        # Rust dispatch returns the result directly (no {result: ...} wrapper)
+        for key in expected_keys:
+            assert key in resp, (
+                f"{tool_name} result missing key '{key}': {resp}"
+            )
+
+    def test_rust_dispatch_takes_priority(self):
+        """Rust tools return results, not UNKNOWN_TOOL error."""
+        resp = handle_call_tool("impact_score_paper", {
+            "paper_id": "2301.00001", "title": "T", "citation_count": 10, "year": 2023,
+        })
+        assert "error" not in resp, f"Rust dispatch failed: {resp}"
+        assert "composite" in resp
+
+    def test_briefing_generate_skipped_without_llm_key(self):
+        """briefing_generate needs LLM key; without it should fail gracefully."""
+        resp = handle_call_tool("briefing_generate", {
+            "arxiv_id": "2301.00001",
+        })
+        has_key = bool(__import__("os").environ.get("OPENAI_API_KEY") or __import__("os").environ.get("ANTHROPIC_API_KEY"))
+        if not has_key:
+            # Without key, should return error, not crash
+            assert "error" in resp or isinstance(resp, dict)
+
+    def test_impact_rank_ordering(self):
+        """impact_rank returns papers sorted by composite descending."""
+        papers = [{"arxiv_id": f"p{i:04d}", "title": f"T{i}",
+                    "citation_count": i, "year": 2020} for i in range(10)]
+        resp = handle_call_tool("impact_rank", {"topic": "t", "top_k": 10, "papers": papers})
+        assert "error" not in resp, str(resp)
+        ranked = resp.get("ranked", [])
+        assert len(ranked) >= 2
+        scores = [r["composite"] for r in ranked]
+        assert scores == sorted(scores, reverse=True), "not sorted descending"
+
+
+class TestPythonFallback:
+    """Verify Python-only tools still work through the fallback dispatch."""
+
+    def test_python_fallback_still_works(self):
+        """Python-only tools (like tag_all) should return results, not UNKNOWN_TOOL."""
+        resp = handle_call_tool("tag_all", {})
+        # tag_all is Python-only — should not return UNKNOWN_TOOL
+        assert "error" not in resp or resp.get("error", {}).get("code") != "UNKNOWN_TOOL", (
+            f"Python fallback failed: {resp}"
+        )

@@ -291,16 +291,18 @@ impl ToolHandler for ImpactScorePaperHandler {
     fn description(&self) -> &str { "Score a paper's impact" }
     fn input_schema(&self) -> ToolInputSchema {
         ToolInputSchema::object(
-            vec![("arxiv_id".into(), ToolProperty::string("arXiv ID"))].into_iter().collect(),
-            vec!["arxiv_id".into()],
+            vec![("paper_id".into(), ToolProperty::string("Paper ID"))].into_iter().collect(),
+            vec!["paper_id".into()],
         )
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
-        let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
-        let title = params.get("title").and_then(|v| v.as_str()).unwrap_or(arxiv_id);
+        let paper_id = params.get("paper_id").and_then(|v| v.as_str())
+            .or_else(|| params.get("arxiv_id").and_then(|v| v.as_str()))
+            .ok_or("Missing paper_id or arxiv_id")?;
+        let title = params.get("title").and_then(|v| v.as_str()).unwrap_or(paper_id);
         let citations = params.get("citation_count").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
         let year = params.get("year").and_then(|v| v.as_i64()).unwrap_or(2024) as i32;
-        let score = impact::score_paper(arxiv_id, title, citations, year, 2026);
+        let score = impact::score_paper(paper_id, title, citations, year, 2026);
         Ok(serde_json::json!(score))
     }
 }
@@ -358,7 +360,9 @@ impl ToolHandler for ReplicationCheckHandler {
         )
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
-        let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
+        let arxiv_id = params.get("arxiv_id").and_then(|v| v.as_str())
+            .or_else(|| params.get("paper_id").and_then(|v| v.as_str()))
+            .ok_or("Missing arxiv_id or paper_id")?;
         let abstract_text = params.get("include_abstract").and_then(|v| v.as_str()).unwrap_or("");
         let title = params.get("title").and_then(|v| v.as_str()).unwrap_or(arxiv_id);
 
