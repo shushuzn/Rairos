@@ -7,6 +7,7 @@
 pub mod arxiv_search;
 pub mod gene_pool;
 pub mod hypothesis_generator;
+pub mod skill_discovery;
 pub mod snapstate;
 
 use rairos_core::{Database, Paper, ResearchGap};
@@ -772,8 +773,15 @@ pub trait ResearchBackend {
             &gap.description,
         )
     }
-    fn on_thought(&self, thought: &AgentThought) -> Result<(), String>;
-    fn find_skills(&self, query: &str) -> Result<Vec<String>, String>;
+    fn on_thought(&self, thought: &AgentThought) -> Result<(), String> {
+        eprintln!("[{}] {}: {}", thought.iteration, thought.role, thought.content);
+        Ok(())
+    }
+    fn find_skills(&self, query: &str) -> Result<Vec<String>, String> {
+        let skills = crate::skill_discovery::discover_skills();
+        let matched = crate::skill_discovery::match_skills(query, &skills);
+        Ok(matched.into_iter().map(|s| s.name).collect())
+    }
     fn checkpoint(&self, session_json: &str) -> Result<(), String> {
         if let Ok(session) = serde_json::from_str::<crate::snapstate::SnapSession>(session_json) {
             let store = crate::snapstate::Snapstate::new(None);
