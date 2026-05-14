@@ -1103,6 +1103,7 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(RoutePlanListHandler).await;
     server.register(RoutePlanUpdateStepHandler).await;
     server.register(RoutePlanReviseHandler).await;
+    server.register(ResearchRunHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────
@@ -1611,6 +1612,73 @@ impl ToolHandler for RoutePlanReviseHandler {
             "revision_count": new_plan.revision_count,
             "step_count": new_plan.steps.len(),
             "progress": new_plan.get_progress(),
+        }))
+    }
+}
+
+// ─── Research Run ─────────────────────────────────────────────────────────
+
+pub struct ResearchRunHandler;
+
+#[async_trait]
+impl ToolHandler for ResearchRunHandler {
+    fn name(&self) -> &str { "research_run" }
+    fn description(&self) -> &str { "Search arXiv, save papers to DB, generate report" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("topic".into(), ToolProperty::string("Research topic to search for")),
+                ("limit".into(), ToolProperty::integer("Maximum results (default 5, max 20)")),
+            ].into_iter().collect(),
+            vec!["topic".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let topic = params["topic"].as_str().ok_or("Missing topic")?;
+        let limit = (params["limit"].as_u64().unwrap_or(5) as usize).min(20);
+
+        // Search arXiv
+        let arxiv_url = "http://export.arxiv.org/api/query";
+        let url = format!("{}?search_query=all:{}&start=0&max_results={}", arxiv_url, topic.replace(' ', "+"), limit);
+        let resp = reqwest::get(&url).await.map_err(|e| format!("arXiv request failed: {}", e))?;
+        let text = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
+        let papers = crate::handlers::parse_arxiv_response(&text);
+
+        // Save to DB
+        let db_path = std::env::var("RAIROS_DB").unwrap_or_else(|_| "rairos.db".to_string());
+        let db = Database::open(&db_path).map_err(|e| format!("DB error: {}", e))?;
+
+        let mut saved = 0;
+        for p in &papers {
+            let arxiv_id = p["arxiv_id"].as_str().unwrap_or("");
+            if arxiv_id.is_empty() { continue; }
+            let title = p["title"].as_str().unwrap_or("");
+            let abstract_text = p["abstract"].as_str().unwrap_or("");
+            let authors: Vec<String> = p["authors"].as_array()
+                .map(|a| a.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+            let categories: Vec<String> = p["categories"].as_array()
+                .map(|c| c.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+                .unwrap_or_default();
+
+            let paper = rairos_core::Paper::with_metadata(
+                Some(arxiv_id.to_string()),
+                title.to_string(),
+                abstract_text.to_string(),
+                authors,
+                categories,
+                rairos_core::PaperMetadata::default(),
+            );
+            if db.insert_paper(&paper).is_ok() {
+                saved += 1;
+            }
+        }
+
+        Ok(serde_json::json!({
+            "topic": topic,
+            "papers_found": papers.len(),
+            "papers_saved": saved,
+            "status": "completed",
         }))
     }
 }

@@ -96,6 +96,7 @@ class TestToolRouting:
         "review_list", "experiment_record", "litreview_list",
         "review_simulate", "gene_pool_watcher", "replication_compare",
         "routeplan_list", "routeplan_update_step", "routeplan_revise",
+        "research_run",
     }
 
     TOOL_NAMES_IN_HANDLER = [
