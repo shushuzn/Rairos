@@ -1,0 +1,22 @@
+        # ── Try Rust MCP server first (faster, no dynamic import) ────────────
+        result = None
+        try:
+            import json as _json
+            from rairos_mcp_py import call_tool_rs
+
+            _result_json = call_tool_rs(name, _json.dumps(arguments))
+            if _result_json is not None:
+                _parsed = _json.loads(_result_json)
+                # Rust MCP returns {"content": [{"type": "text", "text": "..."}]}
+                _content = _parsed.get("content", [])
+                if _content and isinstance(_content, list):
+                    _text = _content[0].get("text", "{}")
+                    return success_response(_json.loads(_text))
+                return success_response(_parsed)
+        except Exception:
+            pass
+
+        if result is None:
+            result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
+
+        return result

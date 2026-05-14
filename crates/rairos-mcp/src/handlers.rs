@@ -784,6 +784,134 @@ impl ToolHandler for CiteFetchHandler {
     }
 }
 
+// ─── Chart Query (figures & tables from KG) ───────────────────────────────
+
+pub struct ChartQueryHandler;
+
+#[async_trait]
+impl ToolHandler for ChartQueryHandler {
+    fn name(&self) -> &str { "chart_query" }
+    fn description(&self) -> &str { "Query figures and tables for a paper from the knowledge graph" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("paper_id".into(), ToolProperty::string("Paper ID (entity_id) to query charts for")),
+                ("action".into(), ToolProperty::string("Action: list, figure, or table")),
+                ("label".into(), ToolProperty::string("Figure/table label (required for figure/table actions)")),
+            ].into_iter().collect(),
+            vec!["paper_id".into(), "action".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let paper_id = params["paper_id"].as_str().ok_or("Missing paper_id")?;
+        let action = params["action"].as_str().ok_or("Missing action")?;
+        let label = params.get("label").and_then(|v| v.as_str());
+
+        // Initialize KG
+        let db_path = rairos_kg::KnowledgeGraph::db_path();
+        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
+            .map_err(|e| format!("KG init failed: {}", e))?;
+        let db = graph.database().ok_or("KG database not available")?;
+
+        // Find paper node
+        let paper_node = db.get_node_by_entity("paper", paper_id)
+            .map_err(|e| format!("KG query error: {}", e))?
+            .ok_or_else(|| format!("Paper not found: {}", paper_id))?;
+
+        // Get figure and table edges
+        let fig_edges = db.get_edges_by_node(&paper_node.id, "out", Some("has_figure"))
+            .map_err(|e| format!("KG edge query: {}", e))?;
+        let tbl_edges = db.get_edges_by_node(&paper_node.id, "out", Some("has_table"))
+            .map_err(|e| format!("KG edge query: {}", e))?;
+
+        // Fetch figure nodes
+        let mut figures = Vec::new();
+        for edge in &fig_edges {
+            if let Ok(Some(node)) = db.get_node(&edge.target) {
+                let props = &node.properties;
+                figures.push(serde_json::json!({
+                    "label": node.label,
+                    "page": props.get("page").and_then(|v| v.as_u64()).unwrap_or(0) + 1,
+                    "description": props.get("description").and_then(|v| v.as_str()).unwrap_or(""),
+                }));
+            }
+        }
+
+        // Fetch table nodes
+        let mut tables = Vec::new();
+        for edge in &tbl_edges {
+            if let Ok(Some(node)) = db.get_node(&edge.target) {
+                let props = &node.properties;
+                tables.push(serde_json::json!({
+                    "label": node.label,
+                    "page": props.get("page").and_then(|v| v.as_u64()).unwrap_or(0) + 1,
+                    "description": props.get("description").and_then(|v| v.as_str()).unwrap_or(""),
+                }));
+            }
+        }
+
+        match action {
+            "list" => Ok(serde_json::json!({
+                "paper_id": paper_id,
+                "figures": figures,
+                "tables": tables,
+            })),
+            "figure" => {
+                let fig_label = label.ok_or("Missing label for figure action")?;
+                let fig = figures.into_iter().find(|f| {
+                    f.get("label").and_then(|v| v.as_str()).map_or(false, |l| {
+                        l.to_lowercase().contains(&fig_label.to_lowercase())
+                    })
+                });
+                match fig {
+                    Some(f) => {
+                        // Fetch full figure details
+                        let fig_node = db.get_node_by_entity("figure", fig_label)
+                            .map_err(|e| format!("KG query: {}", e))?;
+                        let props = fig_node.as_ref().and_then(|n| n.properties.as_object()).cloned().unwrap_or_default();
+                        Ok(serde_json::json!({
+                            "paper_id": paper_id,
+                            "type": "figure",
+                            "label": f["label"],
+                            "page": f["page"],
+                            "caption": props.get("caption").and_then(|v| v.as_str()).unwrap_or(""),
+                            "description": f["description"],
+                            "image_path": props.get("image_path").and_then(|v| v.as_str()).unwrap_or(""),
+                        }))
+                    }
+                    None => Err(format!("Figure not found: {}", fig_label)),
+                }
+            }
+            "table" => {
+                let tbl_label = label.ok_or("Missing label for table action")?;
+                let tbl = tables.into_iter().find(|t| {
+                    t.get("label").and_then(|v| v.as_str()).map_or(false, |l| {
+                        l.to_lowercase().contains(&tbl_label.to_lowercase())
+                    })
+                });
+                match tbl {
+                    Some(t) => {
+                        let tbl_node = db.get_node_by_entity("table", tbl_label)
+                            .map_err(|e| format!("KG query: {}", e))?;
+                        let props = tbl_node.as_ref().and_then(|n| n.properties.as_object()).cloned().unwrap_or_default();
+                        Ok(serde_json::json!({
+                            "paper_id": paper_id,
+                            "type": "table",
+                            "label": t["label"],
+                            "page": t["page"],
+                            "caption": props.get("caption").and_then(|v| v.as_str()).unwrap_or(""),
+                            "description": t["description"],
+                            "markdown": props.get("markdown").and_then(|v| v.as_str()).unwrap_or(""),
+                        }))
+                    }
+                    None => Err(format!("Table not found: {}", tbl_label)),
+                }
+            }
+            _ => Err(format!("Unknown action: {}", action)),
+        }
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
@@ -808,6 +936,7 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(TrendsTopPredictionsHandler).await;
     server.register(TrendsCompareTagsHandler).await;
     server.register(CiteFetchHandler).await;
+    server.register(ChartQueryHandler).await;
     crate::llm_handlers::register_llm_handlers(server).await;
 }
 

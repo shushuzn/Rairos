@@ -440,6 +440,7 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
                     }
 
         # ── Try Rust MCP server first (faster, no dynamic import) ────────────
+        result = None
         try:
             import json as _json
             from rairos_mcp_py import call_tool_rs
@@ -456,13 +457,10 @@ def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ign
         except Exception:
             pass
 
-        if name == "chart_query":
-            result = tool_chart_query(  # type: ignore[arg-type]
-                paper_id=arguments.get("paper_id"),
-                action=arguments.get("action"),
-                label=arguments.get("label"),
-            )
         else:
+            result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
+
+        if result is None:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 
         return result
