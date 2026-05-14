@@ -1015,175 +1015,136 @@ class DeepResearchAgent:
 
     # -------------------------------------------------------------------------
 
-    def run(self) -> DeepResearchResult:
-        """Run the deep research agent synchronously."""
+def _make_json_callback(self, method):
+    import json
+    def cb(json_str):
+        args = json.loads(json_str) if json_str else {}
+        if isinstance(args, dict):
+            result = method(**args)
+        else:
+            result = method(args)
+        return json.dumps(result) if not isinstance(result, str) else result
+    return cb
 
-        if self.session is None:
-            self.start()
+def _make_json_list_callback(self, method):
+    import json
+    def cb(json_str):
+        items = json.loads(json_str) if json_str else []
+        result = method(items)
+        return json.dumps([item._asdict() if hasattr(item, '_asdict') else item.__dict__ for item in result])
+    return cb
 
-        assert self.session is not None
+import json as _json
 
-        self._setup_signal_handlers()
+def run(self) -> DeepResearchResult:
+    from rairos_research_py import PyResearchAgent
 
-        start_time = time.time()
-
-        iteration = self.session.iteration
-
-        self._log(f"Starting run from iteration {iteration}")
-
-        self._print_step("START", f"topic={self.query!r}, max_iter={self.max_iterations}")
-
-        while iteration < self.max_iterations and not self._stop_requested:
-            self.session.iteration = iteration
-
-            self.snapstate.save(self.session)
-
-            # Step 0: Skill check - load relevant skills before planning
-
-            matched_skills = self._find_skills(self.query)
-
-            if matched_skills:
-                skill_names = [s.name for s in matched_skills[:3]]
-
-                self._record_thought(
-                    "planner",
-                    f"Matched skills: {skill_names}",
-                    iteration,
-                )
-
-            # Step 1: Plan (streaming variant for extended-thinking models)
-            if self.use_streaming_reasoning and self._streaming_reasoner:
-                search_query = self._stream_plan_search(iteration)
-            else:
-                search_query = self._plan_next_search(iteration)
-
-            # Plan-mode approval gate
-            if self.mode == "plan":
-                confirmed = self._approve_step(
-                    iteration, "planner", f"Search query: {search_query}"
-                )
-                if not confirmed:
-                    self.session.status = "paused"
-                    self.snapstate.save(self.session)
-                    break
-
-            # Checkpoint after Plan step (every N steps)
-            self._checkpoint_counter += 1
-            if self._checkpoint_counter % self.checkpoint_every_n_steps == 0:
-                self._auto_checkpoint()
-            # Periodic time-based checkpoint
-            if time.time() - self._last_checkpoint_time >= self.checkpoint_interval_seconds:
-                self._auto_checkpoint()
-                self._last_checkpoint_time = time.time()
-
-            # Step 2: Search
-            self._print_step("SEARCH", f"q={search_query!r}")
-
-            papers = self._search_papers(search_query, iteration)
-
-            if not papers:
-                self._log("No papers found, trying alternative query")
-
-                papers = self._search_papers(self.query, iteration)
-
-            if self.session:
-                self.session.search_history.append(search_query)
-
-            if not papers:
-                iteration += 1
-
-                continue
-
-            # Step 3: Extract
-            self._print_step("EXTRACT", f"{len(papers)} papers")
-
-            snapshots = self._extract_papers(papers, iteration)
-
-            if self.session:
-                self.session.papers.extend(snapshots)
-
-            # Workspace snapshot: capture generated code after extract phase
-
-            if self.workspace_snapshot and self.session:
-                code_paths: List[Path] = []
-
-                output_base = Path.cwd() / "output"
-
-                if output_base.exists():
-                    for ext in [".py", ".md", ".json", ".txt"]:
-                        code_paths.extend(output_base.glob(f"*{ext}"))
-
-                if code_paths:
-                    self.workspace_snapshot.capture(
-                        session_id=self.session.session_id,
-                        step=iteration,
-                        paths=code_paths,
-                        metadata={"phase": "extract", "papers_found": len(papers)},
-                    )
-
-            # Step 4: Analyze gaps
-            self._print_step("ANALYZE", f"{len(snapshots)} snapshots")
-
-            gap_snapshots = self._analyze_gaps(snapshots, iteration)
-
-            if self.session:
-                self.session.gaps.extend(gap_snapshots)
-
-            # Checkpoint after Analyze gaps step (every N steps)
-            self._checkpoint_counter += 1
-            if self._checkpoint_counter % self.checkpoint_every_n_steps == 0:
-                self._auto_checkpoint()
-            # Periodic time-based checkpoint
-            if time.time() - self._last_checkpoint_time >= self.checkpoint_interval_seconds:
-                self._auto_checkpoint()
-                self._last_checkpoint_time = time.time()
-
-            # Step 5: Reflect
-
-            should_continue, reason = self._reflect(iteration)
-
-            self._record_thought("reflector", reason, iteration)
-
-            self._log(f"[iter {iteration}] Reflect: {reason}")
-
-            if not should_continue:
-                break
-
-            iteration += 1
-
-            self.snapstate.save(self.session)
-
-        # Encode accepted gaps into Gene Pool
-
-        self._encode_accepted_gaps()
-
-        # Finalize session
-
-        if self.session:
-            self.session.status = "completed" if not self._stop_requested else "paused"
-
-            self.session.iteration = iteration
-
-            self.snapstate.save(self.session)
-
-        duration = time.time() - start_time
-
-        result = DeepResearchResult(
-            session_id=self.session.session_id if self.session else "",
-            query=self.query,
-            iterations=iteration + 1,
-            papers=self.session.papers if self.session else [],
-            gaps=self.session.gaps if self.session else [],
-            thoughts=self.thoughts,
-            report=self._build_report(),
-            duration_seconds=duration,
-            status=self.session.status if self.session else "failed",
-        )
-
-        self._log(f"Run complete: {result.status}, {result.iterations} iterations, {duration:.1f}s")
-        self._print_summary(result)
-
+    def cb_stream_plan(json_str):
+        args = _json.loads(json_str)
+        if self.use_streaming_reasoning:
+            result = self._stream_plan_search(args["iteration"])
+        else:
+            result = self._plan_next_search(args["iteration"])
         return result
+
+    def cb_search_papers(json_str):
+        args = _json.loads(json_str)
+        papers = self._search_papers(args["query"], args["iteration"])
+        return _json.dumps([p.__dict__ for p in papers])
+
+    def cb_extract_paper(json_str):
+        paper_dict = _json.loads(json_str)
+        paper = Paper(**paper_dict)
+        snap = self._extract_papers([paper], 0)
+        if snap:
+            s = snap[0]
+            return _json.dumps({"arxiv_id": s.arxiv_id, "title": s.title, "abstract": s.abstract,
+                                "url": s.url, "extracted_text": s.extracted_text[:5000] if s.extracted_text else ""})
+        return "{}"
+
+    def cb_analyze_gaps(json_str):
+        snap_dicts = _json.loads(json_str)
+        snaps = [PaperSnapshot(**s) for s in snap_dicts]
+        gaps = self._analyze_gaps(snaps, 0)
+        return _json.dumps([g.__dict__ for g in gaps])
+
+    def cb_get_search_guidance(json_str):
+        args = _json.loads(json_str)
+        hint, confidence = self._get_search_guidance(args["topic"], args.get("gap_type", ""), args.get("gap_title", ""))
+        return _json.dumps({"hint": hint, "confidence": confidence})
+
+    def cb_encode_accepted_gap(json_str):
+        gap_dict = _json.loads(json_str)
+        self.tracker.record_gap_accept(
+            topic=self.query,
+            gap_type=gap_dict.get("gap_type", ""),
+            gap_title=gap_dict.get("title", ""),
+            gap_description=gap_dict.get("description", ""),
+        )
+        return ""
+
+    def cb_on_thought(json_str):
+        thought = _json.loads(json_str)
+        self._record_thought(thought.get("role", "planner"), thought.get("content", ""), thought.get("iteration", 0))
+        return ""
+
+    def cb_find_skills(json_str):
+        results = self._find_skills(json_str)
+        return _json.dumps([r.name if hasattr(r, 'name') else str(r) for r in results])
+
+    def cb_checkpoint(json_str):
+        self._auto_checkpoint()
+        return ""
+
+    def cb_new_session(json_str):
+        args = _json.loads(json_str)
+        session = self.start()
+        return _json.dumps({"session_id": session.session_id})
+
+    config = {
+        "max_iterations": self.max_iterations,
+        "max_papers_per_iteration": self.max_papers_per_iteration,
+        "verbose": self.verbose,
+        "use_streaming_reasoning": self.use_streaming_reasoning,
+        "auto_checkpoint": self.auto_checkpoint,
+        "checkpoint_every_n_steps": self.checkpoint_every_n_steps,
+        "checkpoint_interval_seconds": self.checkpoint_interval_seconds,
+    }
+
+    agent = PyResearchAgent(
+        query=self.query,
+        config_json=_json.dumps(config),
+        stream_plan=cb_stream_plan,
+        search_papers=cb_search_papers,
+        extract_paper=cb_extract_paper,
+        analyze_gaps=cb_analyze_gaps,
+        get_search_guidance=cb_get_search_guidance,
+        encode_accepted_gap=cb_encode_accepted_gap,
+        on_thought=cb_on_thought,
+        find_skills=cb_find_skills,
+        checkpoint=cb_checkpoint,
+        new_session=cb_new_session,
+    )
+
+    result_json = agent.run(mode=self.mode, stop_requested=self._stop_requested)
+    result_data = _json.loads(result_json)
+
+    # Convert dict back to DeepResearchResult
+    from research_loop.snapstate import PaperSnapshot, GapSnapshot
+    papers = [PaperSnapshot(**p) for p in result_data.get("papers", [])]
+    gaps = [GapSnapshot(**g) for g in result_data.get("gaps", [])]
+    thoughts = [AgentThought(**t) for t in result_data.get("thoughts", [])]
+    return DeepResearchResult(
+        session_id=result_data.get("session_id", ""),
+        query=result_data.get("query", ""),
+        iterations=result_data.get("iterations", 0),
+        papers=papers,
+        gaps=gaps,
+        thoughts=thoughts,
+        report=result_data.get("report", ""),
+        duration_seconds=result_data.get("duration_seconds", 0.0),
+        status=result_data.get("status", "completed"),
+    )
 
     def _build_report(self) -> str:
         """Build a markdown report from the research session."""

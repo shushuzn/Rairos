@@ -236,6 +236,7 @@ struct PyWorkspaceSnapshot {
 #[pymethods]
 impl PyWorkspaceSnapshot {
     #[new]
+    #[pyo3(signature = (base_dir=None))]
     fn new(base_dir: Option<&str>) -> Self {
         let dir = base_dir.map(PathBuf::from);
         Self {

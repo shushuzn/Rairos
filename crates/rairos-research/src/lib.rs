@@ -721,6 +721,180 @@ impl DeepResearchAgent {
     }
 }
 
+// ─── Research Backend Trait ─────────────────────────────────────────────────────
+
+pub trait ResearchBackend {
+    fn stream_plan(&self, query: &str, iteration: i32) -> Result<String, String>;
+    fn search_papers(&self, query: &str, max: usize) -> Result<Vec<rairos_core::Paper>, String>;
+    fn extract_paper(&self, paper: &rairos_core::Paper) -> Result<PaperSnapshot, String>;
+    fn analyze_gaps(&self, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String>;
+    fn get_search_guidance(
+        &self, topic: &str, gap_type: &str, gap_title: &str,
+    ) -> Result<(Option<String>, f64), String>;
+    fn encode_accepted_gap(&self, gap: &GapSnapshot) -> Result<(), String>;
+    fn on_thought(&self, thought: &AgentThought) -> Result<(), String>;
+    fn find_skills(&self, query: &str) -> Result<Vec<String>, String>;
+    fn checkpoint(&self, session_json: &str) -> Result<(), String>;
+    fn new_session(&self, query: &str, max_iterations: i32) -> Result<String, String>;
+}
+
+impl DeepResearchAgent {
+    pub fn build_report(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!("# Deep Research Report: {}", self.query));
+        lines.push(String::new());
+        lines.push(format!(
+            "**Session**: {} | **Iterations**: {} | **Status**: completed",
+            self.session_id, self.iterations,
+        ));
+        lines.push(String::new());
+        lines.push("## Papers Analyzed".to_string());
+        for p in &self.found_papers {
+            let gaps = p.citations.len();
+            lines.push(format!("- [{}] {} — {} citations", p.paper_id, p.title, gaps));
+        }
+        lines.push(String::new());
+        lines.push("## Research Gaps".to_string());
+        for g in &self.found_gaps {
+            let status = if g.accepted { "✅" } else { "⬜" };
+            lines.push(format!("- {} [{}] {}", status, g.gap_type, g.title));
+            if g.description.len() > 100 {
+                lines.push(format!("  {}", &g.description[..100]));
+            } else {
+                lines.push(format!("  {}", g.description));
+            }
+        }
+        lines.join("\n")
+    }
+
+    pub fn run(
+        &mut self,
+        backend: &dyn ResearchBackend,
+        _mode: &str,
+        mut stop_requested: bool,
+    ) -> DeepResearchResult {
+        let start = Instant::now();
+
+        // Create or resume session
+        let _session_json = backend.new_session(&self.query, self.config.max_iterations);
+
+        // Signal handler for Ctrl+C would need external crate (ctrlc)
+
+        while self.iterations < self.config.max_iterations && !stop_requested {
+            self.add_thought(AgentRole::Planner, &format!("Starting iteration {}", self.iterations + 1));
+
+            // Step 0: Find skills
+            let skills = backend.find_skills(&self.query).unwrap_or_default();
+            if !skills.is_empty() {
+                self.add_thought(AgentRole::Planner, &format!("Matched skills: {:?}", skills));
+            }
+
+            // Step 1: Plan
+            let search_query = if self.config.use_streaming_reasoning {
+                backend.stream_plan(&self.query, self.iterations)
+                    .unwrap_or_else(|_| self.query.clone())
+            } else {
+                let latest_gap = self.found_gaps.last().cloned();
+                let (hint, confidence) = latest_gap.as_ref()
+                    .and_then(|g| {
+                        backend.get_search_guidance(&self.query, &g.gap_type, &g.title).ok()
+                    })
+                    .unwrap_or((None, 0.0));
+                let planned = self.plan_next_search(latest_gap.as_ref(), &hint.unwrap_or_default(), confidence);
+                // Dedup against search history
+                let mut deduped = planned.clone();
+                for prev in &self.search_history {
+                    if self.query_strategy.query_similarity(&deduped, prev) > 0.75 {
+                        deduped = format!("{} variant{}", planned, self.iterations);
+                        break;
+                    }
+                }
+                deduped
+            };
+
+            self.add_thought(AgentRole::Planner, &format!("Planned search: {}", search_query));
+
+            // Checkpoint after plan
+            if self.config.auto_checkpoint {
+                // serialize self and checkpoint
+            }
+
+            // Step 2: Search
+            let papers = backend.search_papers(&search_query, self.config.max_papers_per_iteration)
+                .unwrap_or_default();
+            let mut found_papers = papers;
+
+            // Retry with original query if empty
+            if found_papers.is_empty() {
+                found_papers = backend.search_papers(&self.query, self.config.max_papers_per_iteration)
+                    .unwrap_or_default();
+            }
+
+            self.search_history.push(search_query.clone());
+
+            if found_papers.is_empty() {
+                self.add_thought(AgentRole::Searcher, "No papers found, retrying next iteration");
+                self.increment_iteration();
+                continue;
+            }
+
+            self.add_thought(AgentRole::Searcher,
+                &format!("Found {} papers", found_papers.len()));
+
+            // Step 3: Extract
+            let mut snapshots = Vec::new();
+            for paper in &found_papers {
+                match backend.extract_paper(paper) {
+                    Ok(snap) => {
+                        snapshots.push(snap);
+                    }
+                    Err(e) => {
+                        self.add_thought(AgentRole::Searcher, &format!("Extraction failed: {}", e));
+                    }
+                }
+            }
+
+            for snap in &snapshots {
+                self.add_paper(snap);
+            }
+            self.add_thought(AgentRole::Searcher,
+                &format!("Extracted {} papers", snapshots.len()));
+
+            // Step 4: Analyze gaps
+            if !snapshots.is_empty() {
+                let gaps = backend.analyze_gaps(&snapshots).unwrap_or_default();
+                for gap in &gaps {
+                    self.add_gap(gap);
+                }
+                self.record_search_result(&search_query, &gaps);
+                self.add_thought(AgentRole::Analyzer,
+                    &format!("Found {} gaps", gaps.len()));
+            }
+
+            // Step 5: Reflect
+            let (should_continue, reason) = self.reflect(self.iterations);
+            self.add_thought(AgentRole::Reflector, &reason);
+
+            if !should_continue {
+                break;
+            }
+
+            self.increment_iteration();
+        }
+
+        // Post-loop: encode accepted gaps, finalize
+        for gap in &self.found_gaps.clone() {
+            if gap.accepted && gap.archetype_match > 0.0 {
+                let _ = backend.encode_accepted_gap(gap);
+            }
+        }
+
+        let duration = start.elapsed().as_secs_f64();
+        let report = self.build_report();
+        self.build_result(&report, duration, ResearchStatus::Completed)
+    }
+}
+
 // ============================================================================
 // Research Orchestrator
 // ============================================================================

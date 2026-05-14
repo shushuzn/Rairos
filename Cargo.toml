@@ -117,6 +117,7 @@ members = [
     "crates/rairos-replication-checker",
     "crates/rairos-research",
     "crates/rairos-research-log",
+    "crates/rairos-research-py",
     "crates/rairos-research-memory",
     "crates/rairos-research-session",
     "crates/rairos-retry",

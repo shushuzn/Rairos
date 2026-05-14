@@ -3900,6 +3900,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-research-py"
+version = "0.1.0"
+dependencies = [
+ "pyo3",
+ "rairos-core",
+ "rairos-research",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rairos-research-session"
 version = "0.1.0"
 dependencies = [
