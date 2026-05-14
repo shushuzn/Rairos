@@ -182,6 +182,8 @@ Output as JSON array:
 const USER_PROMPT_TEMPLATE: &str = r#"Research topic: {topic}
 Gap context: {gap_context}
 Creative mode: {creative}
+Related papers from knowledge graph:
+{kg_context}
 
 Generate specific, testable research hypotheses."#;
 
@@ -249,6 +251,70 @@ const TEMPLATES: &[(&str, &[HypothesisTemplate])] = &[
 ];
 
 // ============================================================================
+// KG & GenePool Integration (optional — graceful fallback if unavailable)
+// ============================================================================
+
+/// Fetch relevant paper titles from the knowledge graph for a topic.
+/// Returns empty vec if KG is unavailable (no db, no results).
+pub fn fetch_relevant_papers(topic: &str, limit: usize) -> Vec<String> {
+    let db_path = rairos_kg::KnowledgeGraph::db_path();
+    let graph = match rairos_kg::KnowledgeGraph::with_db(db_path) {
+        Ok(g) => g,
+        Err(_) => return Vec::new(),
+    };
+    let db = match graph.database() {
+        Some(d) => d,
+        None => return Vec::new(),
+    };
+    // Extract keywords from topic and search each
+    let keywords = crate::gene_pool::extract_keywords(topic);
+    if keywords.is_empty() {
+        return Vec::new();
+    }
+    let mut papers: std::collections::HashSet<String> = std::collections::HashSet::new();
+    for kw in &keywords {
+        if let Ok(nodes) = db.query_by_keyword(kw, limit) {
+            for node in &nodes {
+                // Only include paper-type nodes
+                if node.node_type == "paper" && !node.label.is_empty() {
+                    papers.insert(node.label.clone());
+                }
+            }
+        }
+    }
+    let mut result: Vec<String> = papers.into_iter().collect();
+    result.truncate(limit);
+    result
+}
+
+/// Submit high-scoring hypotheses to the GenePool as capsules.
+/// Returns IDs of submitted capsules.
+pub fn submit_hypotheses_to_genepool(
+    topic: &str,
+    gap_type: &str,
+    hypotheses: &[ResearchHypothesis],
+    score_threshold: f64,
+) -> Vec<String> {
+    let pool = crate::gene_pool::GenePool::new();
+    let mut submitted = Vec::new();
+    for h in hypotheses {
+        let combined = h.novelty_score + h.feasibility_score;
+        if combined >= score_threshold {
+            if let Ok(id) = pool.encode_capsule(
+                topic,
+                if h.gap_type.is_empty() { gap_type } else { &h.gap_type },
+                &h.title,
+                &h.core_statement,
+                combined / 2.0, // average score
+            ) {
+                submitted.push(id);
+            }
+        }
+    }
+    submitted
+}
+
+// ============================================================================
 // Hypothesis Generator
 // ============================================================================
 
@@ -282,7 +348,7 @@ impl HypothesisGenerator {
         result
     }
 
-    /// Generate with LLM enhancement.
+    /// Generate with LLM enhancement, including KG context and optional GenePool submission.
     pub async fn generate_llm(
         &self,
         llm: &dyn LlmClient,
@@ -290,15 +356,25 @@ impl HypothesisGenerator {
         topic: &str,
         gap_context: &str,
         creative: bool,
+        auto_submit: bool,
     ) -> HypothesisResult {
         // Start with template-based hypotheses
         let gap_type = self.infer_gap_type(gap_context);
         let mut hypotheses = self.generate_from_templates(topic, gap_context, &gap_type, creative);
 
+        // Fetch KG context for the LLM prompt
+        let kg_papers = fetch_relevant_papers(topic, 10);
+        let kg_context = if kg_papers.is_empty() {
+            "(No related papers found in knowledge graph)".to_string()
+        } else {
+            kg_papers.join("\n- ")
+        };
+
         // Enhance with LLM
         let user_prompt = USER_PROMPT_TEMPLATE
             .replace("{topic}", topic)
             .replace("{gap_context}", &if gap_context.len() > 200 { &gap_context[..200] } else { gap_context })
+            .replace("{kg_context}", &kg_context)
             .replace("{creative}", if creative { "yes" } else { "no" });
 
         let msg = Message {
@@ -340,6 +416,12 @@ impl HypothesisGenerator {
             summary: self.generate_summary(&hypotheses),
             hypotheses,
         };
+
+        // Auto-submit high-scoring hypotheses to GenePool
+        if auto_submit && !result.hypotheses.is_empty() {
+            let _ = submit_hypotheses_to_genepool(topic, &gap_type, &result.hypotheses, 1.0);
+        }
+
         result
     }
 

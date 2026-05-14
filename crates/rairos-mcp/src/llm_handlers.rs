@@ -1078,6 +1078,7 @@ impl ToolHandler for HypothesisGenerateHandler {
                 ("gap_context".into(), ToolProperty::string("Context from gap detection (optional)")),
                 ("gap_type".into(), ToolProperty::string("Type of gap (optional, auto-detected from context)")),
                 ("creative".into(), ToolProperty::string("Generate creative cross-domain hypotheses (true/false, default false)")),
+                ("submit_to_genepool".into(), ToolProperty::string("Auto-submit high-scoring hypotheses to GenePool (true/false, default true)")),
             ].into_iter().collect(),
             vec!["topic".into()],
         )
@@ -1086,12 +1087,13 @@ impl ToolHandler for HypothesisGenerateHandler {
         let topic = params["topic"].as_str().ok_or("Missing required parameter: topic")?;
         let gap_context = params.get("gap_context").and_then(|v| v.as_str()).unwrap_or("");
         let creative = params.get("creative").and_then(|v| v.as_str()).unwrap_or("false") == "true";
+        let auto_submit = params.get("submit_to_genepool").and_then(|v| v.as_str()).unwrap_or("true") == "true";
 
         // Try LLM-enhanced path if client available
         if let Some(client) = llm_client() {
             let gen = rairos_research::hypothesis_generator::HypothesisGenerator::new();
             let result = gen.generate_llm(
-                client.as_ref(), llm_model(), topic, gap_context, creative,
+                client.as_ref(), llm_model(), topic, gap_context, creative, auto_submit,
             ).await;
             return Ok(serde_json::to_value(result).unwrap_or_else(|_| serde_json::json!({
                 "topic": topic, "summary": "Error serializing result", "hypotheses": []
