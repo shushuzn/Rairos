@@ -1100,6 +1100,9 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(ReviewSimulateHandler).await;
     server.register(GenePoolWatcherHandler).await;
     server.register(ReplicationCompareHandler).await;
+    server.register(RoutePlanListHandler).await;
+    server.register(RoutePlanUpdateStepHandler).await;
+    server.register(RoutePlanReviseHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────
@@ -1171,7 +1174,7 @@ impl ToolHandler for RouteQueryHandler {
             let plan = rairos_llm::route_planner::create_plan(
                 client.as_ref(), llm_model(), hypothesis, goal, &known_papers,
             ).await;
-
+            let _ = rairos_llm::route_planner::save_plan(&plan);
             return Ok(serde_json::json!(plan));
         }
 
@@ -1499,6 +1502,115 @@ impl ToolHandler for ReplicationCompareHandler {
             "comparison": {
                 "difficulty_diff": (report1.difficulty_score - report2.difficulty_score).abs() as f64,
             },
+        }))
+    }
+}
+
+// ─── Route Plan List ──────────────────────────────────────────────────────
+
+pub struct RoutePlanListHandler;
+
+#[async_trait]
+impl ToolHandler for RoutePlanListHandler {
+    fn name(&self) -> &str { "routeplan_list" }
+    fn description(&self) -> &str { "List all research plans" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(HashMap::new(), vec![])
+    }
+    async fn call(&self, _params: Value) -> Result<Value, String> {
+        let plans = rairos_llm::route_planner::list_plans(20);
+        let list: Vec<Value> = plans.iter().map(|p| {
+            let progress = p.get_progress();
+            serde_json::json!({
+                "plan_id": p.plan_id,
+                "hypothesis": p.hypothesis.chars().take(80).collect::<String>(),
+                "goal": p.goal.chars().take(80).collect::<String>(),
+                "status": p.status,
+                "step_count": p.steps.len(),
+                "progress": progress.progress_pct,
+                "revision_count": p.revision_count,
+                "created_at": p.created_at,
+                "updated_at": p.updated_at,
+            })
+        }).collect();
+        Ok(serde_json::json!({"plans": list, "count": list.len()}))
+    }
+}
+
+// ─── Route Plan Update Step ────────────────────────────────────────────────
+
+pub struct RoutePlanUpdateStepHandler;
+
+#[async_trait]
+impl ToolHandler for RoutePlanUpdateStepHandler {
+    fn name(&self) -> &str { "routeplan_update_step" }
+    fn description(&self) -> &str { "Update a step status in a research plan" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("plan_id".into(), ToolProperty::string("ID of the plan")),
+                ("step_id".into(), ToolProperty::string("ID of the step to update")),
+                ("status".into(), ToolProperty::string("New status: pending, in_progress, completed, blocked, failed, skipped")),
+                ("result".into(), ToolProperty::string("Result details (optional)")),
+                ("notes".into(), ToolProperty::string("Notes (optional)")),
+            ].into_iter().collect(),
+            vec!["plan_id".into(), "step_id".into(), "status".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let plan_id = params["plan_id"].as_str().ok_or("Missing plan_id")?;
+        let step_id = params["step_id"].as_str().ok_or("Missing step_id")?;
+        let status = params["status"].as_str().ok_or("Missing status")?;
+        let result = params.get("result").and_then(|v| v.as_str()).unwrap_or("");
+        let notes = params.get("notes").and_then(|v| v.as_str()).unwrap_or("");
+
+        let plan = rairos_llm::route_planner::update_step(plan_id, step_id, status, result, notes)
+            .ok_or_else(|| format!("Plan {} or step {} not found", plan_id, step_id))?;
+
+        let ready: Vec<Value> = plan.get_ready_steps().iter().map(|s| {
+            serde_json::json!({"step_id": s.step_id, "description": s.description})
+        }).collect();
+
+        Ok(serde_json::json!({
+            "plan_id": plan.plan_id,
+            "step_id": step_id,
+            "status": status,
+            "progress": plan.get_progress(),
+            "ready_steps": ready,
+        }))
+    }
+}
+
+// ─── Route Plan Revise ────────────────────────────────────────────────────
+
+pub struct RoutePlanReviseHandler;
+
+#[async_trait]
+impl ToolHandler for RoutePlanReviseHandler {
+    fn name(&self) -> &str { "routeplan_revise" }
+    fn description(&self) -> &str { "Revise a plan when dead ends are hit" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("plan_id".into(), ToolProperty::string("ID of the plan to revise")),
+                ("reason".into(), ToolProperty::string("Reason for the revision")),
+            ].into_iter().collect(),
+            vec!["plan_id".into(), "reason".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let plan_id = params["plan_id"].as_str().ok_or("Missing plan_id")?;
+        let reason = params["reason"].as_str().ok_or("Missing reason")?;
+
+        let new_plan = rairos_llm::route_planner::revise_plan(plan_id, reason)
+            .ok_or_else(|| format!("Plan {} not found", plan_id))?;
+
+        Ok(serde_json::json!({
+            "new_plan_id": new_plan.plan_id,
+            "old_plan_id": plan_id,
+            "revision_count": new_plan.revision_count,
+            "step_count": new_plan.steps.len(),
+            "progress": new_plan.get_progress(),
         }))
     }
 }

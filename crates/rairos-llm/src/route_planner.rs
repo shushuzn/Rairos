@@ -137,10 +137,13 @@ pub struct ResearchPlan {
     pub current_step_id: String,
     pub revision_count: u32,
     pub parent_plan_id: String,
+    pub created_at: String,
+    pub updated_at: String,
 }
 
 impl ResearchPlan {
     pub fn new(plan_id: &str, hypothesis: &str, goal: &str, steps: Vec<PlanStep>) -> Self {
+        let now = chrono::Utc::now().to_rfc3339();
         Self {
             plan_id: plan_id.to_string(),
             hypothesis: hypothesis.to_string(),
@@ -150,6 +153,8 @@ impl ResearchPlan {
             current_step_id: String::new(),
             revision_count: 0,
             parent_plan_id: String::new(),
+            created_at: now.clone(),
+            updated_at: now,
         }
     }
 
@@ -233,6 +238,89 @@ fn has_cycle(
 
     in_stack.remove(node);
     false
+}
+
+// ─── Persistence ───────────────────────────────────────────────────────────
+
+fn route_plans_dir() -> std::path::PathBuf {
+    dirs::home_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join(".ai_research_os")
+        .join("route_plans")
+}
+
+pub fn save_plan(plan: &ResearchPlan) -> Result<(), String> {
+    let dir = route_plans_dir();
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let path = dir.join(format!("{}.json", plan.plan_id));
+    let json = serde_json::to_string_pretty(plan).map_err(|e| e.to_string())?;
+    std::fs::write(path, json).map_err(|e| e.to_string())
+}
+
+pub fn load_plans() -> Vec<ResearchPlan> {
+    let dir = route_plans_dir();
+    if !dir.exists() { return vec![]; }
+    let mut plans = Vec::new();
+    if let Ok(entries) = std::fs::read_dir(&dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|e| e.to_str()) == Some("json") {
+                if let Ok(content) = std::fs::read_to_string(&path) {
+                    if let Ok(plan) = serde_json::from_str::<ResearchPlan>(&content) {
+                        plans.push(plan);
+                    }
+                }
+            }
+        }
+    }
+    plans.sort_by(|a, b| b.updated_at.cmp(&a.updated_at));
+    plans
+}
+
+pub fn list_plans(limit: usize) -> Vec<ResearchPlan> {
+    let plans = load_plans();
+    plans.into_iter().take(limit).collect()
+}
+
+pub fn update_step(plan_id: &str, step_id: &str, status: &str, result: &str, notes: &str) -> Option<ResearchPlan> {
+    let mut plans = load_plans();
+    let plan = plans.iter_mut().find(|p| p.plan_id == plan_id)?;
+    let step = plan.steps.iter_mut().find(|s| s.step_id == step_id)?;
+    step.status = status.to_string();
+    if !result.is_empty() { step.result = result.to_string(); }
+    if !notes.is_empty() { step.notes = notes.to_string(); }
+    plan.updated_at = chrono::Utc::now().to_rfc3339();
+
+    // Check if all steps done → mark plan completed
+    if plan.steps.iter().all(|s| s.status == "completed" || s.status == "skipped") {
+        plan.status = "completed".to_string();
+    }
+
+    let result = plan.clone();
+    // Re-save all plans
+    for p in &plans { let _ = save_plan(p); }
+    Some(result)
+}
+
+pub fn revise_plan(plan_id: &str, reason: &str) -> Option<ResearchPlan> {
+    let mut plans = load_plans();
+    let old_idx = plans.iter().position(|p| p.plan_id == plan_id)?;
+    let old = &plans[old_idx];
+
+    let new_id = uuid::Uuid::new_v4().to_string()[..8].to_string();
+    let mut new_plan = ResearchPlan::new(&new_id, &old.hypothesis, &old.goal, old.steps.clone());
+    new_plan.parent_plan_id = plan_id.to_string();
+    new_plan.revision_count = old.revision_count + 1;
+
+    // Mark old plan as revised
+    plans[old_idx].status = "revised".to_string();
+    plans[old_idx].updated_at = chrono::Utc::now().to_rfc3339();
+
+    // Save everything
+    for p in &plans { let _ = save_plan(p); }
+    let _ = save_plan(&new_plan);
+
+    Some(new_plan)
 }
 
 // ─── LLM-based plan creation ──────────────────────────────────────────────

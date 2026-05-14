@@ -95,6 +95,7 @@ class TestToolRouting:
         "leaderboard", "impact_leaderboard", "claim_graph",
         "review_list", "experiment_record", "litreview_list",
         "review_simulate", "gene_pool_watcher", "replication_compare",
+        "routeplan_list", "routeplan_update_step", "routeplan_revise",
     }
 
     TOOL_NAMES_IN_HANDLER = [
