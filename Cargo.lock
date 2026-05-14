@@ -3503,6 +3503,7 @@ dependencies = [
  "futures",
  "rairos-core",
  "rairos-kg",
+ "rairos-llm",
  "rairos-notes",
  "rairos-parser",
  "reqwest",

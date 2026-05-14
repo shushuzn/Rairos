@@ -86,6 +86,53 @@ pub struct ResearchGap {
     pub severity: String,
 }
 
+// ─── Detect gaps using keyword patterns ────────────────────────────────────────
+
+/// Detect research gaps using keyword pattern matching (no LLM needed).
+pub fn detect_gaps_keyword(topic: &str) -> Vec<ResearchGap> {
+    let lower = topic.to_lowercase();
+    let mut gaps = Vec::new();
+
+    let patterns: Vec<(&str, GapType, f64)> = vec![
+        ("limited", GapType::DatasetGap, 0.4),
+        ("lack of", GapType::DatasetGap, 0.5),
+        ("insufficient", GapType::DatasetGap, 0.4),
+        ("not well understood", GapType::TheoreticalGap, 0.5),
+        ("poorly understood", GapType::TheoreticalGap, 0.5),
+        ("unexplored", GapType::UnexploredApplication, 0.4),
+        ("inconsistent", GapType::Contradiction, 0.4),
+        ("conflicting", GapType::Contradiction, 0.5),
+        ("no consensus", GapType::Contradiction, 0.6),
+        ("open problem", GapType::MethodLimitation, 0.3),
+        ("challenge", GapType::MethodLimitation, 0.3),
+        ("future work", GapType::GeneralizationGap, 0.2),
+    ];
+
+    for (keyword, gap_type, confidence) in &patterns {
+        if lower.contains(keyword) {
+            gaps.push(ResearchGap {
+                gap_type: gap_type.clone(),
+                description: format!("Keyword '{}' detected in topic '{}'", keyword, topic),
+                evidence_papers: Vec::new(),
+                confidence: *confidence,
+                severity: "medium".to_string(),
+            });
+        }
+    }
+
+    if gaps.is_empty() {
+        gaps.push(ResearchGap {
+            gap_type: GapType::MethodLimitation,
+            description: format!("No specific gap keywords found for '{}'", topic),
+            evidence_papers: Vec::new(),
+            confidence: 0.1,
+            severity: "low".to_string(),
+        });
+    }
+
+    gaps
+}
+
 // ─── Detect gaps using LLM ────────────────────────────────────────────────────
 
 /// Use LLM to detect research gaps from paper summaries.

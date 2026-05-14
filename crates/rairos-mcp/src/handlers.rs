@@ -543,6 +543,7 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(KgTagGraphHandler).await;
     server.register(KgFullGraphHandler).await;
     server.register(KgQueryHandler).await;
+    crate::llm_handlers::register_llm_handlers(server).await;
 }
 
 // ─── arXiv XML Parser ─────────────────────────────────────────────────────────

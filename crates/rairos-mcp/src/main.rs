@@ -1,10 +1,7 @@
 //! MCP server binary — runs the JSON-RPC 2.0 MCP server over stdio
 
-use rairos_mcp::McpServer;
+use rairos_mcp::{llm_handlers, handlers, McpServer};
 use std::io::{self, Write};
-
-// Re-export tool handlers from sub-crates
-mod handlers;
 
 // Read line-delimited JSON-RPC messages from stdin, write responses to stdout
 fn main() {
@@ -20,6 +17,7 @@ fn main() {
     let server = rt.block_on(async {
         let s = McpServer::new();
         handlers::register_all(&s).await;
+        llm_handlers::register_llm_handlers(&s).await;
         s
     });
 
