@@ -224,25 +224,30 @@ impl KgEdge {
 
 #[derive(Debug)]
 pub struct KgDatabase {
-    conn: rusqlite::Connection,
+    conn: std::sync::Mutex<rusqlite::Connection>,
     path: std::path::PathBuf,
 }
 
 impl KgDatabase {
+    fn lock(&self) -> std::sync::MutexGuard<'_, rusqlite::Connection> {
+        self.conn.lock().expect("KG database mutex poisoned")
+    }
+
     /// Open or create a KG database at the given path
     pub fn new(path: std::path::PathBuf) -> Result<Self, KgError> {
         if let Some(p) = path.parent() {
             std::fs::create_dir_all(p).map_err(|e| KgError::Database(e.to_string()))?;
         }
         let conn = rusqlite::Connection::open(&path)?;
-        let db = KgDatabase { conn, path };
+        let db = KgDatabase { conn: std::sync::Mutex::new(conn), path };
         db.init_tables()?;
         Ok(db)
     }
 
     /// Create tables and indexes
     fn init_tables(&self) -> Result<(), KgError> {
-        self.conn.execute_batch("
+        let guard = self.lock();
+        guard.execute_batch("
             CREATE TABLE IF NOT EXISTS kg_nodes (
                 id TEXT PRIMARY KEY,
                 type TEXT NOT NULL,
@@ -293,11 +298,11 @@ impl KgDatabase {
         let id = Self::gen_id();
         let props_json = Self::props_to_json(&properties);
         let now = Self::now();
-        self.conn.execute(
+        self.lock().execute(
             "INSERT OR IGNORE INTO kg_nodes (id, type, entity_id, label, properties_json, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             rusqlite::params![id, node_type, entity_id, label, props_json, now],
         )?;
-        let existing: Option<String> = self.conn.query_row(
+        let existing: Option<String> = self.lock().query_row(
             "SELECT id FROM kg_nodes WHERE type = ?1 AND entity_id = ?2",
             rusqlite::params![node_type, entity_id],
             |row| row.get(0),
@@ -309,7 +314,7 @@ impl KgDatabase {
     fn add_node_with_id(&self, node_id: &str, node_type: &str, entity_id: &str, label: &str, properties: serde_json::Value) -> Result<(), KgError> {
         let props_json = Self::props_to_json(&properties);
         let now = Self::now();
-        self.conn.execute(
+        self.lock().execute(
             "INSERT OR IGNORE INTO kg_nodes (id, type, entity_id, label, properties_json, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             rusqlite::params![node_id, node_type, entity_id, label, props_json, now],
         )?;
@@ -320,12 +325,12 @@ impl KgDatabase {
         let id = Self::gen_id();
         let props_json = Self::props_to_json(&properties);
         let now = Self::now();
-        self.conn.execute(
+        self.lock().execute(
             "INSERT INTO kg_nodes (id, type, entity_id, label, properties_json, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)
              ON CONFLICT(type, entity_id) DO UPDATE SET label = ?4, properties_json = ?5, created_at = ?6",
             rusqlite::params![id, node_type, entity_id, label, props_json, now],
         )?;
-        let existing: Option<String> = self.conn.query_row(
+        let existing: Option<String> = self.lock().query_row(
             "SELECT id FROM kg_nodes WHERE type = ?1 AND entity_id = ?2",
             rusqlite::params![node_type, entity_id],
             |row| row.get(0),
@@ -334,7 +339,8 @@ impl KgDatabase {
     }
 
     pub fn get_node(&self, node_id: &str) -> Result<Option<KgNode>, KgError> {
-        let mut stmt = self.conn.prepare("SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE id = ?1")?;
+        let _g = self.lock();
+        let mut stmt = _g.prepare("SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE id = ?1")?;
         let mut rows = stmt.query(rusqlite::params![node_id])?;
         match rows.next()? {
             Some(row) => Ok(Some(KgNode {
@@ -349,7 +355,8 @@ impl KgDatabase {
     }
 
     pub fn get_node_by_entity(&self, node_type: &str, entity_id: &str) -> Result<Option<KgNode>, KgError> {
-        let mut stmt = self.conn.prepare("SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE type = ?1 AND entity_id = ?2")?;
+        let _g = self.lock();
+        let mut stmt = _g.prepare("SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE type = ?1 AND entity_id = ?2")?;
         let mut rows = stmt.query(rusqlite::params![node_type, entity_id])?;
         match rows.next()? {
             Some(row) => Ok(Some(KgNode {
@@ -368,7 +375,8 @@ impl KgDatabase {
             Some(_) => "SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE type = ?1 ORDER BY created_at DESC",
             None => "SELECT id, type, entity_id, label, properties_json FROM kg_nodes ORDER BY created_at DESC",
         };
-        let mut stmt = self.conn.prepare(sql)?;
+        let _g = self.lock();
+        let mut stmt = _g.prepare(sql)?;
 
         // Use the same closure type by collecting into Vec directly
         let map_fn = |row: &rusqlite::Row| -> rusqlite::Result<KgNode> {
@@ -393,7 +401,7 @@ impl KgDatabase {
     pub fn add_edge(&self, source_id: &str, target_id: &str, relation_type: &str, weight: f64, properties: serde_json::Value) -> Result<String, KgError> {
         let id = format!("{}-{}-{}", source_id, target_id, Self::gen_id().chars().take(8).collect::<String>());
         let props_json = Self::props_to_json(&properties);
-        self.conn.execute(
+        self.lock().execute(
             "INSERT OR IGNORE INTO kg_edges (id, source_id, target_id, relation_type, weight, properties_json, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
             rusqlite::params![id, source_id, target_id, relation_type, weight, props_json, Self::now()],
         )?;
@@ -409,7 +417,8 @@ impl KgDatabase {
             ("in", None) => "SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE target_id = ?1",
             (_, None) => "SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE source_id = ?1 OR target_id = ?1",
         };
-        let mut stmt = self.conn.prepare(sql)?;
+        let _g = self.lock();
+        let mut stmt = _g.prepare(sql)?;
         let map_fn = |row: &rusqlite::Row| {
             Ok(KgEdge {
                 id: row.get(0)?,
@@ -458,10 +467,10 @@ impl KgDatabase {
     // ── Stats ──────────────────────────────────────────────────────────────
 
     pub fn stats(&self) -> Result<KgStats, KgError> {
-        let total_nodes: i64 = self.conn.query_row("SELECT COUNT(*) FROM kg_nodes", [], |r| r.get(0))?;
-        let total_edges: i64 = self.conn.query_row("SELECT COUNT(*) FROM kg_edges", [], |r| r.get(0))?;
-        let paper_nodes: i64 = self.conn.query_row("SELECT COUNT(*) FROM kg_nodes WHERE type = 'paper'", [], |r| r.get(0))?;
-        let concept_nodes: i64 = self.conn.query_row("SELECT COUNT(*) FROM kg_nodes WHERE type = 'concept'", [], |r| r.get(0))?;
+        let total_nodes: i64 = self.lock().query_row("SELECT COUNT(*) FROM kg_nodes", [], |r| r.get(0))?;
+        let total_edges: i64 = self.lock().query_row("SELECT COUNT(*) FROM kg_edges", [], |r| r.get(0))?;
+        let paper_nodes: i64 = self.lock().query_row("SELECT COUNT(*) FROM kg_nodes WHERE type = 'paper'", [], |r| r.get(0))?;
+        let concept_nodes: i64 = self.lock().query_row("SELECT COUNT(*) FROM kg_nodes WHERE type = 'concept'", [], |r| r.get(0))?;
         let avg_degree = if total_nodes > 0 { total_edges as f32 / total_nodes as f32 } else { 0.0 };
         Ok(KgStats { total_nodes: total_nodes as usize, total_edges: total_edges as usize, avg_degree, paper_nodes: paper_nodes as usize, concept_nodes: concept_nodes as usize })
     }
@@ -472,7 +481,8 @@ impl KgDatabase {
         let nodes = self.get_all_nodes(None)?;
         let mut edges = Vec::new();
         // Get ALL edges
-        let mut stmt = self.conn.prepare("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges")?;
+        let _g = self.lock();
+        let mut stmt = _g.prepare("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges")?;
         let rows = stmt.query_map([], |row| {
             Ok(KgEdge {
                 id: row.get(0)?,
@@ -613,7 +623,8 @@ impl KgDatabase {
     /// Query the graph by keyword against node labels.
     pub fn query_by_keyword(&self, keyword: &str, limit: usize) -> Result<Vec<KgNode>, KgError> {
         let pattern = format!("%{}%", keyword);
-        let mut stmt = self.conn.prepare(
+        let _g = self.lock();
+        let mut stmt = _g.prepare(
             "SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE label LIKE ?1 OR entity_id LIKE ?1 LIMIT ?2"
         )?;
         let rows = stmt.query_map(rusqlite::params![pattern, limit as i64], |row| {
