@@ -439,17 +439,41 @@ pub struct RouteQueryHandler;
 #[async_trait]
 impl ToolHandler for RouteQueryHandler {
     fn name(&self) -> &str { "routeplan_create" }
-    fn description(&self) -> &str { "Route a natural-language query to the appropriate research command" }
+    fn description(&self) -> &str { "Create a research route plan from a hypothesis (LLM-backed, keyword fallback)" }
     fn input_schema(&self) -> ToolInputSchema {
         ToolInputSchema::object(
-            vec![("query".into(), ToolProperty::string("Natural-language research query"))].into_iter().collect(),
-            vec!["query".into()],
+            vec![
+                ("hypothesis".into(), ToolProperty::string("Research hypothesis to investigate")),
+                ("goal".into(), ToolProperty::string("What the plan should determine")),
+                ("known_papers".into(), ToolProperty::string("JSON array of {arxiv_id, title} (optional)")),
+            ].into_iter().collect(),
+            vec!["hypothesis".into()],
         )
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
-        let query = params["query"].as_str().ok_or("Missing query")?;
-        // Fast path: keyword routing (always succeeds)
-        let route = rairos_llm::semantic_router::route_by_keyword(query);
-        Ok(serde_json::json!(route))
+        let hypothesis = params["hypothesis"].as_str().ok_or("Missing hypothesis")?;
+        let goal = params.get("goal").and_then(|v| v.as_str()).unwrap_or("Test the hypothesis");
+
+        // Try LLM path if available
+        if let Some(client) = llm_client() {
+            let known_papers: Vec<String> = params.get("known_papers")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|p| {
+                    let title = p.get("title").and_then(|t| t.as_str()).unwrap_or("");
+                    let arxiv_id = p.get("arxiv_id").and_then(|i| i.as_str()).unwrap_or("");
+                    Some(format!("{} ({})", title, arxiv_id))
+                }).collect())
+                .unwrap_or_default();
+
+            let plan = rairos_llm::route_planner::create_plan(
+                client.as_ref(), llm_model(), hypothesis, goal, &known_papers,
+            ).await;
+
+            return Ok(serde_json::json!(plan));
+        }
+
+        // No LLM: keyword routing fallback (semantic_router)
+        let route = rairos_llm::semantic_router::route_by_keyword(hypothesis);
+        Ok(serde_json::json!({"semantic_route": route, "note": "No LLM available — keyword routing only. Set OPENAI_API_KEY or ANTHROPIC_API_KEY for full plan generation."}))
     }
 }

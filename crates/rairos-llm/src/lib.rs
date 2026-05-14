@@ -14,6 +14,7 @@ pub mod lit_review;
 pub mod slides;
 pub mod trust_scorer;
 pub mod replication;
+pub mod route_planner;
 pub mod semantic_router;
 pub mod experiment_tracker;
 pub mod ollama;
