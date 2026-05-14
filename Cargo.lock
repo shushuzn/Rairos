@@ -3509,6 +3509,8 @@ dependencies = [
  "rairos-llm",
  "rairos-notes",
  "rairos-parser",
+ "rairos-pdf",
+ "rairos-trends",
  "reqwest",
  "serde",
  "serde_json",
