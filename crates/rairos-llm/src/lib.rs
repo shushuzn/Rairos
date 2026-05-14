@@ -3,8 +3,10 @@
 //! Provides unified interface to multiple LLM providers.
 //! Replaces: llm/client.py, llm/citation_chain.py, llm/gap_detector.py
 
+pub mod anthropic_stream;
 pub mod client_async;
 pub mod claude_cli;
+pub mod ollama;
 
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
@@ -769,14 +771,54 @@ impl LlmClient for AnthropicClient {
 
     async fn stream_complete(
         &self,
-        _messages: Vec<Message>,
-        _model: &str,
-        _temperature: f32,
-        _max_tokens: u32,
+        messages: Vec<Message>,
+        model: &str,
+        temperature: f32,
+        max_tokens: u32,
     ) -> Result<LlmResponse, LlmError> {
-        Err(LlmError::InvalidResponse(
-            "Anthropic streaming not yet implemented".to_string(),
-        ))
+        let url = format!("{}/messages", self.base_url);
+
+        #[derive(Serialize)]
+        struct Request<'a> {
+            model: &'a str,
+            messages: Vec<Message>,
+            max_tokens: u32,
+            temperature: f32,
+            stream: bool,
+        }
+
+        let resp = self
+            .client
+            .post(&url)
+            .header("x-api-key", &self.api_key)
+            .header("anthropic-version", "2023-06-01")
+            .header("Content-Type", "application/json")
+            .json(&Request {
+                model,
+                messages,
+                temperature,
+                max_tokens,
+                stream: true,
+            })
+            .send()
+            .await?;
+
+        let status = resp.status();
+        if status.as_u16() == 429 {
+            return Err(LlmError::RateLimited);
+        }
+        if !status.is_success() {
+            let body = resp.text().await?;
+            return Err(LlmError::Api {
+                code: status.as_u16(),
+                message: body,
+            });
+        }
+
+        // Parse Anthropic SSE stream
+        let stream = resp.bytes_stream();
+        let chunk_stream = crate::anthropic_stream::anthropic_stream_to_chunks(stream);
+        Ok(LlmResponse::Stream(StreamResponse::new(chunk_stream)))
     }
 
     fn provider_name(&self) -> &'static str {
