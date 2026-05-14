@@ -3,7 +3,7 @@
 //! Each tool implements the ToolHandler trait. All handlers are self-contained
 //! (no Python dependencies, no sub-crate calls).
 
-use crate::protocol::{Tool, ToolHandler, ToolInputSchema, ToolProperty};
+use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
 use std::collections::HashMap;
@@ -547,7 +547,7 @@ pub async fn register_all(server: &crate::McpServer) {
 
 // ─── arXiv XML Parser ─────────────────────────────────────────────────────────
 
-fn parse_arxiv_response(xml: &str) -> Vec<Value> {
+pub fn parse_arxiv_response(xml: &str) -> Vec<Value> {
     let mut papers = Vec::new();
     let mut pos = 0;
     while let Some(entry_start) = xml[pos..].find("<entry>") {

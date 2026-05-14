@@ -2619,7 +2619,10 @@ dependencies = [
  "criterion",
  "rairos-batch-optimizer",
  "rairos-core",
+ "rairos-mcp",
+ "rairos-research",
  "rairos-text",
+ "serde_json",
 ]
 
 [[package]]
