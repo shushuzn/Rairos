@@ -10,6 +10,7 @@ pub mod citation_chain;
 pub mod client_async;
 pub mod gap_detector;
 pub mod impact;
+pub mod lit_review;
 pub mod ollama;
 pub mod paper_analyzer;
 pub mod reasoning;
