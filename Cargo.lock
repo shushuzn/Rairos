@@ -3498,6 +3498,7 @@ dependencies = [
  "chrono",
  "futures",
  "rairos-core",
+ "rairos-kg",
  "rairos-notes",
  "rairos-parser",
  "reqwest",

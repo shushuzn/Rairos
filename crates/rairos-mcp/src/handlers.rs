@@ -414,6 +414,88 @@ impl ToolHandler for PaperChatHandler {
     }
 }
 
+// ─── KG: Paper Subgraph ───────────────────────────────────────────────────────
+
+pub struct KgPaperSubgraphHandler;
+
+#[async_trait]
+impl ToolHandler for KgPaperSubgraphHandler {
+    fn name(&self) -> &str { "kg_paper_subgraph" }
+    fn description(&self) -> &str { "Get the knowledge subgraph around a paper (nodes + edges up to depth)" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("arxiv_id".into(), ToolProperty::string("arXiv ID of the center paper")),
+                ("depth".into(), ToolProperty::integer("Traversal depth (default 1, max 3)")),
+                ("include_notes".into(), ToolProperty::string("Include note nodes (default true)")),
+            ].into_iter().collect(),
+            vec!["arxiv_id".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
+        let depth = params["depth"].as_u64().unwrap_or(1).min(3) as u32;
+        let include_notes = params["include_notes"].as_str().map(|s| s != "false").unwrap_or(true);
+
+        let db_path = rairos_kg::KnowledgeGraph::db_path();
+        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
+            .map_err(|e| format!("KG init: {}", e))?;
+        let sub = graph.get_paper_subgraph(arxiv_id, depth, include_notes)
+            .map_err(|e| format!("Subgraph query: {}", e))?;
+        Ok(serde_json::to_value(sub).unwrap_or_default())
+    }
+}
+
+// ─── KG: Tag Graph ────────────────────────────────────────────────────────────
+
+pub struct KgTagGraphHandler;
+
+#[async_trait]
+impl ToolHandler for KgTagGraphHandler {
+    fn name(&self) -> &str { "kg_tag_graph" }
+    fn description(&self) -> &str { "Get the knowledge graph for a tag — papers and notes connected by same_tag edges" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("tag".into(), ToolProperty::string("Tag name to query")),
+            ].into_iter().collect(),
+            vec!["tag".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let tag = params["tag"].as_str().ok_or("Missing tag")?;
+        let db_path = rairos_kg::KnowledgeGraph::db_path();
+        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
+            .map_err(|e| format!("KG init: {}", e))?;
+        let sub = graph.get_tag_ecosystem(tag)
+            .map_err(|e| format!("Tag ecosystem: {}", e))?;
+        Ok(serde_json::to_value(sub).unwrap_or_default())
+    }
+}
+
+// ─── KG: Full Graph ───────────────────────────────────────────────────────────
+
+pub struct KgFullGraphHandler;
+
+#[async_trait]
+impl ToolHandler for KgFullGraphHandler {
+    fn name(&self) -> &str { "kg_full_graph" }
+    fn description(&self) -> &str { "Export the entire knowledge graph as JSON (nodes + edges)" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(HashMap::new(), vec![])
+    }
+    async fn call(&self, _params: Value) -> Result<Value, String> {
+        let db_path = rairos_kg::KnowledgeGraph::db_path();
+        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
+            .map_err(|e| format!("KG init: {}", e))?;
+        if let Some(db) = graph.database() {
+            db.export_json().map_err(|e| format!("KG export: {}", e))
+        } else {
+            Ok(graph.export_json())
+        }
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
@@ -427,6 +509,9 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(TrendsDetectTrendingHandler).await;
     server.register(PaperRecommendHandler).await;
     server.register(CitationGraphHandler).await;
+    server.register(KgPaperSubgraphHandler).await;
+    server.register(KgTagGraphHandler).await;
+    server.register(KgFullGraphHandler).await;
 }
 
 // ─── arXiv XML Parser ─────────────────────────────────────────────────────────
@@ -540,6 +625,9 @@ mod tests {
         assert!(PaperQueryHandler.name() == "paper_query");
         assert!(PaperIngestHandler.name() == "paper_ingest");
         assert!(PaperChatHandler.name() == "paper_chat");
+        assert!(KgPaperSubgraphHandler.name() == "kg_paper_subgraph");
+        assert!(KgTagGraphHandler.name() == "kg_tag_graph");
+        assert!(KgFullGraphHandler.name() == "kg_full_graph");
     }
 
     #[test]
