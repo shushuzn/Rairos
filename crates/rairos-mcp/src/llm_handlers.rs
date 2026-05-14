@@ -870,10 +870,107 @@ impl ToolHandler for CrossoverHandler {
     }
 }
 
+// ─── Research Memory (4-in-1 handler) ─────────────────────────────────────
+
+fn parse_stance_type(s: &str) -> Result<rairos_research_memory::StanceType, String> {
+    match s.to_lowercase().as_str() {
+        "supported" => Ok(rairos_research_memory::StanceType::Supported),
+        "rejected" => Ok(rairos_research_memory::StanceType::Rejected),
+        "deferred" => Ok(rairos_research_memory::StanceType::Deferred),
+        "qualified" => Ok(rairos_research_memory::StanceType::Qualified),
+        _ => Err(format!("Invalid stance type: '{}' — expected supported/rejected/deferred/qualified", s)),
+    }
+}
+
+fn research_memory_add_stance_impl(memory: &mut rairos_research_memory::ResearchMemory, params: &Value) -> Result<Value, String> {
+    let topic = params.get("topic").and_then(|v| v.as_str()).ok_or("Missing topic")?;
+    let claim = params.get("claim").and_then(|v| v.as_str()).ok_or("Missing claim")?;
+    let stance_str = params.get("stance").and_then(|v| v.as_str()).ok_or("Missing stance")?;
+    let stance = parse_stance_type(stance_str)?;
+    let evidence_refs: Vec<String> = params.get("evidence_refs")
+        .and_then(|v| serde_json::from_value(v.clone()).ok())
+        .unwrap_or_default();
+    let reasoning = params.get("reasoning").and_then(|v| v.as_str()).unwrap_or("");
+    let confidence = params.get("confidence").and_then(|v| v.as_f64()).unwrap_or(0.5);
+    let tags: Vec<String> = params.get("tags")
+        .and_then(|v| serde_json::from_value(v.clone()).ok())
+        .unwrap_or_default();
+    let notes = params.get("notes").and_then(|v| v.as_str()).unwrap_or("");
+
+    let s = memory.add_stance(topic, claim, stance, evidence_refs, reasoning, confidence, tags, notes);
+    Ok(serde_json::json!({
+        "stance_id": s.stance_id,
+        "topic": s.topic,
+        "claim": s.claim,
+        "stance": s.stance.to_string(),
+        "confidence": s.confidence,
+        "message": "Stance recorded",
+    }))
+}
+
+fn research_memory_list_stances_impl(memory: &rairos_research_memory::ResearchMemory, params: &Value) -> Result<Value, String> {
+    let topic = params.get("topic").and_then(|v| v.as_str());
+    let stances = memory.get_stances(topic, None);
+    Ok(serde_json::json!({ "stances": stances, "total": stances.len() }))
+}
+
+fn research_memory_check_paper_impl(memory: &mut rairos_research_memory::ResearchMemory, params: &Value) -> Result<Value, String> {
+    let arxiv_id = params.get("arxiv_id").and_then(|v| v.as_str()).ok_or("Missing arxiv_id")?;
+    let title = params.get("title").and_then(|v| v.as_str()).unwrap_or("");
+    let claim = params.get("claim").and_then(|v| v.as_str()).unwrap_or("");
+    let mut paper = std::collections::HashMap::new();
+    paper.insert("arxiv_id".to_string(), arxiv_id.to_string());
+    paper.insert("title".to_string(), title.to_string());
+    paper.insert("claim".to_string(), claim.to_string());
+    let anomalies = memory.check_paper_against_stances(&paper, false, None, None, None);
+    Ok(serde_json::json!({ "anomalies": anomalies, "total": anomalies.len() }))
+}
+
+fn research_memory_anomalies_impl(memory: &rairos_research_memory::ResearchMemory, params: &Value) -> Result<Value, String> {
+    let limit = params.get("limit").and_then(|v| v.as_u64()).unwrap_or(20) as usize;
+    let anomalies = memory.get_recent_anomalies(limit);
+    Ok(serde_json::json!({ "anomalies": anomalies, "total": anomalies.len() }))
+}
+
+macro_rules! make_research_memory_handler {
+    ($name:ident, $tool_name:expr, $desc:expr, $impl_fn:ident) => {
+        pub struct $name;
+        #[async_trait]
+        impl ToolHandler for $name {
+            fn name(&self) -> &str { $tool_name }
+            fn description(&self) -> &str { $desc }
+            fn input_schema(&self) -> ToolInputSchema {
+                ToolInputSchema::object(
+                    vec![
+                        ("topic".into(), ToolProperty::string("Research topic")),
+                        ("claim".into(), ToolProperty::string("The claim being evaluated")),
+                        ("stance".into(), ToolProperty::string("Stance: supported/rejected/deferred/qualified")),
+                        ("evidence_refs".into(), ToolProperty::string("JSON array of evidence references")),
+                        ("reasoning".into(), ToolProperty::string("Reasoning behind the stance")),
+                        ("confidence".into(), ToolProperty::string("Confidence score 0.0-1.0")),
+                        ("arxiv_id".into(), ToolProperty::string("arXiv ID for check_paper")),
+                        ("limit".into(), ToolProperty::integer("Max results (default 20)")),
+                    ].into_iter().collect(),
+                    vec![],
+                )
+            }
+            async fn call(&self, params: Value) -> Result<Value, String> {
+                let mut memory = rairos_research_memory::ResearchMemory::new();
+                $impl_fn(&mut memory, &params)
+            }
+        }
+    };
+}
+
+make_research_memory_handler!(ResearchMemoryAddStanceHandler, "research_memory_add_stance", "Record a new research stance", research_memory_add_stance_impl);
+make_research_memory_handler!(ResearchMemoryListStancesHandler, "research_memory_list_stances", "List all research stances", research_memory_list_stances_impl);
+make_research_memory_handler!(ResearchMemoryCheckPaperHandler, "research_memory_check_paper", "Check a paper against prior research stances", research_memory_check_paper_impl);
+make_research_memory_handler!(ResearchMemoryAnomaliesHandler, "research_memory_anomalies", "List recent research memory anomalies", research_memory_anomalies_impl);
+
 // ─── Register ───────────────────────────────────────────────────────────────
 
 pub async fn register_llm_handlers(server: &crate::McpServer) {
-    tracing::debug!("registering 15 llm-backed MCP tool handlers");
+    tracing::debug!("registering 20 llm-backed MCP tool handlers");
     server.register(BriefingGenerateHandler).await;
     server.register(LitReviewGenerateHandler).await;
     server.register(SlidesGenerateHandler).await;
@@ -893,6 +990,10 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(GapEvolveHandler).await;
     server.register(GenePoolDecayHandler).await;
     server.register(CrossoverHandler).await;
+    server.register(ResearchMemoryAddStanceHandler).await;
+    server.register(ResearchMemoryListStancesHandler).await;
+    server.register(ResearchMemoryCheckPaperHandler).await;
+    server.register(ResearchMemoryAnomaliesHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────

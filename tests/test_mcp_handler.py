@@ -90,6 +90,8 @@ class TestToolRouting:
         "pdf_download", "pdf_extract_text", "pdf_extract_structured",
         "trends_predict_next", "trends_top_predictions", "trends_compare_tags",
         "cite_fetch", "gap_submit", "gap_evolve", "gene_pool_decay", "crossover",
+        "research_memory_add_stance", "research_memory_list_stances",
+        "research_memory_check_paper", "research_memory_anomalies",
     }
 
     TOOL_NAMES_IN_HANDLER = [
