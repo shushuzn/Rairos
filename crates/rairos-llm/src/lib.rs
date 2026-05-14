@@ -12,6 +12,7 @@ pub mod gap_detector;
 pub mod impact;
 pub mod lit_review;
 pub mod slides;
+pub mod trust_scorer;
 pub mod replication;
 pub mod semantic_router;
 pub mod experiment_tracker;

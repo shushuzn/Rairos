@@ -396,6 +396,40 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(ImpactRankHandler).await;
     server.register(ReplicationCheckHandler).await;
     server.register(RouteQueryHandler).await;
+    server.register(TrustScorerComputeHandler).await;
+}
+
+// ─── Trust Scorer Compute ──────────────────────────────────────────────────
+
+pub struct TrustScorerComputeHandler;
+
+#[async_trait]
+impl ToolHandler for TrustScorerComputeHandler {
+    fn name(&self) -> &str { "trust_scorer_compute" }
+    fn description(&self) -> &str { "Compute per-category trust scores from capsule quality data" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![("scores".into(), ToolProperty::string("JSON array of {category: string, score: number} objects"))].into_iter().collect(),
+            vec!["scores".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        // Accept scores as a JSON string or as a direct JSON array
+        let entries: Vec<(String, f64)> = if let Some(arr) = params["scores"].as_array() {
+            arr.iter().filter_map(|v| {
+                let cat = v["category"].as_str()?;
+                let score = v["score"].as_f64()?;
+                Some((cat.to_string(), score))
+            }).collect()
+        } else if let Some(s) = params["scores"].as_str() {
+            serde_json::from_str(s).map_err(|e| format!("Invalid scores JSON: {}", e))?
+        } else {
+            return Err("Missing scores: provide JSON array or JSON string".into());
+        };
+        let refs: Vec<(&str, f64)> = entries.iter().map(|(c, s)| (c.as_str(), *s)).collect();
+        let result = rairos_llm::trust_scorer::compute_trust(&refs);
+        Ok(serde_json::json!(result))
+    }
 }
 
 // ─── Route Query (semantic router) ──────────────────────────────────────────
