@@ -6,6 +6,7 @@
 
 pub mod arxiv_search;
 pub mod hypothesis_generator;
+pub mod snapstate;
 
 use rairos_core::{Database, Paper, ResearchGap};
 use rairos_llm::{CostTracker, GapDetector, LlmClient, Message};
@@ -759,8 +760,19 @@ pub trait ResearchBackend {
     fn encode_accepted_gap(&self, gap: &GapSnapshot) -> Result<(), String>;
     fn on_thought(&self, thought: &AgentThought) -> Result<(), String>;
     fn find_skills(&self, query: &str) -> Result<Vec<String>, String>;
-    fn checkpoint(&self, session_json: &str) -> Result<(), String>;
-    fn new_session(&self, query: &str, max_iterations: i32) -> Result<String, String>;
+    fn checkpoint(&self, session_json: &str) -> Result<(), String> {
+        if let Ok(session) = serde_json::from_str::<crate::snapstate::SnapSession>(session_json) {
+            let store = crate::snapstate::Snapstate::new(None);
+            store.create_checkpoint(&session).ok();
+        }
+        Ok(())
+    }
+    fn new_session(&self, query: &str, max_iterations: i32) -> Result<String, String> {
+        let store = crate::snapstate::Snapstate::new(None);
+        let session = store.new_session(query, max_iterations);
+        let _ = store.save(&session);
+        serde_json::to_string(&session).map_err(|e| e.to_string())
+    }
 }
 
 impl DeepResearchAgent {
