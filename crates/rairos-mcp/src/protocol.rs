@@ -25,8 +25,7 @@ pub struct ToolInputSchema {
 }
 
 impl ToolInputSchema {
-    #[allow(dead_code)]
-    fn object(properties: HashMap<String, ToolProperty>, required: Vec<String>) -> Self {
+    pub fn object(properties: HashMap<String, ToolProperty>, required: Vec<String>) -> Self {
         let props: HashMap<String, Value> = properties
             .into_iter()
             .map(|(k, v)| {
@@ -51,8 +50,7 @@ impl ToolInputSchema {
         }
     }
 
-    #[allow(dead_code)]
-    fn string_enum(values: Vec<String>) -> Self {
+    pub fn string_enum(values: Vec<String>) -> Self {
         Self {
             ty: "string".into(),
             properties: None,
@@ -63,8 +61,7 @@ impl ToolInputSchema {
         }
     }
 
-    #[allow(dead_code)]
-    fn integer() -> Self {
+    pub fn integer() -> Self {
         Self {
             ty: "integer".into(),
             properties: None,
@@ -75,8 +72,7 @@ impl ToolInputSchema {
         }
     }
 
-    #[allow(dead_code)]
-    fn number() -> Self {
+    pub fn number() -> Self {
         Self {
             ty: "number".into(),
             properties: None,
@@ -87,8 +83,7 @@ impl ToolInputSchema {
         }
     }
 
-    #[allow(dead_code)]
-    fn boolean() -> Self {
+    pub fn boolean() -> Self {
         Self {
             ty: "boolean".into(),
             properties: None,
@@ -99,8 +94,7 @@ impl ToolInputSchema {
         }
     }
 
-    #[allow(dead_code)]
-    fn array(item_ty: ToolInputSchema) -> Self {
+    pub fn array(item_ty: ToolInputSchema) -> Self {
         Self {
             ty: "array".into(),
             properties: None,
@@ -116,6 +110,24 @@ pub struct ToolProperty {
     pub type_: String,
     pub description: Option<String>,
     pub enum_values: Option<Vec<String>>,
+}
+
+impl ToolProperty {
+    pub fn string(description: &str) -> Self {
+        Self {
+            type_: "string".into(),
+            description: Some(description.into()),
+            enum_values: None,
+        }
+    }
+
+    pub fn integer(description: &str) -> Self {
+        Self {
+            type_: "integer".into(),
+            description: Some(description.into()),
+            enum_values: None,
+        }
+    }
 }
 
 /// Tool definition
