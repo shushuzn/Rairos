@@ -2,10 +2,12 @@
 
 ## Superpowers
 
-Superpowers (obra/superpowers) is installed via OpenCode plugin. Skills available
-after restart: brainstorming, test-driven-development, writing-plans,
-subagent-driven-development, requesting-code-review, finishing-a-development-branch.
-Verify: "Tell me about your superpowers"
+Superpowers (obra/superpowers) skills installed at `/root/.claude/skills/` via
+symlinks to `/root/superpowers/skills/`. Plugin: `~/.config/opencode/plugins/superpowers.js`.
+15 skills: brainstorming, test-driven-development, writing-plans,
+subagent-driven-development, requesting-code-review, finishing-a-development-branch,
+dispatching-parallel-agents, executing-plans, systematic-debugging, etc.
+Verify: `ls /root/.claude/skills/` should show 27+ directories including brainstorming, writing-plans, etc.
 
 ## Project
 
