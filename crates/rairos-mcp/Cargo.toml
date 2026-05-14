@@ -20,6 +20,8 @@ rairos-leaderboard = { path = "../rairos-leaderboard" }
 rairos-claimgraph = { path = "../rairos-claimgraph" }
 rairos-experiment-tracker = { path = "../rairos-experiment-tracker" }
 rairos-review-simulator = { path = "../rairos-review-simulator" }
+rairos-gene-pool-watcher = { path = "../rairos-gene-pool-watcher" }
+rairos-replication-checker = { path = "../rairos-replication-checker" }
 dirs = "5"
 uuid = { version = "1.0", features = ["v4"] }
 rand = "0.8"

@@ -94,6 +94,7 @@ class TestToolRouting:
         "research_memory_check_paper", "research_memory_anomalies",
         "leaderboard", "impact_leaderboard", "claim_graph",
         "review_list", "experiment_record", "litreview_list",
+        "review_simulate", "gene_pool_watcher", "replication_compare",
     }
 
     TOOL_NAMES_IN_HANDLER = [

@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use rand::Rng;
 use rairos_core::Database;
 use rairos_experiment_tracker::ExperimentTracker;
+use rairos_gene_pool_watcher::GenePoolWatcher;
 use rairos_insight_evolution::EvolutionEngine;
 use rairos_insight_storage::CapsuleStorage;
 use rairos_llm::{impact, replication, LlmClient, OpenAiClient, AnthropicClient};
@@ -1096,6 +1097,9 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(ReviewListHandler).await;
     server.register(ExperimentRecordHandler).await;
     server.register(LitReviewListHandler).await;
+    server.register(ReviewSimulateHandler).await;
+    server.register(GenePoolWatcherHandler).await;
+    server.register(ReplicationCompareHandler).await;
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────
@@ -1326,5 +1330,175 @@ impl ToolHandler for LitReviewListHandler {
         }
 
         Ok(serde_json::json!({"reviews": reviews, "count": reviews.len()}))
+    }
+}
+
+// ─── Review Simulate ───────────────────────────────────────────────────────
+
+pub struct ReviewSimulateHandler;
+
+#[async_trait]
+impl ToolHandler for ReviewSimulateHandler {
+    fn name(&self) -> &str { "review_simulate" }
+    fn description(&self) -> &str { "Simulate adversarial peer reviewers on a paper" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("arxiv_id".into(), ToolProperty::string("arXiv ID of the paper to review")),
+                ("persona".into(), ToolProperty::string("Reviewer persona (e.g. 'methodologist', 'all' for consensus)")),
+            ].into_iter().collect(),
+            vec!["arxiv_id".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
+        let persona = params.get("persona").and_then(|v| v.as_str()).unwrap_or("all");
+
+        // Fetch paper from DB
+        let db_path = std::env::var("RAIROS_DB").unwrap_or_else(|_| "rairos.db".to_string());
+        let db = Database::open(&db_path).map_err(|e| format!("DB error: {}", e))?;
+        let paper = db.get_paper_by_arxiv(arxiv_id)
+            .map_err(|e| format!("DB query error: {}", e))?
+            .ok_or_else(|| format!("Paper not found: {}", arxiv_id))?;
+
+        let full_text = format!("{}\n\n{}", paper.title, paper.abstract_text);
+
+        // Run review simulator (uses env vars for LLM credentials via resolve_credentials)
+        let simulator = rairos_review_simulator::ReviewSimulator::new();
+        let review = if persona != "all" {
+            let personas = rairos_review_simulator::default_personas();
+            let selected = personas.into_iter().find(|p| {
+                p.name.to_lowercase().starts_with(&persona.to_lowercase())
+            }).ok_or_else(|| format!("Unknown persona: {}", persona))?;
+            simulator.review(&full_text, Some(&paper.title), Some(&selected), None, None, None).await
+                .map_err(|e| format!("Review error: {}", e))?
+        } else {
+            simulator.review(&full_text, Some(&paper.title), None, None, None, None).await
+                .map_err(|e| format!("Review error: {}", e))?
+        };
+
+        // Save review
+        rairos_review_simulator::save_review(&review);
+
+        Ok(serde_json::json!({
+            "review_id": review.review_id,
+            "persona": review.persona,
+            "overall_score": review.overall_score,
+            "summary": review.summary,
+            "strengths": review.strengths,
+            "weaknesses": review.weaknesses,
+            "recommendation": review.recommendation,
+            "annotation_count": review.annotations.len(),
+        }))
+    }
+}
+
+// ─── Gene Pool Watcher ─────────────────────────────────────────────────────
+
+pub struct GenePoolWatcherHandler;
+
+#[async_trait]
+impl ToolHandler for GenePoolWatcherHandler {
+    fn name(&self) -> &str { "gene_pool_watcher" }
+    fn description(&self) -> &str { "Manage GenePoolWatcher: check diversity gaps and auto-subscribe" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("action".into(), ToolProperty::string("Action: status, start, stop, or trigger_now")),
+                ("interval_minutes".into(), ToolProperty::integer("Check interval in minutes")),
+                ("min_diversity_score".into(), ToolProperty::string("Minimum diversity score threshold (0-100)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let action = params.get("action").and_then(|v| v.as_str()).unwrap_or("status");
+        let interval = params.get("interval_minutes").and_then(|v| v.as_u64()).unwrap_or(60);
+        let min_score = params.get("min_diversity_score").and_then(|v| v.as_f64()).unwrap_or(50.0);
+
+        match action {
+            "start" => {
+                let mut watcher = GenePoolWatcher::new(interval, min_score, true);
+                let result = watcher.watch();
+                Ok(serde_json::json!({
+                    "status": "started",
+                    "message": format!("GenePoolWatcher started. Will check diversity every {}min.", interval),
+                    "diversity_score": result.diversity_score,
+                    "underrepresented_families": result.underrepresented_families,
+                }))
+            }
+            "trigger_now" => {
+                let mut watcher = GenePoolWatcher::new(interval, min_score, true);
+                let result = watcher.watch();
+                Ok(serde_json::json!({
+                    "status": "checked",
+                    "diversity_score": result.diversity_score,
+                    "total_capsules": result.total_capsules,
+                    "underrepresented_families": result.underrepresented_families,
+                    "gap_subscriptions_added": result.gap_subscriptions_added,
+                    "gap_subscriptions_removed": result.gap_subscriptions_removed,
+                    "triggered": result.triggered,
+                }))
+            }
+            _ => {
+                let watcher = GenePoolWatcher::new(interval, min_score, false);
+                let state = watcher.get_state();
+                Ok(serde_json::json!({
+                    "status": "ok",
+                    "diversity_score": state.diversity_score,
+                    "underrepresented_families": state.underrepresented_families,
+                    "gap_subscriptions": state.gap_subscriptions.iter().map(|gs| {
+                        serde_json::json!({
+                            "family": gs.family,
+                            "enabled": gs.enabled,
+                            "keywords": gs.keywords,
+                        })
+                    }).collect::<Vec<_>>(),
+                }))
+            }
+        }
+    }
+}
+
+// ─── Replication Compare ──────────────────────────────────────────────────
+
+pub struct ReplicationCompareHandler;
+
+#[async_trait]
+impl ToolHandler for ReplicationCompareHandler {
+    fn name(&self) -> &str { "replication_compare" }
+    fn description(&self) -> &str { "Compare reproducibility of two papers" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("arxiv_id_1".into(), ToolProperty::string("arXiv ID of the first paper")),
+                ("arxiv_id_2".into(), ToolProperty::string("arXiv ID of the second paper")),
+            ].into_iter().collect(),
+            vec!["arxiv_id_1".into(), "arxiv_id_2".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let arxiv_id_1 = params["arxiv_id_1"].as_str().ok_or("Missing arxiv_id_1")?;
+        let arxiv_id_2 = params["arxiv_id_2"].as_str().ok_or("Missing arxiv_id_2")?;
+
+        let checker = rairos_replication_checker::ReplicationChecker::new();
+
+        let report1 = checker.check_paper(arxiv_id_1, arxiv_id_1, "", "");
+        let report2 = checker.check_paper(arxiv_id_2, arxiv_id_2, "", "");
+
+        let easier_id = if report1.difficulty_score < report2.difficulty_score {
+            report1.paper_id.clone()
+        } else {
+            report2.paper_id.clone()
+        };
+
+        Ok(serde_json::json!({
+            "paper_1": report1,
+            "paper_2": report2,
+            "easier_to_reproduce": easier_id,
+            "comparison": {
+                "difficulty_diff": (report1.difficulty_score - report2.difficulty_score).abs() as f64,
+            },
+        }))
     }
 }

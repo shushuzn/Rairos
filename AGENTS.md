@@ -122,13 +122,13 @@ git push
 - Knowledge Graph: stats, path finding, rankings
 - Memory: research stances, anomaly detection
 
-## Rust MCP Tools (51 Rust + 19 Python fallback)
+## Rust MCP Tools (54 Rust + 12 Python fallback)
 
 | Source | Count | Tools |
 |--------|-------|-------|
 | Core Rust | 24 | paper_search/ingest/query/chat/recommend, tag_add/remove/list/**tag_all**, trends_detect_trending/**predict_next/top_predictions/compare_tags**, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch |
-| LLM-backed Rust | 27 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, **review_list**, **experiment_record**, **litreview_list** |
-| Python fallback | 15 | chart_query, research_run, paper2code_run, research_agent_*, hypothesis_generate/list, gene_pool_watcher, review_simulate, routeplan_list/update_step/revise, replication_compare |
+| LLM-backed Rust | 30 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, **review_simulate**, **gene_pool_watcher**, **replication_compare** |
+| Python fallback | 12 | chart_query, research_run, paper2code_run, research_agent_*, hypothesis_generate/list, routeplan_list/update_step/revise |
 
 ### Performance Benchmarks
 
