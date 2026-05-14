@@ -4,6 +4,7 @@
 //! Replaces: llm/client.py, llm/citation_chain.py, llm/gap_detector.py
 
 pub mod anthropic_stream;
+pub mod briefing;
 pub mod cache;
 pub mod citation_chain;
 pub mod client_async;
