@@ -5,6 +5,7 @@
 //! Replaces: research_loop/core.py, research_loop/orchestrator.py, research_loop/deep_research.py
 
 pub mod arxiv_search;
+pub mod gene_pool;
 pub mod hypothesis_generator;
 pub mod snapstate;
 
@@ -756,8 +757,21 @@ pub trait ResearchBackend {
     fn analyze_gaps(&self, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String>;
     fn get_search_guidance(
         &self, topic: &str, gap_type: &str, gap_title: &str,
-    ) -> Result<(Option<String>, f64), String>;
-    fn encode_accepted_gap(&self, gap: &GapSnapshot) -> Result<(), String>;
+    ) -> Result<(Option<String>, f64), String> {
+        let pool = crate::gene_pool::GenePool::new();
+        let keywords = crate::gene_pool::extract_keywords(gap_title);
+        let kws: Vec<String> = keywords.iter().map(|s| s.to_string()).collect();
+        Ok(pool.find_capsule(topic, gap_type, Some(&kws), 0.1))
+    }
+    fn encode_accepted_gap(&self, topic: &str, gap: &GapSnapshot) -> Result<(), String> {
+        let pool = crate::gene_pool::GenePool::new();
+        pool.record_gap_accept(
+            topic,
+            &gap.gap_type,
+            &gap.title,
+            &gap.description,
+        )
+    }
     fn on_thought(&self, thought: &AgentThought) -> Result<(), String>;
     fn find_skills(&self, query: &str) -> Result<Vec<String>, String>;
     fn checkpoint(&self, session_json: &str) -> Result<(), String> {
@@ -808,7 +822,7 @@ impl DeepResearchAgent {
         &mut self,
         backend: &dyn ResearchBackend,
         _mode: &str,
-        mut stop_requested: bool,
+        stop_requested: bool,
     ) -> DeepResearchResult {
         let start = Instant::now();
 
@@ -922,7 +936,7 @@ impl DeepResearchAgent {
         // Post-loop: encode accepted gaps, finalize
         for gap in &self.found_gaps.clone() {
             if gap.accepted && gap.archetype_match > 0.0 {
-                let _ = backend.encode_accepted_gap(gap);
+                let _ = backend.encode_accepted_gap(&self.query, gap);
             }
         }
 

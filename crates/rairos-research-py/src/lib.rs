@@ -75,9 +75,9 @@ impl ResearchBackend for PyResearchBackend {
         })
     }
 
-    fn encode_accepted_gap(&self, gap: &GapSnapshot) -> Result<(), String> {
+    fn encode_accepted_gap(&self, topic: &str, gap: &GapSnapshot) -> Result<(), String> {
         Python::with_gil(|py| {
-            let args = serde_json::to_string(gap).unwrap_or_default();
+            let args = serde_json::json!({"topic": topic, "gap": gap}).to_string();
             call_void_fn(py, self.encode_accepted_gap.bind(py), &args)
                 .map_err(|e| e.to_string())
         })
