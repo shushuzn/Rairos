@@ -1,24 +1,31 @@
 use pyo3::prelude::*;
 use rairos_mcp::McpServer;
+use std::sync::OnceLock;
+
+fn runtime() -> &'static tokio::runtime::Runtime {
+    static RT: OnceLock<tokio::runtime::Runtime> = OnceLock::new();
+    RT.get_or_init(|| tokio::runtime::Runtime::new().expect("failed to create tokio runtime"))
+}
+
+fn server() -> &'static McpServer {
+    static S: OnceLock<McpServer> = OnceLock::new();
+    S.get_or_init(|| {
+        let s = McpServer::new();
+        runtime().block_on(rairos_mcp::handlers::register_all(&s));
+        s
+    })
+}
 
 /// Call a tool via the Rust MCP server.
 /// Returns the result text on success, None if tool not found.
 #[pyfunction]
 fn call_tool_rs(name: &str, arguments_json: &str) -> PyResult<Option<String>> {
-    let server = McpServer::new();
+    let server = server();
+    let rt = runtime();
 
-    // Register all available Rust MCP handlers
-    let rt = tokio::runtime::Runtime::new()
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
-    rt.block_on(async {
-        rairos_mcp::handlers::register_all(&server).await;
-    });
-
-    // Parse arguments
     let arguments: serde_json::Value = serde_json::from_str(arguments_json)
         .unwrap_or(serde_json::Value::Null);
 
-    // Build JSON-RPC request bytes
     let request_body = serde_json::json!({
         "jsonrpc": "2.0",
         "id": 1,
@@ -37,10 +44,8 @@ fn call_tool_rs(name: &str, arguments_json: &str) -> PyResult<Option<String>> {
     let response: serde_json::Value = serde_json::from_slice(&response_bytes)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
-    // Check for error
     if let Some(error) = response.get("error") {
         let code = error["code"].as_i64().unwrap_or(0);
-        // ERR_METHOD_NOT_FOUND = -32601
         if code == -32601 {
             return Ok(None);
         }
@@ -49,7 +54,6 @@ fn call_tool_rs(name: &str, arguments_json: &str) -> PyResult<Option<String>> {
         ));
     }
 
-    // Extract result
     if let Some(result) = response.get("result") {
         let text = result["content"]
             .as_array()
@@ -66,13 +70,7 @@ fn call_tool_rs(name: &str, arguments_json: &str) -> PyResult<Option<String>> {
 /// List all tool names available in the Rust MCP server.
 #[pyfunction]
 fn list_tools_rs() -> PyResult<Vec<String>> {
-    let server = McpServer::new();
-
-    let rt = tokio::runtime::Runtime::new()
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
-    rt.block_on(async {
-        rairos_mcp::handlers::register_all(&server).await;
-    });
+    let server = server();
 
     let request_bytes = serde_json::to_vec(&serde_json::json!({
         "jsonrpc": "2.0",
@@ -80,7 +78,7 @@ fn list_tools_rs() -> PyResult<Vec<String>> {
         "method": "tools/list",
     })).map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
-    let response_bytes = rt.block_on(async { server.handle_request(&request_bytes).await });
+    let response_bytes = runtime().block_on(async { server.handle_request(&request_bytes).await });
     let response: serde_json::Value = serde_json::from_slice(&response_bytes)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
@@ -98,18 +96,13 @@ fn list_tools_rs() -> PyResult<Vec<String>> {
 /// List all tool names with full definitions (name, description, inputSchema).
 #[pyfunction]
 fn list_tools_detailed_rs() -> PyResult<String> {
-    let server = McpServer::new();
-    let rt = tokio::runtime::Runtime::new()
-        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
-    rt.block_on(async {
-        rairos_mcp::handlers::register_all(&server).await;
-    });
+    let server = server();
 
     let request_bytes = serde_json::to_vec(&serde_json::json!({
         "jsonrpc": "2.0", "id": 1, "method": "tools/list",
     })).map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 
-    let response_bytes = rt.block_on(async { server.handle_request(&request_bytes).await });
+    let response_bytes = runtime().block_on(async { server.handle_request(&request_bytes).await });
     let response: serde_json::Value = serde_json::from_slice(&response_bytes)
         .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
 

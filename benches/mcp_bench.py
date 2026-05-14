@@ -167,8 +167,7 @@ def main():
         print()
 
     print("=" * 80)
-    print("Note: Rust times include PyO3 FFI + McpServer creation + JSON dispatch overhead")
-    print("      (~130µs fixed overhead per call, independent of tool logic).")
+    print("Note: Rust times include PyO3 FFI + JSON-RPC dispatch overhead (now ~5µs baseline).")
     print("Python times are direct function calls with no dispatch overhead.")
     print("For pure compute comparison, see cargo bench results (23µs for 1000 impact scores).")
     print("=" * 80)
