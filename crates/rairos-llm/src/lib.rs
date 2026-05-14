@@ -4,9 +4,12 @@
 //! Replaces: llm/client.py, llm/citation_chain.py, llm/gap_detector.py
 
 pub mod anthropic_stream;
+pub mod cache;
 pub mod client_async;
 pub mod claude_cli;
 pub mod ollama;
+pub mod reasoning;
+pub mod retry;
 
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
