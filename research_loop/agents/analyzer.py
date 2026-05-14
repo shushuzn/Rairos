@@ -30,7 +30,7 @@ class AnalyzerAgent(BaseAgent):
         if self._analyzer is not None:
             return
         try:
-            from llm.gap_analyzer import GapAnalyzerV2
+            from llm.research.gap_analyzer import GapAnalyzerV2
 
             self._analyzer = GapAnalyzerV2()
         except Exception as e:

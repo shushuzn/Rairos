@@ -14,7 +14,7 @@ from llm.research.hypothesis_generator import (
     HypothesisGenerator,
     HypothesisResult,
 )
-from llm.insight_evolution import EvolutionTracker
+from llm.insight import EvolutionTracker
 from llm.text_utils import extract_keywords
 
 # Shared human-readable names for GapType enum values.

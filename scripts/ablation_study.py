@@ -13,8 +13,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from llm.gap_analyzer import GapAnalyzerV2, ResearchGapV2
-from llm.gap_detector import GapType, GapSeverity
+from llm.research.gap_analyzer import GapAnalyzerV2, ResearchGapV2
+from llm.research.gap_detector import GapType, GapSeverity
 from llm.insight.tracker import EvolutionTracker
 
 

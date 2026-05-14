@@ -1,6 +1,6 @@
 """Tier 2 unit tests — llm/gap_analyzer.py, pure functions, no I/O."""
 
-from llm.gap_analyzer import (
+from llm.research.gap_analyzer import (
     ResearchGapV2,
     GapAnalysisResultV2,
     GapAnalyzerV2,
@@ -8,7 +8,7 @@ from llm.gap_analyzer import (
     render_combined_report,
     _GAP_TYPE_NAMES,
 )
-from llm.gap_detector import GapType, GapSeverity
+from llm.research.gap_detector import GapType, GapSeverity
 
 
 # =============================================================================
@@ -628,7 +628,7 @@ class TestGapDetectorPrompts:
 
     def test_system_prompt_has_gap_types(self):
         """System prompt lists all gap types."""
-        from llm.gap_detector import _GAP_DETECTION_SYSTEM_PROMPT
+        from llm.research.gap_detector import _GAP_DETECTION_SYSTEM_PROMPT
 
         required_types = [
             "unexplored_application",
@@ -642,7 +642,7 @@ class TestGapDetectorPrompts:
 
     def test_user_prompt_has_placeholders(self):
         """User prompt has topic and paper placeholders."""
-        from llm.gap_detector import _GAP_DETECTION_USER_PROMPT_TEMPLATE
+        from llm.research.gap_detector import _GAP_DETECTION_USER_PROMPT_TEMPLATE
 
         assert "{topic}" in _GAP_DETECTION_USER_PROMPT_TEMPLATE
         assert "{paper_summaries}" in _GAP_DETECTION_USER_PROMPT_TEMPLATE

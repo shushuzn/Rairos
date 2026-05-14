@@ -1,6 +1,6 @@
 """Tests for research gap detector."""
 
-from llm.gap_detector import (
+from llm.research.gap_detector import (
     GapDetector,
     GapType,
     GapSeverity,

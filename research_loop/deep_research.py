@@ -44,10 +44,10 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from llm.reasoning import StreamingReasoner
 
-from llm.gap_analyzer import GapAnalyzerV2
+from llm.research.gap_analyzer import GapAnalyzerV2
 
 
-from llm.insight_evolution import get_evolution_tracker
+from llm.insight import get_evolution_tracker
 
 
 from db.database import Database
@@ -62,7 +62,7 @@ from research_loop.snapstate import (
 
 
 from research_loop.core import search_arxiv, extract_pdf_text, Paper
-from research_loop.workspace_snapshot import WorkspaceSnapshot
+from rairos_workspace_snapshot_py import WorkspaceSnapshot
 
 
 @dataclass

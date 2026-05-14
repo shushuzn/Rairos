@@ -152,7 +152,7 @@ class ResearchDeepDivePipeline:
         if PostStage.PAPER_ANALYSIS in stages:
             sr = await_stage(PostStage.PAPER_ANALYSIS.value)
             try:
-                from llm.paper_analyzer import PaperAnalyzer
+                from llm.research.paper_analyzer import PaperAnalyzer
 
                 title, abstract, authors = self._get_paper_meta(paper, paper_id)
                 analyzer = PaperAnalyzer(llm_config=llm_config)

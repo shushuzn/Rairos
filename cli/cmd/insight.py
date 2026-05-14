@@ -158,7 +158,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             print_success(f"Rated {args.card}: {stars} ({args.stars}/5)")
             # Bridge to EvolutionTracker
             try:
-                from llm.insight_evolution import get_evolution_tracker
+                from llm.insight import get_evolution_tracker
 
                 evo = get_evolution_tracker()
                 topic = card.paper_title if card else ""
@@ -179,7 +179,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         if ok:
             print_success(f"Liked {args.card} (★★★★★)")
             try:
-                from llm.insight_evolution import get_evolution_tracker
+                from llm.insight import get_evolution_tracker
 
                 evo = get_evolution_tracker()
                 card = manager.get_card(args.card)  # type: ignore[assignment]
@@ -201,7 +201,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         if ok:
             print_success(f"Disliked {args.card} (★☆☆☆☆)")
             try:
-                from llm.insight_evolution import get_evolution_tracker
+                from llm.insight import get_evolution_tracker
 
                 evo = get_evolution_tracker()
                 card = manager.get_card(args.card)  # type: ignore[assignment]

@@ -1,6 +1,7 @@
-use chrono::Local;
-
 #![allow(clippy::sort_by_key)]
+
+use chrono::Local;
+use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -221,6 +222,39 @@ pub fn generate_survey(
     file_path.to_string_lossy().to_string()
 }
 
+// ─── PyO3 Bindings ──────────────────────────────────────────────────────────────
+
+#[pyfunction]
+#[pyo3(signature = (topic, scored_gaps_json, papers_analyzed=0, session_id="", iterations=0, gap_history_stats_json=None, output_dir=None))]
+pub fn generate_survey_py(
+    topic: &str,
+    scored_gaps_json: &str,
+    papers_analyzed: usize,
+    session_id: &str,
+    iterations: usize,
+    gap_history_stats_json: Option<&str>,
+    output_dir: Option<&str>,
+) -> PyResult<String> {
+    let gaps: Vec<ScoredGap> = serde_json::from_str(scored_gaps_json).unwrap_or_default();
+    let history: Option<GapHistoryStats> = gap_history_stats_json
+        .and_then(|s| serde_json::from_str(s).ok());
+    Ok(generate_survey(
+        topic,
+        &gaps,
+        papers_analyzed,
+        session_id,
+        iterations,
+        history.as_ref(),
+        output_dir,
+    ))
+}
+
+#[pymodule]
+pub fn rairos_survey_generator_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(generate_survey_py, m)?)?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -286,7 +320,6 @@ mod tests {
         let out = dir.path().join("surveys");
         let path = generate_survey("Empty", &[], 0, "", 0, None, Some(out.to_str().unwrap()));
         let content = fs::read_to_string(&path).unwrap_or_default();
-        // With empty session_id, the format string produces "Gaps Found: 0 (0 new)"
         assert!(content.contains("0 new"), "content: {content}");
     }
 }

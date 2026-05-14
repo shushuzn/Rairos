@@ -147,7 +147,7 @@ class ResearchPipeline:
         model: Optional[str],
     ) -> Any:
         """Run hypothesis generation with context from previous stages."""
-        from llm.hypothesis_generator import HypothesisGenerator
+        from llm.research.hypothesis_generator import HypothesisGenerator
 
         # Build context strings from previous stages
         trend_context = self._build_trend_context(pipeline_result.trend_result)

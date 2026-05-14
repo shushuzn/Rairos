@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock
 
-from llm.hypothesis_generator import (
+from llm.research.hypothesis_generator import (
     HypothesisGenerator,
     HypothesisType,
     RiskLevel,

@@ -14,7 +14,7 @@ from llm.lean_verifier import (
     render_result,
     render_result_json,
 )
-from llm.hypothesis_generator import ResearchHypothesis, HypothesisType, ExperimentDesign
+from llm.research.hypothesis_generator import ResearchHypothesis, HypothesisType, ExperimentDesign
 
 
 def _build_lean_parser(subparsers) -> argparse.ArgumentParser:

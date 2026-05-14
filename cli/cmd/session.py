@@ -305,7 +305,7 @@ def _process_chat_query(tracker, db, query: str):
 
 def _show_session_gaps(tracker, db):
     """Show gaps based on session context."""
-    from llm.gap_analyzer import GapAnalyzerV2
+    from llm.research.gap_analyzer import GapAnalyzerV2
     from llm.insight_cards import InsightManager
 
     session = tracker.get_current_session()
@@ -326,7 +326,7 @@ def _show_session_gaps(tracker, db):
     )
 
     if result.gaps:
-        from llm.gap_analyzer import render_gap_report
+        from llm.research.gap_analyzer import render_gap_report
 
         print(render_gap_report(result))
     else:
@@ -335,7 +335,7 @@ def _show_session_gaps(tracker, db):
 
 def _show_session_hypothesis(tracker, db):
     """Show hypotheses based on session context."""
-    from llm.gap_analyzer import GapAnalyzerV2, render_combined_report
+    from llm.research.gap_analyzer import GapAnalyzerV2, render_combined_report
     from llm.insight_cards import InsightManager
 
     session = tracker.get_current_session()

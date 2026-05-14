@@ -353,7 +353,7 @@ impl EvolutionReporter {
                             .join(" ")
                     })
                     .unwrap_or_default();
-                Some(format!("{} {}", query, papers))
+                format!("{} {}", query, papers)
             })
             .collect();
 

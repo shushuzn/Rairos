@@ -379,7 +379,7 @@ def resurrect_capsule(capsule_id: str) -> dict:
 
     # Re-score using current impact formula
     try:
-        from research_loop.claim_graph import ClaimGraph
+        from rairos_claimgraph_py import ClaimGraph
 
         cg = ClaimGraph.load()
     except Exception:
@@ -499,7 +499,7 @@ def get_inbound_citations(paper_id: str, graph=None) -> int:
     """Get count of papers that cite paper_id from ClaimGraph."""
     if graph is None:
         try:
-            from research_loop.claim_graph import ClaimGraph
+            from rairos_claimgraph_py import ClaimGraph
 
             graph = ClaimGraph.load()
         except Exception:
@@ -517,7 +517,7 @@ def get_indirect_citations(paper_id: str, graph=None) -> int:
     """
     if graph is None:
         try:
-            from research_loop.claim_graph import ClaimGraph
+            from rairos_claimgraph_py import ClaimGraph
 
             graph = ClaimGraph.load()
         except Exception:
@@ -615,7 +615,7 @@ def score_all_capsules(
 
     # Build claim graph for citation lookup (lazy)
     try:
-        from research_loop.claim_graph import ClaimGraph
+        from rairos_claimgraph_py import ClaimGraph
 
         cg = ClaimGraph.load()
     except Exception:
@@ -1134,7 +1134,7 @@ def score_all_with_predictions(
     capsules = tracker._load_capsules()
 
     try:
-        from research_loop.claim_graph import ClaimGraph
+        from rairos_claimgraph_py import ClaimGraph
 
         cg = ClaimGraph.load()
     except Exception:

@@ -318,7 +318,7 @@ class InsightEvolution:
         self, capsule: CapsuleGene, topic: str
     ) -> Optional[CapsuleCandidate]:
         """Transfer successful pattern to different gap type."""
-        from llm.gap_analyzer import GapType
+        from llm.research.gap_analyzer import GapType
 
         # List all gap types
         all_types = [gt.value for gt in GapType]

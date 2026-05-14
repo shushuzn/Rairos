@@ -14,15 +14,15 @@ def strip_ansi(text: str) -> str:
     return ansi_pattern.sub("", text)
 
 
-from llm.gap_analyzer import (
+from llm.research.gap_analyzer import (
     GapAnalyzerV2,
     ResearchGapV2,
     GapAnalysisResultV2,
     render_gap_report,
     render_combined_report,
 )
-from llm.gap_detector import GapType, GapSeverity
-from llm.insight_evolution import EvolutionTracker, ExplorationAction
+from llm.research.gap_detector import GapType, GapSeverity
+from llm.insight import EvolutionTracker, ExplorationAction
 
 
 @pytest.fixture
@@ -422,7 +422,7 @@ class TestGapConversion:
 
     def test_convert_base_gap(self, analyzer):
         """Test converting base gap to V2."""
-        from llm.gap_detector import ResearchGap
+        from llm.research.gap_detector import ResearchGap
 
         base_gap = ResearchGap(
             gap_type=GapType.METHOD_LIMITATION,
@@ -443,7 +443,7 @@ class TestGapConversion:
 
     def test_convert_multiple_gaps_sorted(self, analyzer):
         """Test that gaps are sorted by severity."""
-        from llm.gap_detector import ResearchGap
+        from llm.research.gap_detector import ResearchGap
 
         gaps = [
             ResearchGap(
@@ -475,8 +475,8 @@ class TestGapConversion:
 
     def test_preference_sorting_boosts_preferred_types(self, analyzer):
         """Test that gaps matching user preferences are boosted."""
-        from llm.gap_detector import ResearchGap
-        from llm.insight_evolution import EvolutionTracker
+        from llm.research.gap_detector import ResearchGap
+        from llm.insight import EvolutionTracker
         import tempfile
         from pathlib import Path
 
@@ -559,7 +559,7 @@ class TestHypothesisGeneration:
     def test_generate_hypotheses_from_gaps(self, analyzer, sample_gap_result):
         """Test hypothesis generation from gap results."""
         with patch("llm.hypothesis_generator.HypothesisGenerator.generate") as mock_gen:
-            from llm.hypothesis_generator import HypothesisResult
+            from llm.research.hypothesis_generator import HypothesisResult
 
             mock_result = HypothesisResult(topic="RAG")
             mock_result.hypotheses = []
@@ -579,8 +579,8 @@ class TestHypothesisGeneration:
         """Test combined analysis method."""
         with patch.object(analyzer, "analyze") as mock_analyze:
             with patch.object(analyzer, "generate_hypotheses") as mock_hypothesis:
-                from llm.gap_analyzer import GapAnalysisResultV2
-                from llm.hypothesis_generator import HypothesisResult
+                from llm.research.gap_analyzer import GapAnalysisResultV2
+                from llm.research.hypothesis_generator import HypothesisResult
 
                 mock_analyze.return_value = GapAnalysisResultV2(topic="Test")
                 mock_hypothesis.return_value = HypothesisResult(topic="Test")
@@ -595,8 +595,8 @@ class TestCombinedReportRendering:
 
     def test_render_combined_empty(self):
         """Test rendering combined report with no gaps."""
-        from llm.gap_analyzer import GapAnalysisResultV2
-        from llm.hypothesis_generator import HypothesisResult
+        from llm.research.gap_analyzer import GapAnalysisResultV2
+        from llm.research.hypothesis_generator import HypothesisResult
 
         gap_result = GapAnalysisResultV2(topic="Test")
         hyp_result = HypothesisResult(topic="Test")
@@ -607,7 +607,7 @@ class TestCombinedReportRendering:
 
     def test_render_combined_with_data(self):
         """Test rendering combined report with data."""
-        from llm.hypothesis_generator import (
+        from llm.research.hypothesis_generator import (
             HypothesisResult,
             HypothesisType,
             ExperimentDesign,

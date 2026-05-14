@@ -1,6 +1,6 @@
 """Tier 2 unit tests — llm/hypothesis_generator.py, pure functions, no I/O."""
 
-from llm.hypothesis_generator import (
+from llm.research.hypothesis_generator import (
     HypothesisType,
     RiskLevel,
     ExperimentDesign,
@@ -649,7 +649,7 @@ class TestPromptTemplates:
 
     def test_system_prompt_has_structure(self):
         """System prompt has required structure."""
-        from llm.hypothesis_generator import _HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT
+        from llm.research.hypothesis_generator import _HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT
 
         assert "3-5" in _HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT
         assert "核心陈述" in _HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT
@@ -658,14 +658,14 @@ class TestPromptTemplates:
 
     def test_user_prompt_template_has_placeholders(self):
         """User prompt template has placeholders."""
-        from llm.hypothesis_generator import _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE
+        from llm.research.hypothesis_generator import _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE
 
         assert "{topic}" in _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE
         assert "{context}" in _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE
 
     def test_user_prompt_template_format(self):
         """User prompt template can be formatted."""
-        from llm.hypothesis_generator import _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE
+        from llm.research.hypothesis_generator import _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE
 
         formatted = _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE.format(
             topic="Test Topic",

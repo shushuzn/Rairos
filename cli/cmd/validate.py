@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 
 from cli._shared import get_db, print_info
-from llm.insight_evolution import EvolutionTracker, ExplorationAction
+from llm.insight import EvolutionTracker, ExplorationAction
 from llm.question_validator import QuestionValidator
 
 

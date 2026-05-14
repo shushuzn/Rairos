@@ -173,7 +173,7 @@ class Snapstate:
         self, query: str, max_iterations: int = 3, archetype: Optional[Dict[str, float]] = None
     ) -> ResearchSession:
         """Create a new research session."""
-        from llm.insight_evolution import get_evolution_tracker
+        from llm.insight import get_evolution_tracker
 
         tracker = get_evolution_tracker()
         profile = tracker.get_archetype()

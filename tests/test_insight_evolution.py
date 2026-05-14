@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from llm.insight_evolution import (
+from llm.insight import (
     EvolutionTracker,
     ExplorationAction,
 )
@@ -750,7 +750,7 @@ class TestExtractKeywords:
     """Test _extract_keywords delegates to extract_keywords util."""
 
     def test_extracts_single_word(self):
-        from llm.insight_evolution import EvolutionTracker
+        from llm.insight import EvolutionTracker
 
         with tempfile.TemporaryDirectory() as tmpdir:
             tracker = EvolutionTracker(data_dir=Path(tmpdir))
@@ -758,7 +758,7 @@ class TestExtractKeywords:
             assert "transformer" in kw
 
     def test_extracts_nothing_from_empty_string(self):
-        from llm.insight_evolution import EvolutionTracker
+        from llm.insight import EvolutionTracker
 
         with tempfile.TemporaryDirectory() as tmpdir:
             tracker = EvolutionTracker(data_dir=Path(tmpdir))

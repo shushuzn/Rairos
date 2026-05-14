@@ -148,7 +148,7 @@ class Dashboard:
 
         # Gap type preferences
         try:
-            from llm.insight_evolution import EvolutionTracker
+            from llm.insight import EvolutionTracker
 
             evolution_tracker = EvolutionTracker()
             profile = evolution_tracker.get_profile()

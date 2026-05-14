@@ -7,9 +7,9 @@ import argparse
 from cli._shared import get_db, print_info, print_error, print_success
 from pathlib import Path
 
-from llm.gap_detector import GapDetector
+from llm.research.gap_detector import GapDetector
 from llm.research.gap_detector import ResearchGap
-from llm.insight_evolution import EvolutionTracker
+from llm.insight import EvolutionTracker
 
 
 def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
@@ -247,9 +247,9 @@ def _run_profile_or_history(args: argparse.Namespace) -> int:
 
 def _run_gap_enhanced(args: argparse.Namespace) -> int:
     """Run enhanced gap detection with insights."""
-    from llm.gap_analyzer import GapAnalyzerV2, render_gap_report, render_combined_report
+    from llm.research.gap_analyzer import GapAnalyzerV2, render_gap_report, render_combined_report
     from llm.insight_cards import InsightManager
-    from llm.insight_evolution import EvolutionTracker, ExplorationAction
+    from llm.insight import EvolutionTracker, ExplorationAction
 
     db = get_db()
     db.init()

@@ -979,7 +979,7 @@ def tool_cite_fetch(paper_id: str, direction: str = "both") -> Dict:
 def tool_paper_analyze(paper_id: str) -> Dict:
     """Analyze paper."""
     try:
-        from llm.paper_analyzer import PaperAnalyzer, PaperAnalysisResult
+        from llm.research.paper_analyzer import PaperAnalyzer, PaperAnalysisResult
         from db.database import Database
 
         db = Database()
@@ -1164,7 +1164,7 @@ def tool_citation_graph(paper_id: str, depth: int = 2, max_nodes: int = 30) -> D
 def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
     """Detect research gaps in a topic using the paper corpus."""
     try:
-        from llm.gap_detector import GapDetector
+        from llm.research.gap_detector import GapDetector
         from db.database import Database
 
         db = Database()
@@ -1453,7 +1453,7 @@ def tool_claim_graph(
 ) -> Dict:
     """Manage cross-paper claim graph: status, add claims, find contradictions, render HTML."""
     try:
-        from research_loop.claim_graph import claim_graph_action
+        from rairos_claimgraph_py import claim_graph_action_py as claim_graph_action
 
         result = claim_graph_action(
             action=action,
@@ -1514,7 +1514,7 @@ def tool_hypothesis_generate(
 ) -> Dict:
     """Generate testable research hypotheses from gap + topic."""
     try:
-        from llm.hypothesis_generator import HypothesisGenerator
+        from llm.research.hypothesis_generator import HypothesisGenerator
 
         gen = HypothesisGenerator()
         result = gen.generate(

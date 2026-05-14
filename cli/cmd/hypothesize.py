@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 
 from cli._shared import get_db, print_info
 from cli.warp import WarpBlocks
-from llm.hypothesis_generator import HypothesisGenerator
+from llm.research.hypothesis_generator import HypothesisGenerator
 
 
 def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
@@ -153,7 +153,7 @@ def _run_hypothesize(args: argparse.Namespace) -> int:
 
 def _run_list_hypotheses() -> int:
     """List all hypotheses with their verdict status."""
-    from llm.insight_evolution import EvolutionTracker
+    from llm.insight import EvolutionTracker
     from llm.experiment_tracker import ExperimentTracker
     from rich.console import Console
 
@@ -239,7 +239,7 @@ def _run_list_hypotheses() -> int:
 
 def _run_validate_hypothesis(hypothesis_id: str) -> int:
     """Validate a hypothesis by checking linked experiment outcomes."""
-    from llm.insight_evolution import EvolutionTracker
+    from llm.insight import EvolutionTracker
     from llm.experiment_tracker import ExperimentTracker
 
     ev = EvolutionTracker()

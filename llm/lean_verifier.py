@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Optional, List, cast
 
 try:
-    from llm.hypothesis_generator import ResearchHypothesis
+    from llm.research.hypothesis_generator import ResearchHypothesis
 
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
@@ -872,7 +872,7 @@ Examples:
         if found:
             exp = found[0]
             if HYPOTHESIS_AVAILABLE:
-                from llm.hypothesis_generator import (
+                from llm.research.hypothesis_generator import (
                     HypothesisType,
                     ResearchHypothesis,
                     ExperimentDesign,
@@ -900,7 +900,7 @@ Examples:
     # Build synthetic hypothesis from text
     if not hypothesis and hypothesis_text:
         if HYPOTHESIS_AVAILABLE:
-            from llm.hypothesis_generator import (
+            from llm.research.hypothesis_generator import (
                 HypothesisType,
                 ResearchHypothesis,
                 ExperimentDesign,

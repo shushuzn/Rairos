@@ -75,7 +75,7 @@ class TestPaperAnalyzerProducesClaims:
     """Smoke test: analyzer returns PaperAnalysisResult with expected fields."""
 
     def test_analyze_returns_result_object(self):
-        from llm.paper_analyzer import PaperAnalyzer
+        from llm.research.paper_analyzer import PaperAnalyzer
 
         analyzer = PaperAnalyzer(llm_config={})
         result = analyzer.analyze(
@@ -93,7 +93,7 @@ class TestPaperAnalyzerProducesClaims:
         assert hasattr(result, "claims")
 
     def test_use_llm_false_sets_llm_used_false(self):
-        from llm.paper_analyzer import PaperAnalyzer
+        from llm.research.paper_analyzer import PaperAnalyzer
 
         analyzer = PaperAnalyzer(llm_config={})
         result = analyzer.analyze(
@@ -123,7 +123,7 @@ class TestVerifyClaimsSetsFields:
 
     def _run_verify(self, sections: dict, content: MockStructuredContent):
         """Helper: create a result with sections and call verify_claims."""
-        from llm.paper_analyzer import PaperAnalyzer, PaperAnalysisResult
+        from llm.research.paper_analyzer import PaperAnalyzer, PaperAnalysisResult
 
         analyzer = PaperAnalyzer(llm_config={})
         result = PaperAnalysisResult(

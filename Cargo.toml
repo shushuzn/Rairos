@@ -19,7 +19,6 @@ members = [
     "crates/rairos-citation-chain",
     "crates/rairos-citation-pathfinder-web",
     "crates/rairos-citations",
-    "crates/rairos-claim-graph",
     "crates/rairos-claimgraph",
     "crates/rairos-cli",
     "crates/rairos-cli-registry",

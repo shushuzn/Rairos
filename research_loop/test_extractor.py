@@ -120,7 +120,7 @@ def _extract_numerical_claims(paper: PaperContent, arxiv_id: str) -> List[TestCa
     # Load ClaimGraph for cross-paper references
     cross_refs: List[str] = []
     try:
-        from research_loop.claim_graph import ClaimGraph
+        from rairos_claimgraph_py import ClaimGraph
 
         cg = ClaimGraph.load()
         inbound = cg.get_inbound_improvement_claims(arxiv_id)

@@ -237,7 +237,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             # Bridge to EvolutionTracker
 
             try:
-                from llm.insight_evolution import get_evolution_tracker
+                from llm.insight import get_evolution_tracker
 
                 evo = get_evolution_tracker()
 
@@ -268,7 +268,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             print_success(f"Liked {args.card} (★★★★★)")
 
             try:
-                from llm.insight_evolution import get_evolution_tracker
+                from llm.insight import get_evolution_tracker
 
                 evo = get_evolution_tracker()
 
@@ -301,7 +301,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             print_success(f"Disliked {args.card} (★☆☆☆☆)")
 
             try:
-                from llm.insight_evolution import get_evolution_tracker
+                from llm.insight import get_evolution_tracker
 
                 evo = get_evolution_tracker()
 

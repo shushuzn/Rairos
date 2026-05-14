@@ -118,7 +118,7 @@ class ExperimentTracker(JsonFileStore):
                 # Record VALIDATED event so gap sorting learns from experiment outcomes
                 if e.hypothesis_id:
                     try:
-                        from llm.insight_evolution import EvolutionTracker, ExplorationAction
+                        from llm.insight import EvolutionTracker, ExplorationAction
 
                         ev = EvolutionTracker()
                         ev.record_event(
@@ -152,7 +152,7 @@ class ExperimentTracker(JsonFileStore):
                 # Record REJECTED event so gap sorting learns from failed experiments
                 if e.hypothesis_id:
                     try:
-                        from llm.insight_evolution import EvolutionTracker, ExplorationAction
+                        from llm.insight import EvolutionTracker, ExplorationAction
 
                         ev = EvolutionTracker()
                         ev.record_event(

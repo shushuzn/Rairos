@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 
 from cli._shared import get_db, print_info
-from llm.insight_evolution import EvolutionTracker, ExplorationAction
+from llm.insight import EvolutionTracker, ExplorationAction
 from llm.argument_builder import ArgumentBuilder, ArgumentResult, render_argument
 
 
@@ -140,7 +140,7 @@ def _run_argue(args: argparse.Namespace) -> int:
 def _build_argument(db, thesis: str, args) -> ArgumentResult:
     """Build argument from thesis."""
     from llm.insight_cards import InsightManager
-    from llm.gap_analyzer import GapAnalyzerV2
+    from llm.research.gap_analyzer import GapAnalyzerV2
 
     # Initialize managers
     insight_manager = InsightManager()

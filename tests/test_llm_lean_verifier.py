@@ -161,7 +161,7 @@ class TestTemplateBasedTranslation:
 
     def _make_hypothesis(self, **kwargs):
         """Create a minimal ResearchHypothesis for testing."""
-        from llm.hypothesis_generator import HypothesisType, ExperimentDesign
+        from llm.research.hypothesis_generator import HypothesisType, ExperimentDesign
 
         defaults = dict(
             id="test-id",
@@ -181,7 +181,7 @@ class TestTemplateBasedTranslation:
         return defaults
 
     def _hypothesis(self, **kwargs):
-        from llm.hypothesis_generator import ResearchHypothesis
+        from llm.research.hypothesis_generator import ResearchHypothesis
 
         d = self._make_hypothesis(**kwargs)
         return ResearchHypothesis(**d)
@@ -217,7 +217,7 @@ class TestTemplateBasedTranslation:
         assert isinstance(code, str)
 
     def test_hypothesis_type_included(self):
-        from llm.hypothesis_generator import HypothesisType
+        from llm.research.hypothesis_generator import HypothesisType
 
         h = self._hypothesis(hypothesis_type=HypothesisType.MECHANISTIC)
         code = _template_based_translation(h)

@@ -47,7 +47,7 @@ def _print_gene_pool_saturation(before: str = "") -> dict:
     try:
         from collections import Counter
 
-        from llm.insight_evolution import get_evolution_tracker
+        from llm.insight import get_evolution_tracker
 
         tracker = get_evolution_tracker()
         capsules = tracker._load_capsules()

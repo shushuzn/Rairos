@@ -1,6 +1,6 @@
 """Tier 2 unit tests — llm/hypothesis_generator.py, pure functions, no I/O."""
 
-from llm.hypothesis_generator import (
+from llm.research.hypothesis_generator import (
     HypothesisType,
     RiskLevel,
     ExperimentDesign,

@@ -26,13 +26,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from core.observability import emit_research_event, EventType, get_trace_id
 
-from research_loop.survey_generator import generate_research_survey
+from rairos_survey_generator_py import generate_survey_py as generate_survey
 
 if TYPE_CHECKING:
     from llm.insight.tracker import EvolutionTracker
     from llm.subscription_monitor import SubscriptionMonitor
     from llm.subscription_scorer import SubscriptionScorer
-    from llm.gap_analyzer import GapAnalyzerV2
+    from llm.research.gap_analyzer import GapAnalyzerV2
     from research_loop.deep_research import DeepResearchAgent
 
 logger = logging.getLogger(__name__)
@@ -152,7 +152,7 @@ class AutonomousOrchestrator:
         from llm.subscription_scorer import SubscriptionScorer
         from llm.insight.tracker import EvolutionTracker
         from research_loop.deep_research import DeepResearchAgent
-        from llm.gap_analyzer import GapAnalyzerV2
+        from llm.research.gap_analyzer import GapAnalyzerV2
 
         from db.database import Database
 
@@ -449,13 +449,13 @@ class AutonomousOrchestrator:
             # ── Generate research survey ─────────────────────────────────────────
             if gaps:
                 try:
-                    survey_path = generate_research_survey(
+                    survey_path = generate_survey(
                         topic=topic,
-                        scored_gaps=scored,
+                        scored_gaps_json=json.dumps(scored),
                         papers_analyzed=research_result.get("papers_analyzed", 0),
                         session_id=session_id,
                         iterations=research_result.get("iterations", 0),
-                        gap_history_stats=filter_stats,
+                        gap_history_stats_json=json.dumps(filter_stats) if filter_stats else None,
                     )
                     logger.info(f"[Orchestrator] Survey generated: {survey_path}")
                 except Exception as e:

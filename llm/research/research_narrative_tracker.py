@@ -225,7 +225,7 @@ class ResearchNarrativeService:
     def _from_evolution_tracker(self, topic: str) -> List[str]:
         """Pull hypothesis_ids from hypothesized events."""
         try:
-            from llm.insight_evolution import EvolutionTracker
+            from llm.insight import EvolutionTracker
 
             ev = EvolutionTracker()
             events = ev.get_recent_events(limit=10000)
@@ -523,7 +523,7 @@ def render_thread(thread: ResearchThread, service: ResearchNarrativeService) -> 
     if thread.hypothesis_ids:
         lines.append(f"HYPOTHESIS STATUS ({thread.hypothesis_count} generated)")
         try:
-            from llm.insight_evolution import EvolutionTracker
+            from llm.insight import EvolutionTracker
 
             ev = EvolutionTracker()
             for hid in thread.hypothesis_ids[:5]:

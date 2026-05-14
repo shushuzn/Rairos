@@ -24,7 +24,7 @@ from llm.insight.gene import CapsuleGene
 from llm.insight.preferences import ExplorationAction
 from llm.insight.tracker import EvolutionTracker
 
-from research_loop.lsp_diagnostics import check_ruff, Diagnostic
+from rairos_lsp_diagnostics_py import check_ruff_py as check_ruff
 
 
 @dataclass
@@ -490,14 +490,14 @@ def run_tests_locally(test_dir: Path, verbose: bool = True) -> subprocess.Comple
     return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
 
 
-def _log_diagnostics(diagnostics: list[Diagnostic], code_path: Path) -> None:
+def _log_diagnostics(diagnostics: list, code_path: Path) -> None:
     """Print ruff diagnostics to stderr for visibility before pytest runs."""
     import sys
 
     lines = [f"\n[ruff] {len(diagnostics)} issue(s) in {code_path.name}:"]
     for d in diagnostics:
-        loc = f"{d.file}:{d.line}:{d.column}"
-        lines.append(f"  [{d.severity.upper()}] {loc} {d.code}: {d.message}")
+        loc = f"{d['file']}:{d['line']}:{d['column']}"
+        lines.append(f"  [{d['severity'].upper()}] {loc} {d['code']}: {d['message']}")
     lines.append("  (running pytest anyway...)")
     print("\n".join(lines), file=sys.stderr)
 

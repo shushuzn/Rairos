@@ -1,3 +1,5 @@
+use pyo3::prelude::*;
+use pyo3::types::{PyDict, PyIterator};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -192,6 +194,69 @@ pub fn format_diagnostics(diagnostics: &[Diagnostic], header: &str) -> String {
         lines.push(d.to_string());
     }
     lines.join("\n")
+}
+
+// ─── PyO3 Bindings ─────────────────────────────────────────────────────────────
+
+fn diag_to_dict(d: &Diagnostic, py: Python<'_>) -> PyResult<Py<PyDict>> {
+    let dict = PyDict::new(py);
+    dict.set_item("file", &d.file)?;
+    dict.set_item("line", d.line)?;
+    dict.set_item("column", d.column)?;
+    dict.set_item("severity", &d.severity)?;
+    dict.set_item("code", &d.code)?;
+    dict.set_item("message", &d.message)?;
+    Ok(dict.into())
+}
+
+fn dict_to_diag(dict: &Bound<'_, PyDict>) -> PyResult<Diagnostic> {
+    Ok(Diagnostic {
+        file: dict.get_item("file")?.and_then(|v| v.extract().ok()).unwrap_or_default(),
+        line: dict.get_item("line")?.and_then(|v| v.extract().ok()).unwrap_or(1),
+        column: dict.get_item("column")?.and_then(|v| v.extract().ok()).unwrap_or(1),
+        severity: dict.get_item("severity")?.and_then(|v| v.extract().ok()).unwrap_or_default(),
+        code: dict.get_item("code")?.and_then(|v| v.extract().ok()).unwrap_or_default(),
+        message: dict.get_item("message")?.and_then(|v| v.extract().ok()).unwrap_or_default(),
+    })
+}
+
+#[pyfunction]
+pub fn check_ruff_py(code_path: &str) -> PyResult<Vec<Py<PyDict>>> {
+    Ok(check_ruff(code_path).iter().map(|d| {
+        Python::with_gil(|py| diag_to_dict(d, py).unwrap())
+    }).collect())
+}
+
+#[pyfunction]
+pub fn check_pyright_py(code_path: &str) -> PyResult<Vec<Py<PyDict>>> {
+    Ok(check_pyright(code_path).iter().map(|d| {
+        Python::with_gil(|py| diag_to_dict(d, py).unwrap())
+    }).collect())
+}
+
+#[pyfunction]
+pub fn format_diagnostics_py(diagnostics: &Bound<'_, PyAny>, header: &str) -> PyResult<String> {
+    let diags: Vec<Diagnostic> = Python::with_gil(|_py| {
+        let iter = PyIterator::from_object(diagnostics)?;
+        let mut result = Vec::new();
+        for item in iter {
+            if let Ok(dict) = item?.downcast::<PyDict>() {
+                if let Ok(d) = dict_to_diag(dict) {
+                    result.push(d);
+                }
+            }
+        }
+        Ok::<_, PyErr>(result)
+    })?;
+    Ok(format_diagnostics(&diags, header))
+}
+
+#[pymodule]
+pub fn rairos_lsp_diagnostics_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(check_ruff_py, m)?)?;
+    m.add_function(wrap_pyfunction!(check_pyright_py, m)?)?;
+    m.add_function(wrap_pyfunction!(format_diagnostics_py, m)?)?;
+    Ok(())
 }
 
 #[cfg(test)]
