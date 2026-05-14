@@ -4,6 +4,7 @@
 //! Coordinates the full research pipeline: fetch → analyze → detect gaps → evolve.
 //! Replaces: research_loop/core.py, research_loop/orchestrator.py, research_loop/deep_research.py
 
+pub mod arxiv_search;
 pub mod hypothesis_generator;
 
 use rairos_core::{Database, Paper, ResearchGap};
@@ -725,7 +726,10 @@ impl DeepResearchAgent {
 
 pub trait ResearchBackend {
     fn stream_plan(&self, query: &str, iteration: i32) -> Result<String, String>;
-    fn search_papers(&self, query: &str, max: usize) -> Result<Vec<rairos_core::Paper>, String>;
+    fn search_papers(&self, query: &str, max: usize) -> Result<Vec<rairos_core::Paper>, String> {
+        // Default implementation: use arXiv search
+        crate::arxiv_search::search(query, max)
+    }
     fn extract_paper(&self, paper: &rairos_core::Paper) -> Result<PaperSnapshot, String>;
     fn analyze_gaps(&self, snapshots: &[PaperSnapshot]) -> Result<Vec<GapSnapshot>, String>;
     fn get_search_guidance(
