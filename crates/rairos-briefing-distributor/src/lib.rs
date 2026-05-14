@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
-
 #![allow(
     clippy::manual_strip,
 )]
+
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
