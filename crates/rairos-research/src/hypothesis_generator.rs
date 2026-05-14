@@ -266,7 +266,14 @@ impl HypothesisGenerator {
     ) -> HypothesisResult {
         let gap_type = self.infer_gap_type(gap_context);
         let hypotheses = self.generate_from_templates(topic, gap_context, &gap_type, creative);
-        // Sort so templates come first, then creative
+        // Enrich: experiment designs, risk assessments, scores
+        let hypotheses: Vec<ResearchHypothesis> = hypotheses.into_iter().map(|mut h| {
+            h.experiment_design = self.generate_experiment_design(&h, topic);
+            h.risk = Some(self.assess_risk(&h));
+            h.novelty_score = self.calculate_novelty(&h, creative);
+            h.feasibility_score = self.calculate_feasibility(&h);
+            h
+        }).collect();
         let result = HypothesisResult {
             topic: topic.to_string(),
             summary: self.generate_summary(&hypotheses),
@@ -827,5 +834,291 @@ mod tests {
         assert!(summary.contains("2 个研究假说"));
         assert!(summary.contains("可行性较高"));
         assert!(summary.contains("创新性较高"));
+    }
+
+    // ─── Comprehensive E2E Tests ────────────────────────────────────────────
+
+    #[test]
+    fn test_all_gap_types_generate_hypotheses() {
+        let gen = HypothesisGenerator::new();
+        let test_cases = vec![
+            ("method_limitation", "Current approach has a scalability limitation"),
+            ("unexplored_application", "This remains a future work direction"),
+            ("contradiction", "However these contradictory results suggest"),
+            ("scalability_issue", "The method does not scale to large production"),
+            ("evaluation_gap", "No benchmark metric exists for evaluation"),
+        ];
+        for (expected_type, context) in &test_cases {
+            let result = gen.generate("Test topic", context, false);
+            assert!(!result.hypotheses.is_empty(),
+                "Should generate at least 1 hypothesis for gap type '{}'", expected_type);
+            // At least one hypothesis should match the gap type
+            let matched = result.hypotheses.iter().any(|h| h.gap_type == *expected_type);
+            assert!(matched,
+                "Gap type '{}' should match for context: {}", expected_type, context);
+            assert!(!result.summary.is_empty());
+            // Verify scores
+            for h in &result.hypotheses {
+                assert!(h.novelty_score >= 0.0 && h.novelty_score <= 1.0,
+                    "novelty_score {} out of range for {}", h.novelty_score, h.gap_type);
+                assert!(h.feasibility_score >= 0.0 && h.feasibility_score <= 1.0,
+                    "feasibility_score {} out of range for {}", h.feasibility_score, h.gap_type);
+            }
+        }
+    }
+
+    #[test]
+    fn test_output_schema_guarantee() {
+        let gen = HypothesisGenerator::new();
+        let result = gen.generate("Transformer efficiency", "Memory footprint limitation", false);
+        for h in &result.hypotheses {
+            // All required fields must be present and non-empty
+            assert!(!h.id.is_empty(), "id must not be empty");
+            assert!(!h.title.is_empty(), "title must not be empty");
+            assert!(!h.hypothesis_type.is_empty(), "type must not be empty");
+            assert!(!h.core_statement.is_empty(), "core_statement must not be empty");
+            assert!(!h.based_on.is_empty(), "based_on must not be empty");
+            assert!(!h.gap_type.is_empty(), "gap_type must not be empty");
+
+            // Experiment design must have all fields
+            assert!(!h.experiment_design.baseline.is_empty(), "experiment baseline must not be empty");
+            assert!(!h.experiment_design.variables.is_empty(), "experiment variables must not be empty");
+            assert!(!h.experiment_design.controls.is_empty(), "experiment controls must not be empty");
+            assert!(!h.experiment_design.evaluation_metrics.is_empty(), "experiment metrics must not be empty");
+            assert!(!h.experiment_design.expected_results.is_empty(), "experiment expected_results must not be empty");
+
+            // Risk must be present
+            assert!(h.risk.is_some(), "risk must be present");
+            if let Some(ref r) = h.risk {
+                assert!(!r.technical.is_empty(), "risk.technical must not be empty");
+                assert!(!r.hypothesis.is_empty(), "risk.hypothesis must not be empty");
+                assert!(r.technical == "low" || r.technical == "medium" || r.technical == "high",
+                    "risk.technical must be low/medium/high, got: {}", r.technical);
+            }
+        }
+    }
+
+    #[test]
+    fn test_multiple_hypotheses_count() {
+        let gen = HypothesisGenerator::new();
+        // With creative=false, should get 2 template hypotheses
+        let result = gen.generate("Vision transformers", "Limitation in attention computation", false);
+        assert_eq!(result.hypotheses.len(), 2,
+            "Should generate exactly 2 template hypotheses without creative");
+
+        // With creative=true and matching domain, should get 3
+        // "transformer" should trigger NLP domain; "contradiction" has 2 templates
+        let result_c = gen.generate("Transformer language model training",
+            "However contradictory results found", true);
+        assert_eq!(result_c.hypotheses.len(), 3,
+            "Should generate 3 hypotheses with creative (contradiction has 2 templates + 1 creative), got {}",
+            result_c.hypotheses.len());
+
+        // Non-matching domain should still get 2
+        let result_neutral = gen.generate("General topic",
+            "Some limitation in approach", true);
+        assert_eq!(result_neutral.hypotheses.len(), 2,
+            "Should generate 2 hypotheses when no domain matches");
+    }
+
+    #[test]
+    fn test_experiment_design_by_type() {
+        let gen = HypothesisGenerator::new();
+        // Comparative type should add specific metrics
+        let result = gen.generate(
+            "Algorithm comparison",
+            "However contradictory findings exist",
+            false,
+        );
+        for h in &result.hypotheses {
+            if h.hypothesis_type == "comparative" {
+                let has_rel_metric = h.experiment_design.evaluation_metrics
+                    .iter().any(|m| m.contains("相对提升"));
+                assert!(has_rel_metric,
+                    "Comparative hypothesis should contain comparison metrics: {:?}",
+                    h.experiment_design.evaluation_metrics);
+            }
+        }
+    }
+
+    #[test]
+    fn test_llm_parse_partial_data() {
+        let gen = HypothesisGenerator::new();
+        // Minimal JSON with only required fields
+        let json = r#"[
+            {
+                "type": "mechanistic",
+                "core_statement": "Test mechanism hypothesis"
+            }
+        ]"#;
+        let result = gen.parse_llm_response(json);
+        assert!(result.is_ok(), "Should parse minimal JSON: {:?}", result.err());
+        let hypotheses = result.unwrap();
+        assert_eq!(hypotheses.len(), 1);
+        assert_eq!(hypotheses[0].hypothesis_type, "mechanistic");
+        assert_eq!(hypotheses[0].core_statement, "Test mechanism hypothesis");
+        // Defaults should be filled
+        assert!(!hypotheses[0].title.is_empty());
+        assert_eq!(hypotheses[0].novelty_score, 0.5);
+    }
+
+    #[test]
+    fn test_llm_parse_multi_hypothesis() {
+        let gen = HypothesisGenerator::new();
+        let json = r#"[
+            {"type": "causal", "core_statement": "H1", "novelty_score": 0.9},
+            {"type": "correlational", "core_statement": "H2", "novelty_score": 0.5},
+            {"type": "comparative", "core_statement": "H3", "novelty_score": 0.3},
+            {"type": "mechanistic", "core_statement": "H4"},
+            {"type": "exploratory", "core_statement": "H5"}
+        ]"#;
+        let result = gen.parse_llm_response(json);
+        assert!(result.is_ok());
+        let hypotheses = result.unwrap();
+        assert_eq!(hypotheses.len(), 5);
+        assert_eq!(hypotheses[0].hypothesis_type, "causal");
+        assert_eq!(hypotheses[4].hypothesis_type, "exploratory");
+    }
+
+    #[test]
+    fn test_llm_parse_empty_json_array() {
+        let gen = HypothesisGenerator::new();
+        let result = gen.parse_llm_response("[]");
+        assert!(result.is_err(), "Empty array should be error");
+    }
+
+    #[test]
+    fn test_llm_parse_invalid_json() {
+        let gen = HypothesisGenerator::new();
+        let result = gen.parse_llm_response("not json at all");
+        assert!(result.is_err(), "Invalid JSON should be error");
+    }
+
+    #[test]
+    fn test_llm_parse_malformed_lines() {
+        let gen = HypothesisGenerator::new();
+        // Lines that start with H pattern but have no useful content
+        let lines = "not a hypothesis\n[假说] \n";
+        let result = gen.parse_llm_response(lines);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_creative_domain_detection() {
+        let gen = HypothesisGenerator::new();
+        // NLP domain
+        let r = gen.generate("Transformer language model", "Limitation", true);
+        assert!(r.hypotheses.iter().any(|h| h.gap_type == "cross_domain"),
+            "NLP topic should trigger creative hypothesis");
+
+        // Vision domain
+        let r = gen.generate("Image classification with CNN", "Limitation", true);
+        assert!(r.hypotheses.iter().any(|h| h.gap_type == "cross_domain"),
+            "Vision topic should trigger creative hypothesis");
+
+        // Non-matching domain
+        let r = gen.generate("Something completely different", "Limitation", true);
+        assert!(!r.hypotheses.iter().any(|h| h.gap_type == "cross_domain"),
+            "Non-matching topic should NOT trigger creative hypothesis");
+    }
+
+    #[test]
+    fn test_risk_for_all_types() {
+        let gen = HypothesisGenerator::new();
+        let types = vec!["causal", "correlational", "comparative", "mechanistic", "exploratory"];
+        for hypo_type in &types {
+            let h = ResearchHypothesis {
+                id: "test".into(),
+                title: format!("Test {}", hypo_type),
+                hypothesis_type: hypo_type.to_string(),
+                core_statement: if *hypo_type == "exploratory" {
+                    "新领域探索".into()
+                } else {
+                    format!("Standard {} hypothesis", hypo_type)
+                },
+                based_on: "Test".into(),
+                novelty_score: 0.5,
+                feasibility_score: 0.5,
+                experiment_design: ExperimentDesign::default(),
+                risk: None,
+                gap_type: "test".into(),
+            };
+            let risk = gen.assess_risk(&h);
+            // Exploratory with 新领域 should be high/high
+            if *hypo_type == "exploratory" && h.core_statement.contains("新领域") {
+                assert_eq!(risk.technical, "high", "{} with 新领域 should be high", hypo_type);
+                assert_eq!(risk.hypothesis, "high", "{} with 新领域 should be high", hypo_type);
+            } else {
+                // Standard types should not crash
+                assert!(!risk.technical.is_empty());
+                assert!(!risk.hypothesis.is_empty());
+            }
+        }
+    }
+
+    #[test]
+    fn test_scoring_ranges() {
+        let gen = HypothesisGenerator::new();
+        let result = gen.generate("Test topic for scoring", "Limitation in approach", false);
+        for h in &result.hypotheses {
+            assert!(h.novelty_score >= 0.0, "novelty must be >= 0");
+            assert!(h.novelty_score <= 1.0, "novelty must be <= 1");
+            assert!(h.feasibility_score >= 0.0, "feasibility must be >= 0");
+            assert!(h.feasibility_score <= 1.0, "feasibility must be <= 1");
+        }
+    }
+
+    #[test]
+    fn test_summary_edge_cases() {
+        let gen = HypothesisGenerator::new();
+        // Empty list
+        let s = gen.generate_summary(&[]);
+        assert_eq!(s, "无法生成有效假说，请提供更多上下文");
+
+        // Single hypothesis with mixed scores
+        let h = ResearchHypothesis {
+            id: "1".into(), title: "H".into(), hypothesis_type: "causal".into(),
+            core_statement: "Test".into(), based_on: "Gap".into(),
+            novelty_score: 0.3, feasibility_score: 0.3,
+            experiment_design: ExperimentDesign::default(), risk: None,
+            gap_type: "test".into(),
+        };
+        let s = gen.generate_summary(&[h]);
+        assert!(s.contains("1 个研究假说"));
+        assert!(!s.contains("可行性较高"), "Low feasibility should not mention high");
+        assert!(!s.contains("创新性较高"), "Low novelty should not mention high");
+    }
+
+    #[test]
+    fn test_multi_hypothesis_diverse_types() {
+        let gen = HypothesisGenerator::new();
+        let result = gen.generate(
+            "Deep learning optimization",
+            "Memory limitation in large batch training on GPU clusters",
+            false,
+        );
+        assert!(result.hypotheses.len() >= 2, "Should have at least 2 hypotheses");
+        // All hypotheses should have unique IDs
+        let ids: std::collections::HashSet<&str> = result.hypotheses.iter().map(|h| h.id.as_str()).collect();
+        assert_eq!(ids.len(), result.hypotheses.len(), "All hypothesis IDs should be unique");
+        // At least one should be causal (from method_limitation template)
+        let has_causal = result.hypotheses.iter().any(|h| h.hypothesis_type == "causal");
+        assert!(has_causal, "method_limitation should generate causal hypotheses");
+    }
+
+    #[test]
+    fn test_generate_with_all_types_inferable() {
+        let gen = HypothesisGenerator::new();
+        // A context that mentions many gap-type keywords
+        let rich_context = "The current method has a scalability limitation and we found contradictory \
+            results. Future work should explore benchmark metrics for evaluation.";
+        let result = gen.generate("Rich topic", rich_context, true);
+        // Should still work and produce valid output
+        assert!(!result.hypotheses.is_empty());
+        assert!(!result.summary.is_empty());
+        for h in &result.hypotheses {
+            assert!(!h.id.is_empty());
+            assert!(h.novelty_score > 0.0);
+        }
     }
 }
