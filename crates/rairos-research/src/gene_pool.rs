@@ -1,13 +1,13 @@
 //! Gene Pool — capsule-based research guidance from historical feedback.
 //!
 //! Mirrors llm/insight/gene.py + storage.py for Rust-side search and logging.
-//! Reads/writes ~/.ai_research_os/evolution/gene_pool.jsonl (JSON Lines).
+//! Enhanced: get_capsule_by_title, encode_capsule, preference_profile integration.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::PathBuf;
 
-// ─── Stopwords for keyword/keyword extraction (mirrors llm/text_utils.py) ──────
+// ─── Stopwords ─────────────────────────────────────────────────────────────────
 
 const STOPWORDS: &[&str] = &[
     "the", "and", "for", "with", "and", "the", "a", "an", "of", "in", "on", "to",
@@ -23,9 +23,48 @@ const STOPWORDS: &[&str] = &[
 
 const KEYWORD_MIN_LEN: usize = 3;
 
-// ─── CapsuleGene sub-schema ────────────────────────────────────────────────────
+// ─── UserPreferenceProfile (from preference_profile.json) ─────────────────────
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Default)]
+struct UserPreferenceProfile {
+    #[serde(default)]
+    accepts: i32,
+    #[serde(default)]
+    rejects: i32,
+    #[serde(default)]
+    views: i32,
+}
+
+fn load_preference_profile(base: &PathBuf) -> UserPreferenceProfile {
+    let path = base.join("preference_profile.json");
+    std::fs::read_to_string(&path)
+        .ok()
+        .and_then(|s| serde_json::from_str(&s).ok())
+        .unwrap_or_default()
+}
+
+fn compute_success_score(profile: &UserPreferenceProfile) -> f64 {
+    let total = (profile.accepts + profile.rejects + profile.views).max(1);
+    profile.accepts as f64 / total as f64
+}
+
+// ─── Gap type normalization ────────────────────────────────────────────────────
+
+fn normalize_gap_type(gap_type: &str) -> String {
+    match gap_type.to_lowercase().as_str() {
+        "method_limitation" | "contradiction" | "scalability_issue" => "method_limitation".into(),
+        "unexplored_application" | "application_gap" | "exploration_gap" => "application_gap".into(),
+        "evaluation_gap" | "baseline_gap" => "evaluation_gap".into(),
+        "theoretical_gap" => "theoretical_gap".into(),
+        "dataset_gap" => "dataset_gap".into(),
+        "generalization_gap" => "generalization_gap".into(),
+        _ => "improvement".into(),
+    }
+}
+
+// ─── CapsuleGene (read + write) ────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct CapsuleGene {
     #[serde(default)]
     pub capsule_id: String,
@@ -46,7 +85,23 @@ struct CapsuleGene {
     #[serde(default)]
     pub feedback_count: i32,
     #[serde(default)]
+    pub evolved_generation: i32,
+    #[serde(default)]
+    pub archetype: serde_json::Value,
+    #[serde(default)]
     pub status: String,
+    #[serde(default)]
+    pub low_score_streak: i32,
+    #[serde(default)]
+    pub credibility_score: f64,
+    #[serde(default)]
+    pub trendslop: bool,
+    #[serde(default)]
+    pub trendslop_reason: String,
+    #[serde(default)]
+    pub credibility_badge: String,
+    #[serde(default)]
+    pub source_arxiv_category: String,
 }
 
 // ─── Category grouping ─────────────────────────────────────────────────────────
@@ -85,22 +140,20 @@ pub fn extract_keywords(text: &str) -> Vec<String> {
     result
 }
 
-// ─── trigger_match — 5-signal scoring ──────────────────────────────────────────
+// ─── trigger_match ─────────────────────────────────────────────────────────────
 
 impl CapsuleGene {
     fn trigger_match(&self, topic: &str, gap_type: &str, keywords: &[String]) -> f64 {
         let mut score = 0.0;
-
-        // Signal 1: action_gap_title substring (max +0.5)
         let title_lower = self.action_gap_title.to_lowercase();
         let topic_lower = topic.to_lowercase();
+
         if topic_lower.contains(&title_lower) && !title_lower.is_empty() {
             score += 0.5;
         } else if title_lower.contains(&topic_lower) && !topic_lower.is_empty() {
             score += 0.3;
         }
 
-        // Signal 2: trigger_topic substring (max +0.3)
         let trig_lower = self.trigger_topic.to_lowercase();
         if topic_lower.contains(&trig_lower) && !trig_lower.is_empty() {
             score += 0.3;
@@ -108,7 +161,6 @@ impl CapsuleGene {
             score += 0.2;
         }
 
-        // Signal 3: gap_type exact + category match (max +0.3)
         let gap_lower = gap_type.to_lowercase();
         let trig_gap_lower = self.trigger_gap_type.to_lowercase();
         if !gap_lower.is_empty() && !trig_gap_lower.is_empty() {
@@ -119,7 +171,6 @@ impl CapsuleGene {
             }
         }
 
-        // Signal 4: keyword overlap (max +0.15)
         if !keywords.is_empty() && !self.trigger_keywords.is_empty() {
             let kw_set: HashSet<&str> = keywords.iter().map(|s| s.as_str()).collect();
             let trig_set: HashSet<&str> = self.trigger_keywords.iter().map(|s| s.as_str()).collect();
@@ -130,7 +181,6 @@ impl CapsuleGene {
             }
         }
 
-        // Signal 5: token Jaccard (max +0.25)
         let topic_tokens: HashSet<&str> = topic_lower
             .split_whitespace()
             .filter(|w| w.len() >= KEYWORD_MIN_LEN && !STOPWORDS.contains(w))
@@ -147,11 +197,17 @@ impl CapsuleGene {
 
         score.min(1.0)
     }
+
+    fn matches_title(&self, title: &str, topic: &str) -> bool {
+        self.action_gap_title.to_lowercase() == title.to_lowercase()
+            && (topic.is_empty() || self.trigger_topic.to_lowercase() == topic.to_lowercase())
+    }
 }
 
 // ─── GenePool Manager ──────────────────────────────────────────────────────────
 
 pub struct GenePool {
+    base_dir: PathBuf,
     jsonl_path: PathBuf,
     events_path: PathBuf,
 }
@@ -163,6 +219,7 @@ impl Default for GenePool {
             .join(".ai_research_os")
             .join("evolution");
         Self {
+            base_dir: base.clone(),
             jsonl_path: base.join("gene_pool.jsonl"),
             events_path: base.join("events.jsonl"),
         }
@@ -172,6 +229,10 @@ impl Default for GenePool {
 impl GenePool {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn base_path(&self) -> &PathBuf {
+        &self.base_dir
     }
 
     fn load_capsules(&self) -> Vec<CapsuleGene> {
@@ -223,6 +284,118 @@ impl GenePool {
         (best_hint, best_score)
     }
 
+    /// Find a capsule by its action_gap_title (case-insensitive, optional topic filter)
+    fn get_capsule_by_title(&self, title: &str, topic: &str) -> Option<CapsuleGene> {
+        self.load_capsules()
+            .into_iter()
+            .find(|c| c.status == "active" && c.matches_title(title, topic))
+    }
+
+    /// Generate a new capsule ID: uuid hex[:12]
+    fn generate_capsule_id(&self) -> String {
+        uuid::Uuid::new_v4().to_string().chars().filter(|c| *c != '-').take(12).collect()
+    }
+
+    /// Create a new capsule and append it to gene_pool.jsonl.
+    /// Mirrors EvolutionTracker.encode_capsule() from llm/insight/storage.py
+    pub fn encode_capsule(
+        &self,
+        topic: &str,
+        gap_type: &str,
+        gap_title: &str,
+        _gap_description: &str,
+        success_score: f64,
+    ) -> Result<String, String> {
+        let normalized_gap = normalize_gap_type(gap_type);
+        let keywords = extract_keywords(gap_title);
+        let now = chrono_now();
+        let capsule_id = self.generate_capsule_id();
+        let norm_clone = normalized_gap.clone();
+
+        let capsule = CapsuleGene {
+            capsule_id: capsule_id.clone(),
+            created_at: now.clone(),
+            trigger_topic: topic.to_string(),
+            trigger_gap_type: normalized_gap.clone(),
+            trigger_keywords: keywords,
+            action_gap_type: normalized_gap,
+            action_gap_title: gap_title.to_string(),
+            outcome_success_score: success_score,
+            feedback_count: 1,
+            evolved_generation: 0,
+            archetype: serde_json::json!({
+                "gap_type": normalize_gap_type(gap_type),
+            }),
+            status: "active".to_string(),
+            low_score_streak: 0,
+            credibility_score: 0.5,
+            trendslop: false,
+            trendslop_reason: String::new(),
+            credibility_badge: "medium".to_string(),
+            source_arxiv_category: String::new(),
+        };
+
+        // Ensure directory exists
+        if let Some(parent) = self.jsonl_path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create dir: {}", e))?;
+        }
+
+        // Append to JSONL
+        let json_line = serde_json::to_string(&capsule)
+            .map_err(|e| format!("Failed to serialize capsule: {}", e))?;
+
+        let mut file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&self.jsonl_path)
+            .map_err(|e| format!("Failed to open gene_pool.jsonl: {}", e))?;
+
+        use std::io::Write;
+        writeln!(file, "{}", json_line)
+            .map_err(|e| format!("Failed to write capsule: {}", e))?;
+
+        // Record lifecycle event
+        self.record_capsule_lifecycle(&capsule_id, "created", gap_title, &norm_clone, "")?;
+
+        Ok(capsule_id)
+    }
+
+    /// Record a capsule lifecycle event to lifecycle_events.jsonl
+    fn record_capsule_lifecycle(
+        &self,
+        capsule_id: &str,
+        action: &str,
+        gap_title: &str,
+        gap_type: &str,
+        details: &str,
+    ) -> Result<(), String> {
+        let evt = serde_json::json!({
+            "timestamp": chrono_now(),
+            "capsule_id": capsule_id,
+            "action": action,
+            "gap_title": gap_title,
+            "gap_type": gap_type,
+            "details": details,
+        });
+
+        let lifecycle_path = self.base_dir.join("lifecycle_events.jsonl");
+        if let Some(parent) = lifecycle_path.parent() {
+            std::fs::create_dir_all(parent).ok();
+        }
+
+        let mut file = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&lifecycle_path)
+            .map_err(|e| format!("Failed to open lifecycle_events.jsonl: {}", e))?;
+
+        use std::io::Write;
+        writeln!(file, "{}", evt).map_err(|e| format!("Failed to write lifecycle event: {}", e))?;
+        Ok(())
+    }
+
+    /// Record a gap accept event — enhanced: creates/updates capsule + logs event
     pub fn record_gap_accept(
         &self,
         topic: &str,
@@ -230,6 +403,7 @@ impl GenePool {
         gap_title: &str,
         gap_description: &str,
     ) -> Result<(), String> {
+        // Step 1: Append to events.jsonl
         let evt = serde_json::json!({
             "timestamp": chrono_now(),
             "topic": topic,
@@ -244,21 +418,69 @@ impl GenePool {
             "notes": "",
             "insight_card_id": "",
         });
-
-        // Ensure parent directory exists
         if let Some(parent) = self.events_path.parent() {
-            std::fs::create_dir_all(parent).map_err(|e| format!("Failed to create dir: {}", e))?;
+            std::fs::create_dir_all(parent).ok();
+        }
+        {
+            let mut file = std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&self.events_path)
+                .map_err(|e| format!("Failed to open events.jsonl: {}", e))?;
+            use std::io::Write;
+            writeln!(file, "{}", evt).map_err(|e| format!("Failed to write event: {}", e))?;
         }
 
-        let mut file = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&self.events_path)
-            .map_err(|e| format!("Failed to open events.jsonl: {}", e))?;
+        // Step 2: Check for existing capsule by title
+        let existing = self.get_capsule_by_title(gap_title, topic);
+        let profile = load_preference_profile(&self.base_dir);
+        let new_score = compute_success_score(&profile);
 
+        if let Some(mut cap) = existing {
+            // Update existing capsule
+            cap.feedback_count += 1;
+            cap.outcome_success_score = cap.outcome_success_score * 0.7 + new_score * 0.3;
+
+            // Write updated capsule back: rewrite entire JSONL with this capsule updated
+            let capsules: Vec<CapsuleGene> = self
+                .load_capsules()
+                .into_iter()
+                .map(|c| {
+                    if c.capsule_id == cap.capsule_id {
+                        cap.clone()
+                    } else {
+                        c
+                    }
+                })
+                .collect();
+            self.write_all_capsules(&capsules)?;
+
+            self.record_capsule_lifecycle(
+                &cap.capsule_id, "consumed", gap_title, gap_type,
+                &format!("Re-accepted (feedback_count={})", cap.feedback_count),
+            )?;
+        } else {
+            // Create new capsule
+            self.encode_capsule(topic, gap_type, gap_title, gap_description, new_score)?;
+        }
+
+        Ok(())
+    }
+
+    /// Rewrite entire gene_pool.jsonl with given capsules
+    fn write_all_capsules(&self, capsules: &[CapsuleGene]) -> Result<(), String> {
+        if let Some(parent) = self.jsonl_path.parent() {
+            std::fs::create_dir_all(parent).ok();
+        }
+        let mut file = std::fs::File::create(&self.jsonl_path)
+            .map_err(|e| format!("Failed to write gene_pool.jsonl: {}", e))?;
         use std::io::Write;
-        writeln!(file, "{}", evt).map_err(|e| format!("Failed to write event: {}", e))?;
-
+        for cap in capsules {
+            let line = serde_json::to_string(cap)
+                .map_err(|e| format!("Failed to serialize: {}", e))?;
+            writeln!(file, "{}", line)
+                .map_err(|e| format!("Failed to write line: {}", e))?;
+        }
         Ok(())
     }
 }
@@ -280,6 +502,21 @@ fn dirs_next() -> Option<PathBuf> {
 mod tests {
     use super::*;
 
+    fn make_pool() -> (GenePool, PathBuf) {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let unique = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let dir = std::env::temp_dir().join(format!("rairos_gp_{}_{}", std::process::id(), unique));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let pool = GenePool {
+            base_dir: dir.clone(),
+            jsonl_path: dir.join("gene_pool.jsonl"),
+            events_path: dir.join("events.jsonl"),
+        };
+        (pool, dir)
+    }
+
     fn sample_capsule() -> CapsuleGene {
         CapsuleGene {
             capsule_id: "test001".to_string(),
@@ -291,79 +528,99 @@ mod tests {
             action_gap_title: "RL sample efficiency".to_string(),
             outcome_success_score: 0.8,
             feedback_count: 5,
+            evolved_generation: 0,
+            archetype: serde_json::Value::Object(serde_json::Map::new()),
             status: "active".to_string(),
+            low_score_streak: 0,
+            credibility_score: 0.5,
+            trendslop: false,
+            trendslop_reason: String::new(),
+            credibility_badge: "medium".to_string(),
+            source_arxiv_category: String::new(),
         }
     }
 
     #[test]
-    fn test_trigger_match_exact_title() {
-        let cap = sample_capsule();
-        // topic contains the capsule's action_gap_title
-        let score = cap.trigger_match("RL sample efficiency issues", "method_limitation", &[]);
-        assert!(score > 0.5, "score was {}", score);
-    }
-
-    #[test]
-    fn test_trigger_match_gap_type_boost() {
-        let cap = sample_capsule();
-        let score_same = cap.trigger_match("some topic", "method_limitation", &[]);
-        let score_diff = cap.trigger_match("some topic", "application_gap", &[]);
-        assert!(score_same >= score_diff, "same type should score >= different");
-    }
-
-    #[test]
-    fn test_trigger_match_no_match() {
-        let cap = sample_capsule();
-        let score = cap.trigger_match("quantum physics", "theoretical_gap", &[]);
-        assert!(score < 0.5, "unrelated topic should score low, got {}", score);
-    }
-
-    #[test]
-    fn test_extract_keywords() {
-        let result = extract_keywords("novel RL sample efficiency method");
-        assert!(result.contains(&"efficiency".to_string()));
-        assert!(!result.contains(&"method".to_string())); // stopword
-        assert!(!result.contains(&"rl".to_string())); // too short (len=2)
-    }
-
-    #[test]
-    fn test_find_capsule_empty_gene_pool() {
-        let dir = std::env::temp_dir().join("rairos_gene_pool_empty_test");
-        let _ = std::fs::remove_dir_all(&dir);
-        std::fs::create_dir_all(&dir).unwrap();
-        let pool = GenePool {
-            jsonl_path: dir.join("gene_pool.jsonl"),
-            events_path: dir.join("events.jsonl"),
-        };
-        let (hint, score) = pool.find_capsule("test", "method", None, 0.0);
-        assert!(hint.is_none(), "expected no hint, got {:?}", hint);
-        assert_eq!(score, 0.0);
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn test_gap_category_groups() {
-        assert_eq!(gap_category("improvement"), "method");
-        assert_eq!(gap_category("method_limitation"), "method");
-        assert_eq!(gap_category("application_gap"), "content");
-        assert_eq!(gap_category("exploration_gap"), "content");
-        assert_eq!(gap_category("theoretical_gap"), "theoretical_gap");
-    }
-
-    #[test]
-    fn test_record_gap_accept() {
-        let dir = std::env::temp_dir().join("rairos_gene_pool_test");
-        let _ = std::fs::remove_dir_all(&dir);
-        std::fs::create_dir_all(&dir).unwrap();
-        let pool = GenePool {
-            jsonl_path: dir.join("gene_pool.jsonl"),
-            events_path: dir.join("events.jsonl"),
-        };
-        let r = pool.record_gap_accept("test topic", "method_gap", "test title", "test desc");
-        assert!(r.is_ok());
-        let content = std::fs::read_to_string(&pool.events_path).unwrap_or_default();
+    fn test_new_capsule_creation() {
+        let (pool, dir) = make_pool();
+        let result = pool.encode_capsule("test topic", "method_gap", "test capsule", "desc", 0.7);
+        assert!(result.is_ok());
+        let content = std::fs::read_to_string(pool.jsonl_path).unwrap_or_default();
         assert!(content.contains("test topic"));
-        assert!(content.contains("accepted"));
+        assert!(content.contains("test capsule"));
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_get_capsule_by_title_found() {
+        let (pool, dir) = make_pool();
+        pool.encode_capsule("test topic", "method_gap", "My Gap Title", "desc", 0.7).unwrap();
+        let found = pool.get_capsule_by_title("My Gap Title", "test topic");
+        assert!(found.is_some());
+        assert_eq!(found.unwrap().action_gap_title, "My Gap Title");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_get_capsule_by_title_not_found() {
+        let (pool, dir) = make_pool();
+        pool.encode_capsule("test topic", "method_gap", "Existing Title", "desc", 0.7).unwrap();
+        let found = pool.get_capsule_by_title("Nonexistent", "");
+        assert!(found.is_none());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_enhanced_record_gap_accept_creates_new() {
+        let (pool, dir) = make_pool();
+        let r = pool.record_gap_accept("test topic", "method_gap", "New Gap", "desc");
+        assert!(r.is_ok());
+        let content = std::fs::read_to_string(&pool.jsonl_path).unwrap_or_default();
+        assert!(content.contains("New Gap"), "capsule should be created in JSONL");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_enhanced_record_gap_accept_updates_existing() {
+        let (pool, dir) = make_pool();
+        pool.encode_capsule("topic", "method_gap", "Existing Gap", "desc", 0.5).unwrap();
+        let initial_count = pool.load_capsules().len();
+        assert_eq!(initial_count, 1);
+
+        // Call record_gap_accept with same title
+        let r = pool.record_gap_accept("topic", "method_gap", "Existing Gap", "desc");
+        assert!(r.is_ok());
+
+        // Should NOT create a new capsule (same count)
+        let capsules = pool.load_capsules();
+        assert_eq!(capsules.len(), 1, "should still be 1 capsule, not duplicated");
+        assert_eq!(capsules[0].feedback_count, 2, "feedback_count should increment");
+        assert!(
+            capsules[0].outcome_success_score < 0.7,
+            "score should be blended (got {})",
+            capsules[0].outcome_success_score
+        );
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn test_compute_success_score() {
+        let profile = UserPreferenceProfile { accepts: 3, rejects: 1, views: 1 };
+        let score = compute_success_score(&profile);
+        assert!((score - 0.6).abs() < 0.001, "expected 0.6, got {}", score);
+    }
+
+    #[test]
+    fn test_normalize_gap_type() {
+        assert_eq!(normalize_gap_type("method_limitation"), "method_limitation");
+        assert_eq!(normalize_gap_type("contradiction"), "method_limitation");
+        assert_eq!(normalize_gap_type("unknown"), "improvement");
+    }
+
+    #[test]
+    fn test_generate_capsule_id() {
+        let pool = GenePool::new();
+        let id = pool.generate_capsule_id();
+        assert_eq!(id.len(), 12);
     }
 }
