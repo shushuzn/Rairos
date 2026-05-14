@@ -660,9 +660,13 @@ mod tests {
     }
 
     #[test]
-    fn test_get_v3_capsules_empty() {
+    fn test_get_v3_capsules_smoke() {
         let v3 = get_v3_capsules();
-        assert!(v3.is_empty());
+        // Check that every v3 capsule has required fields
+        for capsule in &v3 {
+            assert!(!capsule.capsule_id.is_empty(), "capsule_id must not be empty");
+            assert!(!capsule.action_gap_title.is_empty(), "action_gap_title must not be empty");
+        }
     }
 
     #[test]

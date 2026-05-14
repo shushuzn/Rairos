@@ -1,7 +1,7 @@
 """Re-export from llm.routing.semantic_router for backward compatibility."""
 import warnings
 warnings.warn(
-    f"Import from llm.semantic_router is deprecated, use llm.research.semantic_router instead",
+    "Import from llm.semantic_router is deprecated, use llm.research.semantic_router instead",
     DeprecationWarning,
     stacklevel=2,
 )

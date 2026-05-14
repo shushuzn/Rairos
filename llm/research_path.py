@@ -1,7 +1,7 @@
 """Re-export from llm.research.research_path for backward compatibility."""
 import warnings
 warnings.warn(
-    f"Import from llm.research_path is deprecated, use llm.research.research_path instead",
+    "Import from llm.research_path is deprecated, use llm.research.research_path instead",
     DeprecationWarning,
     stacklevel=2,
 )

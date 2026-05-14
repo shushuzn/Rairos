@@ -143,7 +143,6 @@ def main():
 
     call_tool_rs = load_rust()
     py_funcs = load_python()
-    UPDATE_MSG_HEIGHT = len(TOOLS) + 4
 
     # Warmup
     for _ in range(5):

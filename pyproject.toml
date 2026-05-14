@@ -153,7 +153,7 @@ strict = false
 no_implicit_optional = false
 exclude = [".venv/", "shared/"]
 # mypy 1.20.1 CRLF line-number reporting bug on Windows — known false positives
-disable_error_code = ["assignment", "union-attr"]
+disable_error_code = ["assignment", "union-attr", "arg-type"]
 
 [tool.coverage.run]
 

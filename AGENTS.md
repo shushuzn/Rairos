@@ -111,8 +111,8 @@ GIT_ASKPASS=echo timeout 55 git push
 
 ## Stats
 
-- Rust: **153 crates**, ~55k+ lines, 48 CLI commands, 175+ tests
-- Python: ~90k lines, 4882 tests, 19 skipped
+- Rust: **153 crates**, ~55k+ lines, 47 CLI commands, 207+ test files
+- Python: ~90k lines, 5079 tests collected
 
 ## Web UI
 

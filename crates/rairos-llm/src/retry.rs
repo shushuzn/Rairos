@@ -5,7 +5,7 @@
 //!
 //! Rate limiter: token bucket algorithm with configurable QPS.
 
-use std::sync::atomic::{AtomicU32, AtomicBool, Ordering};
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 

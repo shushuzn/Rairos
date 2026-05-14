@@ -5,7 +5,6 @@
 //! Mirrors llm/reasoning.py::_parse_thinking_stream()
 
 use crate::{LlmError, StreamChunk};
-use bytes::Bytes;
 use futures_util::StreamExt;
 use tokio_stream::Stream;
 use std::pin::Pin;

@@ -4,7 +4,7 @@
 //! Mirrors llm/research/gap_detector.py
 //! Falls back to rule-based detection (gap_analysis.rs) when LLM unavailable.
 
-use crate::{LlmClient, Message, NonStreamResponse};
+use crate::{LlmClient, Message};
 use regex::Regex;
 
 // ─── Prompt Templates ─────────────────────────────────────────────────────────

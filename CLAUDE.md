@@ -17,7 +17,7 @@
 - **Python**: >=3.10, tested on 3.11/3.12/3.13
 - **CLI**: 77 commands via `rairos <cmd>`
 - **Entry**: `cli:main` (pyproject.toml scripts.rairos)
-- **Test**: 5156 tests, pytest with timeout=60s
+- **Test**: 5079 tests, pytest with timeout=60s
 - **Linter**: ruff (E4/E7/F/W/B/I), mypy (strict=false)
 - **CI gate**: 40% coverage
 

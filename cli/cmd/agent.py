@@ -221,8 +221,6 @@ def _run_deep_research(args) -> int:
             )
         )
 
-    snapstate_dir = Path.home() / ".ai_research_os" / "sessions"
-
     def _on_thought(role: str, content: str, iteration: int):
         """Streaming callback: display reasoning step in DeepSeek-TUI style."""
         _display_thinking(role, content, args.mode)
