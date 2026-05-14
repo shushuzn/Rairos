@@ -2697,7 +2697,8 @@ fn handle_repl(query: Option<String>) -> Result<()> {
                         p.title.clone()
                     };
                     let arxiv = p.arxiv_id.as_deref().unwrap_or("-");
-                    println!("  {}. [{}] {} — {}", i + 1, &p.id[..8], title, arxiv);
+                    let id_short = if p.id.len() > 8 { &p.id[..8] } else { p.id.as_str() };
+                    println!("  {}. [{}] {} — {}", i + 1, id_short, title, arxiv);
                 }
                 println!();
             }
@@ -2753,7 +2754,8 @@ fn handle_repl(query: Option<String>) -> Result<()> {
                                 p.title.clone()
                             };
                             let arxiv = p.arxiv_id.as_deref().unwrap_or("-");
-                            println!("  {}. [{}] {} — {}", i + 1, &p.id[..8], title, arxiv);
+                            let id_short = if p.id.len() > 8 { &p.id[..8] } else { p.id.as_str() };
+                            println!("  {}. [{}] {} — {}", i + 1, id_short, title, arxiv);
                         }
                         println!();
                     }
