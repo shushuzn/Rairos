@@ -738,6 +738,52 @@ impl ToolHandler for TrendsCompareTagsHandler {
     }
 }
 
+// ─── Cite Fetch ──────────────────────────────────────────────────────────────
+
+pub struct CiteFetchHandler;
+
+#[async_trait]
+impl ToolHandler for CiteFetchHandler {
+    fn name(&self) -> &str { "cite_fetch" }
+    fn description(&self) -> &str { "Fetch citation metadata for a paper from Semantic Scholar" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("paper_id".into(), ToolProperty::string("Paper ID or arXiv ID to fetch citations for")),
+            ].into_iter().collect(),
+            vec!["paper_id".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let paper_id = params["paper_id"].as_str().ok_or("Missing paper_id")?;
+
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(15))
+            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+
+        let url = format!(
+            "https://api.semanticscholar.org/graph/v1/paper/{}?fields=title,citationCount,externalIds",
+            paper_id
+        );
+
+        let resp = client.get(&url).send().await.map_err(|e| format!("Request failed: {}", e))?;
+        if !resp.status().is_success() {
+            return Err(format!("Semantic Scholar API returned {}", resp.status()));
+        }
+
+        let data: serde_json::Value = resp.json().await.map_err(|e| format!("Parse failed: {}", e))?;
+        let cited_by = data["citationCount"].as_u64().unwrap_or(0) as usize;
+        let title = data["title"].as_str().unwrap_or("Unknown");
+
+        Ok(serde_json::json!({
+            "paper_id": paper_id,
+            "title": title,
+            "cited_by_count": cited_by,
+            "citations": [],
+        }))
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
@@ -761,6 +807,7 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(TrendsPredictNextHandler).await;
     server.register(TrendsTopPredictionsHandler).await;
     server.register(TrendsCompareTagsHandler).await;
+    server.register(CiteFetchHandler).await;
     crate::llm_handlers::register_llm_handlers(server).await;
 }
 
@@ -885,6 +932,7 @@ mod tests {
         assert!(TrendsPredictNextHandler.name() == "trends_predict_next");
         assert!(TrendsTopPredictionsHandler.name() == "trends_top_predictions");
         assert!(TrendsCompareTagsHandler.name() == "trends_compare_tags");
+        assert!(CiteFetchHandler.name() == "cite_fetch");
     }
 
     #[test]
@@ -958,6 +1006,18 @@ mod tests {
     fn test_trends_compare_tags_error_missing_tag_a() {
         let result = futures::executor::block_on(TrendsCompareTagsHandler.call(serde_json::json!({"tag_b": "test"})));
         assert_eq!(result, Err("Missing tag_a".to_string()));
+    }
+
+    #[test]
+    fn test_cite_fetch_schema_requires_paper_id() {
+        let req = CiteFetchHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"paper_id".into()));
+    }
+
+    #[test]
+    fn test_cite_fetch_error_missing_paper_id() {
+        let result = futures::executor::block_on(CiteFetchHandler.call(serde_json::json!({})));
+        assert_eq!(result, Err("Missing paper_id".to_string()));
     }
 
     #[test]

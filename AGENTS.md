@@ -157,12 +157,14 @@ GIT_ASKPASS=echo timeout 55 git push
 - Backward-compatible params: Rust handlers accept both `paper_id` and `arxiv_id`
 - Schema validation in Python runs before Rust dispatch, so Rust handler params must match tools_defs.py schemas
 
-### Remaining High-ROI Modules for Rust Porting
+### Remaining Python Fallback MCP Tools for Rust Porting
 
-| Module | Lines | Why |
-|--------|-------|-----|
-| `semantic_router.py` | 499 | Per-call routing, self-contained logic |
-| `route_planner.py` | 578 | LLM call chain planning |
-| `trust_scorer.py` | 211 | Pure computation, no deps |
+36 Python fallback tools remain at `rairos_mcp.py:handle_call_tool`. Highest-ROI candidates:
 
-Note: `postprocess.py` (561 lines) is a pipeline orchestrator calling 7+ other modules — NOT suitable for standalone port.
+| Tool | Complexity | Deps |
+|------|-----------|------|
+| `cite_fetch` | Low | rairos-parser |
+| `gap_submit` / `gap_evolve` | Medium | rairos-core + rairos-llm |
+| `gene_pool_decay` / `crossover` | Medium | rairos-evolution |
+
+Note: `research_run`, `paper2code_run`, `research_agent_*` are pipeline orchestrators calling 7+ modules — NOT suitable for standalone port.
