@@ -50,12 +50,11 @@ class TestSession:
 class TestRateLimiting:
     """Test rate limiting behavior."""
 
-    @pytest.mark.xfail(reason="Flaky: time.monotonic vs time.time mismatch in full suite", strict=False)
     def test_rate_limiter_allows_after_3_seconds(self):
         import parsers.arxiv as arxiv_parser
 
-        arxiv_parser._last_request_time = 0.0
-        with patch("time.time", return_value=10.0):
+        arxiv_parser._last_arxiv_request_time = 0.0
+        with patch("time.monotonic", return_value=10.0):
             with patch("time.sleep") as mock_sleep:
                 arxiv_parser._rate_limit()
                 mock_sleep.assert_not_called()
@@ -63,8 +62,8 @@ class TestRateLimiting:
     def test_rate_limiter_sleeps_when_too_soon(self):
         import parsers.arxiv as arxiv_parser
 
-        arxiv_parser._last_request_time = 10.0
-        with patch("time.time", return_value=10.5):
+        arxiv_parser._last_arxiv_request_time = 10.0
+        with patch("time.monotonic", return_value=10.5):
             with patch("time.sleep") as mock_sleep:
                 arxiv_parser._rate_limit()
                 mock_sleep.assert_called_once()
