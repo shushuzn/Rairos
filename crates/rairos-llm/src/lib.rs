@@ -5,6 +5,7 @@
 
 pub mod anthropic_stream;
 pub mod cache;
+pub mod citation_chain;
 pub mod client_async;
 pub mod claude_cli;
 pub mod gap_detector;
