@@ -1673,8 +1673,33 @@ def handle_initialize() -> dict:
 
 
 def handle_list_tools() -> dict:
-    """Handle list_tools request."""
-    return success_response({"tools": get_tools()})
+    """Handle list_tools request — merge Python + Rust tools."""
+    import json
+
+    # Get Rust tool definitions
+    rust_json = ""
+    try:
+        from rairos_mcp_py import list_tools_detailed_rs
+
+        rust_json = list_tools_detailed_rs()
+    except Exception:
+        pass
+
+    # Get Python tool definitions
+    py_tools = get_tools()
+    py_names = {t["name"] for t in py_tools}
+
+    # Merge: Python tools first, then Rust tools not already in Python
+    if rust_json:
+        try:
+            rust_tools = json.loads(rust_json)
+            for rt in rust_tools:
+                if rt["name"] not in py_names:
+                    py_tools.append(rt)
+        except Exception:
+            pass
+
+    return success_response({"tools": py_tools})
 
 
 def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:  # type: ignore[arg-type]

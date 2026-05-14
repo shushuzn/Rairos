@@ -95,9 +95,32 @@ fn list_tools_rs() -> PyResult<Vec<String>> {
     Ok(tools)
 }
 
+/// List all tool names with full definitions (name, description, inputSchema).
+#[pyfunction]
+fn list_tools_detailed_rs() -> PyResult<String> {
+    let server = McpServer::new();
+    let rt = tokio::runtime::Runtime::new()
+        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
+    rt.block_on(async {
+        rairos_mcp::handlers::register_all(&server).await;
+    });
+
+    let request_bytes = serde_json::to_vec(&serde_json::json!({
+        "jsonrpc": "2.0", "id": 1, "method": "tools/list",
+    })).map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
+
+    let response_bytes = rt.block_on(async { server.handle_request(&request_bytes).await });
+    let response: serde_json::Value = serde_json::from_slice(&response_bytes)
+        .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
+
+    let tools_json = response["result"]["tools"].to_string();
+    Ok(tools_json)
+}
+
 #[pymodule]
 fn rairos_mcp_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(call_tool_rs, m)?)?;
     m.add_function(wrap_pyfunction!(list_tools_rs, m)?)?;
+    m.add_function(wrap_pyfunction!(list_tools_detailed_rs, m)?)?;
     Ok(())
 }
