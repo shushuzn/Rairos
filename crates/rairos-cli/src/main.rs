@@ -20,6 +20,7 @@ use anyhow::{Context, Result};
 use chrono::Utc;
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
+use rairos_pdf;
 use rairos_kg::{GraphAlgorithms, KnowledgeGraph};
 use rairos_llm::{Capsule, CapsuleStatus, GenePool, GenePoolDiversityCalculator};
 use rairos_memory::{ResearchMemory, ResearchStance, StanceType};
@@ -1182,9 +1183,41 @@ fn handle_parse(db: &Database, id: &str) -> Result<()> {
         anyhow::bail!("Paper not found: {}", id);
     };
 
+    let arxiv_id = paper.arxiv_id.as_deref().unwrap_or(&paper.id);
     println!("Parsing paper: {}", paper.title);
-    println!("(Full text parsing not yet implemented in Rust)");
-    println!("Paper status: {}", status_str(&paper.parse_status));
+    println!("  arXiv: {}", arxiv_id);
+
+    let pdf_dir = dirs::home_dir()
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join(".ai_research_os")
+        .join("pdfs");
+    std::fs::create_dir_all(&pdf_dir).context("Failed to create pdfs directory")?;
+
+    let pdf_path = pdf_dir.join(format!("{}.pdf", arxiv_id));
+
+    if !pdf_path.exists() {
+        let pdf_url = format!("https://arxiv.org/pdf/{}.pdf", arxiv_id);
+        println!("  Downloading from {} ...", pdf_url);
+        let rt = tokio::runtime::Runtime::new().context("Failed to create tokio runtime")?;
+        rt.block_on(rairos_pdf::download_pdf(&pdf_url, &pdf_path))
+            .context("Failed to download PDF")?;
+        println!("  Downloaded to: {}", pdf_path.display());
+    } else {
+        println!("  Using cached PDF: {}", pdf_path.display());
+    }
+
+    println!("  Extracting text ...");
+    let text = rairos_pdf::extract_pdf_text(&pdf_path)
+        .context("Failed to extract text from PDF")?;
+
+    println!("\n  Text length: {} characters", text.len());
+
+    let preview: String = text.chars().take(500).collect();
+    println!("\n--- Preview (first 500 chars) ---\n{}", preview);
+
+    db.update_paper_status(&paper.id, rairos_core::ParseStatus::Done)
+        .context("Failed to update paper status")?;
+    println!("\n[OK] Parse complete. Status set to 'done'.");
     Ok(())
 }
 
