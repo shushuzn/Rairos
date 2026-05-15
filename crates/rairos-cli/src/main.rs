@@ -1936,56 +1936,7 @@ fn status_str(status: &ParseStatus) -> &'static str {
 }
 
 // All handler implementations moved to handlers.rs
-mod tests {
-    use crate::handle_parse;
-    use crate::handle_repl;
-    use crate::Cli;
-    use crate::Commands;
-    use rairos_core::Database;
-    use std::path::PathBuf;
-
-
-    #[test]
-    fn cli_version_exists() {
-        assert!(true)
-    }
-
-    #[test]
-    fn test_parse_paper_not_found() {
-        let dir = std::env::temp_dir().join("rairos_cli_test_parse");
-        let _ = std::fs::remove_dir_all(&dir);
-        std::fs::create_dir_all(&dir).unwrap();
-        let db_path = dir.join("test.db");
-        let db = Database::open(&db_path).unwrap();
-        let result = handle_parse(&db, "nonexistent_paper_xyz");
-        assert!(result.is_err());
-        let err = result.unwrap_err().to_string().to_lowercase();
-        assert!(err.contains("not found"), "Expected 'not found', got: {}", err);
-        let _ = std::fs::remove_dir_all(&dir);
-    }
-
-    #[test]
-    fn test_repl_db_not_found() {
-        let dir = std::env::temp_dir().join("rairos_cli_test_repl");
-        let _ = std::fs::remove_dir_all(&dir);
-        std::fs::create_dir_all(&dir).unwrap();
-        let orig_dir = std::env::current_dir().unwrap();
-        std::env::set_current_dir(&dir).unwrap();
-        let result = handle_repl(None);
-        std::env::set_current_dir(&orig_dir).unwrap();
-        let _ = std::fs::remove_dir_all(&dir);
-        assert!(result.is_err());
-        let err = result.unwrap_err().to_string();
-        assert!(err.contains("Database not found"), "Expected 'Database not found', got: {}", err);
-    }
-
-    #[test]
-    fn test_cli_dispatch_routes_version() {
-        let cli = Cli { command: Commands::Version, db: PathBuf::from("test.db"), verbose: false };
-        // Just check the Cli struct can be created with Version command
-        assert!(matches!(cli.command, Commands::Version));
-    }
-}
+mod tests;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
