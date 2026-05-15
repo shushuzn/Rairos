@@ -32,10 +32,16 @@ _TOOLS_CACHE: list[dict] | None = None
 
 
 def _get_tools() -> list[dict]:
+    """Return tool definitions. Prefers Rust MCP (rairos_mcp_py), falls back to Python tools_defs."""
     global _TOOLS_CACHE
     if _TOOLS_CACHE is None:
-        from mcp.tools_defs import get_tools
-        _TOOLS_CACHE = get_tools()
+        try:
+            from rairos_mcp_py import list_tools_detailed_rs
+            tools_json = list_tools_detailed_rs()
+            _TOOLS_CACHE = json.loads(tools_json)
+        except (ImportError, Exception):
+            from mcp.tools_defs import get_tools
+            _TOOLS_CACHE = get_tools()
     return _TOOLS_CACHE
 
 

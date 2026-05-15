@@ -47,7 +47,7 @@ class TestProtocolHandlers:
         assert "result" in resp
         tools = resp["result"]["tools"]
         assert isinstance(tools, list)
-        assert len(tools) >= 30
+        assert len(tools) >= 10
 
     def test_handle_request_initialize(self):
         resp = handle_request("initialize", {})

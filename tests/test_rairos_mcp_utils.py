@@ -1,6 +1,6 @@
 """Tests for rairos_mcp utility functions."""
 
-from rairos_mcp import error_response, success_response, _ensure_data_dir
+from rairos_mcp import error_response, success_response
 
 
 class TestRairosMcpUtils:
@@ -16,7 +16,3 @@ class TestRairosMcpUtils:
     def test_success_response_none(self):
         r = success_response(None)
         assert r["result"] is None
-
-    def test_ensure_data_dir(self):
-        # Should not raise
-        _ensure_data_dir()

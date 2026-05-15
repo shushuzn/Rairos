@@ -4,8 +4,8 @@ import datetime as dt
 from unittest.mock import Mock
 
 
-import ai_research_os as airo
 from core import Paper
+from core.basics import safe_uid, slugify_title
 from parsers import arxiv as arxiv_parser
 from parsers import crossref as crossref_parser
 from parsers.input_detection import (
@@ -635,50 +635,50 @@ class TestCrossrefDictToPaper:
 # =============================================================================
 class TestSlugifyTitle:
     def test_preserves_case(self):
-        assert airo.slugify_title("Attention Is All You Need") == "Attention-Is-All-You-Need"
+        assert slugify_title("Attention Is All You Need") == "Attention-Is-All-You-Need"
 
     def test_replaces_spaces_with_hyphen(self):
-        assert airo.slugify_title("hello world") == "hello-world"
+        assert slugify_title("hello world") == "hello-world"
 
     def test_max_len(self):
         long_title = "a" * 100
-        result = airo.slugify_title(long_title)
+        result = slugify_title(long_title)
         assert len(result) <= 80
 
     def test_strips_special_chars(self):
-        assert airo.slugify_title("Deep Learning (DL)!") == "Deep-Learning-DL"
+        assert slugify_title("Deep Learning (DL)!") == "Deep-Learning-DL"
 
     def test_handles_single_word(self):
-        assert airo.slugify_title("BERT") == "BERT"
+        assert slugify_title("BERT") == "BERT"
 
     def test_handles_empty_string(self):
         # Empty string returns "Paper" per implementation
-        assert airo.slugify_title("") == "Paper"
+        assert slugify_title("") == "Paper"
 
     def test_handles_none(self):
-        assert airo.slugify_title(None) == "Paper"
+        assert slugify_title(None) == "Paper"
 
     def test_no_change_for_valid_slug_chars(self):
-        assert airo.slugify_title("attention-is-all-you-need") == "attention-is-all-you-need"
+        assert slugify_title("attention-is-all-you-need") == "attention-is-all-you-need"
 
     def test_unicode_preserved(self):
-        assert airo.slugify_title("深度学习") == "深度学习"
+        assert slugify_title("深度学习") == "深度学习"
 
 
 class TestSafeUidTier1:
     def test_preserves_case(self):
-        assert airo.safe_uid("TestName") == "TestName"
+        assert safe_uid("TestName") == "TestName"
 
     def test_replaces_special_chars_with_underscore(self):
         # safe_uid replaces non-word chars with underscore
-        assert airo.safe_uid("hello!world@123") == "hello_world_123"
+        assert safe_uid("hello!world@123") == "hello_world_123"
 
     def test_unicode_preserved(self):
-        assert airo.safe_uid("论文标题") == "论文标题"
+        assert safe_uid("论文标题") == "论文标题"
 
     def test_underscore_replacement(self):
         # Dashes and dots are valid in safe_uid (not stripped)
-        assert airo.safe_uid("hello-world") == "hello-world"
+        assert safe_uid("hello-world") == "hello-world"
 
 
 class TestIsProbablyDoi:
