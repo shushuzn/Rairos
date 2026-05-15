@@ -1937,8 +1937,13 @@ fn status_str(status: &ParseStatus) -> &'static str {
 
 // All handler implementations moved to handlers.rs
 mod tests {
-    use super::*;
-    use crate::handlers::*;
+    use crate::handle_parse;
+    use crate::handle_repl;
+    use crate::Cli;
+    use crate::Commands;
+    use rairos_core::Database;
+    use std::path::PathBuf;
+
 
     #[test]
     fn cli_version_exists() {
