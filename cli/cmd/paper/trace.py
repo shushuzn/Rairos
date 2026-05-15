@@ -1,18 +1,22 @@
-     1|"""
-     2|paper trace CLI Command — query paper-code lineage.
-     3|
-     4|Usage:
-     5|    airos paper trace 2106.09685          # show all traces for a paper
-     6|    airos paper trace --list            # show recent traces across all papers
-     7|    airos paper trace 2106.09685 --refs # show paper_section_refs details
-     8|"""
+"""
+paper trace CLI Command — query paper-code lineage.
+
+Usage:
+    airos paper trace 2106.09685          # show all traces for a paper
+    airos paper trace --list            # show recent traces across all papers
+    airos paper trace 2106.09685 --refs # show paper_section_refs details
+"""
+
 # [LEGACY] Paper-code lineage tracker — depends on llm/trace/
 
-     9|
-    10|from __future__ import annotations
-    11|
-    12|import sys
-    13|from 
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import click
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from cli._shared import print_info, print_success, print_error
 

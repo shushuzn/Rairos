@@ -1,19 +1,22 @@
-     1|"""
-     2|Paper → Slides CLI Command
-     3|
-     4|Usage:
-     5|    airos slides 2106.09685                    # 单论文生成
-     6|    airos slides 2106.09685 1706.03762        # 多论文对比
-     7|    airos slides --list                        # 从数据库选择
-     8|    airos slides --interactive                 # 交互模式
-     9|"""
+"""
+Paper → Slides CLI Command
+
+Usage:
+    airos slides 2106.09685                    # 单论文生成
+    airos slides 2106.09685 1706.03762        # 多论文对比
+    airos slides --list                        # 从数据库选择
+    airos slides --interactive                 # 交互模式
+"""
+
 # [LEGACY] Paper slide generator — interactive/render mode, not MCP equivalents
 
-    10|
-    11|import click
-    12|import sys
-    13|import re
-    14|from pathlib import Path
+import click
+import sys
+import re
+from pathlib import Path
+from typing import Optional, List
+
+# Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from cli._shared import print_success, print_error, print_info

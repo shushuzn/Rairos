@@ -1,19 +1,21 @@
-     1|"""CLI command: chat — RAG Chat with your paper library."""
-     2|
-     3|from __future__ import annotations
-     4|
-     5|import argparse
-     6|import datetime
-     7|import os
-     8|import warnings
-     9|from typing import List, Optional
-    10|
-    11|from cli._shared import get_db, Colors, colored, print_info, print_error
-    12|
-    13|
-    14|def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
-    15|    """Build the chat subcommand parser."""
-# [LEGACY] Interactive 
+"""CLI command: chat — RAG Chat with your paper library."""
+
+# [LEGACY] Interactive LLM chat — TUI-heavy, no Rust CLI equivalent
+
+from __future__ import annotations
+
+import argparse
+import datetime
+import os
+import warnings
+from typing import List, Optional
+
+from cli._shared import get_db, Colors, colored, print_info, print_error
+
+
+def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the chat subcommand parser."""
+    p = subparsers.add_parser(
         "chat",
         help="RAG Chat with your paper library",
         description="Ask questions about papers in your library with source citations.",
