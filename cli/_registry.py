@@ -69,7 +69,7 @@ _SUBCOMMAND_TABLE = [
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("route", "cli.cmd.route", "_build_route_parser"),
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
-    ("path", "cli.cmd.path", "_build_path_parser"),
+    ("validate", "cli.cmd.validate", "_build_validate_parser"),
     ("slides", "cli.cmd.slides", "_build_slides_parser"),
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),

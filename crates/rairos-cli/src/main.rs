@@ -1258,6 +1258,36 @@ enum Commands {
         tags: Option<String>,
     },
 
+    /// Generate research reading path from KG citation graph
+    Path {
+        /// Research topic to explore
+        topic: Option<String>,
+
+        /// Reading level: intro/intermediate/advanced
+        #[arg(short = 'l', long, default_value = "intermediate")]
+        level: String,
+
+        /// Maximum papers to recommend
+        #[arg(short = 'n', long, default_value = "8")]
+        max: usize,
+
+        /// Minimum publication year
+        #[arg(long)]
+        min_year: Option<i32>,
+
+        /// Maximum publication year
+        #[arg(long)]
+        max_year: Option<i32>,
+
+        /// Output as Mermaid diagram
+        #[arg(short, long)]
+        mermaid: bool,
+
+        /// Interactive exploration mode
+        #[arg(short, long)]
+        interactive: bool,
+    },
+
     /// Manage research questions (ported from Python CLI)
     Question {
         #[command(subcommand)]
@@ -5639,6 +5669,28 @@ fn main() -> Result<()> {
                 tags.as_deref(),
             )?;
         }
+
+        Commands::Path {
+            topic,
+            level,
+            max,
+            min_year,
+            max_year,
+            mermaid,
+            interactive,
+        } => {
+            let db = open_db(&cli.db)?;
+            handle_path(
+                &db,
+                topic.as_deref(),
+                level,
+                *max,
+                *min_year,
+                *max_year,
+                *mermaid,
+                *interactive,
+            )?;
+        }
     }
 
     Ok(())
@@ -6692,6 +6744,148 @@ fn slugify(title: &str) -> String {
         slug[..80].to_string()
     } else {
         slug
+    }
+}
+
+/// Handle `path` — generate research reading path from KG citation graph.
+fn handle_path(
+    db: &rairos_core::Database,
+    topic: Option<&str>,
+    level: &str,
+    max: usize,
+    min_year: Option<i32>,
+    max_year: Option<i32>,
+    mermaid: bool,
+    interactive: bool,
+) -> Result<()> {
+    let level_enum = rairos_pathfinder::ReadingLevel::from_str(level)
+        .unwrap_or(rairos_pathfinder::ReadingLevel::Intermediate);
+
+    // Interactive mode
+    if interactive || topic.is_none() {
+        return handle_path_interactive(db, level_enum, max, min_year, max_year, mermaid);
+    }
+
+    let topic = topic.unwrap();
+    println!("📊 Planning reading path for: {topic}");
+    println!("   Level: {level} | Max papers: {max}");
+
+    // Get KG if available
+    let kg = try_get_kg();
+
+    let planner = rairos_pathfinder::ResearchPathPlanner::new(kg.as_ref(), Some(db));
+    let path = planner.plan_path(topic, level_enum, max, min_year, max_year);
+
+    if mermaid {
+        println!("{}", rairos_pathfinder::render_mermaid(&path));
+    } else {
+        println!();
+        println!("{}", rairos_pathfinder::render_path(&path));
+    }
+
+    Ok(())
+}
+
+/// Interactive path exploration mode.
+fn handle_path_interactive(
+    db: &rairos_core::Database,
+    mut level: rairos_pathfinder::ReadingLevel,
+    mut max: usize,
+    min_year: Option<i32>,
+    max_year: Option<i32>,
+    mut mermaid: bool,
+) -> Result<()> {
+    println!("📚 Research Path Planner");
+    println!("  输入 topic 开始规划阅读路径");
+    println!("  输入 level [intro|intermediate|advanced] 设置难度");
+    println!("  输入 max [N] 设置最大论文数");
+    println!("  输入 mermaid 显示图");
+    println!("  输入 q/quit 退出");
+    println!();
+
+    loop {
+        let user_input = match std::io::stdin().lines().next() {
+            Some(Ok(line)) => line.trim().to_string(),
+            _ => break,
+        };
+
+        if user_input.is_empty() {
+            continue;
+        }
+
+        let cmd = user_input.to_lowercase();
+
+        match cmd.as_str() {
+            "q" | "quit" | "exit" => break,
+            "mermaid" => {
+                mermaid = !mermaid;
+                let status = if mermaid { "启用" } else { "禁用" };
+                println!("  ✓ Mermaid 输出已{status}");
+                continue;
+            }
+            _ => {}
+        }
+
+        if cmd.starts_with("level ") {
+            let level_str = cmd.split_once(' ').map(|(_, rest)| rest).unwrap_or("");
+            if let Some(l) = rairos_pathfinder::ReadingLevel::from_str(level_str) {
+                level = l;
+                println!("  ✓ 难度设置为: {level_str}");
+            } else {
+                println!("  ✗ 未知难度，可选: intro, intermediate, advanced");
+            }
+            continue;
+        }
+
+        if cmd.starts_with("max ") {
+            if let Some(rest) = cmd.split_once(' ').map(|(_, r)| r) {
+                if let Ok(n) = rest.parse::<usize>() {
+                    max = n;
+                    println!("  ✓ 最大论文数设置为: {max}");
+                } else {
+                    println!("  ✗ 无效数字");
+                }
+            }
+            continue;
+        }
+
+        // Treat as topic
+        let topic = &user_input;
+        println!();
+        println!("📊 Planning: {topic}");
+
+        let kg = try_get_kg();
+        let planner = rairos_pathfinder::ResearchPathPlanner::new(kg.as_ref(), Some(db));
+        let path = planner.plan_path(topic, level, max, min_year, max_year);
+
+        if mermaid {
+            println!("{}", rairos_pathfinder::render_mermaid(&path));
+        } else {
+            println!();
+            println!("{}", rairos_pathfinder::render_path(&path));
+        }
+        println!();
+    }
+
+    Ok(())
+}
+
+/// Try to load the knowledge graph from default location.
+fn try_get_kg() -> Option<rairos_kg::KnowledgeGraph> {
+    let kg_path = dirs::home_dir()
+        .unwrap_or_default()
+        .join(".ai_research_os")
+        .join("kg.db");
+    if kg_path.exists() {
+        rairos_kg::KnowledgeGraph::with_db(kg_path).ok()
+    } else {
+        // Try local path
+        let local_path = std::path::PathBuf::from("kg.db");
+        if local_path.exists() {
+            rairos_kg::KnowledgeGraph::with_db(local_path).ok()
+        } else {
+            Some(rairos_kg::KnowledgeGraph::new())
+        }
     }
 }
 

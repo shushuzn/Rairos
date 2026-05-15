@@ -2781,6 +2781,7 @@ dependencies = [
  "rairos-memory",
  "rairos-narratives",
  "rairos-parser",
+ "rairos-pathfinder",
  "rairos-pdf",
  "rairos-postprocess",
  "rairos-questions",
@@ -3766,9 +3767,13 @@ dependencies = [
 name = "rairos-pathfinder"
 version = "0.1.0"
 dependencies = [
- "dirs",
+ "chrono",
+ "rairos-core",
+ "rairos-kg",
  "serde",
  "serde_json",
+ "thiserror 1.0.69",
+ "tracing",
 ]
 
 [[package]]
