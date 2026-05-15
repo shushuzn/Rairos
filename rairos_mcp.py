@@ -31,17 +31,13 @@ def success_response(result: Any) -> dict:
 _TOOLS_CACHE: list[dict] | None = None
 
 
-def _get_tools() -> list[dict]:
-    """Return tool definitions. Prefers Rust MCP (rairos_mcp_py), falls back to Python tools_defs."""
+def get_tools() -> list[dict]:
+    """Return tool definitions from Rust MCP server."""
     global _TOOLS_CACHE
     if _TOOLS_CACHE is None:
-        try:
-            from rairos_mcp_py import list_tools_detailed_rs
-            tools_json = list_tools_detailed_rs()
-            _TOOLS_CACHE = json.loads(tools_json)
-        except (ImportError, Exception):
-            from mcp.tools_defs import get_tools
-            _TOOLS_CACHE = get_tools()
+        from rairos_mcp_py import list_tools_detailed_rs
+        tools_json = list_tools_detailed_rs()
+        _TOOLS_CACHE = json.loads(tools_json)
     return _TOOLS_CACHE
 
 
@@ -54,7 +50,7 @@ def handle_initialize() -> dict:
 
 
 def handle_list_tools() -> dict:
-    return success_response({"tools": _get_tools()})
+    return success_response({"tools": get_tools()})
 
 
 def handle_call_tool(name: str, arguments: Dict[str, Any]) -> dict:

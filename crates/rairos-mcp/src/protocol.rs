@@ -135,6 +135,7 @@ impl ToolProperty {
 pub struct Tool {
     pub name: String,
     pub description: String,
+    #[serde(rename = "inputSchema")]
     pub input_schema: ToolInputSchema,
 }
 

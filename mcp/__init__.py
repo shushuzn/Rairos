@@ -1,5 +1,5 @@
 """Rairos MCP — protocol, tools, and handlers."""
 
-from mcp.tools_defs import get_tools
+from rairos_mcp import get_tools
 
 __all__ = ["get_tools"]

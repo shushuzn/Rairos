@@ -1,6 +1,6 @@
 """Tests for mcp/tools_defs.py and cli/__main__.py."""
 
-from mcp.tools_defs import get_tools
+from mcp import get_tools
 
 
 class TestMcpTools:

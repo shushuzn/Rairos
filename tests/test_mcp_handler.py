@@ -19,7 +19,7 @@ from rairos_mcp import (
     success_response,
     MCP_VERSION,
 )
-from mcp.tools_defs import get_tools
+from mcp import get_tools
 
 # ── Rust MCP availability ──────────────────────────────────────────────────
 

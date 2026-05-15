@@ -25,7 +25,7 @@ import pytest
 
 # ─── Tools list (loaded once at import time) ───────────────────────────────────
 sys.path.insert(0, ".")
-from mcp.tools_defs import get_tools as _get_tools
+from mcp import get_tools as _get_tools
 
 ALL_TOOLS = _get_tools()
 
