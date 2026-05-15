@@ -19,23 +19,14 @@ __all__ = ["main"]
 
 
 _LAZY_EXPORTS = {
-    "_run_queue": ("cli.cmd.queue", "_run_queue"),
-    "_build_queue_parser": ("cli.cmd.queue", "_build_queue_parser"),
     "_run_dedup_semantic": ("cli.cmd.dedup_semantic", "_run_dedup_semantic"),
     "_build_dedup_semantic_parser": ("cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
     "_run_kg": ("cli.cmd.kg.kg", "_run_kg"),
     "_build_kg_parser": ("cli.cmd.kg.kg", "_build_kg_parser"),
-    "_run_merge": ("cli.cmd.merge", "_run_merge"),
-    "_build_merge_parser": ("cli.cmd.merge", "_build_merge_parser"),
-    "_pick_keep": ("cli.cmd.merge", "_pick_keep"),
     "_run_cite_graph": ("cli.cmd.cite_graph", "_run_cite_graph"),
     "_build_cite_graph_parser": ("cli.cmd.cite_graph", "_build_cite_graph_parser"),
     "_run_cite_fetch": ("cli.cmd.cite_fetch", "_run_cite_fetch"),
     "_build_cite_fetch_parser": ("cli.cmd.cite_fetch", "_build_cite_fetch_parser"),
-    "_run_cite_import": ("cli.cmd.cite_import", "_run_cite_import"),
-    "_build_cite_import_parser": ("cli.cmd.cite_import", "_build_cite_import_parser"),
-    "_run_influence": ("cli.cmd.influence", "_run_influence"),
-    "_build_influence_parser": ("cli.cmd.influence", "_build_influence_parser"),
     "_run_cite_backfill": ("cli.cmd.cite_backfill", "_run_cite_backfill"),
     "_build_cite_backfill_parser": ("cli.cmd.cite_backfill", "_build_cite_backfill_parser"),
     "_run_research_cmd": ("cli.cmd.research", "_run_research_cmd"),

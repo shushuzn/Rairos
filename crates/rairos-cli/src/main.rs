@@ -662,6 +662,53 @@ enum Commands {
         format: String,
     },
 
+    /// Merge a duplicate paper into a target paper
+    Merge {
+        /// Which paper to keep: 'older' (default), 'newer', 'parsed' (better parse_status), or 'semantic' (high similarity + parse_status)
+        #[arg(short, long, default_value = "older")]
+        keep: String,
+
+        /// Show what would be merged without making changes
+        #[arg(short, long)]
+        dry_run: bool,
+
+        /// Automatically find and merge all duplicate pairs with similarity >= 0.95
+        #[arg(long)]
+        auto: bool,
+
+        /// ID of the paper to keep
+        target_id: Option<String>,
+
+        /// ID of the duplicate paper to absorb and delete
+        duplicate_id: Option<String>,
+    },
+
+    /// Import citation links from a JSON file or inline JSON
+    CiteImport {
+        /// JSON string or @filename containing citation data
+        json_input: Option<String>,
+
+        /// Show what would be imported without writing to DB
+        #[arg(short, long)]
+        dry_run: bool,
+
+        /// Skip source/target papers that do not exist in the DB
+        #[arg(long)]
+        skip_missing: bool,
+
+        /// Extract citation references from a paper's plain_text (requires --paper)
+        #[arg(long)]
+        extract: bool,
+
+        /// Paper ID for --extract mode
+        #[arg(long)]
+        paper: Option<String>,
+
+        /// Use upsert mode to report duplicate citation edges
+        #[arg(long)]
+        dedup: bool,
+    },
+
     /// Rank papers by citation velocity
     Influence {
         /// Number of top papers to show
@@ -4573,6 +4620,14 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_influence(&db, *top, paper.as_deref(), *min_cites, &format)?;
         }
+        Commands::Merge { keep, dry_run, auto, target_id, duplicate_id } => {
+            let db = open_db(&cli.db)?;
+            handle_merge(&db, keep, *dry_run, *auto, target_id.as_deref(), duplicate_id.as_deref())?;
+        }
+        Commands::CiteImport { json_input, dry_run, skip_missing, extract, paper, dedup } => {
+            let db = open_db(&cli.db)?;
+            handle_cite_import(&db, json_input.as_deref(), *dry_run, *skip_missing, *extract, paper.as_deref(), *dedup)?;
+        }
     }
 
     Ok(())
@@ -4793,5 +4848,506 @@ fn handle_influence(
             println!("Formula: velocity = forward_citations / age_years  (age = 2026 - published + 1)");
         }
     }
+    Ok(())
+}
+
+/// Pick which paper to keep and which to drop based on strategy.
+fn pick_keep<'a>(
+    _title_a: &'a str,
+    _title_b: &'a str,
+    status_a: &'a str,
+    status_b: &'a str,
+    strategy: &'a str,
+) -> (&'static str, &'static str) {
+    match strategy {
+        "newer" => ("A", "B"),
+        "older" => ("B", "A"),
+        "parsed" | "semantic" => {
+            fn rank(s: &str) -> u8 {
+                match s {
+                    "done" => 4,
+                    "parsing" => 3,
+                    "pending" => 2,
+                    "failed" => 1,
+                    _ => 0,
+                }
+            }
+            if rank(status_a) >= rank(status_b) {
+                ("A", "B")
+            } else {
+                ("B", "A")
+            }
+        }
+        _ => ("A", "B"),
+    }
+}
+
+fn handle_merge(
+    db: &Database,
+    keep: &str,
+    dry_run: bool,
+    auto: bool,
+    target_id: Option<&str>,
+    duplicate_id: Option<&str>,
+) -> Result<()> {
+    if auto {
+        let papers = db.list_papers(None, 100000, 0)?;
+        let mut seen: std::collections::HashSet<(String, String)> = std::collections::HashSet::new();
+        let mut merged_count = 0u32;
+        let mut skipped_count = 0u32;
+
+        for paper in &papers {
+            if seen.iter().any(|(a, b)| a == &paper.id || b == &paper.id) {
+                continue;
+            }
+            if paper.title.is_empty() {
+                continue;
+            }
+
+            let sims = match db.find_similar(&paper.id, 10, 0.95) {
+                Ok(s) => s,
+                Err(_) => continue,
+            };
+
+            for (sim_id, score) in &sims {
+                let pair_key = if paper.id < *sim_id {
+                    (paper.id.clone(), sim_id.clone())
+                } else {
+                    (sim_id.clone(), paper.id.clone())
+                };
+                if seen.contains(&pair_key) {
+                    continue;
+                }
+                seen.insert(pair_key.clone());
+
+                if *score < 0.95 {
+                    continue;
+                }
+
+                let sim_paper = match db.get_paper(sim_id) {
+                    Ok(p) => p,
+                    Err(_) => continue,
+                };
+
+                let (keep_id, drop_id) = {
+                    let (keep_label, _) = pick_keep(
+                        &paper.title,
+                        &sim_paper.title,
+                        &paper.parse_status.to_string(),
+                        &sim_paper.parse_status.to_string(),
+                        keep,
+                    );
+                    if keep_label == "A" {
+                        (&paper.id, sim_id)
+                    } else {
+                        (sim_id, &paper.id)
+                    }
+                };
+
+                if dry_run {
+                    println!("Would merge {} into {}", drop_id, keep_id);
+                    println!("  keeping : [{}] {}", keep_id, &paper.title[..paper.title.len().min(70)]);
+                    println!("  deleting: [{}] {}", drop_id, &sim_paper.title[..sim_paper.title.len().min(70)]);
+                    println!("  semantic similarity: {:.3}", score);
+                    println!();
+                    skipped_count += 1;
+                } else {
+                    let merged = db.merge_papers(keep_id, &[drop_id])?;
+                    if merged {
+                        db.log_dedup(keep_id, drop_id, "semantic-auto")?;
+                        println!("Merged {} into {} (similarity={:.3})", drop_id, keep_id, score);
+                        merged_count += 1;
+                    } else {
+                        println!("Merge failed for {} -> {}", drop_id, keep_id);
+                    }
+                }
+            }
+        }
+
+        if dry_run {
+            println!("({} pair(s) would be merged, dry-run)", skipped_count);
+        } else {
+            println!("Auto-merge complete: {} pair(s) merged", merged_count);
+        }
+        return Ok(());
+    }
+
+    let target_id = match target_id {
+        Some(id) => id,
+        None => {
+            eprintln!("merge requires TARGET_ID and DUPLICATE_ID (or use --auto)");
+            std::process::exit(1);
+        }
+    };
+    let duplicate_id = match duplicate_id {
+        Some(id) => id,
+        None => {
+            eprintln!("merge requires TARGET_ID and DUPLICATE_ID (or use --auto)");
+            std::process::exit(1);
+        }
+    };
+
+    let target = match db.get_paper(target_id) {
+        Ok(p) => p,
+        Err(_) => {
+            eprintln!("Target paper {} not found", target_id);
+            std::process::exit(1);
+        }
+    };
+    let duplicate = match db.get_paper(duplicate_id) {
+        Ok(p) => p,
+        Err(_) => {
+            eprintln!("Duplicate paper {} not found", duplicate_id);
+            std::process::exit(1);
+        }
+    };
+
+    let sim = db.get_similarity(target_id, duplicate_id).ok().flatten();
+
+    let (keep_id, drop_id, drop_title) = if keep == "semantic" {
+        if let Some(s) = sim {
+            if s >= 0.8 {
+                let (keep_label, _) = pick_keep(
+                    &target.title,
+                    &duplicate.title,
+                    &target.parse_status.to_string(),
+                    &duplicate.parse_status.to_string(),
+                    keep,
+                );
+                if keep_label == "A" {
+                    (target.id.clone(), duplicate.id.clone(), duplicate.title.clone())
+                } else {
+                    (duplicate.id.clone(), target.id.clone(), target.title.clone())
+                }
+            } else {
+                eprintln!("Note: low similarity, falling back to 'parsed' (similarity: {:.3})", s);
+                let (keep_label, _) = pick_keep(
+                    &target.title,
+                    &duplicate.title,
+                    &target.parse_status.to_string(),
+                    &duplicate.parse_status.to_string(),
+                    "parsed",
+                );
+                if keep_label == "A" {
+                    (target.id.clone(), duplicate.id.clone(), duplicate.title.clone())
+                } else {
+                    (duplicate.id.clone(), target.id.clone(), target.title.clone())
+                }
+            }
+        } else {
+            eprintln!("Note: no embeddings available, falling back to 'parsed'");
+            let (keep_label, _) = pick_keep(
+                &target.title,
+                &duplicate.title,
+                &target.parse_status.to_string(),
+                &duplicate.parse_status.to_string(),
+                "parsed",
+            );
+            if keep_label == "A" {
+                (target.id.clone(), duplicate.id.clone(), duplicate.title.clone())
+            } else {
+                (duplicate.id.clone(), target.id.clone(), target.title.clone())
+            }
+        }
+    } else {
+        let (keep_label, _) = pick_keep(
+            &target.title,
+            &duplicate.title,
+            &target.parse_status.to_string(),
+            &duplicate.parse_status.to_string(),
+            keep,
+        );
+        if keep_label == "A" {
+            (target.id.clone(), duplicate.id.clone(), duplicate.title.clone())
+        } else {
+            (duplicate.id.clone(), target.id.clone(), target.title.clone())
+        }
+    };
+
+    if dry_run {
+        println!("Would merge {} into {} (--keep={})", drop_id, keep_id, keep);
+        println!("  keeping : [{}] {}", keep_id, &target.title[..target.title.len().min(70)]);
+        println!("  deleting: [{}] {}", drop_id, &drop_title[..drop_title.len().min(70)]);
+        if let Some(s) = sim {
+            println!("  semantic similarity: {:.3}", s);
+        } else {
+            println!("  semantic similarity: no embeddings available");
+        }
+        return Ok(());
+    }
+
+    println!("Merging {} into {}", drop_id, keep_id);
+    println!("  Keeping: [{}] {}", keep_id, &target.title[..target.title.len().min(70)]);
+    println!("  Deleting: [{}] {}", drop_id, &drop_title[..drop_title.len().min(70)]);
+    if let Some(s) = sim {
+        println!("  Similarity: {:.3}", s);
+    } else {
+        println!("  semantic similarity: no embeddings available");
+    }
+
+    let ok = db.merge_papers(&keep_id, &[&drop_id])?;
+    if ok {
+        db.log_dedup(&keep_id, &drop_id, keep)?;
+        println!("Merged {} into {}", drop_id, keep_id);
+    } else {
+        eprintln!("Merge failed for {} -> {}", drop_id, keep_id);
+        std::process::exit(1);
+    }
+
+    Ok(())
+}
+
+fn handle_cite_import(
+    db: &Database,
+    json_input: Option<&str>,
+    dry_run: bool,
+    skip_missing: bool,
+    extract: bool,
+    paper: Option<&str>,
+    _dedup: bool,
+) -> Result<()> {
+    if extract {
+        let paper_id = match paper {
+            Some(id) => id,
+            None => {
+                eprintln!("Error: --paper PAPER_ID required with --extract");
+                std::process::exit(1);
+            }
+        };
+
+        // Verify the paper exists
+        if !db.paper_exists(paper_id) {
+            eprintln!("Error: paper '{}' not found in DB", paper_id);
+            std::process::exit(1);
+        }
+
+        // Get plain_text from the DB
+        let text = match db.get_paper_plain_text(paper_id)? {
+            Some(t) if !t.is_empty() => t,
+            _ => {
+                eprintln!("Error: paper '{}' has no plain_text to extract from", paper_id);
+                std::process::exit(1);
+            }
+        };
+
+        // Extract references using regex
+        let arxiv_re = regex::Regex::new(r"(?i)\barXiv:\s*(\d+\.\d+\b)").unwrap();
+        let doi_re = regex::Regex::new(r"(?i)\b10\.\d{4,}/[^\s]+").unwrap();
+        let pmid_re = regex::Regex::new(r"(?i)\bPMID:\s*(\d{6,})\b").unwrap();
+        let isbn_re = regex::Regex::new(r"(?i)\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b").unwrap();
+
+        // Find references section
+        let refs_section_re = regex::Regex::new(r"(?i)(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)").unwrap();
+        let refs_text = if let Some(m) = refs_section_re.find(&text) {
+            &text[m.start()..]
+        } else {
+            &text[..]
+        };
+
+        let arxiv_ids: Vec<String> = arxiv_re
+            .captures_iter(refs_text)
+            .map(|c| c[1].to_string())
+            .collect();
+
+        let dois: Vec<String> = doi_re
+            .find_iter(refs_text)
+            .map(|m| m.as_str().to_string())
+            .collect();
+
+        let pmids: Vec<String> = pmid_re
+            .captures_iter(refs_text)
+            .map(|c| c[1].to_string())
+            .collect();
+
+        let isbns: Vec<String> = isbn_re
+            .captures_iter(refs_text)
+            .map(|c| c[1].to_string())
+            .collect();
+
+        // Print extracted references
+        if !arxiv_ids.is_empty() {
+            println!("  arXiv IDs ({}): {}", arxiv_ids.len(), arxiv_ids.join(", "));
+        }
+        if !dois.is_empty() {
+            println!("  DOIs ({}): {}", dois.len(), dois.join(", "));
+        }
+        if !pmids.is_empty() {
+            println!("  PMIDs ({}): {}", pmids.len(), pmids.join(", "));
+        }
+        if !isbns.is_empty() {
+            println!("  ISBNs ({}): {}", isbns.len(), isbns.join(", "));
+        }
+
+        if arxiv_ids.is_empty() && dois.is_empty() && pmids.is_empty() && isbns.is_empty() {
+            println!("No references found in '{}'", paper_id);
+            return Ok(());
+        }
+
+        // Look up arXiv IDs in DB and import citations
+        let mut db_ids: Vec<String> = Vec::new();
+        for aid in &arxiv_ids {
+            let full = format!("arxiv:{}", aid.to_lowercase());
+            if db.paper_exists(&full) {
+                db_ids.push(full);
+            }
+        }
+
+        if db_ids.is_empty() {
+            println!("No matching papers found in DB for extracted references");
+            return Ok(());
+        }
+
+        if dry_run {
+            println!("\n[dry-run] Would import {} citation edge(s):", db_ids.len());
+            for tgt in &db_ids {
+                println!("  {} -> {}", paper_id, tgt);
+            }
+        } else {
+            let mut new_count = 0u32;
+            for tgt in &db_ids {
+                // insert_citation uses INSERT OR IGNORE — always succeeds
+                db.insert_citation(paper_id, tgt)?;
+                new_count += 1;
+            }
+            println!("\nImported {} citation edge(s)", new_count);
+        }
+
+        return Ok(());
+    }
+
+    // ── JSON input mode ──
+    let raw = match json_input {
+        Some(s) => s,
+        None => {
+            eprintln!("Error: json_input required (JSON string or @filepath)");
+            std::process::exit(1);
+        }
+    };
+
+    let data: serde_json::Value = if raw.starts_with('@') {
+        let path = &raw[1..];
+        let content = std::fs::read_to_string(path)
+            .map_err(|e| anyhow::anyhow!("Error reading {}: {}", path, e))?;
+        serde_json::from_str(&content)
+            .map_err(|e| anyhow::anyhow!("Error parsing JSON from {}: {}", path, e))?
+    } else {
+        serde_json::from_str(raw)
+            .map_err(|e| anyhow::anyhow!("Error: invalid JSON: {}", e))?
+    };
+
+    // Normalise to array
+    let items: Vec<&serde_json::Value> = match &data {
+        serde_json::Value::Array(arr) => arr.iter().collect(),
+        serde_json::Value::Object(_) => vec![&data],
+        _ => {
+            eprintln!("Error: JSON must be a list of objects or a single object");
+            std::process::exit(1);
+        }
+    };
+
+    let mut total_new = 0u32;
+    let mut total_skip_missing = 0u32;
+    let mut errors: Vec<String> = Vec::new();
+
+    for (i, item) in items.iter().enumerate() {
+        let obj = match item.as_object() {
+            Some(o) => o,
+            None => {
+                errors.push(format!("[{}] item is not an object, skipping", i));
+                continue;
+            }
+        };
+
+        let source = obj
+            .get("source")
+            .or_else(|| obj.get("source_id"))
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+
+        let targets = obj
+            .get("targets")
+            .or_else(|| obj.get("target_ids"))
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                    .collect::<Vec<String>>()
+            })
+            .unwrap_or_default();
+
+        if source.is_empty() {
+            errors.push(format!("[{}] missing 'source' field, skipping", i));
+            continue;
+        }
+
+        if targets.is_empty() {
+            errors.push(format!("[{}] empty 'targets' for source={}, skipping", i, source));
+            continue;
+        }
+
+        // Check source exists
+        if !db.paper_exists(source) {
+            if skip_missing {
+                total_skip_missing += 1;
+                if dry_run {
+                    println!("  [dry-run] skip (missing): {}", source);
+                }
+                continue;
+            } else {
+                errors.push(format!("[{}] source paper '{}' not in DB", i, source));
+                continue;
+            }
+        }
+
+        let mut valid_targets: Vec<String> = Vec::new();
+        for tgt in &targets {
+            if !db.paper_exists(tgt) {
+                if skip_missing {
+                    total_skip_missing += 1;
+                    if dry_run {
+                        println!("  [dry-run] skip (missing): {}", tgt);
+                    }
+                } else {
+                    errors.push(format!("[{}] target paper '{}' not in DB", i, tgt));
+                }
+                continue;
+            }
+            valid_targets.push(tgt.clone());
+        }
+
+        if valid_targets.is_empty() {
+            continue;
+        }
+
+        if dry_run {
+            for tgt in &valid_targets {
+                println!("  [dry-run] add citation: {} -> {}", source, tgt);
+            }
+            total_new += valid_targets.len() as u32;
+        } else {
+            for tgt in &valid_targets {
+                db.insert_citation(source, tgt)?;
+            }
+            total_new += valid_targets.len() as u32;
+        }
+    }
+
+    if !errors.is_empty() {
+        println!("  warnings/errors : {}", errors.len());
+        for err in errors.iter().take(10) {
+            println!("    - {}", err);
+        }
+        if errors.len() > 10 {
+            println!("    ... and {} more", errors.len() - 10);
+        }
+        std::process::exit(1);
+    }
+
+    println!("Import complete.");
+    println!("  new citations : {}", total_new);
+    if skip_missing {
+        println!("  skipped (missing papers): {}", total_skip_missing);
+    }
+
     Ok(())
 }

@@ -63,12 +63,9 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 _SUBCOMMAND_TABLE = [
     ("research", "cli.cmd.research", "_build_research_parser"),
-    ("queue", "cli.cmd.queue", "_build_queue_parser"),
     ("dedup-semantic", "cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
     ("kg", "cli.cmd.kg", "_build_kg_parser"),
-    ("merge", "cli.cmd.merge", "_build_merge_parser"),
     ("cite-graph", "cli.cmd.cite_graph", "_build_cite_graph_parser"),
-    ("cite-import", "cli.cmd.cite_import", "_build_cite_import_parser"),
     ("cite-fetch", "cli.cmd.cite_fetch", "_build_cite_fetch_parser"),
     ("cite-backfill", "cli.cmd.cite_backfill", "_build_cite_backfill_parser"),
     ("paper2code", "cli.cmd.paper.paper2code", "_build_paper2code_parser"),
@@ -81,7 +78,6 @@ _SUBCOMMAND_TABLE = [
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("path", "cli.cmd.path", "_build_path_parser"),
     ("gap", "cli.cmd.gap", "_build_gap_parser"),
-    ("influence", "cli.cmd.influence", "_build_influence_parser"),
     ("hypothesize", "cli.cmd.hypothesize", "_build_hypothesize_parser"),
     ("lean", "cli.cmd.lean", "_build_lean_parser"),
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
@@ -204,10 +200,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     # Lazy dispatch — attribute name so test mocks on cli._run_X take effect
 
     dispatch = {
-        "queue": "_run_queue",
-        "merge": "_run_merge",
         "cite-graph": "_run_cite_graph",
-        "cite-import": "_run_cite_import",
         "cite-fetch": "_run_cite_fetch",
         "dedup-semantic": "_run_dedup_semantic",
         "research": "_run_research_cmd",
@@ -216,7 +209,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         "slides": "_run_slides",
         "hypothesize": "_run_hypothesize",
         "gap": "_run_gap",
-        "influence": "_run_influence",
         "cite-backfill": "_run_cite_backfill",
         "review": "_run_review",
         "question": "_run_question",

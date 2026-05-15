@@ -2766,6 +2766,7 @@ dependencies = [
  "rairos-memory",
  "rairos-pdf",
  "rairos-web",
+ "regex",
  "reqwest",
  "serde_json",
  "tokio",

@@ -237,6 +237,15 @@ pub struct JobQueueEntry {
     pub error: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DedupLogEntry {
+    pub id: String,
+    pub target_id: String,
+    pub duplicate_id: String,
+    pub keep_policy: String,
+    pub created_at: String,
+}
+
 // ============================================================================
 // Database
 // ============================================================================
@@ -374,6 +383,14 @@ impl Database {
                 started_at TEXT,
                 completed_at TEXT,
                 error TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS dedup_log (
+                id TEXT PRIMARY KEY,
+                target_id TEXT NOT NULL,
+                duplicate_id TEXT NOT NULL,
+                keep_policy TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
             );
 
             CREATE INDEX IF NOT EXISTS idx_papers_arxiv ON papers(arxiv_id);
@@ -515,6 +532,171 @@ impl Database {
         let conn = self.conn.lock();
         conn.execute("DELETE FROM papers WHERE id = ?1", [id])?;
         Ok(())
+    }
+
+    /// Check if a paper exists by ID.
+    pub fn paper_exists(&self, id: &str) -> bool {
+        let conn = self.conn.lock();
+        conn.query_row("SELECT 1 FROM papers WHERE id = ?1", params![id], |_| Ok(()))
+            .is_ok()
+    }
+
+    /// Get plain_text for a paper (needed for citation extraction, etc.).
+    pub fn get_paper_plain_text(&self, id: &str) -> Result<Option<String>> {
+        let conn = self.conn.lock();
+        let result = conn
+            .query_row(
+                "SELECT plain_text FROM papers WHERE id = ?1",
+                params![id],
+                |row| row.get::<_, Option<String>>(0),
+            )
+            .map_err(|e| CoreError::Database(e))?;
+        Ok(result)
+    }
+
+    /// Merge duplicate papers into the primary. Copies non-empty fields from
+    /// duplicates where the primary has empty/null values. Transfers tags,
+    /// citations, queued jobs, then deletes the duplicates.
+    /// Returns true if any duplicates were merged.
+    pub fn merge_papers(&self, primary_id: &str, duplicate_ids: &[&str]) -> Result<bool> {
+        let conn = self.conn.lock();
+
+        // Check primary exists
+        let primary_exists = conn
+            .query_row("SELECT 1 FROM papers WHERE id = ?1", params![primary_id], |_| Ok(()))
+            .is_ok();
+        if !primary_exists {
+            return Ok(false);
+        }
+
+        let mut merged = false;
+
+        for &dup_id in duplicate_ids {
+            if dup_id == primary_id {
+                continue;
+            }
+
+            let dup_exists = conn
+                .query_row("SELECT 1 FROM papers WHERE id = ?1", params![dup_id], |_| Ok(()))
+                .is_ok();
+            if !dup_exists {
+                continue;
+            }
+
+            // ── Text/string fields: copy if primary is empty and dup is not ──
+            let text_fields = [
+                "title", "authors", "abstract_text", "doi", "pdf_url",
+                "pdf_path", "pdf_hash", "categories", "plain_text",
+            ];
+            for field in &text_fields {
+                let sql = format!(
+                    "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
+                     WHERE id = ?2 AND ({} IS NULL OR {} = '') \
+                     AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
+                     AND (SELECT {} FROM papers WHERE id = ?1) != ''",
+                    field, field, field, field, field, field
+                );
+                conn.execute(&sql, params![dup_id, primary_id])?;
+            }
+
+            // ── Integer fields: copy if primary is 0 and dup > 0 ──
+            conn.execute(
+                "UPDATE papers SET cited_by = (SELECT cited_by FROM papers WHERE id = ?1) \
+                 WHERE id = ?2 AND cited_by = 0 \
+                 AND (SELECT cited_by FROM papers WHERE id = ?1) > 0",
+                params![dup_id, primary_id],
+            )?;
+            conn.execute(
+                "UPDATE papers SET references_cnt = (SELECT references_cnt FROM papers WHERE id = ?1) \
+                 WHERE id = ?2 AND references_cnt = 0 \
+                 AND (SELECT references_cnt FROM papers WHERE id = ?1) > 0",
+                params![dup_id, primary_id],
+            )?;
+
+            // ── Integer parse fields: copy if primary is 0/NULL and dup > 0 ──
+            for field in &["table_count", "figure_count", "word_count", "page_count"] {
+                let sql = format!(
+                    "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
+                     WHERE id = ?2 AND ({} IS NULL OR {} = 0) \
+                     AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
+                     AND (SELECT {} FROM papers WHERE id = ?1) > 0",
+                    field, field, field, field, field, field
+                );
+                conn.execute(&sql, params![dup_id, primary_id])?;
+            }
+
+            // ── Parse status: copy if primary is 'pending' and dup is not ──
+            conn.execute(
+                "UPDATE papers SET parse_status = (SELECT parse_status FROM papers WHERE id = ?1) \
+                 WHERE id = ?2 AND parse_status = 'pending' \
+                 AND (SELECT parse_status FROM papers WHERE id = ?1) != 'pending'",
+                params![dup_id, primary_id],
+            )?;
+
+            // ── Transfer tags from duplicate to primary ──
+            conn.execute(
+                "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) \
+                 SELECT ?1, tag_id FROM paper_tags WHERE paper_id = ?2",
+                params![primary_id, dup_id],
+            )?;
+
+            // ── Transfer queued jobs from duplicate to primary ──
+            conn.execute(
+                "UPDATE job_queue SET paper_id = ?1 WHERE paper_id = ?2 AND status = 'queued'",
+                params![primary_id, dup_id],
+            )?;
+
+            // ── Transfer citations (both incoming and outgoing) ──
+            conn.execute(
+                "UPDATE OR IGNORE citations SET target_id = ?1 WHERE target_id = ?2",
+                params![primary_id, dup_id],
+            )?;
+            conn.execute(
+                "UPDATE OR IGNORE citations SET source_id = ?1 WHERE source_id = ?2",
+                params![primary_id, dup_id],
+            )?;
+
+            // ── Delete duplicate (cascades to paper_tags, citations) ──
+            conn.execute("DELETE FROM papers WHERE id = ?1", [dup_id])?;
+
+            merged = true;
+        }
+
+        Ok(merged)
+    }
+
+    /// Log a deduplication event.
+    pub fn log_dedup(&self, target_id: &str, duplicate_id: &str, keep_policy: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        let id = Uuid::new_v4().to_string();
+        conn.execute(
+            "INSERT INTO dedup_log (id, target_id, duplicate_id, keep_policy) VALUES (?1, ?2, ?3, ?4)",
+            params![&id, target_id, duplicate_id, keep_policy],
+        )?;
+        Ok(())
+    }
+
+    /// Get deduplication log entries.
+    pub fn get_dedup_log(&self, limit: usize) -> Result<Vec<DedupLogEntry>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT id, target_id, duplicate_id, keep_policy, created_at \
+             FROM dedup_log ORDER BY created_at DESC LIMIT ?1",
+        )?;
+        let rows = stmt.query_map(params![limit as i64], |row| {
+            Ok(DedupLogEntry {
+                id: row.get(0)?,
+                target_id: row.get(1)?,
+                duplicate_id: row.get(2)?,
+                keep_policy: row.get(3)?,
+                created_at: row.get(4)?,
+            })
+        })?;
+        let mut entries = Vec::new();
+        for row in rows {
+            entries.push(row?);
+        }
+        Ok(entries)
     }
 
     /// Get embedding vector for a paper (bytes as f32 array).
@@ -936,6 +1118,29 @@ impl Database {
             params![blob, paper_id],
         )?;
         Ok(())
+    }
+
+    /// Find papers similar to the given paper by embedding cosine similarity.
+    pub fn find_similar(&self, paper_id: &str, top_k: usize, threshold: f32) -> Result<Vec<(String, f32)>> {
+        let embedding = self.get_embedding(paper_id)?;
+        let target = match embedding {
+            Some(v) => v,
+            None => return Ok(vec![]),
+        };
+
+        let mut all = self.find_similar_by_vector(&target, top_k)?;
+        all.retain(|(_, score)| *score >= threshold);
+        Ok(all)
+    }
+
+    /// Compute cosine similarity between two papers' embeddings.
+    pub fn get_similarity(&self, paper_id1: &str, paper_id2: &str) -> Result<Option<f32>> {
+        let e1 = self.get_embedding(paper_id1)?;
+        let e2 = self.get_embedding(paper_id2)?;
+        match (e1, e2) {
+            (Some(v1), Some(v2)) => Ok(Some(cosine_similarity(&v1, &v2))),
+            _ => Ok(None),
+        }
     }
 
     // ─── Queue Operations ─────────────────────────────────────────────────
