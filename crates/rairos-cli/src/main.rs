@@ -1058,6 +1058,118 @@ enum Commands {
         #[arg(short = 'n', long, default_value = "5")]
         top: usize,
     },
+
+    // ── Batch 6 ported from Python CLI ────────────────────────────────────
+
+    /// Build citation subgraph from DB
+    CiteGraph {
+        /// Root paper ID
+        #[arg(long)]
+        paper: Option<String>,
+
+        /// Traversal depth
+        #[arg(long, default_value = "2")]
+        depth: i32,
+
+        /// Max nodes
+        #[arg(long, default_value = "30")]
+        max_nodes: usize,
+
+        /// Output format (text/mermaid/json)
+        #[arg(long, default_value = "text")]
+        format: String,
+    },
+
+    /// Fetch paper metadata from external APIs
+    CiteFetch {
+        /// Paper ID (arXiv ID or DOI)
+        paper_id: Option<String>,
+
+        /// Show what would be done without writing
+        #[arg(long)]
+        dry_run: bool,
+    },
+
+    /// Verify hypotheses with Lean 4 theorem prover
+    Lean {
+        /// Path to a Lean file to verify
+        file: Option<String>,
+
+        /// Hypothesis text to translate to Lean
+        #[arg(short = 'y', long)]
+        hypothesis: Option<String>,
+
+        /// Show installation instructions
+        #[arg(long)]
+        install: bool,
+
+        /// Check if Lean is installed
+        #[arg(long)]
+        check: bool,
+
+        /// Output as JSON
+        #[arg(short, long)]
+        json: bool,
+    },
+
+    /// Generate D3 visualizations
+    Visual {
+        /// Paper ID to visualize citations for
+        #[arg(long)]
+        paper: Option<String>,
+
+        /// Query for benchmark visualization
+        #[arg(short, long)]
+        query: Option<String>,
+
+        /// Max papers
+        #[arg(short = 'n', long, default_value = "20")]
+        limit: usize,
+
+        /// Output path for HTML
+        #[arg(short, long)]
+        output: Option<String>,
+    },
+
+    /// Ingest paper metadata from arXiv/DOI
+    Ingest {
+        /// Paper ID (arXiv ID or DOI)
+        paper_id: Option<String>,
+
+        /// Output JSON format
+        #[arg(short, long)]
+        json: bool,
+
+        /// Skip PDF processing
+        #[arg(long)]
+        no_pdf: bool,
+
+        /// Source: arxiv or doi
+        #[arg(short, long, default_value = "arxiv")]
+        source: String,
+    },
+
+    /// Manage research sessions
+    Session {
+        /// Action: start, list, current, end
+        action: String,
+
+        /// Session title (for start)
+        #[arg(long)]
+        title: Option<String>,
+
+        /// Topic (for start)
+        #[arg(short = 'k', long)]
+        topic: Option<String>,
+
+        /// Days to look back (for list)
+        #[arg(short, long, default_value = "7")]
+        days: usize,
+
+        /// Max sessions to show (for list)
+        #[arg(short = 'n', long, default_value = "10")]
+        limit: usize,
+    },
 }
 
 #[derive(Subcommand)]
@@ -5031,6 +5143,29 @@ fn main() -> Result<()> {
         Commands::Hypothesize { topic, gap, trend, story, no_llm, creative, json, model, top } => {
             handle_hypothesize(topic.as_deref(), gap, trend, story, *no_llm, *creative, *json, model.as_deref(), *top)?;
         }
+
+        // ── Batch 6 ───────────────────────────────────────────────────────
+
+        Commands::CiteGraph { paper, depth, max_nodes, format } => {
+            let db = open_db(&cli.db)?;
+            handle_cite_graph(&db, paper.as_deref(), *depth, *max_nodes, format)?;
+        }
+        Commands::CiteFetch { paper_id, dry_run } => {
+            handle_cite_fetch(paper_id.as_deref(), *dry_run)?;
+        }
+        Commands::Lean { file, hypothesis, install, check, json } => {
+            handle_lean(file.as_deref(), hypothesis.as_deref(), *install, *check, *json)?;
+        }
+        Commands::Visual { paper, query, limit, output } => {
+            let db = open_db(&cli.db)?;
+            handle_visual(&db, paper.as_deref(), query.as_deref(), *limit, output.as_deref())?;
+        }
+        Commands::Ingest { paper_id, json, no_pdf, source } => {
+            handle_ingest(paper_id.as_deref(), *json, *no_pdf, source)?;
+        }
+        Commands::Session { action, title, topic, days, limit } => {
+            handle_session(action, title.as_deref(), topic.as_deref(), *days, *limit)?;
+        }
     }
 
     Ok(())
@@ -6466,6 +6601,225 @@ fn handle_hypothesize(
                 println!("     {}", h.core_statement);
                 let exp_design = &h.experiment_design;
                 println!("     Baseline: {}", exp_design.baseline);
+            }
+        }
+    }
+
+    Ok(())
+}
+
+// ============================================================================
+// Batch 6 handlers — ported from Python CLI
+// ============================================================================
+
+/// Handle `cite-graph` — build citation subgraph from DB
+fn handle_cite_graph(db: &Database, paper: Option<&str>, depth: i32, max_nodes: usize, format: &str) -> Result<()> {
+    let Some(pid) = paper else {
+        eprintln!("Usage: cite-graph --paper <paper_id>");
+        return Ok(());
+    };
+
+    let papers = db.search_papers(pid, 1)?;
+    let root_title = papers.first().map(|p| p.title.as_str()).unwrap_or(pid);
+
+    println!("Citation graph for {} (depth={}):", root_title, depth);
+
+    let mut builder = rairos_citation_chain::CitationChainBuilder::new();
+    for p in db.search_papers(pid, 5)? {
+        builder.add_paper(p.id.clone(), p.title.clone(), p.published.year() as i32, Vec::new(), Vec::new(), String::new(), 0);
+    }
+    let chain = builder.build_from_db(pid, depth);
+
+    match format {
+        "mermaid" => println!("{}", builder.render_mermaid(&chain)),
+        "json" => println!("{}", serde_json::to_string_pretty(&serde_json::json!({
+            "nodes": chain.nodes.len(),
+            "depth": depth,
+            "paper_id": pid,
+        }))?),
+        _ => println!("{}", builder.render_text(&chain, max_nodes)),
+    }
+
+    Ok(())
+}
+
+/// Handle `cite-fetch` — fetch paper metadata from external APIs
+fn handle_cite_fetch(paper_id: Option<&str>, dry_run: bool) -> Result<()> {
+    let Some(pid) = paper_id else {
+        eprintln!("Usage: cite-fetch <paper_id>");
+        return Ok(());
+    };
+
+    println!("🔍 Fetching metadata for: {}", pid);
+
+    let rt = tokio::runtime::Runtime::new()?;
+    let result = rt.block_on(async {
+        rairos_parser::fetch_paper(pid).await
+    });
+
+    match result {
+        Ok(paper) => {
+            if dry_run {
+                println!("[dry-run] Would import: {} (authors: {}, categories: {:?})",
+                    paper.title, paper.authors.len(), paper.categories);
+            } else {
+                println!("Title: {}", paper.title);
+                println!("Authors: {}", paper.authors.join(", "));
+                println!("Published: {}", paper.published);
+                println!("Categories: {:?}", paper.categories);
+                println!("Abstract: {}...", &paper.abstract_text[..200.min(paper.abstract_text.len())]);
+            }
+        }
+        Err(e) => eprintln!("Failed to fetch {}: {}", pid, e),
+    }
+
+    Ok(())
+}
+
+/// Handle `lean` — verify hypotheses with Lean 4
+fn handle_lean(file: Option<&str>, hypothesis: Option<&str>, install: bool, check: bool, json: bool) -> Result<()> {
+    if install {
+        println!("{}", rairos_lean_verifier::get_lean_install_instructions());
+        return Ok(());
+    }
+
+    if check {
+        let (status, msg) = rairos_lean_verifier::check_lean_installed();
+        let msg_str = msg.as_deref().unwrap_or("");
+        if json {
+            println!("{}", serde_json::json!({
+                "installed": matches!(status, rairos_lean_verifier::LeanInstallStatus::Available),
+                "message": msg_str
+            }));
+        } else {
+            match status {
+                rairos_lean_verifier::LeanInstallStatus::Available => println!("✅ Lean 4 is available"),
+                _ => println!("❌ Lean 4 not found: {}", msg_str),
+            }
+        }
+        return Ok(());
+    }
+
+    if let Some(h) = hypothesis {
+        let (code, _name) = rairos_lean_verifier::translate_hypothesis_to_lean("cli", h, "hypothesis");
+        println!("Lean code:\n{}", code);
+        return Ok(());
+    }
+
+    if let Some(f) = file {
+        let content = std::fs::read_to_string(f).unwrap_or_default();
+        let result = rairos_lean_verifier::verify_lean_code(&content, "file", f);
+        if json {
+            println!("{}", rairos_lean_verifier::render_result_json(&result));
+        } else {
+            println!("{}", rairos_lean_verifier::render_result(&result));
+        }
+        return Ok(());
+    }
+
+    println!("Usage: lean [--check | --install | --hypothesis <text> | <file>]");
+    Ok(())
+}
+
+/// Handle `visual` — generate D3 visualizations
+fn handle_visual(db: &Database, paper: Option<&str>, query: Option<&str>, limit: usize, output: Option<&str>) -> Result<()> {
+    if let Some(pid) = paper {
+        println!("📊 Generating D3 citation visualization for: {}", pid);
+
+        let graph = rairos_viz::D3ForceGraph::new(Some(db.clone()));
+        let d3graph = graph.to_json(Some(vec![pid.to_string()]), None, limit)?;
+        let json_str = d3graph.to_json()?;
+
+        if let Some(out) = output {
+            std::fs::write(out, &json_str)?;
+            println!("✅ Written to {}", out);
+        } else {
+            println!("{}", json_str);
+        }
+        return Ok(());
+    }
+
+    if let Some(q) = query {
+        println!("📊 Searching papers for: {}", q);
+        let papers = db.search_papers(q, limit)?;
+        println!("Found {} papers", papers.len());
+        return Ok(());
+    }
+
+    println!("Usage: visual --paper <id> [--output <path>] | visual --query <q>");
+    Ok(())
+}
+
+/// Handle `ingest` — fetch paper metadata
+fn handle_ingest(paper_id: Option<&str>, json: bool, no_pdf: bool, source: &str) -> Result<()> {
+    let Some(pid) = paper_id else {
+        eprintln!("Usage: ingest <paper_id>");
+        return Ok(());
+    };
+
+    println!("📥 Ingesting: {} (source: {}, no_pdf: {})", pid, source, no_pdf);
+
+    let rt = tokio::runtime::Runtime::new()?;
+    let result = rt.block_on(async {
+        rairos_parser::fetch_paper(pid).await
+    });
+
+    match result {
+        Ok(paper) => {
+            if json {
+                println!("{}", serde_json::to_string_pretty(&paper)?);
+            } else {
+                println!("Title: {}", paper.title);
+                println!("ID: {}", paper.id);
+                println!("Authors: {}", paper.authors.len());
+                println!("Published: {}", paper.published);
+                println!("Categories: {:?}", paper.categories);
+                println!("Abstract: {}...", &paper.abstract_text[..200.min(paper.abstract_text.len())]);
+            }
+        }
+        Err(e) => eprintln!("Failed to fetch {}: {}", pid, e),
+    }
+
+    Ok(())
+}
+
+/// Handle `session` — manage research sessions
+fn handle_session(action: &str, title: Option<&str>, topic: Option<&str>, days: usize, limit: usize) -> Result<()> {
+    let mut tracker = rairos_research_session::ResearchSessionTracker::new(None);
+
+    match action {
+        "start" => {
+            let session = tracker.start_session(title);
+            println!("📚 Session started: {}", session.title);
+            println!("   ID: {}", session.id);
+            if let Some(t) = topic {
+                println!("   Topic: {}", t);
+            }
+        }
+        "list" => {
+            let sessions = tracker.get_recent_sessions(days as i64, limit);
+            if sessions.is_empty() {
+                println!("No sessions found.");
+            } else {
+                println!("{}", tracker.render_sessions_list(&sessions));
+            }
+        }
+        "current" => {
+            match tracker.get_current_session() {
+                Some(s) => println!("Current session: {} (ID: {})", s.title, s.id),
+                None => println!("No current session."),
+            }
+        }
+        "end" => {
+            match tracker.end_session() {
+                Some(s) => println!("Ended session: {} (ID: {})", s.title, s.id),
+                None => println!("No active session to end."),
+            }
+        }
+        _ => {
+            match tracker.get_current_session() {
+                Some(s) => println!("Current session: {} (ID: {})", s.title, s.id),
+                None => println!("No current session. Use 'session start' to begin one."),
             }
         }
     }

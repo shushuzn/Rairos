@@ -16,6 +16,8 @@ rairos-research = { path = "../rairos-research" }
 rairos-dashboard = { path = "../rairos-dashboard" }
 rairos-weekly-digest = { path = "../rairos-weekly-digest" }
 rairos-discover = { path = "../rairos-discover" }
+rairos-lean-verifier = { path = "../rairos-lean-verifier" }
+rairos-parser = { path = "../rairos-parser" }
 rairos-evolution = { path = "../rairos-evolution" }
 rairos-experiment-tracker = { path = "../rairos-experiment-tracker" }
 rairos-friction = { path = "../rairos-friction" }

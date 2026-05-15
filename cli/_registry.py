@@ -64,30 +64,23 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 _SUBCOMMAND_TABLE = [
     ("dedup-semantic", "cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
     ("kg", "cli.cmd.kg", "_build_kg_parser"),
-    ("cite-graph", "cli.cmd.cite_graph", "_build_cite_graph_parser"),
-    ("cite-fetch", "cli.cmd.cite_fetch", "_build_cite_fetch_parser"),
-    ("cite-backfill", "cli.cmd.cite_backfill", "_build_cite_backfill_parser"),
     ("paper2code", "cli.cmd.paper.paper2code", "_build_paper2code_parser"),
     ("trace", "cli.cmd.paper.trace", "_build_paper_trace_parser"),
     ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("route", "cli.cmd.route", "_build_route_parser"),
-    ("visual", "cli.cmd.visual", "_build_visual_parser"),
     ("read-queue", "cli.cmd.read_queue", "_build_read_queue_parser"),
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("path", "cli.cmd.path", "_build_path_parser"),
     ("gap", "cli.cmd.gap", "_build_gap_parser"),
-    ("lean", "cli.cmd.lean", "_build_lean_parser"),
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
     ("slides", "cli.cmd.slides", "_build_slides_parser"),
     ("question", "cli.cmd.question", "_build_question_parser"),
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
-    ("session", "cli.cmd.session", "_build_session_parser"),
     ("narrative", "cli.cmd.narrative", "_build_narrative_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
     ("postprocess", "cli.cmd.postprocess", "_build_postprocess_parser"),
-    ("ingest", "cli.cmd.ingest", "_build_ingest_parser"),
     ("demo", "cli.cmd.demo", "_build_demo_parser"),
     ("jin10", "cli.cmd.jin10", "_build_jin10_parser"),
 ]
@@ -180,8 +173,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     # Lazy dispatch — attribute name so test mocks on cli._run_X take effect
 
     dispatch = {
-        "cite-graph": "_run_cite_graph",
-        "cite-fetch": "_run_cite_fetch",
         "dedup-semantic": "_run_dedup_semantic",
         "read-queue": "_run_read_queue",
         "chat": "_run_chat",
@@ -191,14 +182,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         "question": "_run_question",
         "roadmap": "_run_roadmap",
         "pipeline": "_run_pipeline",
-        "lean": "_run_lean",
         "kg": "_run_kg",
-        "session": "_run_session",
         "narrative": "_run_narrative",
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",
         "postprocess": "_run_postprocess",
-        "ingest": "_run_ingest",
         "jin10": "_run_jin10",
         "demo": "_run_demo",
         "paper2code": "_run_paper2code",
@@ -237,11 +225,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         from cli.cmd.slides import slides as slides_cmd
 
         return slides_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
-
-    elif args.subcmd == "visual":
-        from cli.cmd.visual import _show_visual_status
-
-        return cast(int, _show_visual_status())
 
     elif args.subcmd == "repl":
         import cli as _cli
