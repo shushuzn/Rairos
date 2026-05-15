@@ -17,7 +17,7 @@
 )]
 
 use anyhow::{Context, Result};
-use chrono::Utc;
+use chrono::{Datelike, Utc};
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
 use rairos_pdf;
@@ -658,6 +658,25 @@ enum Commands {
         clear: bool,
 
         /// Output format
+        #[arg(short, long, default_value = "text")]
+        format: String,
+    },
+
+    /// Rank papers by citation velocity
+    Influence {
+        /// Number of top papers to show
+        #[arg(short = 'n', long, default_value = "20")]
+        top: usize,
+
+        /// Show detailed stats for a specific paper
+        #[arg(long)]
+        paper: Option<String>,
+
+        /// Minimum forward citations to include
+        #[arg(long, default_value = "1")]
+        min_cites: usize,
+
+        /// Output format (text/csv/json)
         #[arg(short, long, default_value = "text")]
         format: String,
     },
@@ -4550,6 +4569,10 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_queue(&db, add.as_deref(), *list, *pending, *dequeue, *cancel, *clear, &format)?;
         }
+        Commands::Influence { top, paper, min_cites, format } => {
+            let db = open_db(&cli.db)?;
+            handle_influence(&db, *top, paper.as_deref(), *min_cites, &format)?;
+        }
     }
 
     Ok(())
@@ -4613,6 +4636,162 @@ fn handle_queue(
         println!("Cleared {} pending paper(s)", n);
     } else {
         println!("Use --list, --dequeue, --add UID, --cancel JOB_ID, or --clear");
+    }
+    Ok(())
+}
+
+fn handle_influence(
+    db: &Database,
+    top: usize,
+    paper: Option<&str>,
+    min_cites: usize,
+    format: &str,
+) -> Result<()> {
+    if let Some(paper_id) = paper {
+        let pap = db.get_paper(paper_id)?;
+        let citations = db.get_citations(paper_id)?;
+        let forward = citations.citing.len() as f64;
+        let backward = citations.references.len() as f64;
+
+        let year = pap.published.year();
+        let age = if year > 2000 && year <= 2026 {
+            (2026 - year + 1) as f64
+        } else {
+            0.0
+        };
+        let velocity = if age > 0.0 { forward / age } else { 0.0 };
+
+        let impact = if velocity >= 10.0 {
+            "\u{1f525} Extremely high velocity (\u{2265}10/y) — field-defining"
+        } else if velocity >= 5.0 {
+            "\u{1f4c8} High velocity (5-10/y) — very active research"
+        } else if velocity >= 1.0 {
+            "\u{1f4ca} Moderate velocity (1-5/y) — steady influence"
+        } else {
+            "\u{1f4c9} Low velocity — emerging or niche"
+        };
+
+        println!("=== Paper Influence Profile ===");
+        println!("  Paper ID  : {}", paper_id);
+        println!("  Title     : {}", pap.title);
+        println!("  Published : {}", year);
+        if age > 0.0 {
+            println!("  Age       : {:.0} years (as of 2026)", age);
+        }
+        println!();
+        println!("  Citations");
+        if age > 0.0 {
+            println!(
+                "    Cited by (forward) : {:.0}  → velocity = {:.0}/{:.0} = {:.2}/y",
+                forward, forward, age, velocity
+            );
+        } else {
+            println!("    Cited by (forward) : {:.0}", forward);
+        }
+        println!("    References (backward): {:.0}", backward);
+        println!();
+        if age > 0.0 {
+            println!("  Impact Assessment");
+            println!("    {}", impact);
+        }
+        return Ok(());
+    }
+
+    let all_papers = db.list_papers(None, 100000, 0)?;
+    let mut results: Vec<(String, String, i32, f64, f64)> = Vec::new();
+
+    for p in &all_papers {
+        if p.metadata.cited_by == 0 && min_cites > 0 {
+            continue;
+        }
+        let forward = p.metadata.cited_by as f64;
+        if forward < min_cites as f64 {
+            continue;
+        }
+        let year = p.published.year();
+        if year < 2000 || year > 2026 {
+            continue;
+        }
+        let age = (2026 - year + 1) as f64;
+        let velocity = forward / age;
+        results.push((p.id.clone(), p.title.clone(), year, forward, velocity));
+    }
+
+    results.sort_by(|a, b| b.4.partial_cmp(&a.4).unwrap_or(std::cmp::Ordering::Equal));
+
+    if results.is_empty() {
+        println!("No papers with sufficient citation data found.");
+        return Ok(());
+    }
+
+    let top_n: Vec<_> = results.iter().take(top).collect();
+
+    match format {
+        "json" => {
+            let data: Vec<serde_json::Value> = top_n
+                .iter()
+                .enumerate()
+                .map(|(i, (id, title, year, forward, vel))| {
+                    serde_json::json!({
+                        "rank": i + 1,
+                        "paper_id": id,
+                        "title": title,
+                        "year": year,
+                        "forward_cites": forward,
+                        "age_years": (2026 - year + 1) as f64,
+                        "velocity": (vel * 100.0).round() / 100.0,
+                    })
+                })
+                .collect();
+            println!("{}", serde_json::to_string_pretty(&data)?);
+        }
+        "csv" => {
+            println!("rank,paper_id,title,year,forward_cites,age_years,velocity");
+            for (i, (id, title, year, forward, vel)) in top_n.iter().enumerate() {
+                let title_esc = title.replace('"', "\"\"");
+                println!(
+                    "{},\"{}\",\"{}\",{},{},{:.1},{:.2}",
+                    i + 1,
+                    id,
+                    title_esc,
+                    year,
+                    forward,
+                    2026 - year + 1,
+                    vel
+                );
+            }
+        }
+        _ => {
+            println!(
+                "{:>4}  {:>8}  {:>5}  {:>3}y  Year  Paper",
+                "Rank", "Velocity", "Cites", "Age"
+            );
+            println!("{}", "-".repeat(50));
+            for (i, (id, title, year, forward, vel)) in top_n.iter().enumerate() {
+                let title_short = if title.len() > 50 {
+                    format!("{}…", &title[..50])
+                } else {
+                    title.clone()
+                };
+                println!(
+                    "{:>4}  {:>7.1}/y  {:>5.0}  {:>3.0}   {}  {}",
+                    i + 1,
+                    vel,
+                    forward,
+                    2026 - year + 1,
+                    year,
+                    title_short
+                );
+            }
+            println!();
+            println!(
+                "Showing {} of {} papers with >= {} citation(s)",
+                top_n.len(),
+                results.len(),
+                min_cites
+            );
+            println!("Formula: velocity = forward_citations / age_years  (age = 2026 - published + 1)");
+        }
     }
     Ok(())
 }
