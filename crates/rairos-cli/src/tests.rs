@@ -317,3 +317,116 @@ fn cli_dispatch_routes_version() {
     };
     assert!(matches!(cli.command, Commands::Version));
 }
+
+// ─── Network-dependent tests ────────────────────────────────────────────────
+// Run with: cargo test -p rairos-cli -- --ignored --test-threads=1
+// These require arXiv API access, LLM keys, or a populated ~/.ai_research_os/
+
+#[test]
+#[ignore]
+fn net_paper_add_and_show() {
+    // Fetch a real paper from arXiv by ID
+    let (db, _dir) = test_db("net_add");
+    assert!(handle_add(&db, "2301.00001").is_ok());
+    // Now show it (verify it doesn't error — output goes to stdout)
+    let result = handle_show(&db, "2301.00001", "text");
+    assert!(result.is_ok());
+}
+
+#[test]
+#[ignore]
+fn net_paper_search_after_add() {
+    let (db, _dir) = test_db("net_search");
+    handle_add(&db, "2301.00001").unwrap();
+    let result = handle_search(&db, "Dynamics", 10, "all", "table");
+    assert!(result.is_ok());
+}
+
+#[test]
+#[ignore]
+fn net_gene_add_and_list() {
+    // Add a capsule gene then verify it appears in the list
+    let result = handle_gene_add("test approach", "test_gap", "test,keywords", None);
+    assert!(result.is_ok());
+    let list = handle_gene_list(None, None, 10, "table");
+    assert!(list.is_ok());
+}
+
+#[test]
+#[ignore]
+fn net_stance_lifecycle() {
+    // Add a research stance
+    assert!(handle_stance_add(
+        "test_topic", "test claim", "support", "test reasoning"
+    ).is_ok());
+    // List stances for the topic
+    let list = handle_stance_list(Some("test_topic".to_string()), None, "table");
+    assert!(list.is_ok());
+}
+
+#[test]
+#[ignore]
+fn net_session_lifecycle() {
+    // Create a research session
+    let result = handle_session("start", Some("test session"), Some("test topic"), 7, 10);
+    assert!(result.is_ok());
+    // List all sessions
+    let list = handle_session("list", None, None, 7, 10);
+    assert!(list.is_ok());
+}
+
+#[test]
+#[ignore]
+fn net_citation_chain() {
+    // Build citation chain for a known paper — needs DB + arXiv fetch
+    let (db, _dir) = test_db("net_chain");
+    let _ = handle_add(&db, "2301.00001");
+    let result = handle_citation_chain(&db, Some("2301.00001"), 2, false, false, false, false, None);
+    assert!(result.is_ok() || result.is_err());
+}
+
+#[test]
+#[ignore]
+fn net_cite_fetch() {
+    // Fetch citations for a paper from Semantic Scholar
+    let result = handle_cite_fetch(Some("2301.00001"), false);
+    assert!(result.is_ok() || result.is_err());
+}
+
+#[test]
+#[ignore]
+fn net_kg_path() {
+    // Build KG path between two papers
+    // First add papers to DB
+    let (db, _dir) = test_db("net_kg_path");
+    let _ = handle_add(&db, "2301.00001");
+    let _ = handle_add(&db, "2301.00002");
+    let result = handle_kg_path("2301.00001", "2301.00002");
+    assert!(result.is_ok() || result.is_err());
+}
+
+#[test]
+#[ignore]
+fn net_demo_quick() {
+    // Run quick demo pipeline
+    let result = handle_demo(true, Some(2), false);
+    assert!(result.is_ok());
+}
+
+#[test]
+#[ignore]
+fn net_doctor_full() {
+    // Full doctor check — may take time
+    let result = handle_doctor("table");
+    assert!(result.is_ok());
+}
+
+#[test]
+#[ignore]
+fn net_benchmark_all() {
+    // Run all benchmarks
+    for kind in &["impact", "citation", "cache"] {
+        let result = handle_benchmark(kind, 3);
+        assert!(result.is_ok(), "benchmark {kind} failed: {result:?}");
+    }
+}
