@@ -69,7 +69,6 @@ _SUBCOMMAND_TABLE = [
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("route", "cli.cmd.route", "_build_route_parser"),
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
-    ("validate", "cli.cmd.validate", "_build_validate_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
     ("jin10", "cli.cmd.jin10", "_build_jin10_parser"),
 ]
@@ -164,13 +163,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     dispatch = {
         "dedup-semantic": "_run_dedup_semantic",
         "chat": "_run_chat",
-        "question": "_run_question",
-        "narrative": "_run_narrative",
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",
         "jin10": "_run_jin10",
         "paper2code": "_run_paper2code",
-        "validate": "_run_validate",
     }
 
     if args.subcmd in dispatch:
