@@ -3803,6 +3803,7 @@ dependencies = [
 name = "rairos-parser"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "futures",
  "lopdf 0.40.0",
  "rairos-core",

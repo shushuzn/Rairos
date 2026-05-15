@@ -81,11 +81,13 @@ impl ToolHandler for PaperSearchHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let query = params["query"].as_str().ok_or("Missing required parameter: query")?;
         let max = (params["max_results"].as_u64().unwrap_or(10) as usize).min(50);
-        let url = format!("{}?search_query=all:{}&start=0&max_results={}", ARXIV_API, query.replace(' ', "+"), max);
-        let resp = reqwest::get(&url).await.map_err(|e| format!("arXiv request failed: {}", e))?;
-        let text = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
-        let papers = parse_arxiv_response(&text);
-        Ok(serde_json::json!({"papers": papers, "total": papers.len()}))
+        let papers = rairos_parser::search_arxiv(query, max)
+            .await
+            .map_err(|e| format!("Search failed: {}", e))?;
+        let values: Vec<Value> = papers.into_iter()
+            .map(|p| serde_json::to_value(p).unwrap_or_default())
+            .collect();
+        Ok(serde_json::json!({"papers": values, "total": values.len()}))
     }
 }
 
@@ -105,10 +107,10 @@ impl ToolHandler for PaperIngestHandler {
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
         let id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
-        let url = format!("{}?id_list={}", ARXIV_API, id);
-        let resp = reqwest::get(&url).await.map_err(|e| format!("arXiv request failed: {}", e))?;
-        let text = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
-        parse_arxiv_response(&text).into_iter().next().ok_or_else(|| format!("No paper found: {}", id))
+        let paper = rairos_parser::fetch_arxiv(id)
+            .await
+            .map_err(|e| format!("arXiv fetch failed: {}", e))?;
+        serde_json::to_value(&paper).map_err(|e| format!("Serialization failed: {}", e))
     }
 }
 

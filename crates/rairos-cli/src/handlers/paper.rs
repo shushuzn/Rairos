@@ -65,66 +65,28 @@ pub fn handle_add(db: &Database, arxiv_id: &str) -> Result<()> {
 }
 
 pub fn add_paper_from_arxiv(db: &Database, arxiv_id: &str) -> Result<()> {
-    // Fetch from arXiv API
+    // Fetch from arXiv via rairos-parser
     println!("Fetching metadata from arXiv for {}...", arxiv_id);
 
-    let url = format!("https://export.arxiv.org/api/query?id_list={}", arxiv_id);
-    let resp = reqwest::blocking::get(&url).context("Failed to connect to arXiv API")?;
+    let rt = tokio::runtime::Runtime::new().context("Failed to create tokio runtime")?;
+    let paper = rt
+        .block_on(rairos_parser::fetch_arxiv(arxiv_id))
+        .with_context(|| format!("Failed to fetch arXiv paper: {}", arxiv_id))?;
 
-    if !resp.status().is_success() {
-        anyhow::bail!("arXiv API returned error: {}", resp.status());
-    }
-
-    let body = resp.text().context("Failed to read arXiv response")?;
-
-    // arXiv ATOM feed has feed-level <title> and <summary> BEFORE <entry>
-    // We need the entry-level fields, so extract entry block first
-    let entry_start = body.find("<entry>").unwrap_or(0);
-    let entry_end = body.find("</entry>").unwrap_or(body.len());
-    let entry = &body[entry_start..entry_end];
-
-    // Parse entry-level fields
-    let title = extract_xml_field(entry, "<title>")
-        .map(|s| s.trim().to_string())
-        .unwrap_or_else(|| format!("arXiv:{}", arxiv_id));
-    let abstract_text = extract_xml_field(entry, "<summary>")
-        .map(|s| s.trim().to_string())
-        .unwrap_or_else(|| "Abstract not available".to_string());
-
-    let authors: Vec<String> = extract_all_xml_fields(entry, "<name>")
-        .into_iter()
-        .map(|s| s.trim().to_string())
-        .collect();
-
-    let published = extract_xml_field(entry, "<published>")
-        .and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok())
-        .map(|dt| dt.with_timezone(&chrono::Utc))
-        .unwrap_or_else(chrono::Utc::now);
-
-    let categories: Vec<String> = extract_all_xml_fields(entry, "<category term=")
-        .into_iter()
-        .filter(|s| s.contains('"'))
-        .map(|s| s.split('"').nth(1).unwrap_or(&s).to_string())
-        .collect();
-
-    let _primary_category = extract_xml_field(entry, "arxiv:primary_category term=")
-        .map(|s| s.split('"').nth(1).unwrap_or(&s).to_string())
-        .unwrap_or_else(|| categories.first().cloned().unwrap_or_default());
-
-    println!("  Title: {}", title.chars().take(60).collect::<String>());
+    println!("  Title: {}", paper.title.chars().take(60).collect::<String>());
     println!(
         "  Authors: {}",
-        authors
+        paper.authors
             .iter()
             .take(3)
             .cloned()
             .collect::<Vec<_>>()
             .join(", ")
     );
-    println!("  Published: {}", published.format("%Y-%m-%d"));
+    println!("  Published: {}", paper.published.format("%Y-%m-%d"));
     println!(
         "  Categories: {}",
-        categories
+        paper.categories
             .iter()
             .take(5)
             .cloned()
@@ -132,14 +94,12 @@ pub fn add_paper_from_arxiv(db: &Database, arxiv_id: &str) -> Result<()> {
             .join(", ")
     );
 
-    // Build paper with fetched metadata
-    let mut paper = Paper::new(Some(arxiv_id.to_string()), title, abstract_text);
-    paper.authors = authors;
-    paper.categories = categories;
-    paper.published = published;
-
     db.insert_paper(&paper)?;
-    println!("\n[OK] Added: {} ({})", paper.id, arxiv_id);
+    println!(
+        "\n[OK] Added: {} ({})",
+        paper.id,
+        paper.arxiv_id.as_deref().unwrap_or(arxiv_id)
+    );
     Ok(())
 }
 
@@ -153,7 +113,7 @@ pub fn extract_xml_field(xml: &str, tag: &str) -> Option<String> {
     None
 }
 
-fn extract_all_xml_fields(xml: &str, tag: &str) -> Vec<String> {
+fn extract_all_xml_fields(_xml: &str, _tag: &str) -> Vec<String> {
     let mut results = Vec::new();
     let mut search_pos = 0;
 
