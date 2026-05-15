@@ -5,6 +5,11 @@
 //! Provides: PDF download with resume, text extraction, structured content parsing
 //! (LaTeX blocks, tables, figures).
 
+pub mod extable;
+pub mod paper_parser;
+pub mod pdf_parser2;
+pub mod provenance;
+
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -79,9 +84,23 @@ pub struct FigureData {
 pub enum BlockType {
     Heading,
     Body,
+    BodyType,
     Caption,
     ListItem,
     Footnote,
+}
+
+impl BlockType {
+    /// Returns a string representation of the block type.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            BlockType::Heading => "heading",
+            BlockType::Body | BlockType::BodyType => "body",
+            BlockType::Caption => "caption",
+            BlockType::ListItem => "list_item",
+            BlockType::Footnote => "footnote",
+        }
+    }
 }
 
 /// A text block with type classification
@@ -121,7 +140,7 @@ pub struct StructuredPdfContent {
 }
 
 /// Parsed paper result
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ParsedPaper {
     pub paper_id: String,
     pub text: String,

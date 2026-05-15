@@ -41,10 +41,7 @@ reqwest = { version = "0.12", features = ["rustls-tls"], default-features = fals
 rairos-deep-research = { path = "../rairos-deep-research" }
 rairos-orchestrator = { path = "../rairos-orchestrator" }
 rairos-parallel-research = { path = "../rairos-parallel-research" }
-rairos-paper-parser = { path = "../rairos-paper-parser" }
 rairos-topic-discovery = { path = "../rairos-topic-discovery" }
-rairos-pdf-parser = { path = "../rairos-pdf-parser" }
-rairos-extable = { path = "../rairos-extable" }
 
 [dev-dependencies]
 tokio-test = "0.4"

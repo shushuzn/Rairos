@@ -3213,20 +3213,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-extable"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "regex",
- "rusqlite",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
- "uuid",
-]
-
-[[package]]
 name = "rairos-friction"
 version = "0.1.0"
 dependencies = [
@@ -3604,7 +3590,6 @@ dependencies = [
  "rairos-crossover",
  "rairos-deep-research",
  "rairos-experiment-tracker",
- "rairos-extable",
  "rairos-gene-pool-watcher",
  "rairos-insight-evolution",
  "rairos-insight-storage",
@@ -3614,11 +3599,9 @@ dependencies = [
  "rairos-llm",
  "rairos-notes",
  "rairos-orchestrator",
- "rairos-paper-parser",
  "rairos-parallel-research",
  "rairos-parser",
  "rairos-pdf",
- "rairos-pdf-parser",
  "rairos-replication",
  "rairos-replication-checker",
  "rairos-research",
@@ -3755,24 +3738,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-paper-parser"
-version = "0.1.0"
-dependencies = [
- "futures",
- "lopdf 0.34.0",
- "rairos-code-generator",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "sha2 0.11.0",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tracing",
-]
-
-[[package]]
 name = "rairos-paradigm"
 version = "0.1.0"
 dependencies = [
@@ -3851,29 +3816,15 @@ dependencies = [
 name = "rairos-pdf"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "futures",
  "hex",
  "lazy_static",
  "lopdf 0.34.0",
+ "rairos-code-generator",
  "regex",
  "reqwest",
- "serde",
- "serde_json",
- "sha2 0.11.0",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tracing",
-]
-
-[[package]]
-name = "rairos-pdf-parser"
-version = "0.1.0"
-dependencies = [
- "hex",
- "lazy_static",
- "rairos-core",
- "regex",
+ "rusqlite",
  "serde",
  "serde_json",
  "sha2 0.11.0",
@@ -3882,6 +3833,7 @@ dependencies = [
  "tokio",
  "tokio-test",
  "tracing",
+ "uuid",
 ]
 
 [[package]]

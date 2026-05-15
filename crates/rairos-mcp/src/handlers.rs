@@ -932,7 +932,7 @@ impl ToolHandler for PaperParseFullHandler {
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
         let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
-        let content = rairos_paper_parser::download_and_parse(arxiv_id).await;
+        let content = rairos_pdf::paper_parser::download_and_parse(arxiv_id).await;
         Ok(serde_json::json!(content))
     }
 }
@@ -998,10 +998,10 @@ impl ToolHandler for PdfExtractAdvancedHandler {
             return Err("PDF not found. Call pdf_download first.".into());
         }
 
-        let text = rairos_pdf_parser::extract_pdf_text_with_fallback(&pdf_path)
+        let text = rairos_pdf::pdf_parser2::extract_pdf_text_with_fallback(&pdf_path)
             .map_err(|e| format!("Advanced text extraction failed: {}", e))?;
 
-        let sections = rairos_pdf_parser::segment_into_sections(&text, 20);
+        let sections = rairos_pdf::segment_into_sections(&text, 20);
         let section_list: Vec<Value> = sections.iter()
             .map(|(name, content)| serde_json::json!({
                 "section": name,
