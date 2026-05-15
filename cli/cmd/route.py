@@ -1,5 +1,7 @@
 """CLI command: route — semantic command routing."""
 
+# [LEGACY] Semantic command router frontend — wraps llm/routing/semantic_router.py
+
 from __future__ import annotations
 
 import argparse

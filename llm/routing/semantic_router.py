@@ -9,7 +9,7 @@ import math
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from llm.client import call_llm_chat_completions
 
@@ -44,14 +44,10 @@ _QUERY_TYPE_TO_COMMAND: Dict[QueryType, str] = {
 }
 
 # CLI subcommand → (module_path, parser_builder_name) lookup for programmatic execution
-_SUBCOMMAND_TABLE_LOOKUP: Dict[str, Tuple[str, str]] = {
-    "gap": ("cli.cmd.gap", "_build_gap_parser"),
-    "hypothesize": ("cli.cmd.hypothesize", "_build_hypothesize_parser"),
-    "experiment": ("cli.cmd.experiment", "_build_experiment_parser"),
-    "insight": ("cli.cmd.insight", "_build_insight_parser"),
-    "narrative": ("cli.cmd.narrative", "_build_narrative_parser"),
-    "chat": ("cli.cmd.chat", "_build_chat_parser"),
-}
+# NOTE: This dict is intentionally empty. Previous entries (gap, hypothesize, etc.)
+# were removed as their modules were ported to Rust. The _dispatch_command function
+# handles fallback to chat for any missing handlers.
+_SUBCOMMAND_TABLE_LOOKUP: Dict[str, Tuple[str, str]] = {}
 
 
 # ─── Route dataclass ──────────────────────────────────────────────────────────
@@ -475,23 +471,37 @@ def _run_command_by_name(subcmd: str, query: str) -> str:
 
 
 def _dispatch_command(subcmd: str, args: argparse.Namespace) -> None:
-    """Dispatch to the appropriate _run_<subcmd> function."""
-    from cli import _run_gap, _run_hypothesize, _run_experiment
-    from cli import _run_insight, _run_narrative, _run_ask
-    from cli import _run_search, _run_chat
+    """Dispatch to the appropriate _run_<subcmd> function.
 
-    dispatch: Dict[str, Callable] = {
-        "gap": _run_gap,
-        "hypothesize": _run_hypothesize,
-        "experiment": _run_experiment,
-        "insight": _run_insight,
-        "narrative": _run_narrative,
-        "ask": _run_ask,
-        "search": _run_search,
-        "chat": _run_chat,
+    Uses deferred imports per subcommand to avoid hard failures on
+    modules that have been ported to Rust and removed.
+    Falls back to generic chat when handler is unavailable.
+    """
+    import logging
+    import importlib
+
+    # Handlers: subcommand → cli attribute name
+    _HANDLERS: Dict[str, str] = {
+        "narrative": "_run_narrative",
+        "chat": "_run_chat",
     }
 
-    fn = dispatch.get(subcmd)
-    if fn is None:
-        raise ValueError(f"No dispatcher for command: {subcmd}")
-    fn(args)
+    handler_name = _HANDLERS.get(subcmd)
+    if handler_name is not None:
+        mod = importlib.import_module("cli")
+        fn = getattr(mod, handler_name, None)
+        if fn is not None:
+            fn(args)
+            return
+
+    # Fallback: log the gap and route to chat
+    logging.warning(
+        "semantic_router: handler for '%s' not available "
+        "(module not yet ported to Rust), falling back to chat",
+        subcmd,
+    )
+    from cli import _run_chat
+
+    args.subcmd = "chat"
+    args.topic = getattr(args, "query", None) or getattr(args, "topic", None) or getattr(args, "question", "")
+    _run_chat(args)

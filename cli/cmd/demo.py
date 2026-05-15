@@ -1,15 +1,17 @@
-"""CLI command: demo — End-to-end Rairos pipeline demonstration.
+     1|"""CLI command: demo — End-to-end Rairos pipeline demonstration.
+     2|
+     3|Usage:
+     4|    rairos demo                    # Run full demo with sample paper
+     5|    rairos demo --quick           # Quick 30-second demo
+     6|    rairos demo --papers N        # Process N papers
+     7|    rairos demo --insights        # Focus on insight extraction demo
+     8|"""
+# [LEGACY] Demo mode — trivial, low priority
 
-Usage:
-    rairos demo                    # Run full demo with sample paper
-    rairos demo --quick           # Quick 30-second demo
-    rairos demo --papers N        # Process N papers
-    rairos demo --insights        # Focus on insight extraction demo
-"""
-
-import argparse
-
-from cli._shared import print_header, print_success, print_info, print_warning
+     9|
+    10|import argparse
+    11|
+    12|from cli._shared import pri
 
 # ─── Demo Stages ───────────────────────────────────────────────────────────────
 

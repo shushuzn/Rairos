@@ -1,4 +1,6 @@
-"""CLI command: path — Research reading path planner."""
+"""path"""
+
+# [LEGACY] Research path planning — BFS/DFS over research graph
 
 from __future__ import annotations
 

@@ -1,21 +1,21 @@
-"""
-EvoSkill CLI Command
+     1|"""
+     2|EvoSkill CLI Command
+     3|
+     4|Usage:
+     5|    airos evoskill init --task research_qa --dataset ./benchmark.csv
+     6|    airos evoskill run [--continue]
+     7|    airos evoskill eval
+     8|    airos evoskill diff
+     9|"""
+# [LEGACY] Evolution skill lifecycle — depends on llm/evoskill/
 
-Usage:
-    airos evoskill init --task research_qa --dataset ./benchmark.csv
-    airos evoskill run [--continue]
-    airos evoskill eval
-    airos evoskill diff
-"""
-
-import click
-import sys
-from pathlib import Path
-
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-from research_loop.evoskill_integration import EvoSkillPipeline
+    10|
+    11|import click
+    12|import sys
+    13|from pathlib import Path
+    14|
+    15|# Add parent to path for imports
+    16|sys.path.insert(0, str(Path(__file__).parent.pare
 from cli._shared import print_success, print_error, print_info
 
 

@@ -1,17 +1,17 @@
-"""CLI command: question — Manage research questions."""
-
-from __future__ import annotations
-
-import argparse
-from typing import Optional
-
-from cli._shared import get_db, print_error
-from llm.question_tracker import QuestionTracker, QuestionSource, ResearchQuestion
-
-
-def _build_question_parser(subparsers) -> argparse.ArgumentParser:
-    """Build the question subcommand parser."""
-    p = subparsers.add_parser(
+     1|"""CLI command: question — Manage research questions."""
+     2|
+     3|from __future__ import annotations
+     4|
+     5|import argparse
+     6|from typing import Optional
+     7|
+     8|from cli._shared import get_db, print_error
+     9|from llm.question_tracker import QuestionTracker, QuestionSource, ResearchQuestion
+    10|
+    11|
+    12|def _build_question_parser(subparsers) -> argparse.ArgumentParser:
+    13|    """Build the question subcommand parser."""
+# [LEGACY] Research questi
         "question",
         help="Manage research questions",
         description="Track and manage research questions from gap detection and manual entry.",

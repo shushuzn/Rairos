@@ -1,4 +1,6 @@
-"""CLI command: validate — Research question validation."""
+"""validate"""
+
+# [LEGACY] Research question validator — depends on llm/validation/
 
 from __future__ import annotations
 

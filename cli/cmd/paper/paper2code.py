@@ -1,21 +1,22 @@
-"""
-paper2code CLI Command
+     1|"""
+     2|paper2code CLI Command
+     3|
+     4|Usage:
+     5|    airos paper2code 2106.09685 --mode minimal --framework pytorch
+     6|    airos paper2code https://arxiv.org/abs/2106.09685
+     7|"""
+# [LEGACY] Paper-to-code generator — depends on llm/paper2code/
 
-Usage:
-    airos paper2code 2106.09685 --mode minimal --framework pytorch
-    airos paper2code https://arxiv.org/abs/2106.09685
-"""
-
-import re
-import click
-import sys
-from pathlib import Path
-
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-from cli._shared import print_success, print_error, print_info
-
+     8|
+     9|import re
+    10|import click
+    11|import sys
+    12|from pathlib import Path
+    13|
+    14|# Add parent to path for imports
+    15|sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+    16|
+    17|
 
 def _build_paper2code_parser(subparsers):
     """Register paper2code subcommand."""

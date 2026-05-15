@@ -1,5 +1,7 @@
 """CLI command: dedup-semantic."""
 
+# [LEGACY] Semantic deduplication — no Rust equivalent (Rust Dedup is basic, not semantic)
+
 from __future__ import annotations
 
 import argparse

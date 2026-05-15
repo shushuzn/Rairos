@@ -1,22 +1,22 @@
-"""
-RAG Pipeline CLI Command
+     1|"""
+     2|RAG Pipeline CLI Command
+     3|
+     4|Usage:
+     5|    airos rag 2106.09685 --mode minimal
+     6|    airos rag run-full <arxiv_id> [--continue]
+     7|    airos rag gen-tests <arxiv_id>
+     8|    airos rag init-benchmark <csv_path>
+     9|"""
+# [LEGACY] RAG pipeline (paper2code + EvoSkill) — depends on llm/rag/
 
-Usage:
-    airos rag 2106.09685 --mode minimal
-    airos rag run-full <arxiv_id> [--continue]
-    airos rag gen-tests <arxiv_id>
-    airos rag init-benchmark <csv_path>
-"""
-
-import re
-import click
-import sys
-from pathlib import Path
-
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-from research_loop.rag_pipeline import RagPipeline
+    10|
+    11|import re
+    12|import click
+    13|import sys
+    14|from pathlib import Path
+    15|
+    16|# Add parent to path for imports
+    17|sys.path.inse
 from cli._shared import print_success, print_error, print_info
 from cli.warp import WarpBlocks
 

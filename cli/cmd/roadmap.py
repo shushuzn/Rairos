@@ -1,17 +1,17 @@
-"""CLI command: roadmap — Generate research roadmaps."""
-
-from __future__ import annotations
-
-import argparse
-
-from cli._shared import print_info, print_error
-from llm.roadmap_generator import RoadmapGenerator
-from llm.question_tracker import QuestionTracker
-
-
-def _build_roadmap_parser(subparsers) -> argparse.ArgumentParser:
-    """Build the roadmap subcommand parser."""
-    p = subparsers.add_parser(
+     1|"""CLI command: roadmap — Generate research roadmaps."""
+     2|
+     3|from __future__ import annotations
+     4|
+     5|import argparse
+     6|
+     7|from cli._shared import print_info, print_error
+     8|from llm.roadmap_generator import RoadmapGenerator
+     9|from llm.question_tracker import QuestionTracker
+    10|
+    11|
+    12|def _build_roadmap_parser(subparsers) -> argparse.ArgumentParser:
+    13|    """Build the roadmap subcommand parser."""
+# [LEGACY] Research roadmap generat
         "roadmap",
         help="Generate research roadmaps",
         description="Generate structured research roadmaps from questions and hypotheses.",

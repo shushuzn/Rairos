@@ -6,7 +6,9 @@ Usage:
     airos postprocess 2604.22755 --stages analysis insight
     airos postprocess 2604.22755 --skip-llm
     airos postprocess 2604.22755 --root AI-Research --tags LLM,RAG
-"""
+"""postprocess"""
+
+# [LEGACY] Post-processing pipeline — output formatting/analysis
 
 from __future__ import annotations
 
