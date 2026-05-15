@@ -2791,6 +2791,7 @@ dependencies = [
  "rairos-scout",
  "rairos-signal",
  "rairos-story",
+ "rairos-validator",
  "rairos-viz",
  "rairos-web",
  "rairos-weekly-digest",
@@ -4266,6 +4267,13 @@ dependencies = [
 [[package]]
 name = "rairos-user-helpers"
 version = "0.1.0"
+
+[[package]]
+name = "rairos-validator"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+]
 
 [[package]]
 name = "rairos-value-quantifier"

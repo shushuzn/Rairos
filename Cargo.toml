@@ -146,6 +146,7 @@ members = [
     "crates/rairos-trend-analyzer",
     "crates/rairos-trends",
     "crates/rairos-updaters",
+    "crates/rairos-validator",
     "crates/rairos-user-helpers",
     "crates/rairos-value-quantifier",
     "crates/rairos-vault",
