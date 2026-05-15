@@ -12,11 +12,15 @@ use axum::{
 };
 use rairos_core::{Database, DbStats, Paper, ResearchGap};
 use rairos_kg::{GraphAlgorithms, KgStats, KnowledgeGraph};
-use rairos_llm::{Capsule, GenePool, GenePoolDiversityCalculator};
+use rairos_llm::{
+    briefing, citation_chain, impact, Capsule, GenePool, GenePoolDiversityCalculator,
+    LlmClient, LlmCredentials, OpenAiClient,
+};
 use rairos_memory::{MemoryStats, ResearchMemory, ResearchStance, StanceType};
 use rairos_parser::{self, detect_source, Source};
 use rairos_research::{ResearchOrchestrator, ResearchQuery};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::sync::Arc;
 use thiserror::Error;
 use tokio::sync::RwLock;
@@ -122,6 +126,17 @@ pub struct GeneAddRequest {
 #[derive(Debug, Deserialize)]
 pub struct GeneFeedbackRequest {
     pub positive: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BriefingRequest {
+    pub arxiv_id: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CitationChainRequest {
+    pub arxiv_id: String,
+    pub depth: Option<u32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -633,6 +648,271 @@ async fn get_stance(Path(id): Path<String>) -> Result<Json<ResearchStance>, WebE
 }
 
 // ============================================================================
+// Routes - Impact & Insights
+// ============================================================================
+
+async fn impact_ranking(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let papers = state
+        .db
+        .list_papers(None, 1000, 0)
+        .map_err(|e| WebError::Database(e.to_string()))?;
+
+    let current_year = 2025;
+    let paper_data: Vec<(String, String, u32, i32)> = papers
+        .iter()
+        .map(|p| {
+            let year = p
+                .published
+                .format("%Y")
+                .to_string()
+                .parse::<i32>()
+                .unwrap_or(current_year);
+            (
+                p.id.clone(),
+                p.title.clone(),
+                p.metadata.cited_by as u32,
+                year,
+            )
+        })
+        .collect();
+
+    let rankings = impact::rank_papers(&paper_data, current_year, 50);
+
+    Ok(Json(serde_json::json!({
+        "rankings": rankings,
+        "total": rankings.len()
+    })))
+}
+
+async fn insights(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let db_stats = state
+        .db
+        .stats()
+        .map_err(|e| WebError::Database(e.to_string()))?;
+    let pool = state.gene_pool.read().await;
+    let diversity = GenePoolDiversityCalculator::calculate(pool.capsules());
+
+    let mut gap_type_counts: HashMap<String, usize> = HashMap::new();
+    for cap in pool.capsules() {
+        *gap_type_counts.entry(cap.action_gap_type.clone()).or_default() += 1;
+    }
+
+    Ok(Json(serde_json::json!({
+        "database": {
+            "total_papers": db_stats.total,
+            "pending": db_stats.pending,
+            "done": db_stats.done,
+            "gaps": db_stats.gaps,
+        },
+        "gene_pool": {
+            "total_capsules": pool.capsules().len(),
+            "active_capsules": pool.active_capsules().len(),
+            "diversity": {
+                "shannon_index": diversity.shannon_index,
+                "capsule_count": diversity.capsule_count,
+                "diversity_score": diversity.diversity_score,
+                "family_counts": diversity.family_counts,
+                "gap_type_counts": diversity.gap_type_counts,
+            },
+            "gap_type_distribution": gap_type_counts,
+        }
+    })))
+}
+
+// ============================================================================
+// Routes - Briefings
+// ============================================================================
+
+async fn generate_briefing(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<BriefingRequest>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let paper = state
+        .db
+        .get_paper(&req.arxiv_id)
+        .map_err(|e| WebError::NotFound(format!("Paper not found: {}", e)))?;
+
+    let arxiv_id = paper.arxiv_id.clone().unwrap_or_default();
+
+    // Try LLM-backed generation if credentials are available
+    let creds = LlmCredentials::resolve(None, None);
+    if !creds.api_key.is_empty() {
+        let client: Arc<dyn LlmClient> =
+            Arc::new(OpenAiClient::with_base_url(creds.api_key, creds.base_url));
+        let briefing = briefing::generate_briefing(
+            &*client,
+            "gpt-4o-mini",
+            &arxiv_id,
+            &paper.title,
+            &paper.abstract_text,
+            &paper.authors,
+        )
+        .await;
+        return Ok(Json(serde_json::to_value(briefing).unwrap_or_default()));
+    }
+
+    // Fallback: return synthetic briefing from abstract
+    let summary = paper
+        .abstract_text
+        .chars()
+        .take(300)
+        .collect::<String>();
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "arxiv_id": arxiv_id,
+        "title": paper.title,
+        "summary": summary,
+        "key_contributions": [],
+        "methodology": "LLM not configured — no detailed briefing available.",
+        "results": "LLM not configured — no detailed briefing available.",
+        "relevance": "LLM not configured — no detailed briefing available.",
+        "verdict": "No verdict (LLM not available).",
+        "markdown": format!("# {}\n\n**Abstract:** {}\n\n_Generated without LLM._", paper.title, summary),
+    })))
+}
+
+async fn list_briefings() -> Result<Json<Vec<serde_json::Value>>, WebError> {
+    // Briefings are not persisted to a dedicated store yet
+    Ok(Json(vec![]))
+}
+
+// ============================================================================
+// Routes - Citation Chain
+// ============================================================================
+
+async fn citation_chain_handler(
+    Json(req): Json<CitationChainRequest>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let depth = req.depth.unwrap_or(2);
+    match citation_chain::build_chain(&req.arxiv_id, depth).await {
+        Ok(chain) => Ok(Json(serde_json::to_value(chain).unwrap_or_default())),
+        Err(e) => Err(WebError::Internal(format!("Citation chain error: {}", e))),
+    }
+}
+
+// ============================================================================
+// Routes - Reports
+// ============================================================================
+
+async fn list_reports() -> Result<Json<Vec<serde_json::Value>>, WebError> {
+    // Reports are not persisted to a dedicated store yet
+    Ok(Json(vec![]))
+}
+
+// ============================================================================
+// Routes - Research Loop
+// ============================================================================
+
+async fn research_loop_root(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let orch = state.orchestrator.read().await;
+    Ok(Json(serde_json::json!({
+        "running": orch.is_some(),
+        "orchestrator_initialized": orch.is_some(),
+    })))
+}
+
+async fn research_loop_status(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    let orch = state.orchestrator.read().await;
+    if let Some(ref orch) = *orch {
+        let cost = orch.cost_summary().await;
+        Ok(Json(serde_json::json!({
+            "running": true,
+            "orchestrator_initialized": true,
+            "cost_summary": cost,
+        })))
+    } else {
+        Ok(Json(serde_json::json!({
+            "running": false,
+            "orchestrator_initialized": false,
+        })))
+    }
+}
+
+async fn research_loop_action(
+    State(state): State<Arc<AppState>>,
+    Path(action): Path<String>,
+) -> Result<Json<serde_json::Value>, WebError> {
+    match action.as_str() {
+        "start" => {
+            let mut orch = state.orchestrator.write().await;
+            if orch.is_some() {
+                return Ok(Json(serde_json::json!({"status": "already_running"})));
+            }
+            let creds = LlmCredentials::resolve(None, None);
+            if creds.api_key.is_empty() {
+                return Err(WebError::BadRequest(
+                    "LLM credentials not configured — cannot start orchestrator".to_string(),
+                ));
+            }
+            let llm_client: Arc<dyn LlmClient> =
+                Arc::new(OpenAiClient::with_base_url(creds.api_key, creds.base_url));
+            *orch = Some(ResearchOrchestrator::new(state.db.clone(), llm_client));
+            Ok(Json(serde_json::json!({"status": "started"})))
+        }
+        "stop" => {
+            let mut orch = state.orchestrator.write().await;
+            *orch = None;
+            Ok(Json(serde_json::json!({"status": "stopped"})))
+        }
+        "run-cycle" => {
+            let orch = state.orchestrator.read().await;
+            if let Some(ref orch) = *orch {
+                let query = ResearchQuery::new("research");
+                let result = orch
+                    .research(&query)
+                    .await
+                    .map_err(|e| WebError::Internal(e.to_string()))?;
+                Ok(Json(serde_json::json!({
+                    "status": "cycle_complete",
+                    "result": {
+                        "papers_found": result.papers_found,
+                        "gaps_found": result.gaps.len(),
+                        "citations_analyzed": result.citations_analyzed,
+                    }
+                })))
+            } else {
+                Err(WebError::BadRequest(
+                    "Orchestrator not running".to_string(),
+                ))
+            }
+        }
+        _ => Err(WebError::BadRequest(format!("Unknown action: {}", action))),
+    }
+}
+
+// ============================================================================
+// Routes - Gene Matches
+// ============================================================================
+
+async fn paper_gene_matches(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<Json<Vec<GeneResponse>>, WebError> {
+    let pool = state.gene_pool.read().await;
+    // Find capsules matching this paper by source_paper_id
+    let matches: Vec<GeneResponse> = pool
+        .capsules()
+        .iter()
+        .filter(|c| {
+            c.archetype.source_paper_id.as_deref() == Some(&id)
+                || c.capsule_id == id
+                || c.capsule_id.starts_with(&id)
+        })
+        .map(GeneResponse::from)
+        .collect();
+
+    Ok(Json(matches))
+}
+
+// ============================================================================
 // Routes - Server
 // ============================================================================
 
@@ -653,6 +933,7 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/papers", post(add_paper))
         .route("/papers/{id}", get(get_paper))
         .route("/papers/{id}", delete(delete_paper))
+        .route("/papers/{id}/gene-matches", get(paper_gene_matches))
         .route("/gaps", get(list_gaps))
         .route("/gaps/{id}", get(get_gap))
         .route("/genes", get(list_genes))
@@ -671,6 +952,15 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/memory/stances", get(list_stances))
         .route("/memory/stances", post(add_stance))
         .route("/memory/stances/{id}", get(get_stance))
+        .route("/impact/ranking", get(impact_ranking))
+        .route("/insights", get(insights))
+        .route("/briefing/generate", post(generate_briefing))
+        .route("/briefings", get(list_briefings))
+        .route("/citation-chain", post(citation_chain_handler))
+        .route("/reports", get(list_reports))
+        .route("/research-loop", get(research_loop_root))
+        .route("/research-loop/status", get(research_loop_status))
+        .route("/research-loop/{action}", post(research_loop_action))
         .with_state(state)
 }
 
