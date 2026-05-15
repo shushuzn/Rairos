@@ -72,7 +72,6 @@ _SUBCOMMAND_TABLE = [
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
-    ("demo", "cli.cmd.demo", "_build_demo_parser"),
     ("jin10", "cli.cmd.jin10", "_build_jin10_parser"),
 ]
 
@@ -172,7 +171,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",
         "jin10": "_run_jin10",
-        "demo": "_run_demo",
         "paper2code": "_run_paper2code",
         "validate": "_run_validate",
     }
