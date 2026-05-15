@@ -1153,6 +1153,8 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(HypothesisGenerateHandler).await;
     server.register(HypothesisListHandler).await;
     server.register(TopicDiscoveryHandler).await;
+    server.register(OrchestratorRunCycleHandler).await;
+    server.register(DeepResearchRunHandler).await;
 }
 
 // ─── Topic Discovery ───────────────────────────────────────────────────────
@@ -1216,6 +1218,98 @@ impl ToolHandler for TopicDiscoveryHandler {
             "content": [{"type": "text", "text": serde_json::to_string_pretty(&results).unwrap_or_default()}],
             "suggestions": results,
             "count": results.len(),
+        }))
+    }
+}
+
+// ─── Orchestrator Run Cycle ───────────────────────────────────────────────
+
+pub struct OrchestratorRunCycleHandler;
+
+#[async_trait]
+impl ToolHandler for OrchestratorRunCycleHandler {
+    fn name(&self) -> &str { "orchestrator_run_cycle" }
+    fn description(&self) -> &str { "Run one autonomous research cycle — check subscriptions, detect gaps, generate alerts" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("interval_minutes".into(), ToolProperty::integer("Check interval in minutes (default 30)")),
+                ("min_gap_severity".into(), ToolProperty::string("Minimum gap severity for alert (LOW/MEDIUM/HIGH, default MEDIUM)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let interval = params.get("interval_minutes").and_then(|v| v.as_i64()).unwrap_or(30) as i32;
+        let min_severity = params.get("min_gap_severity")
+            .and_then(|v| v.as_str())
+            .unwrap_or("MEDIUM")
+            .to_string();
+
+        let config = rairos_orchestrator::OrchestratorConfig {
+            interval_minutes: interval,
+            min_gap_severity_for_alert: min_severity,
+            ..Default::default()
+        };
+
+        let orchestrator = rairos_orchestrator::AutonomousOrchestrator::new(config, false);
+        let alerts = orchestrator.run_cycle().await
+            .map_err(|e| format!("Orchestrator cycle failed: {}", e))?;
+
+        let alert_list: Vec<Value> = alerts.iter().map(|a| {
+            serde_json::json!({
+                "alert_id": a.alert_id,
+                "topic": a.topic,
+                "triggered_by": a.triggered_by,
+                "trigger_title": a.trigger_title,
+                "gaps_found": a.gaps_found,
+                "top_gap_title": a.top_gap_title,
+                "top_gap_type": a.top_gap_type,
+                "severity": a.severity,
+                "gene_pool_score": a.gene_pool_score,
+            })
+        }).collect();
+
+        Ok(serde_json::json!({
+            "content": [{"type": "text", "text": serde_json::to_string_pretty(&alert_list).unwrap_or_default()}],
+            "alerts": alert_list,
+            "alert_count": alert_list.len(),
+        }))
+    }
+}
+
+// ─── Deep Research Run ────────────────────────────────────────────────────
+
+pub struct DeepResearchRunHandler;
+
+#[async_trait]
+impl ToolHandler for DeepResearchRunHandler {
+    fn name(&self) -> &str { "deep_research_run" }
+    fn description(&self) -> &str { "Run deep research agent on a topic — searches arXiv, detects gaps, generates insights" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("query".into(), ToolProperty::string("Research query or topic")),
+                ("max_iterations".into(), ToolProperty::integer("Maximum research iterations (default 3)")),
+            ].into_iter().collect(),
+            vec!["query".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let query = params["query"].as_str().ok_or("Missing query")?;
+
+        let mut agent = rairos_deep_research::DeepResearchAgent::with_query(query);
+        let result = agent.run().map_err(|e| format!("Deep research failed: {}", e))?;
+
+        Ok(serde_json::json!({
+            "content": [{"type": "text", "text": result.report}],
+            "session_id": result.session_id,
+            "iterations": result.iterations,
+            "papers_found": result.papers.len(),
+            "gaps_found": result.gaps.len(),
+            "thoughts_count": result.thoughts.len(),
+            "duration_seconds": result.duration_seconds,
+            "report_preview": result.report.chars().take(500).collect::<String>(),
         }))
     }
 }
