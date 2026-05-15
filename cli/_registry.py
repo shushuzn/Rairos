@@ -70,7 +70,6 @@ _SUBCOMMAND_TABLE = [
     ("route", "cli.cmd.route", "_build_route_parser"),
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
-    ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
     ("jin10", "cli.cmd.jin10", "_build_jin10_parser"),
 ]
@@ -166,7 +165,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         "dedup-semantic": "_run_dedup_semantic",
         "chat": "_run_chat",
         "question": "_run_question",
-        "pipeline": "_run_pipeline",
         "narrative": "_run_narrative",
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",

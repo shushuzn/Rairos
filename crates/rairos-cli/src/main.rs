@@ -1357,6 +1357,40 @@ enum Commands {
         #[arg(long)]
         insights: bool,
     },
+
+    /// Full research pipeline: gap analysis → hypothesis → experiment
+    Pipeline {
+        /// Research topic or keyword
+        topic: String,
+
+        /// Run gap analysis + hypothesis only (skip experiment creation)
+        #[arg(long)]
+        hypothesis_only: bool,
+
+        /// Number of top hypotheses to convert to experiments
+        #[arg(short = 'n', long, default_value = "3")]
+        top_n: usize,
+
+        /// Minimum papers for gap analysis
+        #[arg(long, default_value = "5")]
+        min_papers: usize,
+
+        /// LLM model override
+        #[arg(long)]
+        model: Option<String>,
+
+        /// Output as JSON
+        #[arg(short = 'j', long)]
+        json: bool,
+
+        /// Skip LLM enhancement — template-based only
+        #[arg(long)]
+        no_llm: bool,
+
+        /// Verbose output
+        #[arg(short = 'v', long)]
+        verbose: bool,
+    },
 }
 
 #[derive(Subcommand)]
@@ -5776,6 +5810,30 @@ fn main() -> Result<()> {
         Commands::Demo { quick, papers, insights } => {
             handle_demo(*quick, *papers, *insights)?;
         }
+
+        Commands::Pipeline {
+            topic,
+            hypothesis_only,
+            top_n,
+            min_papers,
+            model,
+            json,
+            no_llm,
+            verbose,
+        } => {
+            let db = open_db(&cli.db)?;
+            handle_pipeline(
+                &db,
+                topic,
+                *hypothesis_only,
+                *top_n,
+                *min_papers,
+                model.as_deref(),
+                *json,
+                *no_llm,
+                *verbose,
+            )?;
+        }
     }
 
     Ok(())
@@ -6006,6 +6064,227 @@ fn handle_demo(quick: bool, papers: Option<usize>, insights: bool) -> Result<()>
     println!("═══════════════════════════════════════════════════════════════════════════════");
     println!("  ✓ Demo complete! Full pipeline working.");
     println!("═══════════════════════════════════════════════════════════════════════════════");
+
+    Ok(())
+}
+
+// ── Helper: render a severity icon ──────────────────────────────────────
+
+fn severity_icon(severity: &str) -> &'static str {
+    match severity.to_lowercase().as_str() {
+        "high" => "🔴",
+        "medium" => "🟡",
+        "low" => "🟢",
+        _ => "⚪",
+    }
+}
+
+/// Handle `pipeline` — full research pipeline: gap → hypothesis → experiment.
+fn handle_pipeline(
+    db: &rairos_core::Database,
+    topic: &str,
+    hypothesis_only: bool,
+    top_n: usize,
+    min_papers: usize,
+    _model: Option<&str>,
+    json: bool,
+    _no_llm: bool,
+    _verbose: bool,
+) -> Result<()> {
+    use rairos_core::Paper;
+    use rairos_research::gap_analysis;
+    use rairos_research::hypothesis_generator::HypothesisGenerator;
+    use rairos_research::PaperSnapshot;
+
+    // Step 0: Fetch papers by topic
+    if json {
+        println!("  🎯 Topic: {}", topic);
+    } else {
+        println!();
+        println!("═══════════════════════════════════════════════════════");
+        println!("  🎯 {} — Research Pipeline", topic);
+        println!("═══════════════════════════════════════════════════════");
+    }
+
+    let papers: Vec<Paper> = db.search_papers(topic, min_papers.max(5) * 2)?;
+    if papers.is_empty() {
+        // Try a broader search if initial search fails
+        println!("   No papers found; you may want to ingest some papers first.");
+        return Ok(());
+    }
+
+    let snapshots: Vec<PaperSnapshot> = papers.iter().map(PaperSnapshot::from_paper).collect();
+    let n_papers = snapshots.len();
+
+    if json {
+        println!("   {} papers loaded", n_papers);
+    } else {
+        println!("  📚 {} papers loaded for analysis", n_papers);
+    }
+
+    // Step 1: Gap analysis
+    let gaps = gap_analysis::analyze_gaps(&snapshots, topic);
+    let n_gaps = gaps.len();
+
+    if json {
+        println!("   {} gaps detected", n_gaps);
+    } else {
+        println!("  🔍 {} research gaps detected", n_gaps);
+    }
+
+    // Step 2: Format gap context and generate hypotheses
+    let gap_context: Vec<String> = gaps
+        .iter()
+        .map(|g| format!("Gap {} ({}): {} — {}", g.gap_id, g.gap_type, g.title, g.description))
+        .collect();
+    let gap_context_str = gap_context.join("\n");
+
+    let gen = HypothesisGenerator::new();
+    let hypothesis_result = gen.generate(topic, &gap_context_str, true);
+
+    // Step 3: Render combined report
+    if json {
+        use serde_json::json;
+        let output = json!({
+            "topic": topic,
+            "papers_analyzed": n_papers,
+            "gaps": gaps.iter().map(|g| json!({
+                "id": g.gap_id,
+                "type": g.gap_type,
+                "title": g.title,
+                "severity": g.severity,
+                "description": g.description,
+            })).collect::<Vec<_>>(),
+            "hypotheses": hypothesis_result.hypotheses.iter().map(|h| json!({
+                "id": h.id,
+                "title": h.title,
+                "type": h.hypothesis_type,
+                "statement": h.core_statement,
+                "novelty_score": h.novelty_score,
+                "feasibility_score": h.feasibility_score,
+                "experiment": {
+                    "baseline": h.experiment_design.baseline,
+                    "variables": h.experiment_design.variables,
+                    "controls": h.experiment_design.controls,
+                    "metrics": h.experiment_design.evaluation_metrics,
+                },
+            })).collect::<Vec<_>>(),
+        });
+        println!();
+        println!("{}", serde_json::to_string_pretty(&output).unwrap_or_default());
+    } else {
+        // Text report: Gaps
+        println!();
+        println!("  ━━ Gap Analysis ━━");
+        for (i, gap) in gaps.iter().enumerate() {
+            let icon = severity_icon(&gap.severity);
+            println!("  {}. {} [{}] {}", i + 1, icon, gap.gap_type, gap.title);
+            println!("     {}", gap.description);
+        }
+
+        // Text report: Hypotheses
+        println!();
+        println!("  ━━ Generated Hypotheses ━━");
+        for (i, h) in hypothesis_result.hypotheses.iter().enumerate() {
+            let novelty_pct = (h.novelty_score * 100.0) as u8;
+            let feasibility_pct = (h.feasibility_score * 100.0) as u8;
+            println!("  {}. {} [{}]", i + 1, h.title, h.hypothesis_type);
+            println!(
+                "     Novelty: {}%  Feasibility: {}%",
+                novelty_pct, feasibility_pct
+            );
+            println!("     {}", h.core_statement);
+            let ed = &h.experiment_design;
+            if !ed.baseline.is_empty() && ed.baseline != "待确定" {
+                println!("     Baseline: {}", ed.baseline);
+            }
+            if !ed.evaluation_metrics.is_empty() {
+                println!("     Metrics: {}", ed.evaluation_metrics.join(", "));
+            }
+        }
+    }
+
+    // Step 4: Create experiments from top hypotheses
+    if !hypothesis_only && !hypothesis_result.hypotheses.is_empty() {
+        use rairos_experiment_tracker::ExperimentTracker;
+        use std::collections::HashMap;
+
+        let exp_tracker = ExperimentTracker::new(None);
+        let mut created_count = 0usize;
+
+        for h in hypothesis_result.hypotheses.iter().take(top_n) {
+            let ed = &h.experiment_design;
+            if ed.baseline.is_empty() && ed.variables.is_empty() {
+                // Skip hypotheses with no meaningful experiment design
+                if !json {
+                    println!("  ⚠ Skipping experiment for [{}]: no experiment design", h.title);
+                }
+                continue;
+            }
+
+            let mut config = HashMap::new();
+            config.insert("baseline".into(), serde_json::Value::String(ed.baseline.clone()));
+            config.insert(
+                "variables".into(),
+                serde_json::Value::Array(ed.variables.iter().map(|v| serde_json::Value::String(v.clone())).collect()),
+            );
+            config.insert(
+                "controls".into(),
+                serde_json::Value::Array(ed.controls.iter().map(|c| serde_json::Value::String(c.clone())).collect()),
+            );
+            config.insert(
+                "evaluation_metrics".into(),
+                serde_json::Value::Array(
+                    ed.evaluation_metrics.iter().map(|m| serde_json::Value::String(m.clone())).collect(),
+                ),
+            );
+            config.insert(
+                "expected_results".into(),
+                serde_json::Value::String(ed.expected_results.clone()),
+            );
+            config.insert(
+                "hypothesis_type".into(),
+                serde_json::Value::String(h.hypothesis_type.clone()),
+            );
+
+            let tags = vec![topic.to_string(), h.hypothesis_type.clone()];
+            let exp = exp_tracker.run(
+                &h.title,
+                &h.core_statement,
+                "",
+                &h.id,
+                Some(config),
+                Some(tags),
+            );
+
+            if !json {
+                println!("  ✓ Created experiment [{}]: {}", exp.id, h.title);
+            }
+            created_count += 1;
+        }
+
+        if !json {
+            if created_count > 0 {
+                println!();
+                println!("  ━━ {} experiment(s) created ━━", created_count);
+                println!("  Run `rairos experiment list` to view, or `rairos experiment complete <id>` when done.");
+            } else {
+                println!("  No experiments created (no valid experiment designs).");
+            }
+        }
+    } else if hypothesis_only {
+        if json {
+            println!("  Hypothesis-only mode — no experiments created.");
+        } else {
+            println!();
+            println!("  📋 Hypothesis-only mode — experiment creation skipped.");
+        }
+    }
+
+    if !json {
+        println!();
+        println!("  ✓ Pipeline complete.");
+    }
 
     Ok(())
 }
