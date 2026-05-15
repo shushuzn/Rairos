@@ -10,7 +10,7 @@
 //! - Parse quality bonus (papers with better parse_status rank higher)
 
 use chrono::{Datelike, NaiveDate, Utc};
-use rairos_rankers_base::{RankedResult, RankerError};
+use crate::llm_orphans::rankers_base::{RankedResult, RankerError};
 use serde::{Deserialize, Serialize};
 
 // ============================================================================

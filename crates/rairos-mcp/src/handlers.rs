@@ -962,7 +962,7 @@ impl ToolHandler for ReplicationCheckSimpleHandler {
         let abstract_text = params["abstract_text"].as_str().ok_or("Missing abstract_text")?;
         let full_text = params.get("full_text").and_then(|v| v.as_str()).unwrap_or("");
 
-        let checker = rairos_replication::ReplicationChecker::new();
+        let checker = rairos_llm::llm_orphans::replication_check::ReplicationChecker::new();
         let report = checker.check_paper(paper_id, title, abstract_text, full_text);
         let rendered = checker.render_report(&report);
 

@@ -6,7 +6,7 @@
 //! Uses ndarray for batch vector operations.
 
 use ndarray::arr1;
-use rairos_rankers_base::{RankedResult, Ranker, RankerError, Result};
+use crate::llm_orphans::rankers_base::{RankedResult, Ranker, RankerError, Result};
 use serde::{Deserialize, Serialize};
 
 // ============================================================================
