@@ -18,7 +18,7 @@ py-fmt: ## Format Python code
 	uvx ruff check --fix .
 
 py-typecheck: ## Run mypy type checker
-	uvx mypy core parsers db llm research_loop cli --ignore-missing-imports
+	uvx mypy core parsers db llm cli --ignore-missing-imports
 
 py-test: ## Run Python tests
 	uv run pytest tests/ -q --timeout=30

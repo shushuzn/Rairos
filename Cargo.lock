@@ -3097,10 +3097,15 @@ dependencies = [
  "chrono",
  "rairos-core",
  "regex",
+ "reqwest",
  "serde",
  "serde_json",
+ "sha2 0.11.0",
  "thiserror 2.0.18",
  "tokio",
+ "tokio-test",
+ "tracing",
+ "uuid",
 ]
 
 [[package]]
@@ -3790,6 +3795,7 @@ name = "rairos-parallel-research"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "rairos-deep-research",
  "rairos-llm",
  "regex",
  "reqwest",

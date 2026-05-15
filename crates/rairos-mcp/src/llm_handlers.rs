@@ -13,6 +13,7 @@ use rairos_insight_storage::CapsuleStorage;
 use rairos_llm::{impact, replication, LlmClient, OpenAiClient, AnthropicClient};
 use serde_json::Value;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 // ─── LLM client factory ────────────────────────────────────────────────────
 
@@ -1112,7 +1113,15 @@ impl ToolHandler for HypothesisGenerateHandler {
 // ─── Register ───────────────────────────────────────────────────────────────
 
 pub async fn register_llm_handlers(server: &crate::McpServer) {
-    tracing::debug!("registering 24 llm-backed MCP tool handlers");
+    tracing::debug!("registering 25 llm-backed MCP tool handlers");
+    // Core tools (24 handlers): briefing, litreview, slides, gap_detect,
+    // citation_chain* (4), impact_score, impact_rank, replication_check, route_create,
+    // trust_scorer, paper_compare, paper_analyze, gap_submit, gap_evolve, gene_pool_decay,
+    // crossover, research_memory* (4), leaderboard, impact_leaderboard, claim_graph,
+    // tag_all, review_list, experiment_record, litreview_list, review_simulate,
+    // gene_pool_watcher, replication_compare, route_plan* (3), research_run,
+    // hypothesis_generate, hypothesis_list, topic_discovery, orchestrator_run_cycle,
+    // deep_research_run, parallel_research_run
     server.register(BriefingGenerateHandler).await;
     server.register(LitReviewGenerateHandler).await;
     server.register(SlidesGenerateHandler).await;
@@ -1155,6 +1164,7 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(TopicDiscoveryHandler).await;
     server.register(OrchestratorRunCycleHandler).await;
     server.register(DeepResearchRunHandler).await;
+    server.register(ParallelResearchRunHandler).await;
 }
 
 // ─── Topic Discovery ───────────────────────────────────────────────────────
@@ -1296,10 +1306,20 @@ impl ToolHandler for DeepResearchRunHandler {
         )
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
-        let query = params["query"].as_str().ok_or("Missing query")?;
+        let query = params["query"].as_str().ok_or("Missing query")?.to_string();
+        let max_iterations = params.get("max_iterations").and_then(|v| v.as_u64()).unwrap_or(3) as usize;
 
-        let mut agent = rairos_deep_research::DeepResearchAgent::with_query(query);
-        let result = agent.run().map_err(|e| format!("Deep research failed: {}", e))?;
+        // Run the synchronous agent in spawn_blocking to avoid
+        // tokio runtime conflicts with reqwest::blocking
+        let result = tokio::task::spawn_blocking(move || {
+            let mut config = rairos_deep_research::DeepResearchConfig::default();
+            config.query = query;
+            config.max_iterations = max_iterations;
+            let mut agent = rairos_deep_research::DeepResearchAgent::new(config);
+            agent.run()
+        }).await
+            .map_err(|e| format!("Spawn error: {}", e))?
+            .map_err(|e| format!("Deep research failed: {}", e))?;
 
         Ok(serde_json::json!({
             "content": [{"type": "text", "text": result.report}],
@@ -1311,6 +1331,50 @@ impl ToolHandler for DeepResearchRunHandler {
             "duration_seconds": result.duration_seconds,
             "report_preview": result.report.chars().take(500).collect::<String>(),
         }))
+    }
+}
+
+// ─── Parallel Research Run ──────────────────────────────────────────────────
+
+pub struct ParallelResearchRunHandler;
+
+#[async_trait]
+impl ToolHandler for ParallelResearchRunHandler {
+    fn name(&self) -> &str { "parallel_research_run" }
+    fn description(&self) -> &str { "Run parallel deep research across multiple gap clusters — each cluster gets an independent agent" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("topic".into(), ToolProperty::string("Overall research topic")),
+                ("gap_clusters".into(), ToolProperty::string("JSON array of gap clusters: [{cluster_id, gaps: [{title, gap_type, novelty_score}], gap_type, keywords}]")),
+                ("max_concurrency".into(), ToolProperty::integer("Max parallel agents (default 3)")),
+                ("max_iterations".into(), ToolProperty::integer("Max iterations per agent (default 2)")),
+            ].into_iter().collect(),
+            vec!["topic".into(), "gap_clusters".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let topic = params["topic"].as_str().ok_or("Missing topic")?;
+        let clusters_str = params["gap_clusters"].as_str().ok_or("Missing gap_clusters")?;
+        let max_concurrency = params.get("max_concurrency").and_then(|v| v.as_u64()).unwrap_or(3) as usize;
+        let max_iterations = params.get("max_iterations").and_then(|v| v.as_u64()).unwrap_or(2) as usize;
+
+        let gap_clusters: Vec<rairos_parallel_research::GapCluster> =
+            serde_json::from_str(clusters_str)
+                .map_err(|e| format!("Invalid gap_clusters JSON: {}", e))?;
+
+        let coordinator = rairos_parallel_research::ParallelResearchCoordinator::new(
+            max_concurrency,
+            max_iterations,
+            300,
+        );
+
+        let orchestrator: Arc<dyn rairos_parallel_research::Orchestrator> =
+            Arc::new(rairos_parallel_research::DeepResearchOrchestrator);
+
+        let result = coordinator.run(topic, gap_clusters, None, orchestrator).await;
+
+        Ok(serde_json::json!(result))
     }
 }
 

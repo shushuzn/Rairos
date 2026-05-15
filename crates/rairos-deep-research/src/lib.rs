@@ -658,11 +658,57 @@ impl DeepResearchAgent {
         planned
     }
 
-    /// SEARCHER: fetch papers (stub for now).
-    #[allow(dead_code)]
-    fn search_papers(&self, _search_query: &str, _iteration: usize) -> Vec<Paper> {
-        // TODO: Integrate with rairos-llm for arXiv search or MCP paper_search
-        Vec::new()
+    /// SEARCHER: fetch papers from arXiv API.
+    fn search_papers(&self, search_query: &str, _iteration: usize) -> Vec<Paper> {
+        let max_results = self.config.max_papers_per_iteration;
+        if max_results == 0 {
+            return Vec::new();
+        }
+
+        let url = format!(
+            "https://export.arxiv.org/api/query?search_query=all:{}&start=0&max_results={}",
+            urlencode(search_query),
+            max_results,
+        );
+
+        tracing::debug!("[DeepResearchAgent] Searching arXiv: {}", url);
+
+        let client = match reqwest::blocking::Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .user_agent("Rairos/0.1")
+            .danger_accept_invalid_certs(false)
+            .build()
+        {
+            Ok(c) => c,
+            Err(e) => {
+                tracing::warn!("[DeepResearchAgent] Failed to create HTTP client: {}", e);
+                return Vec::new();
+            }
+        };
+
+        let resp = match client.get(&url).send() {
+            Ok(r) => r,
+            Err(e) => {
+                tracing::warn!("[DeepResearchAgent] arXiv search failed: {}", e);
+                return Vec::new();
+            }
+        };
+
+        tracing::debug!("[DeepResearchAgent] arXiv status: {}", resp.status());
+
+        let text = match resp.text() {
+            Ok(t) => t,
+            Err(e) => {
+                tracing::warn!("[DeepResearchAgent] Failed to read arXiv response: {}", e);
+                return Vec::new();
+            }
+        };
+
+        tracing::debug!("[DeepResearchAgent] arXiv response length: {} bytes", text.len());
+
+        let papers = parse_arxiv_atom(&text, max_results, search_query);
+        tracing::debug!("[DeepResearchAgent] Parsed {} papers from arXiv", papers.len());
+        papers
     }
 
     /// EXTRACTOR: extract text from papers and build snapshots.
@@ -1005,6 +1051,103 @@ fn generate_session_id() -> String {
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default();
     format!("session_{}_{}", duration.as_secs(), duration.subsec_nanos())
+}
+
+// ─── arXiv Atom XML Parser ───────────────────────────────────────────────────
+
+/// URL-encode a query string for arXiv API.
+fn urlencode(s: &str) -> String {
+    s.replace(' ', "+")
+        .chars()
+        .map(|c| match c {
+            'a'..='z' | 'A'..='Z' | '0'..='9' | '+' | '-' | '_' | '.' => c.to_string(),
+            _ => format!("%{:02X}", c as u8),
+        })
+        .collect()
+}
+
+/// Parse an arXiv Atom XML response into Paper structs.
+fn parse_arxiv_atom(xml: &str, max_results: usize, _query: &str) -> Vec<Paper> {
+    let mut papers = Vec::new();
+
+    // Simple XML parser — extract entry sections
+    for entry in xml.split("<entry>").skip(1) {
+        if papers.len() >= max_results {
+            break;
+        }
+
+        let uid = extract_xml_tag(entry, "id")
+            .map(|s| s.trim().trim_start_matches("http://arxiv.org/abs/").trim_start_matches("https://arxiv.org/abs/").to_string())
+            .unwrap_or_default();
+
+        let title = extract_xml_tag(entry, "title")
+            .map(|s| s.trim().replace('\n', " ").trim().to_string())
+            .unwrap_or_default();
+
+        let abstract_text = extract_xml_tag(entry, "summary")
+            .map(|s| s.trim().replace('\n', " ").trim().to_string())
+            .unwrap_or_default();
+
+        let published = extract_xml_tag(entry, "published").unwrap_or_default();
+
+        let updated = extract_xml_tag(entry, "updated").unwrap_or_default();
+
+        let pdf_url = format!("https://arxiv.org/pdf/{}.pdf", uid);
+        let abs_url = format!("https://arxiv.org/abs/{}", uid);
+
+        // Extract authors
+        let mut authors = Vec::new();
+        for author_entry in entry.split("<author>").skip(1) {
+            if let Some(name) = extract_xml_tag(author_entry, "name") {
+                authors.push(name.trim().to_string());
+            }
+        }
+
+        // Extract categories
+        let mut categories = Vec::new();
+        for cat in entry.split("<category") {
+            if let Some(term) = extract_attr(cat, "term") {
+                categories.push(term);
+            }
+        }
+
+        let primary_category = categories.first().cloned();
+
+        papers.push(Paper {
+            uid,
+            title,
+            abstract_text,
+            authors,
+            source: "arxiv".to_string(),
+            pdf_url,
+            published,
+            updated,
+            abs_url,
+            primary_category,
+            categories: Some(categories.join(",")),
+        });
+    }
+
+    papers
+}
+
+/// Extract text content of an XML tag.
+fn extract_xml_tag<'a>(xml: &'a str, tag: &str) -> Option<String> {
+    let open = format!("<{}", tag);
+    let close = format!("</{}>", tag);
+    let start = xml.find(&open)?;
+    let content_start = xml[start..].find('>')? + start + 1;
+    let end = xml[content_start..].find(&close)?;
+    Some(xml[content_start..content_start + end].to_string())
+}
+
+/// Extract an attribute value from an XML tag fragment.
+fn extract_attr<'a>(xml: &'a str, attr: &str) -> Option<String> {
+    let search = format!("{}=\"", attr);
+    let start = xml.find(&search)?;
+    let value_start = start + search.len();
+    let end = xml[value_start..].find('"')?;
+    Some(xml[value_start..value_start + end].to_string())
 }
 
 // ============================================================================

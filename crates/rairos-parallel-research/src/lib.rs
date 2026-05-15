@@ -512,6 +512,48 @@ impl ParallelResearchCoordinator {
     }
 }
 
+// ─── DeepResearch Orchestrator Implementation ─────────────────────────────────
+
+/// An `Orchestrator` implementation that wraps `rairos_deep_research::DeepResearchAgent`.
+///
+/// Each call to `run_deep_research` creates a fresh agent for the given topic.
+pub struct DeepResearchOrchestrator;
+
+impl Orchestrator for DeepResearchOrchestrator {
+    fn run_deep_research(
+        &self,
+        topic: &str,
+        _new_papers: Vec<serde_json::Value>,
+    ) -> Pin<Box<dyn Future<Output = Result<serde_json::Value, ParallelResearchError>> + Send + '_>>
+    {
+        let topic = topic.to_string();
+        Box::pin(async move {
+            // Run the synchronous agent in spawn_blocking to avoid
+            // tokio runtime conflicts with reqwest::blocking
+            let result = tokio::task::spawn_blocking(move || {
+                let mut agent = rairos_deep_research::DeepResearchAgent::with_query(&topic);
+                agent.run()
+            }).await
+                .map_err(|e| ParallelResearchError::AgentFailed(e.to_string()))?
+                .map_err(|e| ParallelResearchError::AgentFailed(e.to_string()))?;
+
+            let gaps: Vec<ResearchGap> = result.gaps.iter().map(|g| ResearchGap {
+                title: g.title.clone(),
+                gap_type: g.gap_type.clone(),
+                novelty_score: g.archetype_match,
+                description: g.description.clone(),
+                sources: g.matched_papers.clone(),
+            }).collect();
+
+            Ok(serde_json::json!({
+                "gaps": gaps,
+                "papers_analyzed": result.papers.len(),
+                "iterations": result.iterations,
+            }))
+        })
+    }
+}
+
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 #[cfg(test)]

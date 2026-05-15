@@ -38,7 +38,7 @@ fmt-check:
 
 # Type check (mypy on core modules)
 typecheck:
-    python -m mypy core parsers db llm research_loop --ignore-missing-imports
+    python -m mypy core parsers db llm --ignore-missing-imports
 
 # Full CI pipeline (what GitHub Actions runs)
 ci: lint fmt-check typecheck

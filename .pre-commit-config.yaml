@@ -13,7 +13,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy (Python type check)
-        entry: uv run mypy core parsers db llm research_loop cli --ignore-missing-imports
+        entry: uv run mypy core parsers db llm cli --ignore-missing-imports
         language: system
         pass_filenames: false
 

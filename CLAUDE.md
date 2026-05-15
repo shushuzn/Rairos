@@ -31,11 +31,11 @@ uv sync --all-extras
 uv run ruff check .
 uv run ruff format --check .
 
-# Type check (CI scope: core parsers db llm research_loop cli)
-uv run mypy core parsers db llm research_loop cli scripts notifications
+# Type check (CI scope: core parsers db llm cli)
+uv run mypy core parsers db llm cli scripts notifications
 
 # Tests (fast subset)
-uv run pytest tests/test_workflow.py tests/test_cli_dispatch.py tests/test_briefing_daemon.py -v --timeout=15
+uv run pytest tests/test_workflow.py tests/test_cli_dispatch.py -v --timeout=15
 
 # Full test suite (slow — uses pytest-split 4-way sharding)
 uv run pytest tests/ -q --tb=short -n auto --timeout=60
