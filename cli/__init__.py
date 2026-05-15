@@ -43,8 +43,6 @@ _LAZY_EXPORTS = {
     "_build_narrative_parser": ("cli.cmd.narrative", "_build_narrative_parser"),
     "_run_route": ("cli.cmd.route", "_run_route"),
     "_build_route_parser": ("cli.cmd.route", "_build_route_parser"),
-    "_run_postprocess": ("cli.cmd.postprocess", "_run_postprocess"),
-    "_build_postprocess_parser": ("cli.cmd.postprocess", "_build_postprocess_parser"),
     "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
     "Database": ("db", "Database"),
     # Module-level re-exports (used by tests for mock.patch)

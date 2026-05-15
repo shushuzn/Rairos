@@ -95,6 +95,7 @@ members = [
     "crates/rairos-observability",
     "crates/rairos-orchestrator",
     "crates/rairos-paper-parser",
+    "crates/rairos-postprocess",
     "crates/rairos-paradigm",
     "crates/rairos-parallel-research",
     "crates/rairos-parser",

@@ -39,6 +39,7 @@ rairos-gene-pool-watcher = { path = "../rairos-gene-pool-watcher" }
 rairos-questions = { path = "../rairos-questions" }
 rairos-narratives = { path = "../rairos-narratives" }
 rairos-validator = { path = "../rairos-validator" }
+rairos-postprocess = { path = "../rairos-postprocess" }
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
 tracing = "0.1"

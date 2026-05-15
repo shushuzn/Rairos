@@ -153,7 +153,7 @@ def generate_html(commands):
             "analyze",
         ],
         "Agents": ["agent", "chat", "chat-tui", "route", "friction", "subscribe", "repl"],
-        "Knowledge": ["kg", "rag", "pipeline", "experiment", "postprocess", "validate", "ingest"],
+        "Knowledge": ["kg", "rag", "pipeline", "experiment", "validate", "ingest"],
         "Tools": [
             "cache",
             "queue",

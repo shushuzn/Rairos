@@ -74,7 +74,6 @@ _SUBCOMMAND_TABLE = [
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
-    ("postprocess", "cli.cmd.postprocess", "_build_postprocess_parser"),
     ("demo", "cli.cmd.demo", "_build_demo_parser"),
     ("jin10", "cli.cmd.jin10", "_build_jin10_parser"),
 ]
@@ -176,7 +175,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         "narrative": "_run_narrative",
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",
-        "postprocess": "_run_postprocess",
         "jin10": "_run_jin10",
         "demo": "_run_demo",
         "paper2code": "_run_paper2code",
