@@ -130,6 +130,7 @@ members = [
     "crates/rairos-review-queue",
     "crates/rairos-review-simulator",
     "crates/rairos-rigor",
+    "crates/rairos-roadmap",
     "crates/rairos-scoring-momentum",
     "crates/rairos-scout",
     "crates/rairos-sections",

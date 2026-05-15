@@ -1318,6 +1318,25 @@ enum Commands {
         lang: String,
     },
 
+    /// Generate research roadmap from a question
+    Roadmap {
+        /// Question ID (fetched from QuestionTracker)
+        #[arg(short = 'q', long)]
+        question: Option<String>,
+
+        /// Direct question text (used if --question is not provided)
+        #[arg(short = 't', long)]
+        text: Option<String>,
+
+        /// JSON output
+        #[arg(short = 'j', long)]
+        json: bool,
+
+        /// Export as Markdown file
+        #[arg(long)]
+        export_md: Option<String>,
+    },
+
     /// Manage research questions (ported from Python CLI)
     Question {
         #[command(subcommand)]
@@ -5734,6 +5753,52 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_slides(&db, paper_ids, format, template, *num_slides, output.as_deref(), *include_notes, lang)?;
         }
+
+        Commands::Roadmap { question, text, json, export_md } => {
+            handle_roadmap(question.as_deref(), text.as_deref(), *json, export_md.as_deref())?;
+        }
+    }
+
+    Ok(())
+}
+
+/// Handle `roadmap` — generate research roadmap from a question.
+fn handle_roadmap(
+    question: Option<&str>,
+    text: Option<&str>,
+    json: bool,
+    export_md: Option<&str>,
+) -> Result<()> {
+    use rairos_questions::QuestionTracker;
+    use rairos_roadmap::RoadmapGenerator;
+
+    // Determine question text
+    let (question_text, question_id) = if let Some(qid) = question {
+        let tracker = QuestionTracker::new()?;
+        let q = tracker
+            .get(qid)
+            .ok_or_else(|| anyhow::anyhow!("问题 [{}] 不存在", qid))?;
+        (q.question.clone(), q.id.clone())
+    } else if let Some(t) = text {
+        (t.to_string(), String::new())
+    } else {
+        anyhow::bail!("请提供 --question <id> 或 --text <问题>");
+    };
+
+    println!("📋 生成研究路线图...");
+
+    let gen = RoadmapGenerator::new();
+    let roadmap = gen.generate(&question_text, &question_id, None, "");
+
+    if json {
+        println!("{}", gen.render_json(&roadmap));
+    } else if let Some(path) = export_md {
+        std::fs::write(path, gen.render_markdown(&roadmap))
+            .context("写入文件失败")?;
+        println!("✓ 导出到 {}", path);
+    } else {
+        println!();
+        println!("{}", gen.render_text(&roadmap));
     }
 
     Ok(())

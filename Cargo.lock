@@ -2790,6 +2790,7 @@ dependencies = [
  "rairos-research-log",
  "rairos-research-session",
  "rairos-review-generator",
+ "rairos-roadmap",
  "rairos-scout",
  "rairos-signal",
  "rairos-slides",
@@ -4112,6 +4113,16 @@ version = "0.1.0"
 dependencies = [
  "regex",
  "serde",
+]
+
+[[package]]
+name = "rairos-roadmap"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "tempfile",
 ]
 
 [[package]]
