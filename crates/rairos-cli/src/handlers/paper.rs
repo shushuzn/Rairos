@@ -113,7 +113,7 @@ pub fn extract_xml_field(xml: &str, tag: &str) -> Option<String> {
     None
 }
 
-fn extract_all_xml_fields(_xml: &str, _tag: &str) -> Vec<String> {
+fn extract_all_xml_fields(xml: &str, tag: &str) -> Vec<String> {
     let mut results = Vec::new();
     let mut search_pos = 0;
 

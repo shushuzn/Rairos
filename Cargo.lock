@@ -2667,6 +2667,7 @@ name = "rairos-cache"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "flate2",
  "lazy_static",
  "serde",
  "serde_json",
@@ -3554,7 +3555,6 @@ dependencies = [
  "rairos-replication",
  "rairos-rigor",
  "rairos-scoring-momentum",
- "rairos-smart-cache",
  "rairos-trend-analyzer",
  "regex",
  "reqwest",
@@ -4218,17 +4218,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-smart-cache"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "flate2",
- "lazy_static",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-snapstate"
 version = "0.1.0"
 dependencies = [
@@ -4256,14 +4245,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
-]
-
-[[package]]
-name = "rairos-sysinfo"
-version = "0.1.0"
-dependencies = [
- "pyo3",
- "sysinfo",
 ]
 
 [[package]]

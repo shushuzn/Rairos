@@ -31,7 +31,6 @@ rairos-impact = { path = "../rairos-impact" }
 rairos-impact-scorer = { path = "../rairos-impact-scorer" }
 rairos-gene-pool-decay = { path = "../rairos-gene-pool-decay" }
 rairos-pool = { path = "../rairos-pool" }
-rairos-smart-cache = { path = "../rairos-smart-cache" }
 rairos-game-mode = { path = "../rairos-game-mode" }
 rairos-achievements = { path = "../rairos-achievements" }
 rairos-climate = { path = "../rairos-climate" }
