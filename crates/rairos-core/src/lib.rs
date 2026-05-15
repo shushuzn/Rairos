@@ -1061,6 +1061,18 @@ impl Database {
         Ok(())
     }
 
+    pub fn list_all_citations(&self) -> Result<Vec<(String, String)>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare("SELECT source_id, target_id FROM citations")?;
+        let rows = stmt
+            .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?;
+        let mut result = Vec::new();
+        for row in rows {
+            result.push(row?);
+        }
+        Ok(result)
+    }
+
     pub fn get_citations(&self, paper_id: &str) -> Result<Citations> {
         let conn = self.conn.lock();
         let mut citing_stmt =

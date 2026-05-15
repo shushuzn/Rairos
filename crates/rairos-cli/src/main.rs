@@ -21,7 +21,7 @@ use chrono::{Datelike, Utc};
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
 use rairos_pdf;
-use rairos_kg::{GraphAlgorithms, KnowledgeGraph};
+use rairos_kg::{GraphAlgorithms, KgNode, KnowledgeGraph};
 use rairos_llm::{Capsule, CapsuleStatus, GenePool, GenePoolDiversityCalculator};
 use rairos_memory::{ResearchMemory, ResearchStance, StanceType};
 use rairos_web::{start, AppState};
@@ -365,6 +365,39 @@ enum Commands {
         /// Target paper ID (the paper being cited)
         #[arg(short, long)]
         target: String,
+    },
+
+    /// Show paper's ego graph (neighbors up to N hops)
+    KgGraph {
+        /// Paper ID or arXiv ID
+        #[arg(short, long)]
+        paper_id: String,
+        /// BFS depth (default 2)
+        #[arg(short, long, default_value = "2")]
+        depth: u32,
+        /// Output format (table/json)
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Search nodes in the knowledge graph
+    KgSearch {
+        /// Filter by node type (Paper/Tag/Author/PNote/CNote/MNote)
+        #[arg(long)]
+        node_type: Option<String>,
+        /// Search keyword in label or entity ID
+        #[arg(short, long)]
+        keyword: Option<String>,
+        /// Output format (table/json)
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Rebuild knowledge graph from papers database
+    KgRebuild {
+        /// Only process new/changed papers since last rebuild
+        #[arg(long)]
+        incremental: bool,
     },
 
     /// Run rate limiter benchmark
@@ -2735,6 +2768,203 @@ fn handle_kg_add_citation(db: &Database, source: &str, target: &str) -> Result<(
     Ok(())
 }
 
+fn handle_kg_graph(paper_id: &str, depth: u32, format: &str) -> Result<()> {
+    let graph = KnowledgeGraph::load()?;
+
+    // Find center node by entity_id or node id
+    let center = graph
+        .nodes()
+        .values()
+        .find(|n| n.entity_id == paper_id || n.id == paper_id)
+        .cloned()
+        .ok_or_else(|| anyhow::anyhow!("Paper '{}' not found in KG", paper_id))?;
+
+    // BFS neighbors on in-memory graph
+    let mut visited: HashSet<String> = HashSet::new();
+    visited.insert(center.id.clone());
+    let mut results: Vec<(KgNode, String, u32)> = Vec::new();
+    let mut current_level = vec![center.id.clone()];
+
+    for d in 1..=depth {
+        let mut next_level = Vec::new();
+        for nid in &current_level {
+            for edge in &graph.edges {
+                let neighbor_id = if edge.source == *nid {
+                    Some(&edge.target)
+                } else if edge.target == *nid {
+                    Some(&edge.source)
+                } else {
+                    None
+                };
+                if let Some(nbr_id) = neighbor_id {
+                    if visited.insert(nbr_id.clone()) {
+                        if let Some(node) = graph.get_node(nbr_id) {
+                            results.push((node.clone(), edge.relation.clone(), d));
+                            next_level.push(nbr_id.clone());
+                        }
+                    }
+                }
+            }
+        }
+        current_level = next_level;
+    }
+
+    if format == "json" {
+        let neighbors: Vec<serde_json::Value> = results
+            .iter()
+            .map(|(node, rel, d)| {
+                serde_json::json!({
+                    "id": node.id,
+                    "entity_id": node.entity_id,
+                    "label": node.label,
+                    "type": node.node_type,
+                    "relation": rel,
+                    "depth": d,
+                })
+            })
+            .collect();
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&serde_json::json!({
+                "center": {
+                    "id": center.id,
+                    "entity_id": center.entity_id,
+                    "label": center.label,
+                    "type": center.node_type,
+                },
+                "neighbors": neighbors,
+                "total": results.len(),
+            }))?
+        );
+    } else {
+        println!("=== KG Graph for '{}' (depth={}) ===", paper_id, depth);
+        println!(
+            "Center: [{}] {}",
+            center.node_type,
+            center.label
+        );
+        println!("\n{} neighbor(s):", results.len());
+        for (node, rel, d) in &results {
+            let label = if node.label.len() > 50 {
+                format!("{}...", &node.label[..47])
+            } else {
+                node.label.clone()
+            };
+            println!(
+                "  [depth={}] {:<8} | {:<12} | {}",
+                d, node.node_type, rel, label
+            );
+        }
+    }
+    Ok(())
+}
+
+fn handle_kg_search(
+    node_type: Option<&str>,
+    keyword: Option<&str>,
+    format: &str,
+) -> Result<()> {
+    let graph = KnowledgeGraph::load()?;
+
+    let nodes: Vec<&KgNode> = graph
+        .nodes()
+        .values()
+        .filter(|n| {
+            let type_match = node_type.map(|t| n.node_type == t).unwrap_or(true);
+            let kw = keyword.unwrap_or("");
+            let keyword_match = if kw.is_empty() {
+                true
+            } else {
+                let kw_lower = kw.to_lowercase();
+                n.label.to_lowercase().contains(&kw_lower)
+                    || n.entity_id.to_lowercase().contains(&kw_lower)
+            };
+            type_match && keyword_match
+        })
+        .collect();
+
+    if format == "json" {
+        println!("{}", serde_json::to_string_pretty(&nodes)?);
+    } else {
+        println!("=== KG Search Results ===\n");
+        if nodes.is_empty() {
+            println!("No nodes found.");
+            return Ok(());
+        }
+        println!(
+            "{:>4} {:<12} {:<12} {}",
+            "#", "TYPE", "ENTITY ID", "LABEL"
+        );
+        println!("{}", "-".repeat(80));
+        for (i, node) in nodes.iter().enumerate().take(100) {
+            let eid = if node.entity_id.len() > 12 {
+                format!("{}...", &node.entity_id[..9])
+            } else {
+                node.entity_id.clone()
+            };
+            let label = if node.label.len() > 52 {
+                format!("{}...", &node.label[..49])
+            } else {
+                node.label.clone()
+            };
+            println!(
+                "{:>4} {:<12} {:<12} {}",
+                i + 1,
+                node.node_type,
+                eid,
+                label
+            );
+        }
+        if nodes.len() > 100 {
+            println!("... and {} more", nodes.len() - 100);
+        }
+        println!("\nTotal: {} nodes", nodes.len());
+    }
+    Ok(())
+}
+
+fn handle_kg_rebuild(db: &Database, incremental: bool) -> Result<()> {
+    // Load the knowledge graph (with DB connection)
+    let graph = KnowledgeGraph::load()?;
+
+    // Load all papers from the papers database
+    let papers = db.list_papers(None, 100_000, 0)?;
+    if papers.is_empty() {
+        println!("No papers found in database.");
+        return Ok(());
+    }
+
+    println!("Loading {} papers into knowledge graph...", papers.len());
+
+    // Convert to KgNode
+    let kg_nodes: Vec<KgNode> = papers.iter().map(KgNode::from_paper).collect();
+
+    // Load all citations from the papers database
+    let all_citations = db.list_all_citations()?;
+    println!(
+        "Connecting {} citation edges...",
+        all_citations.len()
+    );
+
+    // Use the KgDatabase to rebuild
+    let db_ref = graph
+        .database()
+        .ok_or_else(|| anyhow::anyhow!("Knowledge graph has no database connection"))?;
+
+    let stats = db_ref.rebuild_from_papers(&kg_nodes, &all_citations)?;
+
+    println!(
+        "Done: {} nodes, {} edges.",
+        stats.total_nodes, stats.total_edges
+    );
+
+    if incremental {
+        println!("(Incremental mode enabled — only new/changed papers processed.)");
+    }
+
+    Ok(())
+}
+
 fn handle_stance_add(topic: &str, claim: &str, stance: &str, reasoning: &str) -> Result<()> {
     let stance_type = match stance.to_lowercase().as_str() {
         "supported" => StanceType::Supported,
@@ -4993,6 +5223,24 @@ fn main() -> Result<()> {
         Commands::KgAddCitation { source, target } => {
             let db = open_db(&cli.db)?;
             handle_kg_add_citation(&db, source, target)?;
+        }
+        Commands::KgGraph {
+            paper_id,
+            depth,
+            format,
+        } => {
+            handle_kg_graph(paper_id, *depth, format)?;
+        }
+        Commands::KgSearch {
+            node_type,
+            keyword,
+            format,
+        } => {
+            handle_kg_search(node_type.as_deref(), keyword.as_deref(), format)?;
+        }
+        Commands::KgRebuild { incremental } => {
+            let db = open_db(&cli.db)?;
+            handle_kg_rebuild(&db, *incremental)?;
         }
         Commands::RateLimitBenchmark { count } => {
             handle_rate_limit_benchmark(*count)?;

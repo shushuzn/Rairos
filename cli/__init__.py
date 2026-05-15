@@ -18,8 +18,6 @@ __all__ = ["main"]
 _LAZY_EXPORTS = {
     "_run_dedup_semantic": ("cli.cmd.dedup_semantic", "_run_dedup_semantic"),
     "_build_dedup_semantic_parser": ("cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
-    "_run_kg": ("cli.cmd.kg.kg", "_run_kg"),
-    "_build_kg_parser": ("cli.cmd.kg.kg", "_build_kg_parser"),
     "_get_ollama_embedding_batch": ("cli.cmd.dedup_semantic", "_get_ollama_embedding_batch"),
     "_run_chat": ("cli.cmd.chat", "_run_chat"),
     "_build_chat_parser": ("cli.cmd.chat", "_build_chat_parser"),

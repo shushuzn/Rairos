@@ -63,7 +63,6 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 _SUBCOMMAND_TABLE = [
     ("dedup-semantic", "cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
-    ("kg", "cli.cmd.kg", "_build_kg_parser"),
     ("paper2code", "cli.cmd.paper.paper2code", "_build_paper2code_parser"),
     ("trace", "cli.cmd.paper.trace", "_build_paper_trace_parser"),
     ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
@@ -177,7 +176,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         "question": "_run_question",
         "roadmap": "_run_roadmap",
         "pipeline": "_run_pipeline",
-        "kg": "_run_kg",
         "narrative": "_run_narrative",
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",
