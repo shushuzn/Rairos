@@ -15,31 +15,27 @@ rairos-citation-chain = { path = "../rairos-citation-chain" }
 rairos-research = { path = "../rairos-research" }
 rairos-dashboard = { path = "../rairos-dashboard" }
 rairos-weekly-digest = { path = "../rairos-weekly-digest" }
-rairos-discover = { path = "../rairos-discover" }
 rairos-lean-verifier = { path = "../rairos-lean-verifier" }
 rairos-parser = { path = "../rairos-parser" }
 rairos-evolution = { path = "../rairos-evolution" }
 rairos-experiment-tracker = { path = "../rairos-experiment-tracker" }
 rairos-friction = { path = "../rairos-friction" }
-rairos-insight-cards = { path = "../rairos-insight-cards" }
 rairos-intelligence = { path = "../rairos-intelligence" }
 rairos-litreview-analyzer = { path = "../rairos-litreview-analyzer" }
 rairos-replication-checker = { path = "../rairos-replication-checker" }
 rairos-evolution-report = { path = "../rairos-evolution-report" }
 rairos-research-log = { path = "../rairos-research-log" }
 rairos-review-generator = { path = "../rairos-review-generator" }
-rairos-scout = { path = "../rairos-scout" }
 rairos-survey-generator = { path = "../rairos-survey-generator" }
 rairos-research-session = { path = "../rairos-research-session" }
-rairos-viz = { path = "../rairos-viz" }
-rairos-gene-pool-watcher = { path = "../rairos-gene-pool-watcher" }
-rairos-questions = { path = "../rairos-questions" }
 rairos-narratives = { path = "../rairos-narratives" }
 rairos-postprocess = { path = "../rairos-postprocess" }
 rairos-pathfinder = { path = "../rairos-pathfinder" }
 rairos-slides = { path = "../rairos-slides" }
 rairos-roadmap = { path = "../rairos-roadmap" }
 rairos-mcp-jin10 = { path = "../rairos-mcp-jin10" }
+rairos-questions = { path = "../rairos-questions" }
+rairos-viz = { path = "../rairos-viz" }
 # Orphan rescues — CLI command crates
 rairos-citations = { path = "../rairos-citations" }
 rairos-sections = { path = "../rairos-sections" }
@@ -51,15 +47,11 @@ rairos-snapstate = { path = "../rairos-snapstate" }
 rairos-updaters = { path = "../rairos-updaters" }
 rairos-review-queue = { path = "../rairos-review-queue" }
 rairos-vault = { path = "../rairos-vault" }
-rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
-rairos-gap-analyzer = { path = "../rairos-gap-analyzer" }
-rairos-gap-detector = { path = "../rairos-gap-detector" }
 rairos-arxiv-alert-channels = { path = "../rairos-arxiv-alert-channels" }
 rairos-channels = { path = "../rairos-channels" }
 rairos-citation-pathfinder-web = { path = "../rairos-citation-pathfinder-web" }
 rairos-skill-discovery = { path = "../rairos-skill-discovery" }
 rairos-testextractor = { path = "../rairos-testextractor" }
-rairos-resource-monitor = { path = "../rairos-resource-monitor" }
 rairos-watch-papers = { path = "../rairos-watch-papers" }
 rairos-vector-store = { path = "../rairos-vector-store" }
 rairos-parsers = { path = "../rairos-parsers" }
@@ -84,6 +76,7 @@ chrono = { version = "0.4", features = ["serde"] }
 serde_json = "1.0"
 regex = "1.10"
 csv = "1.3"
+serde-xml-rs = "0.7"
 dirs = "5.0"
 indicatif = "0.17"
 console = "0.15"
@@ -91,6 +84,7 @@ tokio = { version = "1", features = ["full"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "blocking"], default-features = false }
 ratatui = "0.28"
 crossterm = "0.28"
+rayon = "1"
 
 [dev-dependencies]
 tempfile = "3"

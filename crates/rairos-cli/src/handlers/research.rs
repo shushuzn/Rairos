@@ -1545,7 +1545,7 @@ pub fn handle_question(action: &QuestionAction) -> Result<()> {
 }
 
 pub fn handle_discover(force: bool) -> Result<()> {
-    let result = rairos_discover::discover(force);
+    let result = crate::discover::discover(force);
     println!("{}", serde_json::to_string_pretty(&result)?);
     if result.patterns_discovered > 0 {
         println!("{} new patterns discovered", result.patterns_discovered);
@@ -1556,8 +1556,8 @@ pub fn handle_discover(force: bool) -> Result<()> {
 pub fn handle_scout(topic: Option<&str>, sources: &str, max_results: usize) -> Result<()> {
     let topic_str = topic.unwrap_or("machine learning");
     println!("🔍 Scouting topic: {} (sources: {})", topic_str, sources);
-    let results = rairos_scout::scout(topic_str, sources, 5, max_results, 0.3, &[]);
-    println!("{}", rairos_scout::render_scout_results(&results));
+    let results = crate::scout::scout(topic_str, sources, 5, max_results, 0.3, &[]);
+    println!("{}", crate::scout::render_scout_results(&results));
     Ok(())
 }
 

@@ -22,6 +22,7 @@ pub mod paper_analyzer;
 pub mod paper_comparison;
 pub mod reasoning;
 pub mod retry;
+pub mod insight;
 
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};

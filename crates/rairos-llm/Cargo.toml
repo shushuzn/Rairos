@@ -20,6 +20,8 @@ uuid = { version = "1.0", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 dirs = "5"
 regex = "1"
+rusqlite = { version = "0.39", features = ["bundled"] }
+rand = "0.8"
 # Orphan rescues — LLM domain crates
 rairos-chat = { path = "../rairos-chat" }
 rairos-client = { path = "../rairos-client" }
@@ -34,13 +36,9 @@ rairos-pool = { path = "../rairos-pool" }
 rairos-game-mode = { path = "../rairos-game-mode" }
 rairos-achievements = { path = "../rairos-achievements" }
 rairos-climate = { path = "../rairos-climate" }
-rairos-climate-ai-monitor = { path = "../rairos-climate-ai-monitor" }
 rairos-eval-gap-monitor = { path = "../rairos-eval-gap-monitor" }
 rairos-contradiction = { path = "../rairos-contradiction" }
 rairos-cross-referencer = { path = "../rairos-cross-referencer" }
-rairos-labor-displacement-tracker = { path = "../rairos-labor-displacement-tracker" }
-rairos-policy-impact-tracer = { path = "../rairos-policy-impact-tracer" }
-rairos-insight = { path = "../rairos-insight" }
 rairos-litreview = { path = "../rairos-litreview" }
 rairos-litreview-generator = { path = "../rairos-litreview-generator" }
 rairos-briefing-generator = { path = "../rairos-briefing-generator" }
@@ -58,3 +56,4 @@ rairos-trend-analyzer = { path = "../rairos-trend-analyzer" }
 [dev-dependencies]
 tokio-test = "0.4"
 mockito = "1.6"
+tempfile = "3"

@@ -20,6 +20,22 @@ pub mod logging_utils;
 pub mod i18n;
 pub mod basics;
 
+// Re-exported orphan utility crates
+pub mod retry;
+pub mod cache;
+pub mod core_utils;
+pub mod exceptions;
+pub mod config;
+pub mod perf;
+pub mod rate_limiter;
+pub mod text;
+pub mod observability;
+pub mod user_helpers;
+pub mod auth;
+pub mod notifications;
+pub mod notify;
+pub mod db_migrate;
+
 // ============================================================================
 // Error Types
 // ============================================================================

@@ -371,7 +371,7 @@ pub fn handle_rate_limit_check(endpoint: &str) -> Result<()> {
 }
 
 pub fn handle_insight(action: &InsightAction) -> Result<()> {
-    use rairos_insight_cards::InsightManager;
+    use rairos_llm::insight::cards::InsightManager;
 
     let manager = InsightManager::new(None);
 

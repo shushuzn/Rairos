@@ -27,7 +27,18 @@ pub mod lsp_diagnostics;
 pub mod signal;
 pub mod story;
 pub mod validator;
+pub mod climate_ai_monitor;
+pub mod labor_displacement_tracker;
+pub mod at_risk_scanner;
+pub mod ecosystem;
 pub mod workspace_snapshot;
+pub mod gap_analyzer;
+pub mod value_quantifier;
+pub mod batch_optimizer;
+pub mod gap_detector;
+pub mod policy_impact_tracer;
+pub mod discover;
+pub mod scout;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};

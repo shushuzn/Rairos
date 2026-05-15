@@ -6,7 +6,7 @@
 
 use chrono::Utc;
 use rairos_core::{Database, ResearchGap};
-use rairos_insight_tracker::EvolutionTracker;
+use rairos_llm::insight::tracker::EvolutionTracker;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;

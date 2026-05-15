@@ -22,23 +22,19 @@ anyhow = "1.0"
 lazy_static = "1.4"
 regex = "1.0"
 
-# Orphan rescues — utility/infra layer
+# Orphan rescues — re-exported through rairos_core:: module tree
 rairos-retry = { path = "../rairos-retry" }
 rairos-cache = { path = "../rairos-cache" }
 rairos-core-utils = { path = "../rairos-core-utils" }
 rairos-exceptions = { path = "../rairos-exceptions" }
 rairos-config = { path = "../rairos-config" }
-rairos-profiler = { path = "../rairos-profiler" }
 rairos-perf = { path = "../rairos-perf" }
 rairos-rate-limiter = { path = "../rairos-rate-limiter" }
 rairos-text = { path = "../rairos-text" }
 rairos-observability = { path = "../rairos-observability" }
 rairos-user-helpers = { path = "../rairos-user-helpers" }
-rairos-value-quantifier = { path = "../rairos-value-quantifier" }
 rairos-auth = { path = "../rairos-auth" }
-rairos-ecosystem = { path = "../rairos-ecosystem" }
 rairos-notifications = { path = "../rairos-notifications" }
 rairos-notify = { path = "../rairos-notify" }
 rairos-db-migrate = { path = "../rairos-db-migrate" }
-rairos-batch-optimizer = { path = "../rairos-batch-optimizer" }
-rairos-friction-tracker = { path = "../rairos-friction-tracker" }
+

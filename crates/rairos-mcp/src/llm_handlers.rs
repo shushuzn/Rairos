@@ -8,8 +8,8 @@ use rand::Rng;
 use rairos_core::Database;
 use rairos_experiment_tracker::ExperimentTracker;
 use rairos_gene_pool_watcher::GenePoolWatcher;
-use rairos_insight_evolution::EvolutionEngine;
-use rairos_insight_storage::CapsuleStorage;
+use rairos_llm::insight::evolution::EvolutionEngine;
+use rairos_llm::insight::storage::CapsuleStorage;
 use rairos_llm::{impact, replication, LlmClient, OpenAiClient, AnthropicClient};
 use serde_json::Value;
 use std::collections::HashMap;
@@ -582,7 +582,7 @@ impl ToolHandler for GapEvolveHandler {
 // ─── Gene Pool Decay ────────────────────────────────────────────────────────
 
 fn compute_impact_score(
-    capsule: &rairos_crossover::CapsuleGene,
+    capsule: &rairos_llm::insight::crossover::CapsuleGene,
     lambda_: f64,
 ) -> f64 {
     let age_days = chrono::DateTime::parse_from_rfc3339(&capsule.created_at)
@@ -659,7 +659,7 @@ impl ToolHandler for GenePoolDecayHandler {
             }
             _ => {
                 // status action: score all active capsules with time-weighted impact
-                let active: Vec<&rairos_crossover::CapsuleGene> = capsules.iter().filter(|c| c.status == "active").collect();
+                let active: Vec<&rairos_llm::insight::crossover::CapsuleGene> = capsules.iter().filter(|c| c.status == "active").collect();
                 let mut scored: Vec<_> = active.iter().map(|c| {
                     let impact = compute_impact_score(c, lambda_);
                     (c, impact)
@@ -737,7 +737,7 @@ impl ToolHandler for CrossoverHandler {
                 let v3: Vec<serde_json::Value> = capsules.iter()
                     .filter(|c| c.evolved_generation >= 1 && c.status == "active")
                     .map(|c| {
-                        let fitness = rairos_crossover::compute_fitness(c);
+                        let fitness = rairos_llm::insight::crossover::compute_fitness(c);
                         serde_json::json!({
                             "capsule_id": c.capsule_id,
                             "title": c.action_gap_title,
@@ -756,7 +756,7 @@ impl ToolHandler for CrossoverHandler {
                 let pos = all.iter().position(|c| c.capsule_id == cid)
                     .ok_or_else(|| format!("Capsule {} not found", cid))?;
                 let mut capsule = all[pos].clone();
-                let mutated_arch = rairos_crossover::mutate_archetype(capsule.archetype.clone());
+                let mutated_arch = rairos_llm::insight::crossover::mutate_archetype(capsule.archetype.clone());
                 capsule.archetype = mutated_arch;
                 storage.save_capsules(&[capsule.clone()])
                     .map_err(|e| format!("Failed to save mutated capsule: {}", e))?;
@@ -775,15 +775,15 @@ impl ToolHandler for CrossoverHandler {
                     .filter(|c| c.status == "active" && c.credibility_badge != "low")
                     .collect();
                 active.sort_by(|a, b| {
-                    rairos_crossover::compute_fitness(b)
-                        .partial_cmp(&rairos_crossover::compute_fitness(a))
+                    rairos_llm::insight::crossover::compute_fitness(b)
+                        .partial_cmp(&rairos_llm::insight::crossover::compute_fitness(a))
                         .unwrap_or(std::cmp::Ordering::Equal)
                 });
                 let candidates: Vec<Value> = active.iter().take(offspring_count).map(|c| {
                     serde_json::json!({
                         "capsule_id": c.capsule_id,
                         "title": c.action_gap_title,
-                        "fitness": (rairos_crossover::compute_fitness(c) * 1000.0).round() / 1000.0,
+                        "fitness": (rairos_llm::insight::crossover::compute_fitness(c) * 1000.0).round() / 1000.0,
                         "success_score": c.outcome_success_score,
                         "credibility_badge": c.credibility_badge,
                     })
@@ -794,7 +794,7 @@ impl ToolHandler for CrossoverHandler {
                 // evolve action: select top parents, crossover, mutate, save offspring
                 let all = storage.load_all_capsules()
                     .map_err(|e| format!("Failed to load capsules: {}", e))?;
-                let active: Vec<rairos_crossover::CapsuleGene> = all.into_iter()
+                let active: Vec<rairos_llm::insight::crossover::CapsuleGene> = all.into_iter()
                     .filter(|c| c.status == "active")
                     .collect();
 
@@ -818,10 +818,10 @@ impl ToolHandler for CrossoverHandler {
                     let parent_a = &active[idx_a];
                     let parent_b = &active[idx_b];
 
-                    let cross_result = rairos_crossover::crossover(parent_a, parent_b);
-                    let mutated_arch = rairos_crossover::mutate_archetype(cross_result.archetype);
+                    let cross_result = rairos_llm::insight::crossover::crossover(parent_a, parent_b);
+                    let mutated_arch = rairos_llm::insight::crossover::mutate_archetype(cross_result.archetype);
 
-                    let child = rairos_crossover::CapsuleGene {
+                    let child = rairos_llm::insight::crossover::CapsuleGene {
                         capsule_id: uuid::Uuid::new_v4().to_string()[..12].to_string(),
                         created_at: chrono::Utc::now().to_rfc3339(),
                         trigger_topic: format!("{} & {}", parent_a.trigger_topic, parent_b.trigger_topic),

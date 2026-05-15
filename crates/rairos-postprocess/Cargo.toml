@@ -8,7 +8,6 @@ rairos-core = { path = "../rairos-core" }
 rairos-llm = { path = "../rairos-llm" }
 rairos-kg = { path = "../rairos-kg" }
 rairos-render = { path = "../rairos-render" }
-rairos-insight-cards = { path = "../rairos-insight-cards" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
