@@ -912,11 +912,35 @@ impl ToolHandler for ChartQueryHandler {
     }
 }
 
+// ─── Paper Parse Full ─────────────────────────────────────────────────────
+
+pub struct PaperParseFullHandler;
+
+#[async_trait]
+impl ToolHandler for PaperParseFullHandler {
+    fn name(&self) -> &str { "paper_parse_full" }
+    fn description(&self) -> &str { "Download and fully parse a paper (PDF, equations, claims, algorithms) by arXiv ID" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("arxiv_id".into(), ToolProperty::string("arXiv ID to parse")),
+            ].into_iter().collect(),
+            vec!["arxiv_id".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
+        let content = rairos_paper_parser::download_and_parse(arxiv_id).await;
+        Ok(serde_json::json!(content))
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
     server.register(PaperSearchHandler).await;
     server.register(PaperIngestHandler).await;
+    server.register(PaperParseFullHandler).await;
     server.register(PaperQueryHandler).await;
     server.register(PaperChatHandler).await;
     server.register(TagAddHandler).await;
