@@ -2546,6 +2546,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 
 [[package]]
+name = "rairos-achievements"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+]
+
+[[package]]
 name = "rairos-argument-builder"
 version = "0.1.0"
 dependencies = [
@@ -2608,6 +2616,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-briefing-distributor"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dirs",
+ "serde",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
+name = "rairos-briefing-generator"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dirs",
+ "serde",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "rairos-cache"
 version = "0.1.0"
 dependencies = [
@@ -2625,6 +2655,17 @@ dependencies = [
  "dirs",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "rairos-chat"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "regex",
+ "serde",
+ "serde_json",
+ "sha2 0.11.0",
 ]
 
 [[package]]
@@ -2769,6 +2810,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-client"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "rairos-climate"
+version = "0.1.0"
+dependencies = [
+ "dirs",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rairos-code-generator"
 version = "0.1.0"
 dependencies = [
@@ -2807,6 +2867,15 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+]
+
+[[package]]
+name = "rairos-contradiction"
+version = "0.1.0"
+dependencies = [
+ "dirs",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -2853,6 +2922,33 @@ dependencies = [
  "serde_json",
  "sysinfo",
  "tempfile",
+]
+
+[[package]]
+name = "rairos-credibility"
+version = "0.1.0"
+dependencies = [
+ "dirs",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rairos-credibility-scorer"
+version = "0.1.0"
+dependencies = [
+ "dirs",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rairos-cross-referencer"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -2947,6 +3043,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-distributor"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dirs",
+ "serde",
+ "serde_json",
+ "sha2 0.11.0",
+]
+
+[[package]]
+name = "rairos-eval-gap-monitor"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dirs",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rairos-events"
 version = "0.1.0"
 dependencies = [
@@ -3027,6 +3145,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-game-mode"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dirs",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rairos-gene-pool-decay"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dirs",
+ "log",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "rairos-gene-pool-io"
 version = "0.1.0"
 dependencies = [
@@ -3047,6 +3188,22 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+]
+
+[[package]]
+name = "rairos-impact"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rairos-impact-scorer"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3097,11 +3254,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-litreview"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "rairos-litreview-analyzer"
 version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "rairos-litreview-generator"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "uuid",
 ]
 
 [[package]]
@@ -3113,23 +3288,45 @@ dependencies = [
  "bytes",
  "chrono",
  "dirs",
- "flate2",
  "futures-util",
- "hex",
- "log",
  "mockito",
- "ndarray",
- "parking_lot",
+ "rairos-achievements",
+ "rairos-briefing-distributor",
+ "rairos-briefing-generator",
+ "rairos-chat",
+ "rairos-client",
+ "rairos-climate",
+ "rairos-contradiction",
  "rairos-core",
+ "rairos-credibility",
+ "rairos-credibility-scorer",
+ "rairos-cross-referencer",
+ "rairos-distributor",
+ "rairos-eval-gap-monitor",
+ "rairos-game-mode",
+ "rairos-gene-pool-decay",
+ "rairos-impact",
+ "rairos-impact-scorer",
+ "rairos-litreview",
+ "rairos-litreview-generator",
+ "rairos-paradigm",
+ "rairos-pool",
+ "rairos-query",
+ "rairos-query-types",
+ "rairos-rankers",
+ "rairos-rankers-base",
+ "rairos-rankers-cosine",
+ "rairos-rankers-score",
+ "rairos-replication",
+ "rairos-rigor",
+ "rairos-scoring-momentum",
+ "rairos-trend-analyzer",
  "rand 0.8.6",
  "regex",
  "reqwest",
  "rusqlite",
- "rust_decimal",
  "serde",
  "serde_json",
- "sha2 0.11.0",
- "tar",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
@@ -3160,6 +3357,7 @@ dependencies = [
  "rairos-parallel-research",
  "rairos-parser",
  "rairos-pdf",
+ "rairos-replication",
  "rairos-replication-checker",
  "rairos-research",
  "rairos-research-memory",
@@ -3291,6 +3489,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-paradigm"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rairos-parallel-research"
 version = "0.1.0"
 dependencies = [
@@ -3386,6 +3592,19 @@ name = "rairos-perf"
 version = "0.1.0"
 
 [[package]]
+name = "rairos-pool"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dirs",
+ "flate2",
+ "serde",
+ "serde_json",
+ "tar",
+ "tempfile",
+]
+
+[[package]]
 name = "rairos-postprocess"
 version = "0.1.0"
 dependencies = [
@@ -3402,6 +3621,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-query"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rairos-query-types"
+version = "0.1.0"
+
+[[package]]
 name = "rairos-questions"
 version = "0.1.0"
 dependencies = [
@@ -3413,6 +3644,58 @@ dependencies = [
  "serde_json",
  "tempfile",
  "uuid",
+]
+
+[[package]]
+name = "rairos-rankers"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "ndarray",
+ "parking_lot",
+ "rairos-core",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "uuid",
+]
+
+[[package]]
+name = "rairos-rankers-base"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "rairos-rankers-cosine"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "ndarray",
+ "rairos-rankers-base",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "rairos-rankers-score"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "rairos-rankers-base",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -3433,6 +3716,15 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.18",
  "tracing",
+]
+
+[[package]]
+name = "rairos-replication"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3558,6 +3850,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-rigor"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde",
+]
+
+[[package]]
 name = "rairos-roadmap"
 version = "0.1.0"
 dependencies = [
@@ -3565,6 +3865,19 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+]
+
+[[package]]
+name = "rairos-scoring-momentum"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -3661,6 +3974,17 @@ dependencies = [
 [[package]]
 name = "rairos-tracker-base"
 version = "0.1.0"
+
+[[package]]
+name = "rairos-trend-analyzer"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "rairos-core",
+ "serde",
+ "tempfile",
+ "thiserror 2.0.18",
+]
 
 [[package]]
 name = "rairos-trends"

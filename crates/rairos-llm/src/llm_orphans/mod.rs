@@ -1,7 +1,8 @@
-//! Orphan utility crates inlined into rairos-llm.
+//! Re-export modules for orphan utility crates.
 //!
-//! Each module corresponds to a former standalone crate that had no external consumers.
-//! Inlined to reduce workspace fragmentation while preserving the original API surface.
+//! Each module forwards the public API of a former standalone crate,
+//! providing unified access through `rairos_llm` while keeping the
+//! original crates as the implementation source of truth.
 
 pub mod achievements;
 pub mod briefing_dist;

@@ -18,6 +18,7 @@ rairos-trends = { path = "../rairos-trends" }
 rairos-research-memory = { path = "../rairos-research-memory" }
 rairos-review-simulator = { path = "../rairos-review-simulator" }
 rairos-replication-checker = { path = "../rairos-replication-checker" }
+rairos-replication = { path = "../rairos-replication" }
 rairos-research = { path = "../rairos-research" }
 dirs = "5"
 uuid = { version = "1.0", features = ["v4"] }
