@@ -62,7 +62,6 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 
 _SUBCOMMAND_TABLE = [
-    ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
@@ -177,11 +176,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
 
         return 0
-
-    elif args.subcmd == "evoskill":
-        from cli.cmd.evoskill import evoskill as evoskill_cmd
-
-        return evoskill_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
 
     elif args.subcmd == "rag":
         from cli.cmd.rag import rag as rag_cmd
