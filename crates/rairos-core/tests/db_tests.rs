@@ -875,3 +875,196 @@ fn test_rate_limiter_reset() {
     handle.reset();
     assert!(handle.can(), "After reset should be able to make request");
 }
+
+// ============================================================================
+// Tests: paper_exists
+// ============================================================================
+
+#[test]
+fn test_paper_exists_finds_existing() {
+    let (db, _temp_dir) = create_test_db();
+    let paper = create_test_paper(Some("2301.00001"), "Test Paper");
+    db.insert_paper(&paper).unwrap();
+    assert!(db.paper_exists(&paper.id));
+}
+
+#[test]
+fn test_paper_exists_not_found() {
+    let (db, _temp_dir) = create_test_db();
+    assert!(!db.paper_exists("nonexistent"));
+}
+
+// ============================================================================
+// Tests: get_paper_plain_text
+// ============================================================================
+
+#[test]
+fn test_get_paper_plain_text_returns_none_when_missing() {
+    let (db, _temp_dir) = create_test_db();
+    let paper = create_test_paper(Some("2301.00001"), "Test Paper");
+    db.insert_paper(&paper).unwrap();
+    let text = db.get_paper_plain_text(&paper.id).unwrap();
+    assert!(text.is_none());
+}
+
+#[test]
+fn test_get_paper_plain_text_returns_text() {
+    let (db, _temp_dir) = create_test_db();
+    let paper = create_test_paper(Some("2301.00001"), "Test Paper");
+    db.insert_paper(&paper).unwrap();
+    // Set plain_text via public API
+    db.update_paper_full_text(&paper.id, "plain text content", 0, 0, 0, 0).unwrap();
+    let text = db.get_paper_plain_text(&paper.id).unwrap();
+    assert_eq!(text, Some("plain text content".to_string()));
+}
+
+// ============================================================================
+// Tests: merge_papers
+// ============================================================================
+
+#[test]
+fn test_merge_papers_basic() {
+    let (db, _temp_dir) = create_test_db();
+
+    let primary = create_test_paper(Some("2301.00001"), "Primary Paper");
+    db.insert_paper(&primary).unwrap();
+
+    let mut duplicate = create_test_paper(Some("2301.00002"), "Duplicate Paper");
+    duplicate.id = "dup-001".to_string();
+    db.insert_paper(&duplicate).unwrap();
+
+    let result = db.merge_papers(&primary.id, &["dup-001"]).unwrap();
+    assert!(result, "merge should return true");
+
+    // Duplicate should be deleted
+    assert!(!db.paper_exists("dup-001"));
+}
+
+#[test]
+fn test_merge_papers_primary_not_found() {
+    let (db, _temp_dir) = create_test_db();
+    let result = db.merge_papers("nonexistent", &["dup-001"]).unwrap();
+    assert!(!result, "merge should return false when primary not found");
+}
+
+#[test]
+fn test_merge_papers_copies_empty_fields() {
+    let (db, _temp_dir) = create_test_db();
+
+    // Primary has empty abstract_text
+    let mut primary = create_test_paper(Some("2301.00001"), "Primary Paper");
+    primary.abstract_text = String::new();
+    db.insert_paper(&primary).unwrap();
+
+    let mut duplicate = create_test_paper(Some("2301.00002"), "Duplicate Paper");
+    duplicate.id = "dup-002".to_string();
+    duplicate.abstract_text = "Detailed abstract from duplicate".to_string();
+    db.insert_paper(&duplicate).unwrap();
+
+    db.merge_papers(&primary.id, &["dup-002"]).unwrap();
+
+    // Verify primary got the abstract from duplicate
+    let merged = db.get_paper(&primary.id).unwrap();
+    assert_eq!(merged.abstract_text, "Detailed abstract from duplicate");
+}
+
+#[test]
+fn test_merge_papers_does_not_overwrite_filled_fields() {
+    let (db, _temp_dir) = create_test_db();
+
+    // Primary has a DOI — should NOT be overwritten
+    let primary = create_test_paper(Some("2301.00001"), "Primary Paper");
+    db.insert_paper(&primary).unwrap();
+
+    let mut duplicate = create_test_paper(Some("2301.00002"), "Duplicate Paper");
+    duplicate.id = "dup-003".to_string();
+    // Remove duplicate's DOI to ensure it doesn't overwrite
+    duplicate.metadata.doi = None;
+    db.insert_paper(&duplicate).unwrap();
+
+    db.merge_papers(&primary.id, &["dup-003"]).unwrap();
+
+    let merged = db.get_paper(&primary.id).unwrap();
+    assert_eq!(merged.metadata.doi, Some("10.1234/test".to_string()));
+}
+
+#[test]
+fn test_merge_papers_merges_multiple_duplicates() {
+    let (db, _temp_dir) = create_test_db();
+
+    let primary = create_test_paper(Some("2301.00001"), "Primary Paper");
+    db.insert_paper(&primary).unwrap();
+
+    let mut dup1 = create_test_paper(Some("2301.00002"), "Dup 1");
+    dup1.id = "dup-a".to_string();
+    db.insert_paper(&dup1).unwrap();
+
+    let mut dup2 = create_test_paper(Some("2301.00003"), "Dup 2");
+    dup2.id = "dup-b".to_string();
+    db.insert_paper(&dup2).unwrap();
+
+    let result = db.merge_papers(&primary.id, &["dup-a", "dup-b"]).unwrap();
+    assert!(result);
+    assert!(!db.paper_exists("dup-a"));
+    assert!(!db.paper_exists("dup-b"));
+    assert!(db.paper_exists(&primary.id));
+}
+
+#[test]
+fn test_merge_papers_does_not_merge_into_self() {
+    let (db, _temp_dir) = create_test_db();
+    let paper = create_test_paper(Some("2301.00001"), "Self Merge Test");
+    db.insert_paper(&paper).unwrap();
+    let result = db.merge_papers(&paper.id, &[&paper.id]).unwrap();
+    assert!(!result, "merge should return false when merging paper into itself");
+    assert!(db.paper_exists(&paper.id));
+}
+
+// ============================================================================
+// Tests: log_dedup + get_dedup_log
+// ============================================================================
+
+#[test]
+fn test_log_dedup_and_retrieve() {
+    let (db, _temp_dir) = create_test_db();
+    db.log_dedup("target-001", "dup-001", "semantic-auto").unwrap();
+
+    let log = db.get_dedup_log(10).unwrap();
+    assert_eq!(log.len(), 1);
+    assert_eq!(log[0].target_id, "target-001");
+    assert_eq!(log[0].duplicate_id, "dup-001");
+    assert_eq!(log[0].keep_policy, "semantic-auto");
+}
+
+#[test]
+fn test_get_dedup_log_empty() {
+    let (db, _temp_dir) = create_test_db();
+    let log = db.get_dedup_log(10).unwrap();
+    assert!(log.is_empty());
+}
+
+#[test]
+fn test_log_dedup_multiple_entries() {
+    let (db, _temp_dir) = create_test_db();
+    db.log_dedup("t1", "d1", "older").unwrap();
+    db.log_dedup("t2", "d2", "newer").unwrap();
+    db.log_dedup("t3", "d3", "parsed").unwrap();
+
+    let log = db.get_dedup_log(10).unwrap();
+    assert_eq!(log.len(), 3);
+    // Verify all targets are present (ordering non-deterministic due to SQLite datetime resolution)
+    let targets: Vec<&str> = log.iter().map(|e| e.target_id.as_str()).collect();
+    assert!(targets.contains(&"t1"));
+    assert!(targets.contains(&"t2"));
+    assert!(targets.contains(&"t3"));
+}
+
+#[test]
+fn test_log_dedup_respects_limit() {
+    let (db, _temp_dir) = create_test_db();
+    for i in 0..10 {
+        db.log_dedup(&format!("t{}", i), &format!("d{}", i), "test").unwrap();
+    }
+    let log = db.get_dedup_log(5).unwrap();
+    assert_eq!(log.len(), 5);
+}
