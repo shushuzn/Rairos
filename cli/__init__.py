@@ -31,8 +31,6 @@ _LAZY_EXPORTS = {
     "_build_roadmap_parser": ("cli.cmd.roadmap", "_build_roadmap_parser"),
     "_run_pipeline": ("cli.cmd.pipeline", "_run_pipeline"),
     "_build_pipeline_parser": ("cli.cmd.pipeline", "_build_pipeline_parser"),
-    "_run_slides": ("cli.cmd.slides", "_run_slides"),
-    "_build_slides_parser": ("cli.cmd.slides", "_build_slides_parser"),
     "_run_jin10": ("cli.cmd.jin10", "_run_jin10"),
     "_run_demo": ("cli.cmd.demo", "run_demo"),
     "_run_evoskill": ("cli.cmd.evoskill", "evoskill"),

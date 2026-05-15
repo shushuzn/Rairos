@@ -134,6 +134,7 @@ members = [
     "crates/rairos-scout",
     "crates/rairos-sections",
     "crates/rairos-signal",
+    "crates/rairos-slides",
     "crates/rairos-simple-cli",
     "crates/rairos-skill-discovery",
     "crates/rairos-smart-cache",

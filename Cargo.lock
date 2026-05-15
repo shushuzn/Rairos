@@ -2792,6 +2792,7 @@ dependencies = [
  "rairos-review-generator",
  "rairos-scout",
  "rairos-signal",
+ "rairos-slides",
  "rairos-story",
  "rairos-validator",
  "rairos-viz",
@@ -4173,6 +4174,15 @@ name = "rairos-skill-discovery"
 version = "0.1.0"
 dependencies = [
  "tempfile",
+]
+
+[[package]]
+name = "rairos-slides"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "rairos-core",
+ "serde",
 ]
 
 [[package]]

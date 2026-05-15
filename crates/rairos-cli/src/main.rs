@@ -1288,6 +1288,36 @@ enum Commands {
         interactive: bool,
     },
 
+    /// Generate slides from papers (MD/HTML output)
+    Slides {
+        /// Paper ID(s) to generate slides for
+        paper_ids: Vec<String>,
+
+        /// Output format (md/html)
+        #[arg(short = 'f', long, default_value = "md")]
+        format: String,
+
+        /// Slide template (academic/minimal/modern)
+        #[arg(short = 't', long, default_value = "academic")]
+        template: String,
+
+        /// Number of slides
+        #[arg(short = 's', long, default_value = "10")]
+        num_slides: usize,
+
+        /// Output file path
+        #[arg(short = 'o', long)]
+        output: Option<String>,
+
+        /// Include speaker notes
+        #[arg(long)]
+        include_notes: bool,
+
+        /// Output language (zh/en/bilingual)
+        #[arg(long, default_value = "zh")]
+        lang: String,
+    },
+
     /// Manage research questions (ported from Python CLI)
     Question {
         #[command(subcommand)]
@@ -5691,6 +5721,19 @@ fn main() -> Result<()> {
                 *interactive,
             )?;
         }
+
+        Commands::Slides {
+            paper_ids,
+            format,
+            template,
+            num_slides,
+            output,
+            include_notes,
+            lang,
+        } => {
+            let db = open_db(&cli.db)?;
+            handle_slides(&db, paper_ids, format, template, *num_slides, output.as_deref(), *include_notes, lang)?;
+        }
     }
 
     Ok(())
@@ -6887,6 +6930,41 @@ fn try_get_kg() -> Option<rairos_kg::KnowledgeGraph> {
             Some(rairos_kg::KnowledgeGraph::new())
         }
     }
+}
+
+/// Handle `slides` — generate slides from paper data.
+fn handle_slides(
+    db: &rairos_core::Database,
+    paper_ids: &[String],
+    format: &str,
+    template: &str,
+    num_slides: usize,
+    output: Option<&str>,
+    include_notes: bool,
+    lang: &str,
+) -> Result<()> {
+    use rairos_slides::{PaperSlidesGenerator, SlidesConfig, SlideFormat, SlideTemplate, SlideLanguage};
+
+    let config = SlidesConfig {
+        template: SlideTemplate::from_str(template),
+        num_slides,
+        format: SlideFormat::from_str(format),
+        output_path: output.map(std::path::PathBuf::from),
+        include_notes,
+        language: SlideLanguage::from_str(lang),
+    };
+
+    println!("📊 Generating slides for {} paper(s)", paper_ids.len());
+    println!("   Format: {} | Template: {} | Slides: {}", format, template, num_slides);
+
+    let gen = PaperSlidesGenerator::new(Some(db));
+    let result = gen.generate(paper_ids, &config);
+
+    println!();
+    println!("✅ Generated {} slides", result.slide_count);
+    println!("   Output: {}", result.output_path);
+
+    Ok(())
 }
 
 /// Handle `narrative` — manage research narrative threads

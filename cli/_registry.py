@@ -70,7 +70,6 @@ _SUBCOMMAND_TABLE = [
     ("route", "cli.cmd.route", "_build_route_parser"),
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
-    ("slides", "cli.cmd.slides", "_build_slides_parser"),
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
@@ -168,7 +167,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     dispatch = {
         "dedup-semantic": "_run_dedup_semantic",
         "chat": "_run_chat",
-        "slides": "_run_slides",
         "question": "_run_question",
         "roadmap": "_run_roadmap",
         "pipeline": "_run_pipeline",
@@ -208,10 +206,5 @@ def main(argv: Optional[List[str]] = None) -> int:
         from cli.cmd.rag import rag as rag_cmd
 
         return rag_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
-
-    elif args.subcmd == "slides":
-        from cli.cmd.slides import slides as slides_cmd
-
-        return slides_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
 
     return 0
