@@ -1936,6 +1936,7 @@ fn status_str(status: &ParseStatus) -> &'static str {
 }
 
 // All handler implementations moved to handlers.rs
+#[cfg(test)]
 mod tests;
 
 fn main() -> Result<()> {

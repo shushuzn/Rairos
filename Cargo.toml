@@ -1,7 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "benches",
     "crates/rairos-achievements",
     "crates/rairos-argument-builder",
     "crates/rairos-arxiv-alert-channels",
