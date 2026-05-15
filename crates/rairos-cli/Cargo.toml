@@ -12,6 +12,7 @@ rairos-kg = { path = "../rairos-kg" }
 rairos-memory = { path = "../rairos-memory" }
 rairos-argument-builder = { path = "../rairos-argument-builder" }
 rairos-citation-chain = { path = "../rairos-citation-chain" }
+rairos-research = { path = "../rairos-research" }
 rairos-dashboard = { path = "../rairos-dashboard" }
 rairos-weekly-digest = { path = "../rairos-weekly-digest" }
 rairos-discover = { path = "../rairos-discover" }

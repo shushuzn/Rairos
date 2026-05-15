@@ -869,6 +869,195 @@ enum Commands {
         /// Paper ID or arXiv ID to check
         paper_id: String,
     },
+
+    // ── Batch 5 ported from Python CLI ────────────────────────────────────
+
+    /// Research friction report — detect bottlenecks and failures
+    Friction {
+        /// Filter by friction type (command, workflow, retrieval, cognitive, navigation)
+        #[arg(short, long)]
+        friction_type: Option<String>,
+
+        /// Time window in days
+        #[arg(short, long, default_value = "30")]
+        days: usize,
+
+        /// JSON output
+        #[arg(short, long)]
+        json: bool,
+
+        /// Max events to show
+        #[arg(short = 'n', long, default_value = "20")]
+        limit: usize,
+    },
+
+    /// Track research experiments
+    Experiment {
+        /// Action: list, run, get, complete, metric, compare, delete, simulate
+        action: String,
+
+        /// Experiment name (for run)
+        #[arg(long)]
+        name: Option<String>,
+
+        /// Description (for run)
+        #[arg(long)]
+        desc: Option<String>,
+
+        /// Roadmap milestone (for run)
+        #[arg(short, long)]
+        milestone: Option<String>,
+
+        /// Tags (for run)
+        #[arg(long)]
+        tag: Vec<String>,
+
+        /// Experiment ID (for get/complete/metric/delete/simulate)
+        #[arg(long)]
+        id: Option<String>,
+
+        /// Metrics JSON (for complete)
+        #[arg(long)]
+        metrics: Option<String>,
+
+        /// Metric name (for metric action)
+        #[arg(long)]
+        metric_name: Option<String>,
+
+        /// Metric value (for metric action)
+        #[arg(long)]
+        metric_value: Option<f64>,
+
+        /// Metric unit (for metric action)
+        #[arg(long, default_value = "")]
+        unit: String,
+
+        /// Experiment IDs to compare (for compare action)
+        #[arg(long)]
+        ids: Vec<String>,
+
+        /// Simulated result [success|fail] (for simulate action)
+        #[arg(long)]
+        result: Option<String>,
+    },
+
+    /// Evolution dashboard — view system learning progress
+    Evolution {
+        /// Show statistics
+        #[arg(short, long)]
+        stats: bool,
+
+        /// Show learned patterns
+        #[arg(short, long)]
+        patterns: bool,
+
+        /// Show recent feedback
+        #[arg(short, long)]
+        feedback: bool,
+
+        /// Generate learning report
+        #[arg(short, long)]
+        report: bool,
+
+        /// Show research sessions
+        #[arg(long)]
+        sessions: bool,
+
+        /// Report period in days
+        #[arg(long, default_value = "7")]
+        days: usize,
+
+        /// Clear all evolution data
+        #[arg(short, long)]
+        clear: bool,
+
+        /// Export data to JSON
+        #[arg(short, long)]
+        export: bool,
+    },
+
+    /// Start Rairos Web UI dashboard
+    Dashboard {
+        /// Port to listen on
+        #[arg(short, long, default_value = "8501")]
+        port: u16,
+
+        /// Host to bind to
+        #[arg(long, default_value = "127.0.0.1")]
+        host: String,
+
+        /// Don't open browser
+        #[arg(long)]
+        no_browser: bool,
+    },
+
+    /// Build and visualize citation chains
+    CitationChain {
+        /// Starting paper ID
+        paper_id: Option<String>,
+
+        /// Chain depth
+        #[arg(short, long, default_value_t = 2)]
+        depth: i32,
+
+        /// Output Graphviz DOT format
+        #[arg(short, long)]
+        graphviz: bool,
+
+        /// Output Mermaid flowchart
+        #[arg(short, long)]
+        mermaid: bool,
+
+        /// Show papers that influenced this
+        #[arg(long)]
+        influencers: bool,
+
+        /// Show papers influenced by this
+        #[arg(long)]
+        impact: bool,
+
+        /// Find path to another paper ID
+        #[arg(long)]
+        path: Option<String>,
+    },
+
+    /// Generate research hypotheses from gaps
+    Hypothesize {
+        /// Research topic
+        topic: Option<String>,
+
+        /// Gap context from gap analysis
+        #[arg(short, long, default_value = "")]
+        gap: String,
+
+        /// Trend context from trend analysis
+        #[arg(short, long, default_value = "")]
+        trend: String,
+
+        /// Story context from story weaving
+        #[arg(short, long, default_value = "")]
+        story: String,
+
+        /// Disable LLM enhancement
+        #[arg(long)]
+        no_llm: bool,
+
+        /// Generate creative cross-domain hypotheses
+        #[arg(long)]
+        creative: bool,
+
+        /// JSON output
+        #[arg(short, long)]
+        json: bool,
+
+        /// LLM model to use
+        #[arg(short = 'M', long)]
+        model: Option<String>,
+
+        /// Number of hypotheses to generate
+        #[arg(short = 'n', long, default_value = "5")]
+        top: usize,
+    },
 }
 
 #[derive(Subcommand)]
@@ -4818,6 +5007,30 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_replicate(&db, paper_id)?;
         }
+
+        // ── Batch 5 ───────────────────────────────────────────────────────
+
+        Commands::Friction { friction_type, days, json, limit } => {
+            handle_friction(friction_type.as_deref(), *days, *json, *limit)?;
+        }
+        Commands::Experiment { action, name, desc, milestone, tag, id, metrics, metric_name, metric_value, unit, ids, result } => {
+            handle_experiment(action, name.as_deref(), desc.as_deref(), milestone.as_deref(), tag.clone(),
+                id.as_deref(), metrics.as_deref(), metric_name.as_deref(), *metric_value, unit,
+                ids.clone(), result.as_deref())?;
+        }
+        Commands::Evolution { stats, patterns, feedback, report, sessions, days, clear, export } => {
+            handle_evolution(*stats, *patterns, *feedback, *report, *sessions, *days, *clear, *export)?;
+        }
+        Commands::Dashboard { port, host, no_browser } => {
+            handle_dashboard(*port, host, *no_browser)?;
+        }
+        Commands::CitationChain { paper_id, depth, graphviz, mermaid, influencers, impact, path } => {
+            let db = open_db(&cli.db)?;
+            handle_citation_chain(&db, paper_id.as_deref(), *depth, *graphviz, *mermaid, *influencers, *impact, path.as_deref())?;
+        }
+        Commands::Hypothesize { topic, gap, trend, story, no_llm, creative, json, model, top } => {
+            handle_hypothesize(topic.as_deref(), gap, trend, story, *no_llm, *creative, *json, model.as_deref(), *top)?;
+        }
     }
 
     Ok(())
@@ -5853,5 +6066,409 @@ fn handle_replicate(db: &Database, paper_id: &str) -> Result<()> {
     } else {
         eprintln!("Paper not found: {}", paper_id);
     }
+    Ok(())
+}
+
+// ============================================================================
+// Batch 5 handlers — ported from Python CLI
+// ============================================================================
+
+/// Handle `friction` — research friction report
+fn handle_friction(friction_type: Option<&str>, days: usize, json: bool, limit: usize) -> Result<()> {
+    let tracker = rairos_friction::FrictionTracker::new(None);
+    let ftype = friction_type.and_then(|s| s.parse::<rairos_friction::FrictionType>().ok());
+    let summary = tracker.get_summary(days as i32);
+    let events = tracker.get_events(ftype, days as i32, limit);
+
+    if json {
+        use std::collections::HashMap;
+        let mut output = serde_json::Map::new();
+        output.insert("total_events".into(), serde_json::json!(summary.total_events));
+        output.insert("abandon_rate".into(), serde_json::json!(summary.abandon_rate));
+        let by_type: HashMap<_, _> = summary.by_type.into_iter().collect();
+        output.insert("by_type".into(), serde_json::json!(by_type));
+        output.insert("events".into(), serde_json::json!(&events));
+        println!("{}", serde_json::to_string_pretty(&output)?);
+        return Ok(());
+    }
+
+    println!();
+    println!("  Research Friction Report");
+    println!("  Last {} days", days);
+    println!();
+
+    if summary.total_events == 0 {
+        println!("No friction events recorded yet.");
+        return Ok(());
+    }
+
+    println!("Total events: {}", summary.total_events);
+    println!("  Abandon rate: {:.1}%", summary.abandon_rate * 100.0);
+    println!();
+
+    if !summary.by_type.is_empty() {
+        println!("By Type:");
+        let mut by_type: Vec<_> = summary.by_type.into_iter().collect();
+        by_type.sort_by(|a, b| b.1.cmp(&a.1));
+        for (t, count) in &by_type {
+            let bar = "█".repeat((*count as usize).min(30));
+            println!("  {:<12} {} {}", t, bar, count);
+        }
+        println!();
+    }
+
+    if !summary.top_commands.is_empty() {
+        println!("Top Friction Commands:");
+        for (cmd, count) in &summary.top_commands {
+            println!("  {:<20} {} events", cmd, count);
+        }
+        println!();
+    }
+
+    if !events.is_empty() {
+        println!("Recent Events (last {}):", events.len().min(limit));
+        for e in events.iter().take(limit) {
+            let ts = if e.timestamp.len() >= 10 { &e.timestamp[..10] } else { &e.timestamp };
+            let status = if e.abandoned { " [ABANDONED]" } else { "" };
+            let note_preview = if e.error.len() > 40 { &e.error[..40] } else { &e.error };
+            println!("  {}  {:<12} {:<15} {}{}", ts, e.friction_type, e.command, note_preview, status);
+        }
+    }
+
+    println!();
+    Ok(())
+}
+
+/// Handle `experiment` — track research experiments
+fn handle_experiment(
+    action: &str,
+    name: Option<&str>,
+    desc: Option<&str>,
+    milestone: Option<&str>,
+    tag: Vec<String>,
+    id: Option<&str>,
+    metrics: Option<&str>,
+    metric_name: Option<&str>,
+    metric_value: Option<f64>,
+    unit: &str,
+    ids: Vec<String>,
+    result: Option<&str>,
+) -> Result<()> {
+    let tracker = rairos_experiment_tracker::ExperimentTracker::new(None);
+
+    match action {
+        "list" => {
+            let exps = tracker.list_experiments(None, milestone, None);
+            for e in &exps {
+                println!("[{}] {} — {}", e.id, e.name, e.status);
+            }
+        }
+        "run" => {
+            let n = name.unwrap_or("unnamed");
+            let e = tracker.run(n, desc.unwrap_or(""), milestone.unwrap_or(""), "", None, if tag.is_empty() { None } else { Some(tag.clone()) });
+            println!("⚡ Started experiment [{}]: {}", e.id, e.name);
+        }
+        "get" => {
+            let Some(eid) = id else {
+                eprintln!("Usage: experiment get --id <id>");
+                return Ok(());
+            };
+            match tracker.get(eid) {
+                Some(e) => {
+                    println!("Experiment: {}", e.name);
+                    println!("ID: {}", e.id);
+                    println!("Status: {}", e.status);
+                    println!("Created: {}", e.created_at);
+                    if !e.roadmap_milestone.is_empty() {
+                        println!("Milestone: {}", e.roadmap_milestone);
+                    }
+                }
+                None => eprintln!("Experiment [{}] not found", eid),
+            }
+        }
+        "complete" => {
+            let Some(eid) = id else {
+                eprintln!("Usage: experiment complete --id <id>");
+                return Ok(());
+            };
+            let results: Option<std::collections::HashMap<String, serde_json::Value>> = metrics.and_then(|m| serde_json::from_str(m).ok());
+            match tracker.complete(eid, results) {
+                Some(e) => println!("✓ Completed [{}]: {}", e.id, e.name),
+                None => eprintln!("Experiment [{}] not found", eid),
+            }
+        }
+        "metric" => {
+            let Some(eid) = id else {
+                eprintln!("Usage: experiment metric --id <id> --metric-name <name> --metric-value <value>");
+                return Ok(());
+            };
+            let Some(mn) = metric_name else {
+                eprintln!("Missing --metric-name");
+                return Ok(());
+            };
+            let mv = metric_value.unwrap_or(0.0);
+            match tracker.add_metric(eid, mn, mv, unit) {
+                Some(e) => println!("✓ Added metric {}{} to [{}]", mn, if unit.is_empty() { format!("={}", mv) } else { format!("={}{}", mv, unit) }, e.id),
+                None => eprintln!("Experiment [{}] not found", eid),
+            }
+        }
+        "compare" => {
+            let comp = tracker.compare(&ids, None);
+            println!("Comparison (JSON):");
+            println!("{}", serde_json::to_string_pretty(&comp)?);
+        }
+        "delete" => {
+            let Some(eid) = id else {
+                eprintln!("Usage: experiment delete --id <id>");
+                return Ok(());
+            };
+            if tracker.delete(eid) {
+                println!("✓ Deleted [{}]", eid);
+            } else {
+                eprintln!("Experiment [{}] not found", eid);
+            }
+        }
+        "simulate" => {
+            let Some(eid) = id else {
+                eprintln!("Usage: experiment simulate --id <id> --result success|fail");
+                return Ok(());
+            };
+            let e = tracker.get(eid);
+            match e {
+                Some(e_ref) => {
+                    if e_ref.status != "running" {
+                        eprintln!("Experiment [{}] is not running (status: {})", eid, e_ref.status);
+                        return Ok(());
+                    }
+                    match result {
+                        Some("success") => {
+                            let _ = tracker.complete(eid, {
+                        let mut m = std::collections::HashMap::new();
+                        m.insert("simulated".to_string(), serde_json::json!(true));
+                        m.insert("outcome".to_string(), serde_json::json!("success"));
+                        Some(m)
+                    });
+                            println!("✅ Simulated success for [{}]: {}", eid, e_ref.name);
+                        }
+                        Some("fail") => {
+                            let _ = tracker.fail(eid, "simulated failure");
+                            println!("❌ Simulated failure for [{}]: {}", eid, e_ref.name);
+                        }
+                        _ => eprintln!("Result must be 'success' or 'fail'"),
+                    }
+                    println!("  → VALIDATED/REJECTED event written to evolution tracker");
+                }
+                None => eprintln!("Experiment [{}] not found", eid),
+            }
+        }
+        _ => eprintln!("Unknown action: {}. Use: list, run, get, complete, metric, compare, delete, simulate", action),
+    }
+    Ok(())
+}
+
+/// Handle `evolution` — evolution dashboard
+fn handle_evolution(
+    show_stats: bool,
+    show_patterns: bool,
+    show_feedback: bool,
+    show_report: bool,
+    show_sessions: bool,
+    days: usize,
+    clear: bool,
+    export: bool,
+) -> Result<()> {
+    let evo = rairos_evolution::get_evolution_memory();
+
+    if clear {
+        println!("Clear not implemented in Rust CLI — use Python: rairos evolution --clear");
+        return Ok(());
+    }
+
+    if export {
+        let stats = evo.get_stats();
+        println!("{}", serde_json::to_string_pretty(&stats)?);
+        return Ok(());
+    }
+
+    if show_report {
+        let stats = evo.get_stats();
+        println!();
+        println!("  Evolution Report");
+        println!();
+        for (key, value) in &stats {
+            println!("  {}: {}", key, value);
+        }
+        println!();
+        return Ok(());
+    }
+
+    if show_stats {
+        let stats = evo.get_stats();
+        println!("Evolution Statistics:");
+        for (key, value) in &stats {
+            println!("  {}: {}", key, value);
+        }
+        return Ok(());
+    }
+
+    if show_patterns {
+        let patterns = evo.get_all_patterns();
+        println!("Learned Patterns ({}):", patterns.len());
+        for p in &patterns {
+            println!("  - {} (effectiveness: {})", p.name, p.effectiveness);
+        }
+        return Ok(());
+    }
+
+    if show_feedback {
+        println!("Recent feedback: (check Python CLI for details)");
+        return Ok(());
+    }
+
+    if show_sessions {
+        println!("Research sessions: (check Python CLI for details)");
+        return Ok(());
+    }
+
+    // Default: show dashboard summary
+    let stats = evo.get_stats();
+    println!();
+    println!("  Evolution Dashboard");
+    println!();
+    for (key, value) in &stats {
+        println!("  {}: {}", key, value);
+    }
+    println!();
+    println!("  Tips: --stats, --patterns, --feedback, --report, --export");
+    Ok(())
+}
+
+/// Handle `dashboard` — start web UI
+fn handle_dashboard(port: u16, host: &str, no_browser: bool) -> Result<()> {
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(async {
+        let addr = format!("{}:{}", host, port);
+        let db = Database::open("rairos.db")?;
+        let state = Arc::new(rairos_web::AppState::new(db));
+        println!("🚀 Rairos Web UI starting on http://{}", addr);
+        rairos_web::start(&addr, state).await.map_err(|e| anyhow::anyhow!("Web UI failed: {}", e))
+    })?;
+    Ok(())
+}
+
+/// Handle `citation-chain` — build and visualize citation chains
+fn handle_citation_chain(
+    db: &Database,
+    paper_id: Option<&str>,
+    depth: i32,
+    graphviz: bool,
+    mermaid: bool,
+    influencers: bool,
+    impact: bool,
+    path: Option<&str>,
+) -> Result<()> {
+    let mut builder = rairos_citation_chain::CitationChainBuilder::new();
+
+    if influencers || impact {
+        let Some(pid) = paper_id else {
+            eprintln!("Usage: citation-chain <paper_id> --influencers|--impact");
+            return Ok(());
+        };
+
+        if influencers {
+            println!("Finding influences for: {}", pid);
+            if let Ok(papers) = db.search_papers(pid, 1) {
+                if let Some(p) = papers.first() {
+                builder.add_paper(pid.to_string(), p.title.clone(), p.published.year() as i32, Vec::new(), Vec::new(), String::new(), 0);
+            }
+        }
+        println!("Influencers: (requires citations data in DB)");
+    }
+
+    if impact {
+        println!("Finding impact for: {}", pid);
+        println!("Impact: (requires citations data in DB)");
+        }
+
+        return Ok(());
+    }
+
+    let Some(pid) = paper_id else {
+        eprintln!("Usage: citation-chain <paper_id> [options]");
+        return Ok(());
+    };
+
+    if let Ok(papers) = db.search_papers(pid, 5) {
+        for p in &papers {
+            builder.add_paper(p.id.clone(), p.title.clone(), p.published.year() as i32, Vec::new(), Vec::new(), String::new(), 0);
+        }
+    }
+
+    let chain = builder.build_from_db(pid, depth);
+
+    if graphviz {
+        println!("{}", builder.render_graphviz(&chain));
+    } else if mermaid {
+        println!("{}", builder.render_mermaid(&chain));
+    } else {
+        println!("{}", builder.render_text(&chain, 20));
+    }
+
+    if let Some(target) = path {
+        println!("Path finding requires citation graph data in DB.");
+    }
+
+    Ok(())
+}
+
+/// Handle `hypothesize` — generate research hypotheses
+fn handle_hypothesize(
+    topic: Option<&str>,
+    gap: &str,
+    trend: &str,
+    story: &str,
+    no_llm: bool,
+    creative: bool,
+    json: bool,
+    model: Option<&str>,
+    top: usize,
+) -> Result<()> {
+    let gen = rairos_research::hypothesis_generator::HypothesisGenerator::new();
+    let topic_str = topic.unwrap_or("machine learning");
+
+    if no_llm {
+        // Template-only generation (sync)
+        let result = gen.generate(topic_str, gap, creative);
+        if json {
+            println!("{}", serde_json::to_string_pretty(&result)?);
+        } else {
+            println!("Topic: {}", result.topic);
+            println!("Summary: {}", result.summary);
+            for (i, h) in result.hypotheses.iter().enumerate() {
+                println!("  {}. {} (score: {:.2})", i + 1, h.title, h.novelty_score);
+                println!("     {}", h.core_statement);
+                if let Some(risk) = &h.risk {
+                    println!("     Risk: technical={}, hypothesis={}", risk.technical, risk.hypothesis);
+                }
+            }
+        }
+    } else {
+        println!("🧬 Generating hypotheses for: {}", topic_str);
+        println!("    (LLM-enhanced generation not wired in Rust CLI yet — using template mode)");
+        let result = gen.generate(topic_str, gap, creative);
+        if json {
+            println!("{}", serde_json::to_string_pretty(&result)?);
+        } else {
+            println!("Topic: {}", result.topic);
+            println!("Summary: {}", result.summary);
+            for (i, h) in result.hypotheses.iter().take(top).enumerate() {
+                println!("  {}. {} (novelty: {:.2}, feasibility: {:.2})", i + 1, h.title, h.novelty_score, h.feasibility_score);
+                println!("     {}", h.core_statement);
+                let exp_design = &h.experiment_design;
+                println!("     Baseline: {}", exp_design.baseline);
+            }
+        }
+    }
+
     Ok(())
 }

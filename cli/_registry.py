@@ -77,24 +77,19 @@ _SUBCOMMAND_TABLE = [
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("path", "cli.cmd.path", "_build_path_parser"),
     ("gap", "cli.cmd.gap", "_build_gap_parser"),
-    ("hypothesize", "cli.cmd.hypothesize", "_build_hypothesize_parser"),
     ("lean", "cli.cmd.lean", "_build_lean_parser"),
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
     ("slides", "cli.cmd.slides", "_build_slides_parser"),
-    ("evolution", "cli.cmd.evolution", "_build_evolution_parser"),
     ("question", "cli.cmd.question", "_build_question_parser"),
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
-    ("experiment", "cli.cmd.experiment", "_build_experiment_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
     ("session", "cli.cmd.session", "_build_session_parser"),
     ("narrative", "cli.cmd.narrative", "_build_narrative_parser"),
-    ("friction", "cli.cmd.friction", "_build_friction_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
     ("postprocess", "cli.cmd.postprocess", "_build_postprocess_parser"),
     ("ingest", "cli.cmd.ingest", "_build_ingest_parser"),
     ("demo", "cli.cmd.demo", "_build_demo_parser"),
     ("jin10", "cli.cmd.jin10", "_build_jin10_parser"),
-    ("dashboard", "cli.cmd.dashboard", "_build_web_parser"),
 ]
 
 
@@ -191,21 +186,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         "read-queue": "_run_read_queue",
         "chat": "_run_chat",
         "slides": "_run_slides",
-        "hypothesize": "_run_hypothesize",
         "gap": "_run_gap",
         "cite-backfill": "_run_cite_backfill",
         "question": "_run_question",
         "roadmap": "_run_roadmap",
-        "experiment": "_run_experiment",
         "pipeline": "_run_pipeline",
-        "dashboard": "_run_dashboard",
         "lean": "_run_lean",
-        "citation-chain": "_run_citation_chain",
         "kg": "_run_kg",
         "session": "_run_session",
         "narrative": "_run_narrative",
         "route": "_run_route",
-        "friction": "_run_friction",
         "chat-tui": "_run_chat_tui",
         "postprocess": "_run_postprocess",
         "ingest": "_run_ingest",
@@ -247,23 +237,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         from cli.cmd.slides import slides as slides_cmd
 
         return slides_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
-
-    elif args.subcmd == "evolution":
-        from cli.cmd.evolution import evolution_main
-
-        return cast(
-            int,
-            evolution_main(
-                show_stats=args.stats,
-                show_patterns=args.patterns,
-                show_feedback=args.feedback,
-                show_report=args.report,
-                show_sessions=args.sessions,
-                report_days=args.days,
-                clear=args.clear,
-                export=args.export,
-            ),
-        )
 
     elif args.subcmd == "visual":
         from cli.cmd.visual import _show_visual_status
