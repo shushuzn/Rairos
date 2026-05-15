@@ -31,6 +31,7 @@ rairos-evolution-report = { path = "../rairos-evolution-report" }
 rairos-research-log = { path = "../rairos-research-log" }
 rairos-review-generator = { path = "../rairos-review-generator" }
 rairos-scout = { path = "../rairos-scout" }
+rairos-survey-generator = { path = "../rairos-survey-generator" }
 rairos-research-session = { path = "../rairos-research-session" }
 rairos-signal = { path = "../rairos-signal" }
 rairos-story = { path = "../rairos-story" }
@@ -75,6 +76,9 @@ rairos-setup = { path = "../rairos-setup" }
 rairos-cli-registry = { path = "../rairos-cli-registry" }
 rairos-cli-shared = { path = "../rairos-cli-shared" }
 rairos-simple-cli = { path = "../rairos-simple-cli" }
+rairos-lsp-diagnostics = { path = "../rairos-lsp-diagnostics" }
+rairos-workspace-snapshot = { path = "../rairos-workspace-snapshot" }
+sysinfo = "0.34"
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
 tracing = "0.1"

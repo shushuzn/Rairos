@@ -1534,6 +1534,31 @@ enum Commands {
 
     /// Full-screen TUI chat with paper context sidebar
     ChatTui,
+
+    // ── Utility commands ────────────────────────────────────────────
+
+    /// Run LSP diagnostics (ruff/pyright) on a file or directory
+    Diagnostics {
+        /// Run ruff check
+        #[arg(long)]
+        ruff: bool,
+
+        /// Run pyright check
+        #[arg(long)]
+        pyright: bool,
+
+        /// Path to file or directory to check
+        path: PathBuf,
+    },
+
+    /// Manage workspace snapshots
+    Workspace {
+        #[command(subcommand)]
+        action: WorkspaceAction,
+    },
+
+    /// Show system information (CPU, memory, disk)
+    Sysinfo,
 }
 
 #[derive(Subcommand)]
@@ -1629,6 +1654,15 @@ enum EvoSkillAction {
     Reset,
     /// Check EvoSkill availability
     Status,
+}
+
+#[derive(Subcommand)]
+enum WorkspaceAction {
+    /// Create a workspace snapshot of the given path
+    Snapshot {
+        /// Path to the workspace or directory to snapshot
+        path: PathBuf,
+    },
 }
 
 #[derive(Subcommand)]
@@ -2596,6 +2630,24 @@ fn main() -> Result<()> {
         }
         Commands::ChatTui => {
             handle_chat_tui()?;
+        }
+
+        // ── Utility commands ──────────────────────────────────────
+
+        Commands::Diagnostics { ruff, pyright, path } => {
+            handle_diagnostics(*ruff, *pyright, &path.to_string_lossy())?;
+        }
+
+        Commands::Workspace { action } => {
+            match action {
+                WorkspaceAction::Snapshot { path } => {
+                    handle_workspace_snapshot(&path.to_string_lossy())?;
+                }
+            }
+        }
+
+        Commands::Sysinfo => {
+            handle_sysinfo()?;
         }
     }
 

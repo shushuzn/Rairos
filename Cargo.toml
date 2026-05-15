@@ -40,7 +40,6 @@ members = [
     "crates/rairos-crossref",
     "crates/rairos-daemon",
     "crates/rairos-dashboard",
-    "crates/rairos-db",
     "crates/rairos-db-migrate",
     "crates/rairos-db-py",
     "crates/rairos-deep-research",

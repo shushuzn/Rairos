@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "rairos_workspace_snapshot_py"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

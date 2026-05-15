@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "rairos_survey_generator_py"
-crate-type = ["cdylib"]
+name = "rairos_survey_generator"
+crate-type = ["lib", "cdylib"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

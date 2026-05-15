@@ -2774,6 +2774,7 @@ dependencies = [
  "rairos-lean-verifier",
  "rairos-litreview-analyzer",
  "rairos-llm",
+ "rairos-lsp-diagnostics",
  "rairos-mcp-jin10",
  "rairos-memory",
  "rairos-narratives",
@@ -2800,6 +2801,7 @@ dependencies = [
  "rairos-slides",
  "rairos-snapstate",
  "rairos-story",
+ "rairos-survey-generator",
  "rairos-testextractor",
  "rairos-updaters",
  "rairos-validator",
@@ -2809,10 +2811,12 @@ dependencies = [
  "rairos-watch-papers",
  "rairos-web",
  "rairos-weekly-digest",
+ "rairos-workspace-snapshot",
  "ratatui",
  "regex",
  "reqwest",
  "serde_json",
+ "sysinfo",
  "tokio",
  "tracing",
  "tracing-appender",
@@ -3053,21 +3057,6 @@ dependencies = [
  "chrono",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "rairos-db"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "log",
- "pyo3",
- "regex",
- "rusqlite",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 1.0.69",
 ]
 
 [[package]]
