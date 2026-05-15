@@ -1152,6 +1152,72 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(ResearchRunHandler).await;
     server.register(HypothesisGenerateHandler).await;
     server.register(HypothesisListHandler).await;
+    server.register(TopicDiscoveryHandler).await;
+}
+
+// ─── Topic Discovery ───────────────────────────────────────────────────────
+
+pub struct TopicDiscoveryHandler;
+
+#[async_trait]
+impl ToolHandler for TopicDiscoveryHandler {
+    fn name(&self) -> &str { "topic_discovery" }
+    fn description(&self) -> &str { "Suggest new arXiv subscription topics from research gaps and recent papers" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("recent_gaps".into(), ToolProperty::string("Recent gap objects as JSON array")),
+                ("recent_papers".into(), ToolProperty::string("Recent paper objects with title/abstract as JSON array")),
+                ("gap_clusters".into(), ToolProperty::string("Gap cluster objects as JSON array")),
+                ("gap_trends".into(), ToolProperty::string("Gap type trend map as JSON object {{type: 'rising'|'stable'|'declining'}}")),
+                ("max_suggestions".into(), ToolProperty::integer("Maximum suggestions to return (default 10)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let recent_gaps: Vec<Value> = params.get("recent_gaps")
+            .and_then(|v| v.as_str())
+            .and_then(|s| serde_json::from_str::<Vec<Value>>(s).ok())
+            .unwrap_or_default();
+        let recent_papers: Vec<Value> = params.get("recent_papers")
+            .and_then(|v| v.as_str())
+            .and_then(|s| serde_json::from_str::<Vec<Value>>(s).ok())
+            .unwrap_or_default();
+        let gap_clusters: Vec<Value> = params.get("gap_clusters")
+            .and_then(|v| v.as_str())
+            .and_then(|s| serde_json::from_str::<Vec<Value>>(s).ok())
+            .unwrap_or_default();
+        let gap_trends: std::collections::HashMap<String, String> = params.get("gap_trends")
+            .and_then(|v| v.as_str())
+            .and_then(|s| serde_json::from_str::<std::collections::HashMap<String, String>>(s).ok())
+            .unwrap_or_default();
+        let max_suggestions = params.get("max_suggestions")
+            .and_then(|v| v.as_u64())
+            .unwrap_or(10) as usize;
+
+        let discoverer = rairos_topic_discovery::TopicDiscoverer::new();
+        let suggestions = discoverer.suggest_new_topics(
+            &recent_gaps, &recent_papers, &gap_clusters, &gap_trends, max_suggestions,
+        );
+
+        let results: Vec<Value> = suggestions.into_iter().map(|s| {
+            serde_json::json!({
+                "topic": s.topic,
+                "source": s.source,
+                "confidence": s.confidence,
+                "reason": s.reason,
+                "gap_type": s.gap_type,
+                "keywords": s.keywords,
+            })
+        }).collect();
+
+        Ok(serde_json::json!({
+            "content": [{"type": "text", "text": serde_json::to_string_pretty(&results).unwrap_or_default()}],
+            "suggestions": results,
+            "count": results.len(),
+        }))
+    }
 }
 
 // ─── Trust Scorer Compute ──────────────────────────────────────────────────

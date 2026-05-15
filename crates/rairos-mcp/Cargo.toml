@@ -36,6 +36,14 @@ futures = "0.3"
 async-trait = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
 reqwest = { version = "0.12", features = ["rustls-tls"], default-features = false }
+# Orphan rescues — MCP tool crates
+rairos-deep-research = { path = "../rairos-deep-research" }
+rairos-orchestrator = { path = "../rairos-orchestrator" }
+rairos-parallel-research = { path = "../rairos-parallel-research" }
+rairos-paper-parser = { path = "../rairos-paper-parser" }
+rairos-topic-discovery = { path = "../rairos-topic-discovery" }
+rairos-pdf-parser = { path = "../rairos-pdf-parser" }
+rairos-extable = { path = "../rairos-extable" }
 
 [dev-dependencies]
 tokio-test = "0.4"

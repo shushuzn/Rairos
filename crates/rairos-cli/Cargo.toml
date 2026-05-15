@@ -44,6 +44,37 @@ rairos-pathfinder = { path = "../rairos-pathfinder" }
 rairos-slides = { path = "../rairos-slides" }
 rairos-roadmap = { path = "../rairos-roadmap" }
 rairos-mcp-jin10 = { path = "../rairos-mcp-jin10" }
+# Orphan rescues — CLI command crates
+rairos-citations = { path = "../rairos-citations" }
+rairos-compare = { path = "../rairos-compare" }
+rairos-sections = { path = "../rairos-sections" }
+rairos-benchmark = { path = "../rairos-benchmark" }
+rairos-benchmark-runner = { path = "../rairos-benchmark-runner" }
+rairos-code-indexer = { path = "../rairos-code-indexer" }
+rairos-code-trace = { path = "../rairos-code-trace" }
+rairos-snapstate = { path = "../rairos-snapstate" }
+rairos-updaters = { path = "../rairos-updaters" }
+rairos-review-queue = { path = "../rairos-review-queue" }
+rairos-bold-vault = { path = "../rairos-bold-vault" }
+rairos-vault = { path = "../rairos-vault" }
+rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
+rairos-gap-analyzer = { path = "../rairos-gap-analyzer" }
+rairos-gap-detector = { path = "../rairos-gap-detector" }
+rairos-arxiv-alert-channels = { path = "../rairos-arxiv-alert-channels" }
+rairos-channels = { path = "../rairos-channels" }
+rairos-citation-pathfinder-web = { path = "../rairos-citation-pathfinder-web" }
+rairos-skill-discovery = { path = "../rairos-skill-discovery" }
+rairos-testextractor = { path = "../rairos-testextractor" }
+rairos-resource-monitor = { path = "../rairos-resource-monitor" }
+rairos-watch-papers = { path = "../rairos-watch-papers" }
+rairos-vector-store = { path = "../rairos-vector-store" }
+rairos-parsers = { path = "../rairos-parsers" }
+rairos-crossref = { path = "../rairos-crossref" }
+rairos-daemon = { path = "../rairos-daemon" }
+rairos-setup = { path = "../rairos-setup" }
+rairos-cli-registry = { path = "../rairos-cli-registry" }
+rairos-cli-shared = { path = "../rairos-cli-shared" }
+rairos-simple-cli = { path = "../rairos-simple-cli" }
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
 tracing = "0.1"
