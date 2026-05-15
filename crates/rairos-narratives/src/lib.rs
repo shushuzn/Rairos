@@ -313,7 +313,7 @@ fn experiment_score(thread: &ResearchThread) -> f64 {
     score.min(1.0)
 }
 
-fn narrative_score(thread: &ResearchThread, contrib: f64, exp: f64) -> f64 {
+fn narrative_score(thread: &ResearchThread, contrib: f64, _exp: f64) -> f64 {
     let mut score: f64 = 0.5;
     if !thread.question_ids.is_empty() && !thread.hypothesis_ids.is_empty() {
         score += 0.15;

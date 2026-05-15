@@ -366,7 +366,7 @@ fn identify_key_papers(graph: &mut HashMap<String, PaperNode>) {
         .collect();
 
     let mid_rank = papers.len() / 2;
-    for (year, pr, idx) in with_year.iter().take(mid_rank) {
+    for (_year, pr, idx) in with_year.iter().take(mid_rank) {
         if *pr > 0.5 / papers.len() as f64 {
             papers[*idx].is_milestone = true;
         }

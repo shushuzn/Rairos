@@ -7240,7 +7240,7 @@ fn generate_default_cases(arxiv_id: &str) -> Vec<(String, String, String)> {
 }
 
 /// Generate pytest test files.
-fn generate_pytest_tests(paper_dir: &Path, test_csv: &Path) -> Result<()> {
+fn generate_pytest_tests(_paper_dir: &Path, test_csv: &Path) -> Result<()> {
     let test_dir = test_csv.parent().unwrap();
 
     // conftest.py
@@ -7696,10 +7696,10 @@ h1 {{ color: #1a1a2e; border-bottom: 2px solid #4a4a8a; padding-bottom: 10px; }}
 /// Uses same RAG infrastructure as handle_chat.
 fn handle_chat_tui() -> Result<()> {
     use ratatui::{
-        layout::{Constraint, Direction, Layout, Rect},
-        style::{Color, Modifier, Style, Stylize},
+        layout::{Constraint, Direction, Layout},
+        style::{Color, Modifier, Style},
         text::{Line, Span, Text},
-        widgets::{Block, Borders, List, ListItem, Paragraph, Wrap},
+        widgets::{Block, Borders, List, ListItem, Paragraph},
         Terminal,
     };
     use crossterm::{
@@ -7759,7 +7759,7 @@ fn handle_chat_tui() -> Result<()> {
 
     let mut messages: Vec<ChatMsg> = Vec::new();
     let mut input = String::new();
-    let mut scroll_offset: usize = 0;
+    let _scroll_offset: usize = 0;
     let mut loading = false;
 
     messages.push(ChatMsg {
@@ -7823,7 +7823,7 @@ fn handle_chat_tui() -> Result<()> {
                 let x = chunks[1].x + 1 + input.len() as u16;
                 let y = chunks[1].y + 1;
                 if x < chunks[1].x + chunks[1].width - 1 {
-                    f.set_cursor(x, y);
+                    f.set_cursor_position(ratatui::layout::Position::new(x, y));
                 }
             }
         })?;
@@ -7850,7 +7850,7 @@ fn handle_chat_tui() -> Result<()> {
                             content: q.clone(),
                         });
                         input.clear();
-                        loading = true;
+                        // loading flag is conceptually for async render; block_on is synchronous here
 
                         // Search papers and call LLM
                         let papers = db.search_papers(&q, 5).unwrap_or_default();
@@ -7950,6 +7950,7 @@ fn handle_chat_tui() -> Result<()> {
 /// Handle `demo` — run end-to-end Rairos pipeline demo.
 fn handle_demo(quick: bool, papers: Option<usize>, insights: bool) -> Result<()> {
     // Sample paper data (matching Python's SAMPLE_PAPER)
+    #[allow(dead_code)]
     struct DemoPaper<'a> {
         id: &'a str,
         title: &'a str,
@@ -8544,7 +8545,7 @@ fn handle_influence(
                 "Rank", "Velocity", "Cites", "Age"
             );
             println!("{}", "-".repeat(50));
-            for (i, (id, title, year, forward, vel)) in top_n.iter().enumerate() {
+            for (i, (_id, title, year, forward, vel)) in top_n.iter().enumerate() {
                 let title_short = if title.len() > 50 {
                     format!("{}…", &title[..50])
                 } else {
@@ -10131,7 +10132,7 @@ fn handle_report(format: &str) -> Result<()> {
 }
 
 /// Handle `research` — manage research log
-fn handle_research(db: &Database, action: &str, content: Option<&str>) -> Result<()> {
+fn handle_research(_db: &Database, action: &str, content: Option<&str>) -> Result<()> {
     match action {
         "list" => {
             let notes = rairos_research_log::get_notes(None, 50);
@@ -10180,7 +10181,7 @@ fn handle_trace(db: &Database, arxiv_id: Option<&str>, list: bool, show_refs: bo
         println!("✅ Recent paper-code traces ({}):", traces.len());
         println!();
         for t in &traces {
-            let title = &t.paper_id;
+            let _title = &t.paper_id;
             let coverage = if t.total_code_lines > 0 {
                 format!("{}/{}", t.tagged_lines, t.total_code_lines)
             } else {
@@ -10500,7 +10501,7 @@ fn handle_evolution(
     show_feedback: bool,
     show_report: bool,
     show_sessions: bool,
-    days: usize,
+    _days: usize,
     clear: bool,
     export: bool,
 ) -> Result<()> {
@@ -10571,7 +10572,7 @@ fn handle_evolution(
 }
 
 /// Handle `dashboard` — start web UI
-fn handle_dashboard(port: u16, host: &str, no_browser: bool) -> Result<()> {
+fn handle_dashboard(port: u16, host: &str, _no_browser: bool) -> Result<()> {
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(async {
         let addr = format!("{}:{}", host, port);
@@ -10641,7 +10642,7 @@ fn handle_citation_chain(
         println!("{}", builder.render_text(&chain, 20));
     }
 
-    if let Some(target) = path {
+    if let Some(_target) = path {
         println!("Path finding requires citation graph data in DB.");
     }
 
@@ -10652,12 +10653,12 @@ fn handle_citation_chain(
 fn handle_hypothesize(
     topic: Option<&str>,
     gap: &str,
-    trend: &str,
-    story: &str,
+    _trend: &str,
+    _story: &str,
     no_llm: bool,
     creative: bool,
     json: bool,
-    model: Option<&str>,
+    _model: Option<&str>,
     top: usize,
 ) -> Result<()> {
     let gen = rairos_research::hypothesis_generator::HypothesisGenerator::new();

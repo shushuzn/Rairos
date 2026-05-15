@@ -8,9 +8,11 @@ Skills: `/root/superpowers/skills/` — 15 skills auto-registered on OpenCode st
 
 ## Project
 
-Self-Evolving Research OS — two codebases coexist:
-- **Python** (~90k lines, primary): `core/`, `llm/`, `cli/`, `db/`, `research_loop/`, `parsers/`, `kg/`, `web/`
-- **Rust** (~50k+ lines, rewrite): `crates/` with **120 crates**
+Self-Evolving Research OS — Rust primary (~55k+ lines, **153 crates**):
+- **Rust CLI** (`crates/rairos-cli`): **71 commands** (10920 lines, single main.rs)
+- **Rust MCP** (`crates/rairos-mcp`): 61 Rust tools (zero Python fallback)
+- **Python** (~85k lines): `llm/`, `core/`, `db/`, `kg/`, `parsers/`, `web/` — utility/layer only
+- Python CLI fully migrated to Rust, `cli/` package retained for shared utilities only
 
 ## Critical: Rust Build
 
@@ -69,8 +71,8 @@ sccache --show-stats
 # Build all
 CARGO_BUILD_JOBS=1 cargo build
 
-# Run CLI (48 commands)
-cargo run -p rairos-cli -- help
+# Run CLI (71 commands)
+cargo run -p rairos-cli -- --help  # list all commands
 cargo run -p rairos-cli -- paper-list
 cargo run -p rairos-cli -- gene-list
 cargo run -p rairos-cli -- stance-list
@@ -111,8 +113,8 @@ git push
 
 ## Stats
 
-- Rust: **153 crates**, ~55k+ lines, 56 CLI commands, 207+ test files
-- Python: ~85k lines, 50 CLI command modules, 4700+ tests
+- Rust: **153 crates**, ~55k+ lines, **71 CLI commands**, 207+ test files
+- Python: ~85k lines, `cli/` package retained for shared utils only (`_shared.py` + `warp.py`)
 
 ## Web UI
 
@@ -122,16 +124,15 @@ git push
 - Knowledge Graph: stats, path finding, rankings
 - Memory: research stances, anomaly detection
 
-## Rust MCP Tools (58 Rust + 8 Python fallback)
+## Rust MCP Tools (61 Rust, 0 Python fallback)
 
 | Source | Count | Tools |
 |--------|-------|-------|
 | Core Rust | 25 | paper_search/ingest/query/chat/recommend, tag_add/remove/list/tag_all, trends_detect_trending/predict_next/top_predictions/compare_tags, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch, chart_query |
 | LLM-backed Rust | 36 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create/list/update_step/revise, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, research_run, hypothesis_generate, hypothesis_list |
-| Python fallback | 0 | — |
 
 rairos_mcp.py: **1971 → 652 行** (1319 行死代码已清理)<br>
-Python CLI 死代码清理: **81→50 个命令模块** (21 个有 Rust 等效的命令已删除)，**~8000 行已删除**
+Python CLI 死代码清理: **81→0 命令模块**，全部迁移到 Rust CLI (71 个命令)，删除测试文件 3 个，清理死 import 多处
 
 ### Performance Benchmarks
 
@@ -151,7 +152,7 @@ Python CLI 死代码清理: **81→50 个命令模块** (21 个有 Rust 等效�
 - `TestToolRouting` (4): every routed tool has impl/schema, unknown tool returns error
 - `TestMcpJsonRpc` (5): JSON-RPC round-trip, serialization
 - `TestRustToolIntegration` (10): 11 Rust tools return expected keys, ranking ordering, graceful LLM-key handling
-- `TestPythonFallback` (1): Python-only tools still work via fallback
+- `TestMypy` (1): type checking
 
 ### Key Decisions
 
@@ -159,12 +160,3 @@ Python CLI 死代码清理: **81→50 个命令模块** (21 个有 Rust 等效�
 - Rust-first dispatch: `handle_call_tool` tries `call_tool_rs()` first, falls back to Python on `None`
 - Backward-compatible params: Rust handlers accept both `paper_id` and `arxiv_id`
 - Schema validation in Python runs before Rust dispatch, so Rust handler params must match tools_defs.py schemas
-
-### Python CLI Status
-
-Python CLI reduced from **81 → 50 command modules** (21 removed, Rust equivalents exist). Remaining Python-only commands still provide unique functionality not yet available in Rust CLI.
-
-| Status | Count | Description |
-|--------|-------|-------------|
-| ✅ Rust-equivalent (removed) | 21 | agent, analyze, ask, benchmark, cache, citations, cite-stats, compare, daemon, dedup, doctor, export, import, list, repl, search, similar, stats, status, subscribe, trend |
-| 🟡 Python-only (keep) | 50 | argue, chat, chat-tui, citation-chain, cite-backfill, cite-fetch, cite-graph, cite-import, dashboard, dedup-semantic, demo, digest, discover, evolution, evoskill, experiment, friction, gap, hypothesize, influence, ingest, insight, intel, jin10, journal, kg, lean, litreview, merge, narrative, paper2code, path, pipeline, postprocess, queue, question, rag, read-queue, replicate, report, research, review, roadmap, route, scout, session, signal, slides, story, trace, validate, visual, watch |

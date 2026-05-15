@@ -420,7 +420,7 @@ fn detect_sections(text: &str) -> Vec<DetectedSection> {
                 // Plain heading — must be very short (<25) and marker-proximate
                 trimmed_len < 25 && section_markers.iter().any(|m| {
                     let lower = trimmed.to_lowercase();
-                    lower.find(m).map_or(false, |idx| {
+                    lower.find(m).map_or(false, |_idx| {
                         // Marker must be >40% of line length
                         m.len() as f64 / trimmed_len as f64 > 0.4
                     })
