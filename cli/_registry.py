@@ -64,7 +64,7 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 _SUBCOMMAND_TABLE = [
     ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
-    ("route", "cli.cmd.route", "_build_route_parser"),
+
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
 ]
@@ -158,7 +158,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     dispatch = {
         "chat": "_run_chat",
-        "route": "_run_route",
+
         "chat-tui": "_run_chat_tui",
     }
 
