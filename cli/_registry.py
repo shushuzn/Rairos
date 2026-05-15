@@ -69,7 +69,6 @@ _SUBCOMMAND_TABLE = [
     ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("route", "cli.cmd.route", "_build_route_parser"),
-    ("read-queue", "cli.cmd.read_queue", "_build_read_queue_parser"),
     ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("path", "cli.cmd.path", "_build_path_parser"),
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
@@ -173,10 +172,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     dispatch = {
         "dedup-semantic": "_run_dedup_semantic",
-        "read-queue": "_run_read_queue",
         "chat": "_run_chat",
         "slides": "_run_slides",
-        "cite-backfill": "_run_cite_backfill",
         "question": "_run_question",
         "roadmap": "_run_roadmap",
         "pipeline": "_run_pipeline",
