@@ -247,6 +247,31 @@ pub struct DedupLogEntry {
 }
 
 // ============================================================================
+// PaperCodeTrace
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PaperCodeTrace {
+    pub id: i64,
+    pub paper_id: String,
+    pub code_path: String,
+    pub module_name: String,
+    pub framework: String,
+    pub total_code_lines: i64,
+    pub tagged_lines: i64,
+    pub untagged_ranges: Vec<serde_json::Value>,
+    pub unreferenced_sources: Vec<serde_json::Value>,
+    pub paper_section_refs: Vec<serde_json::Value>,
+    pub gap_ids: Vec<serde_json::Value>,
+    pub benchmark_pass_rate: Option<f64>,
+    pub created_at: String,
+}
+
+impl PaperCodeTrace {
+    // Use rusqlite::Row accessor (not available as trait method on Row in this crate version)
+}
+
+// ============================================================================
 // Database
 // ============================================================================
 
@@ -391,6 +416,23 @@ impl Database {
                 duplicate_id TEXT NOT NULL,
                 keep_policy TEXT NOT NULL,
                 created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
+            CREATE TABLE IF NOT EXISTS paper_code_trace (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                paper_id        TEXT NOT NULL,
+                code_path       TEXT NOT NULL,
+                module_name     TEXT NOT NULL,
+                framework       TEXT NOT NULL DEFAULT 'pytorch',
+                total_code_lines INTEGER NOT NULL DEFAULT 0,
+                tagged_lines    INTEGER NOT NULL DEFAULT 0,
+                untagged_ranges TEXT NOT NULL DEFAULT '[]',
+                unreferenced_sources TEXT NOT NULL DEFAULT '[]',
+                paper_section_refs TEXT NOT NULL DEFAULT '[]',
+                gap_ids         TEXT NOT NULL DEFAULT '[]',
+                benchmark_pass_rate REAL DEFAULT 0.0,
+                created_at      TEXT NOT NULL,
+                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
             );
 
             CREATE INDEX IF NOT EXISTS idx_papers_arxiv ON papers(arxiv_id);
@@ -1244,6 +1286,57 @@ impl Database {
         conn.execute("DELETE FROM papers WHERE parse_status = 'pending'", [])?;
         Ok(count)
     }
+
+    /// List recent paper-code traces across all papers.
+    pub fn list_paper_code_traces(&self, limit: i64) -> Result<Vec<PaperCodeTrace>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT * FROM paper_code_trace ORDER BY created_at DESC LIMIT ?",
+        )?;
+        let rows = stmt.query_map([limit], map_paper_code_trace_row)?;
+        let mut traces = Vec::new();
+        for row in rows {
+            traces.push(row?);
+        }
+        Ok(traces)
+    }
+
+    /// Get paper-code traces for a specific paper.
+    pub fn get_paper_code_trace(&self, paper_id: &str) -> Result<Vec<PaperCodeTrace>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT * FROM paper_code_trace WHERE paper_id = ? ORDER BY created_at DESC",
+        )?;
+        let rows = stmt.query_map([paper_id], map_paper_code_trace_row)?;
+        let mut traces = Vec::new();
+        for row in rows {
+            traces.push(row?);
+        }
+        Ok(traces)
+    }
+}
+
+fn map_paper_code_trace_row(row: &rusqlite::Row) -> rusqlite::Result<PaperCodeTrace> {
+    let untagged: String = row.get("untagged_ranges")?;
+    let unreferenced: String = row.get("unreferenced_sources")?;
+    let refs: String = row.get("paper_section_refs")?;
+    let gap_ids_str: String = row.get("gap_ids")?;
+
+    Ok(PaperCodeTrace {
+        id: row.get("id")?,
+        paper_id: row.get("paper_id")?,
+        code_path: row.get("code_path")?,
+        module_name: row.get("module_name")?,
+        framework: row.get("framework")?,
+        total_code_lines: row.get("total_code_lines")?,
+        tagged_lines: row.get("tagged_lines")?,
+        untagged_ranges: serde_json::from_str(&untagged).unwrap_or_default(),
+        unreferenced_sources: serde_json::from_str(&unreferenced).unwrap_or_default(),
+        paper_section_refs: serde_json::from_str(&refs).unwrap_or_default(),
+        gap_ids: serde_json::from_str(&gap_ids_str).unwrap_or_default(),
+        benchmark_pass_rate: row.get("benchmark_pass_rate")?,
+        created_at: row.get("created_at")?,
+    })
 }
 
 fn map_job_row(row: &rusqlite::Row) -> rusqlite::Result<JobQueueEntry> {

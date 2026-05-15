@@ -869,6 +869,24 @@ enum Commands {
         weeks: usize,
     },
 
+    /// Query paper-code lineage traces
+    Trace {
+        /// arXiv ID (omit to list all recent traces)
+        arxiv_id: Option<String>,
+
+        /// List recent traces across all papers
+        #[arg(short, long)]
+        list: bool,
+
+        /// Show detailed paper_section_refs for each trace
+        #[arg(short, long)]
+        refs: bool,
+
+        /// Max traces to show
+        #[arg(short = 'n', long, default_value = "20")]
+        limit: usize,
+    },
+
     /// Manage paper reviews
     Review {
         /// Action: list, add
@@ -5752,6 +5770,10 @@ fn main() -> Result<()> {
         Commands::Digest { weeks } => {
             handle_digest(*weeks)?;
         }
+        Commands::Trace { arxiv_id, list, refs, limit } => {
+            let db = open_db(&cli.db)?;
+            handle_trace(&db, arxiv_id.as_deref(), *list, *refs, *limit)?;
+        }
         Commands::Review { action, paper, content } => {
             let db = open_db(&cli.db)?;
             handle_review(&db, action, paper.as_deref(), content.as_deref())?;
@@ -8334,6 +8356,93 @@ fn handle_digest(weeks: usize) -> Result<()> {
     println!("📊 Weekly Digest");
     println!("   Period: {} weeks", weeks);
     println!("   (Full digest requires journal/experiment data)");
+    Ok(())
+}
+
+/// Handle `trace` — query paper-code lineage traces
+fn handle_trace(db: &Database, arxiv_id: Option<&str>, list: bool, show_refs: bool, limit: usize) -> Result<()> {
+    if list || arxiv_id.is_none() {
+        let traces = db.list_paper_code_traces(limit as i64)?;
+        if traces.is_empty() {
+            println!("ℹ️  No traces found.");
+            return Ok(());
+        }
+
+        println!("✅ Recent paper-code traces ({}):", traces.len());
+        println!();
+        for t in &traces {
+            let title = &t.paper_id;
+            let coverage = if t.total_code_lines > 0 {
+                format!("{}/{}", t.tagged_lines, t.total_code_lines)
+            } else {
+                "N/A".to_string()
+            };
+            let pr = t.benchmark_pass_rate.map(|r| format!("{:.0}%", r * 100.0)).unwrap_or_else(|| "—".to_string());
+            println!(
+                "  [\x1b[36m{}\x1b[0m]\n    module={}  framework={}\n    coverage={} lines  pass_rate={}  created={}",
+                t.paper_id, t.module_name, t.framework, coverage, pr, &t.created_at[..10.min(t.created_at.len())]
+            );
+            if show_refs && !t.paper_section_refs.is_empty() {
+                for ref_item in t.paper_section_refs.iter().take(5) {
+                    let source_ref = ref_item.get("source_ref").and_then(|v| v.as_str()).unwrap_or("");
+                    let code_range = ref_item.get("code_range").and_then(|v| v.as_str()).unwrap_or("");
+                    let paper_text = ref_item.get("paper_text").and_then(|v| v.as_str()).unwrap_or("");
+                    let text_short: String = paper_text.chars().take(60).collect();
+                    println!("    {} → line {}: {}", source_ref, code_range, text_short);
+                }
+            }
+            println!();
+        }
+        return Ok(());
+    }
+
+    let pid = arxiv_id.unwrap();
+    let traces = db.get_paper_code_trace(pid)?;
+    if traces.is_empty() {
+        eprintln!("❌ No traces found for paper {}.", pid);
+        return Ok(());
+    }
+
+    println!("✅ Traces for \x1b[36m{}\x1b[0m ({}):", pid, traces.len());
+    println!();
+    for (i, t) in traces.iter().enumerate() {
+        let coverage = if t.total_code_lines > 0 {
+            format!("{}/{}", t.tagged_lines, t.total_code_lines)
+        } else {
+            "N/A".to_string()
+        };
+        let pr = t.benchmark_pass_rate.map(|r| format!("{:.0}%", r * 100.0)).unwrap_or_else(|| "—".to_string());
+
+        println!(
+            "Trace #{}  module={}  framework={}\n  code_path: {}\n  coverage: {} lines tagged\n  pass_rate: {}  |  untagged ranges: {}  |  unreferenced: {}\n  created: {}",
+            i + 1, t.module_name, t.framework, t.code_path, coverage, pr,
+            t.untagged_ranges.len(), t.unreferenced_sources.len(), t.created_at
+        );
+
+        if show_refs && !t.paper_section_refs.is_empty() {
+            println!("  Provenance refs ({}):", t.paper_section_refs.len());
+            for ref_item in &t.paper_section_refs {
+                let text = ref_item.get("paper_text").and_then(|v| v.as_str()).unwrap_or("");
+                let text_short: String = text.chars().take(55).collect();
+                let rng = ref_item.get("code_range").and_then(|v| v.as_str()).unwrap_or("");
+                let rng_str = if rng.is_empty() { "?".to_string() } else { format!("L{}", rng) };
+                let source_ref = ref_item.get("source_ref").and_then(|v| v.as_str()).unwrap_or("");
+                println!("    {} → {}: {}", source_ref, rng_str, text_short);
+            }
+        } else if show_refs {
+            println!("  No provenance refs (code may not have # source: comments)");
+        }
+        println!();
+    }
+
+    // Summary stats
+    let total_lines: i64 = traces.iter().map(|t| t.total_code_lines).sum();
+    let total_tagged: i64 = traces.iter().map(|t| t.tagged_lines).sum();
+    if total_lines > 0 {
+        let avg_cov = (total_tagged as f64 / total_lines as f64) * 100.0;
+        println!("ℹ️  Summary: {}/{} lines traced ({:.1}%) across {} trace(s)", total_tagged, total_lines, avg_cov, traces.len());
+    }
+
     Ok(())
 }
 

@@ -63,8 +63,6 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 _SUBCOMMAND_TABLE = [
     ("dedup-semantic", "cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
-    ("paper2code", "cli.cmd.paper.paper2code", "_build_paper2code_parser"),
-    ("trace", "cli.cmd.paper.trace", "_build_paper_trace_parser"),
     ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("route", "cli.cmd.route", "_build_route_parser"),
@@ -166,7 +164,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",
         "jin10": "_run_jin10",
-        "paper2code": "_run_paper2code",
     }
 
     if args.subcmd in dispatch:
