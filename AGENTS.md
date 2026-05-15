@@ -111,8 +111,8 @@ git push
 
 ## Stats
 
-- Rust: **153 crates**, ~55k+ lines, 47 CLI commands, 207+ test files
-- Python: ~90k lines, 5079 tests collected
+- Rust: **153 crates**, ~55k+ lines, 54 CLI commands, 207+ test files
+- Python: ~85k lines, 50 CLI command modules, 4700+ tests
 
 ## Web UI
 
@@ -130,7 +130,8 @@ git push
 | LLM-backed Rust | 36 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create/list/update_step/revise, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, research_run, hypothesis_generate, hypothesis_list |
 | Python fallback | 0 | — |
 
-rairos_mcp.py: **1971 → 652 行** (1319 行死代码已清理)<br>整体 Python 死代码清理: **~5200+ 行已删除**
+rairos_mcp.py: **1971 → 652 行** (1319 行死代码已清理)<br>
+Python CLI 死代码清理: **81→50 个命令模块** (21 个有 Rust 等效的命令已删除)，**~8000 行已删除**
 
 ### Performance Benchmarks
 
@@ -159,15 +160,11 @@ rairos_mcp.py: **1971 → 652 行** (1319 行死代码已清理)<br>整体 Pytho
 - Backward-compatible params: Rust handlers accept both `paper_id` and `arxiv_id`
 - Schema validation in Python runs before Rust dispatch, so Rust handler params must match tools_defs.py schemas
 
-### Remaining Python Fallback MCP Tools for Rust Porting
+### Python CLI Status
 
-7 Python fallback tools remain. Highest-ROI candidates:
+Python CLI reduced from **81 → 50 command modules** (21 removed, Rust equivalents exist). Remaining Python-only commands still provide unique functionality not yet available in Rust CLI.
 
-| Tool | Complexity | Deps |
-|------|-----------|------|
-| ~~`cite_fetch`~~ | Low | rairos-parser |
-| ~~`gap_submit` / `gap_evolve`~~ | Medium | rairos-core + rairos-llm |
-| ~~`gene_pool_decay`~~ / ~~`crossover`~~ | Medium | rairos-evolution |
-| ~~`hypothesis_generate`~~ | HIGH | ✅ Ported to Rust (rairos-research) |
-
-Note: `research_run` is a pipeline orchestrator calling 7+ modules — NOT suitable for standalone port.
+| Status | Count | Description |
+|--------|-------|-------------|
+| ✅ Rust-equivalent (removed) | 21 | agent, analyze, ask, benchmark, cache, citations, cite-stats, compare, daemon, dedup, doctor, export, import, list, repl, search, similar, stats, status, subscribe, trend |
+| 🟡 Python-only (keep) | 50 | argue, chat, chat-tui, citation-chain, cite-backfill, cite-fetch, cite-graph, cite-import, dashboard, dedup-semantic, demo, digest, discover, evolution, evoskill, experiment, friction, gap, hypothesize, influence, ingest, insight, intel, jin10, journal, kg, lean, litreview, merge, narrative, paper2code, path, pipeline, postprocess, queue, question, rag, read-queue, replicate, report, research, review, roadmap, route, scout, session, signal, slides, story, trace, validate, visual, watch |

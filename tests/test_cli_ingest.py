@@ -134,8 +134,8 @@ class TestImportPhase:
             mock_db = FakeDB()
             MockDB.return_value = mock_db
 
-            # _fetch_paper_metadata is imported from cli.cmd.import_ inside the function
-            with patch("cli.cmd.import_._fetch_paper_metadata") as mock_fetch:
+            # _fetch_paper_metadata is now local in cli.cmd.ingest
+            with patch("cli.cmd.ingest._fetch_paper_metadata") as mock_fetch:
                 mock_fetch.return_value = {
                     "title": "Test Paper",
                     "authors": [],
@@ -159,7 +159,7 @@ class TestImportPhase:
             mock_db = FakeDB()
             MockDB.return_value = mock_db
 
-            with patch("cli.cmd.import_._fetch_paper_metadata") as mock_fetch:
+            with patch("cli.cmd.ingest._fetch_paper_metadata") as mock_fetch:
                 mock_fetch.return_value = None  # fetch failed
                 added, failed = _run_import_phase(["2301.00001"], mock_db, "test")
                 assert added == []

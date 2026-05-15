@@ -55,10 +55,47 @@ def _extract_text(pdf_path: Path, max_pages: int = 30) -> str:
         return ""
 
 
+def _fetch_paper_metadata(paper_id: str) -> Optional[dict]:
+    """Fetch paper metadata from arXiv or DOI."""
+    from parsers.arxiv import fetch_arxiv_metadata
+    from parsers.crossref import fetch_crossref_metadata
+    from parsers.input_detection import is_probably_doi, normalize_doi
+
+    try:
+        if is_probably_doi(paper_id):
+            # DOI lookup
+            doi = normalize_doi(paper_id)
+            paper, _ = fetch_crossref_metadata(doi)
+            return {
+                "title": paper.title or "",
+                "authors": paper.authors or [],
+                "abstract": paper.abstract or "",
+                "published": paper.published or "",
+                "abs_url": f"https://doi.org/{doi}",
+                "pdf_url": "",
+                "primary_category": "",
+                "doi": doi,
+            }
+        else:
+            # arXiv lookup
+            paper = fetch_arxiv_metadata(paper_id)
+            return {
+                "title": paper.title or "",
+                "authors": paper.authors or [],
+                "abstract": paper.abstract or "",
+                "published": paper.published or "",
+                "abs_url": paper.abs_url or "",
+                "pdf_url": paper.pdf_url or "",
+                "primary_category": paper.primary_category or "",
+                "doi": getattr(paper, "doi", None) or "",
+            }
+    except Exception as exc:
+        print_warning(f"Failed to fetch metadata for {paper_id}: {exc}")
+        return None
+
+
 def _run_import_phase(paper_ids: list[str], db, source: str) -> tuple[list[str], list[str]]:
     """Import papers by fetching metadata. Returns (added_ids, failed_ids)."""
-    from cli.cmd.import_ import _fetch_paper_metadata
-
     added, failed = [], []
     for pid in paper_ids:
         pid = pid.strip()

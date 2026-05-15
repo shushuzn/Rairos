@@ -50,8 +50,6 @@ _SUBCOMMAND_TABLE_LOOKUP: Dict[str, Tuple[str, str]] = {
     "experiment": ("cli.cmd.experiment", "_build_experiment_parser"),
     "insight": ("cli.cmd.insight", "_build_insight_parser"),
     "narrative": ("cli.cmd.narrative", "_build_narrative_parser"),
-    "ask": ("cli.cmd.ask", "_build_ask_parser"),
-    "search": ("cli.cmd.search", "_build_search_parser"),
     "chat": ("cli.cmd.chat", "_build_chat_parser"),
 }
 

@@ -18,21 +18,15 @@ class TestCLICommandImports:
         """Test that _registry can be imported."""
         from cli._registry import SUBCOMMANDS
 
-        assert "search" in SUBCOMMANDS
-        assert "import" in SUBCOMMANDS
         assert "rag" in SUBCOMMANDS
         assert "visual" in SUBCOMMANDS
 
     def test_import_cmd_modules(self):
         """Test that command modules can be imported."""
-        from cli.cmd.search import _build_search_parser
-        from cli.cmd.import_ import _build_import_parser
         from cli.cmd.rag import _build_rag_parser
         from cli.cmd.visual import _build_visual_parser
 
         # All should be callable
-        assert callable(_build_search_parser)
-        assert callable(_build_import_parser)
         assert callable(_build_rag_parser)
         assert callable(_build_visual_parser)
 
@@ -57,24 +51,13 @@ class TestCLICommandImports:
         from cli._registry import SUBCOMMANDS
 
         expected = {
-            "search",
-            "list",
-            "status",
             "queue",
-            "cache",
-            "dedup",
             "merge",
-            "stats",
-            "import",
-            "export",
-            "citations",
             "cite-graph",
             "cite-import",
             "cite-fetch",
-            "cite-stats",
             "dedup-semantic",
             "research",
-            "similar",
             "kg",
             "paper2code",
             "evoskill",
@@ -99,6 +82,4 @@ class TestCLIParsers:
         _build_all_parsers(subparsers)
 
         # Verify some subcommands exist
-        assert "search" in subparsers.choices
-        assert "import" in subparsers.choices
         assert "rag" in subparsers.choices
