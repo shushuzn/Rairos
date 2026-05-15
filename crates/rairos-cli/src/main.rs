@@ -820,20 +820,6 @@ enum Commands {
         mood: Option<String>,
     },
 
-    /// Manage insight cards
-    Insight {
-        /// Action: list, search
-        action: String,
-
-        /// Query string for search
-        #[arg(short, long)]
-        query: Option<String>,
-
-        /// Paper ID
-        #[arg(short, long)]
-        paper: Option<String>,
-    },
-
     /// Generate unified intelligence report
     Intel {
         /// Focus topic
@@ -1391,6 +1377,12 @@ enum Commands {
         #[arg(short = 'v', long)]
         verbose: bool,
     },
+
+    /// Manage insight cards (add, search, rate, like, top, tag-cloud)
+    Insight {
+        #[command(subcommand)]
+        action: InsightAction,
+    },
 }
 
 #[derive(Subcommand)]
@@ -1549,6 +1541,100 @@ enum NarrativeAction {
     },
     /// Show dashboard overview of all threads
     Dashboard,
+}
+
+#[derive(Subcommand)]
+enum InsightAction {
+    /// Add a new insight card
+    Add {
+        /// Insight content
+        #[arg(long)]
+        content: String,
+
+        /// Insight type (finding, method, limitation, future_work)
+        #[arg(short = 't', long, default_value = "finding")]
+        r#type: String,
+
+        /// Comma-separated tags
+        #[arg(long)]
+        tags: Option<String>,
+
+        /// Paper ID
+        #[arg(long)]
+        paper: Option<String>,
+
+        /// Collection ID to add to
+        #[arg(short = 'c', long)]
+        collection: Option<String>,
+    },
+
+    /// List all insight cards
+    List {
+        /// Maximum cards to show
+        #[arg(short = 'n', long, default_value = "20")]
+        limit: usize,
+    },
+
+    /// Search insight cards
+    Search {
+        /// Search query
+        #[arg(short = 'q', long)]
+        query: String,
+
+        /// Filter by type
+        #[arg(short = 't', long)]
+        r#type: Option<String>,
+    },
+
+    /// Show tag cloud (tag frequency)
+    TagCloud,
+
+    /// Rate a card (1-5 stars)
+    Rate {
+        /// Card ID
+        #[arg(long)]
+        card: String,
+
+        /// Star rating (1-5)
+        #[arg(long)]
+        stars: i32,
+    },
+
+    /// Like a card
+    Like {
+        /// Card ID
+        #[arg(long)]
+        card: String,
+    },
+
+    /// Dislike a card
+    Dislike {
+        /// Card ID
+        #[arg(long)]
+        card: String,
+    },
+
+    /// Show top-rated cards
+    Top {
+        /// Minimum rating filter
+        #[arg(long, default_value = "3")]
+        min_rating: i32,
+
+        /// Maximum cards to show
+        #[arg(short = 'n', long, default_value = "10")]
+        limit: usize,
+    },
+
+    /// Show bottom-rated cards
+    Bottom {
+        /// Maximum rating filter
+        #[arg(long, default_value = "2")]
+        max_rating: i32,
+
+        /// Maximum cards to show
+        #[arg(short = 'n', long, default_value = "10")]
+        limit: usize,
+    },
 }
 
 // ============================================================================
@@ -5649,9 +5735,6 @@ fn main() -> Result<()> {
         Commands::Journal { action, content, tags, mood } => {
             handle_journal(action, content.as_deref(), tags.as_deref(), mood.as_deref())?;
         }
-        Commands::Insight { action, query, paper } => {
-            handle_insight(action, query.as_deref(), paper.as_deref())?;
-        }
         Commands::Intel { topic, verbose } => {
             handle_intel(topic, *verbose)?;
         }
@@ -5834,6 +5917,10 @@ fn main() -> Result<()> {
                 *verbose,
             )?;
         }
+
+        Commands::Insight { action } => {
+            handle_insight(action)?;
+        }
     }
 
     Ok(())
@@ -5876,6 +5963,154 @@ fn handle_roadmap(
     } else {
         println!();
         println!("{}", gen.render_text(&roadmap));
+    }
+
+    Ok(())
+}
+
+/// Handle `insight` — manage insight cards.
+fn handle_insight(action: &InsightAction) -> Result<()> {
+    use rairos_insight_cards::InsightManager;
+
+    let manager = InsightManager::new(None);
+
+    match action {
+        InsightAction::Add {
+            content,
+            r#type,
+            tags,
+            paper,
+            collection,
+        } => {
+            let tag_list: Option<Vec<String>> = tags
+                .as_ref()
+                .map(|t| t.split(',').map(|s| s.trim().to_string()).collect());
+            let card = manager.add_card(
+                paper.as_deref().unwrap_or(""),
+                "",
+                content,
+                r#type,
+                tag_list,
+                "",
+                "",
+            );
+            println!("  ✓ Created insight card [{}]: {}", card.card_id, &card.content[..card.content.len().min(60)]);
+            if let Some(cid) = collection {
+                let _ = manager.add_to_collection(cid, &card.card_id);
+                println!("     Added to collection [{}]", cid);
+            }
+        }
+
+        InsightAction::List { limit } => {
+            let cards = manager.search_cards(None, None, None, None);
+            if cards.is_empty() {
+                println!("  No insight cards found.");
+                return Ok(());
+            }
+            let shown = cards.iter().take(*limit);
+            println!("  Insight cards ({} shown / {} total):", shown.clone().count(), cards.len());
+            for card in shown {
+                let rating = if card.times_rated > 0 {
+                    format!("{}★", card.quality_rating)
+                } else {
+                    "-".to_string()
+                };
+                let tags_str = if card.tags.is_empty() {
+                    String::new()
+                } else {
+                    format!(" [{}]", card.tags.join(", "))
+                };
+                println!("  [{}] {} {}{}", card.card_id, rating, card.content, tags_str);
+                println!("       Type: {} | Paper: {} | Created: {}", card.insight_type, card.paper_id, card.created_at);
+            }
+        }
+
+        InsightAction::Search { query, r#type } => {
+            let cards = manager.search_cards(Some(query), None, r#type.as_deref(), None);
+            if cards.is_empty() {
+                println!("  No matching insight cards found.");
+                return Ok(());
+            }
+            println!("  Found {} card(s):", cards.len());
+            for card in &cards {
+                let rating = if card.times_rated > 0 {
+                    format!("{}★", card.quality_rating)
+                } else {
+                    "-".to_string()
+                };
+                println!("  [{}] {} | {}", card.card_id, rating, card.content);
+            }
+        }
+
+        InsightAction::TagCloud => {
+            let cloud = manager.get_tag_cloud();
+            if cloud.is_empty() {
+                println!("  No tags found.");
+                return Ok(());
+            }
+            let mut tags: Vec<(&String, &i32)> = cloud.iter().collect();
+            tags.sort_by(|a, b| b.1.cmp(a.1));
+            println!("  Tag Cloud:");
+            for (tag, count) in &tags {
+                let bar = "█".repeat(**count as usize);
+                println!("    {} {} ({})", bar, tag, count);
+            }
+        }
+
+        InsightAction::Rate { card, stars } => {
+            let s: i32 = *stars;
+            let s = s.max(1).min(5);
+            let ok = manager.rate_card(card, s);
+            if ok {
+                println!("  ✓ Rated card [{}] with {}★", card, stars);
+            } else {
+                println!("  ✗ Card [{}] not found.", card);
+            }
+        }
+
+        InsightAction::Like { card } => {
+            let ok = manager.like_card(card);
+            if ok {
+                println!("  ✓ Liked card [{}]", card);
+            } else {
+                println!("  ✗ Card [{}] not found.", card);
+            }
+        }
+
+        InsightAction::Dislike { card } => {
+            let ok = manager.dislike_card(card);
+            if ok {
+                println!("  ✓ Disliked card [{}]", card);
+            } else {
+                println!("  ✗ Card [{}] not found.", card);
+            }
+        }
+
+        InsightAction::Top { min_rating, limit } => {
+            let cards = manager.get_high_quality_cards(*min_rating, 1);
+            if cards.is_empty() {
+                println!("  No high-quality cards found (min rating: {}).", min_rating);
+                return Ok(());
+            }
+            let shown = cards.iter().take(*limit);
+            println!("  Top insight cards (min {}★, showing {}):", min_rating, shown.clone().count());
+            for card in shown {
+                println!("  [{:.4}] [{}] {}", card.usefulness_score, card.card_id, card.content);
+            }
+        }
+
+        InsightAction::Bottom { max_rating, limit } => {
+            let cards = manager.get_low_quality_cards(*max_rating, 0);
+            if cards.is_empty() {
+                println!("  No low-quality cards found (max rating: {}).", max_rating);
+                return Ok(());
+            }
+            let shown = cards.iter().take(*limit);
+            println!("  Bottom insight cards (max {}★, showing {}):", max_rating, shown.clone().count());
+            for card in shown {
+                println!("  [{:.4}] [{}] {}", card.usefulness_score, card.card_id, card.content);
+            }
+        }
     }
 
     Ok(())
@@ -7998,34 +8233,6 @@ fn handle_journal(action: &str, content: Option<&str>, tags: Option<&str>, mood:
         }
         _ => {
             eprintln!("Unknown journal action: {}. Use: add, list, stats, delete", action);
-        }
-    }
-    Ok(())
-}
-
-/// Handle `insight` — manage insight cards
-fn handle_insight(action: &str, query: Option<&str>, _paper: Option<&str>) -> Result<()> {
-    let manager = rairos_insight_cards::InsightManager::new(None);
-    match action {
-        "list" => {
-            let cards = manager.search_cards(None, None, None, None);
-            if cards.is_empty() {
-                println!("No insight cards found.");
-            } else {
-                println!("{}", manager.render_text(&cards));
-            }
-        }
-        "search" => {
-            let q = query;
-            let cards = manager.search_cards(q, None, None, None);
-            if cards.is_empty() {
-                println!("No insight cards matching '{:?}'.", q);
-            } else {
-                println!("{}", manager.render_text(&cards));
-            }
-        }
-        _ => {
-            eprintln!("Unknown action: {}. Use: list, search", action);
         }
     }
     Ok(())
