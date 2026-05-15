@@ -2778,6 +2778,7 @@ dependencies = [
  "rairos-lean-verifier",
  "rairos-litreview-analyzer",
  "rairos-llm",
+ "rairos-mcp-jin10",
  "rairos-memory",
  "rairos-narratives",
  "rairos-parser",
