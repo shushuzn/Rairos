@@ -29,7 +29,6 @@ _LAZY_EXPORTS = {
     "_run_pipeline": ("cli.cmd.pipeline", "_run_pipeline"),
     "_build_pipeline_parser": ("cli.cmd.pipeline", "_build_pipeline_parser"),
     "_run_demo": ("cli.cmd.demo", "run_demo"),
-    "_run_rag": ("cli.cmd.rag", "rag"),
     "_run_validate": ("cli.cmd.validate", "_run_validate"),
     "_run_narrative": ("cli.cmd.narrative", "_run_narrative"),
     "_build_narrative_parser": ("cli.cmd.narrative", "_build_narrative_parser"),
