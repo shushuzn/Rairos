@@ -630,6 +630,37 @@ enum Commands {
         #[arg(short, long, default_value = "table")]
         format: String,
     },
+
+    /// Manage job queue
+    Queue {
+        /// Add a paper to the queue
+        #[arg(long)]
+        add: Option<String>,
+
+        /// List queued jobs
+        #[arg(long)]
+        list: bool,
+
+        /// Show papers awaiting processing
+        #[arg(long)]
+        pending: bool,
+
+        /// Pop next job from queue
+        #[arg(long)]
+        dequeue: bool,
+
+        /// Cancel a queued job by id
+        #[arg(long)]
+        cancel: Option<i64>,
+
+        /// Clear all queued jobs
+        #[arg(long)]
+        clear: bool,
+
+        /// Output format
+        #[arg(short, long, default_value = "text")]
+        format: String,
+    },
 }
 
 #[derive(Subcommand)]
@@ -4515,7 +4546,73 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_cite_stats(&db, paper.as_deref(), *top, &format)?;
         }
+        Commands::Queue { add, list, pending, dequeue, cancel, clear, format } => {
+            let db = open_db(&cli.db)?;
+            handle_queue(&db, add.as_deref(), *list, *pending, *dequeue, *cancel, *clear, &format)?;
+        }
     }
 
+    Ok(())
+}
+
+fn handle_queue(
+    db: &Database,
+    add: Option<&str>,
+    list: bool,
+    pending: bool,
+    dequeue: bool,
+    cancel: Option<i64>,
+    clear: bool,
+    format: &str,
+) -> Result<()> {
+    if list {
+        let jobs = db.get_queue_jobs(None, 100)?;
+        if format == "json" {
+            println!("{}", serde_json::to_string_pretty(&jobs)?);
+        } else {
+            for j in &jobs {
+                println!(
+                    "[{}] {} ({}) priority={} status={}",
+                    j.id, j.paper_id, j.job_type, j.priority, j.status
+                );
+            }
+        }
+        if jobs.is_empty() {
+            println!("Queue empty");
+        }
+    } else if pending {
+        let all_papers = db.list_papers(Some(ParseStatus::Pending), 200, 0)?;
+        if all_papers.is_empty() {
+            println!("No pending papers");
+        } else {
+            println!("{} paper(s) awaiting processing:", all_papers.len());
+            for p in &all_papers {
+                println!(
+                    "  {} [{}]",
+                    p.id,
+                    p.arxiv_id.as_deref().unwrap_or("no-arxiv")
+                );
+            }
+        }
+    } else if dequeue {
+        match db.dequeue_job()? {
+            Some(job) => println!("Dequeued: {} (id={})", job.paper_id, job.id),
+            None => println!("Queue empty"),
+        }
+    } else if let Some(paper_id) = add {
+        db.enqueue_job(paper_id, "parse", 5)?;
+        println!("Added {} to queue", paper_id);
+    } else if let Some(job_id) = cancel {
+        if db.cancel_job(job_id)? {
+            println!("Cancelled job {}", job_id);
+        } else {
+            println!("No such job {}", job_id);
+        }
+    } else if clear {
+        let n = db.clear_pending_papers()?;
+        println!("Cleared {} pending paper(s)", n);
+    } else {
+        println!("Use --list, --dequeue, --add UID, --cancel JOB_ID, or --clear");
+    }
     Ok(())
 }

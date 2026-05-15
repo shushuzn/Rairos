@@ -111,7 +111,7 @@ git push
 
 ## Stats
 
-- Rust: **153 crates**, ~55k+ lines, 54 CLI commands, 207+ test files
+- Rust: **153 crates**, ~55k+ lines, 55 CLI commands, 207+ test files
 - Python: ~85k lines, 50 CLI command modules, 4700+ tests
 
 ## Web UI

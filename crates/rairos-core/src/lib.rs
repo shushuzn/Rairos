@@ -224,6 +224,19 @@ pub struct Citations {
     pub references: Vec<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JobQueueEntry {
+    pub id: i64,
+    pub paper_id: String,
+    pub job_type: String,
+    pub status: String,
+    pub priority: i64,
+    pub created_at: String,
+    pub started_at: Option<String>,
+    pub completed_at: Option<String>,
+    pub error: Option<String>,
+}
+
 // ============================================================================
 // Database
 // ============================================================================
@@ -349,6 +362,18 @@ impl Database {
                 uid TEXT PRIMARY KEY,
                 data TEXT NOT NULL,
                 cached_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
+            CREATE TABLE IF NOT EXISTS job_queue (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paper_id TEXT NOT NULL,
+                job_type TEXT NOT NULL DEFAULT 'parse',
+                status TEXT NOT NULL DEFAULT 'queued',
+                priority INTEGER NOT NULL DEFAULT 5,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                started_at TEXT,
+                completed_at TEXT,
+                error TEXT
             );
 
             CREATE INDEX IF NOT EXISTS idx_papers_arxiv ON papers(arxiv_id);
@@ -912,6 +937,110 @@ impl Database {
         )?;
         Ok(())
     }
+
+    // ─── Queue Operations ─────────────────────────────────────────────────
+
+    pub fn enqueue_job(&self, paper_id: &str, job_type: &str, priority: i64) -> Result<i64> {
+        let conn = self.conn.lock();
+        let now = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string();
+        conn.execute(
+            "INSERT INTO job_queue (paper_id, job_type, status, priority, created_at) VALUES (?1, ?2, 'queued', ?3, ?4)",
+            params![paper_id, job_type, priority, now],
+        )?;
+        Ok(conn.last_insert_rowid())
+    }
+
+    pub fn dequeue_job(&self) -> Result<Option<JobQueueEntry>> {
+        let conn = self.conn.lock();
+        let now = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string();
+        let row = conn
+            .query_row(
+                "SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
+                 FROM job_queue WHERE status = 'queued' ORDER BY priority DESC, created_at ASC LIMIT 1",
+                [],
+                |row| {
+                    Ok(JobQueueEntry {
+                        id: row.get(0)?,
+                        paper_id: row.get(1)?,
+                        job_type: row.get(2)?,
+                        status: "running".to_string(),
+                        priority: row.get(4)?,
+                        created_at: row.get(5)?,
+                        started_at: Some(now.clone()),
+                        completed_at: row.get(7)?,
+                        error: row.get(8)?,
+                    })
+                },
+            )
+            .ok();
+
+        if let Some(ref entry) = row {
+            conn.execute(
+                "UPDATE job_queue SET status = 'running', started_at = ?1 WHERE id = ?2",
+                params![now, entry.id],
+            )?;
+        }
+        Ok(row)
+    }
+
+    pub fn get_queue_jobs(&self, status: Option<&str>, limit: i64) -> Result<Vec<JobQueueEntry>> {
+        let conn = self.conn.lock();
+        let (sql, has_status_filter) = if status.is_some() {
+            ("SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
+                 FROM job_queue WHERE status = ?1 ORDER BY priority DESC, created_at ASC LIMIT ?2", true)
+        } else {
+            ("SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
+                 FROM job_queue ORDER BY priority DESC, created_at ASC LIMIT ?1", false)
+        };
+
+        let mut stmt = conn.prepare(sql)?;
+
+        let rows = if has_status_filter {
+            stmt.query_map(params![status.unwrap(), limit], map_job_row)?
+        } else {
+            stmt.query_map(params![limit], map_job_row)?
+        };
+
+        let mut results = Vec::new();
+        for row in rows {
+            results.push(row?);
+        }
+        Ok(results)
+    }
+
+    pub fn cancel_job(&self, job_id: i64) -> Result<bool> {
+        let conn = self.conn.lock();
+        let rows = conn.execute(
+            "UPDATE job_queue SET status = 'cancelled' WHERE id = ?1 AND status = 'queued'",
+            params![job_id],
+        )?;
+        Ok(rows > 0)
+    }
+
+    pub fn clear_pending_papers(&self) -> Result<i64> {
+        let conn = self.conn.lock();
+        let count = conn.query_row(
+            "SELECT COUNT(*) FROM papers WHERE parse_status = 'pending'",
+            [],
+            |row| row.get::<_, i64>(0),
+        )?;
+        conn.execute("DELETE FROM papers WHERE parse_status = 'pending'", [])?;
+        Ok(count)
+    }
+}
+
+fn map_job_row(row: &rusqlite::Row) -> rusqlite::Result<JobQueueEntry> {
+    Ok(JobQueueEntry {
+        id: row.get(0)?,
+        paper_id: row.get(1)?,
+        job_type: row.get(2)?,
+        status: row.get(3)?,
+        priority: row.get(4)?,
+        created_at: row.get(5)?,
+        started_at: row.get(6)?,
+        completed_at: row.get(7)?,
+        error: row.get(8)?,
+    })
 }
 
 fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
