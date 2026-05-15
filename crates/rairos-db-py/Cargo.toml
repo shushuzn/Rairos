@@ -8,7 +8,8 @@ name = "rairos_db_py"
 crate-type = ["cdylib"]
 
 [dependencies]
-rairos-db = { path = "../rairos-db" }
+rairos-core = { path = "../rairos-core" }
 rusqlite = { version = "0.39", features = ["bundled"] }
 pyo3 = { version = "0.24.1", features = ["extension-module"] }
 serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }

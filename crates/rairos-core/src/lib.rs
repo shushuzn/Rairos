@@ -272,6 +272,25 @@ impl PaperCodeTrace {
 }
 
 // ============================================================================
+// Search Result (from rairos-db, used by rairos-db-py bindings)
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SearchResult {
+    pub paper_id: String,
+    pub title: String,
+    pub authors: Vec<String>,
+    pub published: String,
+    pub primary_category: String,
+    pub score: f64,
+    pub snippet: String,
+    pub parse_status: String,
+    pub source: String,
+    pub abs_url: String,
+    pub pdf_url: String,
+}
+
+// ============================================================================
 // Database
 // ============================================================================
 
@@ -1347,6 +1366,430 @@ impl Database {
         }
         Ok(traces)
     }
+
+    // ============================================================================
+    // Methods from rairos-db — adapted to rairos-core's connection pattern
+    // ============================================================================
+
+    /// Open database from RAIROS_DB env var, falling back to ~/.rairos/rairos.db
+    pub fn open_default() -> Result<Self> {
+        let db_path = std::env::var("RAIROS_DB")
+            .or_else(|_| std::env::var("AIROS_DB"))
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|_| {
+                let home = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
+                std::path::PathBuf::from(home)
+                    .join(".rairos")
+                    .join("rairos.db")
+            });
+        Self::open(db_path)
+    }
+
+    /// Open an in-memory database (useful for testing).
+    pub fn open_in_memory() -> Result<Self> {
+        Self::open(":memory:")
+    }
+
+    /// Execute a raw SQL query with values and return results as maps.
+    pub fn query_raw(
+        &self,
+        sql: &str,
+        params: Vec<rusqlite::types::Value>,
+    ) -> Result<Vec<HashMap<String, rusqlite::types::Value>>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(sql)?;
+        let column_count = stmt.column_count();
+        let column_names: Vec<String> = (0..column_count)
+            .map(|i| stmt.column_name(i).unwrap_or("?").to_string())
+            .collect();
+
+        let mut results = Vec::new();
+        let mut rows = stmt.query(rusqlite::params_from_iter(&params))?;
+        while let Some(row) = rows.next()? {
+            let mut map = HashMap::new();
+            for (i, name) in column_names.iter().enumerate() {
+                let value: rusqlite::types::Value = row.get(i)?;
+                map.insert(name.clone(), value);
+            }
+            results.push(map);
+        }
+        Ok(results)
+    }
+
+    /// Execute a transaction with explicit BEGIN/COMMIT/ROLLBACK semantics.
+    pub fn transaction<T, F>(&self, f: F) -> Result<T>
+    where
+        F: FnOnce(&Connection) -> Result<T>,
+    {
+        let conn = self.conn.lock();
+        let tx = conn.unchecked_transaction()?;
+        let result = f(&conn);
+        match result {
+            Ok(v) => {
+                tx.commit()?;
+                Ok(v)
+            }
+            Err(e) => {
+                tx.rollback()?;
+                Err(e)
+            }
+        }
+    }
+
+    /// Delete all data from all tables (for test isolation).
+    /// Unlike rairos-db, we do NOT delete the physical file since rairos-core
+    /// uses a persistent connection.
+    pub fn clear_all(&self) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute_batch(
+            "DELETE FROM paper_tags;
+             DELETE FROM citations;
+             DELETE FROM job_queue;
+             DELETE FROM dedup_log;
+             DELETE FROM paper_code_trace;
+             DELETE FROM evo_suggestions;
+             DELETE FROM research_gaps;
+             DELETE FROM subscriptions;
+             DELETE FROM tags;
+             DELETE FROM paper_cache;
+             DELETE FROM papers_fts;
+             DELETE FROM papers;",
+        )?;
+        Ok(())
+    }
+
+    /// Insert or update a paper. Returns true if the paper was newly inserted.
+    pub fn upsert_paper(&self, paper: &Paper) -> Result<bool> {
+        let conn = self.conn.lock();
+        let exists: bool = conn
+            .query_row("SELECT 1 FROM papers WHERE id = ?1", params![paper.id], |_| {
+                Ok(())
+            })
+            .is_ok();
+
+        if exists {
+            conn.execute(
+                "UPDATE papers SET
+                 arxiv_id=?1, title=?2, authors=?3, published=?4,
+                 abstract_text=?5, categories=?6, parse_status=?7,
+                 cited_by=?8, references_cnt=?9, doi=?10, pdf_url=?11,
+                 updated_at=datetime('now')
+                 WHERE id=?12",
+                params![
+                    paper.arxiv_id,
+                    &paper.title,
+                    serde_json::to_string(&paper.authors)?,
+                    paper.published.to_rfc3339(),
+                    &paper.abstract_text,
+                    serde_json::to_string(&paper.categories)?,
+                    paper.parse_status.to_string(),
+                    paper.metadata.cited_by as i64,
+                    paper.metadata.references as i64,
+                    paper.metadata.doi,
+                    paper.metadata.pdf_url,
+                    paper.id,
+                ],
+            )?;
+            Ok(false)
+        } else {
+            self.insert_paper_conn(&conn, paper)?;
+            Ok(true)
+        }
+    }
+
+    /// Helper: insert a paper using an already-locked connection.
+    fn insert_paper_conn(&self, conn: &Connection, paper: &Paper) -> Result<()> {
+        conn.execute(
+            r#"INSERT INTO papers
+               (id, arxiv_id, title, authors, published, abstract_text, categories,
+                parse_status, cited_by, references_cnt, doi, pdf_url)
+               VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)"#,
+            params![
+                paper.id,
+                paper.arxiv_id,
+                &paper.title,
+                serde_json::to_string(&paper.authors)?,
+                paper.published.to_rfc3339(),
+                &paper.abstract_text,
+                serde_json::to_string(&paper.categories)?,
+                paper.parse_status.to_string(),
+                paper.metadata.cited_by as i64,
+                paper.metadata.references as i64,
+                paper.metadata.doi,
+                paper.metadata.pdf_url,
+            ],
+        )?;
+        Ok(())
+    }
+
+    /// Bulk upsert papers. Returns (inserted, updated) counts.
+    pub fn upsert_papers_bulk(&self, papers: &[Paper]) -> Result<(i64, i64)> {
+        if papers.is_empty() {
+            return Ok((0, 0));
+        }
+        let conn = self.conn.lock();
+        let paper_ids: Vec<&str> = papers.iter().map(|p| p.id.as_str()).collect();
+        let placeholders: Vec<String> = paper_ids.iter().map(|_| "?".to_string()).collect();
+        let sql = format!(
+            "SELECT id FROM papers WHERE id IN ({})",
+            placeholders.join(",")
+        );
+        let mut stmt = conn.prepare(&sql)?;
+        let existing: std::collections::HashSet<String> = stmt
+            .query_map(rusqlite::params_from_iter(&paper_ids), |row| {
+                row.get::<_, String>(0)
+            })?
+            .filter_map(|r| r.ok())
+            .collect();
+
+        let mut inserted: i64 = 0;
+        let mut updated: i64 = 0;
+
+        for paper in papers {
+            if existing.contains(&paper.id) {
+                conn.execute(
+                    "UPDATE papers SET
+                     arxiv_id=?1, title=?2, authors=?3, published=?4,
+                     abstract_text=?5, categories=?6, parse_status=?7,
+                     cited_by=?8, references_cnt=?9, doi=?10, pdf_url=?11,
+                     updated_at=datetime('now')
+                     WHERE id=?12",
+                    params![
+                        paper.arxiv_id,
+                        &paper.title,
+                        serde_json::to_string(&paper.authors)?,
+                        paper.published.to_rfc3339(),
+                        &paper.abstract_text,
+                        serde_json::to_string(&paper.categories)?,
+                        paper.parse_status.to_string(),
+                        paper.metadata.cited_by as i64,
+                        paper.metadata.references as i64,
+                        paper.metadata.doi,
+                        paper.metadata.pdf_url,
+                        paper.id,
+                    ],
+                )?;
+                updated += 1;
+            } else {
+                self.insert_paper_conn(&conn, paper)?;
+                inserted += 1;
+            }
+        }
+        Ok((inserted, updated))
+    }
+
+    /// Export papers as a portable format: Vec<HashMap<field_name, json_value>>.
+    pub fn export_papers(
+        &self,
+        limit: usize,
+        extra_fields: bool,
+    ) -> Result<Vec<HashMap<String, serde_json::Value>>> {
+        let conn = self.conn.lock();
+        let fields: &[&str] = if extra_fields {
+            &[
+                "id", "arxiv_id", "title", "authors", "published", "abstract_text",
+                "categories", "parse_status", "doi", "pdf_url",
+            ]
+        } else {
+            &["id", "title", "authors", "published", "abstract_text", "parse_status"]
+        };
+
+        let (sql, params_slice) = if limit > 0 {
+            (
+                format!(
+                    "SELECT {} FROM papers ORDER BY published DESC LIMIT ?1",
+                    fields.join(",")
+                ),
+                vec![limit as i64],
+            )
+        } else {
+            (
+                format!("SELECT {} FROM papers ORDER BY published DESC", fields.join(",")),
+                Vec::new(),
+            )
+        };
+
+        let mut stmt = conn.prepare(&sql)?;
+        let param_refs: Vec<&dyn rusqlite::ToSql> =
+            params_slice.iter().map(|p| p as &dyn rusqlite::ToSql).collect();
+        let rows = stmt.query_map(param_refs.as_slice(), |row| {
+            let mut m = HashMap::new();
+            for (i, f) in fields.iter().enumerate() {
+                let val: rusqlite::types::Value = row.get(i)?;
+                let json_val = match val {
+                    rusqlite::types::Value::Null => serde_json::Value::Null,
+                    rusqlite::types::Value::Integer(i) => serde_json::json!(i),
+                    rusqlite::types::Value::Real(r) => serde_json::json!(r),
+                    rusqlite::types::Value::Text(s) => serde_json::json!(s),
+                    rusqlite::types::Value::Blob(b) => serde_json::json!(base64_encode(&b)),
+                };
+                m.insert(f.to_string(), json_val);
+            }
+            Ok(m)
+        })?;
+        let mut result = Vec::new();
+        for row in rows {
+            result.push(row?);
+        }
+        Ok(result)
+    }
+
+    /// Rebuild the FTS5 index from all papers. Returns count of indexed rows.
+    pub fn rebuild_fts_index(&self) -> Result<i64> {
+        let conn = self.conn.lock();
+        conn.execute("DELETE FROM papers_fts", [])?;
+        let count = conn.execute(
+            "INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
+             SELECT rowid, title, abstract_text, authors, categories FROM papers",
+            [],
+        )?;
+        Ok(count as i64)
+    }
+
+    /// Search papers with limit/offset/category/parse_status filters via LIKE.
+    /// Returns (results, total_count).
+    pub fn search_papers_ext(
+        &self,
+        query: &str,
+        limit: i64,
+        offset: i64,
+        category: Option<&str>,
+        parse_status: Option<&str>,
+    ) -> Result<(Vec<SearchResult>, i64)> {
+        let conn = self.conn.lock();
+        let pattern = format!("%{}%", query);
+
+        let mut where_clauses: Vec<String> = Vec::new();
+        let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+
+        // FTS match via LIKE (since FTS5 requires specific query syntax, we use LIKE for compatibility)
+        where_clauses.push("(p.title LIKE ? OR p.abstract_text LIKE ?)".to_string());
+        params_vec.push(Box::new(pattern.clone()));
+        params_vec.push(Box::new(pattern));
+
+        if let Some(cat) = category {
+            where_clauses.push("p.categories LIKE ?".to_string());
+            params_vec.push(Box::new(format!("%{}%", cat)));
+        }
+        if let Some(ps) = parse_status {
+            where_clauses.push("p.parse_status = ?".to_string());
+            params_vec.push(Box::new(ps.to_string()));
+        }
+
+        let where_clause = where_clauses.join(" AND ");
+
+        // Count
+        let count_sql = format!("SELECT COUNT(*) FROM papers p WHERE {}", where_clause);
+        let params_ref: Vec<&dyn rusqlite::ToSql> =
+            params_vec.iter().map(|p| p.as_ref()).collect();
+        let total: i64 = conn
+            .query_row(&count_sql, params_ref.as_slice(), |row| row.get(0))
+            .unwrap_or(0);
+
+        // Search
+        let search_sql = format!(
+            "SELECT p.id, p.title, p.authors, p.published, p.abstract_text,
+                    p.categories, p.parse_status, p.doi, p.pdf_url
+             FROM papers p
+             WHERE {}
+             ORDER BY p.published DESC
+             LIMIT ? OFFSET ?",
+            where_clause
+        );
+        let mut all_params = params_vec;
+        all_params.push(Box::new(limit));
+        all_params.push(Box::new(offset));
+        let all_params_ref: Vec<&dyn rusqlite::ToSql> =
+            all_params.iter().map(|p| p.as_ref()).collect();
+
+        let mut stmt = conn.prepare(&search_sql)?;
+        let rows = stmt.query_map(all_params_ref.as_slice(), |row| {
+            let authors_str: String = row.get(2)?;
+            let authors: Vec<String> = serde_json::from_str(&authors_str).unwrap_or_default();
+            let categories_str: String = row.get(5)?;
+            let primary_cat = serde_json::from_str::<Vec<String>>(&categories_str)
+                .ok()
+                .and_then(|c| c.into_iter().next())
+                .unwrap_or_default();
+            Ok(SearchResult {
+                paper_id: row.get(0)?,
+                title: row.get(1)?,
+                authors,
+                published: row.get::<_, String>(3)?,
+                primary_category: primary_cat,
+                score: 0.0,
+                snippet: String::new(),
+                parse_status: row.get(6)?,
+                source: String::new(),
+                abs_url: String::new(),
+                pdf_url: row.get::<_, Option<String>>(8)?.unwrap_or_default(),
+            })
+        })?;
+        let mut results = Vec::new();
+        for row in rows {
+            results.push(row?);
+        }
+        Ok((results, total))
+    }
+
+    /// Count papers filtered by parse status.
+    pub fn count_papers_with_status(&self, status: ParseStatus) -> Result<i64> {
+        let conn = self.conn.lock();
+        let count = conn.query_row(
+            "SELECT COUNT(*) FROM papers WHERE parse_status = ?1",
+            params![status.to_string()],
+            |row| row.get(0),
+        )?;
+        Ok(count)
+    }
+
+    /// Get detailed database statistics matching rairos-db's format.
+    pub fn get_detailed_stats(&self) -> Result<DetailedStats> {
+        let conn = self.conn.lock();
+        let total_papers: i64 =
+            conn.query_row("SELECT COUNT(*) FROM papers", [], |row| row.get(0))?;
+
+        let mut by_status = HashMap::new();
+        let mut stmt =
+            conn.prepare("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")?;
+        let rows = stmt.query_map([], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
+        })?;
+        for r in rows {
+            let (st, cnt) = r?;
+            by_status.insert(st, cnt);
+        }
+
+        let queue_queued: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM job_queue WHERE status = 'queued'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap_or(0);
+        let queue_running: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM job_queue WHERE status = 'running'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap_or(0);
+        let cache_entries: i64 = conn
+            .query_row("SELECT COUNT(*) FROM paper_cache", [], |row| row.get(0))
+            .unwrap_or(0);
+        let dedup_records: i64 = conn
+            .query_row("SELECT COUNT(*) FROM dedup_log", [], |row| row.get(0))
+            .unwrap_or(0);
+
+        Ok(DetailedStats {
+            total_papers,
+            by_status,
+            queue_queued,
+            queue_running,
+            cache_entries,
+            dedup_records,
+        })
+    }
 }
 
 fn map_paper_code_trace_row(row: &rusqlite::Row) -> rusqlite::Result<PaperCodeTrace> {
@@ -1397,12 +1840,49 @@ fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
     }
 }
 
+/// Simple base64 encoding (for export_papers blob conversion).
+fn base64_encode(data: &[u8]) -> String {
+    const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut result = String::new();
+    for chunk in data.chunks(3) {
+        let b = match chunk.len() {
+            1 => [chunk[0], 0, 0],
+            2 => [chunk[0], chunk[1], 0],
+            _ => [chunk[0], chunk[1], chunk[2]],
+        };
+        result.push(ALPHABET[(b[0] >> 2) as usize] as char);
+        result.push(ALPHABET[((b[0] & 0x03) << 4 | b[1] >> 4) as usize] as char);
+        if chunk.len() > 1 {
+            result.push(ALPHABET[((b[1] & 0x0f) << 2 | b[2] >> 6) as usize] as char);
+        } else {
+            result.push('=');
+        }
+        if chunk.len() > 2 {
+            result.push(ALPHABET[(b[2] & 0x3f) as usize] as char);
+        } else {
+            result.push('=');
+        }
+    }
+    result
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DbStats {
     pub total: i64,
     pub pending: i64,
     pub done: i64,
     pub gaps: i64,
+}
+
+/// Detailed database statistics matching rairos-db's get_stats format.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DetailedStats {
+    pub total_papers: i64,
+    pub by_status: HashMap<String, i64>,
+    pub queue_queued: i64,
+    pub queue_running: i64,
+    pub cache_entries: i64,
+    pub dedup_records: i64,
 }
 
 // ============================================================================

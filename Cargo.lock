@@ -3084,8 +3084,9 @@ dependencies = [
 name = "rairos-db-py"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "pyo3",
- "rairos-db",
+ "rairos-core",
  "rusqlite",
  "serde_json",
 ]
