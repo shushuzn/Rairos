@@ -148,10 +148,19 @@ class AutonomousOrchestrator:
         if self._monitor is not None:
             return
 
-        from llm.subscription_monitor import SubscriptionMonitor
+        try:
+            from llm.subscription_monitor import SubscriptionMonitor
+        except ImportError:
+            SubscriptionMonitor = None  # type: ignore
         from llm.subscription_scorer import SubscriptionScorer
-        from llm.insight.tracker import EvolutionTracker
-        from research_loop.agent_shim import AgentShim as DeepResearchAgent
+        try:
+            from llm.insight.tracker import EvolutionTracker
+        except ImportError:
+            EvolutionTracker = None  # type: ignore
+        try:
+            from research_loop.agent_shim import AgentShim as DeepResearchAgent
+        except ImportError:
+            DeepResearchAgent = None  # type: ignore
         from llm.research.gap_analyzer import GapAnalyzerV2
 
         from db.database import Database

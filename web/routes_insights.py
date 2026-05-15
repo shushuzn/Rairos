@@ -240,7 +240,7 @@ async def generate_experiment(request: Request):
             pass
 
     try:
-        from llm.paper_gap_extractor import gaps_to_research_questions
+        from llm.research.paper_gap_extractor import gaps_to_research_questions
 
         frontier_gaps = [
             {

@@ -16,17 +16,20 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from research_loop.paper2code_integration import PaperPipeline
-from research_loop.evoskill_integration import EvoSkillPipeline
-
 
 class RagPipeline:
     """Paper → Code → Tests → Benchmark → Skills 自动闭环"""
 
     def __init__(self, work_dir: str = ".rag_work"):
         self.work_dir = Path(work_dir)
-        self.paper_pipeline = PaperPipeline(work_dir=str(self.work_dir / ".paper2code"))
-        self.evoskill_pipeline = EvoSkillPipeline(work_dir=str(self.work_dir / ".evoskill"))
+        try:
+            from research_loop.paper2code_integration import PaperPipeline
+            from research_loop.evoskill_integration import EvoSkillPipeline
+            self.paper_pipeline = PaperPipeline(work_dir=str(self.work_dir / ".paper2code"))
+            self.evoskill_pipeline = EvoSkillPipeline(work_dir=str(self.work_dir / ".evoskill"))
+        except ImportError:
+            self.paper_pipeline = None
+            self.evoskill_pipeline = None
 
     def run_full_pipeline(
         self,

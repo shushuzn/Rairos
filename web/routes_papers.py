@@ -163,7 +163,7 @@ async def extract_paper_gap(request: Request, paper_id: str):
     if not paper:
         return {"error": f"Paper '{paper_id}' not found."}
 
-    from llm.paper_gap_extractor import extract_gap_from_paper
+    from llm.research.paper_gap_extractor import extract_gap_from_paper
 
     result = extract_gap_from_paper(
         paper_id=paper_id,
@@ -183,7 +183,7 @@ async def save_paper_gap(request: Request, paper_id: str):
     keywords = body.get("keywords", [])
     summary = body.get("summary", "")
 
-    from llm.paper_gap_extractor import save_gap_to_gene_pool
+    from llm.research.paper_gap_extractor import save_gap_to_gene_pool
 
     db = get_db()
     paper = db.get_paper(paper_id)
@@ -276,7 +276,7 @@ async def papers_gap_analysis(request: Request, ids: str = ""):
         for pid, p in paper_map.items()
     ]
 
-    from llm.paper_gap_extractor import analyze_multi_paper_gaps
+    from llm.research.paper_gap_extractor import analyze_multi_paper_gaps
 
     result = analyze_multi_paper_gaps(papers)
     html = _render_gap_analysis_html(result, papers)
@@ -324,7 +324,7 @@ async def gap_analysis_questions(request: Request, ids: str = ""):
         for pid, p in paper_map.items()
     ]
 
-    from llm.paper_gap_extractor import analyze_multi_paper_gaps, gaps_to_research_questions
+    from llm.research.paper_gap_extractor import analyze_multi_paper_gaps, gaps_to_research_questions
 
     gap_result = analyze_multi_paper_gaps(papers)
     frontier = gap_result.get("frontier_gaps", [])

@@ -14,7 +14,6 @@ from pathlib import Path
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from research_loop.paper2code_integration import PaperPipeline
 from cli._shared import print_success, print_error, print_info
 
 
@@ -24,54 +23,29 @@ def _build_paper2code_parser(subparsers):
     p.add_argument("arxiv_id", help="arXiv ID or URL")
     p.add_argument("--mode", "-m", default="minimal", choices=["minimal", "full", "educational"])
     p.add_argument("--framework", "-f", default="pytorch", choices=["pytorch", "jax", "numpy"])
-    p.add_argument("--install-deps", action="store_true")
-    p.set_defaults(
-        func=lambda a: paper2code.callback(
-            arxiv_id=a.arxiv_id, mode=a.mode, framework=a.framework, install_deps=a.install_deps
-        )
-    )
+    p.add_argument("--description", "-d", default=None, help="Task description")
+    p.add_argument("--output", "-o", default=None, help="Output directory")
+    p.set_defaults(func=lambda a: paper2code(a))
+    return p
 
 
-@click.command("paper2code")
-@click.argument("arxiv_id", type=str)
-@click.option(
-    "--mode",
-    "-m",
-    default="minimal",
-    type=click.Choice(["minimal", "full", "educational"]),
-    help="Implementation mode",
-)
-@click.option(
-    "--framework",
-    "-f",
-    default="pytorch",
-    type=click.Choice(["pytorch", "jax", "numpy"]),
-    help="Deep learning framework",
-)
-@click.option("--install-deps", is_flag=True, help="Install paper2code dependencies")
-def paper2code(arxiv_id: str, mode: str, framework: str, install_deps: bool):
-    """Generate citation-anchored implementation from arXiv paper."""
-    # Clean arxiv ID from URL if needed
-    match = re.search(r"(\d+\.\d+)", arxiv_id)
-    if match:
-        arxiv_id = match.group(1)
-    print_info(f"Running paper2code pipeline for arXiv:{arxiv_id}")
+def paper2code(args) -> int:
+    """Run paper2code with lazy import."""
     try:
-        pipeline = PaperPipeline()
-        if install_deps:
-            print_info("Installing dependencies...")
-            pipeline.install_deps()  # type: ignore[attr-defined]
-        print_info(f"Mode: {mode}, Framework: {framework}")
-        result = pipeline.run(arxiv_id, mode=mode, framework=framework)
-        print_success(f"â Implementation generated: {result['paper_dir']}")
-        print_info(f"  README: {result['readme']}")
-    except FileNotFoundError as e:
-        print_error(f"Error: {e}")
-        print_info("Hint: Clone paper2code skill:")
-        print_info(
-            "  git clone https://github.com/PrathamLearnsToCode/paper2code.git ~/.claude/skills/"
-        )
-        sys.exit(1)
-    except Exception as e:
-        print_error(f"Pipeline failed: {e}")
-        sys.exit(1)
+        from research_loop.paper2code_integration import PaperPipeline
+    except ImportError:
+        print_error("paper2code module not available (research_loop.paper2code_integration is missing)")
+        print_info("This feature requires the paper2code integration module.")
+        return 1
+
+    pipeline = PaperPipeline()
+    result = pipeline.run(
+        arxiv_id=args.arxiv_id,
+        mode=args.mode,
+        framework=args.framework,
+        description=args.description,
+        output_dir=args.output,
+    )
+    print_success(f"Code generated: {result['implementation_dir']}")
+    print_info(f"README: {result['readme']}")
+    return 0

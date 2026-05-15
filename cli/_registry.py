@@ -221,9 +221,4 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         return slides_cmd.main(args.argv if hasattr(args, "argv") else [])  # type: ignore[no-any-return]
 
-    elif args.subcmd == "repl":
-        import cli as _cli
-
-        return cast(int, _cli._run_repl(args))
-
     return 0
