@@ -1,0 +1,18 @@
+//! CLI command handler implementations organized by domain.
+//!
+//! Each submodule contains handlers and helpers for a specific domain.
+
+pub mod cite;
+pub use cite::*;
+pub mod evo;
+pub use evo::*;
+pub mod kg;
+pub use kg::*;
+pub mod llm;
+pub use llm::*;
+pub mod paper;
+pub use paper::*;
+pub mod research;
+pub use research::*;
+pub mod util;
+pub use util::*;
