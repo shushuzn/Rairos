@@ -16,13 +16,6 @@ from llm.research.paper_gap_extractor import (
     semantic_search_papers,
     gaps_to_research_questions,
 )
-from llm.research.research_path import (
-    ResearchPathPlanner,
-    ReadingPath,
-    ReadingStep,
-    PaperNode,
-    ReadingLevel,
-)
 
 __all__ = [
     # gap_analyzer
