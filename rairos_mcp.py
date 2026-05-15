@@ -87,24 +87,7 @@ def handle_request(method: str, params: Dict) -> dict:
         return error_response("UNKNOWN_METHOD", f"Unknown method: {method}")
 
 
-def main() -> None:
-    """Entry point for MCP stdio transport."""
-    import sys
-    for line in sys.stdin:
-        try:
-            msg = json.loads(line.strip())
-            req_id = msg.get("id")
-            method = msg.get("method", "")
-            params = msg.get("params", {})
-            resp = handle_request(method, params)
-            resp["id"] = req_id
-            sys.stdout.write(json.dumps(resp) + "\n")
-            sys.stdout.flush()
-        except (json.JSONDecodeError, KeyError) as e:
-            err = error_response("PARSE_ERROR", str(e))
-            sys.stdout.write(json.dumps(err) + "\n")
-            sys.stdout.flush()
-
-
 if __name__ == "__main__":
-    main()
+    # Production entry point is now the Rust binary (target/debug/rairos-mcp)
+    # This Python module is kept for test backward compatibility only.
+    pass

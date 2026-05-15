@@ -1,52 +1,80 @@
-//! MCP server binary — runs the JSON-RPC 2.0 MCP server over stdio
+//! Rairos MCP — stdio transport for MCP protocol (JSON-RPC 2.0)
+//!
+//! Reads JSON-RPC requests from stdin, dispatches to McpServer, writes responses to stdout.
+//! Replaces: rairos_mcp.py
 
-use rairos_mcp::{llm_handlers, handlers, McpServer};
-use std::io::{self, Write};
+use rairos_mcp::{handlers, McpServer};
+use tokio::io::{AsyncBufReadExt, BufReader};
 
-// Read line-delimited JSON-RPC messages from stdin, write responses to stdout
-fn main() {
-    // Initialize tracing
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive(tracing::Level::INFO.into()),
-        )
-        .init();
-
-    let rt = tokio::runtime::Runtime::new().expect("failed to create runtime");
-    let server = rt.block_on(async {
-        let s = McpServer::new();
-        handlers::register_all(&s).await;
-        llm_handlers::register_llm_handlers(&s).await;
-        s
+/// Handle the MCP initialize method — return server capabilities.
+fn handle_initialize(id: serde_json::Value) -> Vec<u8> {
+    let resp = serde_json::json!({
+        "jsonrpc": "2.0",
+        "result": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": { "tools": {} },
+            "serverInfo": {
+                "name": "rairos",
+                "version": env!("CARGO_PKG_VERSION"),
+            },
+        },
+        "id": id,
     });
+    serde_json::to_vec(&resp).unwrap_or_default()
+}
 
-    tracing::info!("rairos-mcp server started, listening on stdin/stdout");
+/// Handle a single JSON-RPC message (one line from stdin).
+async fn handle_message(raw: &[u8], server: &McpServer) -> Vec<u8> {
+    let msg: serde_json::Value = match serde_json::from_slice(raw) {
+        Ok(v) => v,
+        Err(e) => {
+            return serde_json::to_vec(&serde_json::json!({
+                "jsonrpc": "2.0",
+                "error": { "code": -32700, "message": format!("Parse error: {}", e) },
+                "id": serde_json::Value::Null,
+            }))
+            .unwrap_or_default();
+        }
+    };
 
-    loop {
-        // Read one line (JSON-RPC message) at a time from stdin
-        let mut line = String::new();
-        match io::stdin().read_line(&mut line) {
-            Ok(0) => {
-                // EOF — graceful shutdown
-                tracing::info!("stdin closed, shutting down");
-                break;
-            }
-            Ok(_) => {
-                let input = line.trim_end_matches('\n').trim_end_matches('\r');
-                if input.is_empty() {
-                    continue;
-                }
-                let output = rt.block_on(server.handle_request(input.as_bytes()));
-                // Write response followed by newline
-                let mut out = io::stdout();
-                out.write_all(&output).unwrap();
-                out.write_all(b"\n").unwrap();
-                out.flush().unwrap();
-            }
-            Err(e) => {
-                eprintln!("read error: {}", e);
-                break;
+    let is_notification = msg.get("id").is_none() || msg["id"].is_null();
+    let method = msg["method"].as_str().unwrap_or("").to_string();
+    let id = msg.get("id").cloned().unwrap_or(serde_json::Value::Null);
+
+    let response = match method.as_str() {
+        "initialize" => handle_initialize(id),
+        "notifications/initialized" | "initialized" => return Vec::new(),
+        _ => server.handle_request(raw).await,
+    };
+
+    if is_notification {
+        return Vec::new();
+    }
+
+    response
+}
+
+#[tokio::main]
+async fn main() {
+    // Build and register all tools
+    let server = McpServer::new();
+    handlers::register_all(&server).await;
+
+    // Stdio transport loop
+    let stdin = tokio::io::stdin();
+    let reader = BufReader::new(stdin);
+    let mut lines = reader.lines();
+
+    while let Ok(Some(line)) = lines.next_line().await {
+        if line.trim().is_empty() {
+            continue;
+        }
+
+        let response = handle_message(line.as_bytes(), &server).await;
+
+        if !response.is_empty() {
+            if let Ok(resp_str) = String::from_utf8(response) {
+                println!("{}", resp_str);
             }
         }
     }
