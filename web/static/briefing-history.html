@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Briefing History — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>svg#sketch-filter{position:absolute;width:0;height:0;}.skip-link{position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600;}.skip-link:focus{top:0;}</style>
+</head>
+<body data-page="briefing-history">
+  <svg id="sketch-filter" aria-hidden="true"><defs><filter id="sketch" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">📋 Briefing History</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Previously generated research briefings.</p>
+
+      <div style="margin-bottom: 24px;">
+        <a href="/briefing" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">
+          + New Briefing
+        </a>
+      </div>
+
+      <div id="briefings-list">
+        <div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div> Loading&hellip;</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/layout.js"></script>
+  <script>
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return "";
+    const div = document.createElement("div");
+    div.textContent = String(s);
+    return div.innerHTML;
+  }
+
+  function formatDate(d) {
+    if (!d) return "";
+    const date = new Date(d);
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  // ─── Verdict helpers ────────────────────────────────────────────────────────
+  function verdictEmoji(verdict) {
+    if (verdict === "validates") return "✅";
+    if (verdict === "contradicts") return "❌";
+    return "➖";
+  }
+
+  function verdictBadgeClass(verdict) {
+    if (verdict === "validates") return "badge-green";
+    if (verdict === "contradicts") return "badge-red";
+    if (verdict === "neutral") return "badge-gray";
+    return "badge-gray";
+  }
+
+  // ─── Load ──────────────────────────────────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", async () => {
+    const list = document.getElementById("briefings-list");
+    try {
+      const briefings = await API.get("/briefings");
+      if (briefings && briefings.length > 0) {
+        let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+        briefings.forEach(function(b) {
+          const arxivId = b.arxiv_id || b.paper_arxiv_id || "";
+          const title = b.title || b.paper_title || "Untitled";
+          const generated = b.generated_at || b.created_at || "";
+          const verdict = b.verdict || "neutral";
+          const emoji = verdictEmoji(verdict);
+          const badgeClass = verdictBadgeClass(verdict);
+          const truncatedTitle = title.length > 90 ? title.substring(0, 90) + "…" : title;
+
+          html += `
+            <div class="card" style="padding: 18px 20px;">
+              <div style="display: flex; gap: 14px; align-items: flex-start;">
+                <div style="font-size: 24px; flex-shrink: 0; width: 36px; text-align: center;">${emoji}</div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">
+                    ${escapeHtml(truncatedTitle)}
+                  </div>
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--ink-faint);">
+                    <span style="font-family: var(--font-mono);">${escapeHtml(arxivId.substring(0, 20))}</span>
+                    <span>·</span>
+                    <span>${escapeHtml(formatDate(generated))}</span>
+                    <span>·</span>
+                    <span class="badge ${badgeClass}">${escapeHtml(verdict)}</span>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                  <a href="/briefing?arxiv_id=${encodeURIComponent(arxivId)}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">↻ Regenerate</a>
+                </div>
+              </div>
+            </div>`;
+        });
+        html += "</div>";
+        list.innerHTML = html;
+      } else {
+        list.innerHTML = `
+          <div class="card">
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <div class="empty-state-text">No briefings yet</div>
+              <p style="margin-top: 10px; color: var(--ink-faint); font-size: 14px;">
+                Generate a briefing from any paper's arXiv ID.
+              </p>
+              <a href="/briefing" class="btn btn-primary" style="margin-top: 14px; display: inline-flex;">
+                Generate your first briefing →
+              </a>
+            </div>
+          </div>`;
+      }
+    } catch (e) {
+      list.innerHTML = `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <div class="empty-state-text">Failed to load briefings: ${escapeHtml(e.message)}</div>
+            <a href="/briefing" class="btn btn-primary" style="margin-top: 14px; display: inline-flex;">
+              Generate your first briefing →
+            </a>
+          </div>
+        </div>`;
+    }
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Briefing — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>svg#sketch-filter{position:absolute;width:0;height:0;}.skip-link{position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600;}.skip-link:focus{top:0;}</style>
+</head>
+<body data-page="briefing">
+  <svg id="sketch-filter" aria-hidden="true"><defs><filter id="sketch" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">📋 Research Briefing</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Structured intelligence report for any paper — key claims, verdict, and Gene Pool relevance.</p>
+
+      <!-- Input Form -->
+      <div class="card">
+        <div class="card-title">Generate Briefing</div>
+        <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label class="input-label" for="arxiv_id">arXiv ID</label>
+            <input
+              id="arxiv_id"
+              class="input-field"
+              placeholder="e.g. 2301.12345"
+              style="font-size: 17px; padding: 12px;"
+            >
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label class="input-label" style="margin: 0;">LLM</label>
+            <input type="checkbox" id="use_llm" checked style="width: 18px; height: 18px;">
+          </div>
+          <button onclick="generateBriefing()" class="btn btn-blue" style="height: 48px;" id="generate-btn">⚡ Generate</button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="briefing-error" hidden></div>
+
+      <!-- Loading -->
+      <div id="briefing-loading" hidden>
+        <div class="card">
+          <div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div> Generating briefing&hellip;</div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="briefing-result" hidden></div>
+    </main>
+  </div>
+
+  <script src="/static/layout.js"></script>
+  <script>
+  // ─── State ──────────────────────────────────────────────────────────────────
+  let currentBriefing = null;
+
+  // ─── Init ────────────────────────────────────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const arxivId = params.get("arxiv_id");
+    if (arxivId) {
+      document.getElementById("arxiv_id").value = arxivId;
+      generateBriefing();
+    }
+  });
+
+  // ─── Generate Briefing ──────────────────────────────────────────────────────
+  async function generateBriefing() {
+    const arxivId = document.getElementById("arxiv_id").value.trim();
+    if (!arxivId) {
+      showError("Please enter an arXiv ID.");
+      return;
+    }
+    const useLlm = document.getElementById("use_llm").checked;
+
+    hideError();
+    document.getElementById("briefing-result").hidden = true;
+    document.getElementById("briefing-loading").hidden = false;
+    document.getElementById("generate-btn").disabled = true;
+
+    try {
+      const data = await API.post("/briefing/generate", {
+        arxiv_id: arxivId,
+        use_llm: useLlm,
+      });
+      document.getElementById("briefing-loading").hidden = true;
+      currentBriefing = data;
+      renderBriefing(data);
+    } catch (e) {
+      document.getElementById("briefing-loading").hidden = true;
+      document.getElementById("generate-btn").disabled = false;
+      showError("Failed to generate briefing: " + e.message);
+    }
+  }
+
+  // ─── Render Briefing ────────────────────────────────────────────────────────
+  function renderBriefing(data) {
+    const container = document.getElementById("briefing-result");
+    const b = data.briefing || data;
+
+    const verdict = b.verdict || "neutral";
+    const verdictHtml = verdict === "validates"
+      ? '<span class="stamp stamp-green">✓ Validates</span>'
+      : verdict === "contradicts"
+        ? '<span class="stamp stamp-red">✗ Contradicts</span>'
+        : '<span class="stamp stamp-blue">— Neutral</span>';
+
+    const arxivId = b.paper_arxiv_id || "";
+    const title = b.paper_title || "Untitled";
+    const generatedAt = b.generated_at || "";
+    const sections = b.sections || [];
+    const geneMatches = b.gene_pool_matches || [];
+    const memoryStances = b.memory_stances || [];
+    const markdownPath = data.markdown_path || null;
+
+    let html = `
+      <div class="card torn-edge-top torn-edge-bottom" id="briefing-result-inner" style="padding: 32px; position: relative;">
+        <div class="margin-note">briefing<br>${escapeHtml(arxivId.substring(0, 8))}</div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+          <div class="paper-clip" style="flex: 1; min-width: 240px;">
+            <div class="card-title" style="margin-bottom: 4px; font-size: 24px;">${escapeHtml(title.substring(0, 80))}</div>
+            <div style="font-size: 13px; color: var(--ink-faint);">
+              arXiv: <a href="https://arxiv.org/abs/${escapeHtml(arxivId)}" target="_blank" style="color: var(--pen-blue);">${escapeHtml(arxivId)}</a>
+              ${generatedAt ? " · " + escapeHtml(generatedAt.substring(0, 16)) : ""}
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            ${markdownPath ? '<a href="' + escapeHtml(markdownPath) + '" download class="btn btn-secondary" style="padding: 6px 14px; font-size: 13px; text-decoration: none;">📄 Download MD</a>' : ""}
+            <button onclick="window.print()" class="btn btn-secondary" style="padding: 6px 14px; font-size: 13px;">🖨️ Print / PDF</button>
+            ${verdictHtml}
+          </div>
+        </div>
+
+        <!-- Sections -->
+        <div class="markdown-content">`;
+
+    sections.forEach(function(s, idx) {
+      const isLast = idx === sections.length - 1;
+      html += `<h2>${escapeHtml(s.title)}</h2>`;
+      html += `<div>${escapeHtml(s.content).replace(/\\n/g, "<br>")}</div>`;
+      if (!isLast) html += '<hr class="ink-divider">';
+    });
+
+    html += `</div>`;
+
+    // Gene Pool + Memory
+    if (geneMatches.length > 0 || memoryStances.length > 0) {
+      html += '<hr class="divider">';
+
+      if (geneMatches.length > 0) {
+        html += '<div style="margin-bottom: 16px;">';
+        html += '<div style="font-family: var(--font-display); font-size: 18px; margin-bottom: 10px;">🧬 Gene Pool Relevance</div>';
+        geneMatches.forEach(function(m) {
+          html += '<div style="padding: 8px 12px; background: rgba(107,143,173,0.06); border-left: 3px solid var(--pen-blue); margin-bottom: 8px;">';
+          html += '<strong>' + escapeHtml(m.gap_title) + '</strong> <span class="badge badge-blue">' + escapeHtml(m.gap_type) + '</span>';
+          html += '<div style="font-size: 12px; color: var(--ink-faint); margin-top: 2px;">Score: ' + (m.outcome_score != null ? m.outcome_score.toFixed(2) : "—") + '</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      if (memoryStances.length > 0) {
+        html += '<div>';
+        html += '<div style="font-family: var(--font-display); font-size: 18px; margin-bottom: 10px;">🧠 Research Memory Alignment</div>';
+        memoryStances.forEach(function(s) {
+          html += '<div style="padding: 8px 12px; background: rgba(196,112,106,0.06); border-left: 3px solid var(--pen-red); margin-bottom: 8px;">';
+          html += '<strong>[' + escapeHtml((s.stance_type || "").toUpperCase()) + ']</strong> ' + escapeHtml(s.topic) + ': ' + escapeHtml((s.claim || "").substring(0, 80));
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+    }
+
+    html += '</div>';
+
+    container.innerHTML = html;
+    container.hidden = false;
+    document.getElementById("generate-btn").disabled = false;
+
+    // Update URL with arxiv_id
+    const url = new URL(window.location);
+    url.searchParams.set("arxiv_id", arxivId);
+    window.history.replaceState({}, "", url);
+  }
+
+  // ─── Error handling ─────────────────────────────────────────────────────────
+  function showError(msg) {
+    const el = document.getElementById("briefing-error");
+    el.innerHTML = '<div class="alert alert-warning">' + escapeHtml(msg) + '</div>';
+    el.hidden = false;
+    document.getElementById("generate-btn").disabled = false;
+    document.getElementById("briefing-loading").hidden = true;
+  }
+
+  function hideError() {
+    document.getElementById("briefing-error").hidden = true;
+  }
+
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return "";
+    const div = document.createElement("div");
+    div.textContent = String(s);
+    return div.innerHTML;
+  }
+  </script>
+</body>
+</html>

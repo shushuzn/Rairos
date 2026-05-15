@@ -42,40 +42,13 @@ classifiers = [
 ]
 
 dependencies = [
-    "urllib3>=2.7.0",
-    "requests>=2.34.0",
-    "feedparser>=6.0.12",
-    "pymupdf>=1.27.2.3",
-    "pillow>=12.2.0",
-    "psutil>=7.2.2",
-    "aiohttp>=3.13.5",
-    "numpy>=2.2.6",
-    "orjson>=3.11.9",
-    "httpx>=0.28.1",
-    "textual>=8.2.6",
-    "rich>=15.0.0",
-    "jieba>=0.42.1",
-    "pymilvus>=3.0.0",
-
-    "click>=8.3.3",
-    "starlette>=0.45.0",
-    "uvicorn>=0.46.0",
-    "fastapi>=0.136.1",
-    "jinja2>=3.1.6",
-    "python-multipart>=0.0.28",
+    # rairos_mcp.py uses only stdlib (json, typing)
+    # All tool implementations are Rust-native via rairos_mcp_py (PyO3)
 ]
 
 [project.optional-dependencies]
 
-ocr = ["pytesseract>=0.3.13", "pillow>=12.2.0"]
-
-ai = ["openai>=2.36.0"]
-
-dev = ["pytest>=9.0.3", "pytest-cov>=7.1.0", "pytest-xdist>=3.8.0", "pytest-split>=0.11.0", "pytest-timeout>=2.4.0", "freezegun>=1.5.5"]
-
-slides = ["python-pptx>=1.0.2"]
-
-all = ["ai-research-os[ocr,ai,dev,slides]"]
+dev = ["pytest>=9.0.3", "pytest-timeout>=2.4.0"]
 
 [project.scripts]
 
@@ -95,11 +68,11 @@ text = "GPL-3.0-or-later"
 
 where = ["."]
 
-include = ["core*", "parsers*", "pdf*", "sections*", "updaters*", "completions*", "db*", "rankers*", "kg*", "viz*", "scoring*", "trends*", "extable*", "web*", "mcp"]
+include = ["mcp"]
 
 [tool.setuptools]
 
-py-modules = ["config"]
+py-modules = []
 
 [tool.setuptools.package-data]
 

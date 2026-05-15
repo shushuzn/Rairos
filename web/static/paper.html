@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>svg#sketch-filter{position:absolute;width:0;height:0;}.skip-link{position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600;}.skip-link:focus{top:0;}</style>
+</head>
+<body data-page="papers">
+  <svg id="sketch-filter" aria-hidden="true"><defs><filter id="sketch" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <div id="paper-content">
+        <div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div> Loading paper&hellip;</div>
+      </div>
+
+      <!-- Extract Gap Modal -->
+      <div id="gap-modal" role="dialog" aria-modal="true" aria-labelledby="gap-modal-title" style="display: none; position: fixed; inset: 0; z-index: 9000; align-items: center; justify-content: center; background: rgba(44,36,22,0.5); backdrop-filter: blur(3px);">
+        <div class="card" style="width: 480px; max-width: 90vw; max-height: 80vh; overflow-y: auto; padding: 28px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div id="gap-modal-title" class="card-title" style="margin: 0;">🧬 Extracted Research Gap</div>
+            <button onclick="closeGapModal()" aria-label="Close modal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--ink-faint);">✕</button>
+          </div>
+          <div id="gap-modal-body" style="font-size: 14px; color: var(--ink-light); margin-bottom: 20px;">
+            <div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div> Extracting gap&hellip;</div>
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button onclick="closeGapModal()" class="btn btn-secondary">Cancel</button>
+            <button id="gap-save-btn" onclick="saveGap()" class="btn btn-primary" disabled>Save to Gene Pool</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Embodied Planning Panel -->
+      <div id="embodied-panel" class="card" style="margin-bottom: 20px; display: none;">
+        <div class="card-title">🦾 Embodied Planning Analysis</div>
+        <div id="embodied-content"></div>
+      </div>
+
+      <!-- Replication Report -->
+      <div id="replication-panel" class="card" style="margin-bottom: 20px; display: none;">
+        <div class="card-title">🔬 Replication Report</div>
+        <div id="replication-content" style="font-size: 14px;"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/layout.js"></script>
+  <script>
+  // ─── State ──────────────────────────────────────────────────────────────────
+  let paperData = null;
+  let paperId = null;
+  let extractedGap = {};
+
+  // ─── Init ────────────────────────────────────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Read paper ID from URL query param ?id= or from the path
+    const params = new URLSearchParams(window.location.search);
+    paperId = params.get("id") || params.get("arxiv_id");
+    if (!paperId) {
+      // Try to extract from path: /papers/{id}
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      if (pathParts.length >= 2 && pathParts[0] === "papers") {
+        paperId = pathParts[1];
+      }
+    }
+    if (!paperId) {
+      document.getElementById("paper-content").innerHTML = `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-text">No paper specified. Provide an ID via ?id= or navigate from the papers list.</div>
+            <a href="/papers" class="btn btn-secondary" style="margin-top: 16px; display: inline-flex;">← Back to Papers</a>
+          </div>
+        </div>`;
+      return;
+    }
+    await loadPaper(paperId);
+  });
+
+  // ─── Load Paper ──────────────────────────────────────────────────────────────
+  async function loadPaper(id) {
+    const container = document.getElementById("paper-content");
+    try {
+      const p = await API.get("/papers/" + encodeURIComponent(id));
+      paperData = p;
+      setTitle(p.title);
+      renderPaper(p);
+      // Load gene pool matches
+      loadGeneMatches(p);
+    } catch (e) {
+      container.innerHTML = `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-text">${escapeHtml(e.message)}</div>
+            <a href="/papers" class="btn btn-secondary" style="margin-top: 16px; display: inline-flex;">← Back to Papers</a>
+          </div>
+        </div>`;
+    }
+  }
+
+  // ─── Render Paper ────────────────────────────────────────────────────────────
+  function renderPaper(p) {
+    const container = document.getElementById("paper-content");
+    const cat = (p.categories && p.categories.length > 0) ? p.categories[0] : "Uncategorized";
+    const subCats = (p.categories && p.categories.length > 1) ? p.categories.slice(1) : [];
+    const authors = (p.authors && p.authors.length > 0) ? p.authors.join(", ") : "Unknown authors";
+    const abstractText = p.abstract_text || "";
+    const abstractShort = abstractText.length > 800 ? abstractText.substring(0, 800) + "&hellip;" : abstractText;
+    const arxivId = p.arxiv_id || p.id;
+    const doi = p.doi || null;
+    const journal = p.journal || null;
+    const pdfUrl = p.pdf_url || (p.arxiv_id ? "https://arxiv.org/pdf/" + p.arxiv_id : null);
+    const arxivUrl = p.arxiv_id ? "https://arxiv.org/abs/" + p.arxiv_id : null;
+    const pages = p.pages || null;
+    const words = p.words || null;
+    const status = p.parse_status || p.status || null;
+    const readingStatus = p.reading_status || null;
+    const addedDate = p.added_at || p.created_at || null;
+
+    container.innerHTML = `
+      <!-- Header -->
+      <div style="margin-bottom: 32px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;">
+          <a href="/papers" style="color: var(--ink-faint); text-decoration: none; font-size: 13px;">← Papers</a>
+          <span style="color: var(--border);">·</span>
+          <span class="paper-category">${escapeHtml(cat)}</span>
+          ${subCats.map(c => `<span style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 2px; padding: 1px 6px;">${escapeHtml(c)}</span>`).join("")}
+        </div>
+        <h1 class="page-title" style="font-size: 34px;">${escapeHtml(p.title)}</h1>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+          <span style="font-family: var(--font-display); font-size: 16px; color: var(--ink-light);">${escapeHtml(authors)}</span>
+          <span style="color: var(--border);">·</span>
+          <span style="color: var(--ink-faint); font-size: 14px;">${escapeHtml(formatDate(p.published))}</span>
+        </div>
+      </div>
+
+      <!-- Meta cards -->
+      <div class="chart-grid" style="margin-bottom: 28px;">
+        <div class="card" style="margin: 0; padding: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div style="text-align: center;">
+              <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--pen-blue);">${p.cited_by || 0}</div>
+              <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Citations</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--ink);">${p.references || 0}</div>
+              <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">References</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--ink-light);">${pages !== null ? pages : "—"}</div>
+              <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Pages</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--ink-light);">${words !== null ? words : "—"}</div>
+              <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Words</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin: 0; padding: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+              <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Status</div>
+              ${status === "done" || status === "parsed" ? '<span class="badge badge-green">✅ Parsed</span>' :
+                status === "pending" ? '<span class="badge badge-gray">⏳ Pending</span>' :
+                status === "failed" ? '<span class="badge badge-red">❌ Failed</span>' :
+                '<span class="badge badge-gray">' + escapeHtml(status || "—") + '</span>'}
+            </div>
+            <div>
+              <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Reading</div>
+              ${readingStatus === "reading" ? '<span class="badge badge-blue">📖 Reading</span>' :
+                readingStatus === "completed" ? '<span class="badge badge-green">✅ Completed</span>' :
+                '<span class="badge badge-gray">○ Unread</span>'}
+            </div>
+            <div>
+              <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">arXiv ID</div>
+              <span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink);">${escapeHtml(arxivId.substring(0, 20))}</span>
+            </div>
+            <div>
+              <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Added</div>
+              <span style="font-size: 13px; color: var(--ink);">${addedDate ? escapeHtml(addedDate.substring(0, 10)) : "—"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abstract -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-title">📝 Abstract</div>
+        <div style="font-size: 14px; line-height: 1.8; color: var(--ink-light);">${abstractShort}</div>
+      </div>
+
+      <!-- Links -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-title">🔗 Links</div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+          ${arxivUrl ? `<a href="${escapeHtml(arxivUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 14px;">📄 arXiv Abstract</a>` : ""}
+          ${pdfUrl ? `<a href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 14px;">📥 PDF</a>` : ""}
+          ${doi ? `<a href="https://doi.org/${escapeHtml(doi)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 14px;">🔗 DOI</a>` : ""}
+          <a href="/briefing?arxiv_id=${encodeURIComponent(arxivId)}" class="btn btn-blue" style="font-size: 14px;">📋 Briefing</a>
+          <button class="btn btn-secondary" style="font-size: 14px;" onclick="extractGap()">🧬 Extract Gap</button>
+          <button class="btn btn-secondary" style="font-size: 14px;" onclick="loadRigor()">⚖️ Rigor</button>
+          <button class="btn btn-secondary" style="font-size: 14px;" onclick="loadReplication()">🔬 Replication</button>
+          <button class="btn btn-secondary" style="font-size: 14px;" onclick="loadEmbodiedPlanning()">🦾 Embodied Planning</button>
+        </div>
+      </div>
+
+      <!-- Gene Pool Relevance -->
+      <div id="gene-pool-card" class="card" style="margin-bottom: 20px;">
+        <div class="card-title">🧬 Gene Pool Relevance</div>
+        <div id="gene-pool-content" style="font-size: 13px; color: var(--ink-faint); font-style: italic;">Loading gene matches&hellip;</div>
+      </div>
+
+      <!-- Citation info -->
+      <div id="citation-card" style="margin-bottom: 20px; display: ${doi || journal ? "block" : "none"};">
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-title">📚 Citation</div>
+          ${journal ? `<div style="font-size: 13px; color: var(--ink-light); margin-bottom: 6px;"><strong>Journal:</strong> ${escapeHtml(journal)}</div>` : ""}
+          ${doi ? `<div style="font-size: 13px; color: var(--ink-light);"><strong>DOI:</strong> <span style="font-family: var(--font-mono);">${escapeHtml(doi)}</span></div>` : ""}
+        </div>
+      </div>
+    `;
+  }
+
+  // ─── Gene Pool Matches ──────────────────────────────────────────────────────
+  async function loadGeneMatches(p) {
+    const content = document.getElementById("gene-pool-content");
+    if (!content) return;
+    try {
+      const matches = await API.get("/papers/" + encodeURIComponent(p.id) + "/gene-matches");
+      if (matches && matches.length > 0) {
+        let html = "";
+        matches.forEach((m, idx) => {
+          const score = Math.round((m.outcome_score || m.score || 0) * 100);
+          html += `
+            <div style="display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-bottom: ${idx < matches.length - 1 ? "1px dashed var(--border-light)" : "none"};">
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px;">${escapeHtml((m.gap_title || "").substring(0, 80))}</div>
+                <div style="font-size: 11px; color: var(--ink-faint);">
+                  <span class="badge badge-blue" style="font-size: 10px;">${escapeHtml(m.gap_type || "")}</span>
+                  <span style="margin-left: 6px;">${escapeHtml(m.reason || "")}</span>
+                </div>
+              </div>
+              <div style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--pen-green); flex-shrink: 0;">${score}%</div>
+            </div>`;
+        });
+        content.innerHTML = html;
+        content.style.fontStyle = "normal";
+      } else {
+        content.innerHTML = "No matching Gene Pool entries yet. Extract a gap from this paper to get started.";
+      }
+    } catch (e) {
+      content.innerHTML = "No matching Gene Pool entries yet. Extract a gap from this paper to get started.";
+    }
+  }
+
+  // ─── Extract Gap ────────────────────────────────────────────────────────────
+  function extractGap() {
+    const paperId = paperData.id;
+    const body = document.getElementById("gap-modal-body");
+    document.getElementById("gap-modal").style.display = "flex";
+    body.innerHTML = `<div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div> Extracting gap&hellip;</div>`;
+    document.getElementById("gap-save-btn").disabled = true;
+
+    fetch("/paper/" + encodeURIComponent(paperId) + "/extract-gap")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.error) {
+          body.innerHTML = `<div class="alert alert-warning">Error: ${escapeHtml(data.error)}</div>`;
+          return;
+        }
+        extractedGap = data;
+        body.innerHTML = "";
+        const badgeWrap = document.createElement("div");
+        badgeWrap.style.marginBottom = "12px";
+        const badge = document.createElement("span");
+        badge.className = "badge badge-blue";
+        badge.textContent = data.gap_type || "unknown";
+        badgeWrap.appendChild(badge);
+        body.appendChild(badgeWrap);
+
+        const titleDiv = document.createElement("div");
+        titleDiv.style.cssText = "font-size:15px;font-weight:600;color:var(--ink);margin-bottom:8px;";
+        titleDiv.textContent = data.gap_title || "";
+        body.appendChild(titleDiv);
+
+        const summaryDiv = document.createElement("div");
+        summaryDiv.style.cssText = "font-size:13px;color:var(--ink-light);margin-bottom:10px;";
+        summaryDiv.textContent = data.summary || "";
+        body.appendChild(summaryDiv);
+
+        const kwDiv = document.createElement("div");
+        kwDiv.style.cssText = "font-size:12px;color:var(--ink-faint);";
+        kwDiv.textContent = "Keywords: " + ((data.keywords || []).join(", "));
+        body.appendChild(kwDiv);
+
+        document.getElementById("gap-save-btn").disabled = false;
+      })
+      .catch(function(e) {
+        body.innerHTML = `<div class="alert alert-warning">Network error: ${escapeHtml(e.message || e)}</div>`;
+      });
+  }
+
+  function closeGapModal() {
+    document.getElementById("gap-modal").style.display = "none";
+  }
+
+  function saveGap() {
+    const paperId = paperData.id;
+    const btn = document.getElementById("gap-save-btn");
+    btn.disabled = true;
+    btn.textContent = "Saving…";
+    fetch("/paper/" + encodeURIComponent(paperId) + "/save-gap", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(extractedGap),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          closeGapModal();
+          location.reload();
+        } else {
+          btn.disabled = false;
+          btn.textContent = "Save to Gene Pool";
+          alert("Failed to save gap.");
+        }
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = "Save to Gene Pool";
+        alert("Failed to save gap.");
+      });
+  }
+
+  // ─── Rigor ──────────────────────────────────────────────────────────────────
+  function loadRigor() {
+    var paperId = paperData.id;
+    var btn = event.target;
+    btn.disabled = true;
+    btn.textContent = "⏳…";
+
+    fetch("/paper/" + encodeURIComponent(paperId) + "/rigor")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.error) {
+          btn.disabled = false;
+          btn.textContent = "⚖️ Rigor";
+          alert("Error: " + data.error);
+          return;
+        }
+        var colors = {A: "#7A9E7A", B: "#6B8FB5", C: "#D4A84B", D: "#C4706A"};
+        var color = colors[data.badge] || "#888";
+        var signals = (data.reproducibility_signals || []).join(", ") || "No signals detected";
+        var badge = document.createElement("span");
+        badge.style.cssText = "display:inline-flex;align-items:center;justify-content:center;"
+          + "background:" + color + ";color:white;font-family:Caveat,cursive;"
+          + "font-size:1.1em;font-weight:700;"
+          + "width:2em;height:2em;border-radius:6px;cursor:help;";
+        badge.textContent = data.badge;
+        btn.parentNode.replaceChild(badge, btn);
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = "⚖️ Rigor";
+      });
+  }
+
+  // ─── Replication ────────────────────────────────────────────────────────────
+  async function loadReplication() {
+    const panel = document.getElementById("replication-panel");
+    const content = document.getElementById("replication-content");
+    panel.style.display = "block";
+    content.innerHTML = "<div style=\"color:#888;font-size:13px;\">⏳ Checking for code links...</div>";
+    const pid = paperData.id;
+    try {
+      const r = await fetch("/paper/" + encodeURIComponent(pid) + "/replication");
+      const d = await r.json();
+      if (d.error) {
+        content.innerHTML = "<div style=\"color:#c00;font-size:13px;\">Error: " + escapeHtml(d.error) + "</div>";
+        return;
+      }
+      const diff = d.difficulty || "Unknown";
+      const emoji = {"Easy":"🟢","Medium":"🟡","Hard":"🟠","Very Hard":"🔴","Extremely Hard":"💀","No Code Found":"❌"};
+      const diffColor = {"Easy":"#4CAF50","Medium":"#FF9800","Hard":"#ff5722","Very Hard":"#d32f2f","Extremely Hard":"#880000","No Code Found":"#888"};
+      let html = "<div style=\"display:flex;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap;\">";
+      html += "<span style=\"font-size:18px;\">" + (emoji[diff]||"⚪") + "</span>";
+      html += "<span style=\"font-size:16px;font-weight:700;color:" + (diffColor[diff]||"#888") + ";\">" + escapeHtml(diff) + "</span>";
+      html += "<span style=\"font-size:12px;color:#888;\">Difficulty score: " + (d.difficulty_score||"—") + "/10</span>";
+      html += "</div>";
+      if (d.primary_link) {
+        html += "<div style=\"margin-bottom:10px;\">";
+        html += "<a href=\"" + escapeHtml(d.primary_link.url) + "\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:var(--pen-blue);font-size:13px;\">" + escapeHtml(d.primary_link.url) + "</a>";
+        html += " <span style=\"font-size:11px;color:#888;\">(" + escapeHtml(d.primary_link.platform) + ")</span>";
+        html += "</div>";
+      }
+      if (d.notes && d.notes.length) {
+        html += "<div style=\"margin-bottom:8px;\">";
+        d.notes.forEach(function(n) { html += "<div style=\"font-size:13px;color:#555;margin-bottom:4px;\">• " + escapeHtml(n) + "</div>"; });
+        html += "</div>";
+      }
+      if (d.reproducibility_issues && d.reproducibility_issues.length) {
+        html += "<div>";
+        d.reproducibility_issues.forEach(function(i) { html += "<div style=\"font-size:12px;color:#e67e00;margin-bottom:3px;\">⚠️ " + escapeHtml(i) + "</div>"; });
+        html += "</div>";
+      }
+      if (d.links_count > 1) {
+        html += "<div style=\"margin-top:8px;font-size:12px;color:#888;\">Found " + d.links_count + " code links total</div>";
+      }
+      content.innerHTML = html;
+    } catch(e) {
+      content.innerHTML = "<div style=\"color:#c00;font-size:13px;\">Fetch failed: " + escapeHtml(e.message) + "</div>";
+    }
+  }
+
+  // ─── Embodied Planning ──────────────────────────────────────────────────────
+  function loadEmbodiedPlanning() {
+    var paperId = paperData.id;
+    var panel = document.getElementById("embodied-panel");
+    var content = document.getElementById("embodied-content");
+    var btn = event.target;
+    btn.disabled = true;
+    btn.textContent = "⏳…";
+    panel.style.display = "block";
+    content.innerHTML = "<div style=\"color:#888;font-size:13px;\">⏳ Analyzing latent representation type...</div>";
+
+    fetch("/paper/" + encodeURIComponent(paperId) + "/embodied-planning")
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        btn.disabled = false;
+        btn.textContent = "🦾 Embodied Planning";
+        if (data.error) {
+          content.innerHTML = "<div style=\"color:#c00;font-size:13px;\">Error: " + escapeHtml(data.error) + "</div>";
+          return;
+        }
+        var typeColors = {discrete: "#7A9E7A", continuous: "#6B8FB5", hybrid: "#D4A84B", unknown: "#888"};
+        var color = typeColors[data.representation_type] || "#888";
+        var conf = ((data.confidence || 0) * 100).toFixed(0);
+        var html = "<div style=\"display:flex;gap:16px;align-items:center;margin-bottom:14px;flex-wrap:wrap;\">";
+        html += "<span style=\"font-size:28px;font-weight:700;color:" + color + ";\">" + (data.representation_type || "?") + "</span>";
+        html += "<div><div style=\"font-size:12px;color:#888;margin-bottom:2px;\">Confidence: " + conf + "%</div>";
+        html += "<div style=\"font-size:11px;color:#aaa;\">" + (data.gap_title || "No gap title") + "</div></div></div>";
+        if (data.summary) {
+          html += "<div style=\"font-size:13px;color:#555;margin-bottom:10px;line-height:1.6;\">" + escapeHtml(data.summary) + "</div>";
+        }
+        if (data.evidence && data.evidence.length) {
+          html += "<div style=\"font-size:12px;color:#888;margin-bottom:8px;\">Evidence:</div>";
+          data.evidence.forEach(function(e) {
+            html += "<div style=\"font-size:12px;color:#666;margin-bottom:4px;padding-left:10px;border-left:2px solid #ddd;\">" + escapeHtml(e) + "</div>";
+          });
+        }
+        if (data.contradiction_with) {
+          html += "<div style=\"margin-top:12px;padding:10px 12px;background:#fff3f3;border:1px solid #e55353;border-radius:6px;font-size:12px;color:#c00;\">";
+          html += "⚠️ <strong>Contradiction alert:</strong> Paper <code>" + escapeHtml(data.contradiction_with) + "</code> ";
+          html += "concludes <strong>" + (data.contradiction_type || "?") + "</strong> — different representation type. ";
+          html += "Check Gene Pool for opposing findings.</div>";
+        }
+        content.innerHTML = html;
+      })
+      .catch(function(e) {
+        btn.disabled = false;
+        btn.textContent = "🦾 Embodied Planning";
+        content.innerHTML = "<div style=\"color:#c00;font-size:13px;\">Error: " + escapeHtml(e.message) + "</div>";
+      });
+  }
+
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+  function setTitle(title) {
+    document.title = escapeHtml(title.substring(0, 60)) + " — Rairos";
+  }
+
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return "";
+    const div = document.createElement("div");
+    div.textContent = String(s);
+    return div.innerHTML;
+  }
+
+  function formatDate(d) {
+    if (!d) return "";
+    const date = new Date(d);
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  }
+  </script>
+</body>
+</html>

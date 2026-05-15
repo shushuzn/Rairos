@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Papers — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>svg#sketch-filter{position:absolute;width:0;height:0;}.skip-link{position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600;}.skip-link:focus{top:0;}</style>
+</head>
+<body data-page="papers">
+  <svg id="sketch-filter" aria-hidden="true"><defs><filter id="sketch" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">📚 Papers</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc"><span id="paper-count">0</span> papers</p>
+
+      <!-- Search + Filter -->
+      <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+        <input id="search-q" class="input-field" style="flex:1;min-width:180px;font-size:16px;padding:12px 16px;" placeholder="Search by title, author, keyword..." value="">
+        <button class="btn btn-primary" onclick="searchPapers()">🔍</button>
+      </div>
+
+      <!-- Selection bar -->
+      <div id="sel-bar" hidden style="background:#e8f0fe;border:1px solid #c3d9f8;border-radius:8px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:14px;color:#1a73e8;font-weight:500;"><span id="sel-count">0</span> selected</span>
+        <button id="sel-delete" class="btn btn-danger" style="padding:6px 16px;font-size:13px;">🗑️ Delete</button>
+      </div>
+
+      <!-- Results -->
+      <div id="papers-list"></div>
+      <div id="pagination" style="display:flex;justify-content:center;align-items:center;gap:8px;margin:24px 0;flex-wrap:wrap;"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true,theme:'neutral',fontFamily:'Lora, serif'});</script>
+  <script src="/static/layout.js"></script>
+  <script>
+  let allPapers = [];
+  let selected = new Set();
+  let currentPage = 1;
+  const PAGE_SIZE = 20;
+
+  function updateSelectionBar() {
+    const bar = document.getElementById("sel-bar");
+    const count = document.getElementById("sel-count");
+    const n = selected.size;
+    count.textContent = n;
+    bar.hidden = n === 0;
+    document.querySelectorAll(".paper-card").forEach(c => {
+      const id = c.dataset.id;
+      const isSel = selected.has(id);
+      c.style.outline = isSel ? "2px solid #1a73e8" : "none";
+      c.style.background = isSel ? "#f0f4ff" : "";
+      c.setAttribute("aria-checked", String(isSel));
+    });
+  }
+
+  function renderPapers(papers, total) {
+    const list = document.getElementById("papers-list");
+    const count = document.getElementById("paper-count");
+    count.textContent = total || papers.length;
+
+    if (papers.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">No papers found</div></div>`;
+      document.getElementById("pagination").innerHTML = "";
+      return;
+    }
+
+    list.innerHTML = papers.map(p => `
+      <div class="paper-card" data-id="${escapeHtml(p.id)}" role="checkbox" aria-checked="false" tabindex="0" style="cursor:pointer;">
+        <a href="/papers/${escapeHtml(p.id)}" style="text-decoration:none;color:inherit;display:block;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px;">
+            <div class="paper-title" style="flex:1;">${escapeHtml(p.title.substring(0, 90))}</div>
+            ${p.arxiv_id ? `<span class="paper-arxiv-id">${escapeHtml(p.arxiv_id.substring(0, 15))}</span>` : ''}
+          </div>
+          <div class="paper-meta">
+            ${escapeHtml((p.authors || []).slice(0, 3).join(", "))} · ${formatDate(p.published)}
+            ${p.categories?.length ? ` · <span class="paper-category">${escapeHtml(p.categories.slice(0, 2).join(", "))}</span>` : ''}
+          </div>
+          ${p.abstract_text ? `<div class="paper-snippet">${escapeHtml(p.abstract_text.substring(0, 200))}...</div>` : ''}
+        </a>
+      </div>
+    `).join("");
+
+    // Click to select
+    document.querySelectorAll(".paper-card").forEach(card => {
+      card.addEventListener("click", function(e) {
+        if (e.target.closest("a")) return;
+        const id = this.dataset.id;
+        if (selected.has(id)) selected.delete(id); else selected.add(id);
+        updateSelectionBar();
+      });
+    });
+
+    // Pagination
+    const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    const div = document.getElementById("pagination");
+    if (totalPages <= 1) { div.innerHTML = ""; return; }
+
+    let html = "";
+    if (currentPage > 1) html += `<button class="btn btn-secondary" onclick="goPage(${currentPage - 1})">← Prev</button>`;
+
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === currentPage) {
+        html += `<span class="btn btn-primary" style="pointer-events:none;">${p}</span>`;
+      } else if (p <= 3 || p > totalPages - 2 || (p >= currentPage - 1 && p <= currentPage + 1)) {
+        html += `<button class="btn btn-secondary" onclick="goPage(${p})">${p}</button>`;
+      } else if (p === 4 || p === totalPages - 3) {
+        html += `<span style="color:var(--ink-faint);">…</span>`;
+      }
+    }
+
+    if (currentPage < totalPages) html += `<button class="btn btn-secondary" onclick="goPage(${currentPage + 1})">Next →</button>`;
+    div.innerHTML = html;
+  }
+
+  async function searchPapers() {
+    currentPage = 1;
+    selected.clear();
+    await loadPapers();
+  }
+
+  async function goPage(p) {
+    currentPage = p;
+    selected.clear();
+    await loadPapers();
+  }
+
+  async function loadPapers() {
+    const q = document.getElementById("search-q").value.trim();
+    try {
+      let url = `/papers?limit=${PAGE_SIZE}&offset=${(currentPage - 1) * PAGE_SIZE}`;
+      if (q) url = `/papers/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}`;
+      const papers = await API.get(url);
+      allPapers = papers;
+      const total = parseInt(document.getElementById("paper-count").textContent) || papers.length;
+      renderPapers(papers, total);
+    } catch (e) {
+      document.getElementById("papers-list").innerHTML =
+        `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Error: ${e.message}</div></div>`;
+    }
+  }
+
+  // Delete selected
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("sel-delete")?.addEventListener("click", async () => {
+      if (selected.size === 0) return;
+      if (!confirm(`Delete ${selected.size} paper(s)? This cannot be undone.`)) return;
+      for (const id of selected) {
+        try { await API.del(`/papers/${encodeURIComponent(id)}`); } catch(e) {}
+      }
+      selected.clear();
+      await loadPapers();
+    });
+    loadPapers();
+  });
+  </script>
+</body>
+</html>

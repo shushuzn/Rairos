@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citation Chain — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    svg#sketch-filter { position: absolute; width: 0; height: 0; }
+    .skip-link { position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600; }
+    .skip-link:focus { top:0; }
+    @media print { .sidebar,.hamburger,.sidebar-overlay,.btn,nav,header,footer,.page-title-underline,.page-desc { display:none!important; } .main { margin:0!important;padding:20px!important; } .card { box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid; } body { font-size:12pt;color:#000;background:#fff; } a { color:#000;text-decoration:underline; } @page { margin:2cm; } }
+  </style>
+</head>
+<body data-page="citation-chain">
+  <!-- SVG Sketch filter -->
+  <svg id="sketch-filter" aria-hidden="true">
+    <defs>
+      <filter id="sketch" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">🔗 Citation Chain</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Trace citations forward and backward using Semantic Scholar — visualize research influence.</p>
+
+      <!-- Input -->
+      <div class="card" style="margin-bottom:20px;">
+        <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label class="input-label" for="chain-arxiv">Seed arXiv ID</label>
+            <input id="chain-arxiv" class="input-field" placeholder="e.g. 2301.12345" style="font-size: 17px; padding: 12px;" value="">
+          </div>
+          <div>
+            <label class="input-label" for="chain-depth">Depth</label>
+            <select id="chain-depth" class="input-field" style="width: 90px;">
+              <option value="1">1 hop</option>
+              <option value="2" selected>2 hops</option>
+              <option value="3">3 hops</option>
+            </select>
+          </div>
+          <button id="chain-build-btn" class="btn btn-blue" style="height: 48px;" onclick="buildChain()">🔗 Build Chain</button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="chain-error" class="alert alert-warning" hidden></div>
+
+      <!-- Loading -->
+      <div id="chain-loading" class="loading" hidden>
+        <span>Building citation chain…</span>
+        <span class="loading-dots"><span></span><span></span><span></span></span>
+      </div>
+
+      <!-- Chain Result -->
+      <div id="chain-result" hidden>
+        <div class="card" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="card-title" style="margin: 0;" id="chain-summary">Chain: —</div>
+            <span class="badge badge-blue" id="chain-node-badge">0 nodes</span>
+          </div>
+
+          <!-- Format selector -->
+          <div class="tabs" id="chain-tabs">
+            <a href="#" class="tab active" data-fmt="mermaid" onclick="switchFmt('mermaid'); return false;">Mermaid</a>
+            <a href="#" class="tab" data-fmt="text" onclick="switchFmt('text'); return false;">Text</a>
+            <a href="#" class="tab" data-fmt="graphviz" onclick="switchFmt('graphviz'); return false;">Graphviz</a>
+          </div>
+
+          <!-- Mermaid container -->
+          <div id="chain-mermaid" class="mermaid-container" hidden></div>
+
+          <!-- Graphviz container -->
+          <div id="chain-graphviz" class="code-block" style="background:#faf8f4;color:var(--ink);font-size:12px;" hidden></div>
+
+          <!-- Text container -->
+          <pre id="chain-text" class="code-block" style="background:#faf8f4;color:var(--ink);white-space:pre-wrap;" hidden></pre>
+        </div>
+
+        <!-- Node table -->
+        <div class="card">
+          <div class="card-title">Papers in Chain</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Paper</th>
+                <th scope="col">Year</th>
+                <th scope="col">Citations</th>
+                <th scope="col">Cites</th>
+              </tr>
+            </thead>
+            <tbody id="chain-nodes-tbody"></tbody>
+          </table>
+          <p id="chain-more-hint" style="color: var(--ink-faint); font-size: 13px; margin-top: 10px;" hidden></p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true,theme:'neutral',fontFamily:'Lora, serif'});</script>
+  <script src="/static/layout.js"></script>
+  <script>
+  let chainData = null;
+  let currentFmt = 'mermaid';
+
+  async function buildChain() {
+    const arxivId = document.getElementById('chain-arxiv').value.trim();
+    const maxDepth = parseInt(document.getElementById('chain-depth').value);
+    const errorDiv = document.getElementById('chain-error');
+    const resultDiv = document.getElementById('chain-result');
+    const loadingDiv = document.getElementById('chain-loading');
+    const btn = document.getElementById('chain-build-btn');
+
+    if (!arxivId) {
+      errorDiv.textContent = 'Please enter an arXiv ID.';
+      errorDiv.hidden = false;
+      resultDiv.hidden = true;
+      return;
+    }
+
+    errorDiv.hidden = true;
+    resultDiv.hidden = true;
+    loadingDiv.hidden = false;
+    btn.disabled = true;
+    btn.textContent = 'Building…';
+
+    try {
+      const data = await API.post('/citation-chain', {
+        arxiv_id: arxivId,
+        max_depth: maxDepth,
+        fmt: currentFmt,
+      });
+      chainData = data;
+      renderChain(data);
+      resultDiv.hidden = false;
+    } catch (e) {
+      errorDiv.textContent = e.message || 'Failed to build citation chain.';
+      errorDiv.hidden = false;
+    } finally {
+      loadingDiv.hidden = true;
+      btn.disabled = false;
+      btn.innerHTML = '🔗 Build Chain';
+    }
+  }
+
+  function renderChain(data) {
+    // Summary
+    document.getElementById('chain-summary').textContent =
+      `Chain: ${data.nodes_count} papers · ${data.edges_count} connections`;
+    document.getElementById('chain-node-badge').textContent = `${data.nodes_count} nodes`;
+
+    // Render current format
+    renderFmt(data.fmt || 'mermaid', data.rendered);
+
+    // Node table
+    const tbody = document.getElementById('chain-nodes-tbody');
+    const nodes = data.nodes || [];
+    const edges = data.edges || [];
+    const limit = 20;
+
+    tbody.innerHTML = nodes.slice(0, limit).map((node, i) => {
+      const pid = node[0];
+      const title = node[1];
+      const year = node[2];
+      const citeCnt = node[3];
+      const citesCount = edges.filter(e => e === pid).length;
+      return `<tr>
+        <td class="rank-num">${i + 1}</td>
+        <td>
+          <div style="font-weight:600;font-size:14px;">${escapeHtml(title.substring(0, 70))}</div>
+          <div style="font-size:11px;color:var(--ink-faint);font-family:var(--font-mono);">${escapeHtml(pid.substring(0, 15))}</div>
+        </td>
+        <td>${year || '?'}</td>
+        <td>${citeCnt}</td>
+        <td>${citesCount}</td>
+      </tr>`;
+    }).join('');
+
+    // More hint
+    const moreHint = document.getElementById('chain-more-hint');
+    if (nodes.length > limit) {
+      moreHint.textContent = `...and ${nodes.length - limit} more papers`;
+      moreHint.hidden = false;
+    } else {
+      moreHint.hidden = true;
+    }
+  }
+
+  function renderFmt(fmt, rendered) {
+    currentFmt = fmt;
+
+    // Update tabs
+    document.querySelectorAll('#chain-tabs .tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.fmt === fmt);
+    });
+
+    // Hide all
+    document.getElementById('chain-mermaid').hidden = true;
+    document.getElementById('chain-graphviz').hidden = true;
+    document.getElementById('chain-text').hidden = true;
+
+    if (fmt === 'mermaid') {
+      const container = document.getElementById('chain-mermaid');
+      container.hidden = false;
+      // Strip leading/trailing code fences if present
+      let clean = rendered;
+      if (clean.startsWith('```mermaid')) clean = clean.slice(10);
+      else if (clean.startsWith('```')) clean = clean.slice(3);
+      if (clean.endsWith('```')) clean = clean.slice(0, -3);
+      container.innerHTML = `<pre class="mermaid">${clean.trim()}</pre>`;
+      try { mermaid.init({ startOnLoad: true }); } catch(e) {}
+    } else if (fmt === 'graphviz') {
+      const container = document.getElementById('chain-graphviz');
+      container.hidden = false;
+      container.textContent = rendered;
+    } else {
+      const container = document.getElementById('chain-text');
+      container.hidden = false;
+      container.textContent = rendered;
+    }
+  }
+
+  async function switchFmt(fmt) {
+    if (!chainData) return;
+    if (fmt === currentFmt) return;
+
+    // If we already have data for this format, just re-render
+    // Otherwise rebuild with the new format
+    currentFmt = fmt;
+    const arxivId = document.getElementById('chain-arxiv').value.trim();
+    const maxDepth = parseInt(document.getElementById('chain-depth').value);
+
+    try {
+      const data = await API.post('/citation-chain', {
+        arxiv_id: arxivId,
+        max_depth: maxDepth,
+        fmt: fmt,
+      });
+      chainData = data;
+      renderFmt(data.fmt || fmt, data.rendered);
+    } catch (e) {
+      document.getElementById('chain-error').textContent = e.message || 'Failed to switch format.';
+      document.getElementById('chain-error').hidden = false;
+    }
+  }
+
+  // Allow Enter key to submit
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('chain-arxiv').addEventListener('keydown', e => {
+      if (e.key === 'Enter') buildChain();
+    });
+  });
+  </script>
+</body>
+</html>

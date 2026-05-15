@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Loop — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    svg#sketch-filter { position: absolute; width: 0; height: 0; }
+    .skip-link { position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600; }
+    .skip-link:focus { top:0; }
+    @media print { .sidebar,.hamburger,.sidebar-overlay,.btn,nav,header,footer,.page-title-underline,.page-desc { display:none!important; } .main { margin:0!important;padding:20px!important; } .card { box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid; } body { font-size:12pt;color:#000;background:#fff; } a { color:#000;text-decoration:underline; } @page { margin:2cm; } }
+  </style>
+</head>
+<body data-page="research-loop">
+  <!-- SVG Sketch filter -->
+  <svg id="sketch-filter" aria-hidden="true">
+    <defs>
+      <filter id="sketch" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">🔄 Research Loop</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Autonomous research agent — watches arXiv, discovers gaps, scores against Gene Pool.</p>
+
+      <!-- Loading -->
+      <div id="loop-loading" class="loading">
+        <span>Loading…</span>
+        <span class="loading-dots"><span></span><span></span><span></span></span>
+      </div>
+
+      <!-- Error -->
+      <div id="loop-error" class="alert alert-warning" hidden></div>
+
+      <!-- Status Card -->
+      <div id="loop-status-card" class="card" style="margin-bottom: 24px;" hidden>
+        <div class="card-title">⚙️ Agent Status</div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+          <div style="text-align: center;">
+            <div id="loop-running-indicator" style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--ink-faint);">OFF</div>
+            <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;">Running</div>
+          </div>
+          <div style="text-align: center;">
+            <div id="loop-interval" style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--ink);">—</div>
+            <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;">Interval</div>
+          </div>
+          <div style="text-align: center;">
+            <div id="loop-alerts-count" style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--pen-blue);">0</div>
+            <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;">Alerts</div>
+          </div>
+          <div style="text-align: center;">
+            <div id="loop-last-check" style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--ink-light);">—</div>
+            <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;">Last Check</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <button id="loop-start-btn" class="btn btn-primary" style="font-size:14px;" onclick="toggleLoop(true)">▶ Start Watch</button>
+          <button id="loop-stop-btn" class="btn btn-secondary" style="font-size:14px;" onclick="toggleLoop(false)" hidden>⏹ Stop Watch</button>
+          <button id="loop-run-btn" class="btn btn-blue" style="font-size:14px;" onclick="runCycle()">⚡ Run Cycle Now</button>
+          <span style="font-size:13px;color:var(--ink-faint);margin-left:8px;">
+            A cycle checks arXiv subscriptions, runs deep analysis, and scores gaps against Gene Pool.
+          </span>
+        </div>
+      </div>
+
+      <!-- Subscriptions -->
+      <div id="loop-subscriptions-card" class="card" style="margin-bottom: 24px;" hidden>
+        <div class="card-title">📡 arXiv Subscriptions</div>
+        <div id="loop-subscriptions" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+        <div id="loop-no-subs" class="empty-state" hidden>
+          <div class="empty-state-icon">📡</div>
+          <div class="empty-state-text">No subscriptions configured.</div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="card" id="loop-alerts-card" hidden>
+        <div class="card-title">📬 Recent Alerts</div>
+        <div id="loop-alerts"></div>
+        <div id="loop-no-alerts" class="empty-state" hidden>
+          <div class="empty-state-icon">🔍</div>
+          <div class="empty-state-text">No alerts yet. Start the watch loop to begin discovering research gaps.</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true,theme:'neutral',fontFamily:'Lora, serif'});</script>
+  <script src="/static/layout.js"></script>
+  <script>
+  let loopState = null;
+
+  async function loadLoopState() {
+    const loading = document.getElementById('loop-loading');
+    const errorDiv = document.getElementById('loop-error');
+    const statusCard = document.getElementById('loop-status-card');
+    const subsCard = document.getElementById('loop-subscriptions-card');
+    const alertsCard = document.getElementById('loop-alerts-card');
+
+    try {
+      const data = await API.get('/research-loop');
+      loopState = data;
+      renderStatus(data.status || {});
+      renderSubscriptions(data.subscriptions || []);
+      renderAlerts(data.alerts || []);
+      statusCard.hidden = false;
+      subsCard.hidden = false;
+      alertsCard.hidden = false;
+      loading.hidden = true;
+    } catch (e) {
+      loading.hidden = true;
+      errorDiv.textContent = 'Failed to load research loop state: ' + e.message;
+      errorDiv.hidden = false;
+    }
+  }
+
+  function renderStatus(status) {
+    const indicator = document.getElementById('loop-running-indicator');
+    const isRunning = status.running || false;
+
+    indicator.textContent = isRunning ? 'ON' : 'OFF';
+    indicator.style.color = isRunning ? 'var(--pen-green)' : 'var(--ink-faint)';
+
+    document.getElementById('loop-interval').textContent = status.interval_minutes != null
+      ? status.interval_minutes + 'm'
+      : '—';
+    document.getElementById('loop-alerts-count').textContent = status.alerts_count || 0;
+    document.getElementById('loop-last-check').textContent = status.last_check || '—';
+
+    document.getElementById('loop-start-btn').hidden = isRunning;
+    document.getElementById('loop-stop-btn').hidden = !isRunning;
+  }
+
+  function renderSubscriptions(subs) {
+    const container = document.getElementById('loop-subscriptions');
+    const noSubs = document.getElementById('loop-no-subs');
+
+    if (!subs.length) {
+      container.innerHTML = '';
+      noSubs.hidden = false;
+      return;
+    }
+
+    noSubs.hidden = true;
+    container.innerHTML = subs.map(sub => `
+      <div style="display:flex;align-items:center;gap:6px;background:var(--paper-alt);border:1px solid var(--border);border-radius:2px;padding:4px 10px;font-size:13px;">
+        <span style="color:var(--pen-green);font-size:11px;">●</span>
+        ${escapeHtml(sub.topic || sub)}
+      </div>
+    `).join('');
+  }
+
+  function renderAlerts(alerts) {
+    const container = document.getElementById('loop-alerts');
+    const noAlerts = document.getElementById('loop-no-alerts');
+
+    if (!alerts.length) {
+      container.innerHTML = '';
+      noAlerts.hidden = false;
+      return;
+    }
+
+    noAlerts.hidden = true;
+    container.innerHTML = alerts.map((alert, i) => {
+      const severity = alert.severity || 'LOW';
+      let badge = '';
+      if (severity === 'HIGH') {
+        badge = '<span class="badge badge-red">HIGH</span>';
+      } else if (severity === 'MEDIUM') {
+        badge = '<span class="badge badge-blue">MEDIUM</span>';
+      } else {
+        badge = '<span class="badge badge-gray">' + escapeHtml(severity) + '</span>';
+      }
+      const prefBoost = alert.preference_boost
+        ? '<span class="badge badge-green">Pref</span>'
+        : '';
+      return `<div style="padding:12px 0;border-bottom:1px dashed var(--border-light);${i === alerts.length - 1 ? 'border-bottom:none;' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px;">
+          <div style="font-size:14px;font-weight:600;color:var(--ink);flex:1;min-width:0;">
+            ${escapeHtml((alert.top_gap_title || '').substring(0, 80))}
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            ${badge}
+            ${prefBoost}
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--ink-faint);margin-bottom:4px;">
+          Triggered by <a href="/papers/${escapeHtml(alert.triggered_by || '')}" style="color:var(--pen-blue);">${escapeHtml((alert.trigger_title || '').substring(0, 60))}</a>
+          ${alert.topic ? '· ' + escapeHtml(alert.topic) : ''}
+          ${alert.gene_pool_score != null ? '· Score ' + Math.round(alert.gene_pool_score * 100) + '%' : ''}
+        </div>
+        <div style="font-size:11px;color:var(--ink-faint);">
+          ${alert.top_gap_type ? '<span class="badge badge-blue" style="font-size:10px;">' + escapeHtml(alert.top_gap_type) + '</span>' : ''}
+          ${alert.created_at ? '<span style="margin-left:8px;">' + escapeHtml(alert.created_at) + '</span>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function toggleLoop(start) {
+    const btn = start
+      ? document.getElementById('loop-start-btn')
+      : document.getElementById('loop-stop-btn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = start ? 'Starting…' : 'Stopping…';
+
+    try {
+      const endpoint = start ? '/research-loop/start' : '/research-loop/stop';
+      await API.post(endpoint, {});
+      // Reload state
+      await loadLoopState();
+    } catch (e) {
+      const errorDiv = document.getElementById('loop-error');
+      errorDiv.textContent = 'Failed to ' + (start ? 'start' : 'stop') + ' watch: ' + e.message;
+      errorDiv.hidden = false;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function runCycle() {
+    const btn = document.getElementById('loop-run-btn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = 'Running…';
+
+    try {
+      await API.post('/research-loop/run-cycle', {});
+      await loadLoopState();
+    } catch (e) {
+      const errorDiv = document.getElementById('loop-error');
+      errorDiv.textContent = 'Failed to run cycle: ' + e.message;
+      errorDiv.hidden = false;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '⚡ Run Cycle Now';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadLoopState);
+  </script>
+</body>
+</html>

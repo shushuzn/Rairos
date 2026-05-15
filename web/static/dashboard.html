@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    svg#sketch-filter { position: absolute; width: 0; height: 0; }
+    .skip-link { position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600; }
+    .skip-link:focus { top:0; }
+    @media print { .sidebar,.hamburger,.sidebar-overlay,.btn,nav,header,footer,.page-title-underline,.page-desc { display:none!important; } .main { margin:0!important;padding:20px!important; } .card { box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid; } body { font-size:12pt;color:#000;background:#fff; } a { color:#000;text-decoration:underline; } @page { margin:2cm; } }
+  </style>
+</head>
+<body data-page="dashboard">
+  <!-- SVG Sketch filter -->
+  <svg id="sketch-filter" aria-hidden="true">
+    <defs>
+      <filter id="sketch" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">📊 Dashboard</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Your research at a glance.</p>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📄</div><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total Papers</div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="stat-done">—</div><div class="stat-label">Parsed</div></div>
+        <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value" id="stat-pending">—</div><div class="stat-label">Idle / Pending</div></div>
+        <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value" id="stat-gaps">—</div><div class="stat-label">Gaps</div></div>
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-grid" style="margin-bottom:32px;" id="charts-container"></div>
+
+      <!-- Recent Activity -->
+      <div class="card" style="margin-bottom:20px;" id="activity-card" hidden>
+        <div class="card-title">🕐 Recent Activity</div>
+        <div id="activity-list" style="position:relative;padding-left:20px;"></div>
+      </div>
+
+      <!-- Recent Papers -->
+      <div class="card" id="recent-card">
+        <div class="card-title">📖 Recent Papers</div>
+        <div id="recent-list"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true,theme:'neutral',fontFamily:'Lora, serif'});</script>
+  <script src="/static/layout.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      // ── Load stats ──────────────────────────────────────────────────────
+      const stats = await API.get("/stats");
+      document.getElementById("stat-total").textContent = stats.total || 0;
+      document.getElementById("stat-done").textContent = stats.done || 0;
+      document.getElementById("stat-pending").textContent = (stats.pending || 0);
+      document.getElementById("stat-gaps").textContent = stats.gaps || 0;
+
+      // ── Charts ──────────────────────────────────────────────────────────
+      const chartsDiv = document.getElementById("charts-container");
+      const totalPapers = stats.total || 1;
+
+      // Activity timeline (from recent papers)
+      const papers = await API.get("/papers?limit=10");
+      if (papers.length > 0) {
+        const actCard = document.getElementById("activity-card");
+        actCard.hidden = false;
+        const actList = document.getElementById("activity-list");
+        actList.innerHTML = papers.map((p, i) => `
+          <div style="display:flex;gap:16px;padding:8px 0;position:relative;">
+            <div style="position:absolute;left:-14px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--pen-blue);border:2px solid var(--paper);"></div>
+            ${i < papers.length - 1 ? '<div style="position:absolute;left:-10px;top:24px;width:2px;height:calc(100% - 8px);background:var(--border-light);"></div>' : ''}
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(p.title)}</div>
+              <div style="font-size:11px;color:var(--ink-faint);">${escapeHtml(p.authors?.slice(0,3).join(", ") || "")} · ${formatDate(p.published)}</div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      // Recent papers list
+      const recentDiv = document.getElementById("recent-list");
+      if (papers.length > 0) {
+        recentDiv.innerHTML = papers.map(p => `
+          <div style="border-bottom:1px dashed var(--border-light);padding:12px 0;">
+            <a href="/papers/${escapeHtml(p.id)}" style="text-decoration:none;">
+              <div class="paper-title" style="font-size:16px;">${escapeHtml(p.title.substring(0, 80))}</div>
+            </a>
+            <div class="paper-meta">${escapeHtml(p.authors?.slice(0,3).join(", ") || "")} · ${formatDate(p.published)} · ${p.categories?.slice(0,2).join(", ") || ""}</div>
+          </div>
+        `).join("");
+      } else {
+        recentDiv.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No papers yet. Import some!</div></div>`;
+      }
+    } catch (e) {
+      document.getElementById("stats-grid").innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load dashboard: ${e.message}</div></div>`;
+    }
+  });
+  </script>
+</body>
+</html>

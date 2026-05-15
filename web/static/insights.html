@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Insights — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>svg#sketch-filter{position:absolute;width:0;height:0;}.skip-link{position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600;}.skip-link:focus{top:0;}@media print{.sidebar,.hamburger,.sidebar-overlay,.btn,nav,header,footer,.page-title-underline,.page-desc{display:none!important;}.main{margin:0!important;padding:20px!important;}.card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid;}body{font-size:12pt;color:#000;background:#fff;}a{color:#000;text-decoration:underline;}@page{margin:2cm;}}</style>
+</head>
+<body data-page="insights">
+  <svg id="sketch-filter" aria-hidden="true"><defs><filter id="sketch" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">💡 Research Insights</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Your accumulated research knowledge — gaps discovered, patterns found, ideas generated.</p>
+
+      <!-- Top stats row -->
+      <div class="stats-grid" id="stats-grid" style="margin-bottom: 28px;">
+        <div class="stat-card"><div class="stat-icon">🧬</div><div class="stat-value" id="stat-capsules">—</div><div class="stat-label">Gene Pool Entries</div></div>
+        <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value" id="stat-events">—</div><div class="stat-label">Exploration Events</div></div>
+        <div class="stat-card"><div class="stat-icon">📂</div><div class="stat-value" id="stat-topics">—</div><div class="stat-label">Topics Explored</div></div>
+        <div class="stat-card"><div class="stat-icon" id="stat-archetype-icon">❓</div><div class="stat-value" id="stat-archetype" style="font-size: 22px;">Unknown</div><div class="stat-label">Research Archetype</div></div>
+      </div>
+
+      <!-- Chart grid: Archetype + Gap Preferences -->
+      <div class="chart-grid" id="chart-grid" style="margin-bottom: 28px;">
+        <div class="card" style="margin: 0;">
+          <div class="card-title">🎯 Research Archetype</div>
+          <div id="archetype-body">
+            <div style="font-size: 13px; color: var(--ink-faint); font-style: italic; padding: 12px 0;">
+              No exploration events yet. Use <code style="font-size: 12px;">airos gap &lt;topic&gt;</code> to discover your archetype.
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin: 0;">
+          <div class="card-title">📊 Gap Type Preferences</div>
+          <div id="gap-prefs-body">
+            <div style="font-size: 13px; color: var(--ink-faint); font-style: italic; padding: 12px 0;">
+              No gap preferences recorded yet.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic Frequency -->
+      <div class="card" id="topic-freq-card" style="margin-bottom: 20px;" hidden>
+        <div class="card-title">🔑 Top Research Topics</div>
+        <div id="topic-freq-body" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+      </div>
+
+      <!-- Actionable Project Suggestions -->
+      <div class="card" id="suggestions-card" style="margin-bottom: 20px; border-color: var(--pen-blue);" hidden>
+        <div class="card-title">🎯 Actionable Project Suggestions</div>
+        <div id="suggestions-body" style="display: flex; flex-direction: column; gap: 14px;"></div>
+      </div>
+
+      <!-- Gene Pool Capsules -->
+      <div class="card" id="capsules-card" style="margin-bottom: 20px;">
+        <div class="card-title">🧬 Gene Pool — Knowledge Capsules</div>
+        <div id="capsules-body">
+          <div class="empty-state">
+            <div class="empty-state-icon">🧬</div>
+            <div class="empty-state-text">No capsules yet. Extract gaps from papers to build your Gene Pool.</div>
+            <a href="/papers" class="btn btn-secondary" style="margin-top: 14px; display: inline-flex;">Browse Papers →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exploration Timeline -->
+      <div class="card" id="timeline-card" style="margin-bottom: 20px;">
+        <div class="card-title">🕐 Recent Exploration Timeline</div>
+        <div id="timeline-body">
+          <div style="font-size: 13px; color: var(--ink-faint); font-style: italic; padding: 8px 0;">
+            No exploration events yet.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true,theme:'neutral',fontFamily:'Lora, serif'});</script>
+  <script src="/static/layout.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      // ── Fetch all insights data ──────────────────────────────────
+      const data = await API.get("/insights");
+      const capsules = data.capsules || [];
+      const expStats = data.exp_stats || {};
+      const archetype = data.archetype || {};
+      const gapPrefs = data.gap_prefs || {};
+      const topicFreq = data.topic_freq || {};
+      const suggestions = data.suggestions || [];
+      const events = data.events || [];
+
+      // ── Stats Row ────────────────────────────────────────────────
+      document.getElementById("stat-capsules").textContent = capsules.length;
+      document.getElementById("stat-events").textContent = expStats.total_events || 0;
+      document.getElementById("stat-topics").textContent = expStats.total_topics || 0;
+
+      var archEvents = archetype.event_count || 0;
+      document.getElementById("stat-archetype-icon").textContent = archEvents > 0 ? "🎯" : "❓";
+      document.getElementById("stat-archetype").textContent = archEvents > 0 ? (archetype.archetype_label || "Unknown") : "Unknown";
+
+      // ── Archetype ────────────────────────────────────────────────
+      var archBody = document.getElementById("archetype-body");
+      if (archEvents > 0) {
+        var conf = archetype.confidence || 0;
+        var dims = archetype.dimensions || {};
+        var html = '<div style="margin-bottom: 14px;">' +
+          '<span style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--pen-blue);">' + escapeHtml(archetype.archetype_label || "") + '</span>' +
+          '<span style="font-size: 12px; color: var(--ink-faint); margin-left: 10px;">confidence ' + Math.round(conf * 100) + '%</span>' +
+        '</div>' +
+        '<div style="font-size: 12px; color: var(--ink-faint); margin-bottom: 14px;">Based on ' + archEvents + ' exploration events</div>';
+
+        for (var dimKey in dims) {
+          if (dims.hasOwnProperty(dimKey)) {
+            var dim = dims[dimKey];
+            var raw = dim[0], norm = dim[1], label = dim[2], desc = dim[3];
+            var pct = Math.round(norm * 100);
+            var barColor = norm >= 0.7 ? "var(--pen-green)" : norm >= 0.4 ? "var(--pen-blue)" : "var(--ink-faint)";
+            html += '<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 7px;">' +
+              '<div style="width: 110px; font-size: 12px; color: var(--ink-light); flex-shrink: 0;">' + escapeHtml(label) + '</div>' +
+              '<div style="flex: 1; height: 8px; background: var(--paper-alt); border-radius: 4px; border: 1px solid var(--border-light); overflow: hidden;">' +
+                '<div style="height: 100%; width: ' + pct + '%; background: ' + barColor + '; border-radius: 4px;"></div>' +
+              '</div>' +
+              '<div style="width: 32px; text-align: right; font-size: 11px; font-family: var(--font-mono); color: var(--ink-faint);">' + pct + '%</div>' +
+            '</div>';
+          }
+        }
+        archBody.innerHTML = html;
+      }
+
+      // ── Gap Type Preferences ─────────────────────────────────────
+      var gapBody = document.getElementById("gap-prefs-body");
+      var gpKeys = Object.keys(gapPrefs);
+      if (gpKeys.length > 0) {
+        html = "";
+        var count = 0;
+        for (var gpType in gapPrefs) {
+          if (gapPrefs.hasOwnProperty(gpType) && count < 8) {
+            var score = gapPrefs[gpType];
+            var barW = score > -0.5 ? Math.round((score + 0.5) * 80) : 0;
+            var barColor2 = score > 0.2 ? "var(--pen-green)" : score > 0 ? "var(--pen-blue)" : "var(--pen-red)";
+            var txtColor = score > 0.2 ? "var(--pen-green)" : score > 0 ? "var(--pen-blue)" : "var(--pen-red)";
+            html += '<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">' +
+              '<div style="width: 130px; font-size: 12px; color: var(--ink-light); flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + escapeHtml(gpType) + '</div>' +
+              '<div style="flex: 1; height: 8px; background: var(--paper-alt); border-radius: 4px; border: 1px solid var(--border-light); overflow: hidden;">' +
+                '<div style="height: 100%; width: ' + barW + '%; background: ' + barColor2 + '; border-radius: 4px;"></div>' +
+              '</div>' +
+              '<div style="width: 42px; text-align: right; font-size: 11px; font-family: var(--font-mono); color: ' + txtColor + ';">' + score.toFixed(2) + '</div>' +
+            '</div>';
+            count++;
+          }
+        }
+        gapBody.innerHTML = html;
+      }
+
+      // ── Topic Frequency ──────────────────────────────────────────
+      var tfKeys = Object.keys(topicFreq);
+      if (tfKeys.length > 0) {
+        document.getElementById("topic-freq-card").hidden = false;
+        var tfBody = document.getElementById("topic-freq-body");
+        tfBody.innerHTML = tfKeys.map(function(topic) {
+          var count = topicFreq[topic];
+          return '<div style="display: flex; align-items: center; gap: 8px; background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 3px; padding: 6px 12px;">' +
+            '<span style="font-size: 13px; font-weight: 600; color: var(--ink);">' + escapeHtml(topic.substring(0, 40)) + '</span>' +
+            '<span class="badge badge-blue" style="font-size: 11px;">' + count + '×</span>' +
+          '</div>';
+        }).join("");
+      }
+
+      // ── Suggestions ──────────────────────────────────────────────
+      if (suggestions.length > 0) {
+        document.getElementById("suggestions-card").hidden = false;
+        var sugBody = document.getElementById("suggestions-body");
+        sugBody.innerHTML = suggestions.map(function(s) {
+          var kwHtml = "";
+          if (s.keywords && s.keywords.length > 0) {
+            kwHtml = '<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;">' +
+              s.keywords.slice(0, 4).map(function(kw) {
+                return '<span style="font-size: 10px; background: var(--paper); border: 1px solid var(--border-light); border-radius: 2px; padding: 1px 5px; color: var(--ink-faint);">' + escapeHtml(kw) + '</span>';
+              }).join("") +
+            '</div>';
+          }
+          var confPct = s.confidence ? Math.round(s.confidence * 100) + "% confidence" : "";
+          return '<div style="display: flex; gap: 14px; padding: 14px; background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 3px; align-items: flex-start;">' +
+            '<div style="font-size: 24px; flex-shrink: 0; width: 36px; text-align: center;">' + (s.icon || "💡") + '</div>' +
+            '<div style="flex: 1; min-width: 0;">' +
+              '<div style="display: flex; gap: 10px; align-items: center; margin-bottom: 4px; flex-wrap: wrap;">' +
+                '<span style="font-size: 14px; font-weight: 600; color: var(--ink);">' + escapeHtml(s.title || "") + '</span>' +
+                (s.gap_type ? '<span class="badge badge-blue" style="font-size: 9px;">' + escapeHtml(s.gap_type) + '</span>' : "") +
+                (confPct ? '<span style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-faint); margin-left: auto;">' + confPct + '</span>' : "") +
+              '</div>' +
+              '<div style="font-size: 13px; color: var(--ink-light); line-height: 1.5;">' + escapeHtml(s.body || "") + '</div>' +
+              '<div style="margin-top: 10px;">' +
+                '<button class="btn btn-primary" style="font-size: 12px; padding: 4px 14px;" onclick="acceptSuggestion(this, ' + JSON.stringify(s) + ')">Take this on →</button>' +
+                '<button class="btn btn-blue" style="font-size: 12px; padding: 4px 14px; margin-left: 6px;" onclick="generateExperiment(this, ' + JSON.stringify(s) + ')">🔬 Experiment</button>' +
+              '</div>' +
+              kwHtml +
+            '</div>' +
+          '</div>';
+        }).join("");
+      }
+
+      // ── Capsules ─────────────────────────────────────────────────
+      var capBody = document.getElementById("capsules-body");
+      var prefetchedIds = data.prefetched_ids || {};
+      if (capsules.length > 0) {
+        capBody.innerHTML = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' +
+          capsules.map(function(cap) {
+            var capId = cap[0], topic = cap[1], gapType = cap[2], gapTitle = cap[3], score = cap[4], date = cap[5], keywords = cap[6] || [], status = cap[7] || "";
+            var opacity = status === "archived" ? "0.45" : "1";
+            var scoreColor = score >= 0.7 ? "var(--pen-green)" : score >= 0.4 ? "var(--pen-blue)" : "var(--ink-faint)";
+            var statusBadge = "";
+            if (status === "archived") {
+              statusBadge = '<span class="badge" style="font-size: 9px; background: var(--ink-faint); color: var(--paper);">archived</span>';
+            } else if (status === "consumed") {
+              statusBadge = '<span class="badge" style="font-size: 9px; background: var(--pen-green); color: var(--paper);">consumed</span>';
+            }
+            var prefetchedBadge = prefetchedIds[capId] ? '<span title="Prefetched: matches current research topic" style="color:#6B8FB5; font-size: 14px;">⚡</span>' : "";
+            var archiveBtn = (status !== "archived")
+              ? '<button onclick="archiveCapsule(\'' + escapeHtml(capId) + '\', this)" style="font-size: 10px; padding: 2px 8px; background: transparent; border: 1px solid var(--border-light); border-radius: 2px; color: var(--ink-faint); cursor: pointer;">Archive</button>'
+              : "";
+            return '<div style="background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 3px; padding: 14px; position: relative; opacity: ' + opacity + ';">' +
+              '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">' +
+                '<div style="display: flex; gap: 5px; align-items: center;">' +
+                  '<span class="badge badge-blue" style="font-size: 10px;">' + escapeHtml(gapType) + '</span>' +
+                  statusBadge + prefetchedBadge +
+                '</div>' +
+                '<span style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: ' + scoreColor + ';">' + Math.round(score * 100) + '%</span>' +
+              '</div>' +
+              '<div style="font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; line-height: 1.3;">' + escapeHtml((gapTitle || "").substring(0, 70)) + '</div>' +
+              '<div style="font-size: 11px; color: var(--ink-faint); margin-bottom: 6px;">' + escapeHtml(topic) + " · " + escapeHtml(date || "") + '</div>' +
+              '<div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;">' +
+                keywords.slice(0, 4).map(function(kw) {
+                  return '<span style="font-size: 10px; background: var(--paper); border: 1px solid var(--border-light); border-radius: 2px; padding: 1px 5px; color: var(--ink-faint);">' + escapeHtml(kw) + '</span>';
+                }).join("") +
+              '</div>' +
+              archiveBtn +
+            '</div>';
+          }).join("") +
+        '</div>';
+      }
+
+      // ── Timeline ─────────────────────────────────────────────────
+      var timeBody = document.getElementById("timeline-body");
+      if (events.length > 0) {
+        html = '<div style="position: relative; padding-left: 20px;">';
+        for (var i = 0; i < events.length; i++) {
+          var ev = events[i];
+          var time = ev[0], date = ev[1], action = ev[2], topic = ev[3], gapType = ev[4], gapTitle = ev[5];
+          var dotColor = action === "accepted" ? "var(--pen-green)" : action === "rejected" ? "var(--pen-red)" : action === "viewed" ? "var(--pen-blue)" : "var(--ink-faint)";
+          var lineHtml = (i < events.length - 1)
+            ? '<div style="position: absolute; left: -10px; top: 22px; width: 2px; height: calc(100% - 4px); background: var(--border-light);"></div>'
+            : "";
+          var gapSnippet = (gapTitle && gapTitle !== "—") ? '<div style="font-size: 11px; color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + escapeHtml(gapTitle) + '</div>' : "";
+          html += '<div style="display: flex; gap: 14px; padding: 8px 0; position: relative; align-items: flex-start;">' +
+            '<div style="position: absolute; left: -14px; top: 12px; width: 10px; height: 10px; border-radius: 50%; background: ' + dotColor + '; border: 2px solid var(--paper);"></div>' +
+            lineHtml +
+            '<div style="width: 48px; flex-shrink: 0;">' +
+              '<div style="font-size: 11px; font-family: var(--font-mono); color: var(--ink-faint);">' + escapeHtml(date ? date.substring(5) : "") + '</div>' +
+              '<div style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-faint);">' + escapeHtml(time || "") + '</div>' +
+            '</div>' +
+            '<div style="width: 80px; flex-shrink: 0;">' +
+              '<span class="badge badge-blue" style="font-size: 9px; padding: 1px 5px;">' + escapeHtml((action || "").substring(0, 10)) + '</span>' +
+            '</div>' +
+            '<div style="flex: 1; min-width: 0;">' +
+              '<div style="font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + escapeHtml(topic || "") + '</div>' +
+              gapSnippet +
+            '</div>' +
+          '</div>';
+        }
+        html += '</div>';
+        timeBody.innerHTML = html;
+      }
+    } catch (e) {
+      document.getElementById("stats-grid").innerHTML =
+        '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Failed to load insights: ' + escapeHtml(e.message) + '</div></div>';
+    }
+  });
+
+  // ── Suggestion Actions ──────────────────────────────────────────────
+  function generateExperiment(btn, s) {
+    btn.disabled = true;
+    btn.textContent = "Generating…";
+    fetch("/api/insights/generate-experiment", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        gap_type: s.gap_type || "",
+        topic: s.topic_hint || "",
+        title: s.title || "",
+        body: s.body || "",
+        keywords: s.keywords || [],
+        source_cap_id: s.source_cap_id || null,
+      }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        btn.textContent = "✅ Created";
+        btn.className = "btn btn-secondary";
+      } else {
+        btn.disabled = false;
+        btn.textContent = "🔬 Experiment";
+        alert("Failed: " + (data.error || "unknown error"));
+      }
+    })
+    .catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = "🔬 Experiment";
+      alert("Network error: " + e);
+    });
+  }
+
+  function acceptSuggestion(btn, s) {
+    btn.disabled = true;
+    btn.textContent = "Accepting…";
+    fetch("/api/insights/accept-suggestion", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        gap_type: s.gap_type || "",
+        topic: s.topic_hint || "",
+        title: s.title || "",
+        body: s.body || "",
+        type: s.type || "",
+        source_cap_id: s.source_cap_id || null,
+      }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var msg = data.evolved > 0 ? "✓ Evolved " + data.evolved + " capsule(s)!" : "✓ Accepted!";
+        btn.textContent = msg;
+        btn.className = "btn btn-secondary";
+        var card = btn.closest('div[style*="display: flex; gap: 14px"]');
+        if (card) {
+          card.style.opacity = "0.5";
+          card.style.pointerEvents = "none";
+        }
+      } else {
+        btn.disabled = false;
+        btn.textContent = "Take this on →";
+        alert("Failed: " + (data.error || "unknown error"));
+      }
+    })
+    .catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = "Take this on →";
+      alert("Network error: " + e);
+    });
+  }
+
+  function archiveCapsule(capsuleId, btn) {
+    if (!confirm("Archive this capsule? It will be removed from active suggestions.")) return;
+    btn.disabled = true;
+    btn.textContent = "Archiving…";
+    fetch("/api/insights/archive-capsule", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({capsule_id: capsuleId}),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var card = btn.closest('div[style*="background: var(--paper-alt)"]');
+        if (card) {
+          card.style.opacity = "0.4";
+          card.style.pointerEvents = "none";
+          var archiveBtn = card.querySelector("button");
+          if (archiveBtn) archiveBtn.style.display = "none";
+        }
+      } else {
+        btn.disabled = false;
+        btn.textContent = "Archive";
+        alert("Failed: " + (data.error || "unknown error"));
+      }
+    })
+    .catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = "Archive";
+      alert("Network error: " + e);
+    });
+  }
+  </script>
+</body>
+</html>

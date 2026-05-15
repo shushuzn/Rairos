@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daemon — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>svg#sketch-filter{position:absolute;width:0;height:0;}.skip-link{position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600;}.skip-link:focus{top:0;}@media print{.sidebar,.hamburger,.sidebar-overlay,.btn,nav,header,footer,.page-title-underline,.page-desc{display:none!important;}.main{margin:0!important;padding:20px!important;}.card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid;}body{font-size:12pt;color:#000;background:#fff;}a{color:#000;text-decoration:underline;}@page{margin:2cm;}}</style>
+</head>
+<body data-page="daemon">
+  <svg id="sketch-filter" aria-hidden="true"><defs><filter id="sketch" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">🤖 Daemon Dashboard</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Autonomous research autopilot — orchestrator + evolution + credibility.</p>
+
+      <!-- Status Bar -->
+      <div class="daemon-status-bar" id="status-bar" style="display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
+        <div class="stat-card" style="flex:1;min-width:140px;">
+          <div class="stat-icon" id="daemon-status-icon">⚪</div>
+          <div class="stat-value" id="daemon-status-text" style="font-size:1rem;">LOADING</div>
+          <div class="stat-label">Daemon Status</div>
+        </div>
+        <div class="stat-card" style="flex:1;min-width:140px;">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-value" id="daemon-interval" style="font-size:1rem;">—</div>
+          <div class="stat-label">Poll Interval</div>
+        </div>
+        <div class="stat-card" style="flex:1;min-width:140px;">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="daemon-alerts-count" style="font-size:1rem;">—</div>
+          <div class="stat-label">Alerts</div>
+        </div>
+        <div class="stat-card" style="flex:1;min-width:140px;">
+          <div class="stat-icon">🕐</div>
+          <div class="stat-value" id="daemon-last-check" style="font-size:1rem;">—</div>
+          <div class="stat-label">Last Check</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div id="daemon-controls" style="display:flex;gap:8px;margin-bottom:24px;"></div>
+
+      <!-- Gene Pool Stats + Credibility -->
+      <div class="chart-grid" style="margin-bottom:32px;">
+        <div class="bar-chart-container">
+          <div class="bar-chart-title">🧬 Gene Pool</div>
+          <div id="gene-pool-stats" style="padding:12px 0;"></div>
+        </div>
+        <div class="bar-chart-container">
+          <div class="bar-chart-title">⚖️ Credibility</div>
+          <div id="credibility-stats" style="padding:12px 0;">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;">
+              <span style="color:var(--ink-light);">Assessed</span>
+              <span style="font-weight:600;" id="cred-total">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;">
+              <span style="color:var(--ink-light);">High Credibility</span>
+              <span style="font-weight:600;color:#7A9E7A;" id="cred-high">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;">
+              <span style="color:var(--ink-light);">Trendslop</span>
+              <span style="font-weight:600;color:#D9534F;" id="cred-trendslop">—</span>
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <a href="/gene-pool/credibility" class="btn" style="font-size:12px;padding:4px 12px;">View Details →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Alerts -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">🔔 Recent Alerts</div>
+        <div id="alerts-body">
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-text">No alerts yet. Start the daemon or run a cycle.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">🔗 Quick Links</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding:8px 0;">
+          <a href="/gene-pool/credibility" class="btn" style="font-size:12px;">⚖️ Credibility</a>
+          <a href="/trust-scores" class="btn" style="font-size:12px;">🛡️ Trust Scores</a>
+          <a href="/gene-pool/evolution-log" class="btn" style="font-size:12px;">🧬 Evolution</a>
+          <a href="/gene-pool/graph" class="btn" style="font-size:12px;">📊 Gene Pool Graph</a>
+          <a href="/research-loop" class="btn" style="font-size:12px;">🔄 Research Loop</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true,theme:'neutral',fontFamily:'Lora, serif'});</script>
+  <script src="/static/layout.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async function() {
+    await loadDaemonStatus();
+  });
+
+  async function loadDaemonStatus() {
+    try {
+      var status = await API.get("/research-loop/status");
+      renderDaemon(status);
+    } catch (e) {
+      document.getElementById("daemon-status-text").textContent = "ERROR";
+      document.getElementById("daemon-status-icon").textContent = "🔴";
+      document.getElementById("status-bar").insertAdjacentHTML("afterend",
+        '<div class="alert alert-warning" style="margin-bottom:24px;">⚠️ Failed to load daemon status: ' + escapeHtml(e.message) + '</div>');
+    }
+  }
+
+  function renderDaemon(status) {
+    var running = status.running || false;
+
+    // ── Status cards ──────────────────────────────────────────
+    document.getElementById("daemon-status-icon").textContent = running ? "🟢" : "🔴";
+    document.getElementById("daemon-status-text").textContent = running ? "RUNNING" : "STOPPED";
+    document.getElementById("daemon-interval").textContent = (status.interval_minutes || 30) + "min";
+    document.getElementById("daemon-alerts-count").textContent = status.alerts_count || 0;
+    document.getElementById("daemon-last-check").textContent = (status.last_check || "—").substring(0, 16);
+
+    // ── Controls ─────────────────────────────────────────────
+    var controlsDiv = document.getElementById("daemon-controls");
+    if (running) {
+      controlsDiv.innerHTML =
+        '<button class="btn btn-danger" onclick="daemonAction(\'stop\')">⏹ Stop Daemon</button>';
+    } else {
+      controlsDiv.innerHTML =
+        '<button class="btn btn-primary" onclick="daemonAction(\'start\')">▶ Start Daemon</button>' +
+        '<button class="btn" style="background:var(--pen-blue);color:white;" onclick="daemonAction(\'run-cycle\')">🔄 Run Cycle</button>';
+    }
+
+    // ── Gene Pool ─────────────────────────────────────────────
+    var gp = status.gene_pool || {};
+    var gpStatsHtml =
+      '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
+        '<span style="color:var(--ink-light);">Capsules</span>' +
+        '<span style="font-weight:600;">' + (gp.total_capsules || 0) + '</span>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
+        '<span style="color:var(--ink-light);">Avg Score</span>' +
+        '<span style="font-weight:600;">' + (typeof gp.avg_score === "number" ? gp.avg_score.toFixed(3) : "0.000") + '</span>' +
+      '</div>';
+
+    var poolStats = status.pool_stats;
+    if (poolStats && poolStats.generations) {
+      gpStatsHtml +=
+        '<div style="display:flex;justify-content:space-between;padding:6px 0;">' +
+          '<span style="color:var(--ink-light);">Generations</span>' +
+          '<span style="font-weight:600;">' + (poolStats.generations.length || 0) + '</span>' +
+        '</div>';
+    }
+    document.getElementById("gene-pool-stats").innerHTML = gpStatsHtml;
+
+    // ── Credibility ───────────────────────────────────────────
+    var cs = status.cred_stats || {};
+    document.getElementById("cred-total").textContent = (cs.total || 0) + " capsules";
+    document.getElementById("cred-high").textContent = cs.high || 0;
+    document.getElementById("cred-trendslop").textContent = cs.trendslop || 0;
+
+    // ── Alerts ────────────────────────────────────────────────
+    var alerts = status.alerts || [];
+    var alertsBody = document.getElementById("alerts-body");
+    if (alerts.length > 0) {
+      alertsBody.innerHTML = alerts.map(function(a) {
+        var alertId = a[0], sessionId = a[1], topic = a[2], triggeredBy = a[3], triggerTitle = a[4];
+        var gapsFound = a[5], topGapTitle = a[6], topGapType = a[7], severity = a[8];
+        var genePoolScore = a[9], preferenceBoost = a[10], created = a[11];
+
+        var sevIcon = severity === "HIGH" ? "🔴" : severity === "MEDIUM" ? "🟡" : "🟢";
+        var prefBoostHtml = preferenceBoost ? " · ✅ Matches preferences" : "";
+        var gpScoreStr = typeof genePoolScore === "number" ? genePoolScore.toFixed(2) : "0.00";
+        return '<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px dashed var(--border-light);">' +
+          '<div style="flex-shrink:0;width:24px;text-align:center;padding-top:2px;">' + sevIcon + '</div>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-weight:600;font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escapeHtml((topGapTitle || "").substring(0, 60)) + '</div>' +
+            '<div style="font-size:12px;color:var(--ink-light);margin-top:2px;">' +
+              '<strong>' + escapeHtml(severity || "") + '</strong> · ' + escapeHtml(topGapType || "") + ' · gp=' + gpScoreStr +
+              prefBoostHtml +
+            '</div>' +
+            '<div style="font-size:11px;color:var(--ink-faint);margin-top:1px;">' +
+              escapeHtml((triggerTitle || "").substring(0, 45)) + ' · ' + escapeHtml((topic || "").substring(0, 20)) +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+  }
+
+  async function daemonAction(action) {
+    var btn = event.target;
+    btn.disabled = true;
+    btn.textContent = action === "start" ? "Starting…" : action === "stop" ? "Stopping…" : "Cycling…";
+
+    try {
+      var response = await fetch("/api/research-loop/" + action, { method: "POST" });
+      var data = response.ok ? await response.json() : { success: false, error: response.statusText };
+      if (data.success) {
+        btn.textContent = action === "start" ? "✅ Started" : action === "stop" ? "✅ Stopped" : "✅ Cycle triggered";
+        if (action === "run-cycle") {
+          btn.textContent = "🔄 Cycle triggered";
+        }
+        // Reload status
+        setTimeout(async function() {
+          var status = await API.get("/research-loop/status");
+          renderDaemon(status);
+        }, 1000);
+      } else {
+        btn.disabled = false;
+        btn.textContent = action === "start" ? "▶ Start Daemon" : action === "stop" ? "⏹ Stop Daemon" : "🔄 Run Cycle";
+        alert("Failed: " + (data.error || "unknown error"));
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = action === "start" ? "▶ Start Daemon" : action === "stop" ? "⏹ Stop Daemon" : "🔄 Run Cycle";
+      alert("Network error: " + e);
+    }
+  }
+  </script>
+</body>
+</html>

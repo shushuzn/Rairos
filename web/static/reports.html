@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    svg#sketch-filter { position: absolute; width: 0; height: 0; }
+    .skip-link { position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600; }
+    .skip-link:focus { top:0; }
+    .report-card { border:1px solid var(--border); border-radius:8px; margin-bottom:12px; overflow:hidden; }
+    .report-header { padding:16px 20px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; background:none; border:none; width:100%; text-align:left; font:inherit; color:inherit; }
+    .report-header:hover { background:var(--paper-alt); }
+    .report-header .arrow { transition:transform 0.2s; font-size:12px; color:var(--ink-faint); }
+    .report-header.open .arrow { transform:rotate(90deg); }
+    .report-body { display:none; padding:0 20px 20px 20px; font-size:14px; line-height:1.7; color:var(--ink); }
+    .report-body.open { display:block; }
+    .report-meta { font-size:12px; color:var(--ink-faint); margin-top:4px; }
+    @media print { .sidebar,.hamburger,.sidebar-overlay,.btn,nav,header,footer,.page-title-underline,.page-desc { display:none!important; } .main { margin:0!important;padding:20px!important; } .card { box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid; } body { font-size:12pt;color:#000;background:#fff; } a { color:#000;text-decoration:underline; } @page { margin:2cm; } }
+  </style>
+</head>
+<body data-page="reports">
+  <!-- SVG Sketch filter -->
+  <svg id="sketch-filter" aria-hidden="true">
+    <defs>
+      <filter id="sketch" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <h1 class="page-title">📄 Research Reports</h1>
+      <div class="page-title-underline"></div>
+      <p class="page-desc">Theme-based analysis of Gene Pool knowledge. Click a theme to expand.</p>
+
+      <!-- Loading -->
+      <div id="reports-loading" class="loading">
+        <span>Loading reports…</span>
+        <span class="loading-dots"><span></span><span></span><span></span></span>
+      </div>
+
+      <!-- Error -->
+      <div id="reports-error" class="alert alert-warning" hidden></div>
+
+      <!-- Reports Container -->
+      <div id="reports-container"></div>
+
+      <!-- Empty State -->
+      <div id="reports-empty" class="empty-state" hidden>
+        <div class="empty-state-icon">📄</div>
+        <div class="empty-state-text">No reports available yet.</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true,theme:'neutral',fontFamily:'Lora, serif'});</script>
+  <script src="/static/layout.js"></script>
+  <script>
+  function toggleReport(slug) {
+    const body = document.getElementById('report-' + slug);
+    const header = body.previousElementSibling;
+    const isOpen = body.classList.toggle('open');
+    header.classList.toggle('open');
+    header.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const container = document.getElementById('reports-container');
+    const loading = document.getElementById('reports-loading');
+    const errorDiv = document.getElementById('reports-error');
+    const emptyDiv = document.getElementById('reports-empty');
+
+    try {
+      const reports = await API.get('/reports');
+      loading.hidden = true;
+
+      if (!reports || reports.length === 0) {
+        emptyDiv.hidden = false;
+        return;
+      }
+
+      container.innerHTML = reports.map(r => `
+        <div class="report-card">
+          <button class="report-header" id="report-btn-${escapeHtml(r.slug)}" type="button" aria-expanded="false" aria-controls="report-${escapeHtml(r.slug)}" onclick="toggleReport('${escapeHtml(r.slug)}')">
+            <div>
+              <strong style="font-size:16px;">${escapeHtml(r.name)}</strong>
+              <div class="report-meta">${escapeHtml(String(r.count))} capsules · ${escapeHtml(String(r.avg))} · ${escapeHtml(r.summary || '')}</div>
+            </div>
+            <span class="arrow">▶</span>
+          </button>
+          <div class="report-body" id="report-${escapeHtml(r.slug)}" role="region" aria-labelledby="report-btn-${escapeHtml(r.slug)}">
+            <pre style="font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;margin:0;">${escapeHtml(r.content)}</pre>
+          </div>
+        </div>
+      `).join('');
+    } catch (e) {
+      loading.hidden = true;
+      errorDiv.textContent = 'Failed to load reports: ' + e.message;
+      errorDiv.hidden = false;
+    }
+  });
+  </script>
+</body>
+</html>
