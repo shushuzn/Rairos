@@ -10,6 +10,29 @@ rairos-llm = { path = "../rairos-llm" }
 rairos-web = { path = "../rairos-web" }
 rairos-kg = { path = "../rairos-kg" }
 rairos-memory = { path = "../rairos-memory" }
+rairos-argument-builder = { path = "../rairos-argument-builder" }
+rairos-citation-chain = { path = "../rairos-citation-chain" }
+rairos-dashboard = { path = "../rairos-dashboard" }
+rairos-weekly-digest = { path = "../rairos-weekly-digest" }
+rairos-discover = { path = "../rairos-discover" }
+rairos-evolution = { path = "../rairos-evolution" }
+rairos-experiment-tracker = { path = "../rairos-experiment-tracker" }
+rairos-friction = { path = "../rairos-friction" }
+rairos-insight-cards = { path = "../rairos-insight-cards" }
+rairos-intelligence = { path = "../rairos-intelligence" }
+rairos-journal = { path = "../rairos-journal" }
+rairos-litreview-analyzer = { path = "../rairos-litreview-analyzer" }
+rairos-generate = { path = "../rairos-generate" }
+rairos-replication-checker = { path = "../rairos-replication-checker" }
+rairos-evolution-report = { path = "../rairos-evolution-report" }
+rairos-research-log = { path = "../rairos-research-log" }
+rairos-review-generator = { path = "../rairos-review-generator" }
+rairos-scout = { path = "../rairos-scout" }
+rairos-research-session = { path = "../rairos-research-session" }
+rairos-signal = { path = "../rairos-signal" }
+rairos-story = { path = "../rairos-story" }
+rairos-viz = { path = "../rairos-viz" }
+rairos-gene-pool-watcher = { path = "../rairos-gene-pool-watcher" }
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
 tracing = "0.1"

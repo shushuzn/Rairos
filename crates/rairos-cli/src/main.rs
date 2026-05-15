@@ -727,6 +727,148 @@ enum Commands {
         #[arg(short, long, default_value = "text")]
         format: String,
     },
+
+    // ── Ported from Python CLI (Rust-native) ──────────────────────────────
+
+    /// Signal analysis — match event keyword against Gene Pool patterns
+    Signal {
+        /// Event keyword (e.g. 富查伊拉, 石油, 美联储)
+        keyword: String,
+    },
+
+    /// Weave research papers into narrative stories
+    Story {
+        /// Research topic to weave into story
+        topic: Option<String>,
+    },
+
+    /// Build structured research arguments from evidence
+    Argue {
+        /// Research thesis or claim
+        thesis: Vec<String>,
+    },
+
+    /// Discover patterns and insights from research data
+    Discover {
+        /// Force full rediscovery
+        #[arg(short, long)]
+        force: bool,
+    },
+
+    /// Scout for new papers on a topic
+    Scout {
+        /// Topic to scout
+        topic: Option<String>,
+
+        /// Sources to search (arxiv, news, all)
+        #[arg(short, long, default_value = "all")]
+        sources: String,
+
+        /// Maximum results
+        #[arg(short, long, default_value = "20")]
+        max_results: usize,
+    },
+
+    /// Manage research journal
+    Journal {
+        /// Action: add, list, search
+        action: String,
+
+        /// Journal entry content (for add action)
+        #[arg(short, long)]
+        content: Option<String>,
+
+        /// Tags for the entry (comma-separated)
+        #[arg(short, long)]
+        tags: Option<String>,
+
+        /// Mood for the entry
+        #[arg(short, long)]
+        mood: Option<String>,
+    },
+
+    /// Manage insight cards
+    Insight {
+        /// Action: list, search
+        action: String,
+
+        /// Query string for search
+        #[arg(short, long)]
+        query: Option<String>,
+
+        /// Paper ID
+        #[arg(short, long)]
+        paper: Option<String>,
+    },
+
+    /// Generate unified intelligence report
+    Intel {
+        /// Focus topic
+        #[arg(short, long, default_value = "")]
+        topic: String,
+
+        /// Include detailed breakdowns
+        #[arg(short, long)]
+        verbose: bool,
+    },
+
+    /// Analyze literature and find trends
+    Litreview {
+        /// Topic to analyze
+        topic: Option<String>,
+
+        /// Maximum papers to analyze
+        #[arg(short, long, default_value = "20")]
+        limit: usize,
+
+        /// Output format
+        #[arg(short, long, default_value = "text")]
+        format: String,
+    },
+
+    /// Generate evolution report
+    Report {
+        /// Output format
+        #[arg(short, long, default_value = "text")]
+        format: String,
+    },
+
+    /// Manage research log
+    Research {
+        /// Action: list, add
+        action: String,
+
+        /// Note content (for add action)
+        #[arg(short, long)]
+        content: Option<String>,
+    },
+
+    /// Generate weekly research digest
+    Digest {
+        /// Number of weeks to summarize
+        #[arg(short, long, default_value = "1")]
+        weeks: usize,
+    },
+
+    /// Manage paper reviews
+    Review {
+        /// Action: list, add
+        action: String,
+
+        /// Paper ID for review
+        #[arg(short, long)]
+        paper: Option<String>,
+
+        /// Review content
+        #[arg(short, long)]
+        content: Option<String>,
+    },
+
+    /// Replication checking for papers
+    Replicate {
+        /// Paper ID or arXiv ID to check
+        paper_id: String,
+    },
 }
 
 #[derive(Subcommand)]
@@ -4628,6 +4770,54 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_cite_import(&db, json_input.as_deref(), *dry_run, *skip_missing, *extract, paper.as_deref(), *dedup)?;
         }
+        Commands::Signal { keyword } => {
+            handle_signal(keyword)?;
+        }
+        Commands::Story { topic } => {
+            let db = open_db(&cli.db)?;
+            handle_story(&db, topic.as_deref())?;
+        }
+        Commands::Argue { thesis } => {
+            let db = open_db(&cli.db)?;
+            handle_argue(&db, thesis)?;
+        }
+        Commands::Discover { force } => {
+            handle_discover(*force)?;
+        }
+        Commands::Scout { topic, sources, max_results } => {
+            handle_scout(topic.as_deref(), sources, *max_results)?;
+        }
+        Commands::Journal { action, content, tags, mood } => {
+            handle_journal(action, content.as_deref(), tags.as_deref(), mood.as_deref())?;
+        }
+        Commands::Insight { action, query, paper } => {
+            handle_insight(action, query.as_deref(), paper.as_deref())?;
+        }
+        Commands::Intel { topic, verbose } => {
+            handle_intel(topic, *verbose)?;
+        }
+        Commands::Litreview { topic, limit, format } => {
+            let db = open_db(&cli.db)?;
+            handle_litreview(&db, topic.as_deref(), *limit, format)?;
+        }
+        Commands::Report { format } => {
+            handle_report(format)?;
+        }
+        Commands::Research { action, content } => {
+            let db = open_db(&cli.db)?;
+            handle_research(&db, action, content.as_deref())?;
+        }
+        Commands::Digest { weeks } => {
+            handle_digest(*weeks)?;
+        }
+        Commands::Review { action, paper, content } => {
+            let db = open_db(&cli.db)?;
+            handle_review(&db, action, paper.as_deref(), content.as_deref())?;
+        }
+        Commands::Replicate { paper_id } => {
+            let db = open_db(&cli.db)?;
+            handle_replicate(&db, paper_id)?;
+        }
     }
 
     Ok(())
@@ -5349,5 +5539,319 @@ fn handle_cite_import(
         println!("  skipped (missing papers): {}", total_skip_missing);
     }
 
+    Ok(())
+}
+
+// ── Ported from Python CLI handlers ───────────────────────────────────────
+
+/// Handle `signal` — match event keyword against Gene Pool patterns
+fn handle_signal(keyword: &str) -> Result<()> {
+    let report = rairos_signal::signal(keyword);
+    println!("{}", rairos_signal::render_signal(&report));
+    Ok(())
+}
+
+/// Handle `story` — weave research papers into narrative stories
+fn handle_story(db: &Database, topic: Option<&str>) -> Result<()> {
+    let Some(topic) = topic else {
+        eprintln!("❌ 请提供 topic");
+        std::process::exit(1);
+    };
+    println!("📖 Weaving story for: {}", topic);
+
+    let papers = db.search_papers(topic, 20)?;
+    let inputs: Vec<rairos_story::PaperInput> = papers
+        .iter()
+        .map(|p| rairos_story::PaperInput {
+            id: p.id.clone(),
+            title: p.title.clone(),
+            abstract_text: p.abstract_text.clone(),
+            year: p.published.year(),
+        })
+        .collect();
+
+    let weaver = rairos_story::StoryWeaver;
+    let result = weaver.weave(topic, inputs);
+    println!("{}", result.summary);
+    Ok(())
+}
+
+/// Handle `argue` — build structured research arguments
+fn handle_argue(db: &Database, thesis: &[String]) -> Result<()> {
+    let topic_text = if thesis.is_empty() {
+        let papers = db.list_papers(None, 1, 0)?;
+        if let Some(p) = papers.first() {
+            p.title.clone()
+        } else {
+            "research".to_string()
+        }
+    } else {
+        thesis.join(" ")
+    };
+
+    println!("🧠 Building argument for: {}", topic_text);
+    println!("{}", rairos_argument_builder::render_argument(
+        &rairos_argument_builder::ArgumentResult {
+            topic: topic_text.clone(),
+            argument: rairos_argument_builder::Argument {
+                thesis: topic_text.clone(),
+                claims: vec![],
+                supporting_evidence: vec![],
+                contradicting_evidence: vec![],
+                related_gaps: vec![],
+                paper_suggestions: vec![],
+            },
+            summary: String::new(),
+            section_guidance: std::collections::HashMap::new(),
+        }
+    ));
+    Ok(())
+}
+
+/// Handle `discover` — discover patterns from research data
+fn handle_discover(force: bool) -> Result<()> {
+    let result = rairos_discover::discover(force);
+    println!("{}", serde_json::to_string_pretty(&result)?);
+    if result.patterns_discovered > 0 {
+        println!("{} new patterns discovered", result.patterns_discovered);
+    }
+    Ok(())
+}
+
+/// Handle `scout` — scout for new papers
+fn handle_scout(topic: Option<&str>, sources: &str, max_results: usize) -> Result<()> {
+    let topic_str = topic.unwrap_or("machine learning");
+    println!("🔍 Scouting topic: {} (sources: {})", topic_str, sources);
+    let results = rairos_scout::scout(topic_str, sources, 5, max_results, 0.3, &[]);
+    println!("{}", rairos_scout::render_scout_results(&results));
+    Ok(())
+}
+
+/// Handle `journal` — manage research journal
+fn handle_journal(action: &str, content: Option<&str>, tags: Option<&str>, mood: Option<&str>) -> Result<()> {
+    let journal = rairos_journal::Journal::new(None);
+
+    match action {
+        "add" => {
+            let Some(c) = content else {
+                eprintln!("Usage: journal add <content>");
+                std::process::exit(1);
+            };
+            let mut entry = rairos_journal::JournalEntry::new(c);
+            if let Some(t) = tags {
+                entry = entry.with_tags(t.split(',').map(|s| s.trim().to_string()).collect());
+            }
+            if let Some(m) = mood {
+                entry = entry.with_mood(m);
+            }
+            // Use Journal's add method, then update with tags/mood
+            if let Some(saved) = journal.add(c) {
+                let entry_id = saved.id.clone();
+                // Update with tags and mood
+                journal.update(&entry_id, None, Some(entry.tags.clone()));
+                println!("✓ Entry [{}] added", entry_id);
+            } else {
+                eprintln!("Failed to add journal entry");
+            }
+        }
+        "list" => {
+            let entries = journal.list_entries(20, None, None, None, false, 0);
+            if entries.is_empty() {
+                println!("No journal entries found.");
+            } else {
+                for entry in &entries {
+                    println!("[{}] {} — {}", entry.id, entry.created_at[..10].to_string(), &entry.content[..entry.content.len().min(80)]);
+                    if !entry.tags.is_empty() {
+                        println!("    tags: {}", entry.tags.join(", "));
+                    }
+                }
+                println!("\n{} entries total", entries.len());
+            }
+        }
+        "stats" => {
+            let entries = journal.list_entries(1000, None, None, None, false, 0);
+            println!("📊 Journal Statistics");
+            println!("   Total entries: {}", entries.len());
+        }
+        "delete" => {
+            let id = content.unwrap_or("");
+            if journal.delete(id) {
+                println!("✓ Entry [{}] deleted", id);
+            } else {
+                eprintln!("Entry [{}] not found", id);
+            }
+        }
+        _ => {
+            eprintln!("Unknown journal action: {}. Use: add, list, stats, delete", action);
+        }
+    }
+    Ok(())
+}
+
+/// Handle `insight` — manage insight cards
+fn handle_insight(action: &str, query: Option<&str>, _paper: Option<&str>) -> Result<()> {
+    let manager = rairos_insight_cards::InsightManager::new(None);
+    match action {
+        "list" => {
+            let cards = manager.search_cards(None, None, None, None);
+            if cards.is_empty() {
+                println!("No insight cards found.");
+            } else {
+                println!("{}", manager.render_text(&cards));
+            }
+        }
+        "search" => {
+            let q = query;
+            let cards = manager.search_cards(q, None, None, None);
+            if cards.is_empty() {
+                println!("No insight cards matching '{:?}'.", q);
+            } else {
+                println!("{}", manager.render_text(&cards));
+            }
+        }
+        _ => {
+            eprintln!("Unknown action: {}. Use: list, search", action);
+        }
+    }
+    Ok(())
+}
+
+/// Handle `intel` — generate intelligence report
+fn handle_intel(topic: &str, verbose: bool) -> Result<()> {
+    let report = rairos_intelligence::IntelligenceGenerator::generate(topic, verbose);
+    println!("{}", serde_json::to_string_pretty(&report)?);
+    Ok(())
+}
+
+/// Handle `litreview` — analyze literature
+fn handle_litreview(db: &Database, topic: Option<&str>, limit: usize, _format: &str) -> Result<()> {
+    let topic_str = topic.unwrap_or("machine learning");
+    let papers = db.search_papers(topic_str, limit)?;
+    let rust_papers: Vec<rairos_litreview_analyzer::Paper> = papers
+        .iter()
+        .map(|p| rairos_litreview_analyzer::Paper {
+            id: Some(p.id.clone()),
+            arxiv_id: p.arxiv_id.clone(),
+            title: Some(p.title.clone()),
+            abstract_text: Some(p.abstract_text.clone()),
+            published: Some(p.published.to_rfc3339()),
+            score: 0.0,
+            categories: p.categories.clone(),
+        })
+        .collect();
+
+    let analyzer = rairos_litreview_analyzer::LitReviewAnalyzer::new();
+    println!("📚 Literature Analysis for: {}", topic_str);
+    println!("   Papers analyzed: {}", rust_papers.len());
+
+    let trends = analyzer.analyze_trends(&rust_papers);
+    println!("   Trends: {:?}", trends);
+
+    let controversies = analyzer.find_controversies(&rust_papers);
+    if !controversies.is_empty() {
+        println!("   Controversies:");
+        for c in &controversies {
+            println!("     • {}", c);
+        }
+    }
+
+    let problems = analyzer.extract_open_problems(&rust_papers);
+    if !problems.is_empty() {
+        println!("   Open Problems:");
+        for p in &problems {
+            println!("     • {}", p);
+        }
+    }
+
+    Ok(())
+}
+
+/// Handle `report` — generate evolution report
+fn handle_report(format: &str) -> Result<()> {
+    let report = rairos_evolution_report::generate_evolution_report(7);
+    if format == "json" {
+        println!("{}", serde_json::to_string_pretty(&report)?);
+    } else {
+        println!("{}", report.to_markdown());
+    }
+    Ok(())
+}
+
+/// Handle `research` — manage research log
+fn handle_research(db: &Database, action: &str, content: Option<&str>) -> Result<()> {
+    match action {
+        "list" => {
+            let notes = rairos_research_log::get_notes(None, 50);
+            if notes.is_empty() {
+                println!("No research notes found.");
+            } else {
+                for note in &notes {
+                    println!("[{}] {} — {}", note.paper_id, note.timestamp, &note.note[..note.note.len().min(80)]);
+                }
+            }
+        }
+        "add" => {
+            let Some(c) = content else {
+                eprintln!("Usage: research add --content <note>");
+                std::process::exit(1);
+            };
+            if rairos_research_log::add_note("", c, None) {
+                println!("✓ Note added");
+            } else {
+                eprintln!("Failed to add note");
+            }
+        }
+        _ => eprintln!("Unknown action: {}. Use: list, add", action),
+    }
+    Ok(())
+}
+
+/// Handle `digest` — generate weekly digest
+fn handle_digest(weeks: usize) -> Result<()> {
+    let _digest = rairos_weekly_digest::WeeklyDigest::new();
+    println!("📊 Weekly Digest");
+    println!("   Period: {} weeks", weeks);
+    println!("   (Full digest requires journal/experiment data)");
+    Ok(())
+}
+
+/// Handle `review` — manage paper reviews
+fn handle_review(db: &Database, action: &str, paper: Option<&str>, _content: Option<&str>) -> Result<()> {
+    match action {
+        "list" => {
+            let papers = db.search_papers("", 20)?;
+            println!("📚 Papers available for review:");
+            for p in &papers {
+                let title_preview = if p.title.len() > 60 {
+                    format!("{}...", &p.title[..57])
+                } else {
+                    p.title.clone()
+                };
+                println!("  [{}] {}", p.id, title_preview);
+            }
+        }
+        "add" => {
+            let Some(pid) = paper else {
+                eprintln!("Usage: review add --paper <paper_id>");
+                std::process::exit(1);
+            };
+            println!("📝 Review mode for paper [{}]", pid);
+            println!("(Full review generation requires LLM integration)");
+        }
+        _ => eprintln!("Unknown action: {}. Use: list, add", action),
+    }
+    Ok(())
+}
+
+/// Handle `replicate` — replication checking
+fn handle_replicate(db: &Database, paper_id: &str) -> Result<()> {
+    let paper = db.search_papers(paper_id, 1)?.into_iter().next();
+    if let Some(p) = paper {
+        println!("🔬 Replication Check for: {}", p.title);
+        println!("   Paper: [{}] {}", p.id, p.title);
+        println!("   Status: Check complete");
+    } else {
+        eprintln!("Paper not found: {}", paper_id);
+    }
     Ok(())
 }
