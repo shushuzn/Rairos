@@ -1440,6 +1440,52 @@ enum Commands {
         #[command(subcommand)]
         action: RagAction,
     },
+
+    /// RAG Chat with your paper library
+    Chat {
+        /// Question to ask (omit for interactive mode)
+        question: Option<String>,
+
+        /// Target specific paper by ID
+        #[arg(long)]
+        paper: Option<String>,
+
+        /// Filter by concept/tag
+        #[arg(short, long)]
+        concept: Option<String>,
+
+        /// Number of papers to retrieve
+        #[arg(short = 'n', long, default_value = "5")]
+        limit: usize,
+
+        /// Interactive REPL mode
+        #[arg(short, long)]
+        interactive: bool,
+
+        /// Hide citations in output
+        #[arg(long)]
+        no_cite: bool,
+
+        /// LLM model to use
+        #[arg(long)]
+        model: Option<String>,
+
+        /// Verbose output
+        #[arg(short, long)]
+        verbose: bool,
+
+        /// Stream the response
+        #[arg(long)]
+        stream: bool,
+
+        /// Export chat history
+        #[arg(short, long)]
+        export: Option<String>,
+
+        /// Export format (markdown/html)
+        #[arg(short, long)]
+        format: Option<String>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -6191,6 +6237,33 @@ fn main() -> Result<()> {
         Commands::Rag { action } => {
             handle_rag(action)?;
         }
+        Commands::Chat {
+            question,
+            paper,
+            concept,
+            limit,
+            interactive,
+            no_cite,
+            model,
+            verbose,
+            stream,
+            export,
+            format,
+        } => {
+            handle_chat(
+                question.as_deref(),
+                paper.as_deref(),
+                concept.as_deref(),
+                *limit,
+                *interactive,
+                *no_cite,
+                model.as_deref(),
+                *verbose,
+                *stream,
+                export.as_deref(),
+                format.as_deref(),
+            )?;
+        }
     }
 
     Ok(())
@@ -7265,6 +7338,350 @@ type = "multi_tolerance"
     std::fs::write(evoskill_dir.join("task.md"), task_content)?;
 
     Ok(())
+}
+
+/// Handle `chat` — RAG Chat with your paper library using LLM.
+///
+/// Mirrors Python's `cli.cmd.chat` + `llm.chat.RagChat`.
+/// Uses `rairos-llm::client_async::AsyncClient` for LLM calls with tokio runtime.
+fn handle_chat(
+    question: Option<&str>,
+    paper: Option<&str>,
+    _concept: Option<&str>,
+    limit: usize,
+    interactive: bool,
+    no_cite: bool,
+    model: Option<&str>,
+    verbose: bool,
+    stream: bool,
+    export_path: Option<&str>,
+    export_fmt: Option<&str>,
+) -> Result<()> {
+    let api_key = std::env::var("OPENAI_API_KEY")
+        .or_else(|_| std::env::var("LLM_API_KEY"))
+        .map_err(|_| anyhow::anyhow!("OPENAI_API_KEY not set. Please set it to enable chat."))?;
+    let base_url = std::env::var("LLM_BASE_URL")
+        .unwrap_or_else(|_| "https://api.openai.com/v1".to_string());
+    let chat_model = model.unwrap_or("gpt-4o-mini").to_string();
+
+    let db_path = PathBuf::from("rairos.db");
+    let db = Database::open(&db_path)?;
+
+    let rt = tokio::runtime::Runtime::new()?;
+
+    let rag_system_prompt = "你是一个严谨的 AI 研究助手，精通论文阅读和学术分析。
+
+核心原则：
+1. 基于原文回答，不要捏造或推测未提及的内容
+2. 不确定的信息必须加 [推测] 标注
+3. 使用 > 块引用格式引用原文片段
+4. 区分\"原文明确说\"和\"可推断\"
+5. 回答使用中文，但引用原文时保留英文原句
+
+输出格式：
+- 开头总结回答要点（1-2句话）
+- 详细解释部分引用原文片段
+- 结尾标注信息来源";
+
+    if interactive || question.is_none() {
+        run_chat_interactive(&db, &rt, &api_key, &base_url, &chat_model, rag_system_prompt,
+            paper, limit, no_cite, verbose, stream, export_path, export_fmt)?;
+    } else if let Some(q) = question {
+        run_chat_single(q, &db, &rt, &api_key, &base_url, &chat_model,
+            rag_system_prompt, paper, limit, no_cite, verbose, stream)?;
+    }
+
+    Ok(())
+}
+
+/// Run a single RAG chat question -> answer.
+fn run_chat_single(
+    question: &str,
+    db: &Database,
+    rt: &tokio::runtime::Runtime,
+    api_key: &str,
+    base_url: &str,
+    chat_model: &str,
+    rag_system_prompt: &str,
+    _paper: Option<&str>,
+    limit: usize,
+    no_cite: bool,
+    _verbose: bool,
+    _stream: bool,
+) -> Result<()> {
+    let papers = db.search_papers(question, limit)?;
+    if papers.is_empty() {
+        eprintln!("No papers found matching your question.");
+        return Ok(());
+    }
+
+    let context_parts: Vec<String> = papers.iter().enumerate().map(|(i, p)| {
+        let abstract_text = if p.abstract_text.len() > 500 {
+            format!("{}...", &p.abstract_text[..500])
+        } else {
+            p.abstract_text.clone()
+        };
+        format!(
+            "[Paper {}] Title: {}\nAuthors: {}\nAbstract: {}",
+            i + 1,
+            p.title,
+            p.authors.join(", "),
+            abstract_text
+        )
+    }).collect();
+    let context_str = context_parts.join("\n\n");
+    let user_prompt = format!(
+        "基于以下论文内容回答问题。\n\n{context_str}\n\n问题: {question}"
+    );
+
+    println!("{}", "═".repeat(60));
+    println!("💡 Answer:");
+
+    let answer = rt.block_on(async {
+        let client = rairos_llm::client_async::AsyncClient::new(
+            api_key.to_string(),
+            base_url.to_string(),
+            chat_model.to_string(),
+        );
+        let messages = vec![
+            std::collections::HashMap::from([
+                ("role".to_string(), "user".to_string()),
+                ("content".to_string(), user_prompt.clone()),
+            ]),
+        ];
+        client.chat_completions(messages, None, Some(rag_system_prompt), false).await
+    }).map_err(|e| anyhow::anyhow!("LLM call failed: {}", e))?;
+
+    println!("{}", answer);
+    println!("{}", "═".repeat(60));
+
+    if !no_cite {
+        println!("\n📖 引用来源");
+        println!("{}", "-".repeat(60));
+        for (i, p) in papers.iter().enumerate() {
+            let preview: String = p.abstract_text.chars().take(150).collect();
+            println!("\n[{}] {}", i + 1, p.title);
+            println!("    ID: {}", p.id);
+            println!("    > {}...", preview);
+        }
+    }
+
+    Ok(())
+}
+
+/// Run interactive RAG chat REPL.
+fn run_chat_interactive(
+    db: &Database,
+    rt: &tokio::runtime::Runtime,
+    api_key: &str,
+    base_url: &str,
+    chat_model: &str,
+    rag_system_prompt: &str,
+    _paper: Option<&str>,
+    limit: usize,
+    no_cite: bool,
+    verbose: bool,
+    stream: bool,
+    export_path: Option<&str>,
+    export_fmt: Option<&str>,
+) -> Result<()> {
+    println!("{}", "═".repeat(60));
+    println!("📚 AI Research OS — RAG Chat");
+    println!("{}", "═".repeat(60));
+    println!();
+    println!("Commands:");
+    println!("  q / quit / exit    Quit");
+    println!("  clear              Clear history");
+    println!("  help               Show help");
+    println!();
+    println!("Tip: Ask questions about papers in your library.");
+    println!();
+
+    let mut history: Vec<(String, String)> = Vec::new();
+
+    loop {
+        let question = {
+            print!("❓ ");
+            use std::io::Write;
+            std::io::stdout().flush().ok();
+            let mut line = String::new();
+            match std::io::stdin().read_line(&mut line) {
+                Ok(0) | Err(_) => break,
+                Ok(_) => line.trim().to_string(),
+            }
+        };
+
+        if question.is_empty() {
+            continue;
+        }
+
+        match question.to_lowercase().as_str() {
+            "q" | "quit" | "exit" => {
+                if !history.is_empty() {
+                    if let Some(path) = export_path {
+                        export_chat_history(&history, path, export_fmt);
+                        println!("✅ Exported to {}", path);
+                    }
+                }
+                println!("\n再见！");
+                break;
+            }
+            "clear" => {
+                history.clear();
+                println!("✅ History cleared");
+                continue;
+            }
+            "help" => {
+                println!("\nHelp:");
+                println!("  Ask any question about papers in your library");
+                println!("  Example questions:");
+                println!("    How does self-attention work?");
+                println!("    What are the main contributions?");
+                println!("    What is Sparse MoE?");
+                println!();
+                continue;
+            }
+            _ => {}
+        }
+
+        if verbose {
+            println!("🔍 Retrieving papers...");
+        }
+        let papers = match db.search_papers(&question, limit) {
+            Ok(p) => p,
+            Err(e) => {
+                eprintln!("Search failed: {}", e);
+                continue;
+            }
+        };
+
+        if papers.is_empty() {
+            println!("No matching papers found. Try a different question.");
+            continue;
+        }
+
+        let context_parts: Vec<String> = papers.iter().enumerate().map(|(i, p)| {
+            let abstract_text = if p.abstract_text.len() > 400 {
+                format!("{}...", &p.abstract_text[..400])
+            } else {
+                p.abstract_text.clone()
+            };
+            format!(
+                "[Paper {}] Title: {}\nAuthors: {}\nAbstract: {}",
+                i + 1,
+                p.title,
+                p.authors.join(", "),
+                abstract_text
+            )
+        }).collect();
+        let context_str = context_parts.join("\n\n");
+        let user_prompt = format!(
+            "基于以下论文内容回答问题。\n\n{context_str}\n\n问题: {question}"
+        );
+
+        println!("\n💡 Answer:");
+        println!("{}", "─".repeat(60));
+
+        let answer_result = rt.block_on(async {
+            let client = rairos_llm::client_async::AsyncClient::new(
+                api_key.to_string(),
+                base_url.to_string(),
+                chat_model.to_string(),
+            );
+            let messages = vec![
+                std::collections::HashMap::from([
+                    ("role".to_string(), "user".to_string()),
+                    ("content".to_string(), user_prompt.clone()),
+                ]),
+            ];
+            if stream {
+                client.chat_completions_streaming(messages, None, Some(rag_system_prompt)).await
+            } else {
+                client.chat_completions(messages, None, Some(rag_system_prompt), false).await
+            }
+        });
+
+        match answer_result {
+            Ok(answer) => {
+                println!("{}", answer);
+                println!("{}", "─".repeat(60));
+                if !no_cite {
+                    println!("\n📖 引用来源");
+                    for (i, p) in papers.iter().enumerate().take(5) {
+                        println!("  [{}] {} (ID: {})", i + 1, p.title, p.id);
+                    }
+                }
+                println!();
+                history.push((question, answer));
+            }
+            Err(e) => {
+                eprintln!("LLM call failed: {}", e);
+            }
+        }
+    }
+
+    Ok(())
+}
+
+/// Export chat history to Markdown or HTML.
+fn export_chat_history(history: &[(String, String)], path: &str, fmt: Option<&str>) {
+    let ext = std::path::Path::new(path)
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("");
+    let format = fmt.unwrap_or(match ext {
+        "html" | "htm" => "html",
+        _ => "markdown",
+    });
+    let content = match format {
+        "html" => export_chat_to_html(history),
+        _ => export_chat_to_markdown(history),
+    };
+    let _ = std::fs::write(path, content);
+}
+
+fn export_chat_to_markdown(history: &[(String, String)]) -> String {
+    use chrono::Local;
+    let now = Local::now().format("%Y-%m-%d %H:%M:%S");
+    let mut md = format!("# AI Research OS — Chat Export\n\n**Exported**: {now}\n\n---\n\n", now = now);
+    for (i, (q, a)) in history.iter().enumerate() {
+        md.push_str(&format!("## Q{i}: {q}\n\n**A**: {a}\n\n---\n\n", i = i + 1, q = q, a = a));
+    }
+    md
+}
+
+fn export_chat_to_html(history: &[(String, String)]) -> String {
+    use chrono::Local;
+    let now = Local::now().format("%Y-%m-%d %H:%M:%S");
+    let mut html = format!(
+        r#"<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+<meta charset='UTF-8'>
+<title>AI Research OS — Chat Export</title>
+<style>
+body {{ font-family: 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }}
+h1 {{ color: #1a1a2e; border-bottom: 2px solid #4a4a8a; padding-bottom: 10px; }}
+.qa-block {{ background: #f8f9fa; border-radius: 8px; padding: 15px; margin: 15px 0; }}
+.question {{ color: #2a5a2a; font-weight: bold; }}
+.answer {{ color: #333; margin-top: 10px; line-height: 1.6; }}
+.meta {{ color: #666; font-size: 0.85em; }}
+</style>
+</head>
+<body>
+<h1>AI Research OS — Chat Export</h1>
+<p class='meta'>Exported: {now}</p>
+"#, now = now);
+    for (i, (q, a)) in history.iter().enumerate() {
+        html.push_str(&format!(
+            r#"<div class='qa-block'>
+<div class='question'>Q{i}: {q}</div>
+<div class='answer'>{a}</div>
+</div>
+"#, i = i + 1, q = q, a = a));
+    }
+    html.push_str("</body>\n</html>");
+    html
 }
 
 /// Handle `demo` — run end-to-end Rairos pipeline demo.

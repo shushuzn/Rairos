@@ -62,7 +62,6 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 
 _SUBCOMMAND_TABLE = [
-    ("chat", "cli.cmd.chat", "_build_chat_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
 ]
 
@@ -154,7 +153,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     # Lazy dispatch — attribute name so test mocks on cli._run_X take effect
 
     dispatch = {
-        "chat": "_run_chat",
         "chat-tui": "_run_chat_tui",
     }
 
