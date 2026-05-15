@@ -74,7 +74,6 @@ _SUBCOMMAND_TABLE = [
     ("slides", "cli.cmd.slides", "_build_slides_parser"),
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
-    ("narrative", "cli.cmd.narrative", "_build_narrative_parser"),
     ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
     ("postprocess", "cli.cmd.postprocess", "_build_postprocess_parser"),
     ("demo", "cli.cmd.demo", "_build_demo_parser"),
