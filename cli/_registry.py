@@ -62,7 +62,6 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 
 _SUBCOMMAND_TABLE = [
-    ("chat-tui", "cli.cmd.chat_tui", "_build_chat_tui_parser"),
 ]
 
 
@@ -150,19 +149,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         except (ImportError, AttributeError):
             args.model = "qwen3.5-plus"
 
-    # Lazy dispatch — attribute name so test mocks on cli._run_X take effect
-
-    dispatch = {
-        "chat-tui": "_run_chat_tui",
-    }
-
-    if args.subcmd in dispatch:
-        import cli as _cli
-
-        func = getattr(_cli, dispatch[args.subcmd])  # type: ignore[assignment]
-
-        return cast(int, func(args))
-
     elif args.subcmd == "watch":
         from core.watch_papers import watch_and_rebuild
 
@@ -174,5 +160,4 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         return 0
 
-    return 0
     return 0
