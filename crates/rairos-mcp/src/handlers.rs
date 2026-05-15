@@ -935,12 +935,49 @@ impl ToolHandler for PaperParseFullHandler {
     }
 }
 
+// ─── Replication Check Simple ─────────────────────────────────────────────
+
+pub struct ReplicationCheckSimpleHandler;
+
+#[async_trait]
+impl ToolHandler for ReplicationCheckSimpleHandler {
+    fn name(&self) -> &str { "replication_check_simple" }
+    fn description(&self) -> &str { "Check a paper for replication feasibility using code/dependency detection" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("paper_id".into(), ToolProperty::string("Paper ID or arXiv ID")),
+                ("title".into(), ToolProperty::string("Paper title")),
+                ("abstract_text".into(), ToolProperty::string("Paper abstract")),
+                ("full_text".into(), ToolProperty::string("Paper full text (optional)")),
+            ].into_iter().collect(),
+            vec!["paper_id".into(), "title".into(), "abstract_text".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let paper_id = params["paper_id"].as_str().ok_or("Missing paper_id")?;
+        let title = params["title"].as_str().ok_or("Missing title")?;
+        let abstract_text = params["abstract_text"].as_str().ok_or("Missing abstract_text")?;
+        let full_text = params.get("full_text").and_then(|v| v.as_str()).unwrap_or("");
+
+        let checker = rairos_replication::ReplicationChecker::new();
+        let report = checker.check_paper(paper_id, title, abstract_text, full_text);
+        let rendered = checker.render_report(&report);
+
+        Ok(serde_json::json!({
+            "content": [{"type": "text", "text": rendered}],
+            "report": serde_json::to_value(&report).unwrap_or_default(),
+        }))
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
     server.register(PaperSearchHandler).await;
     server.register(PaperIngestHandler).await;
     server.register(PaperParseFullHandler).await;
+    server.register(ReplicationCheckSimpleHandler).await;
     server.register(PaperQueryHandler).await;
     server.register(PaperChatHandler).await;
     server.register(TagAddHandler).await;
