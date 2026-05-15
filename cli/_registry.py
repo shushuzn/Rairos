@@ -62,7 +62,6 @@ class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 
 _SUBCOMMAND_TABLE = [
-    ("dedup-semantic", "cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
     ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("route", "cli.cmd.route", "_build_route_parser"),
@@ -158,7 +157,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     # Lazy dispatch — attribute name so test mocks on cli._run_X take effect
 
     dispatch = {
-        "dedup-semantic": "_run_dedup_semantic",
         "chat": "_run_chat",
         "route": "_run_route",
         "chat-tui": "_run_chat_tui",

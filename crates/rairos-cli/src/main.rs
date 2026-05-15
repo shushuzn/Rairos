@@ -1498,6 +1498,19 @@ enum DedupAction {
     },
     /// Show duplicate groups
     Groups,
+    /// Show embedding coverage statistics
+    Stats,
+    /// Find semantically similar papers using embeddings
+    Semantic {
+        /// Paper ID to check
+        paper: String,
+        /// Cosine similarity threshold
+        #[arg(short, long, default_value = "0.85")]
+        threshold: f32,
+        /// Max results
+        #[arg(short, long, default_value = "20")]
+        limit: usize,
+    },
 }
 
 #[derive(Subcommand)]
@@ -4824,6 +4837,41 @@ fn handle_dedup(db: &Database, action: &DedupAction) -> Result<()> {
         DedupAction::Groups => {
             println!("=== Duplicate Groups ===");
             println!("Run 'rairos dedup find --threshold <0.0-1.0>' first to detect duplicates");
+        }
+        DedupAction::Stats => {
+            let (total, with_emb) = db.get_embedding_stats()?;
+            let pct = if total > 0 { (with_emb as f64 / total as f64) * 100.0 } else { 0.0 };
+            println!("\n  \x1b[36mEmbedding Coverage\x1b[0m");
+            println!("  \x1b[36mPapers with embedding:\x1b[0m  \x1b[92m{}\x1b[0m", with_emb);
+            println!("  \x1b[36mPapers with text:\x1b[0m      \x1b[91m{}\x1b[0m", total);
+            println!("  \x1b[36mCoverage:\x1b[0m              \x1b[93m{:.1}%\x1b[0m", pct);
+            println!();
+        }
+        DedupAction::Semantic { paper, threshold, limit } => {
+            let exists = db.paper_exists(paper);
+            if !exists {
+                eprintln!("Paper '{}' not found", paper);
+                return Ok(());
+            }
+            let sims = db.find_similar(paper, *limit, *threshold)?;
+            if sims.is_empty() {
+                println!("\n  \x1b[36mSimilar Papers — {}\x1b[0m", paper);
+                println!("  \x1b[90mNo similar papers above threshold=\x1b[36m{}\x1b[0m", threshold);
+                println!();
+                return Ok(());
+            }
+            println!("\n  \x1b[36mSimilar Papers — \x1b[91m{}\x1b[0m (threshold=\x1b[91m{}\x1b[0m)\x1b[0m", paper, threshold);
+            println!("  \x1b[36m{} similar papers found\x1b[0m", sims.len());
+            println!();
+            println!("  {:<10} {:>12}  {}", "Score", "Paper ID", "Title");
+            println!("  {} {} {}", "─".repeat(10), "─".repeat(12), "─".repeat(50));
+            for (id, score) in &sims {
+                let score_color = if *score >= 0.95 { "\x1b[92m" } else if *score >= 0.85 { "\x1b[93m" } else { "\x1b[91m" };
+                let paper = db.get_paper(id)?;
+                let title = if paper.title.len() > 47 { format!("{}...", &paper.title[..47]) } else { paper.title.clone() };
+                println!("  {}{:.4}\x1b[0m  {:>12}  \x1b[36m{}\x1b[0m", score_color, score, id, title);
+            }
+            println!();
         }
     }
 

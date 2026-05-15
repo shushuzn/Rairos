@@ -1174,6 +1174,39 @@ impl Database {
         Ok(())
     }
 
+    /// Get embedding coverage stats: (total_with_text, with_embedding).
+    pub fn get_embedding_stats(&self) -> Result<(i64, i64)> {
+        let conn = self.conn.lock();
+        let total: i64 = conn.query_row(
+            "SELECT COUNT(*) FROM papers WHERE title != '' OR abstract_text != ''",
+            [],
+            |row| row.get(0),
+        )?;
+        let with_emb: i64 = conn.query_row(
+            "SELECT COUNT(*) FROM papers WHERE embed_vector IS NOT NULL",
+            [],
+            |row| row.get(0),
+        )?;
+        Ok((total, with_emb))
+    }
+
+    /// Get papers that don't have embeddings yet.
+    pub fn get_papers_without_embeddings(&self, limit: i64) -> Result<Vec<Paper>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT id, arxiv_id, title, authors, published, abstract_text,
+                    categories, parse_status, cited_by, references_cnt, doi, pdf_url
+             FROM papers WHERE embed_vector IS NULL AND (title != '' OR abstract_text != '')
+             LIMIT ?"
+        )?;
+        let rows = stmt.query_map([limit], |row| Ok(Self::row_to_paper(row)))?;
+        let mut papers = Vec::new();
+        for paper in rows {
+            papers.push(paper??);
+        }
+        Ok(papers)
+    }
+
     /// Find papers similar to the given paper by embedding cosine similarity.
     pub fn find_similar(&self, paper_id: &str, top_k: usize, threshold: f32) -> Result<Vec<(String, f32)>> {
         let embedding = self.get_embedding(paper_id)?;
