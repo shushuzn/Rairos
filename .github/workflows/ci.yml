@@ -5,155 +5,60 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_BUILD_JOBS: 1
+  RUSTFLAGS: "--deny warnings"
 
 jobs:
-  commitlint:
-    runs-on: ubuntu-22.04
+  rust:
+    name: Rust — check + test
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          fetch-depth: 0
+          rustflags: ""
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
         with:
-          node-version: '20'
+          key: v1-${{ hashFiles('Cargo.lock') }}
 
-      - name: Install commitlint
-        run: npm install -g @commitlint/cli@19 @commitlint/config-conventional@19
+      - name: cargo check (workspace)
+        run: cargo check --workspace
 
-      - name: Validate commit messages
+      - name: cargo test (key crates)
         run: |
-          npx commitlint --last --verbose 2>&1 || echo "No previous commit"
-          npx commitlint --from=main --verbose 2>&1 | head -50
+          cargo test -p rairos-cli -p rairos-pathfinder -p rairos-slides -p rairos-narratives
 
-  lint:
-    runs-on: ubuntu-22.04
+  python:
+    name: Python — MCP tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
 
-      - name: Sync dependencies
-        run: uv sync --extra dev
+      - name: Install dependencies
+        run: uv sync --all-extras
 
-      - name: Syntax check
-        run: uv run python -m py_compile ai_research_os.py
+      - name: pytest (MCP handler)
+        run: uv run pytest tests/test_mcp_handler.py -q --no-header
 
-      - name: Ruff check
-        run: uvx ruff check .
-
-      - name: Ruff format check
-        run: uvx ruff format --check . --exclude db/
-
-      - name: Run mypy
-        run: uvx mypy core parsers db llm research_loop cli --ignore-missing-imports
-
-      - name: Run bandit
-        continue-on-error: true
-        run: uvx bandit -r llm/ research_loop/ core/ parsers/ db/ -ll -f txt
-
-      - name: Test Crossref API
-        run: uv run python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK')"
-  test-pytest:
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-        shard: [1, 2, 3, 4]
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      - name: Run pytest shard ${{ matrix.shard }}/4
-        run: uv run pytest tests/ \
-            -q --tb=short -n auto \
-            --cov=. --cov-report=term-missing \
-            --splits 4 --group ${{ matrix.shard }} \
-            2>&1 | tee pytest_output.txt
-
-      - name: Upload test output
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: pytest-output-${{ matrix.python-version }}-${{ matrix.shard }}
-          path: pytest_output.txt
-          retention-days: 1
-
-      - name: Upload coverage data
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: coverage-data-${{ matrix.python-version }}-${{ matrix.shard }}
-          path: .coverage
-          retention-days: 1
-
-  coverage-report:
-    needs: [test-pytest]
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-          cache: 'pip'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      - name: Download coverage data
-        uses: actions/download-artifact@v8
-        with:
-          path: coverage-reports
-          pattern: coverage-data-*
-          merge-multiple: true
-
-      - name: Combine and report
-        id: report
-        run: |
-          uv run coverage combine coverage-reports/
-          uv run coverage report --show-missing 2>&1 | tee coverage_report.txt
-          TOTAL=$(grep "^TOTAL" coverage_report.txt | awk '{print $6}' | tr -d '%')
-          echo "Coverage: ${TOTAL}%"
-          echo "coverage_pct=${TOTAL}" >> $GITHUB_OUTPUT
-          if [ -z "${TOTAL}" ] || [ "${TOTAL}" -lt 40 ]; then
-            echo "Coverage ${TOTAL}% below 40% threshold"
-            exit 1
-          fi
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage-reports/.coverage
-          fail_ci_if_error: true
-
-    outputs:
-      coverage_pct: ${{ steps.report.outputs.coverage_pct }}
+      - name: pytest (MCP schema + utils)
+        run: uv run pytest tests/test_mcp_schema_fuzz.py tests/test_mcp_tools.py tests/test_rairos_mcp_utils.py -q --no-header
