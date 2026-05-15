@@ -36,6 +36,7 @@ rairos-signal = { path = "../rairos-signal" }
 rairos-story = { path = "../rairos-story" }
 rairos-viz = { path = "../rairos-viz" }
 rairos-gene-pool-watcher = { path = "../rairos-gene-pool-watcher" }
+rairos-questions = { path = "../rairos-questions" }
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1.0"
 tracing = "0.1"

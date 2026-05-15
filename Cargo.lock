@@ -2781,6 +2781,7 @@ dependencies = [
  "rairos-memory",
  "rairos-parser",
  "rairos-pdf",
+ "rairos-questions",
  "rairos-replication-checker",
  "rairos-research",
  "rairos-research-log",
@@ -3836,6 +3837,20 @@ dependencies = [
 [[package]]
 name = "rairos-query-types"
 version = "0.1.0"
+
+[[package]]
+name = "rairos-questions"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "dirs",
+ "log",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "uuid",
+]
 
 [[package]]
 name = "rairos-rankers"

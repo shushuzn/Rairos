@@ -107,6 +107,7 @@ members = [
     "crates/rairos-profiler",
     "crates/rairos-query",
     "crates/rairos-query-types",
+    "crates/rairos-questions",
     "crates/rairos-rankers",
     "crates/rairos-rankers-base",
     "crates/rairos-rankers-cosine",

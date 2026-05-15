@@ -72,7 +72,6 @@ _SUBCOMMAND_TABLE = [
     ("path", "cli.cmd.path", "_build_path_parser"),
     ("validate", "cli.cmd.validate", "_build_validate_parser"),
     ("slides", "cli.cmd.slides", "_build_slides_parser"),
-    ("question", "cli.cmd.question", "_build_question_parser"),
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
     ("narrative", "cli.cmd.narrative", "_build_narrative_parser"),
