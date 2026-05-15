@@ -971,6 +971,52 @@ impl ToolHandler for ReplicationCheckSimpleHandler {
     }
 }
 
+// ─── PDF Extract Advanced ─────────────────────────────────────────────────
+
+pub struct PdfExtractAdvancedHandler;
+
+#[async_trait]
+impl ToolHandler for PdfExtractAdvancedHandler {
+    fn name(&self) -> &str { "pdf_extract_advanced" }
+    fn description(&self) -> &str { "Extract text from PDF with advanced fallback methods, section segmentation, and block detection" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("arxiv_id".into(), ToolProperty::string("arXiv ID of the paper")),
+            ].into_iter().collect(),
+            vec!["arxiv_id".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
+        let pdf_dir = data_dir().join("pdfs");
+        let pdf_path = pdf_dir.join(format!("{}.pdf", arxiv_id));
+
+        if !pdf_path.exists() {
+            return Err("PDF not found. Call pdf_download first.".into());
+        }
+
+        let text = rairos_pdf_parser::extract_pdf_text_with_fallback(&pdf_path)
+            .map_err(|e| format!("Advanced text extraction failed: {}", e))?;
+
+        let sections = rairos_pdf_parser::segment_into_sections(&text, 20);
+        let section_list: Vec<Value> = sections.iter()
+            .map(|(name, content)| serde_json::json!({
+                "section": name,
+                "content_length": content.len(),
+                "preview": content.chars().take(200).collect::<String>(),
+            }))
+            .collect();
+
+        Ok(serde_json::json!({
+            "text": text,
+            "char_count": text.chars().count(),
+            "sections": section_list,
+            "section_count": sections.len(),
+        }))
+    }
+}
+
 // ─── Register all tools ───────────────────────────────────────────────────────
 
 pub async fn register_all(server: &crate::McpServer) {
@@ -978,6 +1024,7 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(PaperIngestHandler).await;
     server.register(PaperParseFullHandler).await;
     server.register(ReplicationCheckSimpleHandler).await;
+    server.register(PdfExtractAdvancedHandler).await;
     server.register(PaperQueryHandler).await;
     server.register(PaperChatHandler).await;
     server.register(TagAddHandler).await;
