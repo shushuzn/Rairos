@@ -257,7 +257,6 @@ mod tests {
 
     #[test]
     fn test_load_capsules_nonexistent() {
-        // When path doesn't exist, returns empty vec
         let result: Vec<serde_json::Value> = load_capsules();
         assert!(result.is_empty());
     }
@@ -287,7 +286,6 @@ mod tests {
     #[test]
     fn test_get_bold_capsules_returns_vec() {
         let result = get_bold_capsules();
-        // Should always return a valid vec (may be empty)
         assert!(result.capacity() >= 0);
     }
 

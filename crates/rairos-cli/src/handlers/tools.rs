@@ -13,8 +13,8 @@ pub fn handle_diagnostics(ruff: bool, pyright: bool, path: &str) -> Result<()> {
     let run_pyright = pyright || (!ruff && !pyright);
 
     if run_ruff {
-        let diags = rairos_lsp_diagnostics_py::check_ruff(path);
-        let output = rairos_lsp_diagnostics_py::format_diagnostics(&diags, "Ruff");
+        let diags = crate::lsp_diagnostics::check_ruff(path);
+        let output = crate::lsp_diagnostics::format_diagnostics(&diags, "Ruff");
         if !output.is_empty() {
             println!("{}", output);
         } else {
@@ -23,8 +23,8 @@ pub fn handle_diagnostics(ruff: bool, pyright: bool, path: &str) -> Result<()> {
     }
 
     if run_pyright {
-        let diags = rairos_lsp_diagnostics_py::check_pyright(path);
-        let output = rairos_lsp_diagnostics_py::format_diagnostics(&diags, "Pyright");
+        let diags = crate::lsp_diagnostics::check_pyright(path);
+        let output = crate::lsp_diagnostics::format_diagnostics(&diags, "Pyright");
         if !output.is_empty() {
             println!("{}", output);
         } else {
@@ -42,7 +42,7 @@ pub fn handle_workspace_snapshot(path: &str) -> Result<()> {
     use std::collections::HashMap;
     use std::path::PathBuf;
 
-    let snap = rairos_workspace_snapshot_py::WorkspaceSnapshot::new(None);
+    let snap = crate::workspace_snapshot::WorkspaceSnapshot::new(None);
 
     // Collect all files in the given path
     let target = PathBuf::from(path);

@@ -18,6 +18,17 @@
 
 mod handlers;
 
+// Inlined CLI-only crates
+pub mod bold_vault;
+pub mod compare;
+pub mod generate;
+pub mod journal;
+pub mod lsp_diagnostics;
+pub mod signal;
+pub mod story;
+pub mod validator;
+pub mod workspace_snapshot;
+
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, ParseStatus};

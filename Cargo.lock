@@ -2632,15 +2632,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-bold-vault"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-briefing-distributor"
 version = "0.1.0"
 dependencies = [
@@ -2739,13 +2730,13 @@ dependencies = [
  "crossterm",
  "csv",
  "dirs",
+ "hex",
  "indicatif",
  "rairos-argument-builder",
  "rairos-arxiv-alert-channels",
  "rairos-at-risk-scanner",
  "rairos-benchmark",
  "rairos-benchmark-runner",
- "rairos-bold-vault",
  "rairos-channels",
  "rairos-citation-chain",
  "rairos-citation-pathfinder-web",
@@ -2754,7 +2745,6 @@ dependencies = [
  "rairos-cli-shared",
  "rairos-code-indexer",
  "rairos-code-trace",
- "rairos-compare",
  "rairos-core",
  "rairos-crossref",
  "rairos-daemon",
@@ -2767,15 +2757,12 @@ dependencies = [
  "rairos-gap-analyzer",
  "rairos-gap-detector",
  "rairos-gene-pool-watcher",
- "rairos-generate",
  "rairos-insight-cards",
  "rairos-intelligence",
- "rairos-journal",
  "rairos-kg",
  "rairos-lean-verifier",
  "rairos-litreview-analyzer",
  "rairos-llm",
- "rairos-lsp-diagnostics",
  "rairos-mcp-jin10",
  "rairos-memory",
  "rairos-narratives",
@@ -2796,32 +2783,32 @@ dependencies = [
  "rairos-scout",
  "rairos-sections",
  "rairos-setup",
- "rairos-signal",
  "rairos-simple-cli",
  "rairos-skill-discovery",
  "rairos-slides",
  "rairos-snapstate",
- "rairos-story",
  "rairos-survey-generator",
  "rairos-testextractor",
  "rairos-updaters",
- "rairos-validator",
  "rairos-vault",
  "rairos-vector-store",
  "rairos-viz",
  "rairos-watch-papers",
  "rairos-web",
  "rairos-weekly-digest",
- "rairos-workspace-snapshot",
  "ratatui",
  "regex",
  "reqwest",
+ "serde",
  "serde_json",
+ "sha2 0.11.0",
  "sysinfo",
+ "tempfile",
  "tokio",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
@@ -2901,14 +2888,6 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "rairos-compare"
-version = "0.1.0"
-dependencies = [
- "regex",
- "serde",
 ]
 
 [[package]]
@@ -3306,14 +3285,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-generate"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-impact"
 version = "0.1.0"
 dependencies = [
@@ -3425,18 +3396,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
-]
-
-[[package]]
-name = "rairos-journal"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "serde",
- "serde_json",
- "tempfile",
- "uuid",
 ]
 
 [[package]]
@@ -3566,15 +3525,6 @@ dependencies = [
  "tokio-test",
  "tracing",
  "uuid",
-]
-
-[[package]]
-name = "rairos-lsp-diagnostics"
-version = "0.1.0"
-dependencies = [
- "pyo3",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -4191,10 +4141,6 @@ name = "rairos-setup"
 version = "0.1.0"
 
 [[package]]
-name = "rairos-signal"
-version = "0.1.0"
-
-[[package]]
 name = "rairos-simple-cli"
 version = "0.1.0"
 dependencies = [
@@ -4226,14 +4172,6 @@ dependencies = [
  "glob",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "rairos-story"
-version = "0.1.0"
-dependencies = [
- "regex",
- "serde",
 ]
 
 [[package]]
@@ -4315,13 +4253,6 @@ name = "rairos-user-helpers"
 version = "0.1.0"
 
 [[package]]
-name = "rairos-validator"
-version = "0.1.0"
-dependencies = [
- "serde_json",
-]
-
-[[package]]
 name = "rairos-value-quantifier"
 version = "0.1.0"
 dependencies = [
@@ -4398,18 +4329,6 @@ dependencies = [
 [[package]]
 name = "rairos-weekly-digest"
 version = "0.1.0"
-
-[[package]]
-name = "rairos-workspace-snapshot"
-version = "0.1.0"
-dependencies = [
- "hex",
- "pyo3",
- "serde",
- "serde_json",
- "sha2 0.11.0",
- "tempfile",
-]
 
 [[package]]
 name = "rand"

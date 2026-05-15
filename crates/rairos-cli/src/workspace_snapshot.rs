@@ -1,5 +1,3 @@
-use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyIterator};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
@@ -212,94 +210,6 @@ fn dirs_next() -> Option<PathBuf> {
         .ok()
         .map(PathBuf::from)
         .or_else(|| std::env::var("USERPROFILE").ok().map(PathBuf::from))
-}
-
-// ─── PyO3 Bindings ─────────────────────────────────────────────────────────────
-
-fn py_to_pathbuf(item: &Bound<'_, PyAny>) -> PathBuf {
-    if let Ok(s) = item.extract::<String>() {
-        return PathBuf::from(s);
-    }
-    if let Ok(p) = item.downcast::<PyAny>() {
-        if let Ok(s) = p.str() {
-            return PathBuf::from(s.to_string());
-        }
-    }
-    PathBuf::from("")
-}
-
-#[pyclass(name = "WorkspaceSnapshot")]
-struct PyWorkspaceSnapshot {
-    inner: WorkspaceSnapshot,
-}
-
-#[pymethods]
-impl PyWorkspaceSnapshot {
-    #[new]
-    #[pyo3(signature = (base_dir=None))]
-    fn new(base_dir: Option<&str>) -> Self {
-        let dir = base_dir.map(PathBuf::from);
-        Self {
-            inner: WorkspaceSnapshot::new(dir),
-        }
-    }
-
-    fn capture(
-        &self,
-        session_id: &str,
-        step: u32,
-        paths: &Bound<'_, PyAny>,
-        metadata: Option<&Bound<'_, PyDict>>,
-    ) -> PyResult<String> {
-        let path_bufs: Vec<PathBuf> = Python::with_gil(|_py| {
-            PyIterator::from_object(paths)
-                .map(|iter| {
-                    iter.into_iter()
-                        .filter_map(|item| item.ok())
-                        .map(|item| py_to_pathbuf(&item))
-                        .collect::<Vec<_>>()
-                })
-                .unwrap_or_default()
-        });
-
-        let meta: HashMap<String, String> = metadata
-            .map(|d| {
-                d.iter()
-                    .filter_map(|(k, v)| {
-                        let key: String = k.extract().ok()?;
-                        let val: String = v.extract().ok()?;
-                        Some((key, val))
-                    })
-                    .collect()
-            })
-            .unwrap_or_default();
-
-        Ok(self.inner.capture(session_id, step, &path_bufs, meta).to_string_lossy().to_string())
-    }
-
-    fn rollback(&self, session_id: &str, step: u32, target_dir: &str) -> PyResult<Vec<String>> {
-        let target = PathBuf::from(target_dir);
-        let restored = self.inner.rollback(session_id, step, &target);
-        Ok(restored.iter().map(|p| p.to_string_lossy().to_string()).collect())
-    }
-
-    fn list_snapshots(&self, session_id: &str) -> PyResult<Vec<String>> {
-        let snapshots = self.inner.list_snapshots(session_id);
-        Ok(snapshots
-            .iter()
-            .map(|s| serde_json::to_string(s).unwrap_or_default())
-            .collect())
-    }
-
-    fn latest_snapshot(&self, session_id: &str) -> PyResult<Option<u32>> {
-        Ok(self.inner.latest_step(session_id))
-    }
-}
-
-#[pymodule]
-pub fn rairos_workspace_snapshot_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<PyWorkspaceSnapshot>()?;
-    Ok(())
 }
 
 #[cfg(test)]

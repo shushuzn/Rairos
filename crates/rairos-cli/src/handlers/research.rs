@@ -907,7 +907,7 @@ pub fn handle_validate(
     println!("🔬 Validating: {}", question);
 
     let related = find_related_works(db, question, if depth == "full" { 10 } else { 5 });
-    let result = rairos_validator::validate_rules(question, related);
+    let result = crate::validator::validate_rules(question, related);
 
     // Record NARRATED event (same as Python)
     if let Ok(tracker) = rairos_narratives::ResearchThreadTracker::new() {
@@ -919,7 +919,7 @@ pub fn handle_validate(
         println!("{}", render_validation_json(&result));
     } else {
         println!();
-        println!("{}", rairos_validator::render_result(&result));
+        println!("{}", crate::validator::render_result(&result));
     }
 
     Ok(())
@@ -929,10 +929,10 @@ pub fn find_related_works(
     db: &rairos_core::Database,
     question: &str,
     limit: usize,
-) -> Vec<rairos_validator::RelatedWork> {
-    let keywords = rairos_validator::expand_question(question, &rairos_validator::default_ai_keywords());
+) -> Vec<crate::validator::RelatedWork> {
+    let keywords = crate::validator::expand_question(question, &crate::validator::default_ai_keywords());
 
-    let mut related: Vec<rairos_validator::RelatedWork> = Vec::new();
+    let mut related: Vec<crate::validator::RelatedWork> = Vec::new();
     let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     for kw in keywords.iter().take(3) {
@@ -953,7 +953,7 @@ pub fn find_related_works(
                 };
                 if relevance > 0.1 {
                     seen.insert(paper.id.clone());
-                    related.push(rairos_validator::RelatedWork {
+                    related.push(crate::validator::RelatedWork {
                         paper_id: paper.id.clone(),
                         title: paper.title.chars().take(80).collect(),
                         year: paper.published.year(),
@@ -969,17 +969,17 @@ pub fn find_related_works(
     related
 }
 
-pub fn render_validation_json(result: &rairos_validator::ValidationResult) -> String {
+pub fn render_validation_json(result: &crate::validator::ValidationResult) -> String {
     let dim_strs: Vec<&str> = result
         .innovation_score
         .dimensions
         .iter()
         .map(|d| match d {
-            rairos_validator::InnovationDimension::Method => "method",
-            rairos_validator::InnovationDimension::Task => "task",
-            rairos_validator::InnovationDimension::Evaluation => "evaluation",
-            rairos_validator::InnovationDimension::Theory => "theory",
-            rairos_validator::InnovationDimension::Application => "application",
+            crate::validator::InnovationDimension::Method => "method",
+            crate::validator::InnovationDimension::Task => "task",
+            crate::validator::InnovationDimension::Evaluation => "evaluation",
+            crate::validator::InnovationDimension::Theory => "theory",
+            crate::validator::InnovationDimension::Application => "application",
         })
         .collect();
 
@@ -1562,7 +1562,7 @@ pub fn handle_scout(topic: Option<&str>, sources: &str, max_results: usize) -> R
 }
 
 pub fn handle_journal(action: &str, content: Option<&str>, tags: Option<&str>, mood: Option<&str>) -> Result<()> {
-    let journal = rairos_journal::Journal::new(None);
+    let journal = crate::journal::Journal::new(None);
 
     match action {
         "add" => {
@@ -1570,7 +1570,7 @@ pub fn handle_journal(action: &str, content: Option<&str>, tags: Option<&str>, m
                 eprintln!("Usage: journal add <content>");
                 std::process::exit(1);
             };
-            let mut entry = rairos_journal::JournalEntry::new(c);
+            let mut entry = crate::journal::JournalEntry::new(c);
             if let Some(t) = tags {
                 entry = entry.with_tags(t.split(',').map(|s| s.trim().to_string()).collect());
             }
@@ -2130,12 +2130,12 @@ pub fn handle_validate_interactive(
 
         let limit = if depth_owned == "full" { 10 } else { 5 };
         let related = find_related_works(db, &user_input, limit);
-        let result = rairos_validator::validate_rules(&user_input, related);
+        let result = crate::validator::validate_rules(&user_input, related);
 
         if json {
             println!("{}", render_validation_json(&result));
         } else {
-            println!("{}", rairos_validator::render_result(&result));
+            println!("{}", crate::validator::render_result(&result));
         }
         println!();
     }

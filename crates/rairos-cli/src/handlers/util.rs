@@ -546,9 +546,9 @@ pub fn handle_story(db: &Database, topic: Option<&str>) -> Result<()> {
     println!("📖 Weaving story for: {}", topic);
 
     let papers = db.search_papers(topic, 20)?;
-    let inputs: Vec<rairos_story::PaperInput> = papers
+    let inputs: Vec<crate::story::PaperInput> = papers
         .iter()
-        .map(|p| rairos_story::PaperInput {
+        .map(|p| crate::story::PaperInput {
             id: p.id.clone(),
             title: p.title.clone(),
             abstract_text: p.abstract_text.clone(),
@@ -556,7 +556,7 @@ pub fn handle_story(db: &Database, topic: Option<&str>) -> Result<()> {
         })
         .collect();
 
-    let weaver = rairos_story::StoryWeaver;
+    let weaver = crate::story::StoryWeaver;
     let result = weaver.weave(topic, inputs);
     println!("{}", result.summary);
     Ok(())

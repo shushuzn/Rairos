@@ -518,8 +518,8 @@ pub fn handle_insight(action: &InsightAction) -> Result<()> {
 }
 
 pub fn handle_signal(keyword: &str) -> Result<()> {
-    let report = rairos_signal::signal(keyword);
-    println!("{}", rairos_signal::render_signal(&report));
+    let report = crate::signal::signal(keyword);
+    println!("{}", crate::signal::render_signal(&report));
     Ok(())
 }
 
