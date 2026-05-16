@@ -26,7 +26,7 @@ pub enum SlideTemplate {
 }
 
 impl SlideTemplate {
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_string(s: &str) -> Self {
         match s.trim().to_lowercase().as_str() {
             "minimal" => SlideTemplate::Minimal,
             "modern" => SlideTemplate::Modern,
@@ -45,7 +45,7 @@ pub enum SlideFormat {
 }
 
 impl SlideFormat {
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_string(s: &str) -> Self {
         match s.trim().to_lowercase().as_str() {
             "html" => SlideFormat::Html,
             _ => SlideFormat::Markdown,
@@ -65,7 +65,7 @@ pub enum SlideLanguage {
 }
 
 impl SlideLanguage {
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_string(s: &str) -> Self {
         match s.trim().to_lowercase().as_str() {
             "en" => SlideLanguage::English,
             "bilingual" => SlideLanguage::Bilingual,
@@ -615,24 +615,24 @@ mod tests {
 
     #[test]
     fn test_slide_template_from_str() {
-        assert!(matches!(SlideTemplate::from_str("academic"), SlideTemplate::Academic));
-        assert!(matches!(SlideTemplate::from_str("minimal"), SlideTemplate::Minimal));
-        assert!(matches!(SlideTemplate::from_str("modern"), SlideTemplate::Modern));
-        assert!(matches!(SlideTemplate::from_str("unknown"), SlideTemplate::Academic));
+        assert!(matches!(SlideTemplate::from_string("academic"), SlideTemplate::Academic));
+        assert!(matches!(SlideTemplate::from_string("minimal"), SlideTemplate::Minimal));
+        assert!(matches!(SlideTemplate::from_string("modern"), SlideTemplate::Modern));
+        assert!(matches!(SlideTemplate::from_string("unknown"), SlideTemplate::Academic));
     }
 
     #[test]
     fn test_slide_format_from_str() {
-        assert!(matches!(SlideFormat::from_str("md"), SlideFormat::Markdown));
-        assert!(matches!(SlideFormat::from_str("html"), SlideFormat::Html));
-        assert!(matches!(SlideFormat::from_str("unknown"), SlideFormat::Markdown));
+        assert!(matches!(SlideFormat::from_string("md"), SlideFormat::Markdown));
+        assert!(matches!(SlideFormat::from_string("html"), SlideFormat::Html));
+        assert!(matches!(SlideFormat::from_string("unknown"), SlideFormat::Markdown));
     }
 
     #[test]
     fn test_slide_language_from_str() {
-        assert!(matches!(SlideLanguage::from_str("zh"), SlideLanguage::Chinese));
-        assert!(matches!(SlideLanguage::from_str("en"), SlideLanguage::English));
-        assert!(matches!(SlideLanguage::from_str("bilingual"), SlideLanguage::Bilingual));
+        assert!(matches!(SlideLanguage::from_string("zh"), SlideLanguage::Chinese));
+        assert!(matches!(SlideLanguage::from_string("en"), SlideLanguage::English));
+        assert!(matches!(SlideLanguage::from_string("bilingual"), SlideLanguage::Bilingual));
     }
 
     #[test]

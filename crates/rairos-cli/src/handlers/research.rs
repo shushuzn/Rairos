@@ -1028,7 +1028,7 @@ pub fn handle_postprocess(
     } else {
         let parsed: Vec<rairos_postprocess::PostStage> = stages
             .iter()
-            .filter_map(|s| rairos_postprocess::PostStage::from_str(s))
+            .filter_map(|s| rairos_postprocess::PostStage::from_string(s))
             .collect();
         if parsed.is_empty() { None } else { Some(parsed) }
     };
@@ -1141,7 +1141,7 @@ pub fn handle_path(
     mermaid: bool,
     interactive: bool,
 ) -> Result<()> {
-    let level_enum = rairos_pathfinder::ReadingLevel::from_str(level)
+    let level_enum = rairos_pathfinder::ReadingLevel::from_string(level)
         .unwrap_or(rairos_pathfinder::ReadingLevel::Intermediate);
 
     // Interactive mode
@@ -1182,12 +1182,12 @@ pub fn handle_slides(
     use rairos_slides::{PaperSlidesGenerator, SlidesConfig, SlideFormat, SlideTemplate, SlideLanguage};
 
     let config = SlidesConfig {
-        template: SlideTemplate::from_str(template),
+        template: SlideTemplate::from_string(template),
         num_slides,
-        format: SlideFormat::from_str(format),
+        format: SlideFormat::from_string(format),
         output_path: output.map(std::path::PathBuf::from),
         include_notes,
-        language: SlideLanguage::from_str(lang),
+        language: SlideLanguage::from_string(lang),
     };
 
     println!("📊 Generating slides for {} paper(s)", paper_ids.len());
@@ -2183,7 +2183,7 @@ pub fn handle_path_interactive(
 
         if cmd.starts_with("level ") {
             let level_str = cmd.split_once(' ').map(|(_, rest)| rest).unwrap_or("");
-            if let Some(l) = rairos_pathfinder::ReadingLevel::from_str(level_str) {
+            if let Some(l) = rairos_pathfinder::ReadingLevel::from_string(level_str) {
                 level = l;
                 println!("  ✓ 难度设置为: {level_str}");
             } else {

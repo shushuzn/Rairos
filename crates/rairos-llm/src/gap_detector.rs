@@ -36,7 +36,7 @@ impl GapType {
         }
     }
 
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_string(s: &str) -> Self {
         match s {
             "unexplored_application" => GapType::UnexploredApplication,
             "method_limitation" => GapType::MethodLimitation,
@@ -199,7 +199,7 @@ fn parse_gaps(response: &str, _topic: &str) -> Vec<ResearchGap> {
                 .collect();
 
             gaps.push(ResearchGap {
-                gap_type: GapType::from_str(gap_type_str),
+                gap_type: GapType::from_string(gap_type_str),
                 description: description.to_string(),
                 evidence_papers: papers,
                 confidence,
@@ -248,9 +248,9 @@ mod tests {
 
     #[test]
     fn test_gap_type_from_str() {
-        assert!(matches!(GapType::from_str("method_limitation"), GapType::MethodLimitation));
-        assert!(matches!(GapType::from_str("unknown"), GapType::MethodLimitation));
-        assert!(matches!(GapType::from_str("dataset_gap"), GapType::DatasetGap));
+        assert!(matches!(GapType::from_string("method_limitation"), GapType::MethodLimitation));
+        assert!(matches!(GapType::from_string("unknown"), GapType::MethodLimitation));
+        assert!(matches!(GapType::from_string("dataset_gap"), GapType::DatasetGap));
     }
 
     #[test]

@@ -29,7 +29,7 @@ impl StepType {
             Self::ReviseHypothesis => "revise_hypothesis",
         }
     }
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_string(s: &str) -> Self {
         match s {
             "read_paper" => Self::ReadPaper,
             "run_experiment" => Self::RunExperiment,
@@ -504,7 +504,7 @@ mod tests {
     #[test]
     fn test_step_type_roundtrip() {
         for t in &["read_paper", "run_experiment", "write_analysis", "survey_baselines"] {
-            assert_eq!(StepType::from_str(t).as_str(), *t);
+            assert_eq!(StepType::from_string(t).as_str(), *t);
         }
     }
 }

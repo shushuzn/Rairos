@@ -73,7 +73,7 @@ impl PostStage {
     }
 
     /// Parse from a string value (case-insensitive, underscore-normalized).
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn from_string(s: &str) -> Option<Self> {
         match s.trim().to_lowercase().replace('-', "_").as_str() {
             "paper_analysis" => Some(PostStage::PaperAnalysis),
             "benchmark" => Some(PostStage::Benchmark),
@@ -622,29 +622,29 @@ mod tests {
     #[test]
     fn test_poststage_from_str() {
         assert_eq!(
-            PostStage::from_str("paper_analysis"),
+            PostStage::from_string("paper_analysis"),
             Some(PostStage::PaperAnalysis)
         );
-        assert_eq!(PostStage::from_str("benchmark"), Some(PostStage::Benchmark));
+        assert_eq!(PostStage::from_string("benchmark"), Some(PostStage::Benchmark));
         assert_eq!(
-            PostStage::from_str("cross_reference"),
+            PostStage::from_string("cross_reference"),
             Some(PostStage::CrossReference)
         );
-        assert_eq!(PostStage::from_str("insight"), Some(PostStage::Insight));
-        assert_eq!(PostStage::from_str("kg_sync"), Some(PostStage::KgSync));
+        assert_eq!(PostStage::from_string("insight"), Some(PostStage::Insight));
+        assert_eq!(PostStage::from_string("kg_sync"), Some(PostStage::KgSync));
         assert_eq!(
-            PostStage::from_str("pnote_update"),
+            PostStage::from_string("pnote_update"),
             Some(PostStage::PnoteUpdate)
         );
-        assert_eq!(PostStage::from_str("pnote"), Some(PostStage::PnoteUpdate));
-        assert_eq!(PostStage::from_str("unknown"), None);
+        assert_eq!(PostStage::from_string("pnote"), Some(PostStage::PnoteUpdate));
+        assert_eq!(PostStage::from_string("unknown"), None);
         // Case-insensitive
         assert_eq!(
-            PostStage::from_str("Paper_Analysis"),
+            PostStage::from_string("Paper_Analysis"),
             Some(PostStage::PaperAnalysis)
         );
         assert_eq!(
-            PostStage::from_str("CROSS-REFERENCE"),
+            PostStage::from_string("CROSS-REFERENCE"),
             Some(PostStage::CrossReference)
         );
     }

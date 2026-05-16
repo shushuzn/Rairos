@@ -30,7 +30,7 @@ pub enum ReadingLevel {
 }
 
 impl ReadingLevel {
-    pub fn from_str(s: &str) -> Option<Self> {
+    pub fn from_string(s: &str) -> Option<Self> {
         match s.trim().to_lowercase().as_str() {
             "intro" | "beginner" | "入门" => Some(ReadingLevel::Intro),
             "intermediate" | "进阶" => Some(ReadingLevel::Intermediate),
@@ -657,12 +657,12 @@ mod tests {
 
     #[test]
     fn test_reading_level_from_str() {
-        assert_eq!(ReadingLevel::from_str("intro"), Some(ReadingLevel::Intro));
-        assert_eq!(ReadingLevel::from_str("intermediate"), Some(ReadingLevel::Intermediate));
-        assert_eq!(ReadingLevel::from_str("advanced"), Some(ReadingLevel::Advanced));
-        assert_eq!(ReadingLevel::from_str("入门"), Some(ReadingLevel::Intro));
-        assert_eq!(ReadingLevel::from_str("进阶"), Some(ReadingLevel::Intermediate));
-        assert_eq!(ReadingLevel::from_str("invalid"), None);
+        assert_eq!(ReadingLevel::from_string("intro"), Some(ReadingLevel::Intro));
+        assert_eq!(ReadingLevel::from_string("intermediate"), Some(ReadingLevel::Intermediate));
+        assert_eq!(ReadingLevel::from_string("advanced"), Some(ReadingLevel::Advanced));
+        assert_eq!(ReadingLevel::from_string("入门"), Some(ReadingLevel::Intro));
+        assert_eq!(ReadingLevel::from_string("进阶"), Some(ReadingLevel::Intermediate));
+        assert_eq!(ReadingLevel::from_string("invalid"), None);
     }
 
     #[test]

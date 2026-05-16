@@ -1570,9 +1570,9 @@ mod tests {
 
     #[test]
     fn test_gap_type_from_str() {
-        assert_eq!(GapType::from_str("capability"), GapType::Capability);
-        assert_eq!(GapType::from_str("contradiction"), GapType::Contradiction);
-        assert_eq!(GapType::from_str("unknown_type"), GapType::Unknown);
+        assert_eq!(GapType::from_string("capability"), GapType::Capability);
+        assert_eq!(GapType::from_string("contradiction"), GapType::Contradiction);
+        assert_eq!(GapType::from_string("unknown_type"), GapType::Unknown);
     }
 
     #[test]

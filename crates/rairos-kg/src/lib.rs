@@ -60,7 +60,7 @@ impl KgNodeType {
         }
     }
 
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_string(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "paper" => KgNodeType::Paper,
             "tag" => KgNodeType::Tag,
@@ -101,7 +101,7 @@ impl KgEdgeType {
         }
     }
 
-    pub fn from_str(s: &str) -> Self {
+    pub fn from_string(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "cite" => KgEdgeType::Cite,
             "derive" => KgEdgeType::Derive,
@@ -171,7 +171,7 @@ impl KgNode {
     }
 
     pub fn node_type_enum(&self) -> KgNodeType {
-        KgNodeType::from_str(&self.node_type)
+        KgNodeType::from_string(&self.node_type)
     }
 }
 
@@ -214,7 +214,7 @@ impl KgEdge {
     }
 
     pub fn relation_enum(&self) -> KgEdgeType {
-        KgEdgeType::from_str(&self.relation)
+        KgEdgeType::from_string(&self.relation)
     }
 }
 
@@ -797,7 +797,7 @@ impl KnowledgeGraph {
         let neighbors = db.get_neighbors(&center.id, depth, None)?;
         for (node, edge, _) in &neighbors {
             if !include_notes {
-                let nt = KgNodeType::from_str(&node.node_type);
+                let nt = KgNodeType::from_string(&node.node_type);
                 if matches!(nt, KgNodeType::PNote | KgNodeType::CNote | KgNodeType::MNote) {
                     continue;
                 }
@@ -1153,17 +1153,17 @@ mod tests {
         assert_eq!(KgNodeType::Paper.as_str(), "paper");
         assert_eq!(KgNodeType::Tag.as_str(), "tag");
         assert_eq!(KgNodeType::Author.as_str(), "author");
-        assert_eq!(KgNodeType::from_str("paper"), KgNodeType::Paper);
-        assert_eq!(KgNodeType::from_str("TAG"), KgNodeType::Tag);
-        assert_eq!(KgNodeType::from_str("p_note"), KgNodeType::PNote);
+        assert_eq!(KgNodeType::from_string("paper"), KgNodeType::Paper);
+        assert_eq!(KgNodeType::from_string("TAG"), KgNodeType::Tag);
+        assert_eq!(KgNodeType::from_string("p_note"), KgNodeType::PNote);
     }
 
     #[test]
     fn test_edge_type_enum() {
         assert_eq!(KgEdgeType::Cite.as_str(), "cite");
         assert_eq!(KgEdgeType::SameTag.as_str(), "same_tag");
-        assert_eq!(KgEdgeType::from_str("cite"), KgEdgeType::Cite);
-        assert_eq!(KgEdgeType::from_str("same_tag"), KgEdgeType::SameTag);
+        assert_eq!(KgEdgeType::from_string("cite"), KgEdgeType::Cite);
+        assert_eq!(KgEdgeType::from_string("same_tag"), KgEdgeType::SameTag);
     }
 
     #[test]
