@@ -12,7 +12,7 @@ tokio = { workspace = true, features = ["full"] }
 tracing.workspace = true
 anyhow.workspace = true
 uuid = { workspace = true, features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 dirs.workspace = true
 
 [dev-dependencies]

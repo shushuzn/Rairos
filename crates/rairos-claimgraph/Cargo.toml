@@ -12,4 +12,4 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 regex.workspace = true
 dirs.workspace = true
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }

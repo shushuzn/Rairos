@@ -17,7 +17,7 @@ tracing.workspace = true
 async-trait = "0.1"
 anyhow.workspace = true
 uuid = { workspace = true, features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 dirs.workspace = true
 regex.workspace = true
 rusqlite = { version = "0.39", features = ["bundled"] }

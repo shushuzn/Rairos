@@ -9,7 +9,7 @@ regex.workspace = true
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
 tokio = { workspace = true, features = ["full"] }
 thiserror = "2.0"
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 rairos-llm = { path = "../rairos-llm" }
 rairos-deep-research = { path = "../rairos-deep-research" }
 sha2.workspace = true

@@ -10,7 +10,7 @@ rairos-kg = { path = "../rairos-kg" }
 rairos-render = { path = "../rairos-render" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 tokio = { workspace = true, features = ["rt", "macros"] }
 thiserror = "1.0"
 tracing.workspace = true

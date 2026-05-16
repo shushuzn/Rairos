@@ -31,7 +31,7 @@ tracing.workspace = true
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 futures.workspace = true
 async-trait = "0.1"
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 reqwest = { version = "0.12", features = ["rustls-tls"], default-features = false }
 # Orphan rescues — MCP tool crates
 rairos-deep-research = { path = "../rairos-deep-research" }

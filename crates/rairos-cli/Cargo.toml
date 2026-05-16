@@ -88,13 +88,13 @@ serde = { workspace = true, features = ["derive"] }
 sha2.workspace = true
 hex.workspace = true
 uuid = { workspace = true, features = ["v4"] }
-sysinfo.workspace = true
-clap.workspace = true
+sysinfo = "0.34"
+clap = { workspace = true, features = ["derive"] }
 anyhow.workspace = true
 tracing.workspace = true
 tracing-subscriber = "0.3"
 tracing-appender = "0.2"
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 serde_json.workspace = true
 regex.workspace = true
 csv = "1.3"
