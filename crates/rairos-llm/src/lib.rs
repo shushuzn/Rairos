@@ -25,7 +25,7 @@ pub mod retry;
 pub mod insight;
 pub mod llm_orphans;
 
-use rairos_core::constants::LLM_BASE_URL;
+use rairos_core::constants::{GENE_POOL_JSONL, LLM_BASE_URL};
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -1687,7 +1687,7 @@ impl GenePool {
     }
 
     pub fn gene_pool_path() -> std::path::PathBuf {
-        Self::default_path().join("gene_pool.jsonl")
+        Self::default_path().join(GENE_POOL_JSONL)
     }
 
     pub fn load() -> std::io::Result<Self> {

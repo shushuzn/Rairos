@@ -5,7 +5,7 @@
 
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
-use rairos_core::constants::ARXIV_API;
+use rairos_core::constants::{ARXIV_API, GP_DIR_NAME, GENE_POOL_JSONL};
 use serde_json::Value;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -263,7 +263,7 @@ impl ToolHandler for PaperRecommendHandler {
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
         let topic = params["topic"].as_str().ok_or("Missing topic")?;
-        let gp_path = data_dir().join("evolution").join("gene_pool.jsonl");
+        let gp_path = data_dir().join(GP_DIR_NAME).join(GENE_POOL_JSONL);
         let entries = read_jsonl(&gp_path);
 
         // Score each capsule by topic overlap (simple substring match)

@@ -4,7 +4,7 @@
 
 use rand::seq::SliceRandom;
 use rand::Rng;
-use rairos_core::constants::GP_DIR_NAME;
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -22,7 +22,7 @@ fn gp_dir() -> PathBuf {
 }
 
 fn gene_pool_path() -> PathBuf {
-    gp_dir().join("gene_pool.jsonl")
+    gp_dir().join(GENE_POOL_JSONL)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
