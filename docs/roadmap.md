@@ -24,7 +24,7 @@ The goal is not to be another PDF manager or reference manager. It's to be an **
 **v1.5.4** — Core infrastructure is solid. The CLI is functional with 104 commands. Research loop, gap analysis, and RAG pipeline are operational.
 
 Strengths:
-- 73 tests, CI gate at 40% coverage
+- 3,800+ tests, CI gate at 83%+ coverage
 - arXiv/DOI/PDF import with OCR
 - FTS5 + semantic (embedding) search
 - Citation graph via OpenAlex
