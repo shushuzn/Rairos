@@ -1,10 +1,9 @@
-use rairos_core::constants::GP_DIR_NAME;
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::PathBuf;
 
 const CAPSULE_FILE: &str = "capsules.json";
-const JSONL_FILE: &str = "gene_pool.jsonl";
 
 fn get_gp_dir() -> PathBuf {
     std::env::var("RAIROS_HOME")
@@ -19,7 +18,7 @@ fn get_capsule_path() -> PathBuf {
 }
 
 fn get_jsonl_path() -> PathBuf {
-    get_gp_dir().join(JSONL_FILE)
+    get_gp_dir().join(GENE_POOL_JSONL)
 }
 
 pub fn load_capsules(
@@ -32,7 +31,7 @@ pub fn load_capsules(
         return vec![];
     }
 
-    let jsonl_path = gp_dir.join(JSONL_FILE);
+    let jsonl_path = gp_dir.join(GENE_POOL_JSONL);
     let text = match std::fs::read_to_string(&jsonl_path) {
         Ok(t) => t.trim().to_string(),
         Err(_) => return vec![],
