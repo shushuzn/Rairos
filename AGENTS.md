@@ -122,6 +122,9 @@ Constants centralized in `rairos-core::constants` for reuse:
 | `QUESTIONS_FILE` | `questions.json` | Questions file |
 | `INSIGHTS_DIR` | `insights` | Insights directory |
 | `INSIGHT_CARDS_FILE` | `cards.json` | Insight cards file |
+| `CACHE_DIR` | `cache` | Cache directory |
+| `LLM_CACHE_DIR` | `llm_cache` | LLM cache subdirectory |
+| `PAPERS_DB_NAME` | `papers.db` | Papers database filename |
 | `CLIMATE_CATS` | `&["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]` | Climate-related categories |
 | `ARXIV_API` | `https://export.arxiv.org/api/query` | arXiv API endpoint |
 | `SEMANTIC_API` | `https://api.semanticscholar.org/graph/v1` | Semantic Scholar API |
