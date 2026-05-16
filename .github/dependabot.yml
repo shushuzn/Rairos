@@ -13,9 +13,6 @@ updates:
     labels:
       - "dependencies"
       - "automated"
-    ignore:
-      - dependency-name: "pyo3"
-        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /

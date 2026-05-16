@@ -112,8 +112,8 @@ Ou instalar a partir do código-fonte:
 
 ```bash
 git clone https://github.com/shushuzn/Rairos.git
-cd ai_research_os
-pip install -e .
+cd Rairos
+CARGO_BUILD_JOBS=1 cargo build --workspace
 ```
 
 ## Documentação
