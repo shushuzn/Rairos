@@ -4,17 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 regex.workspace = true
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
-tokio = { version = "1.0", features = ["full"] }
+tokio = { workspace = true, features = ["full"] }
 thiserror = "2.0"
 chrono = { version = "0.4", features = ["serde"] }
 rairos-llm = { path = "../rairos-llm" }
 rairos-deep-research = { path = "../rairos-deep-research" }
 sha2.workspace = true
 serde_json.workspace = true
-uuid = { version = "1.0", features = ["v4", "serde"] }
+uuid = { workspace = true, features = ["v4", "serde"] }
 tracing.workspace = true
 
 [dev-dependencies]

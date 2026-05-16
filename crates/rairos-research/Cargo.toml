@@ -11,14 +11,14 @@ rairos-pdf = { path = "../rairos-pdf" }
 rairos-llm = { path = "../rairos-llm" }
 rairos-kg = { path = "../rairos-kg" }
 rairos-trends = { path = "../rairos-trends" }
-serde = { version = "1.0", features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 thiserror = "2.0"
-tokio = { version = "1.0", features = ["full"] }
+tokio = { workspace = true, features = ["full"] }
 tracing.workspace = true
 chrono = { version = "0.4", features = ["serde"] }
 anyhow.workspace = true
-uuid = { version = "1.0", features = ["v4", "serde"] }
+uuid = { workspace = true, features = ["v4", "serde"] }
 dirs.workspace = true
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "blocking"], default-features = false }
 

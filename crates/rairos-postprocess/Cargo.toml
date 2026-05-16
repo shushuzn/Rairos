@@ -8,9 +8,9 @@ rairos-core = { path = "../rairos-core" }
 rairos-llm = { path = "../rairos-llm" }
 rairos-kg = { path = "../rairos-kg" }
 rairos-render = { path = "../rairos-render" }
-serde = { version = "1.0", features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 chrono = { version = "0.4", features = ["serde"] }
-tokio = { version = "1", features = ["rt", "macros"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
 thiserror = "1.0"
 tracing.workspace = true

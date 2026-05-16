@@ -8,7 +8,7 @@ name = "rairos_claimgraph"
 crate-type = ["rlib"]
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 regex.workspace = true
 dirs.workspace = true

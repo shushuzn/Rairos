@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 rairos-crossover = { path = "../rairos-crossover" }
-serde = { version = "1", features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 chrono.workspace = true
 dirs.workspace = true

@@ -9,6 +9,6 @@ rairos-insight-credibility = { path = "../rairos-insight-credibility" }
 rairos-insight-storage = { path = "../rairos-insight-storage" }
 rairos-insight-tracker = { path = "../rairos-insight-tracker" }
 rairos-insight-evolution = { path = "../rairos-insight-evolution" }
-serde = { version = "1", features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 dirs.workspace = true

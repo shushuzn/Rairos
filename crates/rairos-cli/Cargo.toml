@@ -84,12 +84,12 @@ rairos-story = { path = "../rairos-story" }
 rairos-validator = { path = "../rairos-validator" }
 rairos-value-quantifier = { path = "../rairos-value-quantifier" }
 rairos-workspace-snapshot = { path = "../rairos-workspace-snapshot" }
-serde = { version = "1", features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
 sha2.workspace = true
 hex.workspace = true
-uuid = { version = "1.0", features = ["v4"] }
-sysinfo = "0.34"
-clap = { version = "4.5", features = ["derive"] }
+uuid = { workspace = true, features = ["v4"] }
+sysinfo.workspace = true
+clap.workspace = true
 anyhow.workspace = true
 tracing.workspace = true
 tracing-subscriber = "0.3"
@@ -102,7 +102,7 @@ serde-xml-rs = "0.7"
 dirs.workspace = true
 indicatif = "0.17"
 console = "0.15"
-tokio = { version = "1", features = ["full"] }
+tokio = { workspace = true, features = ["full"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "blocking"], default-features = false }
 ratatui = "0.28"
 crossterm = "0.28"
