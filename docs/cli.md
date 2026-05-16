@@ -1,6 +1,6 @@
 # CLI Reference
 
-All commands follow the pattern `python -m cli <subcommand> [options]`.
+All commands follow the pattern `rairos <subcommand> [options]` (or `cargo run -p rairos-cli -- <subcommand>`).
 
 ## Core Research
 
@@ -132,24 +132,24 @@ All commands follow the pattern `python -m cli <subcommand> [options]`.
 
 ```bash
 # Install
-pip install -e ".[all]"
+CARGO_BUILD_JOBS=1 cargo build --workspace
 rairos --help                    # Show all commands
 
 # Paper operations
-python -m cli import 2601.00155
-python -m cli search "attention"
-python -m cli list --status done
+rairos import 2601.00155
+rairos search "attention"
+rairos list --status done
 
 # Research
-python -m cli research "RLHF alignment" --limit 5
-python -m cli gap --papers "2601.00155"
-python -m cli chat-tui
+rairos research "RLHF alignment" --limit 5
+rairos gap --papers "2601.00155"
+rairos chat-tui
 
 # Knowledge graph
-python -m cli kg --query "transformer"
-python -m cli cite-graph 2601.00155
+rairos kg --query "transformer"
+rairos cite-graph 2601.00155
 
 # Gene Pool
-python -m cli scout --topic "mixture of experts"
-python -m cli daemon start
+rairos scout --topic "mixture of experts"
+rairos daemon start
 ```
