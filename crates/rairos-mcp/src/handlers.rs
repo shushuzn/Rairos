@@ -5,7 +5,7 @@
 
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
-use rairos_core::constants::{ARXIV_API, GP_DIR_NAME, GENE_POOL_JSONL};
+use rairos_core::constants::{ARXIV_API, GP_DIR_NAME, GENE_POOL_JSONL, TAGS_FILE};
 use serde_json::Value;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -23,7 +23,7 @@ fn data_dir() -> PathBuf {
 }
 
 fn tags_path() -> PathBuf {
-    data_dir().join("tags.jsonl")
+    data_dir().join(TAGS_FILE)
 }
 
 fn read_jsonl(path: &PathBuf) -> Vec<Value> {
