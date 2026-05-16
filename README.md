@@ -8,8 +8,7 @@
 
 **A Self-Evolving Research Operating System** — 100% Rust (157 crates), 104 CLI commands, 68 MCP tools.
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
-[![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
+[![Build](https://github.com/shushuzn/Rairos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
 ## What It Does
