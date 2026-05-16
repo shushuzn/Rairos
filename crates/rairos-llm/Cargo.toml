@@ -20,7 +20,7 @@ uuid = { workspace = true, features = ["v4", "serde"] }
 chrono = { workspace = true, features = ["serde"] }
 dirs.workspace = true
 regex.workspace = true
-rusqlite = { version = "0.39", features = ["bundled"] }
+rusqlite.workspace = true
 rand.workspace = true
 
 # Orphan rescues — re-exported via llm_orphans module
