@@ -2582,6 +2582,7 @@ const KEYWORD_STOPWORDS: &[&str] = &[
     "using",
 ];
 
+#[deprecated(since = "0.1.0", note = "Use concrete implementations in rairos-research, rairos-llm, or rairos-topic-discovery instead")]
 pub fn extract_keywords(text: &str, min_len: usize) -> Vec<String> {
     let text_lower = text.to_lowercase();
     text_lower
@@ -2591,6 +2592,7 @@ pub fn extract_keywords(text: &str, min_len: usize) -> Vec<String> {
         .collect()
 }
 
+#[deprecated(since = "0.1.0", note = "Use rairos_rankers_cosine::SimpleCosineRanker::cosine_similarity instead")]
 pub fn cosine_sim(a: &[f64], b: &[f64]) -> f64 {
     if a.is_empty() || b.is_empty() {
         return 0.0;
@@ -2604,6 +2606,7 @@ pub fn cosine_sim(a: &[f64], b: &[f64]) -> f64 {
     dot / (norm_a * norm_b)
 }
 
+#[deprecated(since = "0.1.0", note = "This function is orphaned. Use concrete implementations in rairos-vault, rairos-credibility, etc. instead")]
 pub fn jaccard(a: &[&str], b: &[&str]) -> f64 {
     if a.is_empty() || b.is_empty() {
         return 0.0;
