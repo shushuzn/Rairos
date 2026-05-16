@@ -187,7 +187,7 @@ mod tests {
 
     #[test]
     fn test_record_metric_function() {
-        record_metric("func_test", 3.14);
+        record_metric("func_test", std::f64::consts::PI);
         let monitor = get_monitor();
         let stats = monitor.get_stats("func_test").unwrap();
         assert_eq!(stats.count, 1);

@@ -286,7 +286,7 @@ mod tests {
     #[test]
     fn test_get_bold_capsules_returns_vec() {
         let result = get_bold_capsules();
-        assert!(result.capacity() >= 0);
+        assert!(result.is_empty());
     }
 
     #[test]

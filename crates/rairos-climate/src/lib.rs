@@ -385,7 +385,7 @@ mod tests {
     #[test]
     fn test_climate_stats() {
         let stats = get_watch_stats();
-        assert!(stats.total_climate_papers >= 0);
+        // `total_climate_papers` is usize — always non-negative by type
         assert!(stats.watched_count <= stats.total_climate_papers);
         assert!(stats.recent_count <= stats.total_climate_papers);
     }

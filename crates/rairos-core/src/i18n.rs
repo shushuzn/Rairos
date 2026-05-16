@@ -214,10 +214,9 @@ mod tests {
 
     #[test]
     fn test_t_key_exists() {
-        assert_eq!(
+        assert!(
             t("research_searching").find("Searching arXiv").is_some()
-                || t("research_searching").find("搜索 arXiv").is_some(),
-            true
+                || t("research_searching").find("搜索 arXiv").is_some()
         );
     }
 

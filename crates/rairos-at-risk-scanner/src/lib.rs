@@ -260,21 +260,21 @@ mod tests {
     #[test]
     fn test_get_at_risk_capsules_empty() {
         let result = get_at_risk_capsules(0);
-        assert!(result.capacity() >= 0);
+        assert!(result.is_empty());
     }
 
     #[test]
     fn test_keep_active_not_found() {
         // Should return false when capsule doesn't exist
         let result = keep_active("nonexistent-capsule-id");
-        // Returns false (or true if file doesn't exist)
-        assert!(!result || result);
+        // Function returns false for nonexistent capsule
+        assert!(!result);
     }
 
     #[test]
     fn test_pin_to_ttl_not_found() {
         let result = pin_to_ttl("nonexistent-capsule-id", 3);
-        assert!(!result || result);
+        assert!(!result);
     }
 
     #[test]

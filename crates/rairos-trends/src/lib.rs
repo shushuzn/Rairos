@@ -683,6 +683,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::approx_constant)]
     fn test_round_utility() {
         assert!((round(3.14159, 2) - 3.14).abs() < 0.0001);
         assert!((round(1.5, 0) - 2.0).abs() < 0.0001);
