@@ -19,21 +19,11 @@
       "matchTypes": ["minor", "patch"]
     },
     {
-      "description": "Auto-merge Python dependencies for patch updates",
-      "matchManagers": ["pep621"],
-      "automerge": true,
-      "matchTypes": ["patch"]
-    },
-    {
       "description": "Schedule weekly updates",
       "schedule": ["every weekend"]
     }
   ],
   "rust": {
     "enabled": true
-  },
-  "python": {
-    "packageTargets": ["pyproject.toml"],
-    "constraintsFileNames": ["pyproject.toml"]
   }
 }

@@ -1,5 +1,7 @@
 # Phase 2 Specification: Search & Discovery
 
+> **存档 — 历史文档**。此文描述旧 Python 架构的设计决策。当前 Rairos 为 100% Rust，功能已由 `rairos-core` (SQLite/FTS5) 和 `rairos-cli` (search/list 等命令) 重新实现。
+
 ## Status: COMPLETED
 
 ## Motivation

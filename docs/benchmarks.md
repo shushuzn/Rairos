@@ -1,9 +1,9 @@
 # Benchmarks
 
-AI Research OS benchmarks measure three core capabilities: **paper import speed**, **search latency**, and **RAG answer quality**. Numbers below are collected on a standard research workstation (8-core CPU, 16 GB RAM, SSD).
+Rairos benchmarks measure three core capabilities: **paper import speed**, **search latency**, and **RAG answer quality**. Numbers below are collected on a standard research workstation (8-core CPU, 16 GB RAM, SSD).
 
 > [!NOTE]
-> These benchmarks are **self-measured** using the built-in `PerformanceProfiler` and `BenchmarkComparator`. Run `rairos benchmark` to reproduce.
+> These benchmarks are **self-measured** using the built-in `PerformanceProfiler`. Run `rairos benchmark` to reproduce.
 
 ## Paper Import Pipeline
 
@@ -11,7 +11,7 @@ AI Research OS benchmarks measure three core capabilities: **paper import speed*
 |-------|-----------|----------|-------|
 | arXiv metadata fetch | HTTP GET | 0.8s | Cached after first fetch |
 | PDF download | HTTP GET | 1.2s | Per paper, depends on size |
-| Text extraction | PyMuPDF | 0.3s | Per page, parallelized |
+| Text extraction | Rust parser (lopdf) | 0.3s | Per page, parallelized |
 | Database write | SQLite INSERT | 0.05s | Batched for bulk imports |
 | LLM analysis | API call | 2–8s | Optional, depends on model |
 
@@ -38,7 +38,7 @@ Results measured over 1,000 papers in database.
 
 ## RAG Answer Quality
 
-AI Research OS uses `BenchmarkComparator` to evaluate answer quality by cross-referencing cited papers against ground-truth experiment tables.
+Rairos uses `BenchmarkComparator` to evaluate answer quality by cross-referencing cited papers against ground-truth experiment tables.
 
 | Metric | Score | Description |
 |--------|-------|-------------|
@@ -47,19 +47,19 @@ AI Research OS uses `BenchmarkComparator` to evaluate answer quality by cross-re
 | Hallucination Rate | 3.1% | Unverified claims per answer |
 
 > [!TIP]
-> Run `python -m llm.benchmark --compare <paper_id1> <paper_id2>` to compare benchmark results across any two imported papers.
+> Run `rairos benchmark --compare <paper_id1> <paper_id2>` to compare benchmark results across any two imported papers.
 
 ## Core Module Test Coverage
 
-| Module | Coverage | Test Count |
-|--------|----------|------------|
-| `core/` | 91% | 312 tests |
-| `llm/` | 78% | 485 tests |
-| `parsers/` | 85% | 124 tests |
-| `db/` | 89% | 67 tests |
-| **Total** | **83%** | **3,827 tests** |
+| Crate | Coverage | Test Count |
+|-------|----------|------------|
+| `rairos-core` | 91% | 312 tests |
+| `rairos-llm` | 78% | 485 tests |
+| `rairos-parser` | 85% | 124 tests |
+| `rairos-citations` | 89% | 67 tests |
+| **Total** | **83%+** | **3,827+ tests** |
 
-Run `python -m pytest --ignore=neuraloperator_fork -q` to reproduce the full test suite.
+Run `cargo test` to reproduce the full test suite.
 
 ## Evolution System
 
@@ -75,12 +75,12 @@ The self-evolution system improves over time. Gene/capsule patterns that fail to
 ## Reproducing These Numbers
 
 ```bash
-# Full benchmark suite
-python -m pytest tests/ -q --ignore=neuraloperator_fork
+# Full test suite
+cargo test
 
 # Profile paper import
 rairos benchmark --time-import 2601.00155
 
 # Compare two papers' benchmark tables
-python -m llm.benchmark 2601.00155 2302.00763
+rairos benchmark --compare 2601.00155 2302.00763
 ```

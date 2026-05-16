@@ -50,8 +50,11 @@ Esto **no es un gestor de PDFs**. Es un **Sistema Auto-Evolutivo** que:
 ## Inicio rápido
 
 ```bash
-pip install ai-research-os
-airos-cli 2601.00155 --tags LLM,Agent
+CARGO_BUILD_JOBS=1 cargo build --workspace
+
+# Run Rairos (from repo root)
+cd Rairos
+rairos 2601.00155 --tags LLM,Agent
 ```
 
 Listo — un artículo importado en segundos.
@@ -59,18 +62,18 @@ Listo — un artículo importado en segundos.
 ### Una línea, tres entradas
 
 ```bash
-airos-cli 2601.00155                          # ID de arXiv
-airos-cli 10.48550/arXiv.2601.00155           # DOI
-airos-cli --pdf paper.pdf --tags RAG            # PDF local
-airos-cli --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # PDF escaneado
+rairos 2601.00155                          # ID de arXiv
+rairos 10.48550/arXiv.2601.00155           # DOI
+rairos --pdf paper.pdf --tags RAG            # PDF local
+rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # PDF escaneado
 ```
 
 ### Tres comandos principales
 
 ```bash
-airos-cli import 2601.00155 10.1038/nature12373   # Añadir artículos a la DB
-airos-cli search "attention mechanism" --tag LLM    # Buscar artículos
-airos-cli research "RLHF alignment" --limit 5       # Bucle de investigación autónomo
+rairos import 2601.00155 10.1038/nature12373   # Añadir artículos a la DB
+rairos search "attention mechanism" --tag LLM    # Buscar artículos
+rairos research "RLHF alignment" --limit 5       # Bucle de investigación autónomo
 ```
 
 ### Borrador con IA (opcional)
@@ -78,7 +81,7 @@ airos-cli research "RLHF alignment" --limit 5       # Bucle de investigación au
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-airos-cli 2601.00155 --tags LLM --ai
+rairos 2601.00155 --tags LLM --ai
 ```
 
 Para configuración completa, ver [API_CONFIG.md](API_CONFIG.md).
@@ -105,14 +108,6 @@ Los artículos se organizan en 12 directorios:
 ## Instalación
 
 ```bash
-pip install ai-research-os
-```
-
-O instalar desde código fuente:
-
-```bash
-git clone https://github.com/shushuzn/Rairos.git
-cd Rairos
 CARGO_BUILD_JOBS=1 cargo build --workspace
 ```
 

@@ -21,7 +21,7 @@ The goal is not to be another PDF manager or reference manager. It's to be an **
 
 ## Current State
 
-**v1.5.4** — Core infrastructure is solid. The CLI is functional with 23 subcommands. Research loop, gap analysis, and RAG pipeline are operational.
+**v1.5.4** — Core infrastructure is solid. The CLI is functional with 104 commands. Research loop, gap analysis, and RAG pipeline are operational.
 
 Strengths:
 - 73 tests, CI gate at 40% coverage
@@ -30,7 +30,7 @@ Strengths:
 - Citation graph via OpenAlex
 - TUI chat interface
 - EvoSkill integration (benchmark-driven skill discovery)
-- paper2code pipeline
+- Research pipeline (paper analysis → gap detection → code generation)
 - Gap clustering with hotspot trend analysis
 - Contradiction timeline for paradigm shift detection
 - Parallel multi-agent research with result merging
@@ -108,7 +108,7 @@ Goal: A system that does research **with minimal human input**.
   - [x] Searches literature
   - [x] Downloads and reads papers
   - [x] Generates hypotheses
-  - [x] Designs experiments (paper2code)
+  - [x] Generates experiments (code generation from paper)
   - [x] Reports findings
 - [ ] **Multi-modal input**
   - [ ] Accept paper PDFs via email
@@ -136,7 +136,7 @@ Goal: A system that does research **with minimal human input**.
 |---------|--------|---------------|
 | v1.0 | Released | Basic import, search, P-Note generation |
 | v1.3 | Released | C-Note, Radar, Timeline, citation graph |
-| v1.5 | Released | Chat TUI, semantic search, EvoSkill pipeline |
+| v1.5 | Released | Chat TUI, semantic search, skill evolution |
 | v1.5.4 | Released | Gap clustering, contradiction timeline, parallel research, GenePool saturation, rich webhooks, observability |
 | v2.0 | In Progress | Community polish, web UI improvements, Docker |
 | v2.2 | In Progress | Self-evolution dashboard, research digest |

@@ -1,6 +1,8 @@
 # License Conflict Audit
 
-## Active Conflict
+> **存档 — 历史文档**。旧 Python 架构的许可审计。Rairos 已迁移至 100% Rust，不再使用 PyMuPDF（AGPL-3.0）。Rust 依赖均为 Apache-2.0/MIT 兼容许可，无冲突。
+
+## ~~Active Conflict~~ (Resolved by Rust Migration)
 
 | Dependency | License | Project License | Status |
 |------------|---------|-----------------|--------|

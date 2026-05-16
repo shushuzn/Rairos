@@ -1,245 +1,472 @@
 # Advanced Commands Reference
 
-Complete reference for all 23 CLI subcommands. See [README.md](README.md) for installation and quick-start.
+Rairos CLI ships with **104 commands**. This page covers the most useful ones by category.
+
+> Full help: `rairos --help` or `rairos <command> --help`
 
 ---
 
-## Paper Processing (main flow)
+## Paper Management
 
-### `rairos <input> [flags]`
+### `rairos add <arxiv_id>`
+Add a paper by arXiv ID (auto-fetches metadata).
 
-| Argument | Description | Default |
-|----------|-------------|---------|
-| `input` | arXiv ID/URL or DOI/doi.org URL | (required) |
-| `--pdf <path>` | Use local PDF | - |
-| `--ocr` | Enable OCR fallback | off |
-| `--ocr-lang <lang>` | OCR language | `chi_sim+eng` |
-| `--ocr-zoom <zoom>` | OCR render zoom | 2 |
-| `--max-pages <n>` | Limit parsed pages | unlimited |
-| `--ai` | Enable AI draft generation | off |
-| `--ai-cnote` | AI-fill all C-Notes from existing P-Notes | off |
-| `--ai-max-papers <n>` | Max P-notes to feed per C-note | 10 |
-| `--model <name>` | LLM model name | `qwen3.5-plus` |
-| `--base-url <url>` | API endpoint | DashScope compatible |
-| `--api-key <key>` | API key | env `OPENAI_API_KEY` |
-| `--ai-max-chars <n>` | Max chars of extracted text sent to AI | 8000 |
-| `--tags <t1,t2>` | Comma-separated tags | auto-inferred |
-| `--category <dir>` | Folder under root to place P-Note | auto |
-| `--concept-dir <dir>` | Folder under root to place C-Notes | auto |
-| `--comparison-dir <dir>` | Folder under root to place M-Notes | auto |
+```bash
+rairos add 2601.00155
+```
+
+### `rairos list`
+List papers with filters and sorting.
+
+```bash
+rairos list
+rairos list --tag LLM --limit 20 --sort published
+rairos list --status done --year 2025 --format json
+```
+
+### `rairos search <query>`
+Full-text search with BM25 ranking.
+
+```bash
+rairos search "scaling law"
+rairos search "transformer" --limit 20 --field title
+```
+
+### `rairos show <id>`
+Show paper details.
+
+```bash
+rairos show 2601.00155
+rairos show 2601.00155 --format json
+```
+
+### `rairos delete <ids...>`
+Delete papers.
+
+```bash
+rairos delete 2601.00155
+rairos delete 2601.00155 2302.00763 --force
+```
+
+### `rairos import`
+Batch import from arXiv ID, DOI, or JSON file.
+
+```bash
+rairos import --ids 2601.00155 2302.00763
+rairos import --path papers.json
+rairos import --ids DOI:10.48550/arXiv.2601.00155 --skip-existing
+```
+
+### `rairos export`
+Export database to JSON or CSV.
+
+```bash
+rairos export data.json
+rairos export data.csv --format csv
+rairos export done_papers.json --status done
+```
 
 ---
 
-## CLI Subcommands
+## Research Analysis
 
-### `stats`
-DB overview: total papers, status breakdown, queue size.
+### `rairos analyze <id>`
+Extract insights from a paper.
+
+```bash
+rairos analyze 2601.00155 --kind summary
+rairos analyze 2601.00155 --kind keywords
+rairos analyze 2601.00155 --kind topics
+rairos analyze 2601.00155 --kind quality
+```
+
+### `rairos compare <ids...>`
+Compare multiple papers.
+
+```bash
+rairos compare 2601.00155,2302.00763 --aspect abstract
+rairos compare 2601.00155,2302.00763 --aspect method,results
+```
+
+### `rairos ask <question>`
+Ask a question about papers in your library.
+
+```bash
+rairos ask "What architectures are used for long-context LLMs?"
+rairos ask "Compare scaling patterns" --max-papers 20
+```
+
+### `rairos trend <topic>`
+Analyze research trends over time.
+
+```bash
+rairos trend "reinforcement learning" --range 2y
+rairos trend "transformer" --range 6m --format json
+```
+
+---
+
+## Gap Detection & Gene Pool
+
+### `rairos gap --topic <topic>`
+Detect research gaps for a topic.
+
+```bash
+rairos gap --topic "long context LLM"
+rairos gap --topic "VLA" --limit 10 --category LLM
+```
+
+### `rairos gap-list`
+List detected gaps.
+
+```bash
+rairos gap-list
+rairos gap-list --limit 50
+```
+
+### `rairos gap-show <id>`
+Show gap details.
+
+```bash
+rairos gap-show gap_abc123
+```
+
+### `rairos gene-add`
+Add a capsule to the Gene Pool.
+
+```bash
+rairos gene-add --approach "Use adaptive context length" --gap-type scalability_issue --keywords "context,window,length"
+```
+
+### `rairos gene-list`
+List genes/capsules in the pool.
+
+```bash
+rairos gene-list
+rairos gene-list --status active --gap-type scalability_issue
+```
+
+### `rairos gene-evolve`
+Run evolution cycle on Gene Pool.
+
+```bash
+rairos gene-evolve --max-crossovers 5
+```
+
+### `rairos gene-feedback`
+Record feedback for a gene.
+
+```bash
+rairos gene-feedback gene_xyz --positive
+rairos gene-feedback gene_xyz --negative
+```
+
+---
+
+## Knowledge Graph
+
+### `rairos kg-stats`
+Knowledge graph statistics.
+
+```bash
+rairos kg-stats
+```
+
+### `rairos kg-rank`
+PageRank-based paper importance ranking.
+
+```bash
+rairos kg-rank --limit 20
+```
+
+### `rairos kg-path <source> <target>`
+Find shortest path between two papers.
+
+```bash
+rairos kg-path 2601.00155 2302.00763
+```
+
+### `rairos kg-graph <id>`
+Show a paper's ego graph (neighbors).
+
+```bash
+rairos kg-graph 2601.00155 --depth 2
+```
+
+### `rairos kg-search <keyword>`
+Search nodes in the knowledge graph.
+
+```bash
+rairos kg-search "transformer" --type Paper
+rairos kg-search "attention" --type Tag
+```
+
+---
+
+## Citations
+
+### `rairos citations`
+Show citation relationships.
+
+```bash
+rairos citations --from 2601.00155   # Papers this paper cites
+rairos citations --to 2601.00155     # Papers that cite this paper
+```
+
+### `rairos cite-stats`
+Citation statistics.
+
+```bash
+rairos cite-stats
+rairos cite-stats --paper 2601.00155
+rairos cite-stats --top 10
+```
+
+### `rairos cite-import`
+Import citation links from JSON.
+
+```bash
+rairos cite-import --file citations.json
+rairos cite-import --extract --paper 2601.00155  # Extract from plain text
+```
+
+### `rairos cite-fetch`
+Fetch citations from OpenAlex API.
+
+```bash
+rairos cite-fetch 2601.00155
+```
+
+---
+
+## Research Automation
+
+### `rairos agent <topic>`
+Autonomous research agent — searches, reads, analyzes.
+
+```bash
+rairos agent "scaling laws for RL"
+rairos agent "VLA generalization" --max-papers 20 --max-time 30
+```
+
+### `rairos hypothesize <topic>`
+Generate research hypotheses from gaps and trends.
+
+```bash
+rairos hypothesize "adaptive inference" --gap-context "..."
+rairos hypothesize "multi-agent reasoning" --num-hypotheses 5 --json
+```
+
+### `rairos pipeline <topic>`
+Full research pipeline: gap analysis → hypothesis → experiment.
+
+```bash
+rairos pipeline "long context LLM"
+rairos pipeline "multi-modal RL" --skip-experiments
+```
+
+### `rairos research`
+Manage research logs.
+
+```bash
+rairos research list
+rairos research add "Noticed interesting scaling behavior in sparse models"
+```
+
+### `rairos digest`
+Generate weekly research digest.
+
+```bash
+rairos digest --weeks 2
+```
+
+### `rairos demo`
+Run end-to-end pipeline demo.
+
+```bash
+rairos demo              # Full demo
+rairos demo --quick      # 30-second demo
+```
+
+---
+
+## Subscriptions & Monitoring
+
+### `rairos daemon`
+Start Rairos as a background service.
+
+```bash
+rairos daemon
+rairos daemon --port 8080 --foreground
+```
+
+### `rairos subscribe`
+Subscribe to arXiv searches with continuous monitoring.
+
+```bash
+rairos subscribe "transformer attention" --interval 60 --auto-add
+```
+
+### `rairos signal <keyword>`
+Match event keywords against Gene Pool patterns.
+
+```bash
+rairos signal "transformer"
+rairos signal "reinforcement learning"
+```
+
+---
+
+## Environment & Diagnostics
+
+### `rairos doctor`
+Diagnose environment and report issues.
+
+```bash
+rairos doctor
+```
+
+### `rairos stats`
+Database statistics.
 
 ```bash
 rairos stats
+rairos stats --json
 ```
 
-### `status`
-Show current processing status and queue summary.
+### `rairos status`
+Real-time database status.
 
 ```bash
 rairos status
 ```
 
-### `cache`
-Manage paper cache.
+### `rairos setup`
+Run the setup wizard.
 
 ```bash
-rairos cache --stats     # Show cache stats
-rairos cache --clear     # Clear all cache
-rairos cache --get UID  # Get cached path for UID
-rairos cache --set UID PATH  # Set cached path for UID
+rairos setup
+rairos setup --guide     # Quick start guide only
 ```
 
-### `import`
-Batch add papers by arXiv ID / DOI / URL.
+---
+
+## Deduplication
+
+### `rairos dedup`
+Find duplicate papers by DOI/title.
 
 ```bash
-# One or more IDs
-rairos import 2601.00155 10.48550/arXiv.2601.00155
-
-# From file (one ID per line)
-rairos import --file ids.txt
-
-# With checkpoint (save/resume progress)
-rairos import --file ids.txt --checkpoint ckpt.json
-rairos import --resume --checkpoint ckpt.json
+rairos dedup find                    # Find duplicates
+rairos dedup semantic 2601.00155    # Semantic similarity
+rairos dedup remove ID1,ID2         # Remove duplicates
+rairos dedup stats                   # Show embedding coverage
 ```
 
-### `export`
-Export DB to CSV or JSON.
+### `rairos similar <id>`
+Find semantically similar papers.
 
 ```bash
-rairos export
-rairos export --format csv
-rairos export --format json
+rairos similar 2601.00155
+rairos similar 2601.00155 --limit 10 --threshold 0.8
 ```
 
-### `search`
-Full-text search with filters.
-
-```bash
-rairos search "scaling law"
-rairos search "transformer" --tag LLM --limit 20
-```
-
-### `list`
-List papers with sort/filter.
-
-```bash
-rairos list
-rairos list --tag LLM --sort updated --limit 50
-```
-
-### `similar`
-Find semantically similar papers via embeddings.
-
-```bash
-rairos similar PAPER_ID
-rairos similar PAPER_ID --threshold 0.8 --limit 10
-```
-
-Requires Ollama running with `ollama serve` and `ollama pull nomic-embed-text`.
-
-### `queue`
-Manage pending paper queue.
-
-```bash
-rairos queue --list   # List pending papers
-rairos queue --clear  # Reset all to idle
-```
-
-### `dedup`
-Find exact duplicates by DOI/title.
-
-```bash
-rairos dedup
-rairos dedup --dry-run
-```
-
-### `dedup-semantic`
-Semantic deduplication via Ollama embeddings.
-
-```bash
-# Generate embeddings for all papers without them
-rairos dedup-semantic --generate
-
-# Show embedding coverage stats
-rairos dedup-semantic --stats
-
-# Run semantic dedup (requires embeddings)
-rairos dedup-semantic
-```
-
-Requires Ollama running (`ollama serve`) and `ollama pull nomic-embed-text`.
-
-### `merge`
-Merge two duplicate papers.
+### `rairos merge`
+Merge duplicate papers.
 
 ```bash
 rairos merge TARGET_ID DUPLICATE_ID
-rairos merge --keep semantic --auto  # Auto-merge high-similarity pairs
+rairos merge --auto                  # Auto-merge high-similarity pairs
 ```
 
-### `citations --from`
-Show papers cited by a paper (backward citations).
+---
+
+## Queue & Data Management
+
+### `rairos queue`
+Manage the processing queue.
 
 ```bash
-rairos citations --from PAPER_ID
+rairos queue list
+rairos queue add 2601.00155
+rairos queue clear
 ```
 
-### `citations --to`
-Show papers citing a paper (forward citations).
+### `rairos cache`
+Manage cached data.
 
 ```bash
-rairos citations --to PAPER_ID
+rairos cache stats
+rairos cache clear
+rairos cache list
 ```
 
-### `cite-fetch`
-Fetch citations from OpenAlex API.
+### `rairos parse <id>`
+Parse a paper's full text.
 
 ```bash
-rairos cite-fetch PAPER_ID
-rairos cite-fetch PAPER_ID1 PAPER_ID2  # Multiple
+rairos parse 2601.00155
 ```
 
-### `cite-import`
-Bulk import citation edges from JSON.
+---
+
+## Web UI & Visualization
+
+### `rairos dashboard`
+Start the Web UI dashboard.
 
 ```bash
-rairos cite-import --file citations.json
+rairos dashboard
+rairos dashboard --port 3000
 ```
 
-### `cite-stats`
-Citation graph statistics.
+### `rairos visual`
+Generate visualizations.
 
 ```bash
-rairos cite-stats
-rairos cite-stats --top 10  # Top cited papers
+rairos visual 2601.00155
+rairos visual 2601.00155 --output ./viz.html
 ```
 
-### `paper2code`
-Generate code implementation from paper.
+### `rairos slides`
+Generate slides from papers.
 
 ```bash
-rairos paper2code PAPER_ID
-rairos paper2code PAPER_ID --mode minimal
-rairos paper2code PAPER_ID --mode standard
-rairos paper2code --rebuild PAPER_ID  # Rebuild existing
+rairos slides 2601.00155 --format md --style academic
+rairos slides 2601.00155 2302.00763 --slides 15 --notes
 ```
 
-### `evoskill`
-EvoSkill benchmark evaluation.
+---
+
+## Research Memory
+
+### `rairos stance-add`
+Add a research stance.
 
 ```bash
-# Initialize benchmark task
-rairos evoskill --init --task TASK --dataset dataset.csv
-
-# Run benchmark evaluation
-rairos evoskill --benchmark
-rairos evoskill --benchmark --continue  # Continue previous
-
-# Generate evaluation report
-rairos evoskill --report
+rairos stance-add --topic "scaling laws" --claim "Inference cost grows O(n²)" --stance supported
 ```
 
-### `rag`
-Run RAG pipeline (paper2code + tests + benchmark).
+### `rairos stance-list`
+List stances by topic or tag.
 
 ```bash
-rairos rag PAPER_ID
-rairos rag PAPER_ID --mode minimal
+rairos stance-list --topic "scaling laws"
 ```
 
-### `visual`
-Extract figures, formulas, tables from PDF.
+### `rairos narrative`
+Manage research narratives.
 
 ```bash
-rairos visual PAPER_ID
-rairos visual PAPER_ID --output ./visuals/
+rairos narrative list
+rairos narrative track "multi-modal reasoning"
 ```
 
-### `kg`
-Build/query knowledge graph.
+### `rairos story <topic>`
+Weave research into narrative stories.
 
 ```bash
-rairos kg
-rairos kg --export json
-rairos kg --export graphml
-```
-
-### `research`
-Run continuous research loop.
-
-```bash
-rairos research
-rairos research --loop
-rairos research --limit 10
+rairos story "evolution of transformer architecture"
 ```
 
 ---
@@ -247,9 +474,22 @@ rairos research --limit 10
 ## Ollama Setup (for semantic features)
 
 ```bash
-# Start Ollama locally (required for dedup-semantic, similar)
+# Start Ollama locally (required for dedup semantic, similar)
 ollama serve
 
 # Pull embedding model (one-time)
 ollama pull nomic-embed-text
+```
+
+## Build & Test
+
+```bash
+# Build (memory-intensive — single job required)
+CARGO_BUILD_JOBS=1 cargo build
+
+# Run all tests
+CARGO_BUILD_JOBS=1 cargo test
+
+# Test a specific crate
+CARGO_BUILD_JOBS=1 cargo test -p rairos-core
 ```

@@ -1,6 +1,6 @@
 # Benchmark Reference
 
-> What AI Research OS measures — and how.
+> What Rairos measures — and how.
 
 **Last updated:** May 2026
 
@@ -30,13 +30,13 @@ score = citation_score × 0.30
 
 All components are independently min-max normalised to [0, 100] before weighting.
 
-**Source:** `scoring/momentum.py`
+**Source:** `crates/rairos-rankers`
 
 ---
 
 ### Composite Impact Score
 
-`ImpactScorer` produces a richer per-paper profile, used by `airos-cli influence`:
+`ImpactScorer` produces a richer per-paper profile, used by `rairos influence`:
 
 ```
 composite_score = normalized_score × 0.30
@@ -62,7 +62,7 @@ composite_score = normalized_score × 0.30
 | C | 20–39 | top 80% |
 | D | < 20 | bottom 20% |
 
-**Source:** `llm/impact_scorer.py`
+**Source:** `crates/rairos-rankers`
 
 ---
 
@@ -94,7 +94,7 @@ AND Jaccard(keywords_A, keywords_B) >= 0.80
 → merge into higher-score capsule
 ```
 
-**Source:** `llm/insight/evolution.py`
+**Source:** `crates/rairos-insight-evolution`
 
 ---
 
@@ -134,7 +134,7 @@ AND polarity_A != polarity_B
 AND shared_keywords >= 1
 ```
 
-**Source:** `llm/paper_gap_extractor.py` → `detect_contradictions()`
+**Source:** `crates/rairos-research`
 
 ---
 
@@ -159,6 +159,8 @@ Stopping: first capsule reached per path (shortest path per target)
 | `papers_with_citations` | fraction of library with ≥ 1 citation edge |
 | `avg_depth` | mean shortest-path length between any two papers |
 | `isolated_papers` | papers with zero citation edges |
+
+**Source:** `crates/rairos-citations`
 
 ---
 
@@ -190,15 +192,14 @@ Embedding-based deduplication via Ollama (`nomic-embed-text`, 768-dim):
 ### Test Coverage
 
 ```
-3839 tests, 129 test files
-100% pyflakes clean
-100% ruff clean
-100% mypy clean
+3839+ tests, across all crates
+100% clippy clean
+100% rustfmt compliant
 ```
 
 ### CLI Commands
 
-62 subcommands across 8 categories. Run `python scripts/generate_cli_docs.py` to regenerate `docs/cli_reference.html`.
+104 commands across the Rairos CLI. Run `rairos --help` to list all.
 
 ---
 

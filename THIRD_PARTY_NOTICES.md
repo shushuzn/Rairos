@@ -51,7 +51,7 @@ Built by Sentient Labs.
 **Source:** https://github.com/warpdotdev/warp
 **License:** MIT
 
-> Terminal emulator whose block-style UI design (box-drawing characters: `┌─┐│└┘`) inspired the WarpBlocks renderer in `cli/warp.py`. The CLI module uses similar visual patterns for code blocks, panels, and tables.
+> Terminal emulator whose block-style UI design (box-drawing characters: `┌─┐│└┘`) inspired the visual output renderers in the Rairos CLI. The CLI uses similar box-drawing patterns for tables, panels, and structured output.
 
 Copyright (c) Warpdotdev Contributors
 

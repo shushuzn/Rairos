@@ -50,8 +50,11 @@ AI Research OS는 여러분의 사용 패턴에서 학습하는 **자기 진화�
 ## 빠른 시작
 
 ```bash
-pip install ai-research-os
-airos-cli 2601.00155 --tags LLM,Agent
+CARGO_BUILD_JOBS=1 cargo build --workspace
+
+# Run Rairos (from repo root)
+cd Rairos
+rairos 2601.00155 --tags LLM,Agent
 ```
 
  완료——몇 초 만에 논문을 가져옵니다.
@@ -59,18 +62,18 @@ airos-cli 2601.00155 --tags LLM,Agent
 ### 한 줄, 세 가지 입력
 
 ```bash
-airos-cli 2601.00155                          # arXiv ID
-airos-cli 10.48550/arXiv.2601.00155           # DOI
-airos-cli --pdf paper.pdf --tags RAG            # 로컬 PDF
-airos-cli --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # 스캔 PDF
+rairos 2601.00155                          # arXiv ID
+rairos 10.48550/arXiv.2601.00155           # DOI
+rairos --pdf paper.pdf --tags RAG            # 로컬 PDF
+rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # 스캔 PDF
 ```
 
 ### 세 가지 핵심 명령
 
 ```bash
-airos-cli import 2601.00155 10.1038/nature12373   # DB에 논문 추가
-airos-cli search "attention mechanism" --tag LLM    # 논문 검색
-airos-cli research "RLHF alignment" --limit 5       # 자율 연구 루프
+rairos import 2601.00155 10.1038/nature12373   # DB에 논문 추가
+rairos search "attention mechanism" --tag LLM    # 논문 검색
+rairos research "RLHF alignment" --limit 5       # 자율 연구 루프
 ```
 
 ### AI 초안 (선택)
@@ -78,7 +81,7 @@ airos-cli research "RLHF alignment" --limit 5       # 자율 연구 루프
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-airos-cli 2601.00155 --tags LLM --ai
+rairos 2601.00155 --tags LLM --ai
 ```
 
 전체 설정은 [API_CONFIG.md](API_CONFIG.md)를 참조하세요.
@@ -105,14 +108,6 @@ airos-cli 2601.00155 --tags LLM --ai
 ## 설치
 
 ```bash
-pip install ai-research-os
-```
-
-또는 소스에서 설치:
-
-```bash
-git clone https://github.com/shushuzn/Rairos.git
-cd Rairos
 CARGO_BUILD_JOBS=1 cargo build --workspace
 ```
 
