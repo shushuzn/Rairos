@@ -691,17 +691,18 @@ pub fn aggregate_by_topic(topic: &str) -> Result<ResearchThread> {
             if let Ok(events) =
                 serde_json::from_str::<Vec<serde_json::Value>>(&content)
             {
+                let topic_lower = topic.to_lowercase();
                 let mut hids: Vec<String> = Vec::new();
                 for ev in &events {
                     let topic_match = ev["topic"].as_str().is_some_and(|t| {
-                        t.to_lowercase().contains(&topic.to_lowercase())
+                        t.to_lowercase().contains(&topic_lower)
                     });
                     let gap_match = ev["gap_title"].as_str().is_some_and(|g| {
-                        g.to_lowercase().contains(&topic.to_lowercase())
+                        g.to_lowercase().contains(&topic_lower)
                     });
                     if topic_match || gap_match {
                         if let Some(hid) = ev["hypothesis_id"].as_str() {
-                            if !hid.is_empty() && !hids.contains(&hid.to_string()) {
+                            if !hid.is_empty() && !hids.iter().any(|h| h == hid) {
                                 hids.push(hid.to_string());
                             }
                         }
