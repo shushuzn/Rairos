@@ -5,8 +5,7 @@
 //! Reference: Python rankers/ and scoring/ modules.
 
 use chrono::{DateTime, Utc};
-use ndarray::arr1;
-use rairos_core::{Database, Paper, ParseStatus};
+use rairos_core::{cosine_similarity, Database, Paper, ParseStatus};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use thiserror::Error;
@@ -73,14 +72,7 @@ impl CosineSimilarityRanker {
 
     /// Compute cosine similarity between two vectors.
     fn cosine_similarity(q: &[f32], e: &[f32]) -> f32 {
-        let q_arr = arr1(q);
-        let e_arr = arr1(e);
-        let norm_q = q_arr.dot(&q_arr).sqrt();
-        let norm_e = e_arr.dot(&e_arr).sqrt();
-        if norm_q == 0.0 || norm_e == 0.0 {
-            return 0.0;
-        }
-        q_arr.dot(&e_arr) / (norm_q * norm_e)
+        cosine_similarity(q, e)
     }
 }
 

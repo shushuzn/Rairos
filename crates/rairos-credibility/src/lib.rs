@@ -5,6 +5,7 @@
 //!
 //! Ported from `llm/credibility_scorer.py`.
 
+use rairos_core::jaccard_similarity;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -18,20 +19,6 @@ fn capsule_path() -> PathBuf {
         .join(".ai_research_os")
         .join("gene_pool")
         .join("capsules.json")
-}
-
-fn jaccard(a: &[String], b: &[String]) -> f64 {
-    if a.is_empty() || b.is_empty() {
-        return 0.0;
-    }
-    let set_a: std::collections::HashSet<&str> = a.iter().map(|s| s.as_str()).collect();
-    let set_b: std::collections::HashSet<&str> = b.iter().map(|s| s.as_str()).collect();
-    let intersection = set_a.intersection(&set_b).count() as f64;
-    let union = set_a.union(&set_b).count() as f64;
-    if union == 0.0 {
-        return 0.0;
-    }
-    intersection / union
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -163,7 +150,7 @@ impl CredibilityScorer {
                     })
                     .unwrap_or_default();
 
-                let ov = jaccard(&kw, &other_kw);
+                let ov = jaccard_similarity(&kw, &other_kw);
                 if ov > max_overlap {
                     max_overlap = ov;
                 }
@@ -303,29 +290,29 @@ mod tests {
     fn test_jaccard_basic() {
         let a = vec!["a".to_string(), "b".to_string(), "c".to_string()];
         let b = vec!["b".to_string(), "c".to_string(), "d".to_string()];
-        let result = jaccard(&a, &b);
-        assert!((result - 0.5).abs() < 0.001);
+let result = jaccard_similarity(&a, &b);
+        assert_eq!(result, 0.5);
     }
 
     #[test]
     fn test_jaccard_empty() {
-        assert_eq!(jaccard(&[], &[]), 0.0);
-        assert_eq!(jaccard(&["a".to_string()], &[]), 0.0);
-        assert_eq!(jaccard(&[], &["a".to_string()]), 0.0);
+        assert_eq!(jaccard_similarity(&[], &[]), 0.0);
+        assert_eq!(jaccard_similarity(&["a".to_string()], &[]), 0.0);
+        assert_eq!(jaccard_similarity(&[], &["a".to_string()]), 0.0);
     }
 
     #[test]
     fn test_jaccard_full_overlap() {
         let a = vec!["a".to_string(), "b".to_string()];
         let b = vec!["a".to_string(), "b".to_string()];
-        assert_eq!(jaccard(&a, &b), 1.0);
+        assert_eq!(jaccard_similarity(&a, &b), 1.0);
     }
 
     #[test]
     fn test_jaccard_no_overlap() {
         let a = vec!["a".to_string(), "b".to_string()];
         let b = vec!["c".to_string(), "d".to_string()];
-        assert_eq!(jaccard(&a, &b), 0.0);
+        assert_eq!(jaccard_similarity(&a, &b), 0.0);
     }
 
     #[test]

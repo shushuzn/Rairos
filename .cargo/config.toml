@@ -1,5 +1,5 @@
 [build]
-rustc-wrapper = "sccache"
+# rustc-wrapper = "sccache"  # Disabled
 
 [profile.dev]
 opt-level = 0

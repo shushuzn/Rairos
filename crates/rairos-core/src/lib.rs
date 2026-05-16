@@ -1887,7 +1887,7 @@ fn map_job_row(row: &rusqlite::Row) -> rusqlite::Result<JobQueueEntry> {
     })
 }
 
-fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
+pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
     let dot: f32 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
     let norm_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
     let norm_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
@@ -2592,7 +2592,7 @@ pub fn extract_keywords(text: &str, min_len: usize) -> Vec<String> {
         .collect()
 }
 
-#[deprecated(since = "0.1.0", note = "Use rairos_rankers_cosine::SimpleCosineRanker::cosine_similarity instead")]
+#[deprecated(since = "0.1.0", note = "Use rairos_core::cosine_similarity instead")]
 pub fn cosine_sim(a: &[f64], b: &[f64]) -> f64 {
     if a.is_empty() || b.is_empty() {
         return 0.0;
@@ -2606,7 +2606,7 @@ pub fn cosine_sim(a: &[f64], b: &[f64]) -> f64 {
     dot / (norm_a * norm_b)
 }
 
-#[deprecated(since = "0.1.0", note = "This function is orphaned. Use concrete implementations in rairos-vault, rairos-credibility, etc. instead")]
+#[deprecated(since = "0.1.0", note = "Use rairos_core::jaccard_similarity instead")]
 pub fn jaccard(a: &[&str], b: &[&str]) -> f64 {
     if a.is_empty() || b.is_empty() {
         return 0.0;
@@ -2618,6 +2618,18 @@ pub fn jaccard(a: &[&str], b: &[&str]) -> f64 {
     if union == 0 {
         return 0.0;
     }
+    intersection as f64 / union as f64
+}
+
+/// Compute Jaccard similarity between two string collections.
+pub fn jaccard_similarity(a: &[String], b: &[String]) -> f64 {
+    if a.is_empty() || b.is_empty() {
+        return 0.0;
+    }
+    let set_a: std::collections::HashSet<&str> = a.iter().map(|s| s.as_str()).collect();
+    let set_b: std::collections::HashSet<&str> = b.iter().map(|s| s.as_str()).collect();
+    let intersection = set_a.intersection(&set_b).count();
+    let union = set_a.union(&set_b).count();
     intersection as f64 / union as f64
 }
 

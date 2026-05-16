@@ -6,8 +6,8 @@
 //! Tracks high-risk/high-reward Gene Pool capsules.
 //! Bold = theoretical_gap OR negative polarity OR high novelty score.
 
+use rairos_core::jaccard_similarity;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 
@@ -28,23 +28,6 @@ pub struct BoldCapsule {
     pub novelty_score: f64,
     pub trigger_keywords: Vec<String>,
     pub reason: String,
-}
-
-// ─── Core Logic ───────────────────────────────────────────────────────────────
-
-fn jaccard(a: &[String], b: &[String]) -> f64 {
-    if a.is_empty() || b.is_empty() {
-        return 0.0;
-    }
-    let set_a: HashSet<_> = a.iter().collect();
-    let set_b: HashSet<_> = b.iter().collect();
-    let intersection = set_a.intersection(&set_b).count() as f64;
-    let union = set_a.union(&set_b).count() as f64;
-    if union == 0.0 {
-        0.0
-    } else {
-        intersection / union
-    }
 }
 
 fn load_capsules() -> Vec<serde_json::Value> {
@@ -120,7 +103,7 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
                         .collect()
                 })
                 .unwrap_or_default();
-            let ov = jaccard(&keywords, &other_kw);
+            let ov = jaccard_similarity(&keywords, &other_kw);
             if ov > max_overlap {
                 max_overlap = ov;
             }
@@ -238,21 +221,21 @@ mod tests {
     fn test_jaccard_basic() {
         let a = vec!["a".to_string(), "b".to_string(), "c".to_string()];
         let b = vec!["b".to_string(), "c".to_string(), "d".to_string()];
-        let result = jaccard(&a, &b);
+        let result = jaccard_similarity(&a, &b);
         assert!((result - 0.5).abs() < 0.001);
     }
 
     #[test]
     fn test_jaccard_empty() {
-        assert_eq!(jaccard(&[], &["a".to_string()]), 0.0);
-        assert_eq!(jaccard(&[], &[]), 0.0);
+        assert_eq!(jaccard_similarity(&[], &["a".to_string()]), 0.0);
+        assert_eq!(jaccard_similarity(&[], &[]), 0.0);
     }
 
     #[test]
     fn test_jaccard_identical() {
         let a = vec!["a".to_string(), "b".to_string()];
         let b = vec!["a".to_string(), "b".to_string()];
-        assert_eq!(jaccard(&a, &b), 1.0);
+        assert_eq!(jaccard_similarity(&a, &b), 1.0);
     }
 
     #[test]

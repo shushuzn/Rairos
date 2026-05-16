@@ -2447,6 +2447,7 @@ name = "rairos-bold-vault"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "rairos-core",
  "serde",
  "serde_json",
 ]
@@ -2795,6 +2796,7 @@ name = "rairos-credibility"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "rairos-core",
  "serde",
  "serde_json",
 ]
@@ -2804,6 +2806,7 @@ name = "rairos-credibility-scorer"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "rairos-core",
  "serde",
  "serde_json",
 ]
@@ -3739,6 +3742,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "rairos-core",
  "rairos-rankers-base",
  "serde",
  "serde_json",
@@ -4089,6 +4093,7 @@ name = "rairos-vault"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "rairos-core",
  "serde",
  "serde_json",
  "tempfile",

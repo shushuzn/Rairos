@@ -10,6 +10,7 @@
 //! - Parse quality bonus (papers with better parse_status rank higher)
 
 use chrono::{Datelike, NaiveDate, Utc};
+use rairos_core::cosine_similarity;
 use rairos_rankers_base::{RankedResult, RankerError};
 use serde::{Deserialize, Serialize};
 
@@ -126,20 +127,6 @@ impl CompositeScorer {
         }
     }
 
-    /// Compute cosine similarity between two vectors
-    fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
-        if a.len() != b.len() {
-            return 0.0;
-        }
-        let dot: f32 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
-        let norm_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
-        let norm_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
-        if norm_a == 0.0 || norm_b == 0.0 {
-            return 0.0;
-        }
-        dot / (norm_a * norm_b)
-    }
-
     /// Rank papers by composite score
     pub fn rank_papers(
         &self,
@@ -164,7 +151,7 @@ impl CompositeScorer {
             .filter(|p| p.id != query_paper.id)
             .filter_map(|p| {
                 let emb = p.embedding.as_ref()?;
-                let sim = Self::cosine_similarity(query_emb, emb);
+                let sim = cosine_similarity(query_emb, emb);
                 Some((p.clone(), sim))
             })
             .map(|(mut p, sim_score)| {
@@ -285,7 +272,7 @@ mod tests {
     fn test_cosine_similarity() {
         let v1 = vec![1.0, 0.0, 0.0];
         let v2 = vec![1.0, 0.0, 0.0];
-        assert!((CompositeScorer::cosine_similarity(&v1, &v2) - 1.0).abs() < 1e-6);
+        assert!((cosine_similarity(&v1, &v2) - 1.0).abs() < 1e-6);
     }
 
     #[test]

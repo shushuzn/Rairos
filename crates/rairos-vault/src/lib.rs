@@ -7,8 +7,8 @@
 //!
 //! Ported from `llm/bold_vault.py` and `llm/at_risk_scanner.py`.
 
+use rairos_core::jaccard_similarity;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 
@@ -20,20 +20,6 @@ fn capsule_path() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
         .join(CAPSULE_PATH)
-}
-
-fn jaccard(a: &[String], b: &[String]) -> f64 {
-    if a.is_empty() || b.is_empty() {
-        return 0.0;
-    }
-    let set_a: HashSet<_> = a.iter().collect();
-    let set_b: HashSet<_> = b.iter().collect();
-    let intersection = set_a.intersection(&set_b).count();
-    let union = set_a.union(&set_b).count();
-    if union == 0 {
-        return 0.0;
-    }
-    intersection as f64 / union as f64
 }
 
 fn load_capsules() -> Vec<serde_json::Value> {
@@ -130,7 +116,7 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
                         .collect()
                 })
                 .unwrap_or_default();
-            let ov = jaccard(&keywords, &other_kw);
+            let ov = jaccard_similarity(&keywords, &other_kw);
             if ov > max_overlap {
                 max_overlap = ov;
             }
@@ -450,14 +436,14 @@ mod tests {
             "attention".to_string(),
             "llm".to_string(),
         ];
-        assert!((jaccard(&a, &b) - 1.0).abs() < 1e-9);
+        assert!((jaccard_similarity(&a, &b) - 1.0).abs() < 1e-9);
     }
 
     #[test]
     fn test_jaccard_disjoint() {
         let a: Vec<String> = vec!["transformer".to_string()];
         let b: Vec<String> = vec!["llm".to_string()];
-        assert!((jaccard(&a, &b) - 0.0).abs() < 1e-9);
+        assert!((jaccard_similarity(&a, &b) - 0.0).abs() < 1e-9);
     }
 
     #[test]
@@ -472,7 +458,7 @@ mod tests {
             "rl".to_string(),
             "policy".to_string(),
         ];
-        let result = jaccard(&a, &b);
+        let result = jaccard_similarity(&a, &b);
         assert!((result - 1.0 / 5.0).abs() < 1e-9);
     }
 
@@ -480,8 +466,8 @@ mod tests {
     fn test_jaccard_empty() {
         let empty: Vec<String> = vec![];
         let x: Vec<String> = vec!["x".to_string()];
-        assert!((jaccard(&empty, &x).abs()) < 1e-9);
-        assert!((jaccard(&x, &empty).abs()) < 1e-9);
+        assert!((jaccard_similarity(&empty, &x).abs()) < 1e-9);
+        assert!((jaccard_similarity(&x, &empty).abs()) < 1e-9);
     }
 
     #[test]
