@@ -1,0 +1,39 @@
+# git-cliff ~ Rairos changelog configuration
+[changelog]
+header = "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+body = """
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper }}
+{% for commit in commits %}
+- {{ commit.message | upper_first }}{% if commit.breaking and commit.breaking_description %} (BREAKING: {{ commit.breaking_description }}){% endif %}
+{% endfor %}
+{% endfor %}
+"""
+trim = true
+postprocess = [
+  { replace = 'FIX', with = 'Bug Fixes' },
+  { replace = 'FEAT', with = 'Features' },
+  { replace = 'DOCS', with = 'Documentation' },
+  { replace = 'REFACTOR', with = 'Refactoring' },
+  { replace = 'PERF', with = 'Performance' },
+  { replace = 'TEST', with = 'Testing' },
+  { replace = 'CI', with = 'Continuous Integration' },
+  { replace = 'CHORE', with = 'Chores' },
+]
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+commit_parsers = [
+  { message = "^feat", group = "Features" },
+  { message = "^fix", group = "Bug Fixes" },
+  { message = "^docs", group = "Documentation" },
+  { message = "^refactor", group = "Refactoring" },
+  { message = "^perf", group = "Performance" },
+  { message = "^test", group = "Testing" },
+  { message = "^ci", group = "Continuous Integration" },
+  { message = "^chore", group = "Chores" },
+  { message = ".*", group = "Other", default_scope = "other" },
+]
+filter_commits = false
+skip_commits = ["chore\\(release\\):", "chore\\(deps\\):"]

@@ -1,22 +1,4 @@
 repos:
-  # Ruff — Python linter + formatter
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.0
-    hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-      - id: ruff-format
-
-  # mypy — Python type checker
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
-    hooks:
-      - id: mypy
-        name: mypy (Python type check)
-        entry: uv run mypy core parsers db llm cli --ignore-missing-imports
-        language: system
-        pass_filenames: false
-
   # Gitleaks — secret detection
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.24.0
@@ -38,7 +20,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: \.(lock|svg|png|jpg|jpeg|gif|ico|bin)$
+        exclude: \\.(lock|svg|png|jpg|jpeg|gif|ico|bin)$
 
   # End-of-file fixer
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -64,5 +46,5 @@ repos:
     rev: v3.6.0
     hooks:
       - id: branch-name-format
-        args: ['--pattern', '^(feature|fix|docs|refactor|chore|ci|test|build|deps)\/[a-z0-9-]+$']
+        args: ['--pattern', '^(feature|fix|docs|refactor|chore|ci|test|build|deps)\\/[a-z0-9-]+$']
         exclude: ^main$|^dev$

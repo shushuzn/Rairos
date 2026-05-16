@@ -98,14 +98,7 @@ docs/cli_reference.html
 docs/kg_map.html
 docs/assets/architecture.html
 
-# Experiment files (local only)
-
-galerkin_experiment.py
-
-pino_experiment.py
-
 # PR scripts (local only)
-
 _create_pr.js
 
 _pr2.js
