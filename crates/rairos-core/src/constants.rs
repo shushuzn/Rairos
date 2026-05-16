@@ -7,6 +7,7 @@ pub const CAPSULE_PATH: &str = ".ai_research_os/gene_pool/capsules.json";
 pub const ARXIV_API: &str = "https://export.arxiv.org/api/query";
 pub const GP_DIR_NAME: &str = ".ai_research_os/evolution";
 pub const GENE_POOL_JSONL: &str = "gene_pool.jsonl";
+pub const CAPSULES_JSON: &str = "capsules.json";
 pub const CLIMATE_CATS: &[&str] = &["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"];
 pub const LLM_MODEL: &str = "gpt-4o-mini";
 

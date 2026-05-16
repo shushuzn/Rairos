@@ -1,9 +1,7 @@
-use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL, CAPSULES_JSON};
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::PathBuf;
-
-const CAPSULE_FILE: &str = "capsules.json";
 
 fn get_gp_dir() -> PathBuf {
     std::env::var("RAIROS_HOME")
@@ -14,7 +12,7 @@ fn get_gp_dir() -> PathBuf {
 }
 
 fn get_capsule_path() -> PathBuf {
-    get_gp_dir().join(CAPSULE_FILE)
+    get_gp_dir().join(CAPSULES_JSON)
 }
 
 fn get_jsonl_path() -> PathBuf {
@@ -80,7 +78,7 @@ fn sync_capsules_json(
 ) -> Result<(), std::io::Error> {
     let gp_dir = get_gp_dir();
     std::fs::create_dir_all(&gp_dir)?;
-    let path = gp_dir.join(CAPSULE_FILE);
+    let path = gp_dir.join(CAPSULES_JSON);
     let data = serde_json::json!({"version": "1.0", "capsules": capsules});
     let text = serde_json::to_string_pretty(&data)?;
     std::fs::write(path, text)?;
