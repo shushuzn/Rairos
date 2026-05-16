@@ -6,7 +6,7 @@
 //!
 //! Python original: `llm/gene_pool_watcher.py`
 
-use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
+use rairos_core::constants::{GAP_SUBSCRIPTIONS_FILE, GP_DIR_NAME, GENE_POOL_JSONL};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -174,7 +174,7 @@ fn get_gp_dir() -> std::path::PathBuf {
 // ─── State persistence ───────────────────────────────────────────────────────
 
 fn gap_subscriptions_path() -> std::path::PathBuf {
-    get_gp_dir().join("gap_subscriptions.json")
+    get_gp_dir().join(GAP_SUBSCRIPTIONS_FILE)
 }
 
 /// Load watcher state from disk, or return empty state.
