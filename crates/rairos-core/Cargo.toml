@@ -10,13 +10,13 @@ tempfile.workspace = true
 rusqlite.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-parking_lot = "0.12"
+parking_lot.workspace = true
 thiserror.workspace = true
 chrono = { workspace = true, features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "serde"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
 tracing.workspace = true
-tracing-subscriber = "0.3"
+tracing-subscriber.workspace = true
 anyhow.workspace = true
 lazy_static.workspace = true
 regex.workspace = true

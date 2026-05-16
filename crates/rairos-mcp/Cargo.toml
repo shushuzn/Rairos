@@ -26,7 +26,7 @@ rand.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 thiserror.workspace = true
-tokio = { workspace = true, features = ["rt", "io-util", "sync", "macros"] }
+tokio = { workspace = true, features = ["rt", "io-util", "io-std", "sync", "macros"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true
 futures.workspace = true

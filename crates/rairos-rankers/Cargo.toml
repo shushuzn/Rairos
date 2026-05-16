@@ -11,5 +11,5 @@ thiserror.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 chrono = { workspace = true, features = ["serde"] }
-parking_lot = "0.12"
+parking_lot.workspace = true
 uuid = { workspace = true, features = ["v4"] }
