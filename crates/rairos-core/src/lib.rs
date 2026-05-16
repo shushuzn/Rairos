@@ -670,7 +670,7 @@ impl Database {
                 params![id],
                 |row| row.get::<_, Option<String>>(0),
             )
-            .map_err(|e| CoreError::Database(e))?;
+            .map_err(CoreError::Database)?;
         Ok(result)
     }
 

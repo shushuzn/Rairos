@@ -301,11 +301,6 @@ impl BadgeManager {
 mod tests {
     use super::*;
 
-    fn temp_manager() -> BadgeManager {
-        let m = BadgeManager::new();
-        m
-    }
-
     #[test]
     fn test_badge_award() {
         let mut badge = Badge::new("test", "Test", "desc", "⭐");

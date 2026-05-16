@@ -339,6 +339,6 @@ mod tests {
         let json = serde_json::to_string(&cc).unwrap();
         let deserialized: CapsuleCredibility = serde_json::from_str(&json).unwrap();
         assert_eq!(deserialized.capsule_id, "c1");
-        assert_eq!(deserialized.is_trendslop, true);
+        assert!(deserialized.is_trendslop);
     }
 }

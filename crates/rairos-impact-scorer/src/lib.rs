@@ -347,7 +347,7 @@ mod tests {
 
     #[test]
     fn test_tier_assignment() {
-        let mut scorer = ImpactScorer::new();
+        let scorer = ImpactScorer::new();
         assert_eq!(scorer.tier(0.9), "S");
         assert_eq!(scorer.tier(0.7), "A");
         assert_eq!(scorer.tier(0.5), "B");

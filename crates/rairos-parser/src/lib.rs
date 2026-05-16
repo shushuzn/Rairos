@@ -609,7 +609,7 @@ pub async fn search_semantic(query: &str, max_results: usize) -> Result<Vec<Pape
         })
         .collect();
 
-    Ok(papers?)
+    papers
 }
 
 /// Search CrossRef by query string

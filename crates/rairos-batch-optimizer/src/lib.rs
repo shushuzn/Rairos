@@ -210,7 +210,7 @@ mod tests {
         let items = vec![1, 2, 3];
         let failing = |x: &i32| -> Result<i32, std::io::Error> {
             if *x == 2 {
-                Err(std::io::Error::new(std::io::ErrorKind::Other, "oops"))
+                Err(std::io::Error::other("oops"))
             } else {
                 Ok(*x * 3)
             }

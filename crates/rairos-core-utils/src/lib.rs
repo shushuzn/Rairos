@@ -384,7 +384,7 @@ mod tests {
     fn test_search_optimizer_expand() {
         let opt = SearchOptimizer::new();
         let expansions = opt.expand_query("llm");
-        assert!(expansions.len() >= 1);
+        assert!(!expansions.is_empty());
     }
 
     #[test]

@@ -1,6 +1,5 @@
 //! rairos-weekly-digest — Generate weekly research summaries.
 
-#![allow(clippy::sort_by_key)]
 //!
 //! Ported from `llm/weekly_digest.py`.
 //!

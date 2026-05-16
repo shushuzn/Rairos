@@ -482,6 +482,6 @@ mod tests {
         let mut session = snap.new_session("test", 1, HashMap::new());
         session.created_at = now_timestamp() - 10.0;
         let dur = session.duration();
-        assert!(dur >= 9.0 && dur <= 11.0);
+        assert!((9.0..=11.0).contains(&dur));
     }
 }

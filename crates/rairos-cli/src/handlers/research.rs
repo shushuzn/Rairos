@@ -1118,11 +1118,10 @@ pub fn slugify(title: &str) -> String {
     for c in title.chars() {
         if c.is_alphanumeric() || c == '-' || c == '_' {
             slug.push(c);
-        } else if c.is_whitespace() || c == ':' || c == '/' || c == '\\' {
-            if !slug.ends_with('-') {
+        } else if (c.is_whitespace() || c == ':' || c == '/' || c == '\\')
+            && !slug.ends_with('-') {
                 slug.push('-');
             }
-        }
     }
     let slug = slug.trim_matches('-').to_string();
     if slug.len() > 80 {
@@ -1320,7 +1319,7 @@ pub fn handle_narrative(action: &NarrativeAction) -> Result<()> {
 
         NarrativeAction::Dashboard => {
             let threads = tracker.list_threads();
-            let refs: Vec<&rairos_narratives::ResearchThread> = threads.iter().map(|t| *t).collect();
+            let refs: Vec<&rairos_narratives::ResearchThread> = threads.to_vec();
             println!("{}", render_dashboard(&refs));
         }
     }
@@ -1526,13 +1525,13 @@ pub fn handle_question(action: &QuestionAction) -> Result<()> {
             println!("📊 研究问题统计");
             let total = stats.open + stats.in_progress + stats.resolved + stats.wontfix;
             println!("总计: {} 个问题", total);
-            println!("");
+            println!();
             println!("按状态:");
             println!("  open: {}", stats.open);
             println!("  in_progress: {}", stats.in_progress);
             println!("  resolved: {}", stats.resolved);
             println!("  wontfix: {}", stats.wontfix);
-            println!("");
+            println!();
             println!("按来源:");
             println!("  manual: {}", stats.manual);
             println!("  gap_detection: {}", stats.gap_detection);
@@ -1593,7 +1592,7 @@ pub fn handle_journal(action: &str, content: Option<&str>, tags: Option<&str>, m
                 println!("No journal entries found.");
             } else {
                 for entry in &entries {
-                    println!("[{}] {} — {}", entry.id, entry.created_at[..10].to_string(), &entry.content[..entry.content.len().min(80)]);
+                    println!("[{}] {} — {}", entry.id, &entry.created_at[..10], &entry.content[..entry.content.len().min(80)]);
                     if !entry.tags.is_empty() {
                         println!("    tags: {}", entry.tags.join(", "));
                     }

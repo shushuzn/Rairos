@@ -433,6 +433,11 @@ impl ExperimentTracker {
     }
 }
 
+#[allow(dead_code)]
+fn _to_slice<T: Copy>(val: &T) -> &[T] {
+    std::slice::from_ref(val)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -564,9 +569,4 @@ mod tests {
         assert!(comp.contains_key("metrics"));
         assert!(comp.contains_key("experiments"));
     }
-}
-
-#[allow(dead_code)]
-fn _to_slice<T: Copy>(val: &T) -> &[T] {
-    std::slice::from_ref(val)
 }

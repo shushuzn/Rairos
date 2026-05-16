@@ -207,7 +207,7 @@ mod tests {
         let a = Path::new("P - 2017 - Attention Is All You Need.md");
         let b = Path::new("P - 2020 - GPT-3.md");
         let c = Path::new("P - 2023 - Claude.md");
-        let result = mnote_filename("LLM", &a, &b, &c);
+        let result = mnote_filename("LLM", a, b, c);
         assert!(result.starts_with("M - LLM - "));
         assert!(result.ends_with(".md"));
         assert!(result.contains(" vs "));

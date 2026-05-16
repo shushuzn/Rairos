@@ -170,8 +170,8 @@ impl<'a> ResearchPathPlanner<'a> {
                 seen.insert(node.entity_id.clone());
 
                 let year = extract_year_from_props(&node.properties);
-                if min_year.map_or(true, |my| year >= my)
-                    && max_year.map_or(true, |my| year <= my)
+                if min_year.is_none_or(|my| year >= my)
+                    && max_year.is_none_or(|my| year <= my)
                 {
                     let mut pn = PaperNode {
                         paper_id: node.entity_id.clone(),
@@ -213,8 +213,8 @@ impl<'a> ResearchPathPlanner<'a> {
                     seen.insert(row.id.clone());
 
                     let year_val = row.published.year();
-                    if min_year.map_or(true, |my| year_val >= my)
-                        && max_year.map_or(true, |my| year_val <= my)
+                    if min_year.is_none_or(|my| year_val >= my)
+                        && max_year.is_none_or(|my| year_val <= my)
                     {
                         papers.push(PaperNode {
                             paper_id: row.id.clone(),
@@ -771,7 +771,7 @@ mod tests {
 
     #[test]
     fn test_estimate_read_time_highly_cited() {
-        let p = PaperNode { cited_by: vec!["a","b","c","d","e","f"].iter().map(|s| s.to_string()).collect(), ..make_paper("1", "Popular", 2020) };
+        let p = PaperNode { cited_by: ["a","b","c","d","e","f"].iter().map(|s| s.to_string()).collect(), ..make_paper("1", "Popular", 2020) };
         assert!(estimate_read_time(&p) >= 25);
     }
 

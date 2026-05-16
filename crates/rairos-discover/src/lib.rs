@@ -371,14 +371,14 @@ mod tests {
     fn test_load_patterns_empty() {
         let patterns = load_patterns();
         // Patterns file may have pre-seeded data; verify it loaded successfully
-        assert!(!patterns.correlations.is_empty() || patterns.discovered_at.len() > 0);
+        assert!(!patterns.correlations.is_empty() || !patterns.discovered_at.is_empty());
     }
 
     #[test]
     fn test_discover_empty() {
         let result = discover(false);
         assert_eq!(result.patterns_discovered, 1);
-        assert!(result.new_patterns.len() >= 1);
+        assert!(!result.new_patterns.is_empty());
     }
 
     #[test]

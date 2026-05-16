@@ -242,14 +242,12 @@ mod tests {
 
     #[test]
     fn test_get_labor_papers_filters() {
-        let papers = vec![
-            make_paper("Automation and Jobs", "Discussion on job displacement.", vec!["cs.AI"]),
+        let papers = [make_paper("Automation and Jobs", "Discussion on job displacement.", vec!["cs.AI"]),
             make_paper(
                 "ImageNet Classifier",
                 "A newResNet architecture.",
                 vec!["cs.CV"],
-            ),
-        ];
+            )];
         // We can't easily test get_labor_papers without mocking the file,
         // but we test the filter logic via is_labor_related
         assert!(is_labor_related(&papers[0]));

@@ -1,6 +1,5 @@
 //! Rairos Paradigm — Paradigm Concentration Monitor
 
-#![allow(clippy::sort_by_key)]
 //!
 //! Detects when >60% of citations in a domain cluster around ≤3 references.
 //! Flags a generalization_gap risk alert.

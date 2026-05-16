@@ -401,7 +401,7 @@ fn detect_sections(text: &str) -> Vec<DetectedSection> {
         // Check if this line looks like a section heading
         let looks_like_heading = {
             let trimmed_len = trimmed.len();
-            if trimmed_len < 5 || trimmed_len > 60 {
+            if !(5..=60).contains(&trimmed_len) {
                 false
             } else if trimmed.starts_with(|c: char| c.is_ascii_digit() || c == '.')
                 && trimmed.contains(". ")
@@ -412,7 +412,7 @@ fn detect_sections(text: &str) -> Vec<DetectedSection> {
                 trimmed_len < 50 && section_markers.iter().any(|m| {
                     suffix_lower.find(m).map(|i| {
                         let post_ok = suffix_lower.as_bytes().get(i + m.len())
-                            .map_or(true, |&b| !b.is_ascii_alphanumeric());
+                            .is_none_or(|&b| !b.is_ascii_alphanumeric());
                         (i == 0 || " .-:(".contains(suffix_lower.as_bytes().get(i - 1).map(|&b| b as char).unwrap_or(' '))) && post_ok
                     }).unwrap_or(false)
                 })
@@ -420,7 +420,7 @@ fn detect_sections(text: &str) -> Vec<DetectedSection> {
                 // Plain heading — must be very short (<25) and marker-proximate
                 trimmed_len < 25 && section_markers.iter().any(|m| {
                     let lower = trimmed.to_lowercase();
-                    lower.find(m).map_or(false, |_idx| {
+                    lower.find(m).is_some_and(|_idx| {
                         // Marker must be >40% of line length
                         m.len() as f64 / trimmed_len as f64 > 0.4
                     })
@@ -438,11 +438,10 @@ fn detect_sections(text: &str) -> Vec<DetectedSection> {
             current_heading = trimmed.to_string();
             current_body.clear();
             in_section = true;
-        } else if in_section {
-            if !trimmed.starts_with(|c: char| c.is_uppercase()) || trimmed.len() > 3 {
+        } else if in_section
+            && (!trimmed.starts_with(|c: char| c.is_uppercase()) || trimmed.len() > 3) {
                 current_body.push(trimmed.to_string());
             }
-        }
     }
 
     // Last section

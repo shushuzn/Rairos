@@ -79,7 +79,7 @@ fn parse_arxiv_response(xml: &str) -> Result<Vec<Paper>, String> {
     Ok(papers)
 }
 
-fn extract_tag<'a>(s: &'a str, tag: &str) -> Option<String> {
+fn extract_tag(s: &str, tag: &str) -> Option<String> {
     let start = s.find(&format!("<{}>", tag))?;
     let value_start = start + tag.len() + 2;
     let end = s[value_start..].find(&format!("</{}>", tag))?;

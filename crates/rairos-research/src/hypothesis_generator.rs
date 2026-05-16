@@ -512,7 +512,7 @@ impl HypothesisGenerator {
         creative: bool,
     ) -> HypothesisResult {
         let gap_type = self.infer_gap_type(gap_context);
-        let hypotheses = self.generate_from_templates(topic, gap_context, &gap_type, creative);
+        let hypotheses = self.generate_from_templates(topic, gap_context, gap_type, creative);
         // Enrich: experiment designs, risk assessments, scores
         let mut hypotheses: Vec<ResearchHypothesis> = hypotheses.into_iter().map(|mut h| {
             h.experiment_design = self.generate_experiment_design(&h, topic);
@@ -525,12 +525,12 @@ impl HypothesisGenerator {
         // Re-rank by trend data: adjust scores based on hot/cold research tags
         re_rank_by_trends(&mut hypotheses, topic);
 
-        let result = HypothesisResult {
+        
+        HypothesisResult {
             topic: topic.to_string(),
             summary: self.generate_summary(&hypotheses),
             hypotheses,
-        };
-        result
+        }
     }
 
     /// Generate with LLM enhancement, including KG context and optional GenePool submission.
@@ -545,7 +545,7 @@ impl HypothesisGenerator {
     ) -> HypothesisResult {
         // Start with template-based hypotheses
         let gap_type = self.infer_gap_type(gap_context);
-        let mut hypotheses = self.generate_from_templates(topic, gap_context, &gap_type, creative);
+        let mut hypotheses = self.generate_from_templates(topic, gap_context, gap_type, creative);
 
         // Fetch KG context for the LLM prompt
         let kg_papers = fetch_relevant_papers(topic, 10);
@@ -564,7 +564,7 @@ impl HypothesisGenerator {
         // Enhance with LLM
         let user_prompt = USER_PROMPT_TEMPLATE
             .replace("{topic}", topic)
-            .replace("{gap_context}", &if gap_context.len() > 200 { &gap_context[..200] } else { gap_context })
+            .replace("{gap_context}", if gap_context.len() > 200 { &gap_context[..200] } else { gap_context })
             .replace("{kg_context}", &kg_context)
             .replace("{genepool_context}", &genepool_context)
             .replace("{trend_context}", &trend_context)
@@ -615,7 +615,7 @@ impl HypothesisGenerator {
 
         // Auto-submit high-scoring hypotheses to GenePool
         if auto_submit && !result.hypotheses.is_empty() {
-            let _ = submit_hypotheses_to_genepool(topic, &gap_type, &result.hypotheses, 1.0);
+            let _ = submit_hypotheses_to_genepool(topic, gap_type, &result.hypotheses, 1.0);
         }
 
         result
@@ -831,7 +831,7 @@ impl HypothesisGenerator {
 
         // Try line-based format (Python legacy format)
         let mut hypotheses = Vec::new();
-        for (_i, line) in content.lines().enumerate() {
+        for line in content.lines() {
             let trimmed = line.trim();
             if trimmed.starts_with("[假说") || trimmed.starts_with("Hypothesis") || trimmed.starts_with("H") {
                 let parts: Vec<&str> = trimmed.split('|').collect();

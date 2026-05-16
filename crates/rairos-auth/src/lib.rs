@@ -255,7 +255,7 @@ mod tests {
     #[test]
     fn test_is_auth_enabled_when_no_file() {
         // When no auth file exists, should return false
-        let result = is_auth_enabled();
+        let _result = is_auth_enabled();
         // Just check it doesn't panic — result is implementation-defined
     }
 }

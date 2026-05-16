@@ -205,11 +205,10 @@ impl ResearchPlan {
         let mut in_stack = std::collections::HashSet::new();
 
         for step in &self.steps {
-            if !visited.contains(&step.step_id) {
-                if has_cycle(&step.step_id, &self.steps, &mut visited, &mut in_stack) {
+            if !visited.contains(&step.step_id)
+                && has_cycle(&step.step_id, &self.steps, &mut visited, &mut in_stack) {
                     return false;
                 }
-            }
         }
         true
     }
@@ -351,8 +350,8 @@ pub async fn create_plan(
         _ => default_steps(hypothesis),
     };
 
-    let plan = ResearchPlan::new(&plan_id, hypothesis, goal, steps);
-    plan
+    
+    ResearchPlan::new(&plan_id, hypothesis, goal, steps)
 }
 
 fn parse_plan_steps(body: &str) -> Vec<PlanStep> {

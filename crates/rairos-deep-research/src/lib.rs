@@ -1,6 +1,6 @@
 //! Deep Research Agent — iterative research with gap detection and archetype-aware refinement.
 
-#![allow(clippy::default_constructed_unit_structs, clippy::sort_by_key)]
+#![allow(clippy::default_constructed_unit_structs)]
 #![allow(dead_code)]
 //!
 //! Architecture inspired by:
@@ -1132,7 +1132,7 @@ fn parse_arxiv_atom(xml: &str, max_results: usize, _query: &str) -> Vec<Paper> {
 }
 
 /// Extract text content of an XML tag.
-fn extract_xml_tag<'a>(xml: &'a str, tag: &str) -> Option<String> {
+fn extract_xml_tag(xml: &str, tag: &str) -> Option<String> {
     let open = format!("<{}", tag);
     let close = format!("</{}>", tag);
     let start = xml.find(&open)?;
@@ -1142,7 +1142,7 @@ fn extract_xml_tag<'a>(xml: &'a str, tag: &str) -> Option<String> {
 }
 
 /// Extract an attribute value from an XML tag fragment.
-fn extract_attr<'a>(xml: &'a str, attr: &str) -> Option<String> {
+fn extract_attr(xml: &str, attr: &str) -> Option<String> {
     let search = format!("{}=\"", attr);
     let start = xml.find(&search)?;
     let value_start = start + search.len();

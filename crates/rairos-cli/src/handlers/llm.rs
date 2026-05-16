@@ -1280,7 +1280,7 @@ pub fn handle_rag(action: &RagAction) -> Result<()> {
 
             // Stage 1: paper2code — shell out to external CLI or use existing tool
             println!("  Stage 1/4: Generating code from paper...");
-            let _paper2code_result = run_paper2code(&arxiv_id, mode, framework)?;
+            run_paper2code(&arxiv_id, mode, framework)?;
 
             // Stage 2: Extract test cases
             println!("  Stage 2/4: Extracting test cases...");

@@ -178,11 +178,11 @@ impl QuestionTracker {
             .questions
             .values()
             .filter(|q| {
-                let topic_match = topic.map_or(true, |t| {
+                let topic_match = topic.is_none_or(|t| {
                     t.is_empty() || q.topic.to_lowercase().contains(&t.to_lowercase())
                 });
-                let status_match = status.map_or(true, |s| q.status == *s);
-                let source_match = source.map_or(true, |s| q.source == *s);
+                let status_match = status.is_none_or(|s| q.status == *s);
+                let source_match = source.is_none_or(|s| q.source == *s);
                 topic_match && status_match && source_match
             })
             .collect();

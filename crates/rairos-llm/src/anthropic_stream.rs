@@ -29,7 +29,7 @@ pub fn anthropic_stream_to_chunks(
             }
             Err(e) => vec![Err(LlmError::Http(e))],
         })
-        .flat_map(|items| futures_util::stream::iter(items));
+        .flat_map(futures_util::stream::iter);
 
     Box::pin(stream)
 }

@@ -1,6 +1,5 @@
 //! rairos-eval-gap-monitor — Evaluation Gap Monitor for AI Research OS.
 
-#![allow(clippy::sort_by_key)]
 //!
 //! Ported from `llm/eval_gap_monitor.py` (150 LOC, pure stdlib).
 //!

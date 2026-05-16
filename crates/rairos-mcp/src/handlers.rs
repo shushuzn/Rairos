@@ -861,7 +861,7 @@ impl ToolHandler for ChartQueryHandler {
             "figure" => {
                 let fig_label = label.ok_or("Missing label for figure action")?;
                 let fig = figures.into_iter().find(|f| {
-                    f.get("label").and_then(|v| v.as_str()).map_or(false, |l| {
+                    f.get("label").and_then(|v| v.as_str()).is_some_and(|l| {
                         l.to_lowercase().contains(&fig_label.to_lowercase())
                     })
                 });
@@ -887,7 +887,7 @@ impl ToolHandler for ChartQueryHandler {
             "table" => {
                 let tbl_label = label.ok_or("Missing label for table action")?;
                 let tbl = tables.into_iter().find(|t| {
-                    t.get("label").and_then(|v| v.as_str()).map_or(false, |l| {
+                    t.get("label").and_then(|v| v.as_str()).is_some_and(|l| {
                         l.to_lowercase().contains(&tbl_label.to_lowercase())
                     })
                 });
@@ -1081,7 +1081,7 @@ pub fn parse_arxiv_response(xml: &str) -> Vec<Value> {
     papers
 }
 
-fn extract_tag<'a>(s: &'a str, tag: &str) -> Option<String> {
+fn extract_tag(s: &str, tag: &str) -> Option<String> {
     let start = s.find(&format!("<{}>", tag))?;
     let value_start = start + tag.len() + 2;
     let end = s[value_start..].find(&format!("</{}>", tag))?;

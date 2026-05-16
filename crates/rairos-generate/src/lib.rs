@@ -330,7 +330,7 @@ mod tests {
         assert_eq!(in_p, 0.5);
         assert_eq!(out_p, 1.5);
 
-        let (in_p, out_p) = get_model_price("unknown");
+        let (in_p, _out_p) = get_model_price("unknown");
         assert_eq!(in_p, 1.0);
     }
 

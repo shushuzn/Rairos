@@ -1115,7 +1115,7 @@ mod tests {
         let (db, dir) = test_db();
         db.add_node("paper", "1", "Paper", serde_json::json!({})).unwrap();
         let json = db.export_json().unwrap();
-        assert!(json["nodes"].as_array().unwrap().len() >= 1);
+        assert!(!json["nodes"].as_array().unwrap().is_empty());
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -1227,7 +1227,7 @@ mod tests {
 
         let authors = vec!["John Doe".to_string(), "Jane Smith".to_string()];
         let tags = vec!["transformer".to_string(), "attention".to_string()];
-        let paper_id = db.on_paper_processed("2401.00001", "Test Paper", &authors, &tags, "2024").unwrap();
+        let _paper_id = db.on_paper_processed("2401.00001", "Test Paper", &authors, &tags, "2024").unwrap();
 
         // Verify paper node exists
         let paper = db.get_node_by_entity("paper", "2401.00001").unwrap().unwrap();

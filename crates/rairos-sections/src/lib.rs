@@ -307,8 +307,8 @@ mod tests {
     fn make_sdoc(text: &str) -> StructuredPdfContent {
         let blocks: Vec<TextBlock> = text
             .split("\n\n")
-            .enumerate()
-            .map(|(_i, t)| TextBlock {
+            
+            .map(|t| TextBlock {
                 block_type: rairos_pdf::BlockType::Body,
                 text: t.to_string(),
                 page: 0,
@@ -367,7 +367,7 @@ mod tests {
         // Abstract should have higher priority
         assert!(sections
             .iter()
-            .any(|(t, _, m)| t == "Abstract" && m.has_math == false));
+            .any(|(t, _, m)| t == "Abstract" && !m.has_math));
     }
 
     #[test]

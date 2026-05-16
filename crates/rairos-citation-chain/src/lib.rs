@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 #![allow(
     clippy::needless_range_loop,
-    clippy::sort_by_key,
+
     clippy::vec_init_then_push,
 )]
 #![allow(clippy::too_many_arguments)]

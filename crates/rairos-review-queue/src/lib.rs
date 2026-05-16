@@ -323,7 +323,7 @@ function submitVerdict(capsuleId, verdict) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::Write;
+    
 
     #[test]
     fn test_short_id() {
@@ -345,7 +345,7 @@ mod tests {
         let past = Utc::now() - Duration::days(5);
         let ts = past.to_rfc3339();
         let days = _days_ago(&ts);
-        assert!(days >= 4 && days <= 5);
+        assert!((4..=5).contains(&days));
     }
 
     #[test]

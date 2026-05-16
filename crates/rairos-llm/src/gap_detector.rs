@@ -87,7 +87,7 @@ pub fn detect_gaps_keyword(topic: &str) -> Vec<ResearchGap> {
     for (keyword, gap_type, confidence) in &patterns {
         if lower.contains(keyword) {
             gaps.push(ResearchGap {
-                gap_type: gap_type.clone(),
+                gap_type: *gap_type,
                 description: format!("Keyword '{}' detected in topic '{}'", keyword, topic),
                 evidence_papers: Vec::new(),
                 confidence: *confidence,

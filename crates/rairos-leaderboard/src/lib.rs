@@ -702,7 +702,7 @@ mod tests {
         };
 
         let score = entry.compute_score();
-        assert!(score >= 0.0 && score <= 1.0);
+        assert!((0.0..=1.0).contains(&score));
         assert!(entry.stub_rate > 0.0);
         assert!(entry.difficulty_penalty > 0.0);
     }
@@ -715,7 +715,7 @@ mod tests {
             let mut entry = LeaderboardEntry {
                 arxiv_id: format!("test_{}", i),
                 title: format!("Test Paper {}", i),
-                passed: (10 - i * 2) as i32,
+                passed: (10 - i * 2),
                 failed: 2,
                 skipped: 0,
                 duration_seconds: 1.0,

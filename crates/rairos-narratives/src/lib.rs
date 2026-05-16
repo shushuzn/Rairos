@@ -670,7 +670,7 @@ pub fn aggregate_by_topic(topic: &str) -> Result<ResearchThread> {
                     .filter(|q| {
                         q["topic"]
                             .as_str()
-                            .map_or(false, |t| {
+                            .is_some_and(|t| {
                                 t.to_lowercase().contains(&topic.to_lowercase())
                             })
                     })
@@ -693,10 +693,10 @@ pub fn aggregate_by_topic(topic: &str) -> Result<ResearchThread> {
             {
                 let mut hids: Vec<String> = Vec::new();
                 for ev in &events {
-                    let topic_match = ev["topic"].as_str().map_or(false, |t| {
+                    let topic_match = ev["topic"].as_str().is_some_and(|t| {
                         t.to_lowercase().contains(&topic.to_lowercase())
                     });
-                    let gap_match = ev["gap_title"].as_str().map_or(false, |g| {
+                    let gap_match = ev["gap_title"].as_str().is_some_and(|g| {
                         g.to_lowercase().contains(&topic.to_lowercase())
                     });
                     if topic_match || gap_match {

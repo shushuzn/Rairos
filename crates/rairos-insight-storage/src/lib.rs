@@ -582,7 +582,7 @@ fn extract_keywords_simple(text: &str) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::HashMap;
+    
 
     fn create_test_storage() -> (CapsuleStorage, tempfile::TempDir) {
         let temp_dir = tempfile::tempdir().unwrap();

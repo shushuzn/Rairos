@@ -1,6 +1,6 @@
 //! rairos-friction-tracker — Research Friction Tracker for AI Research OS.
 
-#![allow(clippy::should_implement_trait, clippy::sort_by_key, unused_imports)]
+#![allow(clippy::should_implement_trait, unused_imports)]
 #![allow(dead_code)]
 //!
 //! Ported from `llm/friction_tracker.py` (248 LOC, pure stdlib).

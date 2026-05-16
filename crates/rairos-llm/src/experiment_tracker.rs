@@ -39,6 +39,12 @@ pub struct ExperimentTracker {
     experiments: Vec<Experiment>,
 }
 
+impl Default for ExperimentTracker {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ExperimentTracker {
     pub fn new() -> Self {
         Self { experiments: Vec::new() }
@@ -87,7 +93,7 @@ impl ExperimentTracker {
 
     pub fn list(&self, status_filter: Option<ExperimentStatus>) -> Vec<&Experiment> {
         self.experiments.iter()
-            .filter(|e| status_filter.as_ref().map_or(true, |s| e.status == *s))
+            .filter(|e| status_filter.as_ref().is_none_or(|s| e.status == *s))
             .collect()
     }
 

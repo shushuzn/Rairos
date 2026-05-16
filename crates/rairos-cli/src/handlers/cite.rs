@@ -730,8 +730,7 @@ pub fn handle_cite_import(
         }
     };
 
-    let data: serde_json::Value = if raw.starts_with('@') {
-        let path = &raw[1..];
+    let data: serde_json::Value = if let Some(path) = raw.strip_prefix('@') {
         let content = std::fs::read_to_string(path)
             .map_err(|e| anyhow::anyhow!("Error reading {}: {}", path, e))?;
         serde_json::from_str(&content)
@@ -880,7 +879,7 @@ pub fn handle_citation_chain(
             println!("Finding influences for: {}", pid);
             if let Ok(papers) = db.search_papers(pid, 1) {
                 if let Some(p) = papers.first() {
-                builder.add_paper(pid.to_string(), p.title.clone(), p.published.year() as i32, Vec::new(), Vec::new(), String::new(), 0);
+                builder.add_paper(pid.to_string(), p.title.clone(), p.published.year(), Vec::new(), Vec::new(), String::new(), 0);
             }
         }
         println!("Influencers: (requires citations data in DB)");
@@ -901,7 +900,7 @@ pub fn handle_citation_chain(
 
     if let Ok(papers) = db.search_papers(pid, 5) {
         for p in &papers {
-            builder.add_paper(p.id.clone(), p.title.clone(), p.published.year() as i32, Vec::new(), Vec::new(), String::new(), 0);
+            builder.add_paper(p.id.clone(), p.title.clone(), p.published.year(), Vec::new(), Vec::new(), String::new(), 0);
         }
     }
 
@@ -935,7 +934,7 @@ pub fn handle_cite_graph(db: &Database, paper: Option<&str>, depth: i32, max_nod
 
     let mut builder = rairos_citation_chain::CitationChainBuilder::new();
     for p in db.search_papers(pid, 5)? {
-        builder.add_paper(p.id.clone(), p.title.clone(), p.published.year() as i32, Vec::new(), Vec::new(), String::new(), 0);
+        builder.add_paper(p.id.clone(), p.title.clone(), p.published.year(), Vec::new(), Vec::new(), String::new(), 0);
     }
     let chain = builder.build_from_db(pid, depth);
 

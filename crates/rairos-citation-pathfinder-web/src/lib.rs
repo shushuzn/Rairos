@@ -273,7 +273,7 @@ mod tests {
         let g = build_citation_graph("paper1", "Test Paper", &[], &[]);
         let svg = render_citation_graph_svg(Some(&g), "paper1", "Test Paper", &[], &[]);
         assert!(svg.contains("<svg"));
-        assert!(svg.contains("citation-pathfinder") == false);
+        assert!(!svg.contains("citation-pathfinder"));
     }
 
     #[test]

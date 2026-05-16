@@ -124,7 +124,7 @@ fn parse_analysis(response: &str) -> PaperAnalysisResult {
     for cap in rubric_re.captures_iter(response) {
         let key = cap[1].to_lowercase();
         let val: u32 = cap[2].parse().unwrap_or(3);
-        if key.len() <= 20 && val >= 1 && val <= 5 {
+        if key.len() <= 20 && (1..=5).contains(&val) {
             rubric.insert(key, val);
         }
     }

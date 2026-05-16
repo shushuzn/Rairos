@@ -748,7 +748,7 @@ mod tests {
     #[test]
     fn test_recent_anomalies_limit() {
         let mut mem = ResearchMemory::for_testing();
-        let id = mem
+        let _id = mem
             .add_stance(
                 "T",
                 "is supported",

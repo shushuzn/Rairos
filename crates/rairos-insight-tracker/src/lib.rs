@@ -943,7 +943,7 @@ mod tests {
 
     #[test]
     fn test_decay_weight() {
-        let (mut tracker, _temp_dir) = create_test_tracker();
+        let (tracker, _temp_dir) = create_test_tracker();
         let weight = tracker.decay_weight(1.0, "2024-01-01T00:00:00Z", 0.01);
         assert!(weight < 1.0);
         assert!(weight > 0.0);

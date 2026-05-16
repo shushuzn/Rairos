@@ -666,7 +666,7 @@ mod tests {
     fn test_build_timeline_truncation() {
         let gen = ReviewGenerator::new();
         let papers: Vec<PaperRef> = (0..25)
-            .map(|i| make_paper(&format!("p{}", i), &format!("Paper {}", i), "Abstract", 2020 + i as i32))
+            .map(|i| make_paper(&format!("p{}", i), &format!("Paper {}", i), "Abstract", 2020 + i))
             .collect();
         let timeline = gen.build_timeline(&papers);
         assert_eq!(timeline.len(), 20); // truncated to 20
