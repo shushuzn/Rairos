@@ -7,7 +7,6 @@ edition = "2021"
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 regex.workspace = true
-reqwest = { version = "0.12", features = ["json"] }
 rairos-llm = { path = "../rairos-llm" }
 chrono = { workspace = true, features = ["serde"] }
 uuid = { workspace = true, features = ["v4"] }

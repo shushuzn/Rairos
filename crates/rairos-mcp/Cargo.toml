@@ -32,7 +32,7 @@ tracing-subscriber.workspace = true
 futures.workspace = true
 async-trait = "0.1"
 chrono = { workspace = true, features = ["serde"] }
-reqwest = { version = "0.12", features = ["rustls-tls"], default-features = false }
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
 # Orphan rescues — MCP tool crates
 rairos-deep-research = { path = "../rairos-deep-research" }
 rairos-orchestrator = { path = "../rairos-orchestrator" }
