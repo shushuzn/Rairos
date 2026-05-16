@@ -99,7 +99,16 @@ crates/
 - **Always** use `CARGO_BUILD_JOBS=1` — the project has 154 crates and parallel builds easily OOM
 - To build a specific crate: `cargo build -p rairos-core`
 - For incremental compilation: `CARGO_BUILD_JOBS=1 cargo check`
-- Install [sccache](https://github.com/mozilla/sccache) for faster rebuilds
+- Install [sccache](https://github.com/mozilla/sccache) for faster rebuilds:
+
+```bash
+# On Linux/macOS
+sccache --start-server
+CARGO_BUILD_JOBS=1 cargo build
+
+# Check stats
+sccache --show-stats
+```
 
 ## Labels
 
