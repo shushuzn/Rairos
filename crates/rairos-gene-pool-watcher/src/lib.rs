@@ -6,7 +6,7 @@
 //!
 //! Python original: `llm/gene_pool_watcher.py`
 
-use rairos_core::constants::GP_DIR_NAME;
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -579,7 +579,7 @@ impl DiversityPressureEvaluator {
                 );
                 // Write back via gene-pool-io (append to jsonl with new status)
                 // Mark capsule as archived by updating status in JSONL
-                let jsonl_path = get_gp_dir().join("gene_pool.jsonl");
+                let jsonl_path = get_gp_dir().join(GENE_POOL_JSONL);
                 if let Ok(text) = std::fs::read_to_string(&jsonl_path) {
                     let mut lines: Vec<String> = text
                         .lines()

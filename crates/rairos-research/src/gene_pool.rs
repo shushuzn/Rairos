@@ -3,6 +3,7 @@
 //! Mirrors llm/insight/gene.py + storage.py for Rust-side search and logging.
 //! Enhanced: get_capsule_by_title, encode_capsule, preference_profile integration.
 
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
@@ -218,11 +219,10 @@ impl Default for GenePool {
     fn default() -> Self {
         let base = dirs_next()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".ai_research_os")
-            .join("evolution");
+            .join(GP_DIR_NAME);
         Self {
             base_dir: base.clone(),
-            jsonl_path: base.join("gene_pool.jsonl"),
+            jsonl_path: base.join(GENE_POOL_JSONL),
             events_path: base.join("events.jsonl"),
         }
     }
@@ -559,7 +559,7 @@ mod tests {
         std::fs::create_dir_all(&dir).unwrap();
         let pool = GenePool {
             base_dir: dir.clone(),
-            jsonl_path: dir.join("gene_pool.jsonl"),
+            jsonl_path: dir.join(GENE_POOL_JSONL),
             events_path: dir.join("events.jsonl"),
         };
         (pool, dir)

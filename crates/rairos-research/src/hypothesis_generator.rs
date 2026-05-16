@@ -8,6 +8,7 @@
 //! 5. Novelty / feasibility scoring
 //! 6. Summary generation
 
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
 use rairos_llm::{LlmClient, Message};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -1411,12 +1412,12 @@ mod tests {
         let tid = std::thread::current().id();
         let dir = std::env::temp_dir().join(format!("rairos_e2e_{:?}_{}_{}", tid, std::process::id(), unique));
         let _ = std::fs::remove_dir_all(&dir);
-        let gp_dir = dir.join("evolution");
+        let gp_dir = dir.join(GP_DIR_NAME);
         std::fs::create_dir_all(&gp_dir).unwrap();
 
         let pool = crate::gene_pool::GenePool {
             base_dir: gp_dir.clone(),
-            jsonl_path: gp_dir.join("gene_pool.jsonl"),
+            jsonl_path: gp_dir.join(GENE_POOL_JSONL),
             events_path: gp_dir.join("events.jsonl"),
         };
 
@@ -1503,12 +1504,12 @@ mod tests {
         let tid = std::thread::current().id();
         let dir = std::env::temp_dir().join(format!("rairos_e2e_{:?}_{}_{}", tid, std::process::id(), unique));
         let _ = std::fs::remove_dir_all(&dir);
-        let gp_dir = dir.join("evolution");
+        let gp_dir = dir.join(GP_DIR_NAME);
         std::fs::create_dir_all(&gp_dir).unwrap();
 
         let pool = crate::gene_pool::GenePool {
             base_dir: gp_dir.clone(),
-            jsonl_path: gp_dir.join("gene_pool.jsonl"),
+            jsonl_path: gp_dir.join(GENE_POOL_JSONL),
             events_path: gp_dir.join("events.jsonl"),
         };
 
