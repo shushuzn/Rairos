@@ -28,7 +28,7 @@ serde_json.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["full"] }
 tracing.workspace = true
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-subscriber.workspace = true
 futures.workspace = true
 async-trait = "0.1"
 chrono = { workspace = true, features = ["serde"] }
