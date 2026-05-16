@@ -2,50 +2,31 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| v1.7.x  | :white_check_mark: |
-| < v1.7  | :x:                |
+Rairos is under active development. Security patches are provided for the latest release.
+
+| Version | Supported |
+|---------|-----------|
+| latest  | ✅ |
 
 ## Reporting a Vulnerability
 
-Please report security vulnerabilities via [GitHub Security Advisories](https://github.com/shushuzn/Rairos/security/advisories) rather than public issues.
+Open a [security advisory](https://github.com/shushuzn/Rairos/security/advisories/new) or email the maintainers directly.
+
+We aim to acknowledge receipt within 48 hours and provide a timeline for the fix.
 
 ## Known Vulnerabilities
 
-### urllib3 CVEs (GHSA-mf9v-mfxr-j63j, GHSA-qccp-gfcp-xxvc)
+### OpenSSL / ring (transitive)
 
-**Affected:** Python dependencies (boto3, aiohttp, etc.)
-**Status:** Acknowledged. No patched version available yet. Upgrade to urllib3 >= 2.7.1 when released.
-**Impact:** Requires accepting HTTP responses from untrusted servers. Mitigated by not processing untrusted HTTP content.
-**Tracking:** [Dependabot alerts](https://github.com/shushuzn/Rairos/security/dependabot)
+Rairos uses `rusqlite` and `reqwest`, which depend on `openssl` and `ring` respectively.
+These are system-level dependencies managed by Cargo. Run `cargo audit` to check for known vulnerabilities.
 
-### GitPython CVE (GHSA-mv93-w799-cj2w)
+### Dependabot Alerts
 
-**Affected:** Direct dependency (none — GitPython is not a direct dependency of Rairos)
-**Status:** Not applicable. GitPython is not used by Rairos.
-**Note:** Dependabot detected it as a transitive dependency of a development tool.
+Rust crate vulnerabilities are tracked via Dependabot. Check [GitHub Security](https://github.com/shushuzn/Rairos/security/dependabot) for active alerts.
 
-## Dependency Management
+## Security Best Practices
 
-- **Python:** Managed via `pyproject.toml` + `uv`. Run `uv pip tree` to audit.
-- **Rust:** Managed via `Cargo.toml`. Run `cargo audit` in CI.
-- **Auto-updates:** Renovate bot handles dependency PRs automatically.
-
-## Security Tools
-
-| Tool | Purpose | Run |
-|------|---------|-----|
-| `cargo audit` | Rust vulnerability scanning | CI (rust.yml) |
-| `bandit` | Python security linting | CI (ci.yml) |
-| `ruff` | Python linting | CI (ci.yml) |
-| `clippy` | Rust linting | CI (rust.yml) |
-| Renovate | Auto dependency updates | GitHub App |
-
-## Hardened Dependencies
-
-For production deployments, prefer `--no-deps` installs and pin exact versions:
-
-```bash
-uv pip install --no-deps -r requirements.txt
-```
+- Use `cargo audit` to scan for known vulnerabilities
+- Keep Rust toolchain up to date: `rustup update`
+- Run with `RAIROS_DB` pointing to an isolated database path for sandboxed testing

@@ -1,12 +1,12 @@
 # AI Research OS
 
-**A Self-Evolving Research Operating System for AI Researchers** · Built with MkDocs
+**A Self-Evolving Research Operating System for AI Researchers** · 100% Rust (154 crates)
 
 AI Research OS is a local-first research tool that grows smarter over time. It learns your research patterns, surfaces what matters, and generates insights from your paper library.
 
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-[![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
+![Rust](https://img.shields.io/badge/Rust-100%25-orange)
+[![Build](https://github.com/shushuzn/Rairos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ## What It Does
@@ -32,19 +32,19 @@ Feed it a paper — get back structured, cross-linked research knowledge:
 ## Quick Start
 
 ```bash
-pip install -e ".[all]"
+CARGO_BUILD_JOBS=1 cargo build --workspace
 
 # Import a paper
-python -m cli import 2601.00155 --tags LLM,Agent
+rairos import 2601.00155 --tags LLM,Agent
 
 # Search your library
-python -m cli search "attention mechanism" --tag LLM
+rairos search "attention mechanism" --tag LLM
 
 # Autonomous research
-python -m cli research "RLHF alignment" --limit 5
+rairos research "RLHF alignment" --limit 5
 
 # Chat with your papers
-python -m cli chat-tui
+rairos chat-tui
 ```
 
 See [Installation](installation.md) for full setup instructions.
@@ -98,7 +98,7 @@ Paper → P-Note (per paper)
 | Metric | Value |
 |--------|-------|
 | Tests | 73 passing (CI gate 40%) |
-| Python | 3.10+ |
+| Rust | 1.81+ |
 | License | GPL v3 |
 | Version | 1.5.4 |
 
