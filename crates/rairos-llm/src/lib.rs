@@ -103,7 +103,7 @@ impl LlmCredentials {
             .unwrap_or_default();
 
         // Resolve base URL with priority: explicit > MINIMAX_CN > MINIMAX > default
-        let default_openai = "https://api.openai.com/v1";
+        let default_openai = LLM_BASE_URL;
         let resolved_url = explicit_base_url
             .map(|s| s.to_string())
             .filter(|s| !s.is_empty() && s != default_openai)

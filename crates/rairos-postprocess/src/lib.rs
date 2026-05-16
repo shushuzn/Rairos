@@ -14,7 +14,8 @@
 #![allow(clippy::print_literal)]
 
 use chrono::Utc;
-use rairos_core::{constants::LLM_MODEL, Paper};
+use rairos_core::constants::{LLM_BASE_URL, LLM_MODEL};
+use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -170,7 +171,7 @@ impl LlmConfig {
         }
         let base_url = std::env::var("OPENAI_BASE_URL")
             .or_else(|_| std::env::var("AIROS_DEFAULT_OPENAI_BASE_URL"))
-            .unwrap_or_else(|_| "https://api.openai.com/v1".to_string());
+            .unwrap_or_else(|_| LLM_BASE_URL.to_string());
         let model = std::env::var("AIROS_DEFAULT_MODEL_CLI")
             .unwrap_or_else(|_| LLM_MODEL.to_string());
         let timeout_secs = std::env::var("AIROS_LLM_TIMEOUT")
