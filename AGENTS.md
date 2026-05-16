@@ -21,11 +21,11 @@ sccache --start-server
 CARGO_BUILD_JOBS=1 cargo build
 ```
 
-## Key Crates (22 of 158)
+## Key Crates (22 of 157)
 
 | Crate | Purpose |
 |-------|---------|
-| rairos-core | DB, FTS5, subscriptions, tags |
+| rairos-core | DB, FTS5, subscriptions, tags, experiment_tables, db_optimize |
 | rairos-llm | GenePool, Evolution, LLM clients |
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API, PDF extraction |
 | rairos-research | DeepResearchAgent, gap detection |

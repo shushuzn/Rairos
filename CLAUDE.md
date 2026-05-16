@@ -17,10 +17,10 @@
 - **Rust CLI**: 104 commands via `cargo run -p rairos-cli -- <cmd>`
 - **Rust CLI main.rs**: `crates/rairos-cli/src/main.rs` (2721 lines, Commands enum + handle_*())
 - **Rust MCP**: 68 pure-Rust tools in `crates/rairos-mcp/src/` — zero Python fallback
-- **Python**: Fully migrated to Rust. All Python source removed.
-- **Test**: 5079 pytest tests, timeout=60s
-- **Linter**: ruff (E4/E7/F/W/B/I), mypy (strict=false)
-- **CI gate**: 40% coverage
+|- **Python**: Fully migrated to Rust. All Python source removed.
+|- **Test**: `cargo test --workspace` (Rust unit/integration tests)
+|- **Linter**: `cargo clippy` (deny warnings)
+|- **CI gate**: `cargo build + cargo test --workspace + clippy`
 
 ## Build & Test
 
