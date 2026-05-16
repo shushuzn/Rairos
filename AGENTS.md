@@ -109,6 +109,12 @@ Constants centralized in `rairos-core::constants` for reuse:
 | `KG_GRAPH_FILE` | `graph.json` | Knowledge graph file |
 | `TAGS_FILE` | `tags.jsonl` | Tags file |
 | `BRIEFINGS_DIR` | `briefings` | Briefings directory |
+| `BRIEFING_LINKS_FILE` | `briefing_links.json` | Briefing links file |
+| `ARXIV_CHANNELS_FILE` | `arxiv_channels.json` | arXiv alert channels file |
+| `RESEARCH_STANCES_FILE` | `research_memory/stances.json` | Research stances file |
+| `PATTERNS_FILE` | `patterns.json` | Patterns file |
+| `BADGES_FILE` | `badges.json` | Badges file |
+| `CLAIM_GRAPH_FILE` | `claim_graph.json` | Claim graph file |
 | `CATEGORIES_FILE` | `categories.json` | Categories file |
 | `EXPERIMENTS_FILE` | `experiments.json` | Experiments file |
 | `THREADS_FILE` | `threads.json` | Narrative threads file |
