@@ -102,11 +102,20 @@ Constants centralized in `rairos-core::constants` for reuse:
 | `CAPSULES_JSON` | `capsules.json` | Capsule filename |
 | `GP_DIR_NAME` | `.ai_research_os/evolution` | Evolution directory |
 | `GENE_POOL_JSONL` | `gene_pool.jsonl` | Gene pool log file |
+| `EVENTS_JSONL` | `events.jsonl` | Evolution events log |
 | `PAPERS_DB_PATH` | `.ai_research_os/papers.json` | Papers database path |
 | `AIROS_DIR_NAME` | `.ai_research_os` | Root data directory |
 | `KG_DIR` | `kg` | Knowledge graph directory |
+| `KG_GRAPH_FILE` | `graph.json` | Knowledge graph file |
 | `TAGS_FILE` | `tags.jsonl` | Tags file |
 | `BRIEFINGS_DIR` | `briefings` | Briefings directory |
+| `CATEGORIES_FILE` | `categories.json` | Categories file |
+| `EXPERIMENTS_FILE` | `experiments.json` | Experiments file |
+| `THREADS_FILE` | `threads.json` | Narrative threads file |
+| `GAP_SUBSCRIPTIONS_FILE` | `gap_subscriptions.json` | Gap subscriptions file |
+| `QUESTIONS_FILE` | `questions.json` | Questions file |
+| `INSIGHTS_DIR` | `insights` | Insights directory |
+| `INSIGHT_CARDS_FILE` | `cards.json` | Insight cards file |
 | `CLIMATE_CATS` | `&["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]` | Climate-related categories |
 | `ARXIV_API` | `https://export.arxiv.org/api/query` | arXiv API endpoint |
 | `SEMANTIC_API` | `https://api.semanticscholar.org/graph/v1` | Semantic Scholar API |
