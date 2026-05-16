@@ -232,14 +232,14 @@ impl PyDatabase {
         Ok(Some(PyPaper { inner: paper }))
     }
 
-    #[pyo3(signature = (query, limit=None, offset=None, source=None, category=None, parse_status=None))]
+    #[pyo3(signature = (query, limit=None, offset=None, _source=None, category=None, parse_status=None))]
     fn search_papers(
         &self,
         query: &str,
         limit: Option<i64>,
         offset: Option<i64>,
         _source: Option<&str>,
-        _category: Option<&str>,
+        category: Option<&str>,
         parse_status: Option<&str>,
     ) -> PyResult<(Vec<PySearchResult>, i64)> {
         let limit = limit.unwrap_or(20);
