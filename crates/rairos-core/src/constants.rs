@@ -24,6 +24,7 @@ pub const TIMELINE_FILE: &str = "Timeline.md";
 pub const PAPERS_DB_PATH: &str = ".ai_research_os/papers.json";
 pub const AIROS_DIR_NAME: &str = ".ai_research_os";
 pub const RESEARCH_MEMORY_DIR: &str = "research_memory";
+pub const RESEARCH_STANCES_FILE: &str = "research_memory/stances.json";
 pub const KG_DIR: &str = "kg";
 pub const QUESTIONS_DIR: &str = "questions";
 pub const BACKUPS_DIR: &str = "backups";
