@@ -8,6 +8,7 @@
 //! 5. Novelty / feasibility scoring
 //! 6. Summary generation
 
+#[allow(unused_imports)]
 use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL, EVENTS_JSONL};
 use rairos_llm::{LlmClient, Message};
 use serde::{Deserialize, Serialize};
