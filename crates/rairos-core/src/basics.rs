@@ -4,6 +4,7 @@
 //!
 //! Provides research directory management, text slugification, and file utilities.
 
+use crate::constants::CATEGORIES_FILE;
 use regex::Regex;
 use std::fs;
 use std::path::Path;
@@ -38,7 +39,7 @@ static RE_DASHES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"-{2,}").unwrap
 fn get_config_path() -> std::path::PathBuf {
     std::path::PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "~".to_string()))
         .join(".ai_research_os")
-        .join("categories.json")
+        .join(CATEGORIES_FILE)
 }
 
 /// Return the list of research tree directory names.

@@ -28,6 +28,7 @@ pub const KG_DIR: &str = "kg";
 pub const QUESTIONS_DIR: &str = "questions";
 pub const BACKUPS_DIR: &str = "backups";
 pub const TAGS_FILE: &str = "tags.jsonl";
+pub const CATEGORIES_FILE: &str = "categories.json";
 pub const BRIEFINGS_DIR: &str = "briefings";
 pub const CLAIM_GRAPH_FILE: &str = "claim_graph.json";
 
