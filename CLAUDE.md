@@ -12,7 +12,7 @@
 
 ## Project: Rairos (ai-research-os)
 
-**Self-Evolving Research OS (100% Rust, 158 crates, ~73k lines, 104 CLI commands, 68 MCP tools)**
+**Self-Evolving Research OS (100% Rust, 157 crates, ~73k lines, 104 CLI commands, 68 MCP tools)**
 
 - **Rust CLI**: 104 commands via `cargo run -p rairos-cli -- <cmd>`
 - **Rust CLI main.rs**: `crates/rairos-cli/src/main.rs` (2721 lines, Commands enum + handle_*())

@@ -35,6 +35,7 @@ pub mod auth;
 pub mod notifications;
 pub mod notify;
 pub mod db_migrate;
+pub mod db_optimize;
 
 // ============================================================================
 // Error Types
@@ -479,6 +480,45 @@ impl Database {
             CREATE INDEX IF NOT EXISTS idx_papers_reading ON papers(reading_status);
             CREATE INDEX IF NOT EXISTS idx_gaps_topic ON research_gaps(topic);
             CREATE INDEX IF NOT EXISTS idx_subscriptions_enabled ON subscriptions(enabled);
+
+            CREATE TABLE IF NOT EXISTS parse_history (
+                id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                paper_id       TEXT NOT NULL,
+                attempted_at   TEXT NOT NULL DEFAULT (datetime('now')),
+                duration_sec   REAL,
+                status         TEXT NOT NULL,
+                error          TEXT DEFAULT '',
+                parse_version  INTEGER,
+                pdf_hash       TEXT,
+                file_size      INTEGER,
+                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS experiment_tables (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                paper_id      TEXT NOT NULL,
+                table_caption TEXT DEFAULT '',
+                page          INTEGER DEFAULT 0,
+                headers       TEXT DEFAULT '[]',
+                rows          TEXT DEFAULT '[]',
+                bbox_x0       REAL DEFAULT 0,
+                bbox_y0       REAL DEFAULT 0,
+                bbox_x1       REAL DEFAULT 0,
+                bbox_y1       REAL DEFAULT 0,
+                created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS arxiv_search_cache (
+                query_hash   TEXT PRIMARY KEY,
+                query        TEXT NOT NULL,
+                results_json TEXT NOT NULL,
+                created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+                hit_count    INTEGER DEFAULT 1
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_parse_history_paper ON parse_history(paper_id);
+            CREATE INDEX IF NOT EXISTS idx_experiment_tables_paper ON experiment_tables(paper_id);
             "#,
         )?;
 

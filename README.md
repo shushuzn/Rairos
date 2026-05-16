@@ -6,7 +6,7 @@
 
 </div>
 
-**A Self-Evolving Research Operating System** — 100% Rust (158 crates), 104 CLI commands, 68 MCP tools.
+**A Self-Evolving Research Operating System** — 100% Rust (157 crates), 104 CLI commands, 68 MCP tools.
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
 [![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
@@ -26,7 +26,7 @@ Rairos is an **autonomous research assistant** that:
 Feed it a paper → It learns what works → Next search is better
 ```
 
-## Rust Stack (158 crates)
+## Rust Stack (157 crates)
 
 | Crate | Purpose |
 |-------|---------|

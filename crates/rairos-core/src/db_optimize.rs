@@ -1,9 +1,7 @@
-//! rairos-db-optimize — Database optimization utilities.
+//! Database optimization utilities.
 //!
-//! Ported from `db/optimize.py`.
-//!
-//! Provides database optimization utilities including PRAGMA settings,
-//! index creation, and performance monitoring.
+//! Provides PRAGMA settings, index management, and database statistics
+//! for performance monitoring and optimization.
 
 use rusqlite::{Connection, Result as SqliteResult};
 use serde::{Deserialize, Serialize};
@@ -84,10 +82,6 @@ pub const PRAGMA_SETTINGS: &[PragmaSetting] = &[
         name: "read_uncommitted",
         value: "1",
     },
-    PragmaSetting {
-        name: "writable_schema",
-        value: "1",
-    },
 ];
 
 /// Database statistics.
@@ -110,9 +104,6 @@ pub fn apply_pragma_settings(conn: &Connection) -> SqliteResult<Vec<String>> {
         let sql = format!("PRAGMA {} = {}", setting.name, setting.value);
         if conn.execute(&sql, []).is_ok() {
             applied.push(sql);
-            log::info!("Applied PRAGMA optimization: {}", setting.name);
-        } else {
-            log::warn!("Failed to apply PRAGMA {}", setting.name);
         }
     }
     Ok(applied)
@@ -124,9 +115,6 @@ pub fn create_optimization_indexes(conn: &Connection) -> SqliteResult<Vec<String
     for idx in OPTIMIZATION_INDEXES {
         if conn.execute(idx.sql, []).is_ok() {
             applied.push(idx.name.to_string());
-            log::info!("Created optimization index: {}", idx.name);
-        } else {
-            log::warn!("Failed to create index {}", idx.name);
         }
     }
     conn.execute("PRAGMA optimize", [])?;
@@ -146,9 +134,6 @@ pub fn apply_database_optimizations(conn: &Connection) -> SqliteResult<Vec<Strin
     // Run ANALYZE
     if conn.execute("ANALYZE", []).is_ok() {
         applied.push("ANALYZE".to_string());
-        log::info!("Database statistics updated");
-    } else {
-        log::warn!("Failed to run ANALYZE");
     }
 
     Ok(applied)
@@ -169,7 +154,7 @@ pub fn get_database_stats(conn: &Connection) -> SqliteResult<DatabaseStats> {
 
     // Table counts
     let tables = [
-        ("papers", "papers_count"),
+        ("papers", "papers_count" as &str),
         ("parse_history", "parse_history_count"),
         ("paper_tags", "paper_tags_count"),
         ("tags", "tags_count"),
@@ -178,7 +163,7 @@ pub fn get_database_stats(conn: &Connection) -> SqliteResult<DatabaseStats> {
     ];
 
     for (table, field) in tables {
-        let query = format!("SELECT COUNT(*) FROM {}", table);
+        let query = format!("SELECT COUNT(*) FROM {table}");
         if let Ok(count) = conn.query_row(&query, [], |row| row.get::<_, i64>(0)) {
             match field {
                 "papers_count" => stats.papers_count = count,
@@ -215,9 +200,7 @@ pub fn get_database_stats(conn: &Connection) -> SqliteResult<DatabaseStats> {
 
 /// Vacuum the database to reclaim space.
 pub fn vacuum_database(conn: &Connection) -> SqliteResult<()> {
-    log::info!("Starting database VACUUM...");
     conn.execute_batch("VACUUM")?;
-    log::info!("Database VACUUM completed successfully");
     Ok(())
 }
 

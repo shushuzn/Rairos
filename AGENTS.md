@@ -2,7 +2,7 @@
 
 ## Project
 
-Self-Evolving Research OS — **100% Rust**: 158 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
+Self-Evolving Research OS — **100% Rust**: 157 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
 Python CLI fully migrated to Rust. All Python source code removed.
 
 ## Rust Build
