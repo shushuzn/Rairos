@@ -6,6 +6,7 @@
 //! Flags deployment timelines that outpace benchmark research.
 
 use chrono::{Datelike, Local};
+use rairos_core::constants::PAPERS_DB_PATH;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -14,7 +15,6 @@ use std::path::PathBuf;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PAPERS_DB: &str = ".ai_research_os/papers.json";
 const GAP_THRESHOLD: f64 = 0.1;
 
 const DEPLOYMENT_KEYWORDS: &[&str] = &[
@@ -33,7 +33,7 @@ const DEPLOYMENT_KEYWORDS: &[&str] = &[
 fn load_papers() -> Vec<serde_json::Value> {
     let path = dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(PAPERS_DB);
+        .join(PAPERS_DB_PATH);
     if !path.exists() {
         return vec![];
     }
