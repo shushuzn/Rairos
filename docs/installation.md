@@ -34,6 +34,16 @@ The Rust workspace has 154 crates. For builds on memory-constrained machines:
 CARGO_BUILD_JOBS=1 cargo build --workspace
 ```
 
+For faster repeated builds, install [sccache](https://github.com/mozilla/sccache):
+
+```bash
+# Linux/macOS
+cargo install sccache
+sccache --start-server
+CARGO_BUILD_JOBS=1 cargo build --workspace
+sccache --show-stats
+```
+
 For incremental dev builds:
 
 ```bash
