@@ -5,7 +5,7 @@
 
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use thiserror::Error;
 
 // ============================================================================
@@ -743,19 +743,21 @@ impl KnowledgeGraph {
         if !self.nodes.contains_key(start) || !self.nodes.contains_key(end) {
             return None;
         }
-        let mut visited = HashSet::new();
-        let mut queue = vec![vec![start.to_string()]];
-        while let Some(path) = queue.pop() {
-            let current = path.last().unwrap();
-            if current == end { return Some(path); }
-            if visited.contains(current) { continue; }
-            visited.insert(current.clone());
-            if let Some(neighbors) = self.outgoing.get(current) {
+        let mut visited: HashSet<&str> = HashSet::new();
+        let mut queue: VecDeque<(String, Vec<String>)> = VecDeque::new();
+        queue.push_back((start.to_string(), vec![start.to_string()]));
+        visited.insert(start);
+
+        while let Some((current, path)) = queue.pop_front() {
+            if current == end {
+                return Some(path);
+            }
+            if let Some(neighbors) = self.outgoing.get(&current) {
                 for neighbor in neighbors {
-                    if !visited.contains(neighbor) {
+                    if visited.insert(neighbor.as_str()) {
                         let mut new_path = path.clone();
                         new_path.push(neighbor.clone());
-                        queue.push(new_path);
+                        queue.push_back((neighbor.clone(), new_path));
                     }
                 }
             }

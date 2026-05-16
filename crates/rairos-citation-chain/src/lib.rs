@@ -5,7 +5,7 @@
     clippy::vec_init_then_push,
 )]
 #![allow(clippy::too_many_arguments)]
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::vec::Vec;
 
 #[derive(Debug, Clone)]
@@ -151,13 +151,14 @@ impl CitationChainBuilder {
         }
 
         let mut visited: HashSet<String> = HashSet::new();
-        let mut queue: Vec<Vec<String>> = vec![vec![from_id.to_string()]];
+        let mut queue: VecDeque<(String, Vec<String>)> = VecDeque::new();
+        queue.push_back((from_id.to_string(), vec![from_id.to_string()]));
+        visited.insert(from_id.to_string());
 
-        while let Some(path) = queue.pop() {
-            let current = path.last().unwrap();
+        while let Some((current, path)) = queue.pop_front() {
             let neighbors: Vec<String> = {
                 let mut n = Vec::new();
-                if let Some(node) = self.nodes.get(current) {
+                if let Some(node) = self.nodes.get(&current) {
                     n.extend(node.citations.clone());
                     n.extend(node.cited_by.clone());
                 }
@@ -170,11 +171,10 @@ impl CitationChainBuilder {
                     result.push(neighbor);
                     return Some(result);
                 }
-                if !visited.contains(&neighbor) {
-                    visited.insert(neighbor.clone());
+                if visited.insert(neighbor.clone()) {
                     let mut new_path = path.clone();
-                    new_path.push(neighbor);
-                    queue.push(new_path);
+                    new_path.push(neighbor.clone());
+                    queue.push_back((neighbor, new_path));
                 }
             }
         }
