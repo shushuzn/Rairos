@@ -3445,6 +3445,7 @@ dependencies = [
  "chrono",
  "dirs",
  "futures-util",
+ "lazy_static",
  "mockito",
  "rairos-achievements",
  "rairos-briefing-distributor",

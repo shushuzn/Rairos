@@ -19,6 +19,7 @@ anyhow.workspace = true
 uuid = { workspace = true, features = ["v4", "serde"] }
 chrono = { workspace = true, features = ["serde"] }
 dirs.workspace = true
+lazy_static.workspace = true
 regex.workspace = true
 rusqlite.workspace = true
 rand.workspace = true

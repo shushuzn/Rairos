@@ -5,9 +5,15 @@
 //! Mirrors llm/research/paper_analyzer.py
 
 use crate::{LlmClient, Message};
+use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+lazy_static! {
+    static ref SECTION_RE: Regex = Regex::new(r"^##\s*\d+\.?\d*\s*.*$").unwrap();
+    static ref RUBRIC_RE: Regex = Regex::new(r#""([^"]+)":\s*(\d+)"#).unwrap();
+}
 
 // ─── Section Keys ─────────────────────────────────────────────────────────────
 
@@ -88,12 +94,9 @@ fn parse_analysis(response: &str) -> PaperAnalysisResult {
     let mut current_section = String::new();
     let mut current_content = Vec::new();
 
-    let section_re = Regex::new(r"^##\s*\d+\.?\d*\s*.*$").unwrap();
-    let rubric_re = Regex::new(r#""([^"]+)":\s*(\d+)"#).unwrap();
-
     for line in response.lines() {
         let trimmed = line.trim();
-        if section_re.is_match(trimmed) {
+        if SECTION_RE.is_match(trimmed) {
             // Save previous section
             if !current_section.is_empty() {
                 sections.insert(current_section.clone(), current_content.join("\n").trim().to_string());
@@ -121,7 +124,7 @@ fn parse_analysis(response: &str) -> PaperAnalysisResult {
     }
 
     // Extract rubric from entire response
-    for cap in rubric_re.captures_iter(response) {
+    for cap in RUBRIC_RE.captures_iter(response) {
         let key = cap[1].to_lowercase();
         let val: u32 = cap[2].parse().unwrap_or(3);
         if key.len() <= 20 && (1..=5).contains(&val) {

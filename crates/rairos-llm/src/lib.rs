@@ -941,11 +941,10 @@ impl GapDetector {
         let mut gaps = Vec::new();
 
         for keyword in keywords {
+            let kw_lower = keyword.to_lowercase();
             let has_keyword = papers.iter().any(|p| {
-                p.title.to_lowercase().contains(&keyword.to_lowercase())
-                    || p.abstract_text
-                        .to_lowercase()
-                        .contains(&keyword.to_lowercase())
+                p.title.to_lowercase().contains(&kw_lower)
+                    || p.abstract_text.to_lowercase().contains(&kw_lower)
             });
 
             if !has_keyword {
