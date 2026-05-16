@@ -21,6 +21,14 @@ sccache --start-server
 CARGO_BUILD_JOBS=1 cargo build
 ```
 
+### Key Dependencies
+
+| Dependency | Version | Notes |
+|------------|---------|-------|
+| ratatui | 0.30 | Terminal UI framework (updated from 0.28 for lru security fix) |
+| indicatif | 0.18 | Progress bars |
+| tokio | 1.x | Async runtime |
+
 ## Key Crates (22 of 154)
 
 | Crate | Purpose |
@@ -71,6 +79,19 @@ CARGO_BUILD_JOBS=1 cargo test
 - Research Memory: `~/.ai_research_os/research_memory/`
 - Evolution events: `~/.ai_research_os/evolution/events.jsonl`
 
+## Shared Utilities
+
+### Similarity Functions (rairos-core)
+
+These functions are centralized in `rairos-core` for reuse across crates:
+
+| Function | Signature | Purpose |
+|----------|-----------|---------|
+| `cosine_similarity` | `fn(a: &[f32], b: &[f32]) -> f32` | Vector similarity |
+| `jaccard_similarity` | `fn(a: &[String], b: &[String]) -> f64` | Set overlap |
+
+**Used by:** `rairos-rankers`, `rairos-rankers-score`, `rairos-vault`, `rairos-credibility`, `rairos-bold-vault`, `rairos-credibility-scorer`
+
 ## Key Patterns
 
 - `papers` table PK is `id` (NOT arxiv_id)
@@ -92,3 +113,9 @@ CARGO_BUILD_JOBS=1 cargo test
 - MCP: `McpServer` (OnceLock cached) dispatches to pure Rust trait handlers — **no Python fallback**
 - CLI: `Commands` enum + `handle_*()` functions in `crates/rairos-cli/src/main.rs`
 - Backward-compatible params: Rust handlers accept both `paper_id` and `arxiv_id`
+
+## Security
+
+- Run `cargo audit` to check for vulnerabilities in dependencies
+- **Known fixed:** RUSTSEC-2026-0002 (lru crate) — fixed via ratatui 0.30
+- **Note:** urllib3 alerts (#3, #2) reference non-existent `uv.lock` — dismiss as inaccurate
