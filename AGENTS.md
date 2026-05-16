@@ -92,6 +92,19 @@ These functions are centralized in `rairos-core` for reuse across crates:
 
 **Used by:** `rairos-rankers`, `rairos-rankers-score`, `rairos-vault`, `rairos-credibility`, `rairos-bold-vault`, `rairos-credibility-scorer`
 
+### Constants (rairos-core)
+
+Constants centralized in `rairos-core::constants` for reuse:
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `CAPSULE_PATH` | `.ai_research_os/gene_pool/capsules.json` | Gene Pool capsule path |
+| `GP_DIR_NAME` | `.ai_research_os/evolution` | Evolution directory |
+| `CLIMATE_CATS` | `&["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]` | Climate-related categories |
+| `ARXIV_API` | `https://export.arxiv.org/api/query` | arXiv API endpoint |
+
+**Used by:** `rairos-bold-vault`, `rairos-vault`, `rairos-game-mode`, `rairos-gene-pool-watcher`, `rairos-gene-pool-io`, `rairos-climate`, `rairos-climate-ai-monitor`, `rairos-mcp`, `rairos-research`
+
 ## Key Patterns
 
 - `papers` table PK is `id` (NOT arxiv_id)

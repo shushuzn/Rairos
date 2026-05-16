@@ -9,7 +9,7 @@
 //! Supported sources: arXiv, CrossRef, Semantic Scholar
 //! Replaces: parsers/arxiv_search.py, parsers/cross_search.py, parsers/semantic_scholar.py
 
-use rairos_core::{Paper, PaperMetadata};
+use rairos_core::{constants::ARXIV_API, Paper, PaperMetadata};
 use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
@@ -42,8 +42,6 @@ pub enum SearchError {
 // ============================================================================
 // ArXiv Search API
 // ============================================================================
-
-const ARXIV_API: &str = "https://export.arxiv.org/api/query";
 
 /// Search arXiv by keyword and return metadata for top papers.
 ///

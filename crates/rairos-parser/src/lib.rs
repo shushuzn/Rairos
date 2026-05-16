@@ -4,7 +4,7 @@
 //! Supported sources: arXiv, CrossRef, Semantic Scholar, PDF extraction
 //! Replaces: parsers/arxiv.py, parsers/cross_search.py, pdf/parser.py
 
-use rairos_core::{Paper, PaperMetadata};
+use rairos_core::{constants::ARXIV_API, Paper, PaperMetadata};
 use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
@@ -37,8 +37,6 @@ pub enum ParseError {
 // ============================================================================
 // ArXiv API
 // ============================================================================
-
-const ARXIV_API: &str = "https://export.arxiv.org/api/query";
 
 /// ArXiv entry response fields we care about
 #[derive(Debug, Deserialize)]
