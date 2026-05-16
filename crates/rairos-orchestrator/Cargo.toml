@@ -8,7 +8,7 @@ rairos-core = { path = "../rairos-core" }
 rairos-llm = { path = "../rairos-llm" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-thiserror = "2.0"
+thiserror.workspace = true
 tokio = { workspace = true, features = ["full"] }
 async-trait = "0.1"
 tracing.workspace = true

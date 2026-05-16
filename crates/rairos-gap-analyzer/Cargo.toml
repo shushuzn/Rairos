@@ -8,7 +8,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 chrono.workspace = true
 dirs.workspace = true
-thiserror = "2.0"
+thiserror.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

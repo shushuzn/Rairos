@@ -9,5 +9,5 @@ rairos-kg = { path = "../rairos-kg" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 chrono = { workspace = true, features = ["serde"] }
-thiserror = "1.0"
+thiserror.workspace = true
 tracing.workspace = true

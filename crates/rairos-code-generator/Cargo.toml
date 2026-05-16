@@ -12,4 +12,4 @@ tokio = { workspace = true, features = ["full"] }
 rairos-llm = { path = "../rairos-llm" }
 chrono = { workspace = true, features = ["serde"] }
 uuid = { workspace = true, features = ["v4"] }
-thiserror = "2"
+thiserror.workspace = true

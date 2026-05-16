@@ -13,7 +13,7 @@ rairos-kg = { path = "../rairos-kg" }
 rairos-trends = { path = "../rairos-trends" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-thiserror = "2.0"
+thiserror.workspace = true
 tokio = { workspace = true, features = ["full"] }
 tracing.workspace = true
 chrono = { workspace = true, features = ["serde"] }

@@ -10,7 +10,7 @@ serde_json.workspace = true
 regex.workspace = true
 chrono = { workspace = true, features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "serde"] }
-thiserror = "2.0"
+thiserror.workspace = true
 dirs.workspace = true
 
 [dev-dependencies]

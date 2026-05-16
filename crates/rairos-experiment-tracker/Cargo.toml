@@ -8,7 +8,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 chrono.workspace = true
 dirs.workspace = true
-thiserror = "2.0"
+thiserror.workspace = true
 uuid = { workspace = true, features = ["v4"] }
 rairos-tracker-base = { path = "../rairos-tracker-base" }
 

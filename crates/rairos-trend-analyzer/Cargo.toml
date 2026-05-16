@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 rairos-core = { path = "../rairos-core" }
 serde = { workspace = true, features = ["derive"] }
-thiserror = "2.0"
+thiserror.workspace = true
 chrono.workspace = true
 
 [dev-dependencies]

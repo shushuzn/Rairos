@@ -10,7 +10,7 @@ serde_json.workspace = true
 serde-xml-rs = "0.6"
 tokio = { workspace = true, features = ["full"] }
 tracing.workspace = true
-thiserror = "2.0"
+thiserror.workspace = true
 futures.workspace = true
 
 [dev-dependencies]
