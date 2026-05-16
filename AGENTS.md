@@ -102,8 +102,11 @@ Constants centralized in `rairos-core::constants` for reuse:
 | `GP_DIR_NAME` | `.ai_research_os/evolution` | Evolution directory |
 | `CLIMATE_CATS` | `&["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]` | Climate-related categories |
 | `ARXIV_API` | `https://export.arxiv.org/api/query` | arXiv API endpoint |
+| `SEMANTIC_API` | `https://api.semanticscholar.org/graph/v1` | Semantic Scholar API |
+| `RADAR_FILE` | `Radar.md` | Radar filename |
+| `TIMELINE_FILE` | `Timeline.md` | Timeline filename |
 
-**Used by:** `rairos-bold-vault`, `rairos-vault`, `rairos-game-mode`, `rairos-gene-pool-watcher`, `rairos-gene-pool-io`, `rairos-climate`, `rairos-climate-ai-monitor`, `rairos-mcp`, `rairos-research`
+**Used by:** `rairos-bold-vault`, `rairos-vault`, `rairos-game-mode`, `rairos-gene-pool-watcher`, `rairos-gene-pool-io`, `rairos-climate`, `rairos-climate-ai-monitor`, `rairos-mcp`, `rairos-research`, `rairos-parser`, `rairos-parsers`, `rairos-llm`, `rairos-updaters`
 
 ## Key Patterns
 

@@ -4,7 +4,7 @@
 //! Supported sources: arXiv, CrossRef, Semantic Scholar, PDF extraction
 //! Replaces: parsers/arxiv.py, parsers/cross_search.py, pdf/parser.py
 
-use rairos_core::{constants::ARXIV_API, Paper, PaperMetadata};
+use rairos_core::{constants::{ARXIV_API, SEMANTIC_API}, Paper, PaperMetadata};
 use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
@@ -327,8 +327,6 @@ pub async fn fetch_crossref(doi: &str) -> Result<Paper, ParseError> {
 // ============================================================================
 // Semantic Scholar API
 // ============================================================================
-
-const SEMANTIC_API: &str = "https://api.semanticscholar.org/graph/v1";
 
 /// Semantic Scholar paper response
 #[derive(Debug, Deserialize)]

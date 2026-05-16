@@ -14,6 +14,10 @@ pub const OLLAMA_EMBEDDING_MODEL: &str = "nomic-embed-text";
 pub const OLLAMA_API_EMBEDDINGS_ENDPOINT: &str = "/api/embeddings";
 pub const ENV_AIROS_USE_EMBEDDING: &str = "AIROS_USE_EMBEDDING";
 
+pub const SEMANTIC_API: &str = "https://api.semanticscholar.org/graph/v1";
+pub const RADAR_FILE: &str = "Radar.md";
+pub const TIMELINE_FILE: &str = "Timeline.md";
+
 pub static AI_RESEARCH_KEYWORDS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     let mut s = HashSet::new();
     s.insert("transformer");

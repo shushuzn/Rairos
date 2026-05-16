@@ -4458,6 +4458,7 @@ dependencies = [
 name = "rairos-updaters"
 version = "0.1.0"
 dependencies = [
+ "rairos-core",
  "tempfile",
  "thiserror 2.0.18",
 ]

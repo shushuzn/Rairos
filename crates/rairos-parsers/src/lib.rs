@@ -9,7 +9,7 @@
 //! Supported sources: arXiv, CrossRef, Semantic Scholar
 //! Replaces: parsers/arxiv_search.py, parsers/cross_search.py, parsers/semantic_scholar.py
 
-use rairos_core::{constants::ARXIV_API, Paper, PaperMetadata};
+use rairos_core::{constants::{ARXIV_API, SEMANTIC_API}, Paper, PaperMetadata};
 use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
@@ -161,7 +161,6 @@ pub fn arxiv_search_blocking(query: &str, max_results: usize) -> Result<Vec<Pape
 // Semantic Scholar Search API
 // ============================================================================
 
-const SEMANTIC_API: &str = "https://api.semanticscholar.org/graph/v1";
 const S2_FIELDS: &str =
     "title,authors,abstract,year,venue,citationCount,openAccessPdf,paperId,externalIds";
 

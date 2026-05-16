@@ -2,6 +2,7 @@
 //!
 //! Port of `updaters/radar.py` and `updaters/timeline.py` to Rust.
 
+use rairos_core::constants::{RADAR_FILE, TIMELINE_FILE};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -12,8 +13,6 @@ use thiserror::Error;
 // Constants
 // ============================================================================
 
-const RADAR_FILE: &str = "Radar.md";
-const TIMELINE_FILE: &str = "Timeline.md";
 const RADAR_DIR: &str = "00-Radar";
 
 // ============================================================================

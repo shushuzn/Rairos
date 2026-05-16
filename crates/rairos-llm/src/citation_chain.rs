@@ -2,10 +2,9 @@
 //!
 //! Mirrors llm/citation_chain.py
 
+use rairos_core::constants::SEMANTIC_API;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-
-const S2_API: &str = "https://api.semanticscholar.org/graph/v1";
 
 // ─── Data Types ───────────────────────────────────────────────────────────────
 
@@ -35,7 +34,7 @@ pub struct ResearchFamily {
 // ─── Fetch paper data from Semantic Scholar ──────────────────────────────────
 
 pub async fn fetch_paper(paper_id: &str) -> Result<CitationNode, String> {
-    let url = format!("{}/paper/{}?fields=title,year,citations,references", S2_API, paper_id);
+    let url = format!("{}/paper/{}?fields=title,year,citations,references", SEMANTIC_API, paper_id);
     let resp = reqwest::get(&url).await.map_err(|e| format!("S2 request failed: {}", e))?;
     let text = resp.text().await.map_err(|e| format!("S2 read failed: {}", e))?;
 
