@@ -6,10 +6,7 @@
 
 **AI研究者向け自己進化型研究オペレーティングシステム**
 
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
-[![PyPI Version](https://img.shields.io/pypi/v/ai-research-os)](https://pypi.org/project/ai-research-os/)
-[![Coverage](https://img.shields.io/codecov/c/github/shushuzn/Rairos/main?logo=codecov)](https://app.codecov.io/gh/shushuzn/Rairos)
-[![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
+[![Build](https://github.com/shushuzn/Rairos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
 <div align="center">
