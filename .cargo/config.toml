@@ -1,6 +1,5 @@
 [build]
-# Enable sccache if available (set SCCACHE=/path/to/sccache in environment)
-# Build with: SCCACHE=/usr/local/bin/sccache CARGO_BUILD_JOBS=1 cargo build
+rustc-wrapper = "sccache"
 
 [profile.dev]
 opt-level = 0
