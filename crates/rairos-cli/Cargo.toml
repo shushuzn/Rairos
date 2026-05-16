@@ -92,8 +92,6 @@ sysinfo = "0.34"
 clap = { workspace = true, features = ["derive"] }
 anyhow.workspace = true
 tracing.workspace = true
-tracing-subscriber = "0.3"
-tracing-appender = "0.2"
 chrono = { workspace = true, features = ["serde"] }
 serde_json.workspace = true
 regex.workspace = true
