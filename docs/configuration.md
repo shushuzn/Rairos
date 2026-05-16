@@ -4,12 +4,15 @@
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `AI_RESEARCH_OS_DB` | `~/.ai_research_os/papers.db` | SQLite database path |
+| `RAIROS_DB` | `rairos.db` | SQLite database path (in current directory) |
+| `RAIROS_DATA_DIR` | `~/.ai_research_os/` | Data storage root directory |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama API endpoint (for dedup-semantic) |
 | `OPENAI_API_KEY` | — | OpenAI API key for LLM calls |
 | `ANTHROPIC_API_KEY` | — | Anthropic API key (claude-sonnet-4, etc.) |
 | `MINIMAX_CN_API_KEY` | — | MiniMax API key (minimax-m2.7-highspeed, etc.) |
 | `OPENAI_BASE_URL` | `https://api.openai.com/v1` | OpenAI-compatible base URL |
+| `LLM_BASE_URL` | `https://api.openai.com/v1` | Override for OpenAI-compatible endpoints |
+| `LLM_API_KEY` | — | Alternative to OPENAI_API_KEY |
 | `GITHUB_PERSONAL_ACCESS_TOKEN` | — | GitHub API token for PR workflow |
 | `DISCORD_WEBHOOK_URL` | — | Discord webhook for gap notifications |
 | `FEISHU_WEBHOOK_URL` | — | Feishu webhook for gap notifications |
