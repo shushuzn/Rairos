@@ -11,7 +11,7 @@
 [![Build](https://github.com/shushuzn/Rairos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 ![Rust](https://img.shields.io/badge/rust-1.85+-orange.svg?logo=rust)
 ![Crates](https://img.shields.io/badge/crates-154-blue.svg)
-![Lines](https://img.shields.io/badge/lines-73k%2B-green.svg)
+![Lines](https://img.shields.io/badge/lines-116k%2B-green.svg)
 ![MCP](https://img.shields.io/badge/mcp_tools-68-blue.svg?logo=robot)
 ![CLI](https://img.shields.io/badge/cli_commands-104-blue.svg?logo=terminal)
 
