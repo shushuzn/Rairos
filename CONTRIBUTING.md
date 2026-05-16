@@ -1,6 +1,6 @@
 # Contributing to AI Research OS
 
-Thank you for your interest in contributing! This project is a self-evolving research operating system for AI researchers. Here's how you can help.
+Thank you for your interest in contributing! This project is a self-evolving research operating system for AI researchers, built 100% in Rust (154 crates). Here's how you can help.
 
 ## Quick Start
 
@@ -9,11 +9,11 @@ Thank you for your interest in contributing! This project is a self-evolving res
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
 
-# Install dependencies
-pip install -e ".[all]"
+# Build the project
+CARGO_BUILD_JOBS=1 cargo build --workspace
 
 # Run tests
-python -B -m pytest tests/ -q
+CARGO_BUILD_JOBS=1 cargo test --workspace
 ```
 
 ## Development Workflow
@@ -41,9 +41,8 @@ refactor/description     # Code refactoring
 git checkout -b feature/my-feature
 
 # Make your changes, then:
-just lint      # Check code style
-just test-cov  # Run tests with coverage
-just check     # Full lint + format check
+cargo build -p <crate-name>    # Build a specific crate
+CARGO_BUILD_JOBS=1 cargo test  # Run all tests
 
 # Commit (use conventional commits)
 git commit -m "feat(parser): add arXiv ID normalization"
@@ -58,71 +57,43 @@ git commit -m "feat(parser): add arXiv ID normalization"
 
 ## Code Standards
 
-### Python Style
-- Follow PEP 8 (enforced by ruff)
-- Add type annotations for new functions
-- Keep functions under 100 lines
-- Write docstrings for public APIs
+### Rust Style
+
+- Follow Rust 2021 edition conventions
+- Run `cargo clippy --workspace -- -D warnings` before committing
+- Use `cargo fmt` for formatting
+- Add doc comments (`///`) for public APIs and structs
+- Keep functions focused and well-named
 
 ### Testing
-- All new features need tests
-- Aim for meaningful assertions, not just `assert True`
-- Use `@pytest.mark.no_freeze` for tests needing real time
-- Run `just test FILE` to test specific files
 
-### File Structure
+- All new features need tests
+- Use `#[cfg(test)]` modules, not a separate `tests/` directory
+- Run `CARGO_BUILD_JOBS=1 cargo test --workspace` to verify
+
+### Crate Naming
+
+- All crates prefixed with `rairos-` (e.g., `rairos-core`, `rairos-cli`)
+- Library crates: `rairos-<name>` exposes a `<name>`-related functionality
+- CLI command crates: placed in `crates/rairos-<command-name>/`
+
+## Project Structure
+
 ```
 ai_research_os/
-├── core/           # Core utilities (retry, rate_limiter, profiler)
-├── db/             # Database layer
-├── llm/            # LLM integrations and prompts
-├── parsers/        # Paper parsers (arXiv, DOI, PDF)
-├── pdf/            # PDF extraction and OCR
-├── research_loop/  # Autonomous research pipelines
-└── tests/          # Test suites (Tier 1-4 by scope)
+├── Cargo.toml            # Workspace root (154 members)
+├── crates/
+│   ├── rairos-core/      # Core data structures + database
+│   ├── rairos-cli/       # CLI entry point (clap derives)
+│   ├── rairos-mcp/       # MCP protocol server
+│   ├── rairos-llm/       # LLM clients
+│   └── ...               # 150 more crates
+├── AGENTS.md             # Full crate list + CLI reference
+├── docs/                 # Architecture, installation docs
+└── .github/workflows/    # CI configuration
 ```
 
-## Labels
+## Getting Help
 
-| Label | Description |
-|-------|-------------|
-| `bug` | Something isn't working |
-| `enhancement` | New feature or improvement |
-| `good first issue` | Good for newcomers |
-| `help wanted` | Extra attention needed |
-| `docs` | Documentation improvements |
-| `test` | Test coverage improvements |
-| `refactor` | Code refactoring |
-| `research` | Research-related changes |
-
-## Commit Format
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-
-Example:
-```
-feat(cli): add semantic search command
-
-Add `airos similar` command for finding semantically similar papers
-using embedding vectors from Ollama.
-
-Closes #123
-```
-
-## Questions?
-
-- Open an issue for bugs or feature requests
-- Check the [documentation](https://shushuzn.github.io/Rairos/)
-- Review existing PRs for patterns
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the GNU General Public License v3.0.
+- Open a [Discussion](https://github.com/shushuzn/Rairos/discussions) for questions
+- File an [Issue](https://github.com/shushuzn/Rairos/issues) for bugs or feature requests

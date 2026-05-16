@@ -2,54 +2,47 @@
 
 ## Requirements
 
-- Python 3.10+ (tested on 3.11/3.12/3.13)
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+- Rust 1.81+ (tested on 1.81–1.86)
+- SQLite 3.x (bundled via `rusqlite`)
 
-## Install with uv (recommended)
+## Install from Source
 
 ```bash
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
-uv sync --all-extras
-rairos --help
+CARGO_BUILD_JOBS=1 cargo build --workspace
 ```
-
-## Install with pip
-
-```bash
-pip install -e ".[all]"
-```
-
-Both install the `rairos` CLI entry point.
 
 ## Initialize Database
 
 ```bash
-rairos init
+cargo run -p rairos-cli -- init
 ```
 
-Creates the SQLite database at `~/.ai_research_os/papers.db`.
-
-## Ollama (Optional — for Semantic Dedup)
-
-For `dedup-semantic` command, install [Ollama](https://ollama.com) and pull the embedding model:
+## Run a Paper Search
 
 ```bash
-ollama pull nomic-embed-text
+cargo run -p rairos-cli -- add <arxiv-id>
+cargo run -p rairos-cli -- list
 ```
 
-The CLI will automatically use `http://localhost:11434` for embeddings.
+## Optimize for Memory
 
-## Verify
+The Rust workspace has 154 crates. For builds on memory-constrained machines:
 
 ```bash
-rairos --help
-rairos status   # shows database stats
+CARGO_BUILD_JOBS=1 cargo build --workspace
 ```
 
-## Uninstall
+For incremental dev builds:
 
 ```bash
-pip uninstall ai-research-os
-rm -rf ~/.ai_research_os   # remove database and cache
+cargo build -p rairos-cli
 ```
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RAIROS_DB` | `rairos.db` | Database file path |
+| `RAIROS_DATA_DIR` | `~/.ai_research_os/` | Data storage root |
