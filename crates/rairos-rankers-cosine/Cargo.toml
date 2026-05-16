@@ -8,7 +8,7 @@ rairos-rankers-base = { path = "../rairos-rankers-base" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 anyhow.workspace = true
-ndarray = "0.16"
+ndarray = "0.17"
 thiserror.workspace = true
 
 [dev-dependencies]
