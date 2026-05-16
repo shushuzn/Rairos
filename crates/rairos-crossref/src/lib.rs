@@ -8,13 +8,10 @@
 //! Fetches paper metadata from Crossref API by DOI.
 
 use chrono::NaiveDate;
+use rairos_core::constants::{CROSSREF_WORKS, DOI_RESOLVER};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use thiserror::Error;
-
-// Crossref API endpoint
-const CROSSREF_WORKS: &str = "https://api.crossref.org/works/{doi}";
-const DOI_RESOLVER: &str = "https://doi.org/";
 
 #[derive(Error, Debug)]
 pub enum CrossrefError {

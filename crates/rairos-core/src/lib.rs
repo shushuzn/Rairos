@@ -2243,17 +2243,11 @@ pub fn safe_uid(s: &str) -> String {
 // Default research directory names (canonical order).
 // ============================================================================
 // API Endpoints
-// Note: ARXIV_API is now in constants.rs to avoid duplication
-
-pub const CROSSREF_WORKS: &str = "https://api.crossref.org/works/{doi}";
-pub const DOI_RESOLVER: &str = "https://doi.org/";
+// Note: ARXIV_API, SEMANTIC_API, CROSSREF_WORKS, DOI_RESOLVER are now in constants.rs
 
 // ============================================================================
 // Output Files
-// ============================================================================
-
-pub const RADAR_FILE: &str = "Radar.md";
-pub const TIMELINE_FILE: &str = "Timeline.md";
+// Note: RADAR_FILE, TIMELINE_FILE are now in constants.rs
 
 // ============================================================================
 // Research Tree

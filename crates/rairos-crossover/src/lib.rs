@@ -4,12 +4,12 @@
 
 use rand::seq::SliceRandom;
 use rand::Rng;
+use rairos_core::constants::GP_DIR_NAME;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
-const GP_DIR: &str = ".ai_research_os/evolution";
 const DEFAULT_POPULATION_SIZE: usize = 20;
 const _DEFAULT_OFFSPRING_COUNT: usize = 5;
 const MIN_FITNESS_THRESHOLD: f64 = 0.3;
@@ -18,7 +18,7 @@ const MUTATION_RATE: f64 = 0.15;
 fn gp_dir() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(GP_DIR)
+        .join(GP_DIR_NAME)
 }
 
 fn gene_pool_path() -> PathBuf {

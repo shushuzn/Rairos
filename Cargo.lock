@@ -3215,6 +3215,7 @@ name = "rairos-crossover"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "rairos-core",
  "rand 0.8.6",
  "serde",
  "serde_json",
@@ -3225,6 +3226,7 @@ name = "rairos-crossref"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "rairos-core",
  "regex",
  "reqwest",
  "serde",
