@@ -2,7 +2,7 @@
 
 ## Project
 
-Self-Evolving Research OS — **100% Rust**: 157 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
+Self-Evolving Research OS — **100% Rust**: 154 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
 Python CLI fully migrated to Rust. All Python source code removed.
 
 ## Rust Build
@@ -21,7 +21,7 @@ sccache --start-server
 CARGO_BUILD_JOBS=1 cargo build
 ```
 
-## Key Crates (22 of 157)
+## Key Crates (22 of 154)
 
 | Crate | Purpose |
 |-------|---------|
