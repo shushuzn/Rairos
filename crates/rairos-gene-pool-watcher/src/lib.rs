@@ -413,10 +413,7 @@ impl DiversityPressureEvaluator {
             keywords.iter().map(|k| k.to_lowercase()).collect();
 
         for (fam, fam_kws) in FAMILY_KEYWORDS {
-            if fam_kws
-                .iter()
-                .any(|fk| kw_set.contains(&fk.to_lowercase()))
-            {
+            if fam_kws.iter().any(|fk| kw_set.contains(*fk)) {
                 return fam.to_string();
             }
         }
