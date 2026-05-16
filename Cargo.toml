@@ -178,13 +178,3 @@ tokio = { version = "1", features = ["full"] }
 clap = { version = "4", features = ["derive"] }
 sysinfo = "0.34"
 
-[profile.dev]
-opt-level = 0
-debug = true
-incremental = true
-
-[profile.release]
-opt-level = 3
-lto = "fat"
-codegen-units = 1
-strip = true
