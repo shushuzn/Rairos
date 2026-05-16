@@ -31,6 +31,7 @@ pub const TAGS_FILE: &str = "tags.jsonl";
 pub const CATEGORIES_FILE: &str = "categories.json";
 pub const EXPERIMENTS_FILE: &str = "experiments.json";
 pub const EVENTS_JSONL: &str = "events.jsonl";
+pub const KG_GRAPH_FILE: &str = "graph.json";
 pub const BRIEFINGS_DIR: &str = "briefings";
 pub const CLAIM_GRAPH_FILE: &str = "claim_graph.json";
 

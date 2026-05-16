@@ -3,7 +3,7 @@
 //! Manages the paper knowledge graph: nodes, edges, and queries.
 //! Replaces: kg/manager.py, kg/queries.py
 
-use rairos_core::constants::{AIROS_DIR_NAME, KG_DIR};
+use rairos_core::constants::{AIROS_DIR_NAME, KG_DIR, KG_GRAPH_FILE};
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -841,7 +841,7 @@ impl KnowledgeGraph {
     }
 
     pub fn graph_path() -> std::path::PathBuf {
-        Self::default_path().join("graph.json")
+        Self::default_path().join(KG_GRAPH_FILE)
     }
 
     pub fn db_path() -> std::path::PathBuf {
