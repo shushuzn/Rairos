@@ -2809,7 +2809,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "tokio",
  "uuid",
 ]
 
@@ -2885,7 +2884,6 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
- "tokio",
  "tracing",
  "tracing-subscriber",
  "uuid",
@@ -3004,7 +3002,6 @@ dependencies = [
  "serde_json",
  "sha2",
  "thiserror 2.0.18",
- "tokio",
  "tokio-test",
  "tracing",
  "uuid",
@@ -3067,7 +3064,6 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.18",
- "tokio",
  "tracing",
  "tracing-subscriber",
  "uuid",
@@ -3541,7 +3537,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "tokio",
 ]
 
 [[package]]
@@ -3602,7 +3597,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "tokio",
  "tracing",
 ]
 
@@ -3675,7 +3669,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "tokio",
  "tokio-test",
  "tracing",
 ]
@@ -4008,7 +4001,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "tokio",
  "tokio-test",
  "tracing",
  "uuid",
@@ -4156,7 +4148,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.18",
- "tokio",
 ]
 
 [[package]]

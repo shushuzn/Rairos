@@ -11,7 +11,7 @@ rairos-llm = { path = "../rairos-llm" }
 rairos-kg = { path = "../rairos-kg" }
 rairos-memory = { path = "../rairos-memory" }
 axum = "0.8"
-tokio = { workspace = true, features = ["full"] }
+tokio = { workspace = true, features = ["rt", "net", "sync", "macros"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 tracing.workspace = true
