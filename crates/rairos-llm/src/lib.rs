@@ -25,7 +25,7 @@ pub mod retry;
 pub mod insight;
 pub mod llm_orphans;
 
-use rairos_core::constants::{GENE_POOL_JSONL, LLM_BASE_URL};
+use rairos_core::constants::{CAPSULES_JSON, GENE_POOL_JSONL, LLM_BASE_URL};
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -2067,9 +2067,9 @@ fn capsule_path() -> std::path::PathBuf {
         .map(|p| {
             p.join(".ai_research_os")
                 .join("gene_pool")
-                .join("capsules.json")
+                .join(CAPSULES_JSON)
         })
-        .unwrap_or_else(|| std::path::PathBuf::from("capsules.json"))
+        .unwrap_or_else(|| std::path::PathBuf::from(CAPSULES_JSON))
 }
 
 #[derive(Debug, Deserialize)]

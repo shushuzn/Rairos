@@ -5,6 +5,7 @@
 //!
 //! Ported from `llm/credibility_scorer.py`.
 
+use rairos_core::constants::CAPSULES_JSON;
 use rairos_core::jaccard_similarity;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -18,7 +19,7 @@ fn capsule_path() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("."))
         .join(".ai_research_os")
         .join("gene_pool")
-        .join("capsules.json")
+        .join(CAPSULES_JSON)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
