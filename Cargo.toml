@@ -153,9 +153,6 @@ members = [
     "crates/rairos-value-quantifier",
     "crates/rairos-workspace-snapshot",
     # Phase 1/2a restored crates
-    "crates/rairos-paper-parser",
-    "crates/rairos-pdf-parser",
-    "crates/rairos-smart-cache",
     "crates/rairos-sysinfo",
 ]
 

@@ -3647,13 +3647,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-paper-parser"
-version = "0.1.0"
-dependencies = [
- "rairos-pdf",
-]
-
-[[package]]
 name = "rairos-paradigm"
 version = "0.1.0"
 dependencies = [
@@ -3750,13 +3743,6 @@ dependencies = [
  "tokio-test",
  "tracing",
  "uuid",
-]
-
-[[package]]
-name = "rairos-pdf-parser"
-version = "0.1.0"
-dependencies = [
- "rairos-pdf",
 ]
 
 [[package]]
@@ -4126,13 +4112,6 @@ dependencies = [
  "chrono",
  "rairos-core",
  "serde",
-]
-
-[[package]]
-name = "rairos-smart-cache"
-version = "0.1.0"
-dependencies = [
- "rairos-cache",
 ]
 
 [[package]]
