@@ -49,7 +49,7 @@ impl Watcher {
         }
         let data = fs::read(&self.path).ok()?;
         let digest = Md5::digest(&data);
-        Some(format!("{:x}", digest))
+        Some(digest.iter().map(|b| format!("{:02x}", b)).collect())
     }
 
     /// Detect whether the file has changed since last check.
@@ -126,7 +126,7 @@ pub fn check_file_change(path: &Path, last_hash: Option<&str>) -> (bool, Option<
     };
 
     let digest = Md5::digest(&data);
-    let current_hash = format!("{:x}", digest);
+    let current_hash = digest.iter().map(|b| format!("{:02x}", b)).collect::<String>();
 
     let changed = match last_hash {
         Some(h) => h != current_hash,
