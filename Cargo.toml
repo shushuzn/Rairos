@@ -153,12 +153,17 @@ members = [
     "crates/rairos-value-quantifier",
     "crates/rairos-workspace-snapshot",
     # Phase 1/2a restored crates
-    "crates/rairos-extable",
     "crates/rairos-paper-parser",
     "crates/rairos-pdf-parser",
     "crates/rairos-smart-cache",
     "crates/rairos-sysinfo",
 ]
+
+[workspace.dependencies]
+uuid = "1"
+serde = "1"
+tokio = "1"
+clap = { version = "4", features = ["derive"] }
 
 [profile.dev]
 opt-level = 0

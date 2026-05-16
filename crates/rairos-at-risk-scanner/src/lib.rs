@@ -1,8 +1,5 @@
 //! rairos-at-risk-scanner — At-Risk Capsule Scanner for AI Research OS.
 
-#![allow(
-
-)]
 //!
 //! Ported from `llm/at_risk_scanner.py` (166 LOC, pure stdlib).
 //!

@@ -3137,13 +3137,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-extable"
-version = "0.1.0"
-dependencies = [
- "rairos-pdf",
-]
-
-[[package]]
 name = "rairos-friction"
 version = "0.1.0"
 dependencies = [
