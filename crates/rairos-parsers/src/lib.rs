@@ -45,58 +45,6 @@ pub enum SearchError {
 
 const ARXIV_API: &str = "https://export.arxiv.org/api/query";
 
-/// ArXiv entry response fields
-#[derive(Debug, Deserialize)]
-#[allow(dead_code)]
-struct ArXivEntry {
-    #[serde(rename = "id")]
-    entry_id: String,
-    #[serde(rename = "title")]
-    title: String,
-    #[serde(rename = "summary")]
-    abstract_text: String,
-    #[serde(rename = "author")]
-    authors: Vec<ArXivAuthor>,
-    #[serde(rename = "published")]
-    published: String,
-    #[serde(rename = "updated")]
-    updated: Option<String>,
-    #[serde(rename = "arxiv:comment")]
-    comment: Option<ArXivComment>,
-    #[serde(rename = "arxiv:doi")]
-    doi: Option<ArXivDoi>,
-    #[serde(rename = "category")]
-    categories: Vec<ArXivCategory>,
-}
-
-#[derive(Debug, Deserialize)]
-#[allow(dead_code)]
-struct ArXivAuthor {
-    #[serde(rename = "name")]
-    name: String,
-}
-
-#[derive(Debug, Deserialize)]
-#[allow(dead_code)]
-struct ArXivCategory {
-    #[serde(rename = "term")]
-    term: String,
-}
-
-#[derive(Debug, Deserialize)]
-#[allow(dead_code)]
-struct ArXivComment {
-    #[serde(rename = "$value")]
-    text: String,
-}
-
-#[derive(Debug, Deserialize)]
-#[allow(dead_code)]
-struct ArXivDoi {
-    #[serde(rename = "$value")]
-    value: String,
-}
-
 /// Search arXiv by keyword and return metadata for top papers.
 ///
 /// # Arguments
