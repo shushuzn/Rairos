@@ -29,7 +29,6 @@ rairos-exceptions = { path = "../rairos-exceptions" }
 rairos-config = { path = "../rairos-config" }
 rairos-perf = { path = "../rairos-perf" }
 rairos-rate-limiter = { path = "../rairos-rate-limiter" }
-rairos-text = { path = "../rairos-text" }
 rairos-observability = { path = "../rairos-observability" }
 rairos-user-helpers = { path = "../rairos-user-helpers" }
 rairos-auth = { path = "../rairos-auth" }

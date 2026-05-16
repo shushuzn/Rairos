@@ -28,7 +28,6 @@ pub mod exceptions;
 pub mod config;
 pub mod perf;
 pub mod rate_limiter;
-pub mod text;
 pub mod observability;
 pub mod user_helpers;
 pub mod auth;

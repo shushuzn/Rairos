@@ -2730,7 +2730,6 @@ dependencies = [
  "rairos-validator",
  "rairos-value-quantifier",
  "rairos-vault",
- "rairos-vector-store",
  "rairos-viz",
  "rairos-watch-papers",
  "rairos-web",
@@ -2875,7 +2874,6 @@ dependencies = [
  "rairos-perf",
  "rairos-rate-limiter",
  "rairos-retry",
- "rairos-text",
  "rairos-user-helpers",
  "regex",
  "reqwest",
@@ -4130,14 +4128,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-text"
-version = "0.1.0"
-dependencies = [
- "regex",
- "serde",
-]
-
-[[package]]
 name = "rairos-topic-discovery"
 version = "0.1.0"
 dependencies = [
@@ -4210,15 +4200,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
-]
-
-[[package]]
-name = "rairos-vector-store"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "thiserror 2.0.18",
 ]
 
 [[package]]
