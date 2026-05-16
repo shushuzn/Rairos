@@ -4,23 +4,23 @@ version = "0.1.0"
 edition = "2021"
 
 [dev-dependencies]
-tempfile = "3"
+tempfile.workspace = true
 
 [dependencies]
 rusqlite = { version = "0.39", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde_json.workspace = true
 parking_lot = "0.12"
 thiserror = "2.0"
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.11", features = ["v4", "serde"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
 tokio = { version = "1", features = ["full"] }
-tracing = "0.1"
+tracing.workspace = true
 tracing-subscriber = "0.3"
-anyhow = "1.0"
-lazy_static = "1.4"
-regex = "1.0"
+anyhow.workspace = true
+lazy_static.workspace = true
+regex.workspace = true
 
 # Orphan rescues — re-exported through rairos_core:: module tree
 rairos-retry = { path = "../rairos-retry" }
