@@ -166,14 +166,14 @@ mod tests {
     #[test]
     fn test_gap_type_from_str() {
         assert_eq!(
-            GapType::from_string("unexplored_application"),
+            GapType::from_str("unexplored_application"),
             Some(GapType::UnexploredApplication)
         );
         assert_eq!(
-            GapType::from_string("scalability_issue"),
+            GapType::from_str("scalability_issue"),
             Some(GapType::ScalabilityIssue)
         );
-        assert_eq!(GapType::from_string("invalid"), None);
+        assert_eq!(GapType::from_str("invalid"), None);
     }
 
     #[test]
