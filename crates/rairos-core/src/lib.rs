@@ -2628,6 +2628,7 @@ pub fn jaccard_similarity(a: &[String], b: &[String]) -> f64 {
 }
 
 #[cfg(test)]
+#[allow(deprecated)]
 mod text_utils_tests {
     use super::*;
 
