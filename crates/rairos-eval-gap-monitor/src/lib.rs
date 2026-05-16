@@ -157,7 +157,7 @@ pub fn check_eval_gaps() -> EvalGapResult {
         }
     }
 
-    alerts.sort_by(|a, b| b.headroom_years.cmp(&a.headroom_years));
+    alerts.sort_by_key(|x| std::cmp::Reverse(x.headroom_years));
     let alert_count = alerts.len();
     EvalGapResult {
         alerts,

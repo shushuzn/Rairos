@@ -16,10 +16,3 @@ mod memory;
 pub mod memory_stats;
 mod stance;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn research_memory_exists() {
-        assert!(true)
-    }
-}

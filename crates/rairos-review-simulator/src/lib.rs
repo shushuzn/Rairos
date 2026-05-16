@@ -704,7 +704,7 @@ Only include annotations for genuine issues. Maximum 6 annotations per review. I
 
         // Deduplicate by headline similarity (first 40 chars)
         let mut seen_headlines = std::collections::HashSet::new();
-        all_annotations.sort_by(|a, b| b.severity.score().cmp(&a.severity.score()));
+        all_annotations.sort_by_key(|x| std::cmp::Reverse(x.severity.score()));
         all_annotations.retain(|a| {
             let h = a
                 .headline

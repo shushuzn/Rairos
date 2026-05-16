@@ -68,7 +68,7 @@ impl ParadigmMonitor {
             .zip(citation_counts.iter())
             .map(|(p, c)| (p[0], *c))
             .collect();
-        indexed.sort_by(|a, b| b.1.cmp(&a.1));
+        indexed.sort_by_key(|x| std::cmp::Reverse(x.1));
 
         let top_n_slice = &indexed[..indexed.len().min(TOP_N)];
         let top_n_citations: i32 = top_n_slice.iter().map(|(_, c)| *c).sum();

@@ -243,7 +243,7 @@ fn extract_keywords_from_text(texts: &[String], top_n: usize) -> Vec<(String, us
     }
 
     let mut all: Vec<(String, usize)> = token_counter.into_iter().collect();
-    all.sort_by(|a, b| b.1.cmp(&a.1));
+    all.sort_by_key(|x| std::cmp::Reverse(x.1));
     all.truncate(top_n * 2);
     all
 }

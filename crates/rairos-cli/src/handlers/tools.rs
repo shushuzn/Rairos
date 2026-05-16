@@ -9,8 +9,8 @@ use anyhow::Result;
 
 /// Run LSP diagnostics (ruff/pyright) on a file or directory.
 pub fn handle_diagnostics(ruff: bool, pyright: bool, path: &str) -> Result<()> {
-    let run_ruff = ruff || (!ruff && !pyright);
-    let run_pyright = pyright || (!ruff && !pyright);
+    let run_ruff = ruff || !pyright;
+    let run_pyright = !ruff || pyright;
 
     if run_ruff {
         let diags = crate::lsp_diagnostics::check_ruff(path);

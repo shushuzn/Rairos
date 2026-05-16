@@ -5,7 +5,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 // ─── Stopwords ─────────────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ struct UserPreferenceProfile {
     views: i32,
 }
 
-fn load_preference_profile(base: &PathBuf) -> UserPreferenceProfile {
+fn load_preference_profile(base: &Path) -> UserPreferenceProfile {
     let path = base.join("preference_profile.json");
     std::fs::read_to_string(&path)
         .ok()

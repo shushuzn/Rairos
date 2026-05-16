@@ -470,6 +470,7 @@ impl ResearchDeepDivePipeline {
     }
 
     /// Stage 6: Re-render P-note with analysis content.
+    #[allow(clippy::too_many_arguments)]
     fn run_pnote_update(
         &self,
         pnote_path: &Path,

@@ -242,6 +242,8 @@ mod tests {
         fs::create_dir_all(test_file.parent().unwrap()).unwrap();
         fs::write(&test_file, b"original").unwrap();
 
+        // Intentional: single-element slice from owned value
+        #[allow(clippy::cloned_ref_to_slice_refs)]
         snap.capture("sess-1", 1, &[test_file.clone()], HashMap::new());
 
         fs::write(&test_file, b"modified").unwrap();
@@ -266,7 +268,9 @@ mod tests {
         let f = dir.path().join("f.txt");
         fs::write(&f, b"data").unwrap();
         for i in 0..MAX_SNAPSHOTS_PER_SESSION + 2 {
-            snap.capture("prune-test", i as u32, &[f.clone()], HashMap::new());
+            // Intentional: single-element slice from owned value
+        #[allow(clippy::cloned_ref_to_slice_refs)]
+        snap.capture("prune-test", i as u32, &[f.clone()], HashMap::new());
         }
         let list = snap.list_snapshots("prune-test");
         assert!(list.len() <= MAX_SNAPSHOTS_PER_SESSION);

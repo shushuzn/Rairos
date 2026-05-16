@@ -582,7 +582,7 @@ impl InsightManager {
         }
 
         let mut sorted: Vec<_> = tags.into_iter().collect();
-        sorted.sort_by(|a, b| b.1.cmp(&a.1));
+        sorted.sort_by_key(|x| std::cmp::Reverse(x.1));
         sorted.into_iter().collect()
     }
 

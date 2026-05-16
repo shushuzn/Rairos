@@ -125,11 +125,11 @@ impl CredibilityScorer {
 
             // Compute max Jaccard against all other capsules
             let mut max_overlap = 0.0;
-            for j in 0..n {
+            for (j, other) in capsules.iter().enumerate() {
                 if i == j {
                     continue;
                 }
-                let other_kw = capsules[j]
+                let other_kw = other
                     .get("trigger_keywords")
                     .and_then(|v| v.as_array())
                     .map(|arr| {

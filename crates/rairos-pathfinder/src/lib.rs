@@ -308,12 +308,11 @@ fn calculate_pagerank(graph: &mut HashMap<String, PaperNode>) {
         }
     }
 
-    // Normalize by out-degree
-    for j in 0..n {
-        let out_deg: f64 = adj[j].iter().sum();
+    for row in adj.iter_mut() {
+        let out_deg: f64 = row.iter().sum();
         if out_deg > 0.0 {
-            for i in 0..n {
-                adj[j][i] /= out_deg;
+            for cell in row.iter_mut() {
+                *cell /= out_deg;
             }
         }
     }

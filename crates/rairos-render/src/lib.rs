@@ -17,10 +17,3 @@ pub use mnote::render_mnote;
 pub use pnote::render_pnote;
 pub use radar_chart::render_radar_chart;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn render_version_exists() {
-        assert!(true)
-    }
-}

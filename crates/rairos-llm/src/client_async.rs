@@ -188,8 +188,4 @@ mod tests {
         assert_eq!(client.model, "gpt-4");
     }
 
-    #[test]
-    fn test_close_session_is_async() {
-        assert!(true);
-    }
 }

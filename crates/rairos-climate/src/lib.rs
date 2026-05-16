@@ -187,9 +187,7 @@ pub fn render_climate_monitor_html(stats: Option<ClimateStats>) -> String {
     let watch_list = load_watch_list();
     let watched_ids: HashSet<&str> = watch_list.watched_ids.iter().map(|s| s.as_str()).collect();
 
-    #[allow(clippy::vec_init_then_push)]
-    let mut lines = Vec::new();
-    lines.push("<div class=\"climate-monitor\">".to_string());
+    let mut lines = vec!["<div class=\"climate-monitor\">".to_string()];
     lines.push("<h3>🌍 Climate AI Monitor</h3>".to_string());
     lines.push(
         "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>\

@@ -17,10 +17,3 @@ pub use detector::{DetectedTable, TableDetector};
 pub use parser::{ExperimentTableParser, ParseResult, ParsedTable};
 pub use storage::{DbStats, ExperimentDB, Metric, OursBest, StoredTable, TableStruct};
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn extable_version_exists() {
-        assert!(true)
-    }
-}

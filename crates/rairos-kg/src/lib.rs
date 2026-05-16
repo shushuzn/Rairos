@@ -665,8 +665,7 @@ impl KnowledgeGraph {
     /// Create with optional SQLite database connection
     pub fn with_db(db_path: std::path::PathBuf) -> Result<Self, KgError> {
         let db = KgDatabase::new(db_path)?;
-        let mut graph = Self::default();
-        graph.db = Some(db);
+        let graph = Self { db: Some(db), ..Default::default() };
         Ok(graph)
     }
 

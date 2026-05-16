@@ -1312,9 +1312,11 @@ impl ToolHandler for DeepResearchRunHandler {
         // Run the synchronous agent in spawn_blocking to avoid
         // tokio runtime conflicts with reqwest::blocking
         let result = tokio::task::spawn_blocking(move || {
-            let mut config = rairos_deep_research::DeepResearchConfig::default();
-            config.query = query;
-            config.max_iterations = max_iterations;
+            let config = rairos_deep_research::DeepResearchConfig {
+                query,
+                max_iterations,
+                ..Default::default()
+            };
             let mut agent = rairos_deep_research::DeepResearchAgent::new(config);
             agent.run()
         }).await
@@ -1437,10 +1439,10 @@ impl ToolHandler for RouteQueryHandler {
         if let Some(client) = llm_client() {
             let known_papers: Vec<String> = params.get("known_papers")
                 .and_then(|v| v.as_array())
-                .map(|a| a.iter().filter_map(|p| {
+                .map(|a| a.iter().map(|p| {
                     let title = p.get("title").and_then(|t| t.as_str()).unwrap_or("");
                     let arxiv_id = p.get("arxiv_id").and_then(|i| i.as_str()).unwrap_or("");
-                    Some(format!("{} ({})", title, arxiv_id))
+                    format!("{} ({})", title, arxiv_id)
                 }).collect())
                 .unwrap_or_default();
 
@@ -1583,7 +1585,7 @@ fn compute_hypothesis_verdict(experiments: &[&rairos_experiment_tracker::Experim
         e.status == "completed"
             && e.results.get("verdict")
                 .and_then(|v| v.as_str())
-                .map_or(false, |v| v == "validated")
+                .is_some_and(|v| v == "validated")
     });
     let has_rejected = experiments.iter().any(|e| e.status == "failed");
 
@@ -1889,7 +1891,7 @@ impl ToolHandler for ReplicationCompareHandler {
             "paper_2": report2,
             "easier_to_reproduce": easier_id,
             "comparison": {
-                "difficulty_diff": (report1.difficulty_score - report2.difficulty_score).abs() as f64,
+                "difficulty_diff": (report1.difficulty_score - report2.difficulty_score).abs(),
             },
         }))
     }

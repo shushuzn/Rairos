@@ -210,7 +210,7 @@ impl WeeklyDigest {
 
         // Top tags sorted by count, top 5
         let mut tags_vec: Vec<(String, usize)> = tag_count.into_iter().collect();
-        tags_vec.sort_by(|a, b| b.1.cmp(&a.1));
+        tags_vec.sort_by_key(|x| std::cmp::Reverse(x.1));
         week_data.top_tags = tags_vec.into_iter().take(5).collect();
 
         // Experiments

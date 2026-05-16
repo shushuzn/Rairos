@@ -186,7 +186,7 @@ impl QuestionTracker {
                 topic_match && status_match && source_match
             })
             .collect();
-        results.sort_by(|a, b| b.priority.cmp(&a.priority));
+        results.sort_by_key(|x| std::cmp::Reverse(x.priority));
         results
     }
 

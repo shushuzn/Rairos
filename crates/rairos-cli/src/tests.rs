@@ -1,6 +1,5 @@
 /// Rairos CLI integration tests — temp DB, no network required.
 /// Each test creates an isolated temporary database that auto-cleans on drop.
-
 use std::path::{Path, PathBuf};
 
 use crate::*;

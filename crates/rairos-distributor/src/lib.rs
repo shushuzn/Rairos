@@ -430,8 +430,8 @@ mod tests {
         let md = "# Title\n\n## Summary\nThis is the summary.\n\n## Methodology\nMethodology here.";
         let sections = parse_markdown_sections(md);
         assert_eq!(sections.title, Some("Title".to_string()));
-        assert!(sections.sections.get("summary").is_some());
-        assert!(sections.sections.get("methodology").is_some());
+        assert!(sections.sections.contains_key("summary"));
+        assert!(sections.sections.contains_key("methodology"));
     }
 
     #[test]

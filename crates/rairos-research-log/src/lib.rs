@@ -86,8 +86,8 @@ pub fn render_log_html(paper_id: Option<&str>) -> String {
     let notes = get_notes(paper_id, 50);
 
     if notes.is_empty() {
-        let empty_msg = if paper_id.is_some() {
-            format!("No notes for paper {} yet.", paper_id.unwrap())
+        let empty_msg = if let Some(id) = &paper_id {
+            format!("No notes for paper {} yet.", id)
         } else {
             "No research notes yet.".to_string()
         };

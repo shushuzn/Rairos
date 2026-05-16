@@ -565,6 +565,7 @@ mod tests {
         let exp1 = tracker.run("Exp1", "", "", "", None, None);
         tracker.add_metric(&exp1.id, "accuracy", 0.9, "%");
 
+        #[allow(clippy::cloned_ref_to_slice_refs)]
         let comp = tracker.compare(&[exp1.id.clone()], None);
         assert!(comp.contains_key("metrics"));
         assert!(comp.contains_key("experiments"));

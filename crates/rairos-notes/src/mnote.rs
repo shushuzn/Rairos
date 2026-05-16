@@ -312,7 +312,7 @@ mod tests {
         std::fs::create_dir_all(&tmp_dir).ok();
         let a = tmp_dir.join("A.md");
         std::fs::write(&a, "").ok();
-        let result = ensure_or_update_mnote(&tmp_dir, "LLM", &[a.clone()]);
+        let result = ensure_or_update_mnote(&tmp_dir, "LLM", &[a]);
         assert!(result.is_none());
         std::fs::remove_dir_all(&tmp_dir).ok();
     }

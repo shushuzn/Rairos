@@ -501,7 +501,7 @@ impl std::fmt::Display for SearchSource {
 
 /// Search arXiv by query string
 pub async fn search_arxiv(query: &str, max_results: usize) -> Result<Vec<Paper>, ParseError> {
-    let max = max_results.min(50).max(1);
+    let max = max_results.clamp(1, 50);
     let url = format!(
         "{}?search_query=all:{}&start=0&max_results={}",
         ARXIV_API,
@@ -553,7 +553,7 @@ pub async fn search_arxiv(query: &str, max_results: usize) -> Result<Vec<Paper>,
 ///
 /// Requires network access to api.semanticscholar.org
 pub async fn search_semantic(query: &str, max_results: usize) -> Result<Vec<Paper>, ParseError> {
-    let max = max_results.min(50).max(1);
+    let max = max_results.clamp(1, 50);
     let url = format!(
         "{}/paper/search?query={}&limit={}&fields=title,abstract,authors,year,citationCount,externalIds,fieldsOfStudy",
         SEMANTIC_API,
@@ -614,7 +614,7 @@ pub async fn search_semantic(query: &str, max_results: usize) -> Result<Vec<Pape
 
 /// Search CrossRef by query string
 pub async fn search_crossref(query: &str, max_results: usize) -> Result<Vec<Paper>, ParseError> {
-    let max = max_results.min(50).max(1);
+    let max = max_results.clamp(1, 50);
     let url = format!(
         "{}?query={}&rows={}",
         CROSSREF_API,

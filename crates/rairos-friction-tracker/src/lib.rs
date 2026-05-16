@@ -317,7 +317,7 @@ impl FrictionTracker {
         }
 
         let mut top_commands: Vec<_> = command_counts.into_iter().collect();
-        top_commands.sort_by(|a, b| b.1.cmp(&a.1));
+        top_commands.sort_by_key(|x| std::cmp::Reverse(x.1));
         let top_commands: Vec<_> = top_commands.into_iter().take(5).collect();
 
         serde_json::json!({

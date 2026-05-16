@@ -8,7 +8,7 @@
 
 use rairos_core::Database;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 // ============================================================================
 // Types
@@ -529,7 +529,7 @@ fn write_html(slides: &[Slide], output_path: &PathBuf, config: &SlidesConfig) ->
     output_path.clone()
 }
 
-fn ensure_parent(path: &PathBuf) {
+fn ensure_parent(path: &Path) {
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).ok();
     }

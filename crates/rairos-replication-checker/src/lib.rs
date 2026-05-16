@@ -828,6 +828,7 @@ mod tests {
             disk_space_gb: 100,
             ram_gb: 32,
         };
+        #[allow(clippy::cloned_ref_to_slice_refs)]
         let notes = checker.generate_notes(&link, &dep, &[link.clone()]);
         assert!(!notes.is_empty());
     }

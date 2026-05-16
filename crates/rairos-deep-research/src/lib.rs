@@ -247,7 +247,7 @@ impl AdaptiveQueryStrategy {
             .iter()
             .map(|(q, types)| (q.clone(), types.len()))
             .collect();
-        scored.sort_by(|a, b| b.1.cmp(&a.1));
+        scored.sort_by_key(|x| std::cmp::Reverse(x.1));
         scored.into_iter().take(top_k).map(|(q, _)| q).collect()
     }
 
@@ -521,8 +521,7 @@ impl DeepResearchAgent {
 
     /// Create with default configuration.
     pub fn with_query(query: &str) -> Self {
-        let mut config = DeepResearchConfig::default();
-        config.query = query.to_string();
+        let config = DeepResearchConfig { query: query.to_string(), ..Default::default() };
         Self::new(config)
     }
 

@@ -12,10 +12,3 @@ pub use types::{
     JsonRpcError, JsonRpcErrorDetail, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess,
 };
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn mcp_version_exists() {
-        assert!(true)
-    }
-}

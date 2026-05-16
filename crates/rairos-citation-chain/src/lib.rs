@@ -477,7 +477,7 @@ impl CitationChainBuilder {
         lines.push(String::new());
 
         let mut sorted_nodes = chain.nodes.clone();
-        sorted_nodes.sort_by(|a, b| b.year.cmp(&a.year));
+        sorted_nodes.sort_by_key(|x| std::cmp::Reverse(x.year));
 
         for node in sorted_nodes.iter().take(max_nodes) {
             lines.push(format!(

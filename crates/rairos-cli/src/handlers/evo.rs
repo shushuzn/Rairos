@@ -459,8 +459,7 @@ pub fn handle_insight(action: &InsightAction) -> Result<()> {
         }
 
         InsightAction::Rate { card, stars } => {
-            let s: i32 = *stars;
-            let s = s.max(1).min(5);
+            let s: i32 = (*stars).clamp(1, 5);
             let ok = manager.rate_card(card, s);
             if ok {
                 println!("  ✓ Rated card [{}] with {}★", card, stars);

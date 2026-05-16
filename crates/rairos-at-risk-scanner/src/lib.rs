@@ -121,7 +121,7 @@ pub fn get_at_risk_capsules(threshold: u32) -> Vec<AtRiskCapsule> {
         });
     }
 
-    results.sort_by(|a, b| b.low_score_streak.cmp(&a.low_score_streak));
+    results.sort_by_key(|x| std::cmp::Reverse(x.low_score_streak));
     results
 }
 
