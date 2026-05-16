@@ -208,7 +208,6 @@ impl QueryType {
     }
 }
 
-#[allow(dead_code)]
 pub fn bm25_weight(qt: QueryType) -> f64 {
     match qt {
         QueryType::Factual => 0.65,
@@ -219,7 +218,6 @@ pub fn bm25_weight(qt: QueryType) -> f64 {
     }
 }
 
-#[allow(dead_code)]
 pub fn mmr_lambda(qt: QueryType) -> f64 {
     match qt {
         QueryType::Factual => 0.8,
@@ -980,11 +978,7 @@ impl GapDetector {
 // Gene Pool - Core Types
 // ============================================================================
 
-#[allow(dead_code)]
-const DEFAULT_LAMBDA: f64 = 0.01;
 const DEFAULT_MIN_IMPACT: f64 = 0.1;
-#[allow(dead_code)]
-const DEFAULT_CONSECUTIVE_CYCLES: usize = 3;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Capsule {
@@ -1510,8 +1504,6 @@ pub struct GenePool {
     capsules: Vec<Capsule>,
     feedback_events: Vec<Feedback>,
     evolution_events: Vec<EvolutionEvent>,
-    #[allow(dead_code)]
-    patterns: Vec<LearnedPattern>,
 }
 
 impl Default for GenePool {
@@ -1526,7 +1518,6 @@ impl GenePool {
             capsules: Vec::new(),
             feedback_events: Vec::new(),
             evolution_events: Vec::new(),
-            patterns: Vec::new(),
         }
     }
 
@@ -1685,7 +1676,6 @@ impl GenePool {
             capsules,
             feedback_events: Vec::new(),
             evolution_events: Vec::new(),
-            patterns: Vec::new(),
         }
     }
 

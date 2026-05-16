@@ -325,15 +325,6 @@ pub fn revise_plan(plan_id: &str, _reason: &str) -> Option<ResearchPlan> {
 
 // ─── LLM-based plan creation ──────────────────────────────────────────────
 
-#[allow(dead_code)]
-const PLAN_SYSTEM: &str = r#"You are a research strategy planner. Given a hypothesis and goal, create a concrete, dependency-ordered research plan.
-
-Respond ONLY with valid JSON (no markdown, no explanation):
-{"steps": [{"type": "...", "description": "...", "estimated_hours": 2.0, "dependencies": []}]}
-
-Step types: read_paper, run_experiment, compare_methods, write_analysis, survey_baselines, check_contradiction, revise_hypothesis.
-Steps must be in dependency order. Total estimated time should be 1-4 weeks."#;
-
 pub async fn create_plan(
     llm: &dyn crate::LlmClient,
     model: &str,

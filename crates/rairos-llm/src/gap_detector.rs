@@ -8,31 +8,6 @@ use crate::{LlmClient, Message};
 use regex::Regex;
 
 // ─── Prompt Templates ─────────────────────────────────────────────────────────
-
-#[allow(dead_code)]
-const SYSTEM_PROMPT: &str = r#"你是一个研究空白检测专家。分析给定领域的论文列表，识别：
-1. 未充分探索的应用场景
-2. 方法的局限性
-3. 论文间的矛盾点
-4. 评估标准的缺失
-5. 可扩展性问题
-6. 理论基础薄弱之处
-7. 数据集缺失
-8. 泛化能力未验证的问题
-
-输出格式（每行一个gap）：
-[GAP_TYPE] 描述 | 证据论文 | 置信度(0-1) | 严重程度(high/medium/low)
-
-GAP_TYPE 可选：
-- unexplored_application: 未探索的应用
-- method_limitation: 方法局限
-- contradiction: 矛盾
-- evaluation_gap: 评估缺失
-- scalability_issue: 可扩展性
-- theoretical_gap: 理论空白
-- dataset_gap: 数据集缺失
-- generalization_gap: 泛化问题"#;
-
 // ─── Gap Types ────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

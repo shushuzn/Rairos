@@ -72,7 +72,8 @@ fn paper_search_empty_db() {
 #[test]
 fn paper_delete_empty_db() {
     let (db, _dir) = test_db("delete");
-    assert!(handle_delete(&db, &["nonexistent".to_string()], false).is_ok());
+    // force=true to skip stdin prompt (non-interactive test)
+    assert!(handle_delete(&db, &["nonexistent".to_string()], true).is_ok());
 }
 
 #[test]

@@ -366,11 +366,14 @@ impl Database {
 
             CREATE TABLE IF NOT EXISTS research_gaps (
                 id TEXT PRIMARY KEY,
-                topic TEXT NOT NULL,
+                topic TEXT NOT NULL DEFAULT '',
                 session_id TEXT,
-                gap_type TEXT NOT NULL,
-                gap_title TEXT NOT NULL,
+                gap_type TEXT NOT NULL DEFAULT '',
+                gap_title TEXT NOT NULL DEFAULT '',
                 gap_title_hash TEXT,
+                category TEXT DEFAULT '',
+                description TEXT DEFAULT '',
+                severity TEXT DEFAULT 'medium',
                 novelty_score REAL DEFAULT 0.5,
                 priority TEXT DEFAULT 'medium',
                 paper_ids TEXT NOT NULL,

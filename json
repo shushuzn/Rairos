@@ -1,0 +1,44 @@
+[
+  {
+    "abstract": "OpenMC is an open source Monte Carlo neutral particle transport application that has recently been ported to GPU using the OpenMP target offloading model. We examine the performance of OpenMC at scale on the Frontier, Polaris, and Aurora supercomputers, demonstrating that performance portability has been achieved by OpenMC across all three major GPU vendors (AMD, NVIDIA, and Intel). OpenMC's GPU performance is compared to both the traditional CPU-based version of OpenMC as well as several other state-of-the-art CPU-based Monte Carlo particle transport applications. We also provide historical context by analyzing OpenMC's performance on several legacy GPU and CPU architectures. This work includes some of the first published results for a scientific simulation application at scale on a supercomputer featuring Intel's Max series \"Ponte Vecchio\" GPUs. It is also one of the first demonstrations of a large scientific production application using the OpenMP target offloading model to achieve high performance on all three major GPU platforms.",
+    "arxiv_id": "2403.12345",
+    "authors": [
+      "John Tramm",
+      "Paul Romano",
+      "Patrick Shriwise",
+      "Amanda Lund",
+      "Johannes Doerfert",
+      "Patrick Steinbrecher",
+      "Andrew Siegel",
+      "Gavin Ridley"
+    ],
+    "categories": [
+      "cs.DC"
+    ],
+    "cited_by": 0,
+    "id": "1fbb7b3d-e4d3-4d25-9f4e-d3b45184fdd2",
+    "published": "2024-03-19T01:28:01Z",
+    "status": "pending",
+    "title": "Performance Portable Monte Carlo Particle Transport on Intel, NVIDIA, and AMD GPUs"
+  },
+  {
+    "abstract": "Occlusion presents a significant challenge in human pose estimation. The challenges posed by occlusion can be attributed to the following factors: 1) Data: The collection and annotation of occluded human pose samples are relatively challenging. 2) Feature: Occlusion can cause feature confusion due to the high similarity between the target person and interfering individuals. 3) Inference: Robust inference becomes challenging due to the loss of complete body structural information. The existing methods designed for occluded human pose estimation usually focus on addressing only one of these factors. In this paper, we propose a comprehensive framework DAG (Data, Attention, Graph) to address the performance degradation caused by occlusion. Specifically, we introduce the mask joints with instance paste data augmentation technique to simulate occlusion scenarios. Additionally, an Adaptive Discriminative Attention Module (ADAM) is proposed to effectively enhance the features of target individuals. Furthermore, we present the Feature-Guided Multi-Hop GCN (FGMP-GCN) to fully explore the prior knowledge of body structure and improve pose estimation results. Through extensive experiments conducted on three benchmark datasets for occluded human pose estimation, we demonstrate that the proposed method outperforms existing methods. Code and data will be publicly available.",
+    "arxiv_id": "2401.00155",
+    "authors": [
+      "Linhao Xu",
+      "Lin Zhao",
+      "Xinxin Sun",
+      "Di Wang",
+      "Guangyu Li",
+      "Kedong Yan"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "cited_by": 0,
+    "id": "29cd327a-69c0-4b85-8572-7e8a5f165924",
+    "published": "2023-12-30T06:55:30Z",
+    "status": "pending",
+    "title": "A comprehensive framework for occluded human pose estimation"
+  }
+]

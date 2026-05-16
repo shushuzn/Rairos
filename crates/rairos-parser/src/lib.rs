@@ -93,13 +93,22 @@ pub async fn fetch_arxiv(arxiv_id: &str) -> Result<Paper, ParseError> {
     let text = resp.text().await?;
 
     // Parse Atom feed manually since serde_xml doesn't handle namespaced elements well
-    let title = extract_tag(&text, "title").unwrap_or_default();
-    let summary = extract_tag(&text, "summary").unwrap_or_default();
-    let published = extract_tag(&text, "published").unwrap_or_default();
-    let _entry_id = extract_tag(&text, "id").unwrap_or_default();
+    // First extract the <entry> block, then get fields from within it
+    let entry_start = text.find("<entry>").ok_or_else(|| {
+        ParseError::NotFound(arxiv_id.to_string())
+    })?;
+    let entry_end = text[entry_start..].find("</entry>").ok_or_else(|| {
+        ParseError::NotFound(arxiv_id.to_string())
+    })?;
+    let entry = &text[entry_start..entry_start + entry_end + 8];
 
-    let authors: Vec<String> = extract_authors(&text);
-    let categories: Vec<String> = extract_categories(&text);
+    let title = extract_tag(entry, "title").unwrap_or_default();
+    let summary = extract_tag(entry, "summary").unwrap_or_default();
+    let published = extract_tag(entry, "published").unwrap_or_default();
+    let _entry_id = extract_tag(entry, "id").unwrap_or_default();
+
+    let authors: Vec<String> = extract_authors(entry);
+    let categories: Vec<String> = extract_categories(entry);
 
     if title.is_empty() {
         return Err(ParseError::NotFound(arxiv_id.to_string()));

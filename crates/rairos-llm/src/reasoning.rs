@@ -24,26 +24,6 @@ pub enum StreamEvent {
     Content(String),
 }
 
-#[allow(dead_code)]
-const KNOWN_PHASES: &[&str] = &[
-    "decomposition", "analysis", "search", "retrieval", "reasoning",
-    "planning", "synthesis", "reflection", "verification", "conclusion",
-];
-
-/// Infer the reasoning phase from the start of a text chunk
-#[allow(dead_code)]
-fn infer_phase(text: &str) -> &'static str {
-    let lowered = text.to_lowercase().trim().to_string();
-    for phase in KNOWN_PHASES {
-        if lowered.starts_with(&format!("[{}]", phase))
-            || lowered.starts_with(&format!("{}:", phase))
-        {
-            return phase;
-        }
-    }
-    ""
-}
-
 /// State machine for SSE thinking stream parsing
 struct ThinkingState {
     current_phase: String,
@@ -62,9 +42,6 @@ impl ThinkingState {
     fn process_chunk(&mut self, chunk: &StreamChunk) -> Vec<StreamEvent> {
         let mut events = Vec::new();
 
-        // Check if this chunk has thinking content via content_type
-        // (This metadata would come from custom SSE parsing in production)
-
         // For standard OpenAI streaming: just emit content
         if !chunk.content.is_empty() {
             events.push(StreamEvent::Content(chunk.content.clone()));
@@ -79,37 +56,6 @@ impl ThinkingState {
             }));
             self.buffer.clear();
             self.current_phase.clear();
-        }
-
-        events
-    }
-
-    /// Process a delta from a thinking-aware stream (content_type: reasoning)
-    #[allow(dead_code)]
-    fn process_thinking_delta(&mut self, content_type: &str, text: &str) -> Vec<StreamEvent> {
-        let mut events = Vec::new();
-
-        if content_type == "reasoning" || content_type == "thinking" {
-            let detected = infer_phase(text);
-            if !detected.is_empty() && detected != self.current_phase {
-                // Flush previous phase
-                if !self.buffer.is_empty() {
-                    events.push(StreamEvent::Reasoning(ReasoningBlock {
-                        phase: self.current_phase.clone(),
-                        content: self.buffer.clone(),
-                        done: true,
-                    }));
-                }
-                self.current_phase = detected.to_string();
-                self.buffer = text.to_string();
-            } else {
-                self.buffer.push_str(text);
-            }
-            events.push(StreamEvent::Reasoning(ReasoningBlock {
-                phase: self.current_phase.clone(),
-                content: text.to_string(),
-                done: false,
-            }));
         }
 
         events
@@ -146,21 +92,6 @@ pub fn thinking_stream(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_infer_phase() {
-        assert_eq!(infer_phase("[decomposition] Let me break this down"), "decomposition");
-        assert_eq!(infer_phase("analysis: First, consider"), "analysis");
-        assert_eq!(infer_phase("normal text"), "");
-    }
-
-    #[test]
-    fn test_thinking_delta() {
-        let mut state = ThinkingState::new();
-        let events = state.process_thinking_delta("reasoning", "[analysis] test");
-        assert_eq!(events.len(), 1, "should emit one reasoning block");
-        assert!(matches!(&events[0], StreamEvent::Reasoning(r) if r.phase == "analysis" && !r.done));
-    }
 
     #[test]
     fn test_standard_chunk() {

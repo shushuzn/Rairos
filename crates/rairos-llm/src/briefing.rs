@@ -4,29 +4,6 @@
 
 use crate::{LlmClient, Message};
 use serde::{Deserialize, Serialize};
-
-#[allow(dead_code)]
-const BRIEFING_SYSTEM: &str = r#"You are a research briefing assistant. Generate a concise, structured briefing for a research paper.
-
-Output format (Markdown):
-## Summary
-2-3 sentence summary of the paper.
-
-## Key Contributions
-- Bullet list of 3-5 main contributions
-
-## Methodology
-Brief description of the approach.
-
-## Results
-Key findings and results.
-
-## Relevance
-Why this matters to the research community.
-
-## Verdict
-Strong Accept / Accept / Weak Accept / Borderline / Reject"#;
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BriefingResult {
     pub success: bool,

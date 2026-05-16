@@ -55,6 +55,11 @@ rairos-rankers-score = { path = "../rairos-rankers-score" }
 rairos-trend-analyzer = { path = "../rairos-trend-analyzer" }
 rairos-rankers-base = { path = "../rairos-rankers-base" }
 
+# Insight crates — via rairos-insight facade + extras
+rairos-crossover = { path = "../rairos-crossover" }
+rairos-insight = { path = "../rairos-insight" }
+rairos-insight-cards = { path = "../rairos-insight-cards" }
+
 [dev-dependencies]
 tokio-test = "0.4"
 mockito = "1.6"

@@ -1,49 +1,27 @@
 # Rairos Agents
 
-## Superpowers
-
-Superpowers (obra/superpowers) local config at `Rairos/.opencode/opencode.json` (gitignored).
-Plugin: `/root/superpowers/.opencode/plugins/superpowers.js`
-Skills: `/root/superpowers/skills/` — 15 skills auto-registered on OpenCode startup.
-
 ## Project
 
-Self-Evolving Research OS — Rust primary (~55k+ lines, **153 crates**):
-- **Rust CLI** (`crates/rairos-cli`): **71 commands** (10920 lines, single main.rs)
-- **Rust MCP** (`crates/rairos-mcp`): 61 Rust tools (zero Python fallback)
-- **Python** (~85k lines): `llm/`, `core/`, `db/`, `kg/`, `parsers/`, `web/` — utility/layer only
-- Python CLI fully migrated to Rust, `cli/` package retained for shared utilities only
+Self-Evolving Research OS — **100% Rust**: 158 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
+Python CLI fully migrated to Rust. All Python source code removed.
 
-## Critical: Rust Build
+## Rust Build
 
-Rust compilation is memory-intensive. **Always use**:
+Memory-intensive. **Always use**: `CARGO_BUILD_JOBS=1 cargo build`
+
 ```bash
 CARGO_BUILD_JOBS=1 cargo build
 CARGO_BUILD_JOBS=1 cargo test
 ```
 
-## sccache (Compilation Cache)
-
-sccache speeds up Rust builds by caching compilation results.
+### sccache (if available)
 
 ```bash
-# Download prebuilt sccache binary (avoid compiling from source)
-SCCACHE_VERSION="v0.11.0"
-curl -sL "https://github.com/mozilla/sccache/releases/download/${SCCACHE_VERSION}/sccache-${SCCACHE_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
-  | tar xz -C /tmp
-cp "/tmp/sccache-${SCCACHE_VERSION}-x86_64-unknown-linux-musl/sccache" /usr/local/bin/
-
-# Start server
 sccache --start-server
-
-# Build (sccache is configured in ~/.cargo/config.toml)
 CARGO_BUILD_JOBS=1 cargo build
-
-# Check cache stats
-sccache --show-stats
 ```
 
-## Rust Crates
+## Key Crates (22 of 158)
 
 | Crate | Purpose |
 |-------|---------|
@@ -52,7 +30,7 @@ sccache --show-stats
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API, PDF extraction |
 | rairos-research | DeepResearchAgent, gap detection |
 | rairos-web | REST API + HTML frontend |
-| rairos-cli | 48 commands |
+| rairos-cli | 104 commands (2721 lines, main.rs) |
 | rairos-kg | Knowledge graph, PageRank, communities |
 | rairos-memory | Research stance tracking, anomaly detection |
 | rairos-rankers | Paper ranking and scoring |
@@ -63,47 +41,35 @@ sccache --show-stats
 | rairos-viz | Chart and visualization generation |
 | rairos-trends | Research trend analysis |
 | rairos-render | Lite review, paper rendering |
-| rairos-mcp | MCP protocol server (25 Rust tools, JSON-RPC 2.0) |
+| rairos-mcp | MCP protocol server (68 Rust tools, JSON-RPC 2.0) |
+| rairos-insight-types | Insight types (actions, profiles, events, trust) |
+| rairos-insight-credibility | Credibility scoring & trendslop detection |
+| rairos-insight-storage | Capsule storage — gene_pool.db (SQLite) |
+| rairos-insight-tracker | EvolutionTracker — event recording, profile management |
+| rairos-insight-evolution | Evolution engine — audit, propose, evaluate, apply |
 
-## Rust Commands
+## CLI (104 commands)
 
 ```bash
-# Build all
 CARGO_BUILD_JOBS=1 cargo build
-
-# Run CLI (71 commands)
-cargo run -p rairos-cli -- --help  # list all commands
-cargo run -p rairos-cli -- paper-list
-cargo run -p rairos-cli -- gene-list
-cargo run -p rairos-cli -- stance-list
-cargo run -p rairos-cli -- cite-stats
-cargo run -p rairos-cli -- kg-stats
+cargo run -p rairos-cli -- --help
 cargo run -p rairos-cli -- daemon --foreground
-
-# Run tests
 CARGO_BUILD_JOBS=1 cargo test
-CARGO_BUILD_JOBS=1 cargo test -p rairos-llm
 ```
 
-## Python Commands
+## MCP Tools (68 Rust, zero Python)
 
-```bash
-uv sync --all-extras
-uv run ruff check .
-uv run pytest tests/test_workflow.py -v --timeout=15
-```
+| Source | Count | Tools |
+|--------|-------|-------|
+| Core Rust | 25 | paper_search/ingest/parse_full/query/chat/recommend, replication_check_simple, pdf_extract_advanced, tag_add/remove/list, trends_detect_trending/predict_next/top_predictions/compare_tags, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch, chart_query |
+| LLM-backed | 43 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, route_query, trust_scorer_compute, paper_compare/analyze, gene_pool_decay, crossover, tag_all, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, routeplan_list/update_step/revise, research_run, hypothesis_generate/list, topic_discovery, orchestrator_run_cycle, deep_research_run, parallel_research_run |
 
-## Git Push
+## Persistence Paths
 
-```bash
-git push
-```
-
-## Persistence Paths (Rust)
-
-- GenePool: `~/.ai_research_os/evolution/gene_pool.jsonl`
+- GenePool: `~/.ai_research_os/evolution/gene_pool.db` (SQLite, WAL mode) + `gene_pool.jsonl` (append log)
 - Knowledge Graph: `~/.ai_research_os/kg/graph.json`
 - Research Memory: `~/.ai_research_os/research_memory/`
+- Evolution events: `~/.ai_research_os/evolution/events.jsonl`
 
 ## Key Patterns
 
@@ -111,30 +77,7 @@ git push
 - `Paper` struct: `id`, `arxiv_id`, `title`, `authors`, `abstract`, `categories`
 - Database: SQLite at `rairos.db` (CLI default) or `$RAIROS_DB`
 
-## Stats
-
-- Rust: **153 crates**, ~55k+ lines, **71 CLI commands**, 207+ test files
-- Python: ~85k lines, `cli/` package retained for shared utils only (`_shared.py` + `warp.py`)
-
-## Web UI
-
-- Dashboard: stats, recent papers, gene pool diversity
-- Papers: search, list, filter
-- Gene Pool: add gene, list, feedback
-- Knowledge Graph: stats, path finding, rankings
-- Memory: research stances, anomaly detection
-
-## Rust MCP Tools (61 Rust, 0 Python fallback)
-
-| Source | Count | Tools |
-|--------|-------|-------|
-| Core Rust | 25 | paper_search/ingest/query/chat/recommend, tag_add/remove/list/tag_all, trends_detect_trending/predict_next/top_predictions/compare_tags, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch, chart_query |
-| LLM-backed Rust | 36 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, paper_compare/analyze, trust_scorer_compute, routeplan_create/list/update_step/revise, gene_pool_decay, crossover, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, research_run, hypothesis_generate, hypothesis_list |
-
-rairos_mcp.py: **1971 → 652 行** (1319 行死代码已清理)<br>
-Python CLI 死代码清理: **81→0 命令模块**，全部迁移到 Rust CLI (71 个命令)，删除测试文件 3 个，清理死 import 多处
-
-### Performance Benchmarks
+## Performance Benchmarks
 
 | Benchmark | Result |
 |-----------|--------|
@@ -143,20 +86,9 @@ Python CLI 死代码清理: **81→0 命令模块**，全部迁移到 Rust CLI (
 | cargo bench citation find_families (100 nodes) | 109 µs |
 | cargo bench citation find_silent (100 nodes) | 49 µs |
 | MCP dispatch (OnceLock cached) | ~10 µs baseline |
-| MCP dispatch (before caching) | ~130 µs |
 
-### Test Structure
+## Rust Dispatch Architecture
 
-`tests/test_mcp_handler.py`: 27 tests, 5 classes
-- `TestProtocolHandlers` (7): initialize, list_tools, request routing
-- `TestToolRouting` (4): every routed tool has impl/schema, unknown tool returns error
-- `TestMcpJsonRpc` (5): JSON-RPC round-trip, serialization
-- `TestRustToolIntegration` (10): 11 Rust tools return expected keys, ranking ordering, graceful LLM-key handling
-- `TestMypy` (1): type checking
-
-### Key Decisions
-
-- `OnceLock` caches `McpServer` + tokio `Runtime` — avoids rebuilding both on every call (17-37x speedup)
-- Rust-first dispatch: `handle_call_tool` tries `call_tool_rs()` first, falls back to Python on `None`
+- MCP: `McpServer` (OnceLock cached) dispatches to pure Rust trait handlers — **no Python fallback**
+- CLI: `Commands` enum + `handle_*()` functions in `crates/rairos-cli/src/main.rs`
 - Backward-compatible params: Rust handlers accept both `paper_id` and `arxiv_id`
-- Schema validation in Python runs before Rust dispatch, so Rust handler params must match tools_defs.py schemas
