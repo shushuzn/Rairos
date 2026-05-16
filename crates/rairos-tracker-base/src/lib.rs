@@ -387,6 +387,7 @@ mod tests {
     }
 
     impl DummyItemStore {
+        #[allow(dead_code)]
         fn new(path: std::path::PathBuf, items: Vec<DummyItem>) -> Self {
             Self { path, items }
         }
