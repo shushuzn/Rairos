@@ -44,6 +44,9 @@ pub const BRIEFINGS_DIR: &str = "briefings";
 pub const BRIEFING_LINKS_FILE: &str = "briefing_links.json";
 pub const ARXIV_CHANNELS_FILE: &str = "arxiv_channels.json";
 pub const CLAIM_GRAPH_FILE: &str = "claim_graph.json";
+pub const CACHE_DIR: &str = "cache";
+pub const LLM_CACHE_DIR: &str = "llm_cache";
+pub const PAPERS_DB_NAME: &str = "papers.db";
 
 pub static AI_RESEARCH_KEYWORDS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     let mut s = HashSet::new();

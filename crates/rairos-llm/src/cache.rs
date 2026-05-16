@@ -4,12 +4,12 @@
 //! keyed by SHA-256 hash of the serialized request.
 //! Cache entries expire after a configurable TTL (default 1 hour).
 
+use rairos_core::constants::{AIROS_DIR_NAME, CACHE_DIR, LLM_CACHE_DIR};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-const DEFAULT_CACHE_DIR: &str = "llm_cache";
 const DEFAULT_TTL_SECS: u64 = 3600; // 1 hour
 
 /// Cache entry stored on disk
@@ -48,10 +48,10 @@ impl Default for LlmCache {
     fn default() -> Self {
         let base = dirs_next()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".ai_research_os")
-            .join("cache");
+            .join(AIROS_DIR_NAME)
+            .join(CACHE_DIR);
         Self {
-            cache_dir: base.join(DEFAULT_CACHE_DIR),
+            cache_dir: base.join(LLM_CACHE_DIR),
             default_ttl: Duration::from_secs(DEFAULT_TTL_SECS),
         }
     }
@@ -62,9 +62,9 @@ impl LlmCache {
         let dir = cache_dir.unwrap_or_else(|| {
             dirs_next()
                 .unwrap_or_else(|| PathBuf::from("."))
-                .join(".ai_research_os")
-                .join("cache")
-                .join(DEFAULT_CACHE_DIR)
+                .join(AIROS_DIR_NAME)
+                .join(CACHE_DIR)
+                .join(LLM_CACHE_DIR)
         });
         Self {
             cache_dir: dir,
