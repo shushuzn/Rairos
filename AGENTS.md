@@ -99,14 +99,22 @@ Constants centralized in `rairos-core::constants` for reuse:
 | Constant | Value | Purpose |
 |----------|-------|---------|
 | `CAPSULE_PATH` | `.ai_research_os/gene_pool/capsules.json` | Gene Pool capsule path |
+| `CAPSULES_JSON` | `capsules.json` | Capsule filename |
 | `GP_DIR_NAME` | `.ai_research_os/evolution` | Evolution directory |
+| `GENE_POOL_JSONL` | `gene_pool.jsonl` | Gene pool log file |
+| `PAPERS_DB_PATH` | `.ai_research_os/papers.json` | Papers database path |
+| `AIROS_DIR_NAME` | `.ai_research_os` | Root data directory |
 | `CLIMATE_CATS` | `&["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]` | Climate-related categories |
 | `ARXIV_API` | `https://export.arxiv.org/api/query` | arXiv API endpoint |
 | `SEMANTIC_API` | `https://api.semanticscholar.org/graph/v1` | Semantic Scholar API |
+| `CROSSREF_WORKS` | `https://api.crossref.org/works/{doi}` | CrossRef API |
+| `DOI_RESOLVER` | `https://doi.org/` | DOI resolution URL |
+| `LLM_BASE_URL` | `https://api.openai.com/v1` | OpenAI API base |
+| `LLM_MODEL` | `gpt-4o-mini` | Default LLM model |
 | `RADAR_FILE` | `Radar.md` | Radar filename |
 | `TIMELINE_FILE` | `Timeline.md` | Timeline filename |
 
-**Used by:** `rairos-bold-vault`, `rairos-vault`, `rairos-game-mode`, `rairos-gene-pool-watcher`, `rairos-gene-pool-io`, `rairos-climate`, `rairos-climate-ai-monitor`, `rairos-mcp`, `rairos-research`, `rairos-parser`, `rairos-parsers`, `rairos-llm`, `rairos-updaters`
+**Used by:** `rairos-bold-vault`, `rairos-vault`, `rairos-game-mode`, `rairos-gene-pool-watcher`, `rairos-gene-pool-io`, `rairos-climate`, `rairos-climate-ai-monitor`, `rairos-mcp`, `rairos-research`, `rairos-parser`, `rairos-parsers`, `rairos-llm`, `rairos-updaters`, `rairos-chat`, `rairos-labor-displacement-tracker`, `rairos-eval-gap-monitor`
 
 ## Key Patterns
 
