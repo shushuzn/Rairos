@@ -113,6 +113,7 @@ pub fn extract_xml_field(xml: &str, tag: &str) -> Option<String> {
     None
 }
 
+#[allow(dead_code)]
 fn extract_all_xml_fields(xml: &str, tag: &str) -> Vec<String> {
     let mut results = Vec::new();
     let mut search_pos = 0;

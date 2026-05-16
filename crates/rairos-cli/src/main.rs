@@ -2315,7 +2315,7 @@ fn main() -> Result<()> {
                 }
             }
         }
-        Commands::Radar { action, tags, note_date, format } => {
+        Commands::Radar { action, tags, note_date, format: _format } => {
             let root = dirs::home_dir().map(|h| h.join(".ai_research_os")).unwrap_or_default();
             if action == "show" {
                 match rairos_updaters::read_radar(&root) {
@@ -2333,7 +2333,7 @@ fn main() -> Result<()> {
                 }
             }
         }
-        Commands::Timeline { action, year, pnote, title, format } => {
+        Commands::Timeline { action, year, pnote, title, format: _format } => {
             let root = dirs::home_dir().map(|h| h.join(".ai_research_os")).unwrap_or_default();
             if action == "show" {
                 match rairos_updaters::read_timeline(&root) {

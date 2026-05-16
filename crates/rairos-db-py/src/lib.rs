@@ -238,8 +238,8 @@ impl PyDatabase {
         query: &str,
         limit: Option<i64>,
         offset: Option<i64>,
-        source: Option<&str>,
-        category: Option<&str>,
+        _source: Option<&str>,
+        _category: Option<&str>,
         parse_status: Option<&str>,
     ) -> PyResult<(Vec<PySearchResult>, i64)> {
         let limit = limit.unwrap_or(20);
@@ -263,8 +263,8 @@ impl PyDatabase {
         &self,
         limit: Option<i64>,
         offset: Option<i64>,
-        source: Option<&str>,
-        category: Option<&str>,
+        _source: Option<&str>,
+        _category: Option<&str>,
         parse_status: Option<&str>,
     ) -> PyResult<(Vec<PyPaper>, i64)> {
         let limit = limit.unwrap_or(100) as usize;
