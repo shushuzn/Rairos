@@ -3332,6 +3332,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
+ "rairos-core",
  "regex",
  "serde",
  "serde_json",
@@ -3658,6 +3659,7 @@ dependencies = [
 name = "rairos-labor-displacement-tracker"
 version = "0.1.0"
 dependencies = [
+ "rairos-core",
  "serde",
  "serde_json",
  "tempfile",

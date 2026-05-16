@@ -2,15 +2,14 @@
 #![allow(
     clippy::manual_clamp,
 )]
+pub use rairos_core::constants::{LLM_BASE_URL, LLM_MODEL};
 use regex::Regex;
 use sha2::{Digest, Sha256};
 use std::collections::{HashMap, HashSet};
 
-pub const LLM_BASE_URL: &str = "https://api.openai.com/v1";
-pub const LLM_MODEL: &str = "gpt-4o-mini";
-pub const OLLAMA_BASE_URL: &str = "http://localhost:11434";
-pub const OLLAMA_EMBEDDING_MODEL: &str = "nomic-embed-text";
-pub const OLLAMA_API_EMBEDDINGS_ENDPOINT: &str = "/api/embeddings";
+pub use rairos_core::constants::OLLAMA_BASE_URL;
+pub use rairos_core::constants::OLLAMA_EMBEDDING_MODEL;
+pub use rairos_core::constants::OLLAMA_API_EMBEDDINGS_ENDPOINT;
 
 const EMBEDDING_CACHE_MAX: usize = 1000;
 const RETRIEVAL_CACHE_MAX: usize = 500;

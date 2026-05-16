@@ -25,6 +25,7 @@ pub mod retry;
 pub mod insight;
 pub mod llm_orphans;
 
+use rairos_core::constants::LLM_BASE_URL;
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -519,7 +520,7 @@ impl OpenAiClient {
     pub fn new(api_key: String) -> Self {
         Self {
             api_key,
-            base_url: "https://api.openai.com/v1".to_string(),
+            base_url: LLM_BASE_URL.to_string(),
             client: reqwest::Client::new(),
         }
     }

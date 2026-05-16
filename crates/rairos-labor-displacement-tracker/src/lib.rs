@@ -4,11 +4,10 @@
 //!
 //! Tracks papers about AI's impact on employment across cs.cyber-ph, cs.soc, and related categories.
 
+use rairos_core::constants::PAPERS_DB_PATH;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
-
-const PAPERS_DB_PATH: &str = ".ai_research_os/papers.json";
 
 const LABOR_KEYWORDS: &[&str] = &[
     "labor displacement",
