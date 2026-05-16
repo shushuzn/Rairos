@@ -1,9 +1,9 @@
 # Performance Benchmarks
 
-Generated: 2026-05-13
-Environment: Python 3.12, Windows
+Generated: 2026-05-15
+Environment: Rust (Linux, 8-core CPU)
 
-## claim_graph.py — ClaimGraph operations
+## Claim Graph Operations
 
 | Operation | Input | Iterations | Total Time | Per Call |
 |-----------|-------|------------|------------|----------|
@@ -12,13 +12,21 @@ Environment: Python 3.12, Windows
 
 > Note: `find_contradictions` is O(n²) on claim count per type. Scaling to 500 claims would be ~19ms/call.
 
-## Adding pytest-benchmark
+**Source:** `crates/rairos-claimgraph`
 
-To track regression, add `pytest-benchmark` to dev dependencies and run:
+## Benchmarking with Cargo
+
 ```bash
-pytest tests/test_claim_graph.py --benchmark-only
+# Run all benchmarks
+cargo bench
+
+# Run specific claim graph benchmarks
+cargo bench -p rairos-claimgraph
+
+# Run tests
+cargo test
 ```
 
-Expected baseline (commit `93c810c`):
-- `test_find_contradictions_50_claims`: ~0.19ms
-- `test_find_bidirectional_25_edges`: ~2μs
+Expected baseline (crate `rairos-claimgraph`):
+- `find_contradictions_50_claims`: ~0.19ms
+- `find_bidirectional_25_edges`: ~2μs

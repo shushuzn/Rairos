@@ -21,7 +21,7 @@
 | arXiv watch | None | `gap watch` with Gene Pool matching |
 | Evolution system | None | CapsuleGene lifecycle with consumed闭环 |
 | Web UI | None | FastAPI hand-drawn web UI |
-| CLI | None | 62 subcommands |
+| CLI | None | 104 commands |
 
 **Zotero wins:** Mature ecosystem, browser connector, large community, mobile apps.
 **AI Research OS wins:** Autonomous gap detection, self-evolving Gene Pool, citation pathfinding.
@@ -60,7 +60,7 @@
 | Contradiction detection | None | Polarity + gap_type pair detection |
 | Citation pathfinding | Paper pages | Citation Pathfinder to Gene Pool |
 | Local data | None | All data in `~/.ai_research_os/` |
-| Extensible | No | Open architecture, paper2code pipeline |
+| Extensible | No | Open architecture, Rust-based pipeline |
 
 **Semantic Scholar wins:** Massive corpus, web accessibility, free.
 **AI Research OS wins:** Local-first, autonomous gap detection, self-evolving memory, Gene Pool.

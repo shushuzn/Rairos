@@ -62,16 +62,16 @@ See [Installation](installation.md) for full setup instructions.
 - **Rich Webhooks** — Discord embeds + Feishu cards for gap and paradigm shift alerts
 - **Structured Observability** — JSON logging with correlation IDs and event tracking
 
-### 23 CLI Commands
+### 104 CLI Commands
 
 - `import` — Bulk import from arXiv, DOI, PDF
 - `search` — Full-text search with BM25 ranking
 - `chat-tui` — Full-screen TUI chat with paper context
 - `kg` — Knowledge graph query and rebuild
 - `gap` — Detect research gaps, generate research questions
-- `rag` — RAG pipeline: paper → code → tests → benchmark
-- `benchmark` — Cross-paper benchmark with D3.js charts
-- `paper2code` — Generate code from paper
+- `rag` — RAG pipeline: paper analysis → code generation → testing
+- `benchmark` — Cross-paper benchmark with charts
+- `pipeline` — Full research pipeline: gap → hypothesis → experiment
 - `subscribe` — RSS-style paper feed by tag/query
 
 ### Research Knowledge Structure
@@ -97,7 +97,7 @@ Paper → P-Note (per paper)
 
 | Metric | Value |
 |--------|-------|
-| Tests | 73 passing (CI gate 40%) |
+| Tests | 3800+ across 154 crates |
 | Rust | 1.81+ |
 | License | GPL v3 |
 | Version | 1.5.4 |

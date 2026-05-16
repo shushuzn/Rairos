@@ -1,6 +1,6 @@
 # Contributing to Rairos
 
-Thank you for your interest in contributing! This project is a self-evolving research operating system for AI researchers. Here's how you can help.
+Thank you for your interest in contributing! Rairos is a self-evolving research operating system built in Rust. Here's how you can help.
 
 ## Quick Start
 
@@ -9,12 +9,17 @@ Thank you for your interest in contributing! This project is a self-evolving res
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
 
-# Install dependencies (requires Python 3.10+)
-uv sync --all-extras
+# Build (memory-intensive — use single job)
+CARGO_BUILD_JOBS=1 cargo build
 
 # Run tests
-uv run pytest tests/ -q --tb=short -n auto --timeout=60
+CARGO_BUILD_JOBS=1 cargo test
 ```
+
+## Prerequisites
+
+- **Rust toolchain** — install via `rustup` (latest stable)
+- **SQLite** — `libsqlite3-dev` (Linux) or bundled via `rusqlite`
 
 ## Development Workflow
 
@@ -41,9 +46,9 @@ refactor/description     # Code refactoring
 git checkout -b feature/my-feature
 
 # Make your changes, then:
-just lint      # Check code style
-just test-cov  # Run tests with coverage
-just check     # Full lint + format check
+cargo fmt            # Format code
+cargo clippy         # Lint checks
+CARGO_BUILD_JOBS=1 cargo build  # Compile
 
 # Commit (use conventional commits)
 git commit -m "feat(parser): add arXiv ID normalization"
@@ -58,29 +63,43 @@ git commit -m "feat(parser): add arXiv ID normalization"
 
 ## Code Standards
 
-### Python Style
-- Follow PEP 8 (enforced by ruff)
-- Add type annotations for new functions
-- Keep functions under 100 lines
-- Write docstrings for public APIs
+### Rust Style
+- Follow Rust 2024 edition idioms
+- Run `cargo fmt` before committing
+- Run `cargo clippy` — aim for zero warnings
+- Add doc comments (`///`) for public APIs
+- Keep functions focused and well-named
 
 ### Testing
 - All new features need tests
-- Aim for meaningful assertions, not just `assert True`
-- Use `@pytest.mark.no_freeze` for tests needing real time
-- Run `just test FILE` to test specific files
+- Use `#[cfg(test)] mod tests { ... }` pattern
+- Run `CARGO_BUILD_JOBS=1 cargo test -p CRATE_NAME` for fast iteration
+- Use `cargo test --doc` for doc tests
 
-### File Structure
+### Crate Structure
+
 ```
-Rairos/
-├── core/           # Core utilities (retry, rate_limiter, profiler)
-├── db/             # Database layer
-├── llm/            # LLM integrations and prompts
-├── parsers/        # Paper parsers (arXiv, DOI, PDF)
-├── pdf/            # PDF extraction and OCR
-├── research_loop/  # Autonomous research pipelines
-└── tests/          # Test suites (Tier 1-4 by scope)
+crates/
+├── rairos-core/         # Database layer (SQLite, FTS5, migrations)
+├── rairos-cli/          # CLI (104 commands, clap-based)
+├── rairos-llm/          # LLM integrations (GenePool, evolution)
+├── rairos-parser/       # Paper parsers (arXiv, DOI, PDF)
+├── rairos-pdf/          # PDF extraction (lopdf)
+├── rairos-research/     # Deep research agent, gap detection
+├── rairos-citations/    # Citation graph (OpenAlex)
+├── rairos-rankers/      # Paper impact scoring
+├── rairos-kg/           # Knowledge graph (PageRank, communities)
+├── rairos-mcp/          # MCP protocol server (68 tools)
+├── rairos-memory/       # Research stance tracking, anomalies
+└── ... (154 crates total)
 ```
+
+## Build Tips
+
+- **Always** use `CARGO_BUILD_JOBS=1` — the project has 154 crates and parallel builds easily OOM
+- To build a specific crate: `cargo build -p rairos-core`
+- For incremental compilation: `CARGO_BUILD_JOBS=1 cargo check`
+- Install [sccache](https://github.com/mozilla/sccache) for faster rebuilds
 
 ## Labels
 
@@ -111,7 +130,7 @@ Example:
 ```
 feat(cli): add semantic search command
 
-Add `airos similar` command for finding semantically similar papers
+Add `rairos similar` command for finding semantically similar papers
 using embedding vectors from Ollama.
 
 Closes #123

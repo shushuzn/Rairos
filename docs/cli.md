@@ -68,7 +68,8 @@ All commands follow the pattern `rairos <subcommand> [options]` (or `cargo run -
 | Command | Description |
 |---------|-------------|
 | `evoskill` | EvoSkill benchmark-driven skill discovery |
-| `paper2code` | Generate code from paper |
+| `run-full` | Full RAG pipeline: paper analysis → code generation → testing |
+| `gen-tests` | Generate tests from a paper |
 | `rag` | RAG pipeline: paper → code → tests → benchmark |
 | `lean` | Translate research hypotheses into Lean 4 code and verify them |
 | `replicate` | Track paper replication attempts and results |
