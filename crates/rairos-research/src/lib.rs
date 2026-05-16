@@ -11,7 +11,7 @@ pub mod hypothesis_generator;
 pub mod skill_discovery;
 pub mod snapstate;
 
-use rairos_core::{Database, Paper, ResearchGap};
+use rairos_core::{constants::LLM_MODEL, Database, Paper, ResearchGap};
 use rairos_llm::{CostTracker, GapDetector, LlmClient, Message};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -83,7 +83,7 @@ impl Default for ResearchLoopConfig {
             max_text_len: 8000,
             download_pdfs: true,
             skip_existing: true,
-            model: "gpt-4o-mini".to_string(),
+            model: LLM_MODEL.to_string(),
             base_url: None,
             api_key: None,
         }

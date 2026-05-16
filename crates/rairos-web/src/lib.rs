@@ -10,6 +10,7 @@ use axum::{
     routing::{delete, get, post},
     Router,
 };
+use rairos_core::constants::LLM_MODEL;
 use rairos_core::{Database, DbStats, Paper, ResearchGap};
 use rairos_kg::{GraphAlgorithms, KgStats, KnowledgeGraph};
 use rairos_llm::{
@@ -745,7 +746,7 @@ async fn generate_briefing(
             Arc::new(OpenAiClient::with_base_url(creds.api_key, creds.base_url));
         let briefing = briefing::generate_briefing(
             &*client,
-            "gpt-4o-mini",
+            LLM_MODEL,
             &arxiv_id,
             &paper.title,
             &paper.abstract_text,
