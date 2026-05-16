@@ -101,7 +101,7 @@ indicatif.workspace = true
 console = "0.15"
 tokio = { workspace = true, features = ["rt"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "blocking"], default-features = false }
-ratatui = "0.28"
+ratatui = "0.30"
 crossterm = "0.28"
 rayon = "1"
 
