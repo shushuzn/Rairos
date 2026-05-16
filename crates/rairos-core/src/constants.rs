@@ -37,6 +37,7 @@ pub const GAP_SUBSCRIPTIONS_FILE: &str = "gap_subscriptions.json";
 pub const QUESTIONS_FILE: &str = "questions.json";
 pub const INSIGHTS_DIR: &str = "insights";
 pub const INSIGHT_CARDS_FILE: &str = "cards.json";
+pub const PATTERNS_FILE: &str = "patterns.json";
 pub const BRIEFINGS_DIR: &str = "briefings";
 pub const CLAIM_GRAPH_FILE: &str = "claim_graph.json";
 
