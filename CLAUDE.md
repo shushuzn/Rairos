@@ -12,22 +12,22 @@
 
 ## Project: Rairos (ai-research-os)
 
-**Self-Evolving Research OS (100% Rust, 157 crates, ~73k lines, 104 CLI commands, 68 MCP tools)**
+**Self-Evolving Research OS (100% Rust, 154 crates, ~73k lines, 104 CLI commands, 68 MCP tools)**
 
 - **Rust CLI**: 104 commands via `cargo run -p rairos-cli -- <cmd>`
 - **Rust CLI main.rs**: `crates/rairos-cli/src/main.rs` (2721 lines, Commands enum + handle_*())
 - **Rust MCP**: 68 pure-Rust tools in `crates/rairos-mcp/src/` — zero Python fallback
-|- **Python**: Fully migrated to Rust. All Python source removed.
-|- **Test**: `cargo test --workspace` (Rust unit/integration tests)
-|- **Linter**: `cargo clippy` (deny warnings)
-|- **CI gate**: `cargo build + cargo test --workspace + clippy`
+- **Python**: Fully migrated to Rust. All Python source removed.
+- **Test**: `CARGO_BUILD_JOBS=1 cargo test --workspace`
+- **Linter**: `cargo clippy --workspace -- -D warnings`
+- **CI gate**: `cargo build + cargo test + clippy` ( `.github/workflows/rust.yml`)
 
 ## Build & Test
 
 ```bash
-# Rust (always CARGO_BUILD_JOBS=1)
-CARGO_BUILD_JOBS=1 cargo build
-CARGO_BUILD_JOBS=1 cargo test
+# Rust (always CARGO_BUILD_JOBS=1 to avoid OOM on memory-constrained hosts)
+CARGO_BUILD_JOBS=1 cargo build --workspace
+CARGO_BUILD_JOBS=1 cargo test --workspace
 ```
 
 ## Architecture
@@ -39,13 +39,13 @@ CARGO_BUILD_JOBS=1 cargo test
 
 - `papers` table PK is `id` (NOT arxiv_id)
 - `Paper` struct: `id`, `arxiv_id`, `title`, `authors`, `published`, `abstract`, `categories`
-- MCP dispatch: `McpServer` (OnceLock cached) → pure-Rust `ToolHandler` dispatch — **no Python fallback**
+- MCP dispatch: `McpServer` (OnceLock cached) → pure-Rust `ToolHandler` dispatch
 - CLI dispatch: `Commands` enum at line 80 of `crates/rairos-cli/src/main.rs`
 
 ## GitHub Push
 
 ```bash
-GIT_ASKPASS=echo timeout 55 git push
+git push
 ```
 
 ## Known Issues
