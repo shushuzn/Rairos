@@ -50,5 +50,4 @@ GIT_ASKPASS=echo timeout 55 git push
 
 ## Known Issues
 
-- Rust CLI has 3 pre-existing warnings (unused var `format` in radar/timeline, dead function `extract_all_xml_fields`)
 - MCP server runs in OnceLock-cached tokio runtime; 2+ concurrent `call_tool` invocations compete for the lock
