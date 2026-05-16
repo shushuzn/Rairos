@@ -19,10 +19,9 @@
 - [ ] Self-review completed
 - [ ] Tests added/updated if needed
 - [ ] Documentation updated
-- [ ] No new lint warnings: `uv run ruff check .`
-- [ ] Type checks pass: `uv run mypy core parsers db llm research_loop cli --ignore-missing-imports`
-- [ ] All tests pass locally: `uv run pytest tests/ -q`
-- [ ] Rust builds: `CARGO_BUILD_JOBS=1 cargo build`
+- [ ] No new compiler warnings: `cargo build --workspace`
+- [ ] All tests pass: `CARGO_BUILD_JOBS=1 cargo test --workspace`
+- [ ] No clippy warnings: `cargo clippy --workspace -- -D warnings`
 - [ ] Branch name follows convention: `type/description`
 
 ## Related Issues

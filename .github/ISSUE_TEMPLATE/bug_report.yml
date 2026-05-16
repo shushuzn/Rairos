@@ -15,8 +15,8 @@ body:
       description: A clear description of what went wrong
       placeholder: |
         Steps to reproduce:
-        1. Run `python -m cli import 2601.00155`
-        2. Run `python -m cli search "attention"`
+        1. Run `cargo run -p rairos-cli -- import 2601.00155`
+        2. Run `cargo run -p rairos-cli -- search "attention"`
         3. See error...
 
         Expected behavior: ...
@@ -28,14 +28,13 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: Your OS, Python version, and relevant environment variables
+      description: Your OS, Rust version, and relevant environment variables
       placeholder: |
-        OS: Windows 11
-        Python: 3.12.3
-        pip list: requests 2.31.0, feedparser 6.0.10, ...
+        OS: Linux x86_64
+        Rust: 1.86.0
+        cargo: 1.86.0
 
-        AIROS_EMBEDDING_DIM=768
-        OPENAI_API_KEY=set
+        RAIROS_DB=/custom/path/rairos.db
     validations:
       required: true
 
@@ -45,9 +44,11 @@ body:
       label: Full Traceback
       description: The complete error message, if applicable
       placeholder: |
-        Traceback (most recent call last):
-          File "..." line ...
-          ...
+        error[E0308]: mismatched types
+          --> crates/rairos-core/src/lib.rs:123:45
+           |
+        123 |     let x: i32 = "hello";
+           |              ^^^ expected i32, found &str
 
         Exit code: 1
     validations:
