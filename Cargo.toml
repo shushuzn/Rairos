@@ -164,6 +164,7 @@ uuid = "1"
 serde = "1"
 tokio = "1"
 clap = { version = "4", features = ["derive"] }
+sysinfo = "0.34"
 
 [profile.dev]
 opt-level = 0
