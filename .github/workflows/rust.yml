@@ -84,7 +84,7 @@ jobs:
         run: cargo test --workspace
 
       - name: Clippy lint
-        run: cargo clippy --tests --workspace ${{ runner.os == 'macOS' && '--exclude rairos-db-py --exclude rairos-sysinfo --exclude rairos-research-py --exclude rairos-claimgraph --exclude rairos-survey-generator --exclude rairos-lsp-diagnostics --exclude rairos-workspace-snapshot' || '' }} -- -D warnings
+        run: cargo clippy --tests --workspace ${{ runner.os == 'macOS' && '--exclude rairos-sysinfo --exclude rairos-lsp-diagnostics --exclude rairos-workspace-snapshot' || '' }} -- -D warnings
 
       - name: Show sccache stats
         if: runner.os != 'Windows'

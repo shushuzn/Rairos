@@ -26,7 +26,6 @@ rairos-replication-checker = { path = "../rairos-replication-checker" }
 rairos-evolution-report = { path = "../rairos-evolution-report" }
 rairos-research-log = { path = "../rairos-research-log" }
 rairos-review-generator = { path = "../rairos-review-generator" }
-rairos-survey-generator = { path = "../rairos-survey-generator" }
 rairos-research-session = { path = "../rairos-research-session" }
 rairos-narratives = { path = "../rairos-narratives" }
 rairos-postprocess = { path = "../rairos-postprocess" }

@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "rairos_claimgraph_py"
-crate-type = ["cdylib", "rlib"]
+name = "rairos_claimgraph"
+crate-type = ["rlib"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
@@ -13,4 +13,3 @@ serde_json = "1"
 regex = "1"
 dirs = "5"
 chrono = { version = "0.4", features = ["serde"] }
-pyo3 = { version = "0.24.1", features = ["extension-module"] }

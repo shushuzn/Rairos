@@ -1058,7 +1058,7 @@ impl ToolHandler for ClaimGraphHandler {
         let from_paper = params.get("from_paper").and_then(|v| v.as_str());
         let to_paper = params.get("to_paper").and_then(|v| v.as_str());
         let improvement_ratio = params.get("improvement_ratio").and_then(|v| v.as_f64());
-        Ok(rairos_claimgraph_py::claim_graph_action(
+        Ok(rairos_claimgraph::claim_graph_action(
             action, paper_id, claim_type, value, source_text, from_paper, to_paper, improvement_ratio,
         ))
     }

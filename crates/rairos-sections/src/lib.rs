@@ -10,9 +10,12 @@
 
 use rairos_pdf::{
     looks_like_heading as pdf_looks_like_heading,
-    segment_into_sections as pdf_segment_into_sections, MathBlock, StructuredPdfContent, TableBlock,
+    segment_into_sections as pdf_segment_into_sections, MathBlock, StructuredPdfContent,
     TextBlock,
 };
+
+#[cfg(test)]
+use rairos_pdf::TableBlock;
 use serde::{Deserialize, Serialize};
 
 // ============================================================================
