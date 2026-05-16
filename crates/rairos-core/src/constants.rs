@@ -28,6 +28,8 @@ pub const KG_DIR: &str = "kg";
 pub const QUESTIONS_DIR: &str = "questions";
 pub const BACKUPS_DIR: &str = "backups";
 pub const TAGS_FILE: &str = "tags.jsonl";
+pub const BRIEFINGS_DIR: &str = "briefings";
+pub const CLAIM_GRAPH_FILE: &str = "claim_graph.json";
 
 pub static AI_RESEARCH_KEYWORDS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     let mut s = HashSet::new();

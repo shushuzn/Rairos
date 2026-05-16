@@ -104,6 +104,9 @@ Constants centralized in `rairos-core::constants` for reuse:
 | `GENE_POOL_JSONL` | `gene_pool.jsonl` | Gene pool log file |
 | `PAPERS_DB_PATH` | `.ai_research_os/papers.json` | Papers database path |
 | `AIROS_DIR_NAME` | `.ai_research_os` | Root data directory |
+| `KG_DIR` | `kg` | Knowledge graph directory |
+| `TAGS_FILE` | `tags.jsonl` | Tags file |
+| `BRIEFINGS_DIR` | `briefings` | Briefings directory |
 | `CLIMATE_CATS` | `&["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]` | Climate-related categories |
 | `ARXIV_API` | `https://export.arxiv.org/api/query` | arXiv API endpoint |
 | `SEMANTIC_API` | `https://api.semanticscholar.org/graph/v1` | Semantic Scholar API |
@@ -111,10 +114,12 @@ Constants centralized in `rairos-core::constants` for reuse:
 | `DOI_RESOLVER` | `https://doi.org/` | DOI resolution URL |
 | `LLM_BASE_URL` | `https://api.openai.com/v1` | OpenAI API base |
 | `LLM_MODEL` | `gpt-4o-mini` | Default LLM model |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama API endpoint |
+| `OLLAMA_EMBEDDING_MODEL` | `nomic-embed-text` | Ollama embedding model |
 | `RADAR_FILE` | `Radar.md` | Radar filename |
 | `TIMELINE_FILE` | `Timeline.md` | Timeline filename |
 
-**Used by:** `rairos-bold-vault`, `rairos-vault`, `rairos-game-mode`, `rairos-gene-pool-watcher`, `rairos-gene-pool-io`, `rairos-climate`, `rairos-climate-ai-monitor`, `rairos-mcp`, `rairos-research`, `rairos-parser`, `rairos-parsers`, `rairos-llm`, `rairos-updaters`, `rairos-chat`, `rairos-labor-displacement-tracker`, `rairos-eval-gap-monitor`
+**Used by:** `rairos-bold-vault`, `rairos-vault`, `rairos-game-mode`, `rairos-gene-pool-watcher`, `rairos-gene-pool-io`, `rairos-climate`, `rairos-climate-ai-monitor`, `rairos-mcp`, `rairos-research`, `rairos-parser`, `rairos-parsers`, `rairos-llm`, `rairos-updaters`, `rairos-chat`, `rairos-labor-displacement-tracker`, `rairos-eval-gap-monitor`, `rairos-credibility`, `rairos-kg`
 
 ## Key Patterns
 
