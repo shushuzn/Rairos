@@ -23,6 +23,8 @@ pub const RADAR_FILE: &str = "Radar.md";
 pub const TIMELINE_FILE: &str = "Timeline.md";
 pub const PAPERS_DB_PATH: &str = ".ai_research_os/papers.json";
 pub const AIROS_DIR_NAME: &str = ".ai_research_os";
+pub const RESEARCH_MEMORY_DIR: &str = "research_memory";
+pub const KG_DIR: &str = "kg";
 
 pub static AI_RESEARCH_KEYWORDS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     let mut s = HashSet::new();
