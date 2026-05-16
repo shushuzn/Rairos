@@ -3013,6 +3013,7 @@ name = "rairos-climate"
 version = "0.1.0"
 dependencies = [
  "dirs",
+ "rairos-core",
  "serde",
  "serde_json",
 ]
@@ -3021,6 +3022,7 @@ dependencies = [
 name = "rairos-climate-ai-monitor"
 version = "0.1.0"
 dependencies = [
+ "rairos-core",
  "serde",
  "serde_json",
 ]
@@ -3375,6 +3377,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
+ "rairos-core",
  "serde",
  "serde_json",
 ]
@@ -3422,6 +3425,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
+ "rairos-core",
  "serde",
  "serde_json",
  "tempfile",
@@ -3433,6 +3437,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
+ "rairos-core",
  "rairos-gene-pool-io",
  "serde",
  "serde_json",

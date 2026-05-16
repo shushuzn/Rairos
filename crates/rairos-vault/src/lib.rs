@@ -7,12 +7,12 @@
 //!
 //! Ported from `llm/bold_vault.py` and `llm/at_risk_scanner.py`.
 
+use rairos_core::constants::CAPSULE_PATH;
 use rairos_core::jaccard_similarity;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 
-const CAPSULE_PATH: &str = ".ai_research_os/gene_pool/capsules.json";
 const NOVELTY_THRESHOLD: f64 = 0.7;
 const STREAK_THRESHOLD: i32 = 2;
 

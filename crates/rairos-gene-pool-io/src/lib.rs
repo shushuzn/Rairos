@@ -1,8 +1,8 @@
+use rairos_core::constants::GP_DIR_NAME;
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::PathBuf;
 
-const GP_DIR_NAME: &str = ".ai_research_os/evolution";
 const CAPSULE_FILE: &str = "capsules.json";
 const JSONL_FILE: &str = "gene_pool.jsonl";
 

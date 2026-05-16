@@ -2,6 +2,7 @@
 //!
 //! Tracks papers at the intersection of climate science and AI.
 
+use rairos_core::constants::CLIMATE_CATS;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::PathBuf;
@@ -37,8 +38,6 @@ const CLIMATE_KEYWORDS: &[&str] = &[
     "compute efficiency",
     "model efficiency",
 ];
-
-const CLIMATE_CATS: &[&str] = &["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"];
 
 fn papers_db_path() -> PathBuf {
     dirs::home_dir()

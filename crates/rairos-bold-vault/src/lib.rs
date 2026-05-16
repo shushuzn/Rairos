@@ -6,6 +6,7 @@
 //! Tracks high-risk/high-reward Gene Pool capsules.
 //! Bold = theoretical_gap OR negative polarity OR high novelty score.
 
+use rairos_core::constants::CAPSULE_PATH;
 use rairos_core::jaccard_similarity;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -13,7 +14,6 @@ use std::path::PathBuf;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CAPSULE_PATH: &str = ".ai_research_os/gene_pool/capsules.json";
 const NOVELTY_THRESHOLD: f64 = 0.7;
 
 // ─── Data Structures ──────────────────────────────────────────────────────────

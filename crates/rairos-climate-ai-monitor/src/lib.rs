@@ -3,6 +3,8 @@
 //! Ported from `llm/climate_ai_monitor.py` (independent functions only).
 //! `render_climate_monitor_html` renders climate AI paper monitoring stats.
 
+use rairos_core::constants::CLIMATE_CATS;
+
 const CLIMATE_KEYWORDS: &[&str] = &[
     "climate change", "global warming", "carbon", "emissions", "greenhouse gas",
     "renewable energy", "solar", "wind power", "energy efficiency", "sustainable",
@@ -12,8 +14,6 @@ const CLIMATE_KEYWORDS: &[&str] = &[
     "energy-aware", "low-carbon", "carbon footprint", "FLOPs per watt",
     "compute efficiency", "model efficiency",
 ];
-
-const CLIMATE_CATS: &[&str] = &["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"];
 
 /// Returns true if the paper is climate-related.
 pub fn is_climate_related(paper: &serde_json::Value) -> bool {

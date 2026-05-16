@@ -3,12 +3,12 @@
 //! Ported from `llm/game_mode.py` (270 LOC, pure stdlib).
 
 use chrono::Local;
+use rairos_core::constants::CAPSULE_PATH;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
-const CAPSULES_PATH: &str = ".ai_research_os/gene_pool/capsules.json";
 const BADGES_PATH: &str = ".ai_research_os/badges.json";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -57,7 +57,7 @@ impl Default for BadgeManager {
 impl BadgeManager {
     pub fn new() -> Self {
         let home = dirs::home_dir().unwrap_or_default();
-        let capsules_path = home.join(CAPSULES_PATH);
+        let capsules_path = home.join(CAPSULE_PATH);
         let badges_path = home.join(BADGES_PATH);
         Self {
             badges: HashMap::new(),

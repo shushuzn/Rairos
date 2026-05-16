@@ -6,6 +6,7 @@
 //!
 //! Python original: `llm/gene_pool_watcher.py`
 
+use rairos_core::constants::GP_DIR_NAME;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -163,8 +164,6 @@ pub const FAMILY_ARXIV_CONFIG: &[(&str, &[&str], &str)] = &[
 ];
 
 // ─── GP_DIR ───────────────────────────────────────────────────────────────────
-
-const GP_DIR_NAME: &str = ".ai_research_os/evolution";
 
 fn get_gp_dir() -> std::path::PathBuf {
     dirs::home_dir()
