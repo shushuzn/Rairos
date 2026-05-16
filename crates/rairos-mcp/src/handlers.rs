@@ -5,6 +5,7 @@
 
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
+use rairos_core::constants::ARXIV_API;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -58,8 +59,6 @@ fn write_jsonl(path: &PathBuf, items: &[Value]) -> Result<(), String> {
     }
     Ok(())
 }
-
-const ARXIV_API: &str = "http://export.arxiv.org/api/query";
 
 // ─── Paper Search ─────────────────────────────────────────────────────────────
 

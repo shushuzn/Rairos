@@ -1,7 +1,5 @@
-use rairos_core::{Paper, PaperMetadata, ParseStatus};
+use rairos_core::{constants::ARXIV_API, Paper, PaperMetadata, ParseStatus};
 use chrono::{DateTime, Utc, NaiveDate};
-
-const ARXIV_API: &str = "http://export.arxiv.org/api/query";
 
 pub fn search(query: &str, max_results: usize) -> Result<Vec<Paper>, String> {
     let url = format!(

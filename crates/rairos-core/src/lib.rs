@@ -2243,8 +2243,8 @@ pub fn safe_uid(s: &str) -> String {
 // Default research directory names (canonical order).
 // ============================================================================
 // API Endpoints
+// Note: ARXIV_API is now in constants.rs to avoid duplication
 
-pub const ARXIV_API: &str = "https://export.arxiv.org/api/query?id_list={arxiv_id}";
 pub const CROSSREF_WORKS: &str = "https://api.crossref.org/works/{doi}";
 pub const DOI_RESOLVER: &str = "https://doi.org/";
 
