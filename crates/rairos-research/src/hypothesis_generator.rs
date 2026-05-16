@@ -8,7 +8,7 @@
 //! 5. Novelty / feasibility scoring
 //! 6. Summary generation
 
-use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL, EVENTS_JSONL};
 use rairos_llm::{LlmClient, Message};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -1418,7 +1418,7 @@ mod tests {
         let pool = crate::gene_pool::GenePool {
             base_dir: gp_dir.clone(),
             jsonl_path: gp_dir.join(GENE_POOL_JSONL),
-            events_path: gp_dir.join("events.jsonl"),
+            events_path: gp_dir.join(EVENTS_JSONL),
         };
 
         let gen = HypothesisGenerator::new();
@@ -1510,7 +1510,7 @@ mod tests {
         let pool = crate::gene_pool::GenePool {
             base_dir: gp_dir.clone(),
             jsonl_path: gp_dir.join(GENE_POOL_JSONL),
-            events_path: gp_dir.join("events.jsonl"),
+            events_path: gp_dir.join(EVENTS_JSONL),
         };
 
         let gen = HypothesisGenerator::new();

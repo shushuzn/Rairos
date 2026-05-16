@@ -3,7 +3,7 @@
 //! Mirrors llm/insight/gene.py + storage.py for Rust-side search and logging.
 //! Enhanced: get_capsule_by_title, encode_capsule, preference_profile integration.
 
-use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL, EVENTS_JSONL};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
@@ -223,7 +223,7 @@ impl Default for GenePool {
         Self {
             base_dir: base.clone(),
             jsonl_path: base.join(GENE_POOL_JSONL),
-            events_path: base.join("events.jsonl"),
+            events_path: base.join(EVENTS_JSONL),
         }
     }
 }
