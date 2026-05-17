@@ -1,14 +1,26 @@
 //! Handlers for codegraph commands.
 
 use anyhow::Result;
+use rairos_codegraph::CodeGraph;
 use std::path::PathBuf;
 
-pub fn handle_codegraph_stats() -> Result<()> {
-    use rairos_codegraph::CodeGraph;
+fn get_codegraph_db_path() -> Result<PathBuf> {
+    let base = dirs::data_local_dir()
+        .ok_or_else(|| anyhow::anyhow!("Could not find local data directory"))?;
+    Ok(base.join("rairos").join("codegraph.db"))
+}
 
+fn with_codegraph<F, T>(f: F) -> Result<T>
+where
+    F: FnOnce(&CodeGraph) -> Result<T>,
+{
     let db_path = get_codegraph_db_path()?;
     let graph = CodeGraph::open(&db_path)?;
-    let stats = graph.stats()?;
+    f(&graph)
+}
+
+pub fn handle_codegraph_stats() -> Result<()> {
+    let stats = with_codegraph(|g| Ok(g.stats()?))?;
     
     println!("📊 CodeGraph Statistics");
     println!("   Nodes: {}", stats.nodes);
@@ -19,11 +31,7 @@ pub fn handle_codegraph_stats() -> Result<()> {
 }
 
 pub fn handle_codegraph_files() -> Result<()> {
-    use rairos_codegraph::CodeGraph;
-
-    let db_path = get_codegraph_db_path()?;
-    let graph = CodeGraph::open(&db_path)?;
-    let files = graph.files()?;
+    let files = with_codegraph(|g| Ok(g.files()?))?;
     
     println!("📁 Indexed Files ({} total)", files.len());
     for f in files.iter().take(50) {
@@ -37,11 +45,7 @@ pub fn handle_codegraph_files() -> Result<()> {
 }
 
 pub fn handle_codegraph_search(query: &str) -> Result<()> {
-    use rairos_codegraph::CodeGraph;
-
-    let db_path = get_codegraph_db_path()?;
-    let graph = CodeGraph::open(&db_path)?;
-    let results = graph.search(query, 20)?;
+    let results = with_codegraph(|g| Ok(g.search(query, 20)?))?;
     
     println!("🔍 Search results for '{}' ({} total)", query, results.len());
     for r in results {
@@ -55,12 +59,9 @@ pub fn handle_codegraph_search(query: &str) -> Result<()> {
 }
 
 pub fn handle_codegraph_node(node_id: i64) -> Result<()> {
-    use rairos_codegraph::CodeGraph;
-
-    let db_path = get_codegraph_db_path()?;
-    let graph = CodeGraph::open(&db_path)?;
+    let node = with_codegraph(|g| Ok(g.get_node(node_id)?))?;
     
-    if let Some(node) = graph.get_node(node_id)? {
+    if let Some(node) = node {
         println!("📍 Node #{}", node.id);
         println!("   Name: {}", node.name);
         println!("   Kind: {}", node.kind);
@@ -76,11 +77,7 @@ pub fn handle_codegraph_node(node_id: i64) -> Result<()> {
 }
 
 pub fn handle_codegraph_callers(node_id: i64, depth: usize) -> Result<()> {
-    use rairos_codegraph::CodeGraph;
-
-    let db_path = get_codegraph_db_path()?;
-    let graph = CodeGraph::open(&db_path)?;
-    let callers = graph.get_callers(node_id, depth)?;
+    let callers = with_codegraph(|g| Ok(g.get_callers(node_id, depth)?))?;
     
     println!("⬆️  Callers of node #{} (depth={}, {} found)", node_id, depth, callers.len());
     for c in callers {
@@ -91,11 +88,7 @@ pub fn handle_codegraph_callers(node_id: i64, depth: usize) -> Result<()> {
 }
 
 pub fn handle_codegraph_callees(node_id: i64, depth: usize) -> Result<()> {
-    use rairos_codegraph::CodeGraph;
-
-    let db_path = get_codegraph_db_path()?;
-    let graph = CodeGraph::open(&db_path)?;
-    let callees = graph.get_callees(node_id, depth)?;
+    let callees = with_codegraph(|g| Ok(g.get_callees(node_id, depth)?))?;
     
     println!("⬇️  Callees of node #{} (depth={}, {} found)", node_id, depth, callees.len());
     for c in callees {
@@ -103,10 +96,4 @@ pub fn handle_codegraph_callees(node_id: i64, depth: usize) -> Result<()> {
     }
     
     Ok(())
-}
-
-fn get_codegraph_db_path() -> Result<PathBuf> {
-    let base = dirs::data_local_dir()
-        .ok_or_else(|| anyhow::anyhow!("Could not find local data directory"))?;
-    Ok(base.join("rairos").join("codegraph.db"))
 }
