@@ -553,6 +553,20 @@ enum Commands {
         paper_id: String,
     },
 
+    /// Score paper impact
+    Impact {
+        /// Action: leaderboard or score
+        #[arg(short, long, default_value = "leaderboard")]
+        action: String,
+
+        /// Paper ID (for score action)
+        paper_id: Option<String>,
+
+        /// Max papers to show (for leaderboard action)
+        #[arg(short = 'n', long, default_value = "10")]
+        limit: usize,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2162,6 +2176,21 @@ fn main() -> Result<()> {
         }
         Commands::Rigor { paper_id } => {
             handle_rigor_score(paper_id)?;
+        }
+        Commands::Impact { action, paper_id, limit } => {
+            match action.as_str() {
+                "leaderboard" => handle_impact_leaderboard(*limit)?,
+                "score" => {
+                    if let Some(id) = paper_id {
+                        handle_impact_score(id)?;
+                    } else {
+                        eprintln!("Error: --paper-id required for score action");
+                    }
+                }
+                _ => {
+                    eprintln!("Unknown action: {}. Use: leaderboard or score", action);
+                }
+            }
         }
         Commands::Agent {
             topic,

@@ -506,3 +506,17 @@ fn rigor_score_no_crash() {
     let result = handle_rigor_score("test_paper");
     assert!(result.is_ok());
 }
+
+// ─── impact.rs ─────────────────────────────────────────────────────────────
+
+#[test]
+fn impact_leaderboard_no_crash() {
+    let result = handle_impact_leaderboard(10);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn impact_score_no_crash() {
+    let result = handle_impact_score("test_paper");
+    assert!(result.is_ok());
+}

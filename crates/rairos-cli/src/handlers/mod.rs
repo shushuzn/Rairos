@@ -12,6 +12,8 @@ pub mod trends;
 pub use trends::*;
 pub mod rigor;
 pub use rigor::*;
+pub mod impact;
+pub use impact::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;
