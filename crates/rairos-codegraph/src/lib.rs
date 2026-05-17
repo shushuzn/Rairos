@@ -6,7 +6,7 @@ pub mod graph;
 pub mod mcp;
 pub mod indexer;
 
-pub use graph::CodeGraph;
+pub use graph::{CodeGraph, Node, Edge, SearchResult, CallResult, GraphStats};
 pub use mcp::McpServer;
 pub use indexer::Indexer;
 
