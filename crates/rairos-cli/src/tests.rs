@@ -562,3 +562,17 @@ fn crossref_list_no_crash() {
     let result = handle_crossref_list();
     assert!(result.is_ok());
 }
+
+// ─── momentum.rs ───────────────────────────────────────────────────────────
+
+#[test]
+fn momentum_score_no_crash() {
+    let result = handle_momentum_score("machine learning");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn momentum_leaderboard_no_crash() {
+    let result = handle_momentum_leaderboard();
+    assert!(result.is_ok());
+}

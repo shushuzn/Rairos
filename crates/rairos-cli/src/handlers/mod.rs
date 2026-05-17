@@ -20,6 +20,8 @@ pub mod paradigm;
 pub use paradigm::*;
 pub mod crossref;
 pub use crossref::*;
+pub mod momentum;
+pub use momentum::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

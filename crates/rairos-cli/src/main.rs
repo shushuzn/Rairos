@@ -609,6 +609,17 @@ enum Commands {
         limit: usize,
     },
 
+    /// Analyze scoring momentum for research tags
+    Momentum {
+        /// Tag to score
+        #[arg(short, long, default_value = "")]
+        tag: String,
+
+        /// Show leaderboard
+        #[arg(short, long, default_value = "false")]
+        leaderboard: bool,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2253,6 +2264,15 @@ fn main() -> Result<()> {
                 handle_crossref_list()?;
             } else {
                 handle_crossref_analyze(paper_id)?;
+            }
+        }
+        Commands::Momentum { tag, leaderboard } => {
+            if *leaderboard {
+                handle_momentum_leaderboard()?;
+            } else if !tag.is_empty() {
+                handle_momentum_score(tag)?;
+            } else {
+                handle_momentum_leaderboard()?;
             }
         }
         Commands::Agent {
