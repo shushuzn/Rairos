@@ -16,13 +16,31 @@ impl Indexer {
         Self { parser }
     }
 
-    /// Index a Rust project
+    /// Index a Rust project (writes directly to graph)
     pub fn index_project(&mut self, root: &Path, graph: &CodeGraph) -> std::io::Result<IndexStats> {
+        let nodes = self.collect_nodes(root)?;
         let mut stats = IndexStats::default();
         
         graph.clear().ok();
         
-        // Set Rust language if not already set
+        for node in nodes {
+            match node.kind.as_str() {
+                "function" => stats.functions += 1,
+                "struct" => stats.structs += 1,
+                "enum" => stats.enums += 1,
+                "impl" => stats.impls += 1,
+                _ => {}
+            }
+            graph.add_node(&node).ok();
+        }
+        
+        Ok(stats)
+    }
+
+    /// Collect all nodes from a Rust project (returns Vec for testability)
+    pub fn collect_nodes(&mut self, root: &Path) -> std::io::Result<Vec<Node>> {
+        let mut nodes = Vec::new();
+        
         let lang: tree_sitter::Language = LANGUAGE.into();
         self.parser.set_language(&lang).ok();
         
@@ -38,7 +56,7 @@ impl Indexer {
                         if let Ok(mut file) = std::fs::File::open(path) {
                             let mut source = String::new();
                             if std::io::Read::read_to_string(&mut file, &mut source).is_ok() {
-                                self.index_file(&source, path, graph, &mut stats)?;
+                                self.collect_from_source(&source, path, &mut nodes)?;
                             }
                         }
                     }
@@ -46,17 +64,11 @@ impl Indexer {
             }
         }
         
-        Ok(stats)
+        Ok(nodes)
     }
 
-    /// Index a single file
-    fn index_file(
-        &mut self,
-        source: &str,
-        path: &Path,
-        graph: &CodeGraph,
-        stats: &mut IndexStats,
-    ) -> std::io::Result<()> {
+    /// Collect nodes from source code
+    fn collect_from_source(&mut self, source: &str, path: &Path, nodes: &mut Vec<Node>) -> std::io::Result<()> {
         let file_str = path.to_string_lossy().to_string();
         
         let tree = match self.parser.parse(source, None) {
@@ -64,14 +76,63 @@ impl Indexer {
             None => return Ok(()),
         };
         
-        let mut node_map: std::collections::HashMap<usize, i64> = std::collections::HashMap::new();
-        
-        self.find_functions(source, &tree.root_node(), &file_str, graph, &mut node_map, &mut stats.functions)?;
-        self.find_structs(source, &tree.root_node(), &file_str, graph, &mut node_map, &mut stats.structs)?;
-        self.find_enums(source, &tree.root_node(), &file_str, graph, &mut node_map, &mut stats.enums)?;
-        self.find_impls(source, &tree.root_node(), &file_str, graph, &mut node_map, &mut stats.impls)?;
+        self.extract_nodes(source, &tree.root_node(), &file_str, nodes);
         
         Ok(())
+    }
+
+    fn extract_nodes(&self, source: &str, node: &tree_sitter::Node, file: &str, nodes: &mut Vec<Node>) {
+        match node.kind() {
+            "function_item" => {
+                nodes.push(self.make_node(source, node, file, "function"));
+            }
+            "struct_item" => {
+                nodes.push(self.make_node(source, node, file, "struct"));
+            }
+            "enum_item" => {
+                nodes.push(self.make_node(source, node, file, "enum"));
+            }
+            "impl_item" => {
+                let start = node.start_position();
+                let end = node.end_position();
+                nodes.push(Node {
+                    id: 0,
+                    name: format!("impl@{}:{}", file, start.row + 1),
+                    kind: "impl".to_string(),
+                    file: file.to_string(),
+                    line: start.row as u32 + 1,
+                    col: start.column as u32,
+                    end_line: end.row as u32 + 1,
+                    end_col: end.column as u32,
+                    docstring: None,
+                });
+            }
+            _ => {}
+        }
+        
+        for i in 0..node.child_count() {
+            if let Some(child) = node.child(i) {
+                self.extract_nodes(source, &child, file, nodes);
+            }
+        }
+    }
+
+    fn make_node(&self, source: &str, node: &tree_sitter::Node, file: &str, kind: &str) -> Node {
+        let name = self.extract_name(source, node);
+        let start = node.start_position();
+        let end = node.end_position();
+        
+        Node {
+            id: 0,
+            name,
+            kind: kind.to_string(),
+            file: file.to_string(),
+            line: start.row as u32 + 1,
+            col: start.column as u32,
+            end_line: end.row as u32 + 1,
+            end_col: end.column as u32,
+            docstring: self.extract_docstring(source, node),
+        }
     }
 
     fn find_functions(
@@ -84,21 +145,7 @@ impl Indexer {
         counter: &mut usize,
     ) -> std::io::Result<()> {
         if node.kind() == "function_item" {
-            let name = self.extract_name(source, node);
-            let start = node.start_position();
-            let end = node.end_position();
-            
-            let n = Node {
-                id: 0,
-                name,
-                kind: "function".to_string(),
-                file: file.to_string(),
-                line: start.row as u32 + 1,
-                col: start.column as u32,
-                end_line: end.row as u32 + 1,
-                end_col: end.column as u32,
-                docstring: self.extract_docstring(source, node),
-            };
+            let n = self.make_node(source, node, file, "function");
             
             if let Ok(id) = graph.add_node(&n) {
                 node_map.insert(node.id(), id);
@@ -125,21 +172,7 @@ impl Indexer {
         counter: &mut usize,
     ) -> std::io::Result<()> {
         if node.kind() == "struct_item" {
-            let name = self.extract_name(source, node);
-            let start = node.start_position();
-            let end = node.end_position();
-            
-            let n = Node {
-                id: 0,
-                name,
-                kind: "struct".to_string(),
-                file: file.to_string(),
-                line: start.row as u32 + 1,
-                col: start.column as u32,
-                end_line: end.row as u32 + 1,
-                end_col: end.column as u32,
-                docstring: self.extract_docstring(source, node),
-            };
+            let n = self.make_node(source, node, file, "struct");
             
             if let Ok(id) = graph.add_node(&n) {
                 node_map.insert(node.id(), id);
