@@ -2,9 +2,10 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct User {
     pub id: Uuid,
     pub email: String,
@@ -15,19 +16,14 @@ pub struct User {
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ToSchema, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum Tier {
+    #[default]
     Free,
     Pro,
     Team,
     Enterprise,
-}
-
-impl Default for Tier {
-    fn default() -> Self {
-        Tier::Free
-    }
 }
 
 impl std::fmt::Display for Tier {
@@ -95,7 +91,7 @@ pub enum SubscriptionStatus {
     Trialing,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct ApiKeyResponse {
     pub id: Uuid,
     pub name: Option<String>,
@@ -120,19 +116,19 @@ impl From<ApiKey> for ApiKeyResponse {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct RegisterRequest {
     pub email: String,
     pub password: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct LoginRequest {
     pub email: String,
     pub password: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct AuthResponse {
     pub user_id: Uuid,
     pub email: String,
@@ -140,12 +136,12 @@ pub struct AuthResponse {
     pub tier: Tier,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateKeyRequest {
     pub name: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct RotateKeyRequest {
     pub key_id: Uuid,
     #[serde(default = "default_grace_period_hours")]
@@ -156,7 +152,7 @@ fn default_grace_period_hours() -> i64 {
     24
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct RotateKeyResponse {
     pub new_key: String,
     pub new_key_id: Uuid,
@@ -165,7 +161,7 @@ pub struct RotateKeyResponse {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct UsageResponse {
     pub tier: Tier,
     pub requests_used: i64,
@@ -174,7 +170,7 @@ pub struct UsageResponse {
     pub reset_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct PaginationParams {
     #[serde(default)]
     pub q: Option<String>,
@@ -192,7 +188,7 @@ fn default_per_page() -> u32 {
     20
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct UsageDashboard {
     pub total_requests: i64,
     pub requests_today: i64,
@@ -207,7 +203,7 @@ pub struct UsageDashboard {
     pub daily_trend: Vec<DailyUsage>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct EndpointUsage {
     pub endpoint: String,
     pub count: i64,
@@ -215,7 +211,7 @@ pub struct EndpointUsage {
     pub last_called: DateTime<Utc>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct DailyUsage {
     pub date: String,
     pub count: i64,

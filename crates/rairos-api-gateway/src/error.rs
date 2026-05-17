@@ -6,6 +6,7 @@ use axum::{
 };
 use serde::Serialize;
 use thiserror::Error;
+use utoipa::ToSchema;
 
 #[derive(Debug, Error)]
 pub enum ApiError {
@@ -43,12 +44,12 @@ pub enum ApiError {
     Internal(String),
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 struct ErrorResponse {
     error: ErrorDetail,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 struct ErrorDetail {
     code: String,
     message: String,

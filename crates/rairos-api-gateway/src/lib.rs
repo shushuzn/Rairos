@@ -7,6 +7,7 @@ pub mod auth;
 pub mod error;
 pub mod metrics;
 pub mod models;
+pub mod openapi;
 pub mod ratelimit;
 pub mod routes;
 pub mod state;

@@ -25,6 +25,8 @@ hmac = "0.12"
 rand = "0.8"
 tower = "0.4"
 tower-http = { version = "0.5", features = ["cors", "trace"] }
+utoipa = "4"
+utoipa-swagger-ui = "7"
 
 [dev-dependencies]
 tokio-test = "0.4"

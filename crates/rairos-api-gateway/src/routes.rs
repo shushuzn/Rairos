@@ -8,6 +8,7 @@ use axum::{
 };
 use chrono::Utc;
 use uuid::Uuid;
+use utoipa::OpenApi;
 
 use crate::auth::{auth_middleware, generate_api_key, hash_api_key};
 use crate::error::{ApiError, Result};
@@ -22,6 +23,8 @@ pub fn create_api_router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(health_check))
         .route("/metrics", get(metrics))
+        .route("/docs/openapi.json", get(openapi_json))
+        .route("/docs", get(serve_swagger_ui))
         .route("/auth/register", post(register))
         .route("/auth/login", post(login))
         .route("/keys", post(create_api_key).layer(from_fn_with_state(state.clone(), auth_middleware)))
@@ -39,6 +42,17 @@ pub fn create_api_router(state: AppState) -> Router {
         .route("/subscription/status", get(get_subscription_status).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/tiers", get(get_tiers))
         .with_state(state)
+}
+
+pub async fn openapi_json() -> impl axum::response::IntoResponse {
+    let openapi = crate::openapi::ApiDoc::openapi();
+    let json = serde_json::to_string(&openapi).unwrap_or_default();
+    ([(axum::http::header::CONTENT_TYPE, "application/json")], json)
+}
+
+pub async fn serve_swagger_ui() -> impl axum::response::IntoResponse {
+    let html = include_str!("../swagger_ui.html").to_string();
+    axum::response::Html(html)
 }
 
 pub async fn health_check() -> impl axum::response::IntoResponse {
