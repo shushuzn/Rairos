@@ -638,6 +638,17 @@ enum Commands {
         stats: bool,
     },
 
+    /// Scan for at-risk capsules needing attention
+    AtRisk {
+        /// Risk score threshold (default 50)
+        #[arg(short = 't', long, default_value = "50")]
+        threshold: u32,
+
+        /// Capsule ID to keep active
+        #[arg(short, long, default_value = "")]
+        keep: String,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2305,6 +2316,13 @@ fn main() -> Result<()> {
                 handle_decay_status(capsule_id)?;
             } else {
                 handle_decay_stats()?;
+            }
+        }
+        Commands::AtRisk { threshold, keep } => {
+            if !keep.is_empty() {
+                handle_atrisk_keep(&keep)?;
+            } else {
+                handle_atrisk_list(*threshold)?;
             }
         }
         Commands::Agent {

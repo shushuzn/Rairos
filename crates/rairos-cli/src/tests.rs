@@ -604,3 +604,17 @@ fn decay_status_no_crash() {
     let result = handle_decay_status("test_capsule");
     assert!(result.is_ok());
 }
+
+// ─── atrisk.rs ─────────────────────────────────────────────────────────────
+
+#[test]
+fn atrisk_list_no_crash() {
+    let result = handle_atrisk_list(50);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn atrisk_keep_no_crash() {
+    let result = handle_atrisk_keep("test_capsule");
+    assert!(result.is_ok());
+}

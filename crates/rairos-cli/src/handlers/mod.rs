@@ -26,6 +26,8 @@ pub mod crossover;
 pub use crossover::*;
 pub mod decay;
 pub use decay::*;
+pub mod atrisk;
+pub use atrisk::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;
