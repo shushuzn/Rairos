@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerts — Rairos</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    svg#sketch-filter { position: absolute; width: 0; height: 0; }
+    .skip-link { position:absolute;top:-9999px;left:8px;z-index:9999;padding:8px 16px;background:#2563eb;color:#fff;text-decoration:none;border-radius:0 0 4px 4px;font-weight:600; }
+    .skip-link:focus { top:0; }
+    .alert-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .alert-header h1 { margin: 0; }
+    .status-indicator { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; font-weight: 600; }
+    .status-ok { background: #d1fae5; color: #065f46; }
+    .status-warning { background: #fef3c7; color: #92400e; }
+    .status-critical { background: #fee2e2; color: #991b1b; }
+    .usage-bar-container { background: #e5e7eb; border-radius: 8px; height: 24px; overflow: hidden; margin: 16px 0; }
+    .usage-bar { height: 100%; transition: width 0.3s ease; border-radius: 8px; }
+    .usage-bar.ok { background: linear-gradient(90deg, #10b981, #059669); }
+    .usage-bar.warning { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .usage-bar.critical { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .config-form { display: grid; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-weight: 600; font-size: 14px; color: var(--ink); }
+    .form-group input[type="number"] { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+    .form-group input[type="url"] { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+    .form-group input[type="checkbox"] { width: 20px; height: 20px; }
+    .checkbox-group { flex-direction: row; align-items: center; gap: 12px; }
+    .history-list { list-style: none; padding: 0; margin: 0; }
+    .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+    .history-item:last-child { border-bottom: none; }
+    .history-time { font-size: 12px; color: var(--ink-faint); }
+    .history-status { font-size: 12px; padding: 4px 8px; border-radius: 4px; }
+    .history-status.sent { background: #d1fae5; color: #065f46; }
+    .history-status.failed { background: #fee2e2; color: #991b1b; }
+    .btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-primary { background: var(--pen-blue); color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .alert-actions { display: flex; gap: 12px; margin-top: 16px; }
+    .error-message { background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 6px; margin: 16px 0; }
+    .success-message { background: #d1fae5; color: #065f46; padding: 12px 16px; border-radius: 6px; margin: 16px 0; }
+  </style>
+</head>
+<body data-page="alerts">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation"></nav>
+    <main class="main" id="main-content">
+      <div class="alert-header">
+        <div>
+          <h1 class="page-title">🚨 Usage Alerts</h1>
+          <div class="page-title-underline"></div>
+          <p class="page-desc">Configure alerts when you approach your daily usage limits.</p>
+        </div>
+        <div id="status-badge" class="status-indicator status-ok">
+          <span id="status-text">Loading...</span>
+        </div>
+      </div>
+
+      <!-- Usage Status Card -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title">📊 Current Usage</div>
+        <div id="usage-display">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span id="usage-text">— / — requests</span>
+            <span id="usage-percent">—%</span>
+          </div>
+          <div class="usage-bar-container">
+            <div id="usage-bar" class="usage-bar ok" style="width: 0%;"></div>
+          </div>
+          <p style="font-size: 13px; color: var(--ink-faint); margin-top: 8px;">
+            Resets in <span id="reset-time">—</span> · Alert threshold: <span id="threshold-display">—</span>%
+          </p>
+        </div>
+      </div>
+
+      <!-- Alert Configuration Card -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title">⚙️ Alert Configuration</div>
+        <div id="message-area"></div>
+        <form id="alert-form" class="config-form">
+          <div class="form-group">
+            <label for="threshold">Alert Threshold (%)</label>
+            <input type="number" id="threshold" min="1" max="100" value="80" placeholder="80">
+            <small style="color: var(--ink-faint);">Alert when usage exceeds this percentage of your daily limit.</small>
+          </div>
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="email-alert" checked>
+            <label for="email-alert">Send email notifications</label>
+          </div>
+          <div class="form-group">
+            <label for="webhook-url">Webhook URL (optional)</label>
+            <input type="url" id="webhook-url" placeholder="https://your-server.com/webhook">
+            <small style="color: var(--ink-faint);">Receive a POST request when alert is triggered.</small>
+          </div>
+          <div class="alert-actions">
+            <button type="submit" class="btn btn-primary" id="save-btn">Save Configuration</button>
+            <button type="button" class="btn btn-danger" id="delete-btn" style="display: none;">Delete Configuration</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Alert History Card -->
+      <div class="card">
+        <div class="card-title">📜 Alert History</div>
+        <div id="history-loading" style="text-align: center; padding: 20px; color: var(--ink-faint);">
+          Loading...
+        </div>
+        <ul id="history-list" class="history-list" style="display: none;"></ul>
+        <div id="history-empty" style="text-align: center; padding: 20px; color: var(--ink-faint); display: none;">
+          No alerts sent yet.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/layout.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const api = {
+      async get(path) {
+        const token = localStorage.getItem("rairos_api_key") || "";
+        const res = await fetch(`/api${path}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ message: res.statusText }));
+          throw new Error(err.error?.message || err.message || `API ${res.status}`);
+        }
+        return res.json();
+      },
+      async post(path, body) {
+        const token = localStorage.getItem("rairos_api_key") || "";
+        const res = await fetch(`/api${path}`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ message: res.statusText }));
+          throw new Error(err.error?.message || err.message || `API ${res.status}`);
+        }
+        return res.json();
+      },
+      async del(path) {
+        const token = localStorage.getItem("rairos_api_key") || "";
+        const res = await fetch(`/api${path}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ message: res.statusText }));
+          throw new Error(err.error?.message || err.message || `API ${res.status}`);
+        }
+        return res.json();
+      }
+    };
+
+    function showMessage(msg, isError = true) {
+      const area = document.getElementById("message-area");
+      area.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'}">${escapeHtml(msg)}</div>`;
+      setTimeout(() => area.innerHTML = "", 5000);
+    }
+
+    function updateUsageDisplay(usage, limit, percent) {
+      document.getElementById("usage-text").textContent = `${usage.toLocaleString()} / ${limit.toLocaleString()} requests`;
+      document.getElementById("usage-percent").textContent = `${percent.toFixed(1)}%`;
+
+      const bar = document.getElementById("usage-bar");
+      bar.style.width = `${Math.min(percent, 100)}%`;
+      bar.className = "usage-bar " + (percent >= 90 ? "critical" : percent >= 70 ? "warning" : "ok");
+
+      const badge = document.getElementById("status-badge");
+      const statusText = document.getElementById("status-text");
+      if (percent >= 90) {
+        badge.className = "status-indicator status-critical";
+        statusText.textContent = "Critical";
+      } else if (percent >= 70) {
+        badge.className = "status-indicator status-warning";
+        statusText.textContent = "Warning";
+      } else {
+        badge.className = "status-indicator status-ok";
+        statusText.textContent = "OK";
+      }
+    }
+
+    async function loadAlertData() {
+      try {
+        const [status, config] = await Promise.all([
+          api.get("/usage/alert-status"),
+          api.get("/usage/alert-config").catch(() => null)
+        ]);
+
+        updateUsageDisplay(
+          status.current_usage,
+          status.limit,
+          status.usage_percent
+        );
+
+        document.getElementById("threshold-display").textContent = status.threshold_percent;
+        document.getElementById("reset-time").textContent = "24 hours";
+
+        if (config) {
+          document.getElementById("threshold").value = config.threshold_percent;
+          document.getElementById("email-alert").checked = config.email_alert;
+          document.getElementById("webhook-url").value = config.webhook_url || "";
+          document.getElementById("delete-btn").style.display = "inline-block";
+        }
+      } catch (e) {
+        showMessage("Failed to load alert data: " + e.message);
+      }
+    }
+
+    document.getElementById("alert-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("save-btn");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const threshold = parseInt(document.getElementById("threshold").value);
+        const emailAlert = document.getElementById("email-alert").checked;
+        const webhookUrl = document.getElementById("webhook-url").value.trim();
+
+        if (threshold < 1 || threshold > 100) {
+          throw new Error("Threshold must be between 1 and 100");
+        }
+
+        const payload = {
+          threshold_percent: threshold,
+          email_alert: emailAlert,
+          webhook_url: webhookUrl || null
+        };
+
+        await api.post("/usage/alert-config", payload);
+        showMessage("Configuration saved successfully!", false);
+        document.getElementById("delete-btn").style.display = "inline-block";
+        await loadAlertData();
+      } catch (e) {
+        showMessage("Failed to save: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Save Configuration";
+      }
+    });
+
+    document.getElementById("delete-btn").addEventListener("click", async () => {
+      if (!confirm("Are you sure you want to delete your alert configuration?")) return;
+
+      const btn = document.getElementById("delete-btn");
+      btn.disabled = true;
+      btn.textContent = "Deleting...";
+
+      try {
+        await api.del("/usage/alert-config");
+        document.getElementById("threshold").value = 80;
+        document.getElementById("email-alert").checked = true;
+        document.getElementById("webhook-url").value = "";
+        document.getElementById("delete-btn").style.display = "none";
+        showMessage("Configuration deleted.", false);
+      } catch (e) {
+        showMessage("Failed to delete: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Delete Configuration";
+      }
+    });
+
+    await loadAlertData();
+  });
+  </script>
+</body>
+</html>
