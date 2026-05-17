@@ -620,6 +620,13 @@ enum Commands {
         leaderboard: bool,
     },
 
+    /// Run genetic crossover on research capsules
+    Crossover {
+        /// List top crossover candidates
+        #[arg(short, long, default_value = "false")]
+        list: bool,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2273,6 +2280,13 @@ fn main() -> Result<()> {
                 handle_momentum_score(tag)?;
             } else {
                 handle_momentum_leaderboard()?;
+            }
+        }
+        Commands::Crossover { list } => {
+            if *list {
+                handle_crossover_list()?;
+            } else {
+                handle_crossover_run()?;
             }
         }
         Commands::Agent {

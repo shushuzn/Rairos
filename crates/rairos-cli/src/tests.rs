@@ -576,3 +576,17 @@ fn momentum_leaderboard_no_crash() {
     let result = handle_momentum_leaderboard();
     assert!(result.is_ok());
 }
+
+// ─── crossover.rs ─────────────────────────────────────────────────────────
+
+#[test]
+fn crossover_run_no_crash() {
+    let result = handle_crossover_run();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn crossover_list_no_crash() {
+    let result = handle_crossover_list();
+    assert!(result.is_ok());
+}
