@@ -581,6 +581,20 @@ enum Commands {
         limit: usize,
     },
 
+    /// Detect paradigm shifts in a research topic
+    Paradigm {
+        /// Research topic to analyze
+        topic: String,
+
+        /// List detected paradigm shifts
+        #[arg(short, long, default_value = "false")]
+        list: bool,
+
+        /// Max shifts to show
+        #[arg(short = 'n', long, default_value = "10")]
+        limit: usize,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2211,6 +2225,13 @@ fn main() -> Result<()> {
                 handle_briefing_list(*limit)?;
             } else {
                 handle_briefing_generate(arxiv_id)?;
+            }
+        }
+        Commands::Paradigm { topic, list, limit } => {
+            if *list {
+                handle_paradigm_list()?;
+            } else {
+                handle_paradigm_detect(topic)?;
             }
         }
         Commands::Agent {

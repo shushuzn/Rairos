@@ -68,6 +68,7 @@ rairos-replication = { path = "../rairos-replication" }
 rairos-rigor = { path = "../rairos-rigor" }
 rairos-impact = { path = "../rairos-impact" }
 rairos-briefing-generator = { path = "../rairos-briefing-generator" }
+rairos-paradigm = { path = "../rairos-paradigm" }
 rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
 rairos-batch-optimizer = { path = "../rairos-batch-optimizer" }
 rairos-bold-vault = { path = "../rairos-bold-vault" }

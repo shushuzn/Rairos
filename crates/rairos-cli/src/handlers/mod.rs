@@ -16,6 +16,8 @@ pub mod impact;
 pub use impact::*;
 pub mod briefing;
 pub use briefing::*;
+pub mod paradigm;
+pub use paradigm::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

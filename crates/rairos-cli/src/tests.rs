@@ -534,3 +534,17 @@ fn briefing_list_no_crash() {
     let result = handle_briefing_list(10);
     assert!(result.is_ok());
 }
+
+// ─── paradigm.rs ────────────────────────────────────────────────────────────
+
+#[test]
+fn paradigm_detect_no_crash() {
+    let result = handle_paradigm_detect("machine learning");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn paradigm_list_no_crash() {
+    let result = handle_paradigm_list();
+    assert!(result.is_ok());
+}
