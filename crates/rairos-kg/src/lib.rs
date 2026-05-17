@@ -7,6 +7,7 @@ use rairos_core::constants::{AIROS_DIR_NAME, KG_DIR, KG_GRAPH_FILE};
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
+use parking_lot::{Mutex, MutexGuard};
 use thiserror::Error;
 
 // ============================================================================
@@ -225,13 +226,13 @@ impl KgEdge {
 
 #[derive(Debug)]
 pub struct KgDatabase {
-    conn: std::sync::Mutex<rusqlite::Connection>,
+    conn: Mutex<rusqlite::Connection>,
     path: std::path::PathBuf,
 }
 
 impl KgDatabase {
-    fn lock(&self) -> std::sync::MutexGuard<'_, rusqlite::Connection> {
-        self.conn.lock().expect("KG database mutex poisoned")
+    fn lock(&self) -> MutexGuard<'_, rusqlite::Connection> {
+        self.conn.lock()
     }
 
     /// Open or create a KG database at the given path
@@ -240,7 +241,7 @@ impl KgDatabase {
             std::fs::create_dir_all(p).map_err(|e| KgError::Database(e.to_string()))?;
         }
         let conn = rusqlite::Connection::open(&path)?;
-        let db = KgDatabase { conn: std::sync::Mutex::new(conn), path };
+        let db = KgDatabase { conn: Mutex::new(conn), path };
         db.init_tables()?;
         Ok(db)
     }

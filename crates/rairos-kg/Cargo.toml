@@ -12,6 +12,7 @@ tracing.workspace = true
 anyhow.workspace = true
 dirs.workspace = true
 rusqlite.workspace = true
+parking_lot.workspace = true
 uuid = { workspace = true, features = ["v4"] }
 chrono = { workspace = true, features = ["serde"] }
 rand.workspace = true
