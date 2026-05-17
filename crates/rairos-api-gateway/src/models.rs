@@ -162,3 +162,32 @@ fn default_page() -> u32 {
 fn default_per_page() -> u32 {
     20
 }
+
+#[derive(Debug, Serialize)]
+pub struct UsageDashboard {
+    pub total_requests: i64,
+    pub requests_today: i64,
+    pub requests_this_week: i64,
+    pub requests_this_month: i64,
+    pub limit: i64,
+    pub remaining: i64,
+    pub usage_percent: f64,
+    pub tier: Tier,
+    pub reset_at: DateTime<Utc>,
+    pub endpoint_breakdown: Vec<EndpointUsage>,
+    pub daily_trend: Vec<DailyUsage>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct EndpointUsage {
+    pub endpoint: String,
+    pub count: i64,
+    pub avg_latency_ms: f64,
+    pub last_called: DateTime<Utc>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct DailyUsage {
+    pub date: String,
+    pub count: i64,
+}

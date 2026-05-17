@@ -132,6 +132,39 @@ Get current API usage statistics.
 }
 ```
 
+#### GET /usage/dashboard
+
+Get detailed API usage dashboard with breakdowns.
+
+**Response:**
+```json
+{
+  "total_requests": 5432,
+  "requests_today": 150,
+  "requests_this_week": 980,
+  "requests_this_month": 5432,
+  "limit": 10000,
+  "remaining": 4568,
+  "usage_percent": 54.32,
+  "tier": "pro",
+  "reset_at": "2025-05-18T00:00:00Z",
+  "endpoint_breakdown": [
+    {
+      "endpoint": "/papers/search",
+      "count": 3200,
+      "avg_latency_ms": 45.5,
+      "last_called": "2025-05-17T14:30:00Z"
+    }
+  ],
+  "daily_trend": [
+    {
+      "date": "2025-05-15",
+      "count": 320
+    }
+  ]
+}
+```
+
 ### Papers
 
 #### GET /papers/search

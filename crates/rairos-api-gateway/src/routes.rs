@@ -12,8 +12,9 @@ use uuid::Uuid;
 use crate::auth::{auth_middleware, generate_api_key, hash_api_key};
 use crate::error::{ApiError, Result};
 use crate::models::{
-    ApiKey, ApiKeyResponse, AuthResponse, CreateKeyRequest, LoginRequest,
-    PaginationParams, RegisterRequest, Tier, UsageResponse,
+    ApiKey, ApiKeyResponse, AuthResponse, CreateKeyRequest, DailyUsage,
+    EndpointUsage, LoginRequest, PaginationParams, RegisterRequest, Tier,
+    UsageDashboard, UsageResponse,
 };
 use crate::state::AppState;
 
@@ -26,6 +27,7 @@ pub fn create_api_router(state: AppState) -> Router {
         .route("/keys", post(create_api_key).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/keys", get(list_api_keys).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/usage", get(get_usage).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/usage/dashboard", get(get_usage_dashboard).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/papers/search", get(search_papers).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/papers/:id", get(get_paper).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/gap/detect", post(detect_gap).layer(from_fn_with_state(state.clone(), auth_middleware)))
@@ -207,6 +209,86 @@ pub async fn get_usage(
     };
 
     Ok(Json(usage))
+}
+
+pub async fn get_usage_dashboard(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+) -> Result<impl axum::response::IntoResponse> {
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let total_requests: i64 = conn.query_one(
+        "SELECT COALESCE(SUM(requests_used), 0) as total FROM api_keys WHERE user_id = $1",
+        &[&key.user_id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    .get("total");
+
+    let requests_today: i64 = conn.query_one(
+        "SELECT COUNT(*) as count FROM usage_events WHERE api_key_id = $1 AND created_at >= NOW() - INTERVAL '1 day'",
+        &[&key.id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    .get("count");
+
+    let requests_this_week: i64 = conn.query_one(
+        "SELECT COUNT(*) as count FROM usage_events WHERE api_key_id = $1 AND created_at >= NOW() - INTERVAL '7 days'",
+        &[&key.id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    .get("count");
+
+    let requests_this_month: i64 = conn.query_one(
+        "SELECT COUNT(*) as count FROM usage_events WHERE api_key_id = $1 AND created_at >= NOW() - INTERVAL '30 days'",
+        &[&key.id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    .get("count");
+
+    let endpoint_rows = conn.query(
+        "SELECT endpoint, COUNT(*) as count, COALESCE(AVG(latency_ms), 0) as avg_latency, MAX(created_at) as last_called FROM usage_events WHERE api_key_id = $1 GROUP BY endpoint ORDER BY count DESC LIMIT 10",
+        &[&key.id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let endpoint_breakdown: Vec<EndpointUsage> = endpoint_rows.iter().map(|row| {
+        EndpointUsage {
+            endpoint: row.get("endpoint"),
+            count: row.get("count"),
+            avg_latency_ms: row.get("avg_latency"),
+            last_called: row.get("last_called"),
+        }
+    }).collect();
+
+    let daily_rows = conn.query(
+        "SELECT DATE(created_at) as date, COUNT(*) as count FROM usage_events WHERE api_key_id = $1 AND created_at >= NOW() - INTERVAL '30 days' GROUP BY DATE(created_at) ORDER BY date",
+        &[&key.id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let daily_trend: Vec<DailyUsage> = daily_rows.iter().map(|row| {
+        let date: chrono::NaiveDate = row.get("date");
+        DailyUsage {
+            date: date.to_string(),
+            count: row.get("count"),
+        }
+    }).collect();
+
+    let usage_percent = if key.requests_limit > 0 {
+        (key.requests_used as f64 / key.requests_limit as f64) * 100.0
+    } else {
+        0.0
+    };
+
+    let dashboard = UsageDashboard {
+        total_requests: key.requests_used,
+        requests_today,
+        requests_this_week,
+        requests_this_month,
+        limit: key.requests_limit,
+        remaining: ((key.requests_limit - key.requests_used).max(0)),
+        usage_percent,
+        tier: key.tier,
+        reset_at: Utc::now() + chrono::Duration::hours(24),
+        endpoint_breakdown,
+        daily_trend,
+    };
+
+    Ok(Json(dashboard))
 }
 
 pub async fn search_papers(

@@ -64,3 +64,20 @@ CREATE TABLE IF NOT EXISTS webhook_events (
 );
 
 CREATE INDEX IF NOT EXISTS idx_webhook_events_event_id ON webhook_events(event_id);
+
+-- Usage events table (for detailed API usage tracking)
+CREATE TABLE IF NOT EXISTS usage_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    api_key_id UUID NOT NULL REFERENCES api_keys(id) ON DELETE CASCADE,
+    endpoint VARCHAR(100) NOT NULL,
+    method VARCHAR(10) NOT NULL,
+    status_code INT,
+    latency_ms INT,
+    request_size_bytes INT,
+    response_size_bytes INT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_usage_events_api_key_id ON usage_events(api_key_id);
+CREATE INDEX IF NOT EXISTS idx_usage_events_created_at ON usage_events(created_at);
+CREATE INDEX IF NOT EXISTS idx_usage_events_endpoint ON usage_events(endpoint);
