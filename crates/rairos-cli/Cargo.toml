@@ -74,6 +74,7 @@ rairos-scoring-momentum = { path = "../rairos-scoring-momentum" }
 rairos-crossover = { path = "../rairos-crossover" }
 rairos-gene-pool-decay = { path = "../rairos-gene-pool-decay" }
 rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
+rairos-credibility = { path = "../rairos-credibility" }
 rairos-batch-optimizer = { path = "../rairos-batch-optimizer" }
 rairos-bold-vault = { path = "../rairos-bold-vault" }
 rairos-climate-ai-monitor = { path = "../rairos-climate-ai-monitor" }

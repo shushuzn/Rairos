@@ -28,6 +28,8 @@ pub mod decay;
 pub use decay::*;
 pub mod atrisk;
 pub use atrisk::*;
+pub mod credibility;
+pub use credibility::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

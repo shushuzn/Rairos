@@ -649,6 +649,13 @@ enum Commands {
         keep: String,
     },
 
+    /// Score capsule credibility and detect trendslop
+    Credibility {
+        /// Show trend-slop capsules
+        #[arg(short, long, default_value = "false")]
+        trendslop: bool,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2323,6 +2330,13 @@ fn main() -> Result<()> {
                 handle_atrisk_keep(&keep)?;
             } else {
                 handle_atrisk_list(*threshold)?;
+            }
+        }
+        Commands::Credibility { trendslop } => {
+            if *trendslop {
+                handle_credibility_trendslop()?;
+            } else {
+                handle_credibility_score()?;
             }
         }
         Commands::Agent {

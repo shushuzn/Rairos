@@ -618,3 +618,17 @@ fn atrisk_keep_no_crash() {
     let result = handle_atrisk_keep("test_capsule");
     assert!(result.is_ok());
 }
+
+// ─── credibility.rs ────────────────────────────────────────────────────────
+
+#[test]
+fn credibility_score_no_crash() {
+    let result = handle_credibility_score();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn credibility_trendslop_no_crash() {
+    let result = handle_credibility_trendslop();
+    assert!(result.is_ok());
+}
