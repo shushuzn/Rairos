@@ -65,11 +65,11 @@ cargo run -p rairos-cli -- daemon --foreground
 CARGO_BUILD_JOBS=1 cargo test
 ```
 
-## MCP Tools (68 Rust, zero Python)
+## MCP Tools (70 Rust, zero Python)
 
 | Source | Count | Tools |
 |--------|-------|-------|
-| Core Rust | 25 | paper_search/ingest/parse_full/query/chat/recommend, replication_check_simple, pdf_extract_advanced, tag_add/remove/list, trends_detect_trending/predict_next/top_predictions/compare_tags, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch, chart_query |
+| Core Rust | 27 | paper_search/ingest/parse_full/query/chat/recommend, replication_check_simple, github_repo_metadata, huggingface_dataset_metadata, pdf_extract_advanced, tag_add/remove/list, trends_detect_trending/predict_next/top_predictions/compare_tags, citation_graph, kg_paper_subgraph/kg_tag_graph/kg_full_graph/kg_query, pdf_download/extract_text/extract_structured, cite_fetch, chart_query |
 | LLM-backed | 43 | briefing_generate, litreview_generate, slides_generate, gap_detect/submit/evolve, citation_chain_build/families/silent/render, impact_score_paper/rank, replication_check, route_query, trust_scorer_compute, paper_compare/analyze, gene_pool_decay, crossover, tag_all, research_memory_add_stance/list_stances/check_paper/anomalies, leaderboard/impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, routeplan_list/update_step/revise, research_run, hypothesis_generate/list, topic_discovery, orchestrator_run_cycle, deep_research_run, parallel_research_run |
 
 ## Persistence Paths
@@ -91,6 +91,34 @@ These functions are centralized in `rairos-core` for reuse across crates:
 | `jaccard_similarity` | `fn(a: &[String], b: &[String]) -> f64` | Set overlap |
 
 **Used by:** `rairos-rankers`, `rairos-rankers-score`, `rairos-vault`, `rairos-credibility`, `rairos-bold-vault`, `rairos-credibility-scorer`
+
+### GitHub API Client (rairos-replication-checker)
+
+`GitHubClient` provides access to GitHub REST API v3:
+
+| Method | Signature | Purpose |
+|--------|-----------|---------|
+| `get_repo_metadata` | `async fn(owner, repo) -> RepoMetadata` | Fetch repo metadata |
+| `get_readme_preview` | `async fn(owner, repo, max_len) -> String` | Fetch README preview |
+
+`RepoMetadata` fields: `full_name`, `description`, `stars`, `forks`, `language`, `license`, `topics`, `created_at`, `pushed_at`, `open_issues`, `subscribers_count`
+
+**Environment:** `GITHUB_TOKEN` (optional) for higher rate limits (5000 req/hr vs 60 req/hr)
+
+**Used by:** `rairos-mcp` (github_repo_metadata tool)
+
+### HuggingFace Dataset API Client (rairos-replication-checker)
+
+`HuggingFaceClient` provides access to HuggingFace datasets API:
+
+| Method | Signature | Purpose |
+|--------|-----------|---------|
+| `get_dataset_metadata` | `async fn(dataset_name) -> DatasetMetadata` | Fetch dataset metadata |
+| `search_datasets` | `async fn(query, limit) -> Vec<DatasetMetadata>` | Search datasets |
+
+`DatasetMetadata` fields: `id`, `name`, `tags`, `downloads`, `papers_with_code`, `trending`
+
+**Used by:** `rairos-mcp` (huggingface_dataset_metadata tool)
 
 ### Constants (rairos-core)
 

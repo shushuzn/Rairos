@@ -841,6 +841,129 @@ impl Default for GitHubClient {
     }
 }
 
+// ─── HuggingFace Dataset API Client ──────────────────────────────────────────
+
+#[derive(Debug, Clone)]
+pub struct HuggingFaceClient {
+    client: reqwest::Client,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DatasetMetadata {
+    pub id: String,
+    pub name: String,
+    pub tags: Vec<String>,
+    pub downloads: u64,
+    pub papers_with_code: Option<u32>,
+    pub trending: bool,
+}
+
+impl HuggingFaceClient {
+    pub fn new() -> Self {
+        Self {
+            client: reqwest::Client::new(),
+        }
+    }
+
+    pub async fn get_dataset_metadata(&self, dataset_name: &str) -> Result<DatasetMetadata, String> {
+        let url = format!("https://huggingface.co/api/datasets/{}", dataset_name);
+
+        let response = self.client.get(&url)
+            .header("User-Agent", "Rairos-Research-OS")
+            .header("Accept", "application/json")
+            .send()
+            .await
+            .map_err(|e| format!("HuggingFace API request failed: {}", e))?;
+
+        if response.status() == 404 {
+            return Err(format!("Dataset not found: {}", dataset_name));
+        }
+
+        if !response.status().is_success() {
+            return Err(format!("HuggingFace API error: {}", response.status()));
+        }
+
+        let json: serde_json::Value = response.json().await
+            .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+        let id = json["id"].as_str().unwrap_or(dataset_name).to_string();
+        let name = json["name"].as_str().unwrap_or(&id).to_string();
+        let tags = json["tags"]
+            .as_array()
+            .map(|arr| arr.iter().filter_map(|t| t.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let downloads = json["downloads"].as_u64().unwrap_or(0);
+        let papers_with_code = json["paperswithcode"]
+            .as_object()
+            .and_then(|obj| obj.get("count"))
+            .and_then(|v| v.as_u64())
+            .map(|n| n as u32);
+        let trending = json["trending"].as_bool().unwrap_or(false);
+
+        Ok(DatasetMetadata {
+            id,
+            name,
+            tags,
+            downloads,
+            papers_with_code,
+            trending,
+        })
+    }
+
+    pub async fn search_datasets(&self, query: &str, limit: usize) -> Result<Vec<DatasetMetadata>, String> {
+        let url = format!("https://huggingface.co/api/datasets?search={}&limit={}", query, limit);
+
+        let response = self.client.get(&url)
+            .header("User-Agent", "Rairos-Research-OS")
+            .header("Accept", "application/json")
+            .send()
+            .await
+            .map_err(|e| format!("HuggingFace API request failed: {}", e))?;
+
+        if !response.status().is_success() {
+            return Err(format!("HuggingFace API error: {}", response.status()));
+        }
+
+        let json: Vec<serde_json::Value> = response.json().await
+            .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+        let datasets: Vec<DatasetMetadata> = json.iter()
+            .map(|item| {
+                let id = item["id"].as_str().unwrap_or("").to_string();
+                let name = item["name"].as_str().unwrap_or(&id).to_string();
+                let tags = item["tags"]
+                    .as_array()
+                    .map(|arr| arr.iter().filter_map(|t| t.as_str().map(String::from)).collect())
+                    .unwrap_or_default();
+                let downloads = item["downloads"].as_u64().unwrap_or(0);
+                let papers_with_code = item["paperswithcode"]
+                    .as_object()
+                    .and_then(|obj| obj.get("count"))
+                    .and_then(|v| v.as_u64())
+                    .map(|n| n as u32);
+                let trending = item["trending"].as_bool().unwrap_or(false);
+
+                DatasetMetadata {
+                    id,
+                    name,
+                    tags,
+                    downloads,
+                    papers_with_code,
+                    trending,
+                }
+            })
+            .collect();
+
+        Ok(datasets)
+    }
+}
+
+impl Default for HuggingFaceClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
 #[cfg(test)]

@@ -1040,6 +1040,73 @@ impl ToolHandler for GitHubRepoMetadataHandler {
     }
 }
 
+// ─── HuggingFace Dataset Metadata ───────────────────────────────────────────
+
+pub struct HuggingFaceDatasetHandler;
+
+#[async_trait]
+impl ToolHandler for HuggingFaceDatasetHandler {
+    fn name(&self) -> &str { "huggingface_dataset_metadata" }
+    fn description(&self) -> &str { "Fetch HuggingFace dataset metadata (downloads, tags, papers with code)" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("dataset_id".into(), ToolProperty::string("Dataset ID (e.g., 'imagenet-1k' or 'ILSVRC/imagenet-1k')")),
+                ("search".into(), ToolProperty::string("Search query to find datasets (alternative to dataset_id)")),
+                ("limit".into(), ToolProperty::string("Max results when searching (default: 5)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let client = rairos_replication_checker::HuggingFaceClient::new();
+
+        if let Some(search) = params.get("search").and_then(|v| v.as_str()) {
+            let limit = params.get("limit")
+                .and_then(|v| v.as_str())
+                .and_then(|s| s.parse::<usize>().ok())
+                .unwrap_or(5);
+
+            let datasets = client.search_datasets(search, limit).await
+                .map_err(|e| format!("Failed to search datasets: {}", e))?;
+
+            let content: Vec<String> = datasets.iter().map(|d| {
+                format!(
+                    "## {}\nDownloads: {} | Tags: {}\n",
+                    d.id,
+                    d.downloads,
+                    d.tags.iter().take(5).map(|s| s.as_str()).collect::<Vec<_>>().join(", ")
+                )
+            }).collect();
+
+            Ok(serde_json::json!({
+                "content": [{"type": "text", "text": content.join("\n")}],
+                "datasets": datasets,
+            }))
+        } else {
+            let dataset_id = params["dataset_id"].as_str()
+                .ok_or("Missing dataset_id or search parameter")?;
+
+            let meta = client.get_dataset_metadata(dataset_id).await
+                .map_err(|e| format!("Failed to fetch dataset metadata: {}", e))?;
+
+            Ok(serde_json::json!({
+                "content": [{
+                    "type": "text",
+                    "text": format!(
+                        "## {}\nDownloads: {}\nTags: {}\nPapers with Code: {}",
+                        meta.id,
+                        meta.downloads,
+                        meta.tags.iter().take(10).map(|s| s.as_str()).collect::<Vec<_>>().join(", "),
+                        meta.papers_with_code.map(|n| n.to_string()).unwrap_or_else(|| "N/A".to_string())
+                    )
+                }],
+                "metadata": meta,
+            }))
+        }
+    }
+}
+
 // ─── PDF Extract Advanced ─────────────────────────────────────────────────
 
 pub struct PdfExtractAdvancedHandler;
@@ -1094,6 +1161,7 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(PaperParseFullHandler).await;
     server.register(ReplicationCheckSimpleHandler).await;
     server.register(GitHubRepoMetadataHandler).await;
+    server.register(HuggingFaceDatasetHandler).await;
     server.register(PdfExtractAdvancedHandler).await;
     server.register(PaperQueryHandler).await;
     server.register(PaperChatHandler).await;
