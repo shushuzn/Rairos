@@ -8,6 +8,8 @@ pub mod game_mode;
 pub use game_mode::*;
 pub mod contradiction;
 pub use contradiction::*;
+pub mod trends;
+pub use trends::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

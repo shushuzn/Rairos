@@ -63,6 +63,7 @@ rairos-simple-cli = { path = "../rairos-simple-cli" }
 rairos-achievements = { path = "../rairos-achievements" }
 rairos-game-mode = { path = "../rairos-game-mode" }
 rairos-contradiction = { path = "../rairos-contradiction" }
+rairos-trend-analyzer = { path = "../rairos-trend-analyzer" }
 rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
 rairos-batch-optimizer = { path = "../rairos-batch-optimizer" }
 rairos-bold-vault = { path = "../rairos-bold-vault" }

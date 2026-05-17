@@ -484,3 +484,17 @@ fn contradictions_render_no_crash() {
     let result = handle_contradictions_render();
     assert!(result.is_ok());
 }
+
+// ─── trends.rs ───────────────────────────────────────────────────────────────
+
+#[test]
+fn trends_analyze_no_crash() {
+    let result = handle_trends_analyze("machine learning", None);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn trends_mermaid_no_crash() {
+    let result = handle_trends_mermaid("machine learning", None);
+    assert!(result.is_ok());
+}

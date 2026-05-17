@@ -533,6 +533,20 @@ enum Commands {
         limit: usize,
     },
 
+    /// Analyze research trends for a topic
+    Trends {
+        /// Topic to analyze
+        topic: String,
+
+        /// Number of years to look back
+        #[arg(short = 'y', long)]
+        years: Option<i32>,
+
+        /// Output format: text or mermaid
+        #[arg(short, long, default_value = "text")]
+        format: String,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2128,6 +2142,15 @@ fn main() -> Result<()> {
                 "render" => handle_contradictions_render()?,
                 _ => {
                     eprintln!("Unknown action: {}. Use: list or render", action);
+                }
+            }
+        }
+        Commands::Trends { topic, years, format } => {
+            match format.as_str() {
+                "text" => handle_trends_analyze(topic, *years)?,
+                "mermaid" => handle_trends_mermaid(topic, *years)?,
+                _ => {
+                    eprintln!("Unknown format: {}. Use: text or mermaid", format);
                 }
             }
         }
