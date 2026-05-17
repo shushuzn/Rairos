@@ -646,3 +646,11 @@ fn claimgraph_contradictions_no_crash() {
     let result = handle_claimgraph_contradictions();
     assert!(result.is_ok());
 }
+
+// ─── bold.rs ──────────────────────────────────────────────────────────────
+
+#[test]
+fn bold_list_no_crash() {
+    let result = handle_bold_list();
+    assert!(result.is_ok());
+}

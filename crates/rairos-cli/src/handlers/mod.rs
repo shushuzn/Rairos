@@ -32,6 +32,8 @@ pub mod credibility;
 pub use credibility::*;
 pub mod claimgraph;
 pub use claimgraph::*;
+pub mod bold;
+pub use bold::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

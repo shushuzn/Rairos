@@ -667,6 +667,9 @@ enum Commands {
         contradictions: bool,
     },
 
+    /// List high-risk/high-reward bold capsules
+    Bold,
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2356,6 +2359,9 @@ fn main() -> Result<()> {
             } else {
                 handle_claimgraph_stats()?;
             }
+        }
+        Commands::Bold => {
+            handle_bold_list()?;
         }
         Commands::Agent {
             topic,
