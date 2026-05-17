@@ -1,15 +1,18 @@
 use rairos_core::Database;
 use rairos_web::{start, AppState};
+use rairos_observability::layer::{init_logging, cleanup_old_logs, log_dir};
 use std::sync::Arc;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive(tracing::Level::INFO.into()),
-        )
-        .init();
+    let _guard = init_logging();
+
+    let log_dir = log_dir();
+    if let Ok(removed) = cleanup_old_logs(&log_dir, 30) {
+        if removed > 0 {
+            eprintln!("Cleaned up {} old log files", removed);
+        }
+    }
 
     let db_path = std::env::var("RAIROS_DB").unwrap_or_else(|_| "rairos.db".to_string());
     let db = Database::open(&db_path).expect("Failed to open database");
