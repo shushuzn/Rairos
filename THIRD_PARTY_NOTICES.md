@@ -1,6 +1,30 @@
 # Third-Party Software Notices
 
-This project uses the following open-source software:
+This project uses the following open-source software.
+
+## Adding New Dependencies
+
+When adding a new third-party dependency:
+
+1. Add entry in alphabetical order below
+2. Include **Source** URL, **License**, and description
+3. Explain how it relates to Rairos
+4. Include copyright notice if available
+
+### Template
+
+```markdown
+## [Name]
+
+**Source:** https://github.com/[owner]/[repo]
+**License:** [License Name]
+
+> [Brief description of how this project is used in Rairos]
+
+Copyright (c) [Year] [Owner]
+```
+
+---
 
 ---
 
