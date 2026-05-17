@@ -430,3 +430,43 @@ fn net_benchmark_all() {
         assert!(result.is_ok(), "benchmark {kind} failed: {result:?}");
     }
 }
+
+// ─── achievements.rs ───────────────────────────────────────────────────────────
+
+#[test]
+fn achievements_list_no_crash() {
+    let result = handle_achievements_list();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn achievements_report_no_crash() {
+    let result = handle_achievements_report();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn achievements_stats_no_crash() {
+    let result = handle_achievements_stats();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn achievements_unlock_nonexistent_no_crash() {
+    let result = handle_achievements_unlock("nonexistent_achievement_id");
+    assert!(result.is_ok());
+}
+
+// ─── game_mode.rs ─────────────────────────────────────────────────────────────
+
+#[test]
+fn badges_list_no_crash() {
+    let result = handle_badges_list();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn badges_award_no_crash() {
+    let result = handle_badges_award("nonexistent_badge_id");
+    assert!(result.is_ok());
+}
