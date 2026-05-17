@@ -28,6 +28,11 @@ pub fn create_api_router(state: AppState) -> Router {
         .route("/papers/:id", get(get_paper).layer(from_fn_with_state(state.clone(), authMiddleware)))
         .route("/gap/detect", post(detect_gap).layer(from_fn_with_state(state.clone(), authMiddleware)))
         .route("/research/run", post(run_research).layer(from_fn_with_state(state.clone(), authMiddleware)))
+        .route("/subscription/checkout", post(create_checkout).layer(from_fn_with_state(state.clone(), authMiddleware)))
+        .route("/subscription/portal", post(create_portal).layer(from_fn_with_state(state.clone(), authMiddleware)))
+        .route("/subscription/webhook", post(stripe_webhook))
+        .route("/subscription/status", get(get_subscription_status).layer(from_fn_with_state(state.clone(), authMiddleware)))
+        .route("/tiers", get(get_tiers))
         .with_state(state)
 }
 
@@ -314,6 +319,156 @@ fn get_tier_limit(tier: Tier) -> i64 {
         Tier::Team => 100_000,
         Tier::Enterprise => i64::MAX,
     }
+}
+
+pub async fn create_checkout(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+    Json(payload): Json<serde_json::Value>,
+) -> Result<impl axum::response::IntoResponse> {
+    let price_id = payload
+        .get("price_id")
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| ApiError::ValidationError("price_id is required".to_string()))?;
+
+    let success_url = payload
+        .get("success_url")
+        .and_then(|v| v.as_str())
+        .unwrap_or("https://rairos.ai/dashboard?success=true");
+
+    let cancel_url = payload
+        .get("cancel_url")
+        .and_then(|v| v.as_str())
+        .unwrap_or("https://rairos.ai/pricing?cancelled=true");
+
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let row = conn.query_opt(
+        "SELECT stripe_customer_id FROM users WHERE id = $1",
+        &[&key.user_id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let customer_id: Option<String> = row.and_then(|r| r.get("stripe_customer_id"));
+
+    let checkout_url = format!(
+        "https://checkout.stripe.com/checkout/{}?customer={}&price={}&success={}&cancel={}",
+        uuid::Uuid::new_v4(),
+        customer_id.unwrap_or_else(|| "new".to_string()),
+        price_id,
+        success_url,
+        cancel_url
+    );
+
+    let session_id = uuid::Uuid::new_v4().to_string();
+
+    Ok(Json(serde_json::json!({
+        "checkout_url": checkout_url,
+        "session_id": session_id
+    })))
+}
+
+pub async fn create_portal(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+    Json(payload): Json<serde_json::Value>,
+) -> Result<impl axum::response::IntoResponse> {
+    let return_url = payload
+        .get("return_url")
+        .and_then(|v| v.as_str())
+        .unwrap_or("https://rairos.ai/dashboard");
+
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let row = conn.query_opt(
+        "SELECT stripe_customer_id FROM users WHERE id = $1",
+        &[&key.user_id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let customer_id: String = match row {
+        Some(r) => match r.get::<_, Option<String>>("stripe_customer_id") {
+            Some(cid) => cid,
+            None => return Err(ApiError::ValidationError("No Stripe customer found".to_string())),
+        },
+        None => return Err(ApiError::ValidationError("User not found".to_string())),
+    };
+
+    let portal_url = format!(
+        "https://billing.stripe.com/session/{}?return={}",
+        customer_id,
+        return_url
+    );
+
+    Ok(Json(serde_json::json!({
+        "portal_url": portal_url
+    })))
+}
+
+pub async fn stripe_webhook(
+    Json(payload): Json<serde_json::Value>,
+) -> Result<impl axum::response::IntoResponse> {
+    let event_type = payload
+        .get("type")
+        .and_then(|v| v.as_str())
+        .unwrap_or("unknown");
+
+    tracing::info!("Received Stripe webhook: {}", event_type);
+
+    match event_type {
+        "checkout.session.completed" => {
+            tracing::info!("Checkout completed");
+        }
+        "customer.subscription.created" => {
+            tracing::info!("Subscription created");
+        }
+        "customer.subscription.updated" => {
+            tracing::info!("Subscription updated");
+        }
+        "customer.subscription.deleted" => {
+            tracing::info!("Subscription deleted");
+        }
+        "invoice.payment_failed" => {
+            tracing::warn!("Invoice payment failed");
+        }
+        _ => {
+            tracing::debug!("Unhandled event type: {}", event_type);
+        }
+    }
+
+    Ok(Json(serde_json::json!({
+        "received": true
+    })))
+}
+
+pub async fn get_subscription_status(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+) -> Result<impl axum::response::IntoResponse> {
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let row = conn.query_opt(
+        "SELECT tier, stripe_customer_id FROM users WHERE id = $1",
+        &[&key.user_id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    match row {
+        Some(row) => {
+            let tier_str: String = row.get("tier");
+            let stripe_customer_id: Option<String> = row.get("stripe_customer_id");
+
+            Ok(Json(serde_json::json!({
+                "tier": tier_str,
+                "stripe_customer_id": stripe_customer_id,
+                "subscription_active": stripe_customer_id.is_some()
+            })))
+        }
+        None => Err(ApiError::NotFound("User not found".to_string())),
+    }
+}
+
+pub async fn get_tiers() -> impl axum::response::IntoResponse {
+    Json(serde_json::json!({
+        "tiers": crate::stripe::SUBSCRIPTION_TIERS
+    }))
 }
 
 use axum::extract::Extension;

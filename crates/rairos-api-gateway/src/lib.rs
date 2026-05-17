@@ -9,6 +9,7 @@ pub mod models;
 pub mod ratelimit;
 pub mod routes;
 pub mod state;
+pub mod stripe;
 
 pub use error::{ApiError, Result};
 pub use state::AppState;
