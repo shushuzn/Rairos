@@ -564,13 +564,16 @@ impl KgDatabase {
 
     // ── Full graph export ──────────────────────────────────────────────────
 
-    pub fn export_json(&self) -> Result<serde_json::Value, KgError> {
+    pub fn export_json(&self, limit: Option<usize>) -> Result<serde_json::Value, KgError> {
+        let limit = limit.unwrap_or(10000).min(100000);
         let nodes = self.get_all_nodes(None)?;
+        let nodes_to_export = if nodes.len() > limit { &nodes[..limit] } else { &nodes };
         let mut edges = Vec::new();
-        // Get ALL edges
         let _g = self.lock();
-        let mut stmt = _g.prepare("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges")?;
-        let rows = stmt.query_map([], |row| {
+        let mut stmt = _g.prepare(
+            "SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges LIMIT ?1"
+        )?;
+        let rows = stmt.query_map([limit as i64], |row| {
             Ok(KgEdge {
                 id: row.get(0)?,
                 source: row.get(1)?,
@@ -583,7 +586,11 @@ impl KgDatabase {
         for row in rows {
             edges.push(row?);
         }
-        Ok(serde_json::json!({ "nodes": nodes, "edges": edges }))
+        Ok(serde_json::json!({
+            "nodes": nodes_to_export,
+            "edges": edges,
+            "truncated": nodes.len() > limit
+        }))
     }
 
     /// Get database path
@@ -861,10 +868,14 @@ impl KnowledgeGraph {
         KgStats { total_nodes: node_count, total_edges: edge_count, avg_degree, paper_nodes, concept_nodes }
     }
 
-    pub fn export_json(&self) -> serde_json::Value {
+    pub fn export_json(&self, limit: Option<usize>) -> serde_json::Value {
+        let limit = limit.unwrap_or(10000).min(100000);
+        let nodes: Vec<_> = self.nodes.values().take(limit).collect();
+        let edges: Vec<_> = self.edges.iter().take(limit).collect();
         serde_json::json!({
-            "nodes": self.nodes.values().collect::<Vec<_>>(),
-            "edges": self.edges,
+            "nodes": nodes,
+            "edges": edges,
+            "truncated": self.nodes.len() > limit || self.edges.len() > limit
         })
     }
 
@@ -1202,7 +1213,7 @@ mod tests {
     fn test_db_export_json() {
         let (db, dir) = test_db();
         db.add_node("paper", "1", "Paper", serde_json::json!({})).unwrap();
-        let json = db.export_json().unwrap();
+        let json = db.export_json(None).unwrap();
         assert!(!json["nodes"].as_array().unwrap().is_empty());
         let _ = std::fs::remove_dir_all(&dir);
     }

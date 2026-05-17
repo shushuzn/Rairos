@@ -540,7 +540,7 @@ async fn kg_export(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<serde_json::Value>, WebError> {
     let kg = state.knowledge_graph.read().await;
-    Ok(Json(kg.export_json()))
+    Ok(Json(kg.export_json(None)))
 }
 
 async fn kg_citations(

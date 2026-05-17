@@ -496,9 +496,9 @@ impl ToolHandler for KgFullGraphHandler {
     async fn call(&self, _params: Value) -> Result<Value, String> {
         let graph = kg();
         if let Some(db) = graph.database() {
-            db.export_json().map_err(|e| format!("KG export: {}", e))
+            db.export_json(None).map_err(|e| format!("KG export: {}", e))
         } else {
-            Ok(graph.export_json())
+            Ok(graph.export_json(None))
         }
     }
 }
