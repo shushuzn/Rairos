@@ -1,4 +1,4 @@
-use rairos_codegraph::{CodeGraph, Indexer, Node};
+use rairos_codegraph::{CodeGraph, Indexer};
 use std::fs;
 use tempfile::TempDir;
 

@@ -1,5 +1,4 @@
 use rairos_codegraph::{CodeGraph, Node};
-use std::fs;
 use tempfile::TempDir;
 
 fn create_test_graph() -> (CodeGraph, TempDir) {
