@@ -1,99 +1,150 @@
-# Contributing to AI Research OS
+# Contributing to Rairos
 
-Thank you for your interest in contributing! This project is a self-evolving research operating system for AI researchers, built 100% in Rust (154 crates). Here's how you can help.
+Thank you for your interest in contributing to Rairos!
 
-## Quick Start
+## Project Overview
+
+Rairos is a Self-Evolving Research OS built with **100% Rust**:
+- 150 crates
+- 122 CLI commands
+- 67 MCP tools
+- GPL-3.0 license
+
+## Development Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
 
-# Build the project
-CARGO_BUILD_JOBS=1 cargo build --workspace
+# Run setup script
+bash scripts/setup-dev.sh
 
-# Run tests
-CARGO_BUILD_JOBS=1 cargo test --workspace
+# Or manually:
+# 1. Install Rust (stable)
+rustup default stable
+
+# 2. Build
+CARGO_BUILD_JOBS=1 cargo build
+
+# 3. Test
+CARGO_BUILD_JOBS=1 cargo test
 ```
 
-## Development Workflow
+## Making Changes
 
-### 1. Pick an Issue
+### Code Style
 
-- Look for issues labeled [good first issue](https://github.com/shushuzn/Rairos/labels/good%20first%20issue) or [help wanted](https://github.com/shushuzn/Rairos/labels/help%20wanted)
-- Comment on the issue to let others know you're working on it
-- Fork the repo and create a feature branch
+- Follow Rust standard formatting (`cargo fmt`)
+- Run clippy linter (`cargo clippy -- -D warnings`)
+- Keep code clear and documented where necessary
 
-### 2. Branch Naming
+### Commit Messages
 
 ```
-feature/description      # New features
-fix/description          # Bug fixes
-docs/description         # Documentation only
-test/description         # Test coverage only
-refactor/description     # Code refactoring
+feat(scope): add new feature
+fix(scope): fix bug
+refactor(scope): code refactoring
+test(scope): add or update tests
+docs(scope): documentation updates
 ```
 
-### 3. Making Changes
+Examples:
+```
+feat(cli): add paper-search command
+fix(mcp): handle missing parameters correctly
+refactor(core): extract similarity functions
+```
+
+### Building
 
 ```bash
-# Create your branch
-git checkout -b feature/my-feature
+# Always use CARGO_BUILD_JOBS=1 to avoid OOM
+CARGO_BUILD_JOBS=1 cargo build
 
-# Make your changes, then:
-cargo build -p <crate-name>    # Build a specific crate
-CARGO_BUILD_JOBS=1 cargo test  # Run all tests
-
-# Commit (use conventional commits)
-git commit -m "feat(parser): add arXiv ID normalization"
+# Build specific crate
+CARGO_BUILD_JOBS=1 cargo build -p rairos-cli
 ```
-
-### 4. Submit a Pull Request
-
-- Fill out the PR template (title, summary, changes, motivation, verification)
-- Link the issue: `Closes #123`
-- Ensure CI passes
-- Update CHANGELOG.md for user-facing changes
-
-## Code Standards
-
-### Rust Style
-
-- Follow Rust 2021 edition conventions
-- Run `cargo clippy --workspace -- -D warnings` before committing
-- Use `cargo fmt` for formatting
-- Add doc comments (`///`) for public APIs and structs
-- Keep functions focused and well-named
 
 ### Testing
 
-- All new features need tests
-- Use `#[cfg(test)]` modules, not a separate `tests/` directory
-- Run `CARGO_BUILD_JOBS=1 cargo test --workspace` to verify
+```bash
+# Test all
+CARGO_BUILD_JOBS=1 cargo test
 
-### Crate Naming
+# Test specific crate
+CARGO_BUILD_JOBS=1 cargo test -p rairos-core
 
-- All crates prefixed with `rairos-` (e.g., `rairos-core`, `rairos-cli`)
-- Library crates: `rairos-<name>` exposes a `<name>`-related functionality
-- CLI command crates: placed in `crates/rairos-<command-name>/`
-
-## Project Structure
-
+# Test with output
+CARGO_BUILD_JOBS=1 cargo test -p rairos-cli -- --nocapture
 ```
-ai_research_os/
-├── Cargo.toml            # Workspace root (154 members)
-├── crates/
-│   ├── rairos-core/      # Core data structures + database
-│   ├── rairos-cli/       # CLI entry point (clap derives)
-│   ├── rairos-mcp/       # MCP protocol server
-│   ├── rairos-llm/       # LLM clients
-│   └── ...               # 150 more crates
-├── AGENTS.md             # Full crate list + CLI reference
-├── docs/                 # Architecture, installation docs
-└── .github/workflows/    # CI configuration
+
+## Adding New Features
+
+### New CLI Command
+
+1. Add command variant to `Commands` enum in `crates/rairos-cli/src/main.rs`
+2. Create handler in `crates/rairos-cli/src/handlers/<feature>.rs`
+3. Add match arm in command dispatch
+
+### New MCP Tool
+
+1. Add handler to `crates/rairos-mcp/src/handlers.rs` (core) or `llm_handlers.rs` (LLM-backed)
+2. Implement `fn name(&self) -> &str` returning tool name
+3. Run `python3 scripts/generate_skills.py` to update documentation
+
+### New Crate
+
+1. Create in `crates/rairos-<name>/`
+2. Add to `Cargo.toml` workspace members
+3. Update dependencies in relevant crates
+
+## Updating Documentation
+
+After adding CLI commands or MCP tools, regenerate skill files:
+
+```bash
+python3 scripts/generate_skills.py
+```
+
+This updates:
+- `.opencode/skills/rairos-dev/SKILL.md`
+- `.opencode/skills/rairos-dev/REFERENCE.md`
+
+## Pull Request Process
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feat/my-feature`)
+3. Make changes with tests
+4. Ensure CI passes
+5. Submit PR with clear description
+
+### PR Description Template
+
+```markdown
+## Summary
+Brief description of changes
+
+## Type
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Refactoring
+- [ ] Documentation
+
+## Testing
+How was this tested?
+
+## Checklist
+- [ ] Code follows project style
+- [ ] Tests pass
+- [ ] Documentation updated (if applicable)
 ```
 
 ## Getting Help
 
-- Open a [Discussion](https://github.com/shushuzn/Rairos/discussions) for questions
-- File an [Issue](https://github.com/shushuzn/Rairos/issues) for bugs or feature requests
+- Open an issue for bugs or feature requests
+- Check existing issues before duplicating
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the GPL-3.0 License.
