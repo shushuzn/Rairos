@@ -1,11 +1,18 @@
 # Rairos JavaScript SDK
 
+[![npm version](https://img.shields.io/npm/v/rairos.svg)](https://www.npmjs.com/package/rairos)
+[![License](https://img.shields.io/npm/l/rairos.svg)](https://github.com/shushuzn/Rairos/blob/main/sdks/js/package.json)
+
 JavaScript/TypeScript SDK for the Rairos API platform.
 
 ## Installation
 
 ```bash
+# From npm (coming soon)
 npm install rairos
+
+# From source
+cd sdks/js && npm install && cd ../..
 ```
 
 ## Quick Start

@@ -1,11 +1,19 @@
 # Rairos Python SDK
 
+[![PyPI version](https://img.shields.io/pypi/v/rairos.svg)](https://pypi.org/project/rairos/)
+[![Python versions](https://img.shields.io/pypi/pyversions/rairos.svg)](https://pypi.org/project/rairos/)
+[![License](https://img.shields.io/pypi/l/rairos.svg)](https://github.com/shushuzn/Rairos/blob/main/sdks/python/pyproject.toml)
+
 Python SDK for the Rairos API platform.
 
 ## Installation
 
 ```bash
+# From PyPI (coming soon)
 pip install rairos
+
+# From source
+cd sdks/python && pip install -e . && cd ../..
 ```
 
 ## Quick Start

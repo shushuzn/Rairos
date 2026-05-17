@@ -86,12 +86,14 @@ The **Rairos API** provides programmatic access to research intelligence.
 ### Quick Start
 
 ```bash
-# Install SDK
-pip install rairos
+# Install Python SDK (from source)
+cd sdks/python && pip install -e . && cd ../..
 
-# Or Node.js
-npm install rairos
+# Or Node.js SDK (from source)
+cd sdks/js && npm install && cd ../..
 ```
+
+**Note**: SDK packages will be available on PyPI/npm soon. For now, install from source.
 
 ```python
 from rairos import RairosClient
@@ -107,6 +109,14 @@ gaps = client.detect_gap("transformer efficiency")
 # Check usage
 usage = client.get_usage()
 ```
+
+### API Documentation
+
+| Resource | URL |
+|----------|-----|
+| Swagger UI | `http://localhost:8081/docs` |
+| OpenAPI JSON | `http://localhost:8081/docs/openapi.json` |
+| Full Docs | [docs/api/index.md](docs/api/index.md) |
 
 See [API Documentation](docs/api/index.md) for full API reference.
 
