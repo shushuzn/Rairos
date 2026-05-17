@@ -2,6 +2,30 @@
 
 REST API for the Rairos research platform.
 
+## Quick Start
+
+```bash
+# Install SDK
+pip install rairos
+
+# Get your API key at https://rairos.ai/api
+```
+
+```python
+from rairos import RairosClient
+
+client = RairosClient(api_key="your-key")
+
+# Search papers
+papers = client.search_papers("machine learning")
+
+# Detect research gaps
+gaps = client.detect_gap("transformer efficiency")
+
+# Check usage
+usage = client.get_usage()
+```
+
 ## Base URL
 
 ```
