@@ -3299,6 +3299,7 @@ dependencies = [
  "hmac 0.12.1",
  "rand 0.8.6",
  "redis",
+ "reqwest",
  "serde",
  "serde_json",
  "sha2 0.10.9",

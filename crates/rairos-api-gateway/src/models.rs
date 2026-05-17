@@ -504,3 +504,75 @@ mod tests {
         assert_eq!(params.per_page, 50);
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+pub struct AlertConfig {
+    pub id: Uuid,
+    pub user_id: Uuid,
+    pub threshold_percent: i32,
+    pub email_alert: bool,
+    pub webhook_url: Option<String>,
+    pub last_alerted_at: Option<DateTime<Utc>>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct AlertConfigResponse {
+    pub threshold_percent: i32,
+    pub email_alert: bool,
+    pub webhook_url: Option<String>,
+    pub last_alerted_at: Option<DateTime<Utc>>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+impl From<AlertConfig> for AlertConfigResponse {
+    fn from(config: AlertConfig) -> Self {
+        Self {
+            threshold_percent: config.threshold_percent,
+            email_alert: config.email_alert,
+            webhook_url: config.webhook_url,
+            last_alerted_at: config.last_alerted_at,
+            created_at: config.created_at,
+            updated_at: config.updated_at,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct CreateAlertConfigRequest {
+    pub threshold_percent: Option<i32>,
+    pub email_alert: Option<bool>,
+    pub webhook_url: Option<String>,
+}
+
+#[derive(Debug, Deserialize, ToSchema)]
+pub struct UpdateAlertConfigRequest {
+    pub threshold_percent: Option<i32>,
+    pub email_alert: Option<bool>,
+    pub webhook_url: Option<String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct AlertStatus {
+    pub current_usage: i64,
+    pub limit: i64,
+    pub usage_percent: f64,
+    pub threshold_percent: i32,
+    pub should_alert: bool,
+    pub last_alerted_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct AlertPayload {
+    pub alert_type: String,
+    pub user_id: String,
+    pub tier: String,
+    pub current_usage: i64,
+    pub limit: i64,
+    pub usage_percent: f64,
+    pub threshold_percent: i32,
+    pub message: String,
+    pub timestamp: DateTime<Utc>,
+}

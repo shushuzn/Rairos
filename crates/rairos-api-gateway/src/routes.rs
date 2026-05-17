@@ -5,7 +5,7 @@ use std::sync::atomic::Ordering;
 use axum::{
     extract::{Path, State, Query},
     middleware::from_fn_with_state,
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use chrono::Utc;
@@ -13,12 +13,14 @@ use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 use utoipa::OpenApi;
 
+use crate::alerts::AlertService;
 use crate::auth::{auth_middleware, create_api_key_for_user, generate_api_key, hash_api_key};
 use crate::error::{ApiError, Result};
 use crate::models::{
-    ApiKey, ApiKeyResponse, AuthResponse, CreateKeyRequest, DailyUsage,
-    EndpointUsage, LoginRequest, PaginationParams, RegisterRequest,
-    RotateKeyRequest, RotateKeyResponse, Tier, UsageDashboard, UsageResponse,
+    AlertConfigResponse, AlertStatus, ApiKey, ApiKeyResponse, AuthResponse,
+    CreateAlertConfigRequest, CreateKeyRequest, DailyUsage, EndpointUsage, LoginRequest,
+    PaginationParams, RegisterRequest, RotateKeyRequest, RotateKeyResponse, Tier,
+    UsageDashboard, UsageResponse,
 };
 use crate::state::AppState;
 
@@ -65,6 +67,10 @@ pub fn create_api_router(state: AppState) -> Router {
         .route("/keys/rotate", post(rotate_api_key).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/usage", get(get_usage).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/usage/dashboard", get(get_usage_dashboard).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/usage/alert-config", get(get_alert_config).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/usage/alert-config", post(create_alert_config).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/usage/alert-config", delete(delete_alert_config).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/usage/alert-status", get(get_alert_status).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/papers/search", get(search_papers).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/papers/:id", get(get_paper).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/gap/detect", post(detect_gap).layer(from_fn_with_state(state.clone(), auth_middleware)))
@@ -382,6 +388,84 @@ pub async fn get_usage_dashboard(
     };
 
     Ok(Json(dashboard))
+}
+
+pub async fn get_alert_config(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+) -> Result<Json<serde_json::Value>> {
+    let config = AlertService::get_alert_config(&state, key.user_id).await?;
+
+    match config {
+        Some(cfg) => Ok(Json(serde_json::to_value(AlertConfigResponse::from(cfg)).unwrap())),
+        None => {
+            let now = Utc::now();
+            Ok(Json(serde_json::json!({
+                "threshold_percent": 80,
+                "email_alert": true,
+                "webhook_url": null,
+                "last_alerted_at": null,
+                "created_at": now,
+                "updated_at": now
+            })))
+        }
+    }
+}
+
+pub async fn create_alert_config(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+    Json(req): Json<CreateAlertConfigRequest>,
+) -> Result<Json<serde_json::Value>> {
+    let existing = AlertService::get_alert_config(&state, key.user_id).await?;
+
+    let config = if existing.is_some() {
+        AlertService::update_alert_config(
+            &state,
+            key.user_id,
+            req.threshold_percent,
+            req.email_alert,
+            req.webhook_url,
+        )
+        .await?
+    } else {
+        AlertService::create_alert_config(
+            &state,
+            key.user_id,
+            req.threshold_percent,
+            req.email_alert,
+            req.webhook_url,
+        )
+        .await?
+    };
+
+    Ok(Json(serde_json::to_value(AlertConfigResponse::from(config)).unwrap()))
+}
+
+pub async fn delete_alert_config(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+) -> Result<impl axum::response::IntoResponse> {
+    AlertService::delete_alert_config(&state, key.user_id).await?;
+
+    Ok(Json(serde_json::json!({
+        "message": "Alert configuration deleted successfully"
+    })))
+}
+
+pub async fn get_alert_status(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+) -> Result<Json<AlertStatus>> {
+    let status = AlertService::get_alert_status(
+        &state,
+        key.user_id,
+        key.requests_used,
+        key.requests_limit,
+    )
+    .await?;
+
+    Ok(Json(status))
 }
 
 pub async fn search_papers(

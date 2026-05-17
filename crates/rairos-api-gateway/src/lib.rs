@@ -3,6 +3,7 @@
 //! API Gateway for Rairos API-first commercial platform.
 //! Provides authentication, rate limiting, and API routing.
 
+pub mod alerts;
 pub mod auth;
 pub mod error;
 pub mod metrics;
