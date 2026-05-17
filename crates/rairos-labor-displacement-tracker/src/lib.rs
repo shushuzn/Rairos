@@ -4,10 +4,9 @@
 //!
 //! Tracks papers about AI's impact on employment across cs.cyber-ph, cs.soc, and related categories.
 
-use rairos_core::constants::PAPERS_DB_PATH;
+use rairos_core::constants::papers_db_path;
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::PathBuf;
 
 const LABOR_KEYWORDS: &[&str] = &[
     "labor displacement",
@@ -38,12 +37,6 @@ const LABOR_KEYWORDS: &[&str] = &[
 ];
 
 const LABOR_CATS: &[&str] = &["cs.cyber-ph", "cs.soc", "cs.HC", "econ.GN"];
-
-/// Returns the path to the papers database.
-fn papers_db_path() -> PathBuf {
-    PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| "~".to_string()))
-        .join(PAPERS_DB_PATH)
-}
 
 /// A paper entry as stored in papers.json.
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -3,6 +3,16 @@ use std::sync::LazyLock;
 
 pub const LLM_BASE_URL: &str = "https://api.openai.com/v1";
 
+pub fn data_dir() -> std::path::PathBuf {
+    dirs::data_local_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join(AIROS_DIR_NAME)
+}
+
+pub fn papers_db_path() -> std::path::PathBuf {
+    data_dir().join(PAPERS_DB_PATH.trim_start_matches(&['.', '/'][..]))
+}
+
 pub const CAPSULE_PATH: &str = ".ai_research_os/gene_pool/capsules.json";
 pub const ARXIV_API: &str = "https://export.arxiv.org/api/query";
 pub const GP_DIR_NAME: &str = ".ai_research_os/evolution";

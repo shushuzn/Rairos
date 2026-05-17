@@ -7,6 +7,7 @@ edition = "2021"
 rairos-core = { path = "../rairos-core" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
+dirs.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

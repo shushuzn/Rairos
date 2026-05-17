@@ -20,6 +20,7 @@ tracing-subscriber.workspace = true
 anyhow.workspace = true
 lazy_static.workspace = true
 regex.workspace = true
+dirs.workspace = true
 
 # Orphan rescues — re-exported through rairos_core:: module tree
 rairos-retry = { path = "../rairos-retry" }
