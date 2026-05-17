@@ -172,3 +172,32 @@ fn test_stats() {
     assert_eq!(stats.edges, 0);
     assert_eq!(stats.files, 1);
 }
+
+#[test]
+fn test_codegraph_backend_trait() {
+    use rairos_codegraph::{CodeGraphBackend, Node};
+
+    let (graph, _dir) = create_test_graph();
+
+    let node = Node {
+        id: 0,
+        name: "backend_test".to_string(),
+        kind: "function".to_string(),
+        file: "test.rs".to_string(),
+        line: 1,
+        col: 0,
+        end_line: 5,
+        end_col: 1,
+        docstring: None,
+    };
+
+    let id = graph.add_node(&node).unwrap();
+    assert!(id > 0);
+
+    let stats = graph.stats().unwrap();
+    assert_eq!(stats.nodes, 1);
+
+    let retrieved = graph.get_node(id).unwrap();
+    assert!(retrieved.is_some());
+    assert_eq!(retrieved.unwrap().name, "backend_test");
+}
