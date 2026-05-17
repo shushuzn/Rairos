@@ -622,7 +622,7 @@ pub async fn stripe_webhook(
     headers: axum::http::HeaderMap,
     body: axum::body::Body,
 ) -> Result<impl axum::response::IntoResponse> {
-    let stripe_signature = headers
+    let signature_header = headers
         .get("stripe-signature")
         .and_then(|v| v.to_str().ok())
         .unwrap_or("");
@@ -633,6 +633,14 @@ pub async fn stripe_webhook(
 
     let raw_body = String::from_utf8(raw_bytes.to_vec())
         .map_err(|e| ApiError::ValidationError(format!("Invalid UTF-8: {}", e)))?;
+
+    if let Some(ref secret) = state.stripe_webhook_secret {
+        crate::webhook::verify_stripe_signature(&raw_body, signature_header, secret)
+            .map_err(|e| {
+                tracing::warn!("Stripe signature verification failed: {}", e);
+                ApiError::Unauthorized
+            })?;
+    }
 
     let payload: serde_json::Value = serde_json::from_str(&raw_body)
         .map_err(|e| ApiError::ValidationError(format!("Invalid JSON: {}", e)))?;
@@ -668,7 +676,6 @@ pub async fn stripe_webhook(
             if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
                 let customer_id = data.get("customer").and_then(|v| v.as_str());
                 let subscription_id = data.get("subscription").and_then(|v| v.as_str());
-                let customer_email = data.get("customer_details").and_then(|d| d.get("email")).and_then(|v| v.as_str());
 
                 if let (Some(cid), Some(sid)) = (customer_id, subscription_id) {
                     tracing::info!("Checkout completed for customer {} subscription {}", cid, sid);

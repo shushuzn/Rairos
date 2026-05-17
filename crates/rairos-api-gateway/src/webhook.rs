@@ -4,6 +4,12 @@
 
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
+
+const TOLERANCE_SECONDS: i64 = 300;
+
+type HmacSha256 = Hmac<Sha256>;
 
 #[derive(Debug, Deserialize)]
 pub struct StripeWebhookPayload {
@@ -87,6 +93,88 @@ pub fn get_tier_from_status(status: &str) -> &'static str {
     }
 }
 
+pub fn verify_stripe_signature(
+    payload: &str,
+    signature_header: &str,
+    secret: &str,
+) -> Result<(), StripeSignatureError> {
+    if signature_header.is_empty() {
+        return Err(StripeSignatureError::MissingSignature);
+    }
+
+    let mut timestamp: Option<i64> = None;
+    let mut signatures: Vec<String> = Vec::new();
+
+    for part in signature_header.split(',') {
+        let part = part.trim();
+        if let Some(value) = part.strip_prefix("t=") {
+            timestamp = Some(value.parse().map_err(|_| StripeSignatureError::InvalidFormat)?);
+        } else if let Some(value) = part.strip_prefix("v1=") {
+            signatures.push(value.to_string());
+        }
+    }
+
+    let timestamp = timestamp.ok_or(StripeSignatureError::InvalidFormat)?;
+
+    let now = Utc::now().timestamp();
+    if (now - timestamp).abs() > TOLERANCE_SECONDS {
+        return Err(StripeSignatureError::TimestampExpired);
+    }
+
+    let signed_payload = format!("{}.{}", timestamp, payload);
+
+    let mut mac = HmacSha256::new_from_slice(secret.as_bytes())
+        .map_err(|_| StripeSignatureError::MacError)?;
+    mac.update(signed_payload.as_bytes());
+
+    let expected_signature = hex::encode(mac.finalize().into_bytes());
+
+    let valid = signatures.iter().any(|sig| {
+        constant_time_eq(sig.as_bytes(), expected_signature.as_bytes())
+    });
+
+    if valid {
+        Ok(())
+    } else {
+        Err(StripeSignatureError::SignatureMismatch)
+    }
+}
+
+fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
+    if a.len() != b.len() {
+        return false;
+    }
+
+    let mut result = 0u8;
+    for (x, y) in a.iter().zip(b.iter()) {
+        result |= x ^ y;
+    }
+    result == 0
+}
+
+#[derive(Debug)]
+pub enum StripeSignatureError {
+    MissingSignature,
+    InvalidFormat,
+    TimestampExpired,
+    SignatureMismatch,
+    MacError,
+}
+
+impl std::fmt::Display for StripeSignatureError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::MissingSignature => write!(f, "Missing Stripe signature header"),
+            Self::InvalidFormat => write!(f, "Invalid signature header format"),
+            Self::TimestampExpired => write!(f, "Webhook timestamp expired (replay attack prevention)"),
+            Self::SignatureMismatch => write!(f, "Signature verification failed"),
+            Self::MacError => write!(f, "MAC computation error"),
+        }
+    }
+}
+
+impl std::error::Error for StripeSignatureError {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -96,5 +184,12 @@ mod tests {
         assert_eq!(get_tier_from_status("active"), "active");
         assert_eq!(get_tier_from_status("past_due"), "past_due");
         assert_eq!(get_tier_from_status("canceled"), "canceled");
+    }
+
+    #[test]
+    fn test_constant_time_eq() {
+        assert!(constant_time_eq(b"abc", b"abc"));
+        assert!(!constant_time_eq(b"abc", b"abd"));
+        assert!(!constant_time_eq(b"abc", b"ab"));
     }
 }

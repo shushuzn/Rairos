@@ -21,6 +21,7 @@ hex.workspace = true
 thiserror = "2"
 anyhow = "1"
 sha2 = "0.10"
+hmac = "0.12"
 rand = "0.8"
 tower = "0.4"
 tower-http = { version = "0.5", features = ["cors", "trace"] }
