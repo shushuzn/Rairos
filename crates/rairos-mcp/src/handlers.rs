@@ -9,6 +9,17 @@ use rairos_core::constants::{ARXIV_API, GP_DIR_NAME, GENE_POOL_JSONL, TAGS_FILE}
 use serde_json::Value;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::OnceLock;
+
+static KG: OnceLock<rairos_kg::KnowledgeGraph> = OnceLock::new();
+
+fn kg() -> &'static rairos_kg::KnowledgeGraph {
+    KG.get_or_init(|| {
+        let db_path = rairos_kg::KnowledgeGraph::db_path();
+        rairos_kg::KnowledgeGraph::with_db(db_path)
+            .expect("Failed to initialize knowledge graph")
+    })
+}
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -438,10 +449,7 @@ impl ToolHandler for KgPaperSubgraphHandler {
         let depth = params["depth"].as_u64().unwrap_or(1).min(3) as u32;
         let include_notes = params["include_notes"].as_str().map(|s| s != "false").unwrap_or(true);
 
-        let db_path = rairos_kg::KnowledgeGraph::db_path();
-        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
-            .map_err(|e| format!("KG init: {}", e))?;
-        let sub = graph.get_paper_subgraph(arxiv_id, depth, include_notes)
+        let sub = kg().get_paper_subgraph(arxiv_id, depth, include_notes)
             .map_err(|e| format!("Subgraph query: {}", e))?;
         Ok(serde_json::to_value(sub).unwrap_or_default())
     }
@@ -465,10 +473,7 @@ impl ToolHandler for KgTagGraphHandler {
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
         let tag = params["tag"].as_str().ok_or("Missing tag")?;
-        let db_path = rairos_kg::KnowledgeGraph::db_path();
-        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
-            .map_err(|e| format!("KG init: {}", e))?;
-        let sub = graph.get_tag_ecosystem(tag)
+        let sub = kg().get_tag_ecosystem(tag)
             .map_err(|e| format!("Tag ecosystem: {}", e))?;
         Ok(serde_json::to_value(sub).unwrap_or_default())
     }
@@ -486,9 +491,7 @@ impl ToolHandler for KgFullGraphHandler {
         ToolInputSchema::object(HashMap::new(), vec![])
     }
     async fn call(&self, _params: Value) -> Result<Value, String> {
-        let db_path = rairos_kg::KnowledgeGraph::db_path();
-        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
-            .map_err(|e| format!("KG init: {}", e))?;
+        let graph = kg();
         if let Some(db) = graph.database() {
             db.export_json().map_err(|e| format!("KG export: {}", e))
         } else {
@@ -517,10 +520,7 @@ impl ToolHandler for KgQueryHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let keyword = params["keyword"].as_str().ok_or("Missing keyword")?;
         let limit = params["limit"].as_u64().unwrap_or(20).min(100) as usize;
-        let db_path = rairos_kg::KnowledgeGraph::db_path();
-        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
-            .map_err(|e| format!("KG init: {}", e))?;
-        let db = graph.database().ok_or("No database connected")?;
+        let db = kg().database().ok_or("No database connected")?;
         let results = db.query_by_keyword(keyword, limit)
             .map_err(|e| format!("KG query: {}", e))?;
         Ok(serde_json::json!({"results": results, "total": results.len(), "keyword": keyword}))
@@ -809,10 +809,7 @@ impl ToolHandler for ChartQueryHandler {
         let label = params.get("label").and_then(|v| v.as_str());
 
         // Initialize KG
-        let db_path = rairos_kg::KnowledgeGraph::db_path();
-        let graph = rairos_kg::KnowledgeGraph::with_db(db_path)
-            .map_err(|e| format!("KG init failed: {}", e))?;
-        let db = graph.database().ok_or("KG database not available")?;
+        let db = kg().database().ok_or("KG database not available")?;
 
         // Find paper node
         let paper_node = db.get_node_by_entity("paper", paper_id)
