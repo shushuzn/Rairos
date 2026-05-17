@@ -677,6 +677,37 @@ enum Commands {
         stats: bool,
     },
 
+    /// CodeGraph knowledge graph operations
+    CodeGraph {
+        /// Show codegraph statistics
+        #[arg(short, long, default_value = "false")]
+        stats: bool,
+
+        /// List indexed files
+        #[arg(short = 'f', long, default_value = "false")]
+        files: bool,
+
+        /// Search for a symbol by name
+        #[arg(short = 's', long)]
+        search: Option<String>,
+
+        /// Show a specific node by ID
+        #[arg(short = 'n', long)]
+        node: Option<i64>,
+
+        /// Show callers of a node
+        #[arg(long)]
+        callers: Option<i64>,
+
+        /// Show callees of a node
+        #[arg(long)]
+        callees: Option<i64>,
+
+        /// Traversal depth for callers/callees
+        #[arg(long, default_value = "1")]
+        depth: usize,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2375,6 +2406,23 @@ fn main() -> Result<()> {
                 handle_profiler_stats()?;
             } else {
                 handle_profiler_report()?;
+            }
+        }
+        Commands::CodeGraph { stats, files, search, node, callers, callees, depth } => {
+            if *stats {
+                handle_codegraph_stats()?;
+            } else if *files {
+                handle_codegraph_files()?;
+            } else if let Some(q) = search {
+                handle_codegraph_search(q)?;
+            } else if let Some(id) = node {
+                handle_codegraph_node(*id)?;
+            } else if let Some(id) = callers {
+                handle_codegraph_callers(*id, *depth)?;
+            } else if let Some(id) = callees {
+                handle_codegraph_callees(*id, *depth)?;
+            } else {
+                handle_codegraph_stats()?;
             }
         }
         Commands::Agent {

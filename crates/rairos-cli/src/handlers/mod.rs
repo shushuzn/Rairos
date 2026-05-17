@@ -36,6 +36,8 @@ pub mod bold;
 pub use bold::*;
 pub mod profiler;
 pub use profiler::*;
+pub mod codegraph;
+pub use codegraph::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;
