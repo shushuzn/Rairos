@@ -37,6 +37,9 @@ pub enum OrchestratorError {
 
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
+
+    #[error("Other error: {0}")]
+    Other(String),
 }
 
 pub type Result<T> = std::result::Result<T, OrchestratorError>;
@@ -302,41 +305,57 @@ impl AutonomousOrchestrator {
     /// Check all subscriptions for new papers. Returns sub_id -> new papers.
     pub async fn check_subscriptions(&self) -> Result<HashMap<String, Vec<PaperInfo>>> {
         self.init_components().await?;
-        let db_guard = self.db.read().await;
-        let db = db_guard
-            .as_ref()
-            .ok_or_else(|| OrchestratorError::NotInitialized("database".to_string()))?;
 
-        let mut result: HashMap<String, Vec<PaperInfo>> = HashMap::new();
+        // Collect topics while holding the lock
+        let topics: Vec<(String, String)> = {
+            let db_guard = self.db.read().await;
+            let db = db_guard
+                .as_ref()
+                .ok_or_else(|| OrchestratorError::NotInitialized("database".to_string()))?;
+            let subs = db
+                .list_subscriptions(false)
+                .map_err(|e| OrchestratorError::Database(e.to_string()))?;
+            subs.into_iter().map(|s| (s.query.clone(), s.id.clone())).collect()
+        };
 
-        // Get all subscriptions
-        let subs = db
-            .list_subscriptions(false)
-            .map_err(|e| OrchestratorError::Database(e.to_string()))?;
-
-        for sub in subs {
-            let topic = sub.query.clone();
-            // Search for papers matching the subscription topic
-            if let Ok(papers) = db.search_papers(&topic, 20) {
-                if !papers.is_empty() {
-                    let paper_infos: Vec<PaperInfo> = papers
-                        .into_iter()
-                        .map(|p| PaperInfo {
-                            arxiv_id: p.arxiv_id.unwrap_or_default(),
-                            title: p.title.clone(),
-                            abstract_text: p.abstract_text.clone(),
-                            pdf_url: p.metadata.pdf_url.clone().unwrap_or_default(),
-                            categories: p.categories.join(" "),
-                            authors: p.authors.clone(),
-                            published: p.published.to_rfc3339(),
-                        })
-                        .collect();
-                    result.insert(topic, paper_infos);
-                }
-            }
+        if topics.is_empty() {
+            return Ok(HashMap::new());
         }
 
-        Ok(result)
+        // Clone the Arc so the Database stays valid for the blocking task
+        let db_arc = Arc::clone(&self.db);
+
+        // Run searches in parallel using spawn_blocking
+        use tokio::task;
+        let search_results = task::spawn_blocking(move || {
+            let db_guard = db_arc.blocking_read();
+            let db = db_guard.as_ref().unwrap();
+            let mut results = HashMap::new();
+            for (topic, _sub_id) in &topics {
+                if let Ok(papers) = db.search_papers(topic, 20) {
+                    if !papers.is_empty() {
+                        let paper_infos: Vec<PaperInfo> = papers
+                            .into_iter()
+                            .map(|p| PaperInfo {
+                                arxiv_id: p.arxiv_id.unwrap_or_default(),
+                                title: p.title.clone(),
+                                abstract_text: p.abstract_text.clone(),
+                                pdf_url: p.metadata.pdf_url.clone().unwrap_or_default(),
+                                categories: p.categories.join(" "),
+                                authors: p.authors.clone(),
+                                published: p.published.to_rfc3339(),
+                            })
+                            .collect();
+                        results.insert(topic.clone(), paper_infos);
+                    }
+                }
+            }
+            results
+        })
+        .await
+        .map_err(|e| OrchestratorError::Other(e.to_string()))?;
+
+        Ok(search_results)
     }
 
     // ── Deep research ─────────────────────────────────────────────────────────
