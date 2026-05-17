@@ -158,20 +158,62 @@ impl Paper {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResearchGap {
     pub id: String,
+    pub topic: String,
+    pub session_id: Option<String>,
+    pub gap_type: String,
+    pub gap_title: String,
+    pub gap_title_hash: Option<String>,
     pub category: String,
     pub description: String,
     pub severity: String,
+    pub novelty_score: f64,
+    pub priority: String,
     pub paper_ids: Vec<String>,
+    pub created_at: String,
 }
 
 impl ResearchGap {
-    pub fn new(category: &str, description: &str, severity: &str) -> Self {
+    pub fn new(
+        topic: &str,
+        gap_type: &str,
+        gap_title: &str,
+        category: &str,
+        description: &str,
+        severity: &str,
+        priority: &str,
+    ) -> Self {
         Self {
             id: uuid::Uuid::new_v4().to_string(),
+            topic: topic.to_string(),
+            session_id: None,
+            gap_type: gap_type.to_string(),
+            gap_title: gap_title.to_string(),
+            gap_title_hash: None,
             category: category.to_string(),
             description: description.to_string(),
             severity: severity.to_string(),
+            novelty_score: 0.5,
+            priority: priority.to_string(),
             paper_ids: Vec::new(),
+            created_at: chrono::Utc::now().to_rfc3339(),
+        }
+    }
+
+    pub fn new_simple(category: &str, description: &str, severity: &str) -> Self {
+        Self {
+            id: uuid::Uuid::new_v4().to_string(),
+            topic: String::new(),
+            session_id: None,
+            gap_type: category.to_string(),
+            gap_title: String::new(),
+            gap_title_hash: None,
+            category: String::new(),
+            description: description.to_string(),
+            severity: severity.to_string(),
+            novelty_score: 0.5,
+            priority: "medium".to_string(),
+            paper_ids: Vec::new(),
+            created_at: chrono::Utc::now().to_rfc3339(),
         }
     }
 }
@@ -886,13 +928,21 @@ impl Database {
     pub fn insert_gap(&self, gap: &ResearchGap) -> Result<()> {
         let conn = self.conn.lock();
         conn.execute(
-            "INSERT INTO research_gaps (id, category, description, severity, paper_ids) VALUES (?1, ?2, ?3, ?4, ?5)",
+            "INSERT INTO research_gaps (id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
             params![
                 gap.id,
+                &gap.topic,
+                &gap.session_id,
+                &gap.gap_type,
+                &gap.gap_title,
+                &gap.gap_title_hash,
                 &gap.category,
                 &gap.description,
                 &gap.severity,
+                gap.novelty_score,
+                &gap.priority,
                 serde_json::to_string(&gap.paper_ids)?,
+                &gap.created_at,
             ],
         )?;
         Ok(())
@@ -901,15 +951,23 @@ impl Database {
     pub fn list_gaps(&self, limit: usize, offset: usize) -> Result<Vec<ResearchGap>> {
         let conn = self.conn.lock();
         let mut stmt = conn.prepare(
-            "SELECT id, category, description, severity, paper_ids FROM research_gaps ORDER BY created_at DESC LIMIT ?1 OFFSET ?2",
+            "SELECT id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at FROM research_gaps ORDER BY created_at DESC LIMIT ?1 OFFSET ?2",
         )?;
         let rows = stmt.query_map(params![limit as i64, offset as i64], |row| {
             Ok(ResearchGap {
                 id: row.get(0)?,
-                category: row.get(1)?,
-                description: row.get(2)?,
-                severity: row.get(3)?,
-                paper_ids: serde_json::from_str(&row.get::<_, String>(4)?).unwrap_or_default(),
+                topic: row.get(1)?,
+                session_id: row.get(2)?,
+                gap_type: row.get(3)?,
+                gap_title: row.get(4)?,
+                gap_title_hash: row.get(5)?,
+                category: row.get(6)?,
+                description: row.get(7)?,
+                severity: row.get(8)?,
+                novelty_score: row.get(9)?,
+                priority: row.get(10)?,
+                paper_ids: serde_json::from_str(&row.get::<_, String>(11)?).unwrap_or_default(),
+                created_at: row.get(12)?,
             })
         })?;
         let mut gaps = Vec::new();
@@ -922,15 +980,23 @@ impl Database {
     pub fn get_gap(&self, id: &str) -> Result<Option<ResearchGap>> {
         let conn = self.conn.lock();
         let mut stmt = conn.prepare(
-            "SELECT id, category, description, severity, paper_ids FROM research_gaps WHERE id = ?1",
+            "SELECT id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at FROM research_gaps WHERE id = ?1",
         )?;
         let result = stmt.query_row([id], |row| {
             Ok(Some(ResearchGap {
                 id: row.get(0)?,
-                category: row.get(1)?,
-                description: row.get(2)?,
-                severity: row.get(3)?,
-                paper_ids: serde_json::from_str(&row.get::<_, String>(4)?).unwrap_or_default(),
+                topic: row.get(1)?,
+                session_id: row.get(2)?,
+                gap_type: row.get(3)?,
+                gap_title: row.get(4)?,
+                gap_title_hash: row.get(5)?,
+                category: row.get(6)?,
+                description: row.get(7)?,
+                severity: row.get(8)?,
+                novelty_score: row.get(9)?,
+                priority: row.get(10)?,
+                paper_ids: serde_json::from_str(&row.get::<_, String>(11)?).unwrap_or_default(),
+                created_at: row.get(12)?,
             }))
         });
         match result {

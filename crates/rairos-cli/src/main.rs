@@ -502,6 +502,26 @@ enum Commands {
         iterations: usize,
     },
 
+    /// Show achievements and gamification progress
+    Achievements {
+        /// Action: list, report, stats, or unlock
+        #[arg(short, long, default_value = "list")]
+        action: String,
+
+        /// Achievement ID (for unlock action)
+        achievement_id: Option<String>,
+    },
+
+    /// Show badges and research game mode progress
+    Badges {
+        /// Action: list or award
+        #[arg(short, long, default_value = "list")]
+        action: String,
+
+        /// Badge ID (for award action)
+        badge_id: Option<String>,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2058,6 +2078,38 @@ fn main() -> Result<()> {
         }
         Commands::Benchmark { kind, iterations } => {
             handle_benchmark(kind, *iterations)?;
+        }
+        Commands::Achievements { action, achievement_id } => {
+            match action.as_str() {
+                "list" => handle_achievements_list()?,
+                "report" => handle_achievements_report()?,
+                "stats" => handle_achievements_stats()?,
+                "unlock" => {
+                    if let Some(id) = achievement_id {
+                        handle_achievements_unlock(id)?;
+                    } else {
+                        eprintln!("Error: --achievement-id required for unlock action");
+                    }
+                }
+                _ => {
+                    eprintln!("Unknown action: {}. Use: list, report, stats, or unlock", action);
+                }
+            }
+        }
+        Commands::Badges { action, badge_id } => {
+            match action.as_str() {
+                "list" => handle_badges_list()?,
+                "award" => {
+                    if let Some(id) = badge_id {
+                        handle_badges_award(id)?;
+                    } else {
+                        eprintln!("Error: --badge-id required for award action");
+                    }
+                }
+                _ => {
+                    eprintln!("Unknown action: {}. Use: list or award", action);
+                }
+            }
         }
         Commands::Agent {
             topic,

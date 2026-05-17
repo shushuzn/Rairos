@@ -1060,11 +1060,11 @@ impl ResearchOrchestrator {
         let mut gaps = Vec::new();
 
         for desc in gap_descriptions {
-            gaps.push(ResearchGap::new("keyword_gap", &desc, "medium"));
+            gaps.push(ResearchGap::new_simple("keyword_gap", &desc, "medium"));
         }
 
         for cat in under_category {
-            gaps.push(ResearchGap::new(
+            gaps.push(ResearchGap::new_simple(
                 "category_gap",
                 &format!("Under-explored category: {}", cat),
                 "low",

@@ -722,10 +722,10 @@ fn test_insert_citation_duplicate_no_error() {
 
 // ============================================================================
 // Test: Experiment tables (research_gaps)
-// Note: insert_gap, list_gaps, get_gap all have schema mismatch bugs
-// (use category/description/severity but table has topic/gap_title/priority).
-// Only delete_gap works via public API. Tests for gap functionality are
-// limited to what the public API supports correctly.
+// Fixed: insert_gap, list_gaps, get_gap now match the full schema.
+// The ResearchGap struct includes: id, topic, session_id, gap_type,
+// gap_title, gap_title_hash, category, description, severity, novelty_score,
+// priority, paper_ids, created_at.
 // ============================================================================
 
 #[test]

@@ -206,7 +206,7 @@ pub fn handle_gap(
     if rare_keywords.len() > 3 {
         let sample: Vec<_> = rare_keywords.iter().take(5).collect();
         let examples: Vec<String> = sample.iter().map(|(k, _)| format!("\"{}\"", k)).collect();
-        let gap = ResearchGap::new(
+        let gap = ResearchGap::new_simple(
             category.as_deref().unwrap_or("underexplored"),
             &format!(
                 "Underexplored subtopics detected: {} (appearing in only 1-2 papers each). \
@@ -255,7 +255,7 @@ pub fn handle_gap(
                 .take(5)
                 .map(|(k, _)| k.clone())
                 .collect();
-            let gap = ResearchGap::new(
+            let gap = ResearchGap::new_simple(
                 category.as_deref().unwrap_or("category-gap"),
                 &format!(
                     "Underrepresented categories (appear in <30% of papers): {}. \
@@ -280,7 +280,7 @@ pub fn handle_gap(
 
     if recent_papers.len() >= 2 && total_papers > 5 {
         // Check if recent papers mostly cite old work
-        let gap = ResearchGap::new(
+        let gap = ResearchGap::new_simple(
             category.as_deref().unwrap_or("temporal"),
             &format!(
                 "Recent work ({} papers <1yr old) may not fully incorporate latest advances. \
@@ -296,7 +296,7 @@ pub fn handle_gap(
     // GAP 4: Coverage gap (insufficient papers)
     // ============================================================
     if total_papers < 10 {
-        let gap = ResearchGap::new(
+        let gap = ResearchGap::new_simple(
             category.as_deref().unwrap_or("coverage"),
             &format!(
                 "Insufficient coverage of '{}' - only {} papers found. \
@@ -345,7 +345,7 @@ pub fn handle_gap(
             .iter()
             .map(|(m, _)| format!("\"{}\"", m))
             .collect();
-        let gap = ResearchGap::new(
+        let gap = ResearchGap::new_simple(
             category.as_deref().unwrap_or("method-diversity"),
             &format!(
                 "Limited methodological diversity. Methods detected: {} (only {}/{} known methods found). \

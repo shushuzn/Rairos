@@ -2,6 +2,10 @@
 //!
 //! Each submodule contains handlers and helpers for a specific domain.
 
+pub mod achievements;
+pub use achievements::*;
+pub mod game_mode;
+pub use game_mode::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

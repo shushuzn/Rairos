@@ -933,7 +933,7 @@ mod tests {
 
     #[test]
     fn test_scored_gap_serde() {
-        let gap = ResearchGap::new(
+        let gap = ResearchGap::new_simple(
             "method_limitation",
             "Scaling law breakdown at 10B params",
             "HIGH",
@@ -963,7 +963,7 @@ mod tests {
         };
         let orch = AutonomousOrchestrator::new(config, false);
 
-        let gap = ResearchGap::new("evaluation_gap", "Missing benchmark for task X", "LOW");
+        let gap = ResearchGap::new_simple("evaluation_gap", "Missing benchmark for task X", "LOW");
         let scored = ScoredGap {
             gap: gap.clone(),
             gap_type: "evaluation_gap".to_string(),
@@ -1000,7 +1000,7 @@ mod tests {
         };
         let orch = AutonomousOrchestrator::new(config, false);
 
-        let gap = ResearchGap::new("method_limitation", "Scaling law breakdown", "HIGH");
+        let gap = ResearchGap::new_simple("method_limitation", "Scaling law breakdown", "HIGH");
         let scored = ScoredGap {
             gap: gap.clone(),
             gap_type: "method_limitation".to_string(),
