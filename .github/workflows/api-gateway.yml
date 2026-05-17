@@ -1,0 +1,66 @@
+name: API Gateway Tests
+
+on:
+  push:
+    paths:
+      - 'crates/rairos-api-gateway/**'
+      - '.github/workflows/api-gateway.yml'
+  pull_request:
+    paths:
+      - 'crates/rairos-api-gateway/**'
+      - '.github/workflows/api-gateway.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: api-gateway-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: api-gateway-cargo-
+
+      - name: cargo fmt check
+        run: cargo fmt -p rairos-api-gateway -- --check
+
+      - name: cargo clippy
+        run: cargo clippy -p rairos-api-gateway -- -D warnings
+
+      - name: cargo test
+        run: cargo test -p rairos-api-gateway
+
+      - name: cargo build
+        run: cargo build -p rairos-api-gateway
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deploy/Dockerfile
+          push: false
+          tags: rairos-api-gateway:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify image exists
+        run: docker images rairos-api-gateway:test

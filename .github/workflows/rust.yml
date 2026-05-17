@@ -99,3 +99,18 @@ jobs:
       - name: Show sccache stats
         if: runner.os != 'Windows'
         run: sccache --show-stats
+
+      - name: Set up Docker Buildx
+        if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deploy/Dockerfile
+          push: false
+          tags: rairos-api-gateway:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
