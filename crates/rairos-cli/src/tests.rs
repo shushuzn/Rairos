@@ -632,3 +632,17 @@ fn credibility_trendslop_no_crash() {
     let result = handle_credibility_trendslop();
     assert!(result.is_ok());
 }
+
+// ─── claimgraph.rs ──────────────────────────────────────────────────────────
+
+#[test]
+fn claimgraph_stats_no_crash() {
+    let result = handle_claimgraph_stats();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn claimgraph_contradictions_no_crash() {
+    let result = handle_claimgraph_contradictions();
+    assert!(result.is_ok());
+}

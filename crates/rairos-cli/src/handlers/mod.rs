@@ -30,6 +30,8 @@ pub mod atrisk;
 pub use atrisk::*;
 pub mod credibility;
 pub use credibility::*;
+pub mod claimgraph;
+pub use claimgraph::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

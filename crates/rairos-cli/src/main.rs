@@ -656,6 +656,17 @@ enum Commands {
         trendslop: bool,
     },
 
+    /// Analyze claim graphs and find contradictions
+    ClaimGraph {
+        /// Show claim graph statistics
+        #[arg(short, long, default_value = "false")]
+        stats: bool,
+
+        /// Find contradictions in claims
+        #[arg(short, long, default_value = "false")]
+        contradictions: bool,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2337,6 +2348,13 @@ fn main() -> Result<()> {
                 handle_credibility_trendslop()?;
             } else {
                 handle_credibility_score()?;
+            }
+        }
+        Commands::ClaimGraph { stats, contradictions } => {
+            if *contradictions {
+                handle_claimgraph_contradictions()?;
+            } else {
+                handle_claimgraph_stats()?;
             }
         }
         Commands::Agent {
