@@ -233,4 +233,43 @@ mod tests {
             "Keywords should have some overlap with SmartFollowup base"
         );
     }
+
+    #[test]
+    fn test_data_dir_contains_airos_name() {
+        let dir = data_dir();
+        assert!(
+            dir.to_string_lossy().contains(AIROS_DIR_NAME),
+            "data_dir should contain AIROS_DIR_NAME: {:?}",
+            dir
+        );
+    }
+
+    #[test]
+    fn test_papers_db_path_is_valid() {
+        let path = papers_db_path();
+        assert!(
+            path.to_string_lossy().contains("papers"),
+            "papers_db_path should reference papers: {:?}",
+            path
+        );
+    }
+
+    #[test]
+    fn test_papers_db_path_ends_with_json() {
+        let path = papers_db_path();
+        assert!(
+            path.to_string_lossy().ends_with(".json"),
+            "papers_db_path should end with .json: {:?}",
+            path
+        );
+    }
+
+    #[test]
+    fn test_data_dir_is_absolute_or_fallback() {
+        let dir = data_dir();
+        assert!(
+            !dir.to_string_lossy().is_empty(),
+            "data_dir should not be empty"
+        );
+    }
 }
