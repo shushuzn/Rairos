@@ -13,8 +13,8 @@ use crate::auth::{auth_middleware, generate_api_key, hash_api_key};
 use crate::error::{ApiError, Result};
 use crate::models::{
     ApiKey, ApiKeyResponse, AuthResponse, CreateKeyRequest, DailyUsage,
-    EndpointUsage, LoginRequest, PaginationParams, RegisterRequest, Tier,
-    UsageDashboard, UsageResponse,
+    EndpointUsage, LoginRequest, PaginationParams, RegisterRequest,
+    RotateKeyRequest, RotateKeyResponse, Tier, UsageDashboard, UsageResponse,
 };
 use crate::state::AppState;
 
@@ -26,6 +26,7 @@ pub fn create_api_router(state: AppState) -> Router {
         .route("/auth/login", post(login))
         .route("/keys", post(create_api_key).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/keys", get(list_api_keys).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/keys/rotate", post(rotate_api_key).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/usage", get(get_usage).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/usage/dashboard", get(get_usage_dashboard).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/papers/search", get(search_papers).layer(from_fn_with_state(state.clone(), auth_middleware)))
@@ -194,6 +195,63 @@ pub async fn list_api_keys(
         .collect();
 
     Ok(Json(keys))
+}
+
+pub async fn rotate_api_key(
+    State(state): State<AppState>,
+    Extension(key): Extension<ApiKey>,
+    Json(req): Json<RotateKeyRequest>,
+) -> Result<impl axum::response::IntoResponse> {
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let old_key_row = conn.query_opt(
+        "SELECT id, user_id, tier FROM api_keys WHERE id = $1 AND user_id = $2",
+        &[&req.key_id.to_string(), &key.user_id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let old_key_row = old_key_row.ok_or_else(|| ApiError::NotFound("API key not found".to_string()))?;
+
+    let new_api_key = generate_api_key();
+    let new_key_hash = hash_api_key(&new_api_key);
+    let new_key_id = Uuid::new_v4();
+    let grace_period_ends = Utc::now() + chrono::Duration::hours(req.grace_period_hours);
+
+    let new_key_id_str = new_key_id.to_string();
+    let user_id_str = key.user_id.to_string();
+    let old_key_id_str = req.key_id.to_string();
+    let tier_str = key.tier.to_string();
+    let requests_limit = get_tier_limit(key.tier);
+
+    use tokio_postgres::types::ToSql;
+    let params: Vec<&(dyn ToSql + Sync)> = vec![
+        &new_key_id_str as &(dyn ToSql + Sync),
+        &user_id_str as &(dyn ToSql + Sync),
+        &new_key_hash as &(dyn ToSql + Sync),
+        &tier_str as &(dyn ToSql + Sync),
+        &requests_limit as &(dyn ToSql + Sync),
+        &old_key_id_str as &(dyn ToSql + Sync),
+        &grace_period_ends as &(dyn ToSql + Sync),
+    ];
+
+    conn.execute(
+        "INSERT INTO api_keys (id, user_id, key_hash, tier, requests_used, requests_limit, created_at, rotated_from, rotated_at, grace_period_ends) VALUES ($1, $2, $3, $4, 0, $5, NOW(), $6, NOW(), $7)",
+        &params,
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    conn.execute(
+        "UPDATE api_keys SET expires_at = $1 WHERE id = $2",
+        &[&grace_period_ends, &req.key_id.to_string()],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let response = RotateKeyResponse {
+        new_key: new_api_key,
+        new_key_id,
+        old_key_id: req.key_id,
+        grace_period_ends,
+        message: format!("Key rotated successfully. Old key expires at {}.", grace_period_ends),
+    };
+
+    Ok(Json(response))
 }
 
 pub async fn get_usage(

@@ -115,6 +115,29 @@ Create a new API key.
 }
 ```
 
+#### POST /keys/rotate
+
+Rotate an existing API key. The old key remains valid during the grace period.
+
+**Request Body:**
+```json
+{
+  "key_id": "uuid-of-key-to-rotate",
+  "grace_period_hours": 24
+}
+```
+
+**Response:**
+```json
+{
+  "new_key": "64_character_new_key",
+  "new_key_id": "uuid",
+  "old_key_id": "uuid",
+  "grace_period_ends": "2025-05-18T12:00:00Z",
+  "message": "Key rotated successfully. Old key expires at 2025-05-18T12:00:00Z."
+}
+```
+
 ### Usage
 
 #### GET /usage

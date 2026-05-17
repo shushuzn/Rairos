@@ -33,7 +33,7 @@ pub async fn auth_middleware(
     let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     let row = conn.query_opt(
-        "SELECT id, user_id, key_hash, name, tier, requests_used, requests_limit, created_at, expires_at FROM api_keys WHERE key_hash = $1 AND (expires_at IS NULL OR expires_at > NOW())",
+        "SELECT id, user_id, key_hash, name, tier, requests_used, requests_limit, created_at, expires_at, rotated_from, rotated_at, grace_period_ends FROM api_keys WHERE key_hash = $1 AND (expires_at IS NULL OR expires_at > NOW() OR grace_period_ends > NOW())",
         &[&key_hash],
     ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
@@ -48,6 +48,9 @@ pub async fn auth_middleware(
             requests_limit: row.get("requests_limit"),
             created_at: row.get("created_at"),
             expires_at: row.get("expires_at"),
+            rotated_from: row.get("rotated_from"),
+            rotated_at: row.get("rotated_at"),
+            grace_period_ends: row.get("grace_period_ends"),
         },
         None => return Err(ApiError::InvalidApiKey),
     };

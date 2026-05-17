@@ -52,12 +52,21 @@ pub struct ApiKey {
     pub requests_limit: i64,
     pub created_at: DateTime<Utc>,
     pub expires_at: Option<DateTime<Utc>>,
+    pub rotated_from: Option<Uuid>,
+    pub rotated_at: Option<DateTime<Utc>>,
+    pub grace_period_ends: Option<DateTime<Utc>>,
 }
 
 impl ApiKey {
     pub fn is_expired(&self) -> bool {
         self.expires_at
             .map(|e| e < Utc::now())
+            .unwrap_or(false)
+    }
+
+    pub fn is_in_grace_period(&self) -> bool {
+        self.grace_period_ends
+            .map(|g| g > Utc::now())
             .unwrap_or(false)
     }
 
@@ -134,6 +143,26 @@ pub struct AuthResponse {
 #[derive(Debug, Deserialize)]
 pub struct CreateKeyRequest {
     pub name: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RotateKeyRequest {
+    pub key_id: Uuid,
+    #[serde(default = "default_grace_period_hours")]
+    pub grace_period_hours: i64,
+}
+
+fn default_grace_period_hours() -> i64 {
+    24
+}
+
+#[derive(Debug, Serialize)]
+pub struct RotateKeyResponse {
+    pub new_key: String,
+    pub new_key_id: Uuid,
+    pub old_key_id: Uuid,
+    pub grace_period_ends: DateTime<Utc>,
+    pub message: String,
 }
 
 #[derive(Debug, Serialize)]

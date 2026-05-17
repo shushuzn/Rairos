@@ -22,7 +22,10 @@ CREATE TABLE IF NOT EXISTS api_keys (
     requests_used BIGINT DEFAULT 0,
     requests_limit BIGINT NOT NULL DEFAULT 100,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    expires_at TIMESTAMP WITH TIME ZONE
+    expires_at TIMESTAMP WITH TIME ZONE,
+    rotated_from UUID REFERENCES api_keys(id) ON DELETE SET NULL,
+    rotated_at TIMESTAMP WITH TIME ZONE,
+    grace_period_ends TIMESTAMP WITH TIME ZONE
 );
 
 -- Subscriptions table
