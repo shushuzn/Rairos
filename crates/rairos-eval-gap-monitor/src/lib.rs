@@ -6,12 +6,11 @@
 //! Flags deployment timelines that outpace benchmark research.
 
 use chrono::{Datelike, Local};
-use rairos_core::constants::PAPERS_DB_PATH;
+use rairos_core::constants::papers_db_path;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -31,9 +30,7 @@ const DEPLOYMENT_KEYWORDS: &[&str] = &[
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 fn load_papers() -> Vec<serde_json::Value> {
-    let path = dirs::home_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join(PAPERS_DB_PATH);
+    let path = papers_db_path();
     if !path.exists() {
         return vec![];
     }
