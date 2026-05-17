@@ -567,6 +567,20 @@ enum Commands {
         limit: usize,
     },
 
+    /// Generate research briefing for a paper
+    Briefing {
+        /// arXiv ID of the paper
+        arxiv_id: String,
+
+        /// List existing briefings
+        #[arg(short, long, default_value = "false")]
+        list: bool,
+
+        /// Max briefings to list
+        #[arg(short = 'n', long, default_value = "10")]
+        limit: usize,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2190,6 +2204,13 @@ fn main() -> Result<()> {
                 _ => {
                     eprintln!("Unknown action: {}. Use: leaderboard or score", action);
                 }
+            }
+        }
+        Commands::Briefing { arxiv_id, list, limit } => {
+            if *list {
+                handle_briefing_list(*limit)?;
+            } else {
+                handle_briefing_generate(arxiv_id)?;
             }
         }
         Commands::Agent {

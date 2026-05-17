@@ -520,3 +520,17 @@ fn impact_score_no_crash() {
     let result = handle_impact_score("test_paper");
     assert!(result.is_ok());
 }
+
+// ─── briefing.rs ────────────────────────────────────────────────────────────
+
+#[test]
+fn briefing_generate_no_crash() {
+    let result = handle_briefing_generate("2301.00001");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn briefing_list_no_crash() {
+    let result = handle_briefing_list(10);
+    assert!(result.is_ok());
+}
