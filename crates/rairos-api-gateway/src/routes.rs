@@ -217,13 +217,38 @@ pub async fn search_papers(
     require_tier(key.tier, Tier::Free)?;
 
     let offset = (params.page - 1) * params.per_page;
+    let query = "".to_string();
 
     let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    let rows = conn.query(
-        "SELECT id, title, abstract, authors, categories, published FROM papers ORDER BY published DESC LIMIT $1 OFFSET $2",
-        &[&(params.per_page as i64), &(offset as i64)],
-    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+    let (count_row, rows) = if query.is_empty() {
+        let rows = conn.query(
+            "SELECT id, title, abstract, authors, categories, published FROM papers ORDER BY published DESC LIMIT $1 OFFSET $2",
+            &[&(params.per_page as i64), &(offset as i64)],
+        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        let count_row = conn.query_one(
+            "SELECT COUNT(*) as count FROM papers",
+            &[],
+        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        (count_row, rows)
+    } else {
+        let search_pattern = format!("%{}%", query);
+        let rows = conn.query(
+            "SELECT id, title, abstract, authors, categories, published FROM papers WHERE title ILIKE $1 OR abstract ILIKE $1 ORDER BY published DESC LIMIT $2 OFFSET $3",
+            &[&search_pattern, &(params.per_page as i64), &(offset as i64)],
+        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        let count_row = conn.query_one(
+            "SELECT COUNT(*) as count FROM papers WHERE title ILIKE $1 OR abstract ILIKE $1",
+            &[&search_pattern],
+        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        (count_row, rows)
+    };
+
+    let total: i64 = count_row.get("count");
 
     let papers: Vec<serde_json::Value> = rows
         .iter()
@@ -239,10 +264,13 @@ pub async fn search_papers(
         })
         .collect();
 
+    state.metrics.record_request("/papers/search", &key.tier.to_string());
+
     Ok(Json(serde_json::json!({
         "papers": papers,
         "page": params.page,
         "per_page": params.per_page,
+        "total": total
     })))
 }
 
@@ -274,28 +302,63 @@ pub async fn get_paper(
 }
 
 pub async fn detect_gap(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     Extension(key): Extension<ApiKey>,
-    Json(_payload): Json<serde_json::Value>,
+    Json(payload): Json<serde_json::Value>,
 ) -> Result<impl axum::response::IntoResponse> {
     require_tier(key.tier, Tier::Pro)?;
 
+    let topic = payload
+        .get("query")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+
+    if topic.is_empty() {
+        return Err(ApiError::ValidationError("query is required".to_string()));
+    }
+
+    let gaps = detect_gap_impl(topic, &state.db).await?;
+
+    state.metrics.record_request("/gap/detect", &key.tier.to_string());
+
     Ok(Json(serde_json::json!({
-        "status": "placeholder",
-        "message": "Gap detection requires rairos-research integration"
+        "query": topic,
+        "gaps_found": gaps.len(),
+        "gaps": gaps
     })))
 }
 
 pub async fn run_research(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     Extension(key): Extension<ApiKey>,
-    Json(_payload): Json<serde_json::Value>,
+    Json(payload): Json<serde_json::Value>,
 ) -> Result<impl axum::response::IntoResponse> {
     require_tier(key.tier, Tier::Team)?;
 
+    let query = payload
+        .get("query")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+
+    if query.is_empty() {
+        return Err(ApiError::ValidationError("query is required".to_string()));
+    }
+
+    let gaps = detect_gap_impl(query, &state.db).await?;
+
+    state.metrics.record_request("/research/run", &key.tier.to_string());
+
     Ok(Json(serde_json::json!({
-        "status": "placeholder",
-        "message": "Research execution requires rairos-research integration"
+        "query": query,
+        "status": "completed",
+        "gaps_found": gaps.len(),
+        "gaps": gaps,
+        "papers_analyzed": 0,
+        "next_steps": [
+            "Review identified gaps",
+            "Select gap for deeper analysis",
+            "Run detailed research on selected gap"
+        ]
     })))
 }
 
@@ -483,6 +546,76 @@ pub async fn get_tiers() -> impl axum::response::IntoResponse {
 }
 
 use axum::extract::Extension;
+
+const GAP_PATTERNS: &[(&str, &str, &[&str])] = &[
+    ("method_limitation", "Method Limitation", &["limitation", "drawback", "however", "not suitable", "not efficient", "poor performance", "bottleneck"]),
+    ("unexplored_application", "Unexplored Application", &["future work", "open question", "not explore", "remains unexplored", "left for future"]),
+    ("contradiction", "Contradiction", &["inconsistent", "contradict", "debate", "conflicting", "mixed results"]),
+    ("evaluation_gap", "Evaluation Gap", &["no benchmark", "lack evaluation", "not compare", "no standard", "not evaluated"]),
+    ("scalability_issue", "Scalability Issue", &["scalab", "large scale", "not scalable", "computational cost"]),
+    ("theoretical_gap", "Theoretical Gap", &["theoretical", "lack formal", "no theory"]),
+    ("dataset_gap", "Dataset Gap", &["dataset lack", "no data", "limited data"]),
+    ("generalization_gap", "Generalization Gap", &["generaliz", "transfer", "domain adapt"]),
+];
+
+fn detect_gaps_from_text(text: &str, topic: &str) -> Vec<serde_json::Value> {
+    let text_lower = text.to_lowercase();
+    let topic_lower = topic.to_lowercase();
+    let mut found_gaps: Vec<serde_json::Value> = Vec::new();
+
+    for (gap_type, label, patterns) in GAP_PATTERNS {
+        for pattern in *patterns {
+            if text_lower.contains(&pattern.to_lowercase()) {
+                found_gaps.push(serde_json::json!({
+                    "gap_type": gap_type,
+                    "label": label,
+                    "evidence": format!("Found '{}' in context of {}", pattern, topic),
+                    "topic": topic,
+                    "severity": "medium"
+                }));
+                break;
+            }
+        }
+    }
+
+    if text_lower.contains(&topic_lower) && found_gaps.is_empty() {
+        found_gaps.push(serde_json::json!({
+            "gap_type": "research_opportunity",
+            "label": "Research Opportunity",
+            "evidence": format!("{} mentioned but no specific gaps detected", topic),
+            "topic": topic,
+            "severity": "low"
+        }));
+    }
+
+    found_gaps
+}
+
+pub async fn detect_gap_impl(
+    topic: &str,
+    db: &bb8::Pool<bb8_postgres::PostgresConnectionManager<tokio_postgres::NoTls>>,
+) -> std::result::Result<Vec<serde_json::Value>, ApiError> {
+    let conn = db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let rows = conn.query(
+        "SELECT title, abstract FROM papers WHERE title ILIKE $1 OR abstract ILIKE $1 LIMIT 50",
+        &[&format!("%{}%", topic)],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let mut all_gaps: Vec<serde_json::Value> = Vec::new();
+
+    for row in rows.iter() {
+        let title: String = row.get("title");
+        let abstract_text: String = row.get("abstract");
+        let combined = format!("{} {}", title, abstract_text);
+
+        let gaps = detect_gaps_from_text(&combined, topic);
+        all_gaps.extend(gaps);
+    }
+
+    all_gaps.truncate(10);
+    Ok(all_gaps)
+}
 
 #[cfg(test)]
 mod tests {

@@ -35,8 +35,21 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Papers table (minimal for MVP - full sync with main Rairos DB in production)
+CREATE TABLE IF NOT EXISTS papers (
+    id UUID PRIMARY KEY,
+    title VARCHAR(500) NOT NULL,
+    abstract TEXT,
+    authors TEXT,
+    categories VARCHAR(255),
+    published TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
 CREATE INDEX IF NOT EXISTS idx_api_keys_key_hash ON api_keys(key_hash);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_papers_title ON papers(title);
+CREATE INDEX IF NOT EXISTS idx_papers_abstract ON papers(abstract);
