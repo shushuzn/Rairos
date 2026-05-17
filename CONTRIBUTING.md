@@ -111,6 +111,21 @@ This updates:
 - `.opencode/skills/rairos-dev/SKILL.md`
 - `.opencode/skills/rairos-dev/REFERENCE.md`
 
+### Shell Completions
+
+After adding CLI commands, regenerate shell completions:
+
+```bash
+make completions
+```
+
+Or manually:
+```bash
+cargo run -p rairos-cli -- completions bash > completions/bash
+cargo run -p rairos-cli -- completions zsh > completions/zsh
+cargo run -p rairos-cli -- completions fish > completions/fish
+```
+
 ## Pull Request Process
 
 1. Fork the repository

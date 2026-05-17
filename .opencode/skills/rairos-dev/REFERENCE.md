@@ -4,7 +4,7 @@
 
 - **150 crates** (Rust only, no Python)
 - **~73k+ Rust lines**
-- **122 CLI commands**
+- **123 CLI commands**
 - **67 MCP tools** (27 core + 40 LLM-backed)
 - **License**: GPL-3.0
 
@@ -13,7 +13,7 @@
 | Crate | Purpose |
 |-------|---------|
 | rairos-core | DB, FTS5, subscriptions, tags, constants |
-| rairos-cli | 122 commands in main.rs |
+| rairos-cli | 123 commands in main.rs |
 | rairos-mcp | MCP protocol server (67 tools) |
 | rairos-codegraph | CodeGraph MCP server + CLI |
 | rairos-llm | GenePool, Evolution, LLM clients |
@@ -23,7 +23,7 @@
 | rairos-memory | Research stance tracking |
 | rairos-rankers | Paper ranking/scoring |
 
-## CLI Commands (122 total)
+## CLI Commands (123 total)
 
 Sample: Add...
 

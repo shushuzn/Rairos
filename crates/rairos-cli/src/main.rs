@@ -42,6 +42,7 @@ pub mod scout;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
+use clap_complete::{generate, shells};
 use rairos_core::{Database, ParseStatus};
 use std::path::PathBuf;
 
@@ -2210,6 +2211,13 @@ enum InsightAction {
         #[arg(short = 'n', long, default_value = "10")]
         limit: usize,
     },
+
+    /// Generate shell completions
+    Completions {
+        /// Shell to generate completions for (bash, zsh, fish)
+        #[arg(value_parser = ["bash", "zsh", "fish"])]
+        shell: String,
+    },
 }
 
 // ============================================================================
@@ -3026,6 +3034,18 @@ fn main() -> Result<()> {
 
         Commands::Sysinfo => {
             handle_sysinfo()?;
+        }
+
+        Commands::Completions { shell } => {
+            let mut cmd = Cli::command();
+            let name = cmd.get_name().to_string();
+            let mut stdout = std::io::stdout();
+            match shell.as_str() {
+                "bash" => generate(shells::Bash, &mut cmd, name, &mut stdout),
+                "zsh" => generate(shells::Zsh, &mut cmd, name, &mut stdout),
+                "fish" => generate(shells::Fish, &mut cmd, name, &mut stdout),
+                _ => anyhow::bail!("Unsupported shell: {}. Use: bash, zsh, fish", shell),
+            }
         }
     }
 

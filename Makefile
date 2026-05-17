@@ -47,6 +47,12 @@ rust-clippy: ## Run clippy linter
 
 rust-all: rust-fmt rust-clippy rust-test ## Run all Rust checks
 
+completions: ## Generate shell completions
+	@mkdir -p completions
+	cargo run -p rairos-cli -- completions bash > completions/bash
+	cargo run -p rairos-cli -- completions zsh > completions/zsh
+	cargo run -p rairos-cli -- completions fish > completions/fish
+
 # ─── Combined ─────────────────────────────────────────────────────────────────
 
 dev: py-deps ## Setup development environment
