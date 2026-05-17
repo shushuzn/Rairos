@@ -82,18 +82,41 @@ def get_crates_list() -> List[Tuple[str, str]]:
             result.append((crate, desc))
     return result
 
-def get_cli_commands_sample() -> List[str]:
-    """Get sample of CLI commands"""
+def get_all_cli_commands() -> List[str]:
+    """Get all CLI commands from Commands enum"""
     main_rs = PROJECT_ROOT / "crates" / "rairos-cli" / "src" / "main.rs"
     content = main_rs.read_text()
-    # Find Commands enum
     enum_match = re.search(r'enum Commands \{(.+?)\n    \}', content, re.DOTALL)
     if not enum_match:
         return []
     enum_body = enum_match.group(1)
-    # Extract variant names
     variants = re.findall(r'^\s+(\w+)\s*\{', enum_body, re.MULTILINE)
-    return variants[:20]  # Top 20
+    return variants
+
+def get_cli_commands_sample() -> List[str]:
+    """Get sample of CLI commands"""
+    return get_all_cli_commands()[:20]
+
+def get_mcp_tool_names() -> Tuple[List[str], List[str]]:
+    """Get MCP tool names from handlers"""
+    handlers = PROJECT_ROOT / "crates" / "rairos-mcp" / "src" / "handlers.rs"
+    llm_handlers = PROJECT_ROOT / "crates" / "rairos-mcp" / "src" / "llm_handlers.rs"
+
+    core_tools = []
+    llm_tools = []
+
+    if handlers.exists():
+        content = handlers.read_text()
+        # Find patterns like: fn name(&self) -> &str { "tool_name" }
+        matches = re.findall(r'fn name\(&self\) -> &str\s*\{\s*"(\w+)"', content)
+        core_tools = matches
+
+    if llm_handlers.exists():
+        content = llm_handlers.read_text()
+        matches = re.findall(r'fn name\(&self\) -> &str\s*\{\s*"(\w+)"', content)
+        llm_tools = matches
+
+    return core_tools, llm_tools
 
 # ---------------------------------------------------------------------------
 # Generators
@@ -239,7 +262,7 @@ See `REFERENCE.md` for full architecture details.
     )
     return content
 
-def generate_reference_md(stats: Dict, crates_list: List[Tuple[str, str]], cli_sample: List[str]) -> str:
+def generate_reference_md(stats: Dict, crates_list: List[Tuple[str, str]], cli_sample: List[str], core_tools: List[str], llm_tools: List[str]) -> str:
     """Generate REFERENCE.md"""
     return f"""# Rairos Project Reference
 
@@ -268,21 +291,13 @@ def generate_reference_md(stats: Dict, crates_list: List[Tuple[str, str]], cli_s
 
 ## CLI Commands ({stats["cli_commands"]} total)
 
-Sample commands: {', '.join(cli_sample[:10])}...
-
-Categories:
-- **Papers**: search, add, list, parse, stats, recommend
-- **Research**: briefing, litreview, gap, hypothesis
-- **Evolution**: gene-pool, crossover, decay, watcher
-- **Analysis**: trends, impact, rigor, citations
-- **Discovery**: claim-graph, contradictions, paradigm
-- **Output**: render, chart, timeline, radar
+Sample: {', '.join(cli_sample[:15])}...
 
 ## MCP Tools ({stats["mcp_total"]} total)
 
-**Core Rust ({stats["mcp_core"]})**: paper_search, paper_ingest, paper_parse_full, paper_query, paper_chat, paper_recommend, replication_check_simple, github_repo_metadata, huggingface_dataset_metadata, pdf_extract_advanced, tag_add, tag_remove, tag_list, trends_detect_trending, trends_predict_next, trends_top_predictions, trends_compare_tags, citation_graph, kg_paper_subgraph, kg_tag_graph, kg_full_graph, kg_query, pdf_download, pdf_extract_text, pdf_extract_structured, cite_fetch, chart_query
+**Core Rust ({stats["mcp_core"]})**: {', '.join(core_tools)}
 
-**LLM-backed ({stats["mcp_llm"]})**: briefing_generate, litreview_generate, slides_generate, gap_detect, gap_submit, gap_evolve, citation_chain_build, citation_chain_families, citation_chain_silent, citation_chain_render, impact_score_paper, impact_rank, replication_check, route_query, trust_scorer_compute, paper_compare, paper_analyze, gene_pool_decay, crossover, tag_all, research_memory_add_stance, research_memory_list_stances, research_memory_check_paper, research_memory_anomalies, leaderboard, impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, routeplan_list, routeplan_update_step, routeplan_revise, research_run, hypothesis_generate, hypothesis_list, topic_discovery, orchestrator_run_cycle, deep_research_run, parallel_research_run
+**LLM-backed ({stats["mcp_llm"]})**: {', '.join(llm_tools)}
 
 ## Data Paths
 
@@ -346,15 +361,17 @@ def generate_all():
 
     stats = get_project_stats()
     crates_list = get_crates_list()
-    cli_sample = get_cli_commands_sample()
+    cli_sample = get_all_cli_commands()
+    core_tools, llm_tools = get_mcp_tool_names()
 
     print(f"  Stats: {stats['crates']} crates, {stats['cli_commands']} CLI, {stats['mcp_total']} MCP")
+    print(f"  MCP: {len(core_tools)} core, {len(llm_tools)} LLM")
 
     SKILL_DIR.mkdir(parents=True, exist_ok=True)
 
     # Generate files
     (SKILL_DIR / "SKILL.md").write_text(generate_skill_md(stats))
-    (SKILL_DIR / "REFERENCE.md").write_text(generate_reference_md(stats, crates_list, cli_sample))
+    (SKILL_DIR / "REFERENCE.md").write_text(generate_reference_md(stats, crates_list, cli_sample, core_tools, llm_tools))
 
     # CODERIEF.md is static - just copy if needed
     coderief = SKILL_DIR / "CODERIEF.md"

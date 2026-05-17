@@ -25,21 +25,13 @@
 
 ## CLI Commands (122 total)
 
-Sample commands: Add...
-
-Categories:
-- **Papers**: search, add, list, parse, stats, recommend
-- **Research**: briefing, litreview, gap, hypothesis
-- **Evolution**: gene-pool, crossover, decay, watcher
-- **Analysis**: trends, impact, rigor, citations
-- **Discovery**: claim-graph, contradictions, paradigm
-- **Output**: render, chart, timeline, radar
+Sample: Add...
 
 ## MCP Tools (67 total)
 
-**Core Rust (27)**: paper_search, paper_ingest, paper_parse_full, paper_query, paper_chat, paper_recommend, replication_check_simple, github_repo_metadata, huggingface_dataset_metadata, pdf_extract_advanced, tag_add, tag_remove, tag_list, trends_detect_trending, trends_predict_next, trends_top_predictions, trends_compare_tags, citation_graph, kg_paper_subgraph, kg_tag_graph, kg_full_graph, kg_query, pdf_download, pdf_extract_text, pdf_extract_structured, cite_fetch, chart_query
+**Core Rust (27)**: paper_search, paper_ingest, tag_add, tag_remove, tag_list, trends_detect_trending, paper_recommend, citation_graph, paper_query, paper_chat, kg_paper_subgraph, kg_tag_graph, kg_full_graph, kg_query, pdf_download, pdf_extract_text, pdf_extract_structured, trends_predict_next, trends_top_predictions, trends_compare_tags, cite_fetch, chart_query, paper_parse_full, replication_check_simple, github_repo_metadata, huggingface_dataset_metadata, pdf_extract_advanced
 
-**LLM-backed (40)**: briefing_generate, litreview_generate, slides_generate, gap_detect, gap_submit, gap_evolve, citation_chain_build, citation_chain_families, citation_chain_silent, citation_chain_render, impact_score_paper, impact_rank, replication_check, route_query, trust_scorer_compute, paper_compare, paper_analyze, gene_pool_decay, crossover, tag_all, research_memory_add_stance, research_memory_list_stances, research_memory_check_paper, research_memory_anomalies, leaderboard, impact_leaderboard, claim_graph, review_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, routeplan_list, routeplan_update_step, routeplan_revise, research_run, hypothesis_generate, hypothesis_list, topic_discovery, orchestrator_run_cycle, deep_research_run, parallel_research_run
+**LLM-backed (40)**: briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build, citation_chain_families, citation_chain_silent, citation_chain_render, impact_score_paper, impact_rank, replication_check, paper_compare, paper_analyze, gap_submit, gap_evolve, gene_pool_decay, crossover, leaderboard, impact_leaderboard, claim_graph, hypothesis_generate, topic_discovery, orchestrator_run_cycle, deep_research_run, parallel_research_run, trust_scorer_compute, routeplan_create, tag_all, review_list, hypothesis_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, routeplan_list, routeplan_update_step, routeplan_revise, research_run
 
 ## Data Paths
 

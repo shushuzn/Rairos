@@ -1,13 +1,23 @@
-[build]
-# rustc-wrapper = "sccache"  # Disabled
+# Rairos cargo aliases
+# Place in .cargo/config.toml or ~/.cargo/config.toml
+# Note: Rairos requires CARGO_BUILD_JOBS=1 for memory-constrained builds
 
-[profile.dev]
-opt-level = 0
-debug = true
-incremental = true
+[alias]
+# Quick commands
+b = "build"
+t = "test"
+c = "clippy"
+f = "fmt"
 
-[profile.release]
-opt-level = 3
-lto = "thin"
-codegen-units = 16
-strip = true
+# Rairos-specific (requires CARGO_BUILD_JOBS=1 env var)
+r = "build"
+rr = "build --release"
+rt = "test"
+rb = "build -p rairos-cli"
+rci = "build -p rairos-cli --release"
+rtest = "test -p"
+rclip = "clippy -p"
+
+# Single crate testing
+test-p = "test -p"
+clippy-p = "clippy -p"
