@@ -19,6 +19,8 @@ use crate::state::AppState;
 
 pub fn create_api_router(state: AppState) -> Router {
     Router::new()
+        .route("/health", get(health_check))
+        .route("/metrics", get(metrics))
         .route("/auth/register", post(register))
         .route("/auth/login", post(login))
         .route("/keys", post(create_api_key).layer(from_fn_with_state(state.clone(), authMiddleware)))
@@ -34,6 +36,15 @@ pub fn create_api_router(state: AppState) -> Router {
         .route("/subscription/status", get(get_subscription_status).layer(from_fn_with_state(state.clone(), authMiddleware)))
         .route("/tiers", get(get_tiers))
         .with_state(state)
+}
+
+pub async fn health_check() -> impl axum::response::IntoResponse {
+    ([(axum::http::header::CONTENT_TYPE, "application/json")], r#"{"status":"ok"}"#)
+}
+
+pub async fn metrics(State(state): State<AppState>) -> impl axum::response::IntoResponse {
+    let output = state.metrics.export_prometheus();
+    ([(axum::http::header::CONTENT_TYPE, "text/plain; version=0.0.4")], output)
 }
 
 pub async fn register(

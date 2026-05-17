@@ -5,6 +5,7 @@
 
 pub mod auth;
 pub mod error;
+pub mod metrics;
 pub mod models;
 pub mod ratelimit;
 pub mod routes;

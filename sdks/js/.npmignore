@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.log
+.env
+.env.*
+tsconfig.json
+publish.sh
