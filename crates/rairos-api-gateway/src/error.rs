@@ -65,14 +65,20 @@ impl IntoResponse for ApiError {
             ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, "UNAUTHORIZED", self.to_string()),
             ApiError::InvalidApiKey => (StatusCode::UNAUTHORIZED, "INVALID_API_KEY", self.to_string()),
             ApiError::RateLimited { limit, reset_at } => {
-                let body = serde_json::to_vec(&ErrorResponse {
+                let body = match serde_json::to_vec(&ErrorResponse {
                     error: ErrorDetail {
                         code: "RATE_LIMITED".to_string(),
                         message: self.to_string(),
                         limit: Some(*limit),
                         reset_at: Some(reset_at.to_rfc3339()),
                     },
-                }).unwrap_or_default();
+                }) {
+                    Ok(body) => body,
+                    Err(e) => {
+                        tracing::error!("Failed to serialize RATE_LIMITED response: {}", e);
+                        return (StatusCode::TOO_MANY_REQUESTS).into_response();
+                    }
+                };
                 return (StatusCode::TOO_MANY_REQUESTS, body).into_response();
             }
             ApiError::Forbidden(s) => (StatusCode::FORBIDDEN, "FORBIDDEN", s.clone()),
@@ -84,14 +90,20 @@ impl IntoResponse for ApiError {
             ApiError::Internal(s) => (StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", s.clone()),
         };
 
-        let body = serde_json::to_vec(&ErrorResponse {
+        let body = match serde_json::to_vec(&ErrorResponse {
             error: ErrorDetail {
                 code: code.to_string(),
                 message,
                 limit: None,
                 reset_at: None,
             },
-        }).unwrap_or_default();
+        }) {
+            Ok(body) => body,
+            Err(e) => {
+                tracing::error!("Failed to serialize error response: {}", e);
+                return status.into_response();
+            }
+        };
 
         (status, body).into_response()
     }

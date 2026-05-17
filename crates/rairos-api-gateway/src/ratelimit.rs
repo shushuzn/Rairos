@@ -155,23 +155,9 @@ struct TierLimits {
 }
 
 fn get_tier_limits(tier: Tier) -> TierLimits {
-    match tier {
-        Tier::Free => TierLimits {
-            daily: 100,
-            minute: 10,
-        },
-        Tier::Pro => TierLimits {
-            daily: 10_000,
-            minute: 1000,
-        },
-        Tier::Team => TierLimits {
-            daily: 100_000,
-            minute: 10_000,
-        },
-        Tier::Enterprise => TierLimits {
-            daily: u32::MAX,
-            minute: u32::MAX,
-        },
+    TierLimits {
+        daily: tier.requests_limit() as u32,
+        minute: tier.rate_limit_per_minute(),
     }
 }
 

@@ -43,7 +43,7 @@ pub async fn auth_middleware(
             user_id: row.get("user_id"),
             key_hash: row.get("key_hash"),
             name: row.get("name"),
-            tier: parse_tier(row.get("tier")),
+            tier: Tier::from_str(row.get::<_, String>("tier")),
             requests_used: row.get("requests_used"),
             requests_limit: row.get("requests_limit"),
             created_at: row.get("created_at"),
@@ -73,18 +73,30 @@ pub fn hash_api_key(key: &str) -> String {
     hex::encode(hasher.finalize())
 }
 
-fn parse_tier(s: String) -> Tier {
-    match s.as_str() {
-        "pro" => Tier::Pro,
-        "team" => Tier::Team,
-        "enterprise" => Tier::Enterprise,
-        _ => Tier::Free,
-    }
-}
-
 pub fn generate_api_key() -> String {
     let bytes: [u8; 32] = rand::random();
     hex::encode(bytes)
+}
+
+pub async fn create_api_key_for_user(
+    state: &AppState,
+    user_id: uuid::Uuid,
+    tier: Tier,
+    name: Option<String>,
+) -> Result<(String, uuid::Uuid)> {
+    let api_key = generate_api_key();
+    let key_hash = hash_api_key(&api_key);
+    let key_id = uuid::Uuid::new_v4();
+    let requests_limit = tier.requests_limit();
+
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    conn.execute(
+        "INSERT INTO api_keys (id, user_id, key_hash, name, tier, requests_used, requests_limit, created_at) VALUES ($1, $2, $3, NULLIF($4, ''), $5, 0, $6, NOW())",
+        &[&key_id.to_string(), &user_id.to_string(), &key_hash, &name, &tier.to_string(), &requests_limit],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    Ok((api_key, key_id))
 }
 
 #[cfg(test)]

@@ -12,6 +12,8 @@
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 
+use crate::models::Tier;
+
 static PRICE_IDS: OnceLock<PriceIds> = OnceLock::new();
 
 #[derive(Debug, Clone)]
@@ -62,25 +64,25 @@ pub fn get_subscription_tiers() -> Vec<SubscriptionTier> {
             name: "free",
             price_id: String::new(),
             price_monthly: 0,
-            requests_limit: 100,
+            requests_limit: Tier::Free.requests_limit(),
         },
         SubscriptionTier {
             name: "pro",
             price_id: ids.pro_monthly.clone(),
             price_monthly: 2900,
-            requests_limit: 10_000,
+            requests_limit: Tier::Pro.requests_limit(),
         },
         SubscriptionTier {
             name: "team",
             price_id: ids.team_monthly.clone(),
             price_monthly: 9900,
-            requests_limit: 100_000,
+            requests_limit: Tier::Team.requests_limit(),
         },
         SubscriptionTier {
             name: "enterprise",
             price_id: ids.enterprise_monthly.clone(),
             price_monthly: 49900,
-            requests_limit: i64::MAX,
+            requests_limit: Tier::Enterprise.requests_limit(),
         },
     ]
 }

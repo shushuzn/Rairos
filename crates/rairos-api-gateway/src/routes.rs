@@ -11,7 +11,7 @@ use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 use utoipa::OpenApi;
 
-use crate::auth::{auth_middleware, generate_api_key, hash_api_key};
+use crate::auth::{auth_middleware, create_api_key_for_user, generate_api_key, hash_api_key};
 use crate::error::{ApiError, Result};
 use crate::models::{
     ApiKey, ApiKeyResponse, AuthResponse, CreateKeyRequest, DailyUsage,
@@ -117,14 +117,7 @@ pub async fn register(
         &[&user_id.to_string(), &req.email, &password_hash],
     ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    let api_key = generate_api_key();
-    let key_hash = hash_api_key(&api_key);
-
-    let key_id = Uuid::new_v4();
-    conn.execute(
-        "INSERT INTO api_keys (id, user_id, key_hash, tier, requests_used, requests_limit, created_at) VALUES ($1, $2, $3, 'free', 0, 100, NOW())",
-        &[&key_id.to_string(), &user_id.to_string(), &key_hash],
-    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+    let (api_key, _key_id) = create_api_key_for_user(&state, user_id, Tier::Free, None).await?;
 
     Ok(Json(AuthResponse {
         user_id,
@@ -153,18 +146,9 @@ pub async fn login(
 
     let user_id: Uuid = row.get("id");
     let tier_str: String = row.get("tier");
-    let tier = parse_tier(tier_str);
+    let tier = Tier::from_str(&tier_str);
 
-    let api_key = generate_api_key();
-    let key_hash = hash_api_key(&api_key);
-
-    let key_id = Uuid::new_v4();
-    let requests_limit = get_tier_limit(tier);
-
-    conn.execute(
-        "INSERT INTO api_keys (id, user_id, key_hash, tier, requests_used, requests_limit, created_at) VALUES ($1, $2, $3, $4, 0, $5, NOW())",
-        &[&key_id.to_string(), &user_id.to_string(), &key_hash, &tier.to_string(), &requests_limit],
-    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+    let (api_key, _key_id) = create_api_key_for_user(&state, user_id, tier, None).await?;
 
     Ok(Json(AuthResponse {
         user_id,
@@ -231,7 +215,7 @@ pub async fn list_api_keys(
         .map(|row| ApiKeyResponse {
             id: row.get("id"),
             name: row.get("name"),
-            tier: parse_tier(row.get("tier")),
+            tier: Tier::from_str(row.get::<_, String>("tier")),
             requests_used: row.get("requests_used"),
             requests_limit: row.get("requests_limit"),
             created_at: row.get("created_at"),
@@ -561,22 +545,8 @@ fn require_tier(current: Tier, required: Tier) -> Result<()> {
     }
 }
 
-fn parse_tier(s: String) -> Tier {
-    match s.as_str() {
-        "pro" => Tier::Pro,
-        "team" => Tier::Team,
-        "enterprise" => Tier::Enterprise,
-        _ => Tier::Free,
-    }
-}
-
 fn get_tier_limit(tier: Tier) -> i64 {
-    match tier {
-        Tier::Free => 100,
-        Tier::Pro => 10_000,
-        Tier::Team => 100_000,
-        Tier::Enterprise => i64::MAX,
-    }
+    tier.requests_limit()
 }
 
 pub async fn create_checkout(

@@ -37,6 +37,35 @@ impl std::fmt::Display for Tier {
     }
 }
 
+impl Tier {
+    pub fn from_str<S: AsRef<str>>(s: S) -> Self {
+        match s.as_ref() {
+            "pro" => Tier::Pro,
+            "team" => Tier::Team,
+            "enterprise" => Tier::Enterprise,
+            _ => Tier::Free,
+        }
+    }
+
+    pub fn requests_limit(&self) -> i64 {
+        match self {
+            Tier::Free => 100,
+            Tier::Pro => 10_000,
+            Tier::Team => 100_000,
+            Tier::Enterprise => i64::MAX,
+        }
+    }
+
+    pub fn rate_limit_per_minute(&self) -> u32 {
+        match self {
+            Tier::Free => 10,
+            Tier::Pro => 1_000,
+            Tier::Team => 10_000,
+            Tier::Enterprise => u32::MAX,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApiKey {
     pub id: Uuid,
