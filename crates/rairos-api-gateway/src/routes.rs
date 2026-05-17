@@ -943,4 +943,97 @@ mod tests {
         assert_eq!(get_tier_limit(Tier::Pro), 10_000);
         assert_eq!(get_tier_limit(Tier::Team), 100_000);
     }
+
+    #[test]
+    fn test_extract_checkout_session_data_valid() {
+        let json = serde_json::json!({
+            "customer": "cus_123",
+            "subscription": "sub_456",
+            "metadata": {
+                "user_id": "user_789"
+            }
+        });
+        let result = extract_checkout_session_data(&json);
+        assert!(result.is_some());
+        let data = result.unwrap();
+        assert_eq!(data.customer_id, "cus_123");
+        assert_eq!(data.subscription_id, "sub_456");
+        assert_eq!(data.user_id, Some("user_789".to_string()));
+    }
+
+    #[test]
+    fn test_extract_checkout_session_data_missing_customer() {
+        let json = serde_json::json!({
+            "subscription": "sub_456",
+            "metadata": {}
+        });
+        let result = extract_checkout_session_data(&json);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_extract_checkout_session_data_missing_subscription() {
+        let json = serde_json::json!({
+            "customer": "cus_123",
+            "metadata": {}
+        });
+        let result = extract_checkout_session_data(&json);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_extract_checkout_session_data_missing_metadata() {
+        let json = serde_json::json!({
+            "customer": "cus_123",
+            "subscription": "sub_456"
+        });
+        let result = extract_checkout_session_data(&json);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_extract_subscription_data_valid_active() {
+        let json = serde_json::json!({
+            "id": "sub_123",
+            "customer": "cus_456",
+            "status": "active",
+            "items": {
+                "data": [{
+                    "price": {
+                        "id": "price_pro_monthly"
+                    }
+                }]
+            }
+        });
+        let result = extract_subscription_data(&json);
+        assert!(result.is_some());
+        let data = result.unwrap();
+        assert_eq!(data.subscription_id, "sub_123");
+        assert_eq!(data.customer_id, "cus_456");
+        assert_eq!(data.status, "active");
+    }
+
+    #[test]
+    fn test_extract_subscription_data_missing_status() {
+        let json = serde_json::json!({
+            "id": "sub_123",
+            "customer": "cus_456"
+        });
+        let result = extract_subscription_data(&json);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_extract_subscription_data_past_due() {
+        let json = serde_json::json!({
+            "id": "sub_123",
+            "customer": "cus_456",
+            "status": "past_due"
+        });
+        let result = extract_subscription_data(&json);
+        assert!(result.is_some());
+        let data = result.unwrap();
+        assert_eq!(data.status, "past_due");
+        assert_eq!(data.tier, "free");
+    }
 }

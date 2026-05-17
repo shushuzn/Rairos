@@ -178,4 +178,24 @@ mod tests {
         let enterprise = get_tier_limits(Tier::Enterprise);
         assert_eq!(enterprise.daily, u32::MAX);
     }
+
+    #[test]
+    fn test_tier_limits_free() {
+        let limits = get_tier_limits(Tier::Free);
+        assert_eq!(limits.daily, 100);
+        assert_eq!(limits.minute, 10);
+    }
+
+    #[test]
+    fn test_tier_limits_team() {
+        let limits = get_tier_limits(Tier::Team);
+        assert_eq!(limits.daily, 100_000);
+        assert_eq!(limits.minute, 10_000);
+    }
+
+    #[test]
+    fn test_rate_limiter_construction_in_memory() {
+        let limiter = RateLimiter::new(None);
+        assert!(matches!(*limiter.inner, RateLimiterInner::InMemory { .. }));
+    }
 }

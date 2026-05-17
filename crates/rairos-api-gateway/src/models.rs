@@ -245,3 +245,262 @@ pub struct DailyUsage {
     pub date: String,
     pub count: i64,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tier_from_str() {
+        assert_eq!(Tier::from_str("free"), Tier::Free);
+        assert_eq!(Tier::from_str("pro"), Tier::Pro);
+        assert_eq!(Tier::from_str("team"), Tier::Team);
+        assert_eq!(Tier::from_str("enterprise"), Tier::Enterprise);
+        assert_eq!(Tier::from_str("unknown"), Tier::Free);
+        assert_eq!(Tier::from_str(""), Tier::Free);
+        assert_eq!(Tier::from_str("FREE"), Tier::Free);
+        assert_eq!(Tier::from_str("Pro"), Tier::Free);
+    }
+
+    #[test]
+    fn test_tier_from_str_string() {
+        let s = String::from("pro");
+        assert_eq!(Tier::from_str(s), Tier::Pro);
+    }
+
+    #[test]
+    fn test_tier_requests_limit() {
+        assert_eq!(Tier::Free.requests_limit(), 100);
+        assert_eq!(Tier::Pro.requests_limit(), 10_000);
+        assert_eq!(Tier::Team.requests_limit(), 100_000);
+        assert_eq!(Tier::Enterprise.requests_limit(), i64::MAX);
+    }
+
+    #[test]
+    fn test_tier_rate_limit_per_minute() {
+        assert_eq!(Tier::Free.rate_limit_per_minute(), 10);
+        assert_eq!(Tier::Pro.rate_limit_per_minute(), 1_000);
+        assert_eq!(Tier::Team.rate_limit_per_minute(), 10_000);
+        assert_eq!(Tier::Enterprise.rate_limit_per_minute(), u32::MAX);
+    }
+
+    #[test]
+    fn test_tier_display() {
+        assert_eq!(Tier::Free.to_string(), "free");
+        assert_eq!(Tier::Pro.to_string(), "pro");
+        assert_eq!(Tier::Team.to_string(), "team");
+        assert_eq!(Tier::Enterprise.to_string(), "enterprise");
+    }
+
+    #[test]
+    fn test_api_key_is_expired_no_expiry() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 0,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        assert!(!key.is_expired());
+    }
+
+    #[test]
+    fn test_api_key_is_expired_future() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 0,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: Some(Utc::now() + chrono::Duration::days(1)),
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        assert!(!key.is_expired());
+    }
+
+    #[test]
+    fn test_api_key_is_expired_past() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 0,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: Some(Utc::now() - chrono::Duration::days(1)),
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        assert!(key.is_expired());
+    }
+
+    #[test]
+    fn test_api_key_is_in_grace_period_no_grace() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 0,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        assert!(!key.is_in_grace_period());
+    }
+
+    #[test]
+    fn test_api_key_is_in_grace_period_active() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 0,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: Some(Utc::now() + chrono::Duration::hours(12)),
+        };
+        assert!(key.is_in_grace_period());
+    }
+
+    #[test]
+    fn test_api_key_is_in_grace_period_expired() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 0,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: Some(Utc::now() - chrono::Duration::hours(1)),
+        };
+        assert!(!key.is_in_grace_period());
+    }
+
+    #[test]
+    fn test_api_key_is_limit_exceeded_false() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 50,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        assert!(!key.is_limit_exceeded());
+    }
+
+    #[test]
+    fn test_api_key_is_limit_exceeded_true() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Free,
+            requests_used: 100,
+            requests_limit: 100,
+            created_at: Utc::now(),
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        assert!(key.is_limit_exceeded());
+    }
+
+    #[test]
+    fn test_api_key_is_limit_exceeded_unlimited() {
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: None,
+            tier: Tier::Enterprise,
+            requests_used: 1_000_000,
+            requests_limit: i64::MAX,
+            created_at: Utc::now(),
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        assert!(!key.is_limit_exceeded());
+    }
+
+    #[test]
+    fn test_api_key_response_from_api_key() {
+        let now = Utc::now();
+        let key = ApiKey {
+            id: Uuid::new_v4(),
+            user_id: Uuid::new_v4(),
+            key_hash: "hash".to_string(),
+            name: Some("Test Key".to_string()),
+            tier: Tier::Pro,
+            requests_used: 500,
+            requests_limit: 10_000,
+            created_at: now,
+            expires_at: None,
+            rotated_from: None,
+            rotated_at: None,
+            grace_period_ends: None,
+        };
+        let response: ApiKeyResponse = key.into();
+        assert_eq!(response.tier, Tier::Pro);
+        assert_eq!(response.requests_used, 500);
+        assert_eq!(response.requests_limit, 10_000);
+    }
+
+    #[test]
+    fn test_pagination_params_defaults() {
+        let json = r#"{}"#;
+        let params: PaginationParams = serde_json::from_str(json).unwrap();
+        assert_eq!(params.page, 1);
+        assert_eq!(params.per_page, 20);
+        assert!(params.q.is_none());
+    }
+
+    #[test]
+    fn test_pagination_params_with_values() {
+        let json = r#"{"q": "test", "page": 5, "per_page": 50}"#;
+        let params: PaginationParams = serde_json::from_str(json).unwrap();
+        assert_eq!(params.q, Some("test".to_string()));
+        assert_eq!(params.page, 5);
+        assert_eq!(params.per_page, 50);
+    }
+}
