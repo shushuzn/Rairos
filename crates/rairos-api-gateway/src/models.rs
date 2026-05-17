@@ -147,6 +147,8 @@ pub struct UsageResponse {
 
 #[derive(Debug, Deserialize)]
 pub struct PaginationParams {
+    #[serde(default)]
+    pub q: Option<String>,
     #[serde(default = "default_page")]
     pub page: u32,
     #[serde(default = "default_per_page")]

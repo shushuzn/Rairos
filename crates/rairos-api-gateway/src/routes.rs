@@ -217,23 +217,11 @@ pub async fn search_papers(
     require_tier(key.tier, Tier::Free)?;
 
     let offset = (params.page - 1) * params.per_page;
-    let query = "".to_string();
+    let search_query = params.q.as_deref().filter(|s| !s.is_empty());
 
     let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    let (count_row, rows) = if query.is_empty() {
-        let rows = conn.query(
-            "SELECT id, title, abstract, authors, categories, published FROM papers ORDER BY published DESC LIMIT $1 OFFSET $2",
-            &[&(params.per_page as i64), &(offset as i64)],
-        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-
-        let count_row = conn.query_one(
-            "SELECT COUNT(*) as count FROM papers",
-            &[],
-        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-
-        (count_row, rows)
-    } else {
+    let (count_row, rows) = if let Some(query) = search_query {
         let search_pattern = format!("%{}%", query);
         let rows = conn.query(
             "SELECT id, title, abstract, authors, categories, published FROM papers WHERE title ILIKE $1 OR abstract ILIKE $1 ORDER BY published DESC LIMIT $2 OFFSET $3",
@@ -243,6 +231,18 @@ pub async fn search_papers(
         let count_row = conn.query_one(
             "SELECT COUNT(*) as count FROM papers WHERE title ILIKE $1 OR abstract ILIKE $1",
             &[&search_pattern],
+        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        (count_row, rows)
+    } else {
+        let rows = conn.query(
+            "SELECT id, title, abstract, authors, categories, published FROM papers ORDER BY published DESC LIMIT $1 OFFSET $2",
+            &[&(params.per_page as i64), &(offset as i64)],
+        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+        let count_row = conn.query_one(
+            "SELECT COUNT(*) as count FROM papers",
+            &[],
         ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
         (count_row, rows)
