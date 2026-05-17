@@ -41,7 +41,6 @@ const ROUTES: Record<string, string> = {
   "/chat": "chat.html",
   "/login": "login.html",
   "/setup": "setup.html",
-  "/alerts": "alerts.html",
 };
 
 // ─── Server ───────────────────────────────────────────────────────────────────
