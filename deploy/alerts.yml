@@ -1,0 +1,82 @@
+# Prometheus alerting rules for Rairos API Gateway
+
+groups:
+  - name: api_gateway_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High 5xx error rate"
+          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+          runbook_url: "https://docs.rairos.ai/runbooks/high-error-rate"
+
+      - alert: RateLimitNearCapacity
+        expr: |
+          (
+            rate_limit_used{job="api-gateway"}
+            /
+            rate_limit_total{job="api-gateway"}
+          ) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limit at {{ $value | humanizePercentage }} capacity"
+          description: "User rate limits are approaching capacity. Consider upgrading users or increasing limits."
+          runbook_url: "https://docs.rairos.ai/runbooks/rate-limit"
+
+      - alert: DatabaseConnectionFailure
+        expr: |
+          avg(db_connections_active{job="api-gateway"}) == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection lost"
+          description: "No active database connections for {{ $labels.job }}. API will fail."
+          runbook_url: "https://docs.rairos.ai/runbooks/db-connection"
+
+      - alert: RedisConnectionFailure
+        expr: |
+          avg(redis_connections_active{job="api-gateway"}) == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis connection lost"
+          description: "No active Redis connections. Rate limiting falling back to in-memory mode."
+          runbook_url: "https://docs.rairos.ai/runbooks/redis-connection"
+
+      - alert: HighAuthFailureRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status="401"}[5m}))
+            /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value | humanizePercentage }} of requests are failing authentication."
+          runbook_url: "https://docs.rairos.ai/runbooks/auth-failures"
+
+      - alert: APIServerDown
+        expr: |
+          up{job="api-gateway"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API Gateway is down"
+          description: "API Gateway has been unreachable for 1 minute."
+          runbook_url: "https://docs.rairos.ai/runbooks/api-down"
