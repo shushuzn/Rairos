@@ -7,6 +7,7 @@ use axum::{
     Json, Router,
 };
 use chrono::Utc;
+use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 use utoipa::OpenApi;
 
@@ -19,8 +20,38 @@ use crate::models::{
 };
 use crate::state::AppState;
 
+fn cors_layer() -> CorsLayer {
+    let allowed_origins_str = std::env::var("CORS_ALLOWED_ORIGINS")
+        .unwrap_or_else(|_| "https://rairos.ai,https://www.rairos.ai".to_string());
+
+    let origins: Vec<String> = allowed_origins_str
+        .split(',')
+        .map(|o| o.trim().to_string())
+        .filter(|o| !o.is_empty())
+        .collect();
+
+    let layer = CorsLayer::new()
+        .allow_methods(Any)
+        .allow_headers(Any)
+        .expose_headers(Any)
+        .max_age(std::time::Duration::from_secs(86400));
+
+    if origins.iter().any(|o| o == "*") {
+        layer.allow_origin(Any)
+    } else {
+        let origins_static: Vec<String> = origins.clone();
+        let allow_origin = tower_http::cors::AllowOrigin::predicate(move |origin, _| {
+            origins_static.iter().any(|o| {
+                origin.to_str().map(|s| s == o.as_str()).unwrap_or(false)
+            })
+        });
+        layer.allow_origin(allow_origin)
+    }
+}
+
 pub fn create_api_router(state: AppState) -> Router {
     Router::new()
+        .layer(cors_layer())
         .route("/health", get(health_check))
         .route("/metrics", get(metrics))
         .route("/docs/openapi.json", get(openapi_json))

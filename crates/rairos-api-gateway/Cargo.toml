@@ -12,7 +12,7 @@ serde.workspace = true
 serde_json.workspace = true
 chrono.workspace = true
 uuid = { workspace = true, features = ["v4", "serde"] }
-bcrypt = "0.15"
+bcrypt = "0.16"
 redis = { version = "0.25", features = ["tokio-comp"] }
 tokio-postgres = { version = "0.7", features = ["with-uuid-1", "with-chrono-0_4"] }
 bb8-postgres = "0.8"
@@ -23,7 +23,7 @@ anyhow = "1"
 sha2 = "0.10"
 hmac = "0.12"
 rand = "0.8"
-tower = "0.4"
+tower.workspace = true
 tower-http = { version = "0.5", features = ["cors", "trace"] }
 utoipa = "4"
 utoipa-swagger-ui = "7"
