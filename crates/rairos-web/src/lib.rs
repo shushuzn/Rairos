@@ -13,6 +13,7 @@ use axum::{
 use rairos_core::constants::LLM_MODEL;
 use rairos_core::{Database, DbStats, Paper, ResearchGap};
 use rairos_kg::{GraphAlgorithms, KgStats, KnowledgeGraph};
+use rairos_observability::get_metrics;
 use rairos_llm::{
     briefing, citation_chain, impact, Capsule, GenePool, GenePoolDiversityCalculator,
     LlmClient, LlmCredentials, OpenAiClient,
@@ -924,10 +925,16 @@ async fn index() -> impl IntoResponse {
     Html(html)
 }
 
+async fn metrics() -> Response {
+    let output = get_metrics().export_prometheus();
+    ([(axum::http::header::CONTENT_TYPE, "text/plain; version=0.0.4")], output).into_response()
+}
+
 pub fn build_router(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/", get(index))
         .route("/health", get(health))
+        .route("/metrics", get(metrics))
         .route("/stats", get(stats))
         .route("/papers", get(list_papers))
         .route("/papers/search", get(search_papers))
