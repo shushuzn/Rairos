@@ -9,7 +9,7 @@ use axum::{
 use chrono::Utc;
 use uuid::Uuid;
 
-use crate::auth::{authMiddleware, generate_api_key, hash_api_key};
+use crate::auth::{auth_middleware, generate_api_key, hash_api_key};
 use crate::error::{ApiError, Result};
 use crate::models::{
     ApiKey, ApiKeyResponse, AuthResponse, CreateKeyRequest, LoginRequest,
@@ -23,17 +23,17 @@ pub fn create_api_router(state: AppState) -> Router {
         .route("/metrics", get(metrics))
         .route("/auth/register", post(register))
         .route("/auth/login", post(login))
-        .route("/keys", post(create_api_key).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/keys", get(list_api_keys).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/usage", get(get_usage).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/papers/search", get(search_papers).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/papers/:id", get(get_paper).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/gap/detect", post(detect_gap).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/research/run", post(run_research).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/subscription/checkout", post(create_checkout).layer(from_fn_with_state(state.clone(), authMiddleware)))
-        .route("/subscription/portal", post(create_portal).layer(from_fn_with_state(state.clone(), authMiddleware)))
+        .route("/keys", post(create_api_key).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/keys", get(list_api_keys).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/usage", get(get_usage).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/papers/search", get(search_papers).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/papers/:id", get(get_paper).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/gap/detect", post(detect_gap).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/research/run", post(run_research).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/subscription/checkout", post(create_checkout).layer(from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/subscription/portal", post(create_portal).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/subscription/webhook", post(stripe_webhook))
-        .route("/subscription/status", get(get_subscription_status).layer(from_fn_with_state(state.clone(), authMiddleware)))
+        .route("/subscription/status", get(get_subscription_status).layer(from_fn_with_state(state.clone(), auth_middleware)))
         .route("/tiers", get(get_tiers))
         .with_state(state)
 }
@@ -202,7 +202,7 @@ pub async fn get_usage(
         tier: key.tier,
         requests_used: key.requests_used,
         requests_limit: key.requests_limit,
-        requests_remaining: ((key.requests_limit - key.requests_used as i64).max(0)) as i64,
+        requests_remaining: ((key.requests_limit - key.requests_used).max(0)),
         reset_at: Utc::now() + chrono::Duration::hours(24),
     };
 

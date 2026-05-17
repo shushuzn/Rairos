@@ -13,7 +13,7 @@ use crate::error::{ApiError, Result};
 use crate::models::{ApiKey, Tier};
 use crate::state::AppState;
 
-pub async fn authMiddleware(
+pub async fn auth_middleware(
     State(state): State<AppState>,
     mut req: Request<axum::body::Body>,
     next: Next,
