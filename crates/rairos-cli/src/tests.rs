@@ -470,3 +470,17 @@ fn badges_award_no_crash() {
     let result = handle_badges_award("nonexistent_badge_id");
     assert!(result.is_ok());
 }
+
+// ─── contradiction.rs ─────────────────────────────────────────────────────────
+
+#[test]
+fn contradictions_list_no_crash() {
+    let result = handle_contradictions_list(10);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn contradictions_render_no_crash() {
+    let result = handle_contradictions_render();
+    assert!(result.is_ok());
+}

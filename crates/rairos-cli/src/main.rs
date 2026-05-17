@@ -522,6 +522,17 @@ enum Commands {
         badge_id: Option<String>,
     },
 
+    /// Detect contradictions in research gaps
+    Contradictions {
+        /// Action: list (show contradictions) or render (heatmap)
+        #[arg(short, long, default_value = "list")]
+        action: String,
+
+        /// Max papers to show
+        #[arg(short = 'n', long, default_value = "10")]
+        limit: usize,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2108,6 +2119,15 @@ fn main() -> Result<()> {
                 }
                 _ => {
                     eprintln!("Unknown action: {}. Use: list or award", action);
+                }
+            }
+        }
+        Commands::Contradictions { action, limit } => {
+            match action.as_str() {
+                "list" => handle_contradictions_list(*limit)?,
+                "render" => handle_contradictions_render()?,
+                _ => {
+                    eprintln!("Unknown action: {}. Use: list or render", action);
                 }
             }
         }

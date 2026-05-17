@@ -62,6 +62,7 @@ rairos-simple-cli = { path = "../rairos-simple-cli" }
 # Restored CLI crate deps — original crates re-exported via rairos-cli/src modules
 rairos-achievements = { path = "../rairos-achievements" }
 rairos-game-mode = { path = "../rairos-game-mode" }
+rairos-contradiction = { path = "../rairos-contradiction" }
 rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
 rairos-batch-optimizer = { path = "../rairos-batch-optimizer" }
 rairos-bold-vault = { path = "../rairos-bold-vault" }

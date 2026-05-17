@@ -6,6 +6,8 @@ pub mod achievements;
 pub use achievements::*;
 pub mod game_mode;
 pub use game_mode::*;
+pub mod contradiction;
+pub use contradiction::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;
