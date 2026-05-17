@@ -118,9 +118,8 @@ members = [
     "crates/rairos-rankers-score",
     "crates/rairos-trend-analyzer",
     "crates/rairos-rankers-base",
-    # Insight crates — re-exported via insight module in rairos-llm
+    # Insight crates — direct re-exports via insight module in rairos-llm
     "crates/rairos-crossover",
-    "crates/rairos-insight",
     "crates/rairos-insight-cards",
     "crates/rairos-insight-credibility",
     "crates/rairos-insight-evolution",

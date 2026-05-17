@@ -1,1 +1,1 @@
-pub use rairos_insight::credibility::*;
+pub use rairos_insight_credibility::*;

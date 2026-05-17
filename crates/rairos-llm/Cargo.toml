@@ -56,10 +56,14 @@ rairos-rankers-score = { path = "../rairos-rankers-score" }
 rairos-trend-analyzer = { path = "../rairos-trend-analyzer" }
 rairos-rankers-base = { path = "../rairos-rankers-base" }
 
-# Insight crates — via rairos-insight facade + extras
+# Insight crates — direct dependencies on implementation crates
 rairos-crossover = { path = "../rairos-crossover" }
-rairos-insight = { path = "../rairos-insight" }
 rairos-insight-cards = { path = "../rairos-insight-cards" }
+rairos-insight-credibility = { path = "../rairos-insight-credibility" }
+rairos-insight-evolution = { path = "../rairos-insight-evolution" }
+rairos-insight-storage = { path = "../rairos-insight-storage" }
+rairos-insight-tracker = { path = "../rairos-insight-tracker" }
+rairos-insight-types = { path = "../rairos-insight-types" }
 
 [dev-dependencies]
 tokio-test = "0.4"

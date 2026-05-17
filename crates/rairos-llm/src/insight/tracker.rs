@@ -1,1 +1,1 @@
-pub use rairos_insight::tracker::*;
+pub use rairos_insight_tracker::*;

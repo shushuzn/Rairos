@@ -4091,20 +4091,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-insight"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "rairos-insight-credibility",
- "rairos-insight-evolution",
- "rairos-insight-storage",
- "rairos-insight-tracker",
- "rairos-insight-types",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-insight-cards"
 version = "0.1.0"
 dependencies = [
@@ -4305,8 +4291,12 @@ dependencies = [
  "rairos-gene-pool-decay",
  "rairos-impact",
  "rairos-impact-scorer",
- "rairos-insight",
  "rairos-insight-cards",
+ "rairos-insight-credibility",
+ "rairos-insight-evolution",
+ "rairos-insight-storage",
+ "rairos-insight-tracker",
+ "rairos-insight-types",
  "rairos-litreview",
  "rairos-litreview-generator",
  "rairos-paradigm",

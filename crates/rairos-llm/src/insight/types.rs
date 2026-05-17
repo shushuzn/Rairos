@@ -1,1 +1,1 @@
-pub use rairos_insight::types::*;
+pub use rairos_insight_types::*;
