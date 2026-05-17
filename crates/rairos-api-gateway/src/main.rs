@@ -9,9 +9,10 @@ async fn main() -> anyhow::Result<()> {
     let database_url = std::env::var("DATABASE_URL")
         .unwrap_or_else(|_| "postgres://postgres:postgres@localhost/rairos_api".to_string());
 
+    let redis_url = std::env::var("REDIS_URL").ok();
     let stripe_webhook_secret = std::env::var("STRIPE_WEBHOOK_SECRET").ok();
 
-    let state = AppState::new(&database_url, stripe_webhook_secret).await?;
+    let state = AppState::new(&database_url, redis_url.as_deref(), stripe_webhook_secret).await?;
 
     let app = create_app(state);
 

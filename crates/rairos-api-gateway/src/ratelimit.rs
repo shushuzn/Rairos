@@ -1,4 +1,6 @@
 //! Rate Limiting
+//!
+//! Supports both in-memory (single instance) and Redis (distributed) rate limiting.
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -11,46 +13,107 @@ const MINUTE_WINDOW_SECS: u64 = 60;
 
 #[derive(Clone)]
 pub struct RateLimiter {
-    in_memory: Arc<RwLock<InMemoryRateLimiter>>,
+    inner: Arc<RateLimiterInner>,
 }
 
-struct InMemoryRateLimiter {
-    daily: HashMap<String, u32>,
-    minute: HashMap<String, u32>,
-}
-
-impl Default for InMemoryRateLimiter {
-    fn default() -> Self {
-        Self {
-            daily: HashMap::new(),
-            minute: HashMap::new(),
-        }
-    }
+enum RateLimiterInner {
+    Redis {
+        client: redis::Client,
+    },
+    InMemory {
+        daily: Arc<RwLock<HashMap<String, u32>>>,
+        minute: Arc<RwLock<HashMap<String, u32>>>,
+    },
 }
 
 impl RateLimiter {
-    pub fn new() -> Self {
+    pub fn new(redis_client: Option<redis::Client>) -> Self {
+        let inner = match redis_client {
+            Some(client) => RateLimiterInner::Redis { client },
+            None => RateLimiterInner::InMemory {
+                daily: Arc::new(RwLock::new(HashMap::new())),
+                minute: Arc::new(RwLock::new(HashMap::new())),
+            },
+        };
+
         Self {
-            in_memory: Arc::new(RwLock::new(InMemoryRateLimiter::default())),
+            inner: Arc::new(inner),
         }
     }
 
-    #[allow(dead_code)]
     pub async fn check_rate_limit(
         &self,
         key_hash: &str,
         tier: Tier,
     ) -> Option<(u32, chrono::DateTime<chrono::Utc>)> {
         let limits = get_tier_limits(tier);
-        let limiter = self.in_memory.read().await;
 
-        if let Some(count) = limiter.daily.get(key_hash) {
-            if *count >= limits.daily {
+        match self.inner.as_ref() {
+            RateLimiterInner::Redis { client } => {
+                Self::check_redis_rate_limit(client, key_hash, limits).await
+            }
+            RateLimiterInner::InMemory { daily, minute } => {
+                Self::check_in_memory_rate_limit(daily, minute, key_hash, limits).await
+            }
+        }
+    }
+
+    async fn check_redis_rate_limit(
+        client: &redis::Client,
+        key_hash: &str,
+        limits: TierLimits,
+    ) -> Option<(u32, chrono::DateTime<chrono::Utc>)> {
+        let mut conn = match client.get_multiplexed_async_connection().await {
+            Ok(conn) => conn,
+            Err(_) => return None,
+        };
+
+        let daily_key = format!("ratelimit:daily:{}", key_hash);
+        let minute_key = format!("ratelimit:minute:{}", key_hash);
+
+        let daily_count: Option<u32> = redis::cmd("GET")
+            .arg(&daily_key)
+            .query_async(&mut conn)
+            .await
+            .ok();
+
+        if let Some(count) = daily_count {
+            if count >= limits.daily {
                 return Some((limits.daily, chrono::Utc::now() + chrono::Duration::days(1)));
             }
         }
 
-        if let Some(count) = limiter.minute.get(key_hash) {
+        let minute_count: Option<u32> = redis::cmd("GET")
+            .arg(&minute_key)
+            .query_async(&mut conn)
+            .await
+            .ok();
+
+        if let Some(count) = minute_count {
+            if count >= limits.minute {
+                return Some((limits.minute, chrono::Utc::now() + chrono::Duration::minutes(1)));
+            }
+        }
+
+        None
+    }
+
+    async fn check_in_memory_rate_limit(
+        daily: &Arc<RwLock<HashMap<String, u32>>>,
+        minute: &Arc<RwLock<HashMap<String, u32>>>,
+        key_hash: &str,
+        limits: TierLimits,
+    ) -> Option<(u32, chrono::DateTime<chrono::Utc>)> {
+        let daily_reader = daily.read().await;
+        if let Some(count) = daily_reader.get(key_hash) {
+            if *count >= limits.daily {
+                return Some((limits.daily, chrono::Utc::now() + chrono::Duration::days(1)));
+            }
+        }
+        drop(daily_reader);
+
+        let minute_reader = minute.read().await;
+        if let Some(count) = minute_reader.get(key_hash) {
             if *count >= limits.minute {
                 return Some((limits.minute, chrono::Utc::now() + chrono::Duration::minutes(1)));
             }
@@ -59,17 +122,30 @@ impl RateLimiter {
         None
     }
 
-    #[allow(dead_code)]
     pub async fn record_request(&self, key_hash: &str) {
-        let mut limiter = self.in_memory.write().await;
-        *limiter.daily.entry(key_hash.to_string()).or_insert(0) += 1;
-        *limiter.minute.entry(key_hash.to_string()).or_insert(0) += 1;
-    }
-}
+        match self.inner.as_ref() {
+            RateLimiterInner::Redis { client } => {
+                if let Ok(mut conn) = client.get_multiplexed_async_connection().await {
+                    let daily_key = format!("ratelimit:daily:{}", key_hash);
+                    let minute_key = format!("ratelimit:minute:{}", key_hash);
 
-impl Default for RateLimiter {
-    fn default() -> Self {
-        Self::new()
+                    let _: Result<(), _> = redis::pipe()
+                        .incr(&daily_key, 1)
+                        .expire(&daily_key, DAILY_WINDOW_SECS as i64)
+                        .incr(&minute_key, 1)
+                        .expire(&minute_key, MINUTE_WINDOW_SECS as i64)
+                        .query_async(&mut conn)
+                        .await;
+                }
+            }
+            RateLimiterInner::InMemory { daily, minute } => {
+                let mut daily_writer = daily.write().await;
+                *daily_writer.entry(key_hash.to_string()).or_insert(0) += 1;
+
+                let mut minute_writer = minute.write().await;
+                *minute_writer.entry(key_hash.to_string()).or_insert(0) += 1;
+            }
+        }
     }
 }
 
@@ -96,14 +172,6 @@ fn get_tier_limits(tier: Tier) -> TierLimits {
             daily: u32::MAX,
             minute: u32::MAX,
         },
-    }
-}
-
-pub struct RateLimitLayer;
-
-impl RateLimitLayer {
-    pub fn new() -> Self {
-        Self
     }
 }
 
