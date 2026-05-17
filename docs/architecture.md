@@ -5,8 +5,9 @@
 ```
 CLI (rairos-cli) → crates/* (154 crates)
   ├── rairos-core        # Core data structures + database (SQLite, FTS5)
-  ├── rairos-cli         # 104 CLI commands
-  ├── rairos-mcp         # MCP protocol server (68 tools)
+  ├── rairos-cli         # 105 CLI commands
+  ├── rairos-mcp         # MCP protocol server (69 tools)
+  ├── rairos-codegraph   # Code knowledge graph with MCP tools
   ├── rairos-llm         # LLM clients, gene pool, evolution
   ├── rairos-parser      # arXiv/CrossRef/Semantic Scholar API
   ├── rairos-research    # Deep research agent, gap detection
@@ -19,9 +20,17 @@ AI Research OS is a **local-first** research tool. No cloud dependency — all d
 
 ## Key Modules
 
-### CLI Entry Point
+### ### CLI Entry Point
 
-`rairos-cli` — subcommands registered via `clap` derives. All commands dispatch to pure Rust handlers:
+`rairos-cli` — 105 CLI commands registered via `clap` derives. All commands dispatch to pure Rust handlers:
+
+```bash
+cargo run -p rairos-cli -- <command> [options]
+```
+
+### CodeGraph
+
+`rairos-codegraph` — Pre-indexed code knowledge graph for Claude Code. Provides fast code exploration via MCP tools (codegraph_search, codegraph_context, codegraph_callers, etc.) without expensive file scanning.
 
 ```bash
 cargo run -p rairos-cli -- <command> [options]
@@ -37,7 +46,7 @@ cargo run -p rairos-cli -- <command> [options]
 
 ### MCP Protocol
 
-`rairos-mcp` — 68 pure-Rust tools exposing all Rairos functionality via JSON-RPC 2.0 MCP.
+`rairos-mcp` — 69 pure-Rust tools exposing all Rairos functionality via JSON-RPC 2.0 MCP.
 
 ## Data Flow
 

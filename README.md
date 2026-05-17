@@ -6,14 +6,14 @@
 
 </div>
 
-**A Self-Evolving Research Operating System** — 100% Rust (154 crates), 104 CLI commands, 68 MCP tools.
+**A Self-Evolving Research Operating System** — 100% Rust (154 crates), 105 CLI commands, 69 MCP tools.
 
 [![Build](https://github.com/shushuzn/Rairos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 ![Rust](https://img.shields.io/badge/rust-1.85+-orange.svg?logo=rust)
 ![Crates](https://img.shields.io/badge/crates-154-blue.svg)
 ![Lines](https://img.shields.io/badge/lines-116k%2B-green.svg)
-![MCP](https://img.shields.io/badge/mcp_tools-68-blue.svg?logo=robot)
-![CLI](https://img.shields.io/badge/cli_commands-104-blue.svg?logo=terminal)
+![MCP](https://img.shields.io/badge/mcp_tools-69-blue.svg?logo=robot)
+![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
 
 ## What It Does
 
@@ -35,7 +35,7 @@ Feed it a paper → It learns what works → Next search is better
 |-------|---------|
 | rairos-core | DB, FTS5, subscriptions, tags |
 | rairos-llm | GenePool, Evolution, LLM clients |
-| rairos-cli | 104 CLI commands |
+| rairos-cli | 105 CLI commands |
 | rairos-mcp | 68 MCP tools (JSON-RPC 2.0) |
 | rairos-web | REST API + HTML frontend |
 | rairos-kg | Knowledge graph, PageRank |
