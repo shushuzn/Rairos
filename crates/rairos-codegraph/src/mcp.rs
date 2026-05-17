@@ -1,6 +1,6 @@
 //! MCP protocol server for CodeGraph
 
-use crate::graph::{CodeGraph, GraphStats, SearchResult, CallResult, Node};
+use crate::graph::CodeGraph;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
