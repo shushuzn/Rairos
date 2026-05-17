@@ -686,87 +686,61 @@ pub async fn stripe_webhook(
     match event_type {
         "checkout.session.completed" => {
             if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
-                let customer_id = data.get("customer").and_then(|v| v.as_str());
-                let subscription_id = data.get("subscription").and_then(|v| v.as_str());
+                if let Some(session) = extract_checkout_session_data(data) {
+                    tracing::info!("Checkout completed for customer {} subscription {}",
+                        session.customer_id, session.subscription_id);
 
-                if let (Some(cid), Some(sid)) = (customer_id, subscription_id) {
-                    tracing::info!("Checkout completed for customer {} subscription {}", cid, sid);
-
-                    let metadata = data.get("metadata");
-                    let user_id = metadata
-                        .and_then(|m| m.get("user_id"))
-                        .and_then(|v| v.as_str())
-                        .map(|s| s.to_string());
-
-                    if let Some(uid) = user_id {
-                        let tier = crate::stripe::get_tier_by_checkout_session(data)
-                            .map(|t| t.name.to_string())
-                            .unwrap_or_else(|| "free".to_string());
-
+                    if let Some(uid) = session.user_id {
                         conn.execute(
                             "UPDATE users SET stripe_customer_id = $1, stripe_subscription_id = $2, tier = $3 WHERE id = $4",
-                            &[&cid, &sid, &tier, &uid],
+                            &[&session.customer_id, &session.subscription_id, &session.tier, &uid],
                         ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-                        tracing::info!("Updated user {} to tier {} via checkout", uid, tier);
+                        tracing::info!("Updated user {} to tier {} via checkout", uid, session.tier);
                     }
                 }
             }
         }
         "customer.subscription.created" | "customer.subscription.updated" => {
             if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
-                let subscription_id = data.get("id").and_then(|v| v.as_str()).unwrap_or("");
-                let customer_id = data.get("customer").and_then(|v| v.as_str()).unwrap_or("");
-                let status = data.get("status").and_then(|v| v.as_str()).unwrap_or("");
+                if let Some(sub) = extract_subscription_data(data) {
+                    tracing::info!("Subscription {} (customer {}) status: {}",
+                        sub.subscription_id, sub.customer_id, sub.status);
 
-                tracing::info!("Subscription {} (customer {}) status: {}", subscription_id, customer_id, status);
+                    conn.execute(
+                        "UPDATE users SET tier = $1 WHERE stripe_customer_id = $2",
+                        &[&sub.tier, &sub.customer_id],
+                    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-                let tier = if status == "active" || status == "trialing" {
-                    data.get("items").and_then(|items| items.get("data"))
-                        .and_then(|items| items.as_array())
-                        .and_then(|items| items.first())
-                        .and_then(|item| item.get("price"))
-                        .and_then(|price| price.get("id"))
-                        .and_then(|id| id.as_str())
-                        .and_then(|price_id| crate::stripe::get_tier_by_price_id(price_id))
-                        .map(|t| t.name.to_string())
-                        .unwrap_or_else(|| "free".to_string())
-                } else {
-                    "free".to_string()
-                };
-
-                conn.execute(
-                    "UPDATE users SET tier = $1 WHERE stripe_customer_id = $2",
-                    &[&tier, &customer_id],
-                ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-
-                tracing::info!("Updated customer {} to tier {} via subscription update", customer_id, tier);
+                    tracing::info!("Updated customer {} to tier {} via subscription update",
+                        sub.customer_id, sub.tier);
+                }
             }
         }
         "customer.subscription.deleted" => {
             if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
-                let customer_id = data.get("customer").and_then(|v| v.as_str()).unwrap_or("");
+                if let Some(customer_id) = data.get("customer").and_then(|v| v.as_str()) {
+                    tracing::info!("Subscription deleted for customer {}", customer_id);
 
-                tracing::info!("Subscription deleted for customer {}", customer_id);
+                    conn.execute(
+                        "UPDATE users SET tier = 'free', stripe_subscription_id = NULL WHERE stripe_customer_id = $1",
+                        &[&customer_id],
+                    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-                conn.execute(
-                    "UPDATE users SET tier = 'free', stripe_subscription_id = NULL WHERE stripe_customer_id = $1",
-                    &[&customer_id],
-                ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-
-                tracing::info!("Downgraded customer {} to free tier", customer_id);
+                    tracing::info!("Downgraded customer {} to free tier", customer_id);
+                }
             }
         }
         "invoice.payment_failed" => {
             if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
-                let customer_id = data.get("customer").and_then(|v| v.as_str()).unwrap_or("");
+                if let Some(customer_id) = data.get("customer").and_then(|v| v.as_str()) {
+                    tracing::warn!("Payment failed for customer {}", customer_id);
 
-                tracing::warn!("Payment failed for customer {}", customer_id);
-
-                conn.execute(
-                    "UPDATE users SET tier = 'free' WHERE stripe_customer_id = $1 AND tier != 'free'",
-                    &[&customer_id],
-                ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+                    conn.execute(
+                        "UPDATE users SET tier = 'free' WHERE stripe_customer_id = $1 AND tier != 'free'",
+                        &[&customer_id],
+                    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+                }
             }
         }
         _ => {
@@ -886,6 +860,69 @@ pub async fn detect_gap_impl(
 
     all_gaps.truncate(10);
     Ok(all_gaps)
+}
+
+struct CheckoutSessionData {
+    customer_id: String,
+    subscription_id: String,
+    user_id: Option<String>,
+    tier: String,
+}
+
+fn extract_checkout_session_data(data: &serde_json::Value) -> Option<CheckoutSessionData> {
+    let customer_id = data.get("customer")?.as_str()?.to_string();
+    let subscription_id = data.get("subscription")?.as_str()?.to_string();
+    let user_id = data
+        .get("metadata")?
+        .get("user_id")?
+        .as_str()?
+        .to_string()
+        .into();
+    let tier = crate::stripe::get_tier_by_checkout_session(data)
+        .map(|t| t.name.to_string())
+        .unwrap_or_else(|| "free".to_string());
+
+    Some(CheckoutSessionData {
+        customer_id,
+        subscription_id,
+        user_id,
+        tier,
+    })
+}
+
+struct SubscriptionData {
+    subscription_id: String,
+    customer_id: String,
+    status: String,
+    tier: String,
+}
+
+fn extract_subscription_data(data: &serde_json::Value) -> Option<SubscriptionData> {
+    let subscription_id = data.get("id")?.as_str()?.to_string();
+    let customer_id = data.get("customer")?.as_str()?.to_string();
+    let status = data.get("status")?.as_str()?.to_string();
+
+    let tier = if status == "active" || status == "trialing" {
+        data.get("items")
+            .and_then(|items| items.get("data"))
+            .and_then(|items| items.as_array())
+            .and_then(|items| items.first())
+            .and_then(|item| item.get("price"))
+            .and_then(|price| price.get("id"))
+            .and_then(|id| id.as_str())
+            .and_then(|price_id| crate::stripe::get_tier_by_price_id(price_id))
+            .map(|t| t.name.to_string())
+            .unwrap_or_else(|| "free".to_string())
+    } else {
+        "free".to_string()
+    };
+
+    Some(SubscriptionData {
+        subscription_id,
+        customer_id,
+        status,
+        tier,
+    })
 }
 
 #[cfg(test)]
