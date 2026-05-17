@@ -80,3 +80,101 @@ groups:
           summary: "API Gateway is down"
           description: "API Gateway has been unreachable for 1 minute."
           runbook_url: "https://docs.rairos.ai/runbooks/api-down"
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency"
+          description: "95th percentile latency is {{ $value | humanizeDuration }}"
+          runbook_url: "https://docs.rairos.ai/runbooks/high-latency"
+
+      - alert: DatabasePoolExhausted
+        expr: |
+          avg(db_connections_active{job="api-gateway"}) > 18
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database connection pool near capacity"
+          description: "Active connections: {{ $value }}. Pool may be exhausted soon."
+          runbook_url: "https://docs.rairos.ai/runbooks/db-pool"
+
+      - alert: SubscriptionMrrDrop
+        expr: |
+          payment_events_total{status="succeeded", type="subscription"} - payment_events_total{status="succeeded", type="subscription"} offset 24h > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MRR drop detected"
+          description: "Subscription cancellations detected in last 24h"
+          runbook_url: "https://docs.rairos.ai/runbooks/mrr-drop"
+
+      - alert: CostOverBudget
+        expr: |
+          (
+            sum(increase(api_costs_total[24h])) * 0.0001
+          ) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API costs exceeding budget"
+          description: "Estimated daily cost: ${{ $value | humanize }}, exceeds $100 threshold"
+          runbook_url: "https://docs.rairos.ai/runbooks/cost-over-budget"
+
+      - alert: UserQuotaWarning
+        expr: |
+          (
+            sum by (user_id) (rate(api_requests_total[1h]))
+            /
+            ignoring(tier) group_left() sum by (tier) (tier_requests_limit)
+          ) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "User approaching quota limit"
+          description: "User {{ $labels.user_id }} at {{ $value | humanizePercentage }} of daily quota"
+          runbook_url: "https://docs.rairos.ai/runbooks/quota-warning"
+
+      - alert: WebhookProcessingFailure
+        expr: |
+          (
+            sum(rate(webhook_events_total{status="failed"}[5m]))
+            /
+            sum(rate(webhook_events_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Webhook processing failures"
+          description: "{{ $value | humanizePercentage }} of Stripe webhooks failing"
+          runbook_url: "https://docs.rairos.ai/runbooks/webhook-failures"
+
+      - alert: RateLimitHysteresis
+        expr: |
+          sum(rate(http_requests_total{status="429"}[5m])) / sum(rate(http_requests_total[5m])) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate limit rejection rate"
+          description: "{{ $value | humanizePercentage }} of requests being rate limited"
+          runbook_url: "https://docs.rairos.ai/runbooks/rate-limit-hysteresis"
+
+      - alert: HealthyChecksFailing
+        expr: |
+          sum(rate(healthcheck_failed_total[5m])) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Health checks failing"
+          description: "Health endpoint returning errors"
+          runbook_url: "https://docs.rairos.ai/runbooks/healthcheck-fail"

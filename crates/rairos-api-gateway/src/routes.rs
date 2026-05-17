@@ -1,5 +1,7 @@
 //! API Routes
 
+use std::sync::atomic::Ordering;
+
 use axum::{
     extract::{Path, State, Query},
     middleware::from_fn_with_state,
@@ -116,6 +118,11 @@ pub async fn register(
         "INSERT INTO users (id, email, password_hash, tier, created_at) VALUES ($1, $2, $3, 'free', NOW())",
         &[&user_id.to_string(), &req.email, &password_hash],
     ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    state.metrics.record_subscription("free");
+    state.metrics.update_active_users(
+        state.metrics.active_users.load(Ordering::Relaxed) + 1
+    );
 
     let (api_key, _key_id) = create_api_key_for_user(&state, user_id, Tier::Free, None).await?;
 
@@ -696,6 +703,7 @@ pub async fn stripe_webhook(
                             &[&session.customer_id, &session.subscription_id, &session.tier, &uid],
                         ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
+                        state.metrics.record_subscription(&session.tier);
                         tracing::info!("Updated user {} to tier {} via checkout", uid, session.tier);
                     }
                 }
@@ -712,6 +720,7 @@ pub async fn stripe_webhook(
                         &[&sub.tier, &sub.customer_id],
                     ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
+                    state.metrics.record_subscription(&sub.tier);
                     tracing::info!("Updated customer {} to tier {} via subscription update",
                         sub.customer_id, sub.tier);
                 }
@@ -727,6 +736,7 @@ pub async fn stripe_webhook(
                         &[&customer_id],
                     ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
+                    state.metrics.record_subscription("free");
                     tracing::info!("Downgraded customer {} to free tier", customer_id);
                 }
             }
