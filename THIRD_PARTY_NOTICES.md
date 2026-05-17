@@ -56,3 +56,25 @@ Built by Sentient Labs.
 Copyright (c) Warpdotdev Contributors
 
 ---
+
+## CodeGraph
+
+**Source:** https://github.com/colbymchenry/codegraph
+**License:** MIT
+
+> Pre-indexed code knowledge graph for Claude Code. Provides semantic code exploration with 94% fewer tool calls and 71% faster performance. Used by Rairos as a reference architecture for MCP server implementation.
+
+Copyright (c) colbymchenry
+
+---
+
+## scientific-agent-skills
+
+**Source:** https://github.com/K-Dense-AI/scientific-agent-skills
+**License:** MIT
+
+> A collection of skills for scientific research agents. Provides specialized tooling for hypothesis generation, literature review, evidence evaluation, and other scientific workflows compatible with Claude Code and similar agents.
+
+Built by K-Dense AI.
+
+---
