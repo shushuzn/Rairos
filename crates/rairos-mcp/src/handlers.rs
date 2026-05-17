@@ -1000,6 +1000,1624 @@ impl ToolHandler for PaperCitationsHandler {
     }
 }
 
+// ─── Paper Verify Citations ──────────────────────────────────────────────
+
+pub struct PaperVerifyCitationsHandler;
+
+#[derive(Debug, Clone, Copy)]
+enum CitationStyle {
+    Apa,
+    Nature,
+    Vancouver,
+}
+
+impl CitationStyle {
+    fn from_str(s: &str) -> Option<Self> {
+        match s.to_lowercase().as_str() {
+            "apa" => Some(CitationStyle::Apa),
+            "nature" => Some(CitationStyle::Nature),
+            "vancouver" => Some(CitationStyle::Vancouver),
+            _ => None,
+        }
+    }
+}
+
+fn format_citation_apa(authors: &[String], title: &str, journal: &str, year: i64, doi: &str) -> String {
+    let author_str = if authors.is_empty() {
+        "Unknown".to_string()
+    } else if authors.len() == 1 {
+        authors[0].clone()
+    } else if authors.len() == 2 {
+        format!("{} & {}", authors[0], authors[1])
+    } else {
+        format!("{} et al.", authors[0])
+    };
+    format!("{} ({}). {}. *{}*. https://doi.org/{}", author_str, year, title, journal, doi)
+}
+
+fn format_citation_nature(authors: &[String], title: &str, journal: &str, year: i64, doi: &str) -> String {
+    let author_str = if authors.is_empty() {
+        "Unknown".to_string()
+    } else if authors.len() <= 5 {
+        authors.join(", ")
+    } else {
+        format!("{} et al.", authors[0])
+    };
+    format!("{} {} {} {} {}", author_str, title, journal, year, doi)
+}
+
+fn format_citation_vancouver(authors: &[String], title: &str, journal: &str, year: i64, doi: &str) -> String {
+    let author_str = if authors.is_empty() {
+        "Unknown".to_string()
+    } else if authors.len() <= 6 {
+        authors.join(", ")
+    } else {
+        format!("{} et al.", authors[0])
+    };
+    format!("{} {}. {}. {}. {}:{}:{}", author_str, title, journal, year, journal, year, doi)
+}
+
+#[async_trait]
+impl ToolHandler for PaperVerifyCitationsHandler {
+    fn name(&self) -> &str { "paper_verify_citations" }
+    fn description(&self) -> &str { "Verify DOIs and format citations in APA, Nature, or Vancouver style" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("dois".into(), ToolProperty::string("Comma-separated DOIs to verify")),
+                ("style".into(), ToolProperty::string("Citation style: apa, nature, or vancouver (default: apa)")),
+            ].into_iter().collect(),
+            vec!["dois".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let dois_str = params["dois"].as_str().ok_or("Missing required parameter: dois")?;
+        let style_str = params.get("style").and_then(|v| v.as_str()).unwrap_or("apa");
+        let style = CitationStyle::from_str(style_str).ok_or_else(|| format!("Invalid style: {}. Use apa, nature, or vancouver.", style_str))?;
+
+        let dois: Vec<&str> = dois_str.split(',').map(|s| s.trim()).filter(|s| !s.is_empty()).collect();
+        if dois.is_empty() {
+            return Err("No DOIs provided".to_string());
+        }
+        if dois.len() > 50 {
+            return Err("Maximum 50 DOIs at a time".to_string());
+        }
+
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+
+        let mut results = Vec::new();
+        for doi in dois {
+            let url = format!(
+                "https://api.crossref.org/works/{}?mailto=rairos@example.com",
+                urlencoding::encode(doi)
+            );
+
+            let resp = match client.get(&url).send().await {
+                Ok(r) => r,
+                Err(e) => {
+                    results.push(serde_json::json!({
+                        "doi": doi,
+                        "verified": false,
+                        "error": format!("Request failed: {}", e),
+                    }));
+                    continue;
+                }
+            };
+
+            if !resp.status().is_success() {
+                results.push(serde_json::json!({
+                    "doi": doi,
+                    "verified": false,
+                    "error": format!("Crossref API returned {}", resp.status()),
+                }));
+                continue;
+            }
+
+            let data: serde_json::Value = match resp.json().await {
+                Ok(d) => d,
+                Err(e) => {
+                    results.push(serde_json::json!({
+                        "doi": doi,
+                        "verified": false,
+                        "error": format!("Parse failed: {}", e),
+                    }));
+                    continue;
+                }
+            };
+
+            let msg = &data["message"];
+
+            let authors: Vec<String> = if let Some(author_arr) = msg["author"].as_array() {
+                author_arr.iter()
+                    .map(|a| {
+                        let given = a["given"].as_str().unwrap_or("");
+                        let family = a["family"].as_str().unwrap_or("");
+                        format!("{} {}", given, family).trim().to_string()
+                    })
+                    .collect()
+            } else {
+                Vec::new()
+            };
+
+            let title = msg["title"].as_array().and_then(|t| t[0].as_str()).unwrap_or("");
+            let journal = msg["container-title"].as_array().and_then(|j| j[0].as_str()).unwrap_or("");
+            let year = msg["published"]["date-parts"]
+                .as_array()
+                .and_then(|d| d[0].as_array())
+                .and_then(|y| y[0].as_i64())
+                .unwrap_or(0);
+
+            let formatted = match style {
+                CitationStyle::Apa => format_citation_apa(&authors, title, journal, year, doi),
+                CitationStyle::Nature => format_citation_nature(&authors, title, journal, year, doi),
+                CitationStyle::Vancouver => format_citation_vancouver(&authors, title, journal, year, doi),
+            };
+
+            results.push(serde_json::json!({
+                "doi": doi,
+                "verified": true,
+                "title": title,
+                "authors": authors,
+                "journal": journal,
+                "year": year,
+                "formatted": formatted,
+            }));
+        }
+
+        let verified_count = results.iter().filter(|r| r["verified"].as_bool().unwrap_or(false)).count();
+        Ok(serde_json::json!({
+            "citations": results,
+            "total": results.len(),
+            "verified": verified_count,
+            "style": style_str,
+        }))
+    }
+}
+
+// ─── Paper Visualize Trends ───────────────────────────────────────────────
+
+pub struct PaperVisualizeTrendsHandler;
+
+#[async_trait]
+impl ToolHandler for PaperVisualizeTrendsHandler {
+    fn name(&self) -> &str { "paper_visualize_trends" }
+    fn description(&self) -> &str { "Generate a publication-quality bar chart of research trends" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("trends_json".into(), ToolProperty::string("JSON array of {keyword, count} objects")),
+                ("chart_type".into(), ToolProperty::string("Chart type: bar (default), line")),
+                ("title".into(), ToolProperty::string("Chart title")),
+                ("journal".into(), ToolProperty::string("Target journal: default, nature, science, cell")),
+            ].into_iter().collect(),
+            vec!["trends_json".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let trends_str = params["trends_json"].as_str().ok_or("Missing trends_json")?;
+        let chart_type = params.get("chart_type").and_then(|v| v.as_str()).unwrap_or("bar");
+        let title = params.get("title").and_then(|v| v.as_str()).unwrap_or("Research Trends");
+        let journal = params.get("journal").and_then(|v| v.as_str()).unwrap_or("default");
+
+        let trends: Vec<(String, usize)> = serde_json::from_str(trends_str)
+            .map_err(|e| format!("Invalid JSON: {}", e))?;
+
+        if trends.is_empty() {
+            return Err("No trends data provided".to_string());
+        }
+
+        let labels: Vec<String> = trends.iter().map(|(k, _)| k.clone()).collect();
+        let values: Vec<f64> = trends.iter().map(|(_, v)| *v as f64).collect();
+
+        let data = serde_json::json!({
+            "labels": labels,
+            "values": values,
+            "xlabel": "Keyword",
+            "ylabel": "Frequency"
+        });
+
+        let output_dir = data_dir().join("visualizations");
+        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        let output_path = output_dir.join(format!("trends_{}.png", std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()));
+
+        let data_str = serde_json::to_string(&data).map_err(|e| e.to_string())?;
+
+        let python_cmd = std::env::var("RAIROS_VIZ_HELPER")
+            .unwrap_or_else(|_| "python3".to_string());
+
+        let mut cmd = std::process::Command::new(&python_cmd);
+        cmd.arg("/root/Rairos/scripts/viz_helper.py")
+            .arg("--type").arg(chart_type)
+            .arg("--data").arg(&data_str)
+            .arg("--output").arg(output_path.to_str().unwrap())
+            .arg("--title").arg(title)
+            .arg("--journal").arg(journal);
+
+        let output = cmd.output().map_err(|e| format!("Failed to run viz helper: {}", e))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(format!("viz_helper failed: {}", stderr));
+        }
+
+        Ok(serde_json::json!({
+            "image_path": output_path.to_string_lossy(),
+            "trends_count": trends.len(),
+            "chart_type": chart_type,
+        }))
+    }
+}
+
+// ─── Paper Visualize Radar ─────────────────────────────────────────────────
+
+pub struct PaperVisualizeRadarHandler;
+
+#[async_trait]
+impl ToolHandler for PaperVisualizeRadarHandler {
+    fn name(&self) -> &str { "paper_visualize_radar" }
+    fn description(&self) -> &str { "Generate a radar chart for paper rubric scores" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("scores_json".into(), ToolProperty::string("JSON object with axis names and scores, e.g. {\"Novelty\": 8, \"Leverage\": 7}")),
+                ("title".into(), ToolProperty::string("Chart title")),
+                ("journal".into(), ToolProperty::string("Target journal: default, nature, science, cell")),
+            ].into_iter().collect(),
+            vec!["scores_json".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let scores_str = params["scores_json"].as_str().ok_or("Missing scores_json")?;
+        let title = params.get("title").and_then(|v| v.as_str()).unwrap_or("Paper Scores");
+        let journal = params.get("journal").and_then(|v| v.as_str()).unwrap_or("default");
+
+        let scores: serde_json::Map<String, serde_json::Value> = serde_json::from_str(scores_str)
+            .map_err(|e| format!("Invalid JSON: {}", e))?;
+
+        if scores.is_empty() {
+            return Err("No scores data provided".to_string());
+        }
+
+        let axes: Vec<String> = scores.keys().cloned().collect();
+        let values: Vec<f64> = scores.values()
+            .filter_map(|v| v.as_f64().or_else(|| v.as_u64().map(|x| x as f64)))
+            .collect();
+
+        if axes.len() != values.len() {
+            return Err("Axes and scores count mismatch".to_string());
+        }
+
+        let data = serde_json::json!({
+            "axes": axes,
+            "scores": values,
+            "max_score": 10
+        });
+
+        let output_dir = data_dir().join("visualizations");
+        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        let output_path = output_dir.join(format!("radar_{}.png", std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()));
+
+        let data_str = serde_json::to_string(&data).map_err(|e| e.to_string())?;
+
+        let mut cmd = std::process::Command::new("python3");
+        cmd.arg("/root/Rairos/scripts/viz_helper.py")
+            .arg("--type").arg("radar")
+            .arg("--data").arg(&data_str)
+            .arg("--output").arg(output_path.to_str().unwrap())
+            .arg("--title").arg(title)
+            .arg("--journal").arg(journal);
+
+        let output = cmd.output().map_err(|e| format!("Failed to run viz helper: {}", e))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(format!("viz_helper failed: {}", stderr));
+        }
+
+        Ok(serde_json::json!({
+            "image_path": output_path.to_string_lossy(),
+            "axes": axes,
+            "scores": values,
+        }))
+    }
+}
+
+// ─── Paper Critical Analysis ────────────────────────────────────────────────
+
+pub struct PaperCriticalAnalysisHandler;
+
+#[async_trait]
+impl ToolHandler for PaperCriticalAnalysisHandler {
+    fn name(&self) -> &str { "paper_critical_analysis" }
+    fn description(&self) -> &str { "Evaluate a paper for methodological quality, biases, and evidence strength using critical thinking frameworks" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("paper_id".into(), ToolProperty::string("Paper ID or arXiv ID")),
+                ("title".into(), ToolProperty::string("Paper title")),
+                ("abstract".into(), ToolProperty::string("Paper abstract")),
+            ].into_iter().collect(),
+            vec!["paper_id".into(), "title".into(), "abstract".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let paper_id = params["paper_id"].as_str().ok_or("Missing paper_id")?;
+        let title = params["title"].as_str().ok_or("Missing title")?;
+        let abstract_text = params["abstract"].as_str().ok_or("Missing abstract")?;
+
+        let checker = rairos_replication_checker::CriticalThinkingChecker::new();
+        let report = checker.analyze(paper_id, title, abstract_text);
+
+        Ok(serde_json::json!({
+            "paper_id": report.paper_id,
+            "study_design": report.study_design,
+            "design_quality_score": report.design_quality_score,
+            "evidence_quality": report.evidence_quality,
+            "overall_score": report.overall_score,
+            "biases": report.biases.iter().map(|b| serde_json::json!({
+                "type": b.bias_type,
+                "severity": b.severity,
+                "description": b.description,
+                "indicator": b.indicator,
+            })).collect::<Vec<_>>(),
+            "statistical_concerns": report.statistical_concerns.iter().map(|c| serde_json::json!({
+                "type": c.concern_type,
+                "severity": c.severity,
+                "description": c.description,
+                "suggestion": c.suggestion,
+            })).collect::<Vec<_>>(),
+            "logical_fallacies": report.logical_fallacies,
+            "strengths": report.strengths,
+            "recommendations": report.recommendations,
+        }))
+    }
+}
+
+// ─── Paper Generate Review PDF ──────────────────────────────────────────────
+
+pub struct PaperGenerateReviewPdfHandler;
+
+#[async_trait]
+impl ToolHandler for PaperGenerateReviewPdfHandler {
+    fn name(&self) -> &str { "paper_generate_review_pdf" }
+    fn description(&self) -> &str { "Generate a PDF literature review from structured content" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("review_json".into(), ToolProperty::string("JSON object with title, topic, abstract, sections, references")),
+                ("output_path".into(), ToolProperty::string("Output PDF file path (optional, defaults to data dir)")),
+            ].into_iter().collect(),
+            vec!["review_json".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let review_json = params["review_json"].as_str().ok_or("Missing review_json")?;
+        let output_path = params.get("output_path").and_then(|v| v.as_str());
+
+        let output_dir = data_dir().join("reviews");
+        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+
+        let filename = format!("review_{}.pdf", std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+        let pdf_path = if let Some(path) = output_path {
+            PathBuf::from(path)
+        } else {
+            output_dir.join(&filename)
+        };
+
+        let mut cmd = std::process::Command::new("python3");
+        cmd.arg("/root/Rairos/scripts/pdf_helper.py")
+            .arg("--type").arg("review")
+            .arg("--data").arg(review_json)
+            .arg("--output").arg(pdf_path.to_str().unwrap());
+
+        let output = cmd.output().map_err(|e| format!("Failed to run pdf_helper: {}", e))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(format!("pdf_helper failed: {}", stderr));
+        }
+
+        Ok(serde_json::json!({
+            "pdf_path": pdf_path.to_string_lossy(),
+            "status": "generated",
+        }))
+    }
+}
+
+// ─── Hypothesis Report ────────────────────────────────────────────────────
+
+pub struct HypothesisReportHandler;
+
+fn build_hypothesis_markdown(topic: &str, hypotheses_json: &str) -> String {
+    let hypotheses: Vec<serde_json::Value> = serde_json::from_str(hypotheses_json)
+        .unwrap_or_default();
+
+    let mut md = format!("# Hypothesis Report: {}\n\n", topic);
+    md.push_str(&format!("**Generated:** {}\n\n", chrono_now()));
+
+    md.push_str("## Executive Summary\n\n");
+    md.push_str(&format!("This report presents {} research hypotheses generated for the topic: *{}*\n\n",
+        hypotheses.len(), topic));
+
+    md.push_str("---\n\n## Hypotheses\n\n");
+
+    for (i, h) in hypotheses.iter().enumerate() {
+        let title = h.get("title").and_then(|v| v.as_str()).unwrap_or("Untitled");
+        let hypo_type = h.get("hypothesis_type").and_then(|v| v.as_str()).unwrap_or("unknown");
+        let description = h.get("description").and_then(|v| v.as_str()).unwrap_or("");
+        let evidence = h.get("evidence").and_then(|v| v.as_str()).unwrap_or("");
+        let predictions = h.get("predictions").and_then(|v| v.as_str()).unwrap_or("");
+        let experiments = h.get("experiments").and_then(|v| v.as_str()).unwrap_or("");
+
+        md.push_str(&format!("### Hypothesis {}: {}\n\n", i + 1, title));
+        md.push_str(&format!("**Type:** {} | **Confidence:** {}/10\n\n",
+            hypo_type,
+            h.get("confidence").and_then(|v| v.as_f64()).unwrap_or(5.0) as i32));
+
+        if !description.is_empty() {
+            md.push_str(&format!("**Mechanism:** {}\n\n", description));
+        }
+
+        if !evidence.is_empty() {
+            md.push_str(&format!("**Supporting Evidence:** {}\n\n", evidence));
+        }
+
+        if !predictions.is_empty() {
+            md.push_str(&format!("**Testable Predictions:**\n{}\n\n", predictions));
+        }
+
+        if !experiments.is_empty() {
+            md.push_str(&format!("**Proposed Experiments:**\n{}\n\n", experiments));
+        }
+
+        md.push_str("---\n\n");
+    }
+
+    md.push_str("## Recommendations\n\n");
+    md.push_str("Based on the generated hypotheses, the following next steps are recommended:\n\n");
+    md.push_str("1. **Validate hypotheses** against existing literature\n");
+    md.push_str("2. **Design experiments** to test the highest-confidence hypotheses\n");
+    md.push_str("3. **Submit to GenePool** for tracking and evolution\n\n");
+
+    md
+}
+
+#[async_trait]
+impl ToolHandler for HypothesisReportHandler {
+    fn name(&self) -> &str { "paper_hypothesis_report" }
+    fn description(&self) -> &str { "Generate a structured hypothesis report with framework from hypothesis results" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("topic".into(), ToolProperty::string("Research topic")),
+                ("hypotheses_json".into(), ToolProperty::string("JSON array of hypotheses from hypothesis_generate")),
+                ("output_format".into(), ToolProperty::string("Output format: markdown or pdf (default: markdown)"))            ].into_iter().collect(),
+            vec!["topic".into(), "hypotheses_json".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let topic = params["topic"].as_str().ok_or("Missing topic")?;
+        let hypotheses_json = params["hypotheses_json"].as_str().ok_or("Missing hypotheses_json")?;
+        let output_format = params.get("output_format").and_then(|v| v.as_str()).unwrap_or("markdown");
+
+        let markdown_content = build_hypothesis_markdown(topic, hypotheses_json);
+
+        let output_dir = data_dir().join("hypotheses");
+        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+
+        let filename = format!("hypothesis_report_{}.md",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+        let md_path = output_dir.join(&filename);
+
+        std::fs::write(&md_path, &markdown_content).map_err(|e| e.to_string())?;
+
+        let mut result = serde_json::json!({
+            "report_path": md_path.to_string_lossy(),
+            "format": "markdown",
+            "topic": topic,
+        });
+
+        if output_format == "pdf" {
+            let pdf_filename = format!("hypothesis_report_{}.pdf",
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+            let pdf_path = output_dir.join(&pdf_filename);
+
+            let mut cmd = std::process::Command::new("python3");
+            cmd.arg("/root/Rairos/scripts/pdf_helper.py")
+                .arg("--type").arg("markdown")
+                .arg("--file").arg(md_path.to_str().unwrap())
+                .arg("--output").arg(pdf_path.to_str().unwrap());
+
+            if cmd.output().map_err(|e| e.to_string())?.status.success() {
+                result = serde_json::json!({
+                    "report_path": pdf_path.to_string_lossy(),
+                    "markdown_path": md_path.to_string_lossy(),
+                    "format": "pdf",
+                    "topic": topic,
+                });
+            }
+        }
+
+        Ok(result)
+    }
+}
+
+// ─── Paper Generate Schematic ─────────────────────────────────────────────
+
+pub struct PaperGenerateSchematicHandler;
+
+#[async_trait]
+impl ToolHandler for PaperGenerateSchematicHandler {
+    fn name(&self) -> &str { "paper_generate_schematic" }
+    fn description(&self) -> &str { "Generate a scientific schematic diagram (flowchart, architecture, pathway, block, timeline) from structured data" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("diagram_type".into(), ToolProperty::string("Type: flowchart, architecture, pathway, block, timeline")),
+                ("diagram_json".into(), ToolProperty::string("JSON data for the diagram (structure depends on type)")),
+                ("title".into(), ToolProperty::string("Diagram title")),
+            ].into_iter().collect(),
+            vec!["diagram_type".into(), "diagram_json".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let diagram_type = params["diagram_type"].as_str().ok_or("Missing diagram_type")?;
+        let diagram_json = params["diagram_json"].as_str().ok_or("Missing diagram_json")?;
+        let title = params.get("title").and_then(|v| v.as_str()).unwrap_or("");
+
+        let valid_types = ["flowchart", "architecture", "pathway", "block", "timeline"];
+        if !valid_types.contains(&diagram_type) {
+            return Err(format!("Invalid diagram_type: {}. Use: {}", diagram_type, valid_types.join(", ")));
+        }
+
+        let output_dir = data_dir().join("schematics");
+        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+
+        let filename = format!("{}_{}.png",
+            diagram_type,
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+        let output_path = output_dir.join(&filename);
+
+        let mut cmd = std::process::Command::new("python3");
+        cmd.arg("/root/Rairos/scripts/schematic_helper.py")
+            .arg("--type").arg(diagram_type)
+            .arg("--data").arg(diagram_json)
+            .arg("--output").arg(output_path.to_str().unwrap());
+        if !title.is_empty() {
+            cmd.arg("--title").arg(title);
+        }
+
+        let output = cmd.output().map_err(|e| format!("Failed to run schematic_helper: {}", e))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(format!("schematic_helper failed: {}", stderr));
+        }
+
+        Ok(serde_json::json!({
+            "image_path": output_path.to_string_lossy(),
+            "diagram_type": diagram_type,
+        }))
+    }
+}
+
+// ─── Paper Science Discovery ──────────────────────────────────────────────
+
+pub struct PaperScienceDiscoveryHandler;
+
+#[async_trait]
+impl ToolHandler for PaperScienceDiscoveryHandler {
+    fn name(&self) -> &str { "paper_science_discovery" }
+    fn description(&self) -> &str { "Discover scientific AI models and datasets from HuggingFace for a research topic" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("query".into(), ToolProperty::string("Research topic or scientific domain (e.g., 'protein language model', 'molecular dynamics')")),
+                ("resource_type".into(), ToolProperty::string("Type: model, dataset, or all (default: all)")),
+            ].into_iter().collect(),
+            vec!["query".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let query = params["query"].as_str().ok_or("Missing query")?;
+        let resource_type = params.get("resource_type").and_then(|v| v.as_str()).unwrap_or("all");
+
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(15))
+            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+
+        let query_encoded = urlencoding::encode(query);
+
+        let mut results = serde_json::json!({
+            "query": query,
+            "models": [],
+            "datasets": [],
+        });
+
+        if resource_type == "all" || resource_type == "model" {
+            let models_url = format!(
+                "https://huggingface.co/api/models?search={}&sort=downloads&direction=-1&limit=10",
+                query_encoded
+            );
+            if let Ok(resp) = client.get(&models_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        if let Some(arr) = data.as_array() {
+                            let models: Vec<Value> = arr.iter()
+                                .take(10)
+                                .map(|m| {
+                                    serde_json::json!({
+                                        "id": m["id"],
+                                        "downloads": m["downloads"],
+                                        "likes": m["likes"],
+                                        "tags": m["tags"].as_array().map(|t| t.iter().filter_map(|v| v.as_str()).take(5).collect::<Vec<_>>()).unwrap_or_default(),
+                                        "pipeline_tag": m["pipeline_tag"],
+                                    })
+                                })
+                                .collect();
+                            results["models"] = serde_json::json!(models);
+                        }
+                    }
+                }
+            }
+        }
+
+        if resource_type == "all" || resource_type == "dataset" {
+            let datasets_url = format!(
+                "https://huggingface.co/api/datasets?search={}&sort=downloads&direction=-1&limit=10",
+                query_encoded
+            );
+            if let Ok(resp) = client.get(&datasets_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        if let Some(arr) = data.as_array() {
+                            let datasets: Vec<Value> = arr.iter()
+                                .take(10)
+                                .map(|d| {
+                                    serde_json::json!({
+                                        "id": d["id"],
+                                        "downloads": d["downloads"],
+                                        "likes": d["likes"],
+                                        "tags": d["tags"].as_array().map(|t| t.iter().filter_map(|v| v.as_str()).take(5).collect::<Vec<_>>()).unwrap_or_default(),
+                                    })
+                                })
+                                .collect();
+                            results["datasets"] = serde_json::json!(datasets);
+                        }
+                    }
+                }
+            }
+        }
+
+        let model_count = results["models"].as_array().map(|a| a.len()).unwrap_or(0);
+        let dataset_count = results["datasets"].as_array().map(|a| a.len()).unwrap_or(0);
+
+        Ok(serde_json::json!({
+            "query": query,
+            "models_count": model_count,
+            "datasets_count": dataset_count,
+            "models": results["models"],
+            "datasets": results["datasets"],
+        }))
+    }
+}
+
+// ─── Paper Database Lookup ────────────────────────────────────────────────
+
+pub struct PaperDatabaseLookupHandler;
+
+#[async_trait]
+impl ToolHandler for PaperDatabaseLookupHandler {
+    fn name(&self) -> &str { "paper_database_lookup" }
+    fn description(&self) -> &str { "Query scientific databases (PubChem, UniProt, NCBI Gene, Reactome, PDB, AlphaFold, ChEMBL) for compounds, genes, proteins, pathways, or structures" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("query_type".into(), ToolProperty::string("Type: compound, gene, protein, pathway, structure, bioactivity, or auto")),
+                ("term".into(), ToolProperty::string("Search term (e.g., 'aspirin', 'BRCA1', 'apoptosis', 'P05387')")),
+                ("limit".into(), ToolProperty::integer("Max results per database (default: 5)")),
+            ].into_iter().collect(),
+            vec!["query_type".into(), "term".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let query_type = params["query_type"].as_str().unwrap_or("auto");
+        let term = params["term"].as_str().ok_or("Missing term")?;
+        let limit = params.get("limit").and_then(|v| v.as_u64()).unwrap_or(5) as usize;
+
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(20))
+            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+
+        let term_enc = urlencoding::encode(term);
+
+        let mut results = serde_json::json!({
+            "query_type": query_type,
+            "term": term,
+            "databases": [],
+        });
+
+        // ── compound → PubChem + ChEMBL ──────────────────────────────────
+        if query_type == "compound" || query_type == "auto" {
+            let pc_url = format!(
+                "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{}/property/MolecularFormula,MolecularWeight,CanonicalSMILES,IUPACName/JSON",
+                term_enc
+            );
+            if let Ok(resp) = client.get(&pc_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let pubs = data["PropertyTable"]["Properties"].as_array()
+                            .map(|arr| arr.iter().take(limit).map(|p| {
+                                serde_json::json!({
+                                    "cid": p["CID"],
+                                    "molecular_formula": p["MolecularFormula"],
+                                    "molecular_weight": p["MolecularWeight"],
+                                    "iupac_name": p["IUPACName"],
+                                    "smiles": p["CanonicalSMILES"],
+                                })
+                            }).collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        if !pubs.is_empty() {
+                            results["databases"] = serde_json::json!([
+                                { "name": "PubChem", "source": "pubchem", "results": pubs }
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            let chembl_url = format!(
+                "https://www.ebi.ac.uk/chembl/api/data/molecule/search?q={}&format=json&limit={}",
+                term_enc, limit
+            );
+            if let Ok(resp) = client.get(&chembl_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let chems = data["molecules"].as_array()
+                            .map(|arr| arr.iter().take(limit).map(|m| {
+                                serde_json::json!({
+                                    "chembl_id": m["molecule_chembl_id"],
+                                    "name": m["pref_name"],
+                                    "max_phase": m["max_phase"],
+                                    "smiles": m["molecule_structures"]["canonical_smiles"],
+                                    "inchi_key": m["molecule_structures"]["standard_inchi_key"],
+                                })
+                            }).collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        if !chems.is_empty() {
+                            if results["databases"].as_array().map(|a| a.is_empty()).unwrap_or(true) {
+                                results["databases"] = serde_json::json!([
+                                    { "name": "ChEMBL", "source": "chembl", "results": chems }
+                                ]);
+                            } else {
+                                results["databases"].as_array_mut().map(|a| {
+                                    a.push(serde_json::json!({ "name": "ChEMBL", "source": "chembl", "results": chems }))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── gene → NCBI Gene + UniProt ────────────────────────────────────
+        if query_type == "gene" || query_type == "auto" {
+            let ncbi_url = format!(
+                "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&term={}[gene]+AND+human[orgn]&retmode=json&retmax={}",
+                term_enc, limit
+            );
+            if let Ok(resp) = client.get(&ncbi_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let ids: Vec<u64> = serde_json::from_value(
+                            data["esearchresult"]["idlist"].clone()
+                        ).unwrap_or_default();
+                        if !ids.is_empty() {
+                            let ids_str = ids.iter().map(|i| i.to_string()).collect::<Vec<_>>().join(",");
+                            let summary_url = format!(
+                                "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id={}&retmode=json",
+                                ids_str
+                            );
+                            if let Ok(sresp) = client.get(&summary_url).send().await {
+                                if let Ok(sdata) = sresp.json::<serde_json::Value>().await {
+                                    let genes: Vec<Value> = ids.iter().filter_map(|id| {
+                                        sdata["result"][id.to_string()].as_object().map(|obj| {
+                                            serde_json::json!({
+                                                "gene_id": id,
+                                                "name": obj.get("name").and_then(|v| v.as_str()),
+                                                "description": obj.get("description").and_then(|v| v.as_str()),
+                                                "chromosome": obj.get("chromosome").and_then(|v| v.as_str()),
+                                                "map_location": obj.get("maplocation").and_then(|v| v.as_str()),
+                                            })
+                                        })
+                                    }).take(limit).collect();
+                                    if !genes.is_empty() {
+                                        results["databases"] = serde_json::json!([
+                                            { "name": "NCBI Gene", "source": "ncbi-gene", "results": genes }
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            let up_url = format!(
+                "https://rest.uniprot.org/uniprotkb/search?query=(gene:{})+AND+(organism_id:9606)+AND+(reviewed:true)&format=json&fields=accession,protein_name,gene_names,organism_name,length,cc_function&size={}",
+                term_enc, limit
+            );
+            if let Ok(resp) = client.get(&up_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let prots: Vec<Value> = data["results"].as_array()
+                            .map(|arr| arr.iter().take(limit).map(|r| {
+                                let entry = &r["entry"];
+                                serde_json::json!({
+                                    "accession": entry["primaryAccession"],
+                                    "protein_name": entry["proteinDescription"]["recommendedName"]["fullName"]["value"].as_str(),
+                                    "gene": entry["genes"].as_array().and_then(|g| g[0]["geneName"]["value"].as_str()),
+                                    "organism": entry["organism"]["scientificName"],
+                                    "length": entry["sequence"]["length"],
+                                    "function": entry["comments"].as_array().and_then(|c| c.iter().find(|cm| cm["type"] == "FUNCTION")).and_then(|cm| cm["text"].as_array()).and_then(|t| t[0].as_str()),
+                                })
+                            }).collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        if !prots.is_empty() {
+                            if results["databases"].as_array().map(|a| a.is_empty()).unwrap_or(true) {
+                                results["databases"] = serde_json::json!([
+                                    { "name": "UniProt", "source": "uniprot", "results": prots }
+                                ]);
+                            } else {
+                                results["databases"].as_array_mut().map(|a| {
+                                    a.push(serde_json::json!({ "name": "UniProt", "source": "uniprot", "results": prots }))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── protein → UniProt ────────────────────────────────────────────
+        if query_type == "protein" || query_type == "auto" {
+            let up_url = format!(
+                "https://rest.uniprot.org/uniprotkb/search?query=(protein_name:{})+AND+(reviewed:true)&format=json&fields=accession,protein_name,gene_names,organism_name,length,cc_function,go&size={}",
+                term_enc, limit
+            );
+            if let Ok(resp) = client.get(&up_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let prots: Vec<Value> = data["results"].as_array()
+                            .map(|arr| arr.iter().take(limit).map(|r| {
+                                let entry = &r["entry"];
+                                serde_json::json!({
+                                    "accession": entry["primaryAccession"],
+                                    "protein_name": entry["proteinDescription"]["recommendedName"]["fullName"]["value"].as_str(),
+                                    "gene": entry["genes"].as_array().and_then(|g| g[0]["geneName"]["value"].as_str()),
+                                    "organism": entry["organism"]["scientificName"],
+                                    "length": entry["sequence"]["length"],
+                                    "function": entry["comments"].as_array().and_then(|c| c.iter().find(|cm| cm["type"] == "FUNCTION")).and_then(|cm| cm["text"].as_array()).and_then(|t| t[0].as_str()),
+                                })
+                            }).collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        if !prots.is_empty() {
+                            results["databases"] = serde_json::json!([
+                                { "name": "UniProt", "source": "uniprot", "results": prots }
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── pathway → Reactome ───────────────────────────────────────────
+        if query_type == "pathway" || query_type == "auto" {
+            let reactome_url = format!(
+                "https://reactome.org/ContentService/search/query?query={}&species=Homo+sapiens&types=Pathway&cluster=true&rows={}",
+                term_enc, limit
+            );
+            if let Ok(resp) = client.get(&reactome_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let paths: Vec<Value> = data["results"].as_array()
+                            .map(|arr| arr.iter().filter_map(|r| {
+                                r["rows"].as_array().and_then(|rows| rows.get(0)).map(|row| {
+                                    serde_json::json!({
+                                        "stable_id": row["stId"],
+                                        "name": row["name"],
+                                        "species": row["species"],
+                                    })
+                                })
+                            }).take(limit).collect())
+                            .unwrap_or_default();
+                        if !paths.is_empty() {
+                            results["databases"] = serde_json::json!([
+                                { "name": "Reactome", "source": "reactome", "results": paths }
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── structure → PDB + AlphaFold ──────────────────────────────────
+        if query_type == "structure" || query_type == "auto" {
+            let af_url = format!(
+                "https://alphafold.ebi.ac.uk/api/search?q={}&format=json",
+                term_enc
+            );
+            if let Ok(resp) = client.get(&af_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let structs: Vec<Value> = data["results"].as_array()
+                            .map(|arr| arr.iter().take(limit).map(|r| {
+                                serde_json::json!({
+                                    "uniprot_accession": r["uniprotAccession"],
+                                    "uniprot_id": r["uniprotId"],
+                                    "蛋白名称": r["proteinNames"],
+                                    "gene": r["gene"],
+                                    "organism": r["organismScientificName"],
+                                })
+                            }).collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        if !structs.is_empty() {
+                            results["databases"] = serde_json::json!([
+                                { "name": "AlphaFold DB", "source": "alphafold", "results": structs }
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            let pdb_search_url = "https://search.rcsb.org/rcsbsearch/v2/query";
+            let pdb_body = serde_json::json!({
+                "query": {
+                    "type": "terminal",
+                    "service": "full_text",
+                    "parameters": { "value": term }
+                },
+                "return_type": "entry",
+                "request_options": { "paginate": { "start": 0, "rows": limit } }
+            });
+            if let Ok(resp) = client.post(pdb_search_url)
+                .header("Content-Type", "application/json")
+                .json(&pdb_body)
+                .send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let pdb_ids: Vec<String> = data["result_set"]
+                            .as_array()
+                            .map(|arr| arr.iter().filter_map(|r| r["identifier"].as_str().map(String::from)).take(limit).collect())
+                            .unwrap_or_default();
+                        if !pdb_ids.is_empty() {
+                            if results["databases"].as_array().map(|a| a.is_empty()).unwrap_or(true) {
+                                results["databases"] = serde_json::json!([
+                                    { "name": "PDB", "source": "pdb", "results": pdb_ids.into_iter().map(|id| serde_json::json!({ "pdb_id": id })).collect::<Vec<_>>() }
+                                ]);
+                            } else {
+                                results["databases"].as_array_mut().map(|a| {
+                                    a.push(serde_json::json!({ "name": "PDB", "source": "pdb", "results": pdb_ids.into_iter().map(|id| serde_json::json!({ "pdb_id": id })).collect::<Vec<_>>() }))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── bioactivity → ChEMBL ─────────────────────────────────────────
+        if query_type == "bioactivity" || query_type == "auto" {
+            let chembl_url = format!(
+                "https://www.ebi.ac.uk/chembl/api/data/activity?molecule_chembl_id__in=CHEMBL25&format=json&limit={}",
+                limit
+            );
+            if let Ok(resp) = client.get(&chembl_url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(data) = resp.json::<serde_json::Value>().await {
+                        let acts: Vec<Value> = data["activities"].as_array()
+                            .map(|arr| arr.iter().take(limit).map(|a| {
+                                serde_json::json!({
+                                    "chembl_id": a["molecule_chembl_id"],
+                                    "target": a["target_chembl_id"],
+                                    "pchembl_value": a["pchembl_value"],
+                                    "assay_type": a["assay_type"],
+                                    "document": a["document"],
+                                })
+                            }).collect::<Vec<_>>())
+                            .unwrap_or_default();
+                        if !acts.is_empty() {
+                            results["databases"] = serde_json::json!([
+                                { "name": "ChEMBL", "source": "chembl", "results": acts }
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        let db_count = results["databases"].as_array().map(|a| a.len()).unwrap_or(0);
+        Ok(serde_json::json!({
+            "query_type": query_type,
+            "term": term,
+            "databases_queried": db_count,
+            "results": results["databases"],
+        }))
+    }
+}
+
+// ─── Paper Peer Review ────────────────────────────────────────────────────
+
+pub struct PaperPeerReviewHandler;
+
+#[derive(Default)]
+struct PeerReviewChecklist {
+    has_abstract: bool,
+    has_introduction: bool,
+    has_methods: bool,
+    has_results: bool,
+    has_discussion: bool,
+    has_references: bool,
+    has_ethics_statement: bool,
+    has_conflict_of_interest: bool,
+    has_limitations: bool,
+    has_data_availability: bool,
+    has_sample_size_justification: bool,
+    has_statistical_tests: bool,
+    has_confidence_intervals: bool,
+    has_effect_sizes: bool,
+    has_replicates: bool,
+    novelty_score: u8,
+    methodology_score: u8,
+    clarity_score: u8,
+    reproducibility_score: u8,
+}
+
+impl PeerReviewChecklist {
+    fn evaluate(title: &str, abstract_text: &str, sections: &str) -> Self {
+        let text_lower = format!("{} {} {}", title, abstract_text, sections).to_lowercase();
+        let mut checklist = PeerReviewChecklist::default();
+
+        checklist.has_abstract = !abstract_text.is_empty();
+        checklist.has_introduction = text_lower.contains("introduction") || text_lower.contains("background");
+        checklist.has_methods = text_lower.contains("method") || text_lower.contains("experiment") || text_lower.contains("procedure");
+        checklist.has_results = text_lower.contains("result") || text_lower.contains("finding") || text_lower.contains("outcome");
+        checklist.has_discussion = text_lower.contains("discussion") || text_lower.contains("conclusion");
+        checklist.has_references = text_lower.contains("reference") || text_lower.contains("citation") || sections.len() > 5000;
+        checklist.has_ethics_statement = text_lower.contains("ethics") || text_lower.contains("irb") || text_lower.contains("approval") || text_lower.contains("consent");
+        checklist.has_conflict_of_interest = text_lower.contains("conflict") || text_lower.contains("coi") || text_lower.contains("disclosure");
+        checklist.has_limitations = text_lower.contains("limitation") || text_lower.contains("caveat");
+        checklist.has_data_availability = text_lower.contains("data availability") || text_lower.contains("supplementary") || text_lower.contains("repository");
+        checklist.has_sample_size_justification = text_lower.contains("sample size") || text_lower.contains("power analysis") || text_lower.contains("n =");
+        checklist.has_statistical_tests = text_lower.contains("p-value") || text_lower.contains("t-test") || text_lower.contains("anova") || text_lower.contains("regression") || text_lower.contains("wilcoxon") || text_lower.contains("mann-whitney");
+        checklist.has_confidence_intervals = text_lower.contains("confidence interval") || text_lower.contains("ci:");
+        checklist.has_effect_sizes = text_lower.contains("effect size") || text_lower.contains("cohen") || text_lower.contains("odds ratio");
+        checklist.has_replicates = text_lower.contains("replicate") || text_lower.contains("triplicate") || text_lower.contains("n = 3") || text_lower.contains("n=3");
+
+        checklist.novelty_score = if text_lower.contains("novel") || text_lower.contains("first") || text_lower.contains("new method") || text_lower.contains("state-of-the-art") || text_lower.contains("sota") { 5 } else if text_lower.contains("improve") || text_lower.contains("advance") { 4 } else if text_lower.contains("build") || text_lower.contains("extend") { 3 } else { 2 };
+        checklist.methodology_score = if checklist.has_methods && checklist.has_statistical_tests && checklist.has_sample_size_justification { 5 } else if checklist.has_methods { 3 } else { 1 };
+        checklist.clarity_score = if text_lower.len() > 2000 { 4 } else if text_lower.len() > 500 { 3 } else { 2 };
+        checklist.reproducibility_score = if checklist.has_data_availability && checklist.has_methods && checklist.has_replicates { 5 } else if checklist.has_data_availability || checklist.has_methods { 3 } else { 1 };
+
+        checklist
+    }
+
+    fn overall_score(&self) -> f64 {
+        (self.novelty_score as f64 + self.methodology_score as f64 + self.clarity_score as f64 + self.reproducibility_score as f64) / 4.0
+    }
+
+    fn recommendation(&self) -> &'static str {
+        let score = self.overall_score();
+        if score >= 4.0 { "Accept" }
+        else if score >= 3.0 { "Minor Revision" }
+        else if score >= 2.0 { "Major Revision" }
+        else { "Reject" }
+    }
+
+    fn major_issues(&self) -> Vec<&'static str> {
+        let mut issues = Vec::new();
+        if !self.has_methods { issues.push("Missing or inadequate Methods section"); }
+        if !self.has_results { issues.push("Missing or inadequate Results section"); }
+        if !self.has_discussion { issues.push("Missing or inadequate Discussion/Conclusion section"); }
+        if !self.has_statistical_tests { issues.push("No mention of statistical tests used for analysis"); }
+        if self.methodology_score < 3 { issues.push("Methodology appears insufficiently detailed for reproducibility"); }
+        if !self.has_data_availability { issues.push("No data availability statement — reproducibility concern"); }
+        if self.reproducibility_score < 2 { issues.push("Low reproducibility score — missing key elements"); }
+        issues
+    }
+
+    fn minor_issues(&self) -> Vec<&'static str> {
+        let mut issues = Vec::new();
+        if !self.has_abstract { issues.push("Abstract missing or empty"); }
+        if !self.has_ethics_statement { issues.push("Ethics statement not explicitly mentioned"); }
+        if !self.has_conflict_of_interest { issues.push("Conflict of interest statement not provided"); }
+        if !self.has_limitations { issues.push("Limitations section missing — important for reader assessment"); }
+        if !self.has_sample_size_justification { issues.push("Sample size justification or power analysis not described"); }
+        if !self.has_confidence_intervals { issues.push("Confidence intervals not reported alongside point estimates"); }
+        if !self.has_effect_sizes { issues.push("Effect sizes not explicitly reported — limits interpretability"); }
+        if !self.has_replicates { issues.push("Number of replicates or independent experiments not clearly stated"); }
+        issues
+    }
+}
+
+#[async_trait]
+impl ToolHandler for PaperPeerReviewHandler {
+    fn name(&self) -> &str { "paper_peer_review" }
+    fn description(&self) -> &str { "Generate a structured peer review for a scientific paper with compliance checklist, major/minor issues, and recommendation" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("paper_id".into(), ToolProperty::string("Paper ID or arXiv ID")),
+                ("title".into(), ToolProperty::string("Paper title")),
+                ("abstract_text".into(), ToolProperty::string("Paper abstract")),
+                ("sections".into(), ToolProperty::string("Full text of paper sections (introduction, methods, results, discussion)")),
+                ("checklist_type".into(), ToolProperty::string("Optional: CONSORT (clinical trials), STROBE (observational), PRISMA (meta-analyses), or general (default)")),
+            ].into_iter().collect(),
+            vec!["paper_id".into(), "title".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let paper_id = params["paper_id"].as_str().ok_or("Missing paper_id")?;
+        let title = params["title"].as_str().ok_or("Missing title")?;
+        let abstract_text = params.get("abstract_text").and_then(|v| v.as_str()).unwrap_or("");
+        let sections = params.get("sections").and_then(|v| v.as_str()).unwrap_or("");
+        let checklist_type = params.get("checklist_type").and_then(|v| v.as_str()).unwrap_or("general");
+
+        let checklist = PeerReviewChecklist::evaluate(title, abstract_text, sections);
+        let overall_score = checklist.overall_score();
+        let recommendation = checklist.recommendation();
+        let major_issues = checklist.major_issues();
+        let minor_issues = checklist.minor_issues();
+
+        let mut compliance = serde_json::json!({
+            "abstract": checklist.has_abstract,
+            "introduction": checklist.has_introduction,
+            "methods": checklist.has_methods,
+            "results": checklist.has_results,
+            "discussion": checklist.has_discussion,
+            "references": checklist.has_references,
+            "ethics_statement": checklist.has_ethics_statement,
+            "conflict_of_interest": checklist.has_conflict_of_interest,
+            "limitations": checklist.has_limitations,
+            "data_availability": checklist.has_data_availability,
+            "sample_size_justification": checklist.has_sample_size_justification,
+            "statistical_tests": checklist.has_statistical_tests,
+            "confidence_intervals": checklist.has_confidence_intervals,
+            "effect_sizes": checklist.has_effect_sizes,
+            "replicates": checklist.has_replicates,
+        });
+
+        if checklist_type == "CONSORT" {
+            compliance["consort_checklist"] = serde_json::json!({
+                "title_and_abstract": checklist.has_abstract,
+                "introduction_background": checklist.has_introduction,
+                "methods_intervention": checklist.has_methods,
+                "methods_outcomes": checklist.has_results,
+                "methods_sample_size": checklist.has_sample_size_justification,
+                "results_numbers_analyzed": checklist.has_results,
+                "results_harms": sections.to_lowercase().contains("adverse") || sections.to_lowercase().contains("side effect"),
+                "discussion_limitations": checklist.has_limitations,
+                "discussion_generalizability": checklist.has_discussion,
+            });
+        } else if checklist_type == "STROBE" {
+            compliance["strobe_checklist"] = serde_json::json!({
+                "title_abstract": checklist.has_abstract,
+                "introduction_background": checklist.has_introduction,
+                "methods_study_design": checklist.has_methods,
+                "methods_setting": checklist.has_methods,
+                "methods_participants": sections.to_lowercase().contains("participant") || sections.to_lowercase().contains("patient"),
+                "methods_variables": checklist.has_methods,
+                "methods_data_sources": checklist.has_methods,
+                "methods_bias": checklist.has_methods,
+                "methods_quantitative": checklist.has_statistical_tests,
+                "results_participants": checklist.has_results,
+                "results_descriptive": checklist.has_results,
+                "results_outcome_data": checklist.has_results,
+                "discussion_key_results": checklist.has_discussion,
+                "discussion_limitations": checklist.has_limitations,
+                "discussion_generalizability": checklist.has_discussion,
+                "discussion_funding": sections.to_lowercase().contains("funding") || sections.to_lowercase().contains("grant"),
+            });
+        } else if checklist_type == "PRISMA" {
+            compliance["prisma_checklist"] = serde_json::json!({
+                "title": checklist.has_abstract,
+                "abstract": checklist.has_abstract,
+                "introduction_eligibility_criteria": checklist.has_introduction,
+                "introduction_information_sources": sections.to_lowercase().contains("database") || sections.to_lowercase().contains("search"),
+                "introduction_search_strategy": sections.to_lowercase().contains("search"),
+                "methods_study_selection": checklist.has_methods,
+                "methods_data_extraction": checklist.has_methods,
+                "methods_risk_of_bias": checklist.has_methods,
+                "methods_results_synthesis": checklist.has_results,
+                "results_study_selection": checklist.has_results,
+                "results_study_characteristics": checklist.has_results,
+                "results_risk_of_bias": checklist.has_results,
+                "results_results_synthesis": checklist.has_results,
+                "discussion_limitations": checklist.has_limitations,
+                "discussion_conclusions": checklist.has_discussion,
+                "discussion_registration": sections.to_lowercase().contains("registration") || sections.to_lowercase().contains("protocol"),
+            });
+        }
+
+        Ok(serde_json::json!({
+            "paper_id": paper_id,
+            "title": title,
+            "checklist_type": checklist_type,
+            "overall_score": overall_score,
+            "recommendation": recommendation,
+            "dimension_scores": {
+                "novelty": checklist.novelty_score,
+                "methodology": checklist.methodology_score,
+                "clarity": checklist.clarity_score,
+                "reproducibility": checklist.reproducibility_score,
+            },
+            "compliance": compliance,
+            "major_issues": major_issues,
+            "minor_issues": minor_issues,
+            "review_summary": format!(
+                "This paper '{}' receives an overall score of {:.1}/5.0 and a recommendation of {}. \
+                The review identified {} major issue(s) and {} minor issue(s). \
+                Key strengths: novelty ({}/5), methodology ({}/5), clarity ({}/5), reproducibility ({}/5). \
+                {}",
+                title, overall_score, recommendation,
+                major_issues.len(), minor_issues.len(),
+                checklist.novelty_score, checklist.methodology_score, checklist.clarity_score, checklist.reproducibility_score,
+                if major_issues.is_empty() { "No major issues identified." } else { major_issues[0] }
+            ),
+        }))
+    }
+}
+
+// ─── Paper Format Citation ─────────────────────────────────────────────────
+
+pub struct PaperFormatCitationHandler;
+
+fn format_author_human(authors: &[Value]) -> String {
+    if authors.is_empty() {
+        return String::new();
+    }
+    let formatted: Vec<String> = authors.iter().filter_map(|a| {
+        let given = a.get("given").and_then(|v| v.as_str()).unwrap_or("");
+        let family = a.get("family").and_then(|v| v.as_str()).unwrap_or("");
+        if family.is_empty() {
+            None
+        } else if given.is_empty() {
+            Some(family.to_string())
+        } else {
+            Some(format!("{} {}", given, family))
+        }
+    }).collect();
+    if formatted.len() <= 6 {
+        formatted.join(", ")
+    } else {
+        format!("{} et al.", formatted[0])
+    }
+}
+
+fn generate_bibtex_key(authors: &[Value], year: &str, _title: &str) -> String {
+    let first_author = authors.first()
+        .and_then(|a| a.get("family").and_then(|v| v.as_str()))
+        .unwrap_or("unknown");
+    format!("{}{}", first_author.to_lowercase(), year)
+}
+
+fn format_authors_bibtex(authors: &[Value]) -> String {
+    let formatted: Vec<String> = authors.iter().filter_map(|a| {
+        let given = a.get("given").and_then(|v| v.as_str()).unwrap_or("");
+        let family = a.get("family").and_then(|v| v.as_str()).unwrap_or("");
+        if family.is_empty() {
+            None
+        } else if given.is_empty() {
+            Some(family.to_string())
+        } else {
+            Some(format!("{{{}, {}}}", family, given))
+        }
+    }).collect();
+    formatted.join(" and ")
+}
+
+#[async_trait]
+impl ToolHandler for PaperFormatCitationHandler {
+    fn name(&self) -> &str { "paper_format_citation" }
+    fn description(&self) -> &str { "Format a paper citation in multiple styles (APA, Nature, Vancouver, Chicago, IEEE, BibTeX) from DOI, PMID, or arXiv ID" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("identifier".into(), ToolProperty::string("DOI (e.g., 10.1038/s41586-021-03819-2), PMID (e.g., 34265844), or arXiv ID (e.g., 2103.14030)")),
+                ("style".into(), ToolProperty::string("Citation style: apa, nature, vancouver, chicago, ieee, bibtex, or all (default: all)")),
+            ].into_iter().collect(),
+            vec!["identifier".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let identifier = params["identifier"].as_str().ok_or("Missing identifier")?;
+        let style = params.get("style").and_then(|v| v.as_str()).unwrap_or("all");
+
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(15))
+            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+
+        let (metadata, id_type) = if identifier.starts_with("10.") {
+            let url = format!("https://doi.org/{}", identifier);
+            let resp = client.get(&url)
+                .header("Accept", "application/json")
+                .send().await.map_err(|e| format!("CrossRef request failed: {}", e))?;
+            if !resp.status().is_success() {
+                return Err(format!("DOI not found: {}", identifier));
+            }
+            let data: serde_json::Value = resp.json().await
+                .map_err(|e| format!("Parse failed: {}", e))?;
+            (data, "doi".to_string())
+        } else if identifier.chars().all(|c| c.is_ascii_digit()) {
+            let url = format!(
+                "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id={}&retmode=json",
+                identifier
+            );
+            let resp = client.get(&url).send().await.map_err(|e| format!("PubMed request failed: {}", e))?;
+            if !resp.status().is_success() {
+                return Err(format!("PubMed request failed: {}", resp.status()));
+            }
+            let data: serde_json::Value = resp.json().await
+                .map_err(|e| format!("Parse failed: {}", e))?;
+            (data, "pmid".to_string())
+        } else if identifier.contains("/") || identifier.starts_with("arxiv:") {
+            let arxiv_id = identifier.trim_start_matches("arxiv:");
+            let url = format!(
+                "https://export.arxiv.org/api/query?id_list={}&max_results=1",
+                arxiv_id
+            );
+            let resp = client.get(&url).send().await.map_err(|e| format!("arXiv request failed: {}", e))?;
+            if !resp.status().is_success() {
+                return Err(format!("arXiv request failed: {}", resp.status()));
+            }
+            let body = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
+            let parsed = parse_arxiv_citation(&body)?;
+            (serde_json::json!({ "entry": parsed }), "arxiv".to_string())
+        } else {
+            return Err("Invalid identifier. Use DOI (10.xxxx), PMID (digits), or arXiv ID (e.g. 2103.14030)".into());
+        };
+
+        let mut title = String::new();
+        let mut authors: Vec<Value> = Vec::new();
+        let mut year = String::new();
+        let mut journal = String::new();
+        let mut volume = String::new();
+        let mut issue = String::new();
+        let mut pages = String::new();
+        let mut doi = String::new();
+        let mut url = String::new();
+
+        if id_type == "doi" {
+            if let Some(msg) = metadata.get("message").or(metadata.get("response")) {
+                title = msg.get("title").and_then(|v| v.as_str())
+                    .map(String::from)
+                    .unwrap_or_default();
+                if let Some(a) = msg.get("author").or(msg.get("author")).and_then(|v| v.as_array()) {
+                    authors = a.clone();
+                }
+                year = msg.get("published").and_then(|v| v.get("date-parts"))
+                    .and_then(|v| v.get(0))
+                    .and_then(|v| v.get(0))
+                    .and_then(|v| v.as_i64())
+                    .map(|y| y.to_string())
+                    .unwrap_or_default();
+                if year.is_empty() {
+                    year = msg.get("created").and_then(|v| v.get("date-parts"))
+                        .and_then(|v| v.get(0))
+                        .and_then(|v| v.get(0))
+                        .and_then(|v| v.as_i64())
+                        .map(|y| y.to_string())
+                        .unwrap_or_default();
+                }
+                journal = msg.get("container-title")
+                    .and_then(|v| v.as_array())
+                    .and_then(|v| v.get(0))
+                    .and_then(|v| v.as_str())
+                    .map(String::from)
+                    .unwrap_or_default();
+                volume = msg.get("volume").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                issue = msg.get("issue").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                pages = msg.get("page").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                doi = msg.get("DOI").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                url = format!("https://doi.org/{}", doi);
+            }
+        } else if id_type == "pmid" {
+            if let Some(result) = metadata.get("result").and_then(|v| v.get(identifier)) {
+                title = result.get("title").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                if let Some(a) = result.get("authors").and_then(|v| v.as_array()) {
+                    authors = a.clone();
+                }
+                year = result.get("pubdate").and_then(|v| v.as_str())
+                    .map(|s| s.split_whitespace().next().unwrap_or("").to_string())
+                    .unwrap_or_default();
+                journal = result.get("source").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                volume = result.get("volume").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                issue = result.get("issue").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                pages = result.get("pages").and_then(|v| v.as_str()).map(String::from).unwrap_or_default();
+                doi = result.get("elocationid")
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.trim_start_matches("pii: ").to_string())
+                    .unwrap_or_default();
+                url = format!("https://pubmed.ncbi.nlm.nih.gov/{}", identifier);
+            }
+        } else if id_type == "arxiv" {
+            if let Some(entry) = metadata.get("entry").or(metadata.as_array().and_then(|v| v.get(0))) {
+                title = entry.get("title").and_then(|v| v.as_str())
+                    .map(|s| s.trim().to_string())
+                    .unwrap_or_default();
+                if let Some(a) = entry.get("author").and_then(|v| v.as_array()) {
+                    authors = a.iter().filter_map(|author| {
+                        let name = author.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                        let parts: Vec<&str> = name.split_whitespace().collect();
+                        let family = parts.last().map(|s| *s).unwrap_or("");
+                        let given = if parts.len() > 1 { parts[..parts.len()-1].join(" ") } else { String::new() };
+                        if family.is_empty() { None } else { Some(serde_json::json!({ "family": family, "given": given })) }
+                    }).collect();
+                }
+                year = entry.get("published").or(entry.get("updated"))
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.split('-').next().unwrap_or("").to_string())
+                    .unwrap_or_default();
+                journal = entry.get("journal-ref")
+                    .and_then(|v| v.as_str())
+                    .map(String::from)
+                    .unwrap_or_else(|| "arXiv preprint".to_string());
+                url = entry.get("id")
+                    .and_then(|v| v.as_str())
+                    .map(String::from)
+                    .unwrap_or_default();
+                if entry.get("doi").and_then(|v| v.as_str()).is_some() {
+                    doi = entry.get("doi").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                } else {
+                    let arxiv_id_val = entry.get("arxiv_id")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or(identifier);
+                    doi = format!("10.48550/arXiv.{}", arxiv_id_val);
+                    url = format!("https://arxiv.org/abs/{}", arxiv_id_val);
+                }
+            }
+        }
+
+        if title.is_empty() {
+            return Err("Could not extract paper metadata".into());
+        }
+
+        let author_str = format_author_human(&authors);
+
+        let mut citations = serde_json::json!({});
+
+        if style == "all" || style == "apa" {
+            citations["apa"] = serde_json::json!(format!(
+                "{}. ({}). {}. {}{}{}{}.",
+                author_str, year,
+                title,
+                if !journal.is_empty() { format!("{}. ", journal) } else { String::new() },
+                if !volume.is_empty() { format!("{}", volume) } else { String::new() },
+                if !issue.is_empty() { format!("({})", issue) } else { String::new() },
+                if !pages.is_empty() { format!(", {}", pages.replace("-", "--")) } else { String::new() }
+            ));
+        }
+
+        if style == "all" || style == "nature" {
+            let nature_journal = if journal.is_empty() { String::new() } else { journal.clone() };
+            citations["nature"] = serde_json::json!(format!(
+                "{} {} {} {} {}{}{}.",
+                author_str.split(',').next().unwrap_or(&author_str).split_whitespace().last().unwrap_or(""),
+                if !year.is_empty() { &year } else { "s" },
+                title,
+                nature_journal,
+                if !volume.is_empty() { format!("{}", volume) } else { String::new() },
+                if !pages.is_empty() { format!(", {}", pages.replace("-", "-")) } else { String::new() },
+                if !doi.is_empty() { format!(" https://doi.org/{}", doi) } else { String::new() }
+            ));
+        }
+
+        if style == "all" || style == "vancouver" {
+            let numbered_authors: Vec<String> = authors.iter().map(|a| {
+                let family = a.get("family").and_then(|v| v.as_str()).unwrap_or("");
+                let given = a.get("given").and_then(|v| v.as_str()).unwrap_or("");
+                let initials: String = given.split_whitespace()
+                    .filter_map(|n| n.chars().next())
+                    .collect::<String>();
+                format!("{}{}", initials, family)
+            }).collect();
+            let vancouver_author = if numbered_authors.len() <= 6 {
+                numbered_authors.join(", ")
+            } else {
+                format!("{} et al.", numbered_authors[..5].join(", "))
+            };
+            citations["vancouver"] = serde_json::json!(format!(
+                "{} {}. {}. {}{}{}:{}",
+                vancouver_author, year, title, journal,
+                if !volume.is_empty() { format!(" {}", volume) } else { String::new() },
+                if !issue.is_empty() { format!("({})", issue) } else { String::new() },
+                if !pages.is_empty() { pages.replace("-", "-") } else { "".into() }
+            ));
+        }
+
+        if style == "all" || style == "chicago" {
+            citations["chicago"] = serde_json::json!(format!(
+                "{} \"{}\"{} {}{}{}{}.",
+                author_str,
+                title,
+                if !journal.is_empty() { format!(", {}", journal) } else { String::new() },
+                if !volume.is_empty() { format!(" {}", volume) } else { String::new() },
+                if !issue.is_empty() { format!(", no. {}", issue) } else { String::new() },
+                if !year.is_empty() { format!(" ({})", year) } else { String::new() },
+                if !pages.is_empty() { format!(": {}", pages.replace("-", "-")) } else { String::new() }
+            ));
+        }
+
+        if style == "all" || style == "ieee" {
+            let ieee_authors: Vec<String> = authors.iter().map(|a| {
+                let given = a.get("given").and_then(|v| v.as_str()).unwrap_or("");
+                let family = a.get("family").and_then(|v| v.as_str()).unwrap_or("");
+                let initials: String = given.split_whitespace()
+                    .filter_map(|n| n.chars().next())
+                    .collect::<String>();
+                format!("{}. {}", initials, family)
+            }).collect();
+            let ieee_author = if ieee_authors.len() <= 3 {
+                ieee_authors.join(", ")
+            } else {
+                format!("{} et al.", ieee_authors.iter().take(2).cloned().collect::<Vec<_>>().join(", "))
+            };
+            let ieee_str = format!(
+                "{} {}, \"{}\" {}{}{}{}.",
+                ieee_author, year, title,
+                if !journal.is_empty() { format!("{}", journal) } else { String::new() },
+                if !volume.is_empty() { format!(", vol. {}", volume) } else { String::new() },
+                if !issue.is_empty() { format!(", no. {}", issue) } else { String::new() },
+                if !pages.is_empty() { format!(", pp. {}", pages.replace("-", "--")) } else { String::new() }
+            );
+            citations["ieee"] = serde_json::json!(ieee_str);
+        }
+
+        if style == "all" || style == "bibtex" {
+            let bibtex_key = generate_bibtex_key(&authors, &year, &title);
+            let bibtex_authors = format_authors_bibtex(&authors);
+            let bibtex_abstract = metadata.get("message")
+                .and_then(|m| m.get("abstract"))
+                .and_then(|v| v.as_str())
+                .map(|s| format!("\n  abstract = {{{}}}", s.trim()))
+                .unwrap_or_default();
+            citations["bibtex"] = serde_json::json!(format!(
+                "@article{{{},\n  author = {{{}}}\n  title = {{{}}}\n  journal = {{{}}}\n  year = {{{}}}{}{}{}{}{}\n}}",
+                bibtex_key,
+                bibtex_authors,
+                title,
+                journal,
+                year,
+                if !volume.is_empty() { format!("\n  volume = {{{}}}", volume) } else { String::new() },
+                if !issue.is_empty() { format!("\n  number = {{{}}}", issue) } else { String::new() },
+                if !pages.is_empty() { format!("\n  pages = {{{}}}", pages.replace("-", "--")) } else { String::new() },
+                if !doi.is_empty() { format!("\n  doi = {{{}}}", doi) } else { String::new() },
+                bibtex_abstract
+            ));
+        }
+
+        Ok(serde_json::json!({
+            "identifier": identifier,
+            "id_type": id_type,
+            "title": title,
+            "authors": author_str,
+            "year": year,
+            "journal": journal,
+            "doi": doi,
+            "url": url,
+            "citations": citations,
+        }))
+    }
+}
+
 // ─── Chart Query (figures & tables from KG) ───────────────────────────────
 
 pub struct ChartQueryHandler;
@@ -1394,6 +3012,20 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(TrendsTopPredictionsHandler).await;
     server.register(TrendsCompareTagsHandler).await;
     server.register(CiteFetchHandler).await;
+    server.register(PaperSearchMultiHandler).await;
+    server.register(PaperLookupDoiHandler).await;
+    server.register(PaperCitationsHandler).await;
+    server.register(PaperVerifyCitationsHandler).await;
+    server.register(PaperVisualizeTrendsHandler).await;
+    server.register(PaperVisualizeRadarHandler).await;
+    server.register(PaperCriticalAnalysisHandler).await;
+    server.register(PaperGenerateReviewPdfHandler).await;
+    server.register(HypothesisReportHandler).await;
+    server.register(PaperGenerateSchematicHandler).await;
+    server.register(PaperScienceDiscoveryHandler).await;
+    server.register(PaperDatabaseLookupHandler).await;
+    server.register(PaperPeerReviewHandler).await;
+    server.register(PaperFormatCitationHandler).await;
     server.register(ChartQueryHandler).await;
     crate::llm_handlers::register_llm_handlers(server).await;
 }
@@ -1465,6 +3097,52 @@ fn extract_categories(entry: &str) -> Vec<String> {
         pos += start + 6;
     }
     cats
+}
+
+fn parse_arxiv_citation(xml: &str) -> Result<serde_json::Value, String> {
+    let entry_text: Option<String> = if let Some(start) = xml.find("<entry>") {
+        let abs_start = start;
+        let end = xml[abs_start..].find("</entry>").ok_or("No </entry> found")?;
+        Some(xml[abs_start..abs_start + end + 8].to_string())
+    } else {
+        None
+    };
+    let entry = entry_text.ok_or("No entry found in arXiv response")?;
+
+    let title = extract_tag(&entry, "title").map(clean_xml).unwrap_or_default();
+    let id = extract_tag(&entry, "id").unwrap_or_default();
+    let published = extract_tag(&entry, "published").unwrap_or_default();
+    let journal_ref = extract_tag(&entry, "journal-ref").unwrap_or_default();
+    let doi = extract_tag(&entry, "doi").unwrap_or_default();
+
+    let mut authors: Vec<serde_json::Value> = Vec::new();
+    let mut a_pos = 0;
+    while let Some(start) = entry[a_pos..].find("<author>") {
+        let abs_start = a_pos + start;
+        let Some(end) = entry[abs_start..].find("</author>") else { break; };
+        let ab = &entry[abs_start..abs_start + end + 9];
+        if let Some(name) = extract_tag(ab, "name") {
+            let parts: Vec<&str> = name.split_whitespace().collect();
+            let family = parts.last().unwrap_or(&"").to_string();
+            let given = if parts.len() > 1 { parts[..parts.len()-1].join(" ") } else { String::new() };
+            authors.push(serde_json::json!({ "family": family, "given": given }));
+        }
+        a_pos = abs_start + end + 9;
+    }
+
+    let arxiv_id = id.strip_prefix("http://arxiv.org/abs/")
+        .or_else(|| id.strip_prefix("https://arxiv.org/abs/"))
+        .unwrap_or(&id).to_string();
+
+    Ok(serde_json::json!({
+        "title": title,
+        "id": id,
+        "published": published,
+        "journal-ref": journal_ref,
+        "doi": doi,
+        "authors": authors,
+        "arxiv_id": arxiv_id,
+    }))
 }
 
 fn chrono_now() -> String {
@@ -1611,5 +3289,183 @@ mod tests {
     fn test_trends_compare_tags_error_missing_tag_b() {
         let result = futures::executor::block_on(TrendsCompareTagsHandler.call(serde_json::json!({"tag_a": "test"})));
         assert_eq!(result, Err("Missing tag_b".to_string()));
+    }
+
+    #[test]
+    fn test_paper_verify_citations_schema_requires_dois() {
+        let req = PaperVerifyCitationsHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"dois".into()));
+    }
+
+    #[test]
+    fn test_paper_verify_citations_error_missing_dois() {
+        let result = futures::executor::block_on(PaperVerifyCitationsHandler.call(serde_json::json!({})));
+        assert_eq!(result, Err("Missing required parameter: dois".to_string()));
+    }
+
+    #[test]
+    fn test_paper_verify_citations_error_invalid_style() {
+        let result = futures::executor::block_on(PaperVerifyCitationsHandler.call(serde_json::json!({"dois": "10.1234/test", "style": "invalid"})));
+        assert!(result.is_err() && result.unwrap_err().contains("Invalid style"));
+    }
+
+    #[test]
+    fn test_paper_verify_citations_error_no_dois() {
+        let result = futures::executor::block_on(PaperVerifyCitationsHandler.call(serde_json::json!({"dois": ""})));
+        assert_eq!(result, Err("No DOIs provided".to_string()));
+    }
+
+    #[test]
+    fn test_paper_visualize_trends_schema_requires_trends_json() {
+        let req = PaperVisualizeTrendsHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"trends_json".into()));
+    }
+
+    #[test]
+    fn test_paper_visualize_trends_error_missing_data() {
+        let result = futures::executor::block_on(PaperVisualizeTrendsHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_visualize_radar_schema_requires_scores_json() {
+        let req = PaperVisualizeRadarHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"scores_json".into()));
+    }
+
+    #[test]
+    fn test_paper_visualize_radar_error_missing_data() {
+        let result = futures::executor::block_on(PaperVisualizeRadarHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_critical_analysis_schema_requires_fields() {
+        let req = PaperCriticalAnalysisHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"paper_id".into()));
+        assert!(req.contains(&"title".into()));
+        assert!(req.contains(&"abstract".into()));
+    }
+
+    #[test]
+    fn test_paper_critical_analysis_error_missing_fields() {
+        let result = futures::executor::block_on(PaperCriticalAnalysisHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_generate_review_pdf_schema_requires_review_json() {
+        let req = PaperGenerateReviewPdfHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"review_json".into()));
+    }
+
+    #[test]
+    fn test_paper_generate_review_pdf_error_missing_data() {
+        let result = futures::executor::block_on(PaperGenerateReviewPdfHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_hypothesis_report_schema_requires_fields() {
+        let req = HypothesisReportHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"topic".into()));
+        assert!(req.contains(&"hypotheses_json".into()));
+    }
+
+    #[test]
+    fn test_hypothesis_report_error_missing_fields() {
+        let result = futures::executor::block_on(HypothesisReportHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_generate_schematic_schema_requires_fields() {
+        let req = PaperGenerateSchematicHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"diagram_type".into()));
+        assert!(req.contains(&"diagram_json".into()));
+    }
+
+    #[test]
+    fn test_paper_generate_schematic_error_missing_fields() {
+        let result = futures::executor::block_on(PaperGenerateSchematicHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_science_discovery_schema_requires_query() {
+        let req = PaperScienceDiscoveryHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"query".into()));
+    }
+
+    #[test]
+    fn test_paper_science_discovery_error_missing_query() {
+        let result = futures::executor::block_on(PaperScienceDiscoveryHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_database_lookup_schema() {
+        let req = PaperDatabaseLookupHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"query_type".into()));
+        assert!(req.contains(&"term".into()));
+    }
+
+    #[test]
+    fn test_paper_database_lookup_error_missing_fields() {
+        let result = futures::executor::block_on(PaperDatabaseLookupHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_peer_review_schema() {
+        let req = PaperPeerReviewHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"paper_id".into()));
+        assert!(req.contains(&"title".into()));
+    }
+
+    #[test]
+    fn test_paper_peer_review_error_missing_fields() {
+        let result = futures::executor::block_on(PaperPeerReviewHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_paper_peer_review_minimal_input() {
+        let result = futures::executor::block_on(PaperPeerReviewHandler.call(serde_json::json!({
+            "paper_id": "test123",
+            "title": "Test Paper",
+            "abstract_text": "This is a test abstract about methods and results.",
+            "sections": "Introduction: background. Methods: experiments were conducted with statistical tests. Results: findings show significant effects. Discussion: limitations acknowledged."
+        })));
+        assert!(result.is_ok());
+        let output = result.unwrap();
+        assert!(output["overall_score"].as_f64().is_some());
+        assert!(!output["recommendation"].as_str().unwrap().is_empty());
+        assert!(output["major_issues"].as_array().is_some());
+        assert!(output["minor_issues"].as_array().is_some());
+    }
+
+    #[test]
+    fn test_paper_peer_review_consort_checklist() {
+        let result = futures::executor::block_on(PaperPeerReviewHandler.call(serde_json::json!({
+            "paper_id": "test456",
+            "title": "Clinical Trial Paper",
+            "checklist_type": "CONSORT"
+        })));
+        assert!(result.is_ok());
+        let output = result.unwrap();
+        assert!(output["compliance"]["consort_checklist"].is_object());
+    }
+
+    #[test]
+    fn test_paper_format_citation_schema() {
+        let req = PaperFormatCitationHandler.input_schema().required.unwrap_or_default();
+        assert!(req.contains(&"identifier".into()));
+    }
+
+    #[test]
+    fn test_paper_format_citation_error_missing_fields() {
+        let result = futures::executor::block_on(PaperFormatCitationHandler.call(serde_json::json!({})));
+        assert!(result.is_err());
     }
 }

@@ -4239,6 +4239,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "dirs",
+ "parking_lot",
  "rairos-core",
  "rand 0.8.6",
  "rusqlite",
@@ -4416,6 +4417,7 @@ dependencies = [
  "tokio-test",
  "tracing",
  "tracing-subscriber",
+ "urlencoding",
  "uuid",
 ]
 

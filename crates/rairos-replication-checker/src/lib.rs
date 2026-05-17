@@ -1206,3 +1206,428 @@ mod tests {
         assert!(json.contains("100"));
     }
 }
+
+// ─── Critical Thinking Checker ───────────────────────────────────────────────
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum StudyDesign {
+    Unknown,
+    RandomizedControlledTrial,
+    Cohort,
+    CaseControl,
+    CrossSectional,
+    CaseSeries,
+    Review,
+    MetaAnalysis,
+    Experiment,
+    Simulation,
+    Theoretical,
+}
+
+impl StudyDesign {
+    pub fn from_text(text: &str) -> Self {
+        let lower = text.to_lowercase();
+        if lower.contains("randomized") || lower.contains("rct") || lower.contains("randomised") {
+            StudyDesign::RandomizedControlledTrial
+        } else if lower.contains("cohort") || lower.contains("prospective") || lower.contains("retrospective") {
+            StudyDesign::Cohort
+        } else if lower.contains("case-control") || lower.contains("case control") {
+            StudyDesign::CaseControl
+        } else if lower.contains("cross-sectional") || lower.contains("cross sectional") {
+            StudyDesign::CrossSectional
+        } else if lower.contains("case series") || lower.contains("case report") {
+            StudyDesign::CaseSeries
+        } else if lower.contains("systematic review") || lower.contains("review") {
+            StudyDesign::Review
+        } else if lower.contains("meta-analysis") || lower.contains("meta analysis") {
+            StudyDesign::MetaAnalysis
+        } else if lower.contains("experiment") || lower.contains("experimental") {
+            StudyDesign::Experiment
+        } else if lower.contains("simulation") || lower.contains("in silico") {
+            StudyDesign::Simulation
+        } else if lower.contains("theoretical") || lower.contains("theorem") {
+            StudyDesign::Theoretical
+        } else {
+            StudyDesign::Unknown
+        }
+    }
+
+    pub fn quality_level(&self) -> u8 {
+        match self {
+            StudyDesign::MetaAnalysis => 5,
+            StudyDesign::RandomizedControlledTrial => 4,
+            StudyDesign::Cohort => 3,
+            StudyDesign::CaseControl => 3,
+            StudyDesign::CrossSectional => 2,
+            StudyDesign::CaseSeries => 1,
+            StudyDesign::Review => 2,
+            StudyDesign::Experiment => 3,
+            StudyDesign::Simulation => 2,
+            StudyDesign::Theoretical => 1,
+            StudyDesign::Unknown => 0,
+        }
+    }
+
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            StudyDesign::Unknown => "Unknown",
+            StudyDesign::RandomizedControlledTrial => "Randomized Controlled Trial",
+            StudyDesign::Cohort => "Cohort Study",
+            StudyDesign::CaseControl => "Case-Control Study",
+            StudyDesign::CrossSectional => "Cross-Sectional Study",
+            StudyDesign::CaseSeries => "Case Series",
+            StudyDesign::Review => "Literature Review",
+            StudyDesign::MetaAnalysis => "Meta-Analysis",
+            StudyDesign::Experiment => "Experiment",
+            StudyDesign::Simulation => "Simulation",
+            StudyDesign::Theoretical => "Theoretical",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BiasType {
+    SelectionBias,
+    MeasurementBias,
+    Confounding,
+    PublicationBias,
+    RecallBias,
+    ObserverBias,
+    AttritionBias,
+    FundingBias,
+    ConflictOfInterest,
+}
+
+impl BiasType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            BiasType::SelectionBias => "Selection Bias",
+            BiasType::MeasurementBias => "Measurement Bias",
+            BiasType::Confounding => "Confounding",
+            BiasType::PublicationBias => "Publication Bias",
+            BiasType::RecallBias => "Recall Bias",
+            BiasType::ObserverBias => "Observer Bias",
+            BiasType::AttritionBias => "Attrition Bias",
+            BiasType::FundingBias => "Funding Bias",
+            BiasType::ConflictOfInterest => "Conflict of Interest",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BiasFlag {
+    pub bias_type: String,
+    pub severity: String,
+    pub description: String,
+    pub indicator: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatisticalConcern {
+    pub concern_type: String,
+    pub severity: String,
+    pub description: String,
+    pub suggestion: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum EvidenceQuality {
+    High,
+    Moderate,
+    Low,
+    VeryLow,
+}
+
+impl EvidenceQuality {
+    pub fn from_score(score: f64) -> Self {
+        if score >= 0.8 {
+            EvidenceQuality::High
+        } else if score >= 0.6 {
+            EvidenceQuality::Moderate
+        } else if score >= 0.4 {
+            EvidenceQuality::Low
+        } else {
+            EvidenceQuality::VeryLow
+        }
+    }
+
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            EvidenceQuality::High => "High",
+            EvidenceQuality::Moderate => "Moderate",
+            EvidenceQuality::Low => "Low",
+            EvidenceQuality::VeryLow => "Very Low",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CriticalThinkingReport {
+    pub paper_id: String,
+    pub study_design: String,
+    pub design_quality_score: f64,
+    pub evidence_quality: String,
+    pub biases: Vec<BiasFlag>,
+    pub statistical_concerns: Vec<StatisticalConcern>,
+    pub logical_fallacies: Vec<String>,
+    pub strengths: Vec<String>,
+    pub recommendations: Vec<String>,
+    pub overall_score: f64,
+}
+
+pub struct CriticalThinkingChecker;
+
+impl CriticalThinkingChecker {
+    pub fn new() -> Self {
+        Self
+    }
+
+    pub fn analyze(&self, paper_id: &str, title: &str, abstract_text: &str) -> CriticalThinkingReport {
+        let text = format!("{} {}", title, abstract_text);
+
+        let study_design = StudyDesign::from_text(&text);
+        let design_score = study_design.quality_level() as f64 / 5.0;
+
+        let mut biases = Vec::new();
+        let mut concerns = Vec::new();
+        let mut fallacies = Vec::new();
+        let mut strengths = Vec::new();
+        let mut recommendations = Vec::new();
+
+        self.check_selection_bias(&text, &mut biases);
+        self.check_measurement_bias(&text, &mut biases);
+        self.check_confounding(&text, &mut biases);
+        self.check_statistical_concerns(&text, &mut concerns);
+        self.check_logical_fallacies(&text, &mut fallacies);
+        self.assess_strengths(&text, &mut strengths);
+        self.generate_recommendations(&text, &mut recommendations);
+
+        let bias_penalty = biases.iter()
+            .filter(|b| b.severity == "High")
+            .count() as f64 * 0.1;
+
+        let concern_penalty = concerns.iter()
+            .filter(|c| c.severity == "High")
+            .count() as f64 * 0.05;
+
+        let overall_score = (design_score - bias_penalty - concern_penalty).max(0.0).min(1.0);
+
+        let evidence_quality = EvidenceQuality::from_score(overall_score);
+
+        CriticalThinkingReport {
+            paper_id: paper_id.to_string(),
+            study_design: study_design.as_str().to_string(),
+            design_quality_score: design_score,
+            evidence_quality: evidence_quality.as_str().to_string(),
+            biases,
+            statistical_concerns: concerns,
+            logical_fallacies: fallacies,
+            strengths,
+            recommendations,
+            overall_score,
+        }
+    }
+
+    fn check_selection_bias(&self, text: &str, biases: &mut Vec<BiasFlag>) {
+        let lower = text.to_lowercase();
+
+        if lower.contains("convenience sample") || lower.contains("volunteer") {
+            biases.push(BiasFlag {
+                bias_type: BiasType::SelectionBias.as_str().to_string(),
+                severity: "Medium".to_string(),
+                description: "Use of convenience sampling may limit generalizability".to_string(),
+                indicator: "Convenience sample or volunteer participants detected".to_string(),
+            });
+        }
+
+        if lower.contains("self-select") || lower.contains("self refer") {
+            biases.push(BiasFlag {
+                bias_type: BiasType::SelectionBias.as_str().to_string(),
+                severity: "Medium".to_string(),
+                description: "Self-referral may introduce selection bias".to_string(),
+                indicator: "Self-selection bias detected".to_string(),
+            });
+        }
+
+        if lower.contains("online survey") && !lower.contains("random") {
+            biases.push(BiasFlag {
+                bias_type: BiasType::SelectionBias.as_str().to_string(),
+                severity: "Low".to_string(),
+                description: "Online surveys may not represent target population".to_string(),
+                indicator: "Non-random online sample".to_string(),
+            });
+        }
+    }
+
+    fn check_measurement_bias(&self, text: &str, biases: &mut Vec<BiasFlag>) {
+        let lower = text.to_lowercase();
+
+        if lower.contains("self-report") || lower.contains("self report") {
+            biases.push(BiasFlag {
+                bias_type: BiasType::MeasurementBias.as_str().to_string(),
+                severity: "Medium".to_string(),
+                description: "Self-reported measures may be affected by recall or social desirability bias".to_string(),
+                indicator: "Self-report methodology detected".to_string(),
+            });
+        }
+
+        if lower.contains("unblinded") || lower.contains("non-blinded") {
+            biases.push(BiasFlag {
+                bias_type: BiasType::ObserverBias.as_str().to_string(),
+                severity: "Medium".to_string(),
+                description: "Lack of blinding may introduce observer bias".to_string(),
+                indicator: "Non-blinded design".to_string(),
+            });
+        }
+    }
+
+    fn check_confounding(&self, text: &str, biases: &mut Vec<BiasFlag>) {
+        let lower = text.to_lowercase();
+
+        if lower.contains("observational") && !lower.contains("adjust") && !lower.contains("control") {
+            biases.push(BiasFlag {
+                bias_type: BiasType::Confounding.as_str().to_string(),
+                severity: "High".to_string(),
+                description: "Observational study without adjustment for confounders may have confounding bias".to_string(),
+                indicator: "Unadjusted observational study".to_string(),
+            });
+        }
+
+        if lower.contains("correlation") && lower.contains("caus") {
+            biases.push(BiasFlag {
+                bias_type: BiasType::Confounding.as_str().to_string(),
+                severity: "High".to_string(),
+                description: "Correlation does not imply causation".to_string(),
+                indicator: "Causal language used with correlational data".to_string(),
+            });
+        }
+    }
+
+    fn check_statistical_concerns(&self, text: &str, concerns: &mut Vec<StatisticalConcern>) {
+        let lower = text.to_lowercase();
+
+        if lower.contains("p <") || lower.contains("p-value") || lower.contains("p value") {
+            if !lower.contains("correction") && !lower.contains("bonferroni") && !lower.contains("fdr") {
+                concerns.push(StatisticalConcern {
+                    concern_type: "Multiple Comparisons".to_string(),
+                    severity: "Medium".to_string(),
+                    description: "Multiple statistical tests without correction may increase false positive rate".to_string(),
+                    suggestion: "Apply multiple comparison correction (Bonferroni, FDR)".to_string(),
+                });
+            }
+        }
+
+        if lower.contains("sample size") || lower.contains("n =") {
+            if lower.contains("small") || lower.contains("limited") {
+                concerns.push(StatisticalConcern {
+                    concern_type: "Small Sample Size".to_string(),
+                    severity: "Medium".to_string(),
+                    description: "Small sample size may limit statistical power".to_string(),
+                    suggestion: "Conduct power analysis and increase sample size if possible".to_string(),
+                });
+            }
+        }
+
+        if lower.contains("post-hoc") || lower.contains("posthoc") || lower.contains("post hoc") {
+            concerns.push(StatisticalConcern {
+                concern_type: "Post-hoc Analysis".to_string(),
+                severity: "Medium".to_string(),
+                description: "Post-hoc analyses are exploratory and should be interpreted cautiously".to_string(),
+                suggestion: "Distinguish confirmatory from exploratory analyses".to_string(),
+            });
+        }
+
+        if lower.contains("effect size") || lower.contains("cohen") {
+            // Effect size mentioned is a good sign
+        } else if lower.contains("significant") && !lower.contains("effect size") {
+            concerns.push(StatisticalConcern {
+                concern_type: "Missing Effect Size".to_string(),
+                severity: "Low".to_string(),
+                description: "Effect sizes not reported alongside significance tests".to_string(),
+                suggestion: "Report effect sizes with confidence intervals".to_string(),
+            });
+        }
+    }
+
+    fn check_logical_fallacies(&self, text: &str, fallacies: &mut Vec<String>) {
+        let lower = text.to_lowercase();
+
+        if lower.contains("this proves") || lower.contains("clearly demonstrates") {
+            if lower.contains("correlation") || lower.contains("association") {
+                fallacies.push("Causation fallacy: Using causal language (proves, demonstrates) with correlational evidence".to_string());
+            }
+        }
+
+        if lower.contains("while this") && lower.contains("may") {
+            // Hedging detected - not a fallacy
+        } else if lower.contains("all") && lower.contains("never") {
+            fallacies.push("Hasty generalization: Absolute quantifiers (all, never) in empirical claims".to_string());
+        }
+
+        if lower.contains("experts believe") || lower.contains("scientists think") {
+            fallacies.push("Appeal to authority: Citing consensus without empirical evidence".to_string());
+        }
+    }
+
+    fn assess_strengths(&self, text: &str, strengths: &mut Vec<String>) {
+        let lower = text.to_lowercase();
+
+        if lower.contains("randomized") || lower.contains("rct") {
+            strengths.push("Randomized design helps control for confounding".to_string());
+        }
+
+        if lower.contains("blind") || lower.contains("blinded") {
+            strengths.push("Blinding reduces measurement bias".to_string());
+        }
+
+        if lower.contains("control group") || lower.contains("control condition") {
+            strengths.push("Presence of control group enables comparison".to_string());
+        }
+
+        if lower.contains("replication") || lower.contains("reproduced") {
+            strengths.push("Replication attempt strengthens credibility".to_string());
+        }
+
+        if lower.contains("open source") || lower.contains("code available") || lower.contains("github") {
+            strengths.push("Code availability enhances reproducibility".to_string());
+        }
+
+        if lower.contains("pre-regist") || lower.contains("preregist") {
+            strengths.push("Preregistration reduces publication bias".to_string());
+        }
+
+        if lower.contains("effect size") || lower.contains("confidence interval") {
+            strengths.push("Effect sizes and CIs reported".to_string());
+        }
+
+        if lower.contains("power analysis") || lower.contains("sample size calculation") {
+            strengths.push("Sample size determined by power analysis".to_string());
+        }
+    }
+
+    fn generate_recommendations(&self, text: &str, recommendations: &mut Vec<String>) {
+        let lower = text.to_lowercase();
+
+        if !lower.contains("replication") && !lower.contains("reproduced") {
+            recommendations.push("Consider independent replication to validate findings".to_string());
+        }
+
+        if !lower.contains("code") && !lower.contains("github") && !lower.contains("open source") {
+            recommendations.push("Make code and data available for reproducibility".to_string());
+        }
+
+        if lower.contains("observational") && !lower.contains("causal") {
+            recommendations.push("Use causal inference methods if making causal claims".to_string());
+        }
+
+        if !lower.contains("limitation") {
+            recommendations.push("Discuss limitations explicitly in the paper".to_string());
+        }
+    }
+}
+
+impl Default for CriticalThinkingChecker {
+    fn default() -> Self {
+        Self::new()
+    }
+}
