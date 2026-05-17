@@ -4,7 +4,6 @@ use bb8::Pool;
 use bb8_postgres::PostgresConnectionManager;
 use tokio_postgres::NoTls;
 use std::sync::Arc;
-use redis::aio::MultiplexedConnection;
 
 use crate::metrics::SharedMetrics;
 use crate::ratelimit::RateLimiter;

@@ -3,7 +3,7 @@
 //! Handles Stripe webhook events to sync subscription status.
 
 use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
 

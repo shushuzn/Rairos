@@ -8,8 +8,8 @@ use std::collections::HashMap;
 
 use crate::models::Tier;
 
-const DAILY_WINDOW_SECS: u64 = 86400;
-const MINUTE_WINDOW_SECS: u64 = 60;
+const DAILY_WINDOW_SECS: i64 = 86400;
+const MINUTE_WINDOW_SECS: i64 = 60;
 
 #[derive(Clone)]
 pub struct RateLimiter {
@@ -131,9 +131,9 @@ impl RateLimiter {
 
                     let _: Result<(), _> = redis::pipe()
                         .incr(&daily_key, 1)
-                        .expire(&daily_key, DAILY_WINDOW_SECS as i64)
+                        .expire(&daily_key, DAILY_WINDOW_SECS)
                         .incr(&minute_key, 1)
-                        .expire(&minute_key, MINUTE_WINDOW_SECS as i64)
+                        .expire(&minute_key, MINUTE_WINDOW_SECS)
                         .query_async(&mut conn)
                         .await;
                 }

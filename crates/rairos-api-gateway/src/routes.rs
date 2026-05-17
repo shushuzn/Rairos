@@ -218,12 +218,11 @@ pub async fn rotate_api_key(
 ) -> Result<impl axum::response::IntoResponse> {
     let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    let old_key_row = conn.query_opt(
+    let _old_key_row = conn.query_opt(
         "SELECT id, user_id, tier FROM api_keys WHERE id = $1 AND user_id = $2",
         &[&req.key_id.to_string(), &key.user_id.to_string()],
-    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
-
-    let old_key_row = old_key_row.ok_or_else(|| ApiError::NotFound("API key not found".to_string()))?;
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?
+    .ok_or_else(|| ApiError::NotFound("API key not found".to_string()))?;
 
     let new_api_key = generate_api_key();
     let new_key_hash = hash_api_key(&new_api_key);
@@ -289,7 +288,7 @@ pub async fn get_usage_dashboard(
 ) -> Result<impl axum::response::IntoResponse> {
     let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
-    let total_requests: i64 = conn.query_one(
+    let _total_requests: i64 = conn.query_one(
         "SELECT COALESCE(SUM(requests_used), 0) as total FROM api_keys WHERE user_id = $1",
         &[&key.user_id.to_string()],
     ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?
@@ -682,8 +681,6 @@ pub async fn stripe_webhook(
         tracing::debug!("Duplicate webhook event: {}", event_id);
         return Ok(Json(serde_json::json!({ "received": true, "duplicate": true })));
     }
-
-    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     match event_type {
         "checkout.session.completed" => {
