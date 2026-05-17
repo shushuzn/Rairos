@@ -152,6 +152,35 @@ pub fn cleanup_old_logs(log_dir: &PathBuf, days: u32) -> std::io::Result<usize> 
     Ok(removed)
 }
 
+#[cfg(feature = "otlp")]
+pub fn init_otlp_tracing(
+    endpoint: &str,
+) -> Result<tracing_opentelemetry::OpenTelemetryLayer<tracing_subscriber::Registry, opentelemetry_sdk::trace::Tracer>, Box<dyn std::error::Error>> {
+    use opentelemetry::trace::TracerProvider;
+    use opentelemetry_otlp::WithExportConfig;
+    use opentelemetry_sdk::runtime;
+    use tracing_opentelemetry::OpenTelemetryLayer;
+
+    let exporter = opentelemetry_otlp::new_exporter()
+        .tonic()
+        .with_endpoint(endpoint);
+
+    let tracer_provider = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(exporter)
+        .with_trace_config(opentelemetry_sdk::trace::Config::default())
+        .install_batch(runtime::Tokio)?;
+
+    let tracer = tracer_provider.tracer("rairos");
+    let otel_layer = OpenTelemetryLayer::new(tracer);
+    Ok(otel_layer)
+}
+
+#[cfg(not(feature = "otlp"))]
+pub fn init_otlp_tracing(_endpoint: &str) -> Result<(), Box<dyn std::error::Error>> {
+    Err("OTLP feature not enabled. Add `otlp = [\"rairos-observability/otlp\"]` to enable.".into())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
