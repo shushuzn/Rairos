@@ -670,6 +670,13 @@ enum Commands {
     /// List high-risk/high-reward bold capsules
     Bold,
 
+    /// Show performance profiler report
+    Profiler {
+        /// Show profiler statistics as JSON
+        #[arg(short, long, default_value = "false")]
+        stats: bool,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2362,6 +2369,13 @@ fn main() -> Result<()> {
         }
         Commands::Bold => {
             handle_bold_list()?;
+        }
+        Commands::Profiler { stats } => {
+            if *stats {
+                handle_profiler_stats()?;
+            } else {
+                handle_profiler_report()?;
+            }
         }
         Commands::Agent {
             topic,

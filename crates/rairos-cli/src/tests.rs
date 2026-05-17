@@ -654,3 +654,17 @@ fn bold_list_no_crash() {
     let result = handle_bold_list();
     assert!(result.is_ok());
 }
+
+// ─── profiler.rs ──────────────────────────────────────────────────────────
+
+#[test]
+fn profiler_report_no_crash() {
+    let result = handle_profiler_report();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn profiler_stats_no_crash() {
+    let result = handle_profiler_stats();
+    assert!(result.is_ok());
+}

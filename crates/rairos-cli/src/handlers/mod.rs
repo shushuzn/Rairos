@@ -34,6 +34,8 @@ pub mod claimgraph;
 pub use claimgraph::*;
 pub mod bold;
 pub use bold::*;
+pub mod profiler;
+pub use profiler::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;
