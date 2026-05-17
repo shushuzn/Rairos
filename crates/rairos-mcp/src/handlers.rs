@@ -8,6 +8,7 @@ use async_trait::async_trait;
 use rairos_core::constants::{ARXIV_API, GP_DIR_NAME, GENE_POOL_JSONL, TAGS_FILE};
 use serde_json::Value;
 use std::collections::HashMap;
+use std::io::BufRead;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 
@@ -38,13 +39,15 @@ fn tags_path() -> PathBuf {
 }
 
 fn read_jsonl(path: &PathBuf) -> Vec<Value> {
-    let content = match std::fs::read_to_string(path) {
-        Ok(c) => c,
+    let file = match std::fs::File::open(path) {
+        Ok(f) => f,
         Err(_) => return Vec::new(),
     };
-    content
+    let reader = std::io::BufReader::new(file);
+    reader
         .lines()
         .filter_map(|line| {
+            let line = line.ok()?;
             let t = line.trim();
             if t.is_empty() { None } else { serde_json::from_str(t).ok() }
         })
