@@ -1,51 +1,99 @@
 //! Stripe Subscription Integration
+//!
+//! Price IDs are loaded from environment variables at runtime.
+//! Set these in your environment or .env file:
+//! - STRIPE_PRICE_PRO_MONTHLY
+//! - STRIPE_PRICE_PRO_ANNUAL
+//! - STRIPE_PRICE_TEAM_MONTHLY
+//! - STRIPE_PRICE_TEAM_ANNUAL
+//! - STRIPE_PRICE_ENTERPRISE_MONTHLY
+//! - STRIPE_PRICE_ENTERPRISE_ANNUAL
 
 use serde::{Deserialize, Serialize};
+use std::sync::OnceLock;
+
+static PRICE_IDS: OnceLock<PriceIds> = OnceLock::new();
+
+#[derive(Debug, Clone)]
+pub struct PriceIds {
+    pub pro_monthly: String,
+    pub pro_annual: String,
+    pub team_monthly: String,
+    pub team_annual: String,
+    pub enterprise_monthly: String,
+    pub enterprise_annual: String,
+}
+
+impl PriceIds {
+    pub fn from_env() -> Self {
+        Self {
+            pro_monthly: std::env::var("STRIPE_PRICE_PRO_MONTHLY")
+                .unwrap_or_else(|_| "price_pro_monthly".to_string()),
+            pro_annual: std::env::var("STRIPE_PRICE_PRO_ANNUAL")
+                .unwrap_or_else(|_| "price_pro_annual".to_string()),
+            team_monthly: std::env::var("STRIPE_PRICE_TEAM_MONTHLY")
+                .unwrap_or_else(|_| "price_team_monthly".to_string()),
+            team_annual: std::env::var("STRIPE_PRICE_TEAM_ANNUAL")
+                .unwrap_or_else(|_| "price_team_annual".to_string()),
+            enterprise_monthly: std::env::var("STRIPE_PRICE_ENTERPRISE_MONTHLY")
+                .unwrap_or_else(|_| "price_enterprise_monthly".to_string()),
+            enterprise_annual: std::env::var("STRIPE_PRICE_ENTERPRISE_ANNUAL")
+                .unwrap_or_else(|_| "price_enterprise_annual".to_string()),
+        }
+    }
+
+    pub fn get() -> &'static PriceIds {
+        PRICE_IDS.get_or_init(|| PriceIds::from_env())
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SubscriptionTier {
     pub name: &'static str,
-    pub price_id: &'static str,
+    pub price_id: String,
     pub price_monthly: i64,
     pub requests_limit: i64,
 }
 
-pub const SUBSCRIPTION_TIERS: &[SubscriptionTier] = &[
-    SubscriptionTier {
-        name: "free",
-        price_id: "",
-        price_monthly: 0,
-        requests_limit: 100,
-    },
-    SubscriptionTier {
-        name: "pro",
-        price_id: "price_pro_monthly",
-        price_monthly: 2900,
-        requests_limit: 10_000,
-    },
-    SubscriptionTier {
-        name: "team",
-        price_id: "price_team_monthly",
-        price_monthly: 9900,
-        requests_limit: 100_000,
-    },
-    SubscriptionTier {
-        name: "enterprise",
-        price_id: "price_enterprise_monthly",
-        price_monthly: 49900,
-        requests_limit: i64::MAX,
-    },
-];
-
-pub fn get_tier_by_name(name: &str) -> Option<&'static SubscriptionTier> {
-    SUBSCRIPTION_TIERS.iter().find(|t| t.name == name)
+pub fn get_subscription_tiers() -> Vec<SubscriptionTier> {
+    let ids = PriceIds::get();
+    vec![
+        SubscriptionTier {
+            name: "free",
+            price_id: String::new(),
+            price_monthly: 0,
+            requests_limit: 100,
+        },
+        SubscriptionTier {
+            name: "pro",
+            price_id: ids.pro_monthly.clone(),
+            price_monthly: 2900,
+            requests_limit: 10_000,
+        },
+        SubscriptionTier {
+            name: "team",
+            price_id: ids.team_monthly.clone(),
+            price_monthly: 9900,
+            requests_limit: 100_000,
+        },
+        SubscriptionTier {
+            name: "enterprise",
+            price_id: ids.enterprise_monthly.clone(),
+            price_monthly: 49900,
+            requests_limit: i64::MAX,
+        },
+    ]
 }
 
-pub fn get_tier_by_price_id(price_id: &str) -> Option<&'static SubscriptionTier> {
-    SUBSCRIPTION_TIERS.iter().find(|t| t.price_id == price_id)
+pub fn get_tier_by_name(name: &str) -> Option<SubscriptionTier> {
+    get_subscription_tiers().into_iter().find(|t| t.name == name)
 }
 
-pub fn get_tier_by_checkout_session(data: &serde_json::Value) -> Option<&'static SubscriptionTier> {
+pub fn get_tier_by_price_id(price_id: &str) -> Option<SubscriptionTier> {
+    get_subscription_tiers().into_iter().find(|t| t.price_id == price_id)
+}
+
+pub fn get_tier_by_checkout_session(data: &serde_json::Value) -> Option<SubscriptionTier> {
     let price_id = data
         .get("line_items")
         .and_then(|li| li.get("data"))

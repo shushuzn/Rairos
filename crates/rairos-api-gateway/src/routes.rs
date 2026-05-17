@@ -811,7 +811,7 @@ pub async fn get_subscription_status(
 
 pub async fn get_tiers() -> impl axum::response::IntoResponse {
     Json(serde_json::json!({
-        "tiers": crate::stripe::SUBSCRIPTION_TIERS
+        "tiers": crate::stripe::get_subscription_tiers()
     }))
 }
 

@@ -70,6 +70,50 @@ cargo run -p rairos-cli -- gap "transformer efficiency"
 | [Benchmarks](docs/benchmarks.md) | Performance metrics |
 | [AGENTS.md](AGENTS.md) | Agent context for AI tools |
 
+## API Gateway (Commercial)
+
+The **Rairos API** provides programmatic access to research intelligence.
+
+### Pricing
+
+| Tier | Price | Requests/day |
+|------|-------|--------------|
+| Free | $0 | 100 |
+| Pro | $29/mo | 10,000 |
+| Team | $99/mo | 100,000 |
+| Enterprise | $499/mo | Unlimited |
+
+### Quick Start
+
+```bash
+# Install SDK
+pip install rairos
+
+# Or Node.js
+npm install rairos
+```
+
+```python
+from rairos import RairosClient
+
+client = RairosClient(api_key="your-api-key")
+
+# Search papers
+papers = client.search_papers("machine learning")
+
+# Detect research gaps
+gaps = client.detect_gap("transformer efficiency")
+
+# Check usage
+usage = client.get_usage()
+```
+
+See [API Documentation](docs/api/index.md) for full API reference.
+
+### Deployment
+
+See [Deployment Checklist](deploy/CHECKLIST.md) for production setup.
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE) for details.
