@@ -397,6 +397,84 @@ impl KgDatabase {
         Ok(rows)
     }
 
+    pub fn get_nodes_batch(&self, node_ids: &[String]) -> Result<HashMap<String, KgNode>, KgError> {
+        if node_ids.is_empty() {
+            return Ok(HashMap::new());
+        }
+        let placeholders: Vec<String> = node_ids.iter().map(|_| "?".to_string()).collect();
+        let sql = format!(
+            "SELECT id, type, entity_id, label, properties_json FROM kg_nodes WHERE id IN ({})",
+            placeholders.join(",")
+        );
+        let _g = self.lock();
+        let mut stmt = _g.prepare(&sql)?;
+        let params: Vec<&dyn rusqlite::ToSql> = node_ids.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
+        let map_fn = |row: &rusqlite::Row| -> rusqlite::Result<KgNode> {
+            Ok(KgNode {
+                id: row.get(0)?,
+                node_type: row.get(1)?,
+                entity_id: row.get::<_, String>(2)?,
+                label: row.get(3)?,
+                properties: KgDatabase::json_to_props(&row.get::<_, String>(4)?),
+            })
+        };
+        let rows: Vec<KgNode> = stmt.query_map(params.as_slice(), map_fn)?.collect::<Result<Vec<_>, _>>()?;
+        Ok(rows.into_iter().map(|n| (n.id.clone(), n)).collect())
+    }
+
+    pub fn get_edges_by_nodes_batch(&self, node_ids: &[String], direction: &str, rel_type: Option<&str>) -> Result<Vec<KgEdge>, KgError> {
+        if node_ids.is_empty() {
+            return Ok(Vec::new());
+        }
+        let placeholders: Vec<String> = node_ids.iter().map(|_| "?".to_string()).collect();
+        let sql = match (direction, rel_type) {
+            ("out", Some(_)) =>
+                format!("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE source_id IN ({}) AND relation_type = ?", placeholders.join(",")),
+            ("in", Some(_)) =>
+                format!("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE target_id IN ({}) AND relation_type = ?", placeholders.join(",")),
+            (_, Some(_)) =>
+                format!("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE (source_id IN ({}) OR target_id IN ({})) AND relation_type = ?", placeholders.join(","), placeholders.join(",")),
+            ("out", None) =>
+                format!("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE source_id IN ({})", placeholders.join(",")),
+            ("in", None) =>
+                format!("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE target_id IN ({})", placeholders.join(",")),
+            (_, None) =>
+                format!("SELECT id, source_id, target_id, relation_type, weight, properties_json FROM kg_edges WHERE source_id IN ({}) OR target_id IN ({})", placeholders.join(","), placeholders.join(",")),
+        };
+        let _g = self.lock();
+        let mut stmt = _g.prepare(&sql)?;
+        let map_fn = |row: &rusqlite::Row| -> rusqlite::Result<KgEdge> {
+            Ok(KgEdge {
+                id: row.get(0)?,
+                source: row.get(1)?,
+                target: row.get(2)?,
+                relation: row.get(3)?,
+                weight: row.get::<_, f64>(4)? as f32,
+                properties: KgDatabase::json_to_props(&row.get::<_, String>(5)?),
+            })
+        };
+        let rows: Vec<KgEdge> = match rel_type {
+            Some(rt) => {
+                let mut params_vec: Vec<String> = node_ids.iter().cloned().collect();
+                if direction != "out" && direction != "in" {
+                    params_vec.push(node_ids.last().unwrap().clone());
+                }
+                params_vec.push(rt.to_string());
+                let params: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
+                stmt.query_map(params.as_slice(), map_fn)?.collect::<Result<Vec<_>, _>>()?
+            }
+            None => {
+                let mut params_vec: Vec<String> = node_ids.iter().cloned().collect();
+                if direction != "out" && direction != "in" {
+                    params_vec.push(node_ids.last().unwrap().clone());
+                }
+                let params: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
+                stmt.query_map(params.as_slice(), map_fn)?.collect::<Result<Vec<_>, _>>()?
+            }
+        };
+        Ok(rows)
+    }
+
     // ── Edge CRUD ──────────────────────────────────────────────────────────
 
     pub fn add_edge(&self, source_id: &str, target_id: &str, relation_type: &str, weight: f64, properties: serde_json::Value) -> Result<String, KgError> {
@@ -446,20 +524,27 @@ impl KgDatabase {
         let mut current_level = vec![node_id.to_string()];
 
         for d in 1..=depth {
-            let mut next_level = Vec::new();
-            for nid in &current_level {
-                let edges = self.get_edges_by_node(nid, "both", relation_type)?;
-                for edge in &edges {
-                    let neighbor_id = if edge.source == *nid { &edge.target } else { &edge.source };
-                    if visited.insert(neighbor_id.clone()) {
-                        if let Some(neighbor) = self.get_node(neighbor_id)? {
-                            results.push((neighbor, edge.clone(), d));
-                            next_level.push(neighbor_id.clone());
-                        }
+            let edges = self.get_edges_by_nodes_batch(&current_level, "both", relation_type)?;
+            let mut next_level_ids = Vec::new();
+            let mut discovered: HashMap<String, KgEdge> = HashMap::new();
+
+            for edge in &edges {
+                let neighbor_id = if current_level.contains(&edge.source) { &edge.target } else { &edge.source };
+                if visited.insert(neighbor_id.clone()) {
+                    next_level_ids.push(neighbor_id.clone());
+                    discovered.insert(neighbor_id.clone(), edge.clone());
+                }
+            }
+
+            if !next_level_ids.is_empty() {
+                let nodes = self.get_nodes_batch(&next_level_ids)?;
+                for (nid, edge) in discovered {
+                    if let Some(node) = nodes.get(&nid) {
+                        results.push((node.clone(), edge, d));
                     }
                 }
             }
-            current_level = next_level;
+            current_level = next_level_ids;
         }
 
         Ok(results)

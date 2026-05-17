@@ -14,6 +14,7 @@ members = [
     "crates/rairos-cli-registry",
     "crates/rairos-cli-shared",
     "crates/rairos-code-generator",
+    "crates/rairos-codegraph",
     "crates/rairos-code-indexer",
     "crates/rairos-code-trace",
     "crates/rairos-core",

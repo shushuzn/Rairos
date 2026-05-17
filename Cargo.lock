@@ -629,6 +629,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "clap_complete"
+version = "4.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0a7a9bfdb35811f9e59832f0f05975114d2251b415fb534108e6f34060fd772"
+dependencies = [
+ "clap",
+]
+
+[[package]]
 name = "clap_derive"
 version = "4.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3499,6 +3508,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "clap",
+ "clap_complete",
  "console 0.15.11",
  "crossterm 0.28.1",
  "csv",
@@ -3513,17 +3523,24 @@ dependencies = [
  "rairos-benchmark",
  "rairos-benchmark-runner",
  "rairos-bold-vault",
+ "rairos-briefing-generator",
  "rairos-channels",
  "rairos-citation-chain",
  "rairos-citation-pathfinder-web",
  "rairos-citations",
+ "rairos-claimgraph",
  "rairos-cli-registry",
  "rairos-cli-shared",
  "rairos-climate-ai-monitor",
  "rairos-code-indexer",
  "rairos-code-trace",
+ "rairos-codegraph",
  "rairos-compare",
+ "rairos-contradiction",
  "rairos-core",
+ "rairos-credibility",
+ "rairos-cross-referencer",
+ "rairos-crossover",
  "rairos-crossref",
  "rairos-daemon",
  "rairos-dashboard",
@@ -3537,7 +3554,9 @@ dependencies = [
  "rairos-game-mode",
  "rairos-gap-analyzer",
  "rairos-gap-detector",
+ "rairos-gene-pool-decay",
  "rairos-generate",
+ "rairos-impact",
  "rairos-intelligence",
  "rairos-journal",
  "rairos-kg",
@@ -3549,6 +3568,7 @@ dependencies = [
  "rairos-mcp-jin10",
  "rairos-memory",
  "rairos-narratives",
+ "rairos-paradigm",
  "rairos-parser",
  "rairos-parsers",
  "rairos-pathfinder",
@@ -3557,6 +3577,7 @@ dependencies = [
  "rairos-postprocess",
  "rairos-profiler",
  "rairos-questions",
+ "rairos-replication",
  "rairos-replication-checker",
  "rairos-research",
  "rairos-research-log",
@@ -3564,7 +3585,9 @@ dependencies = [
  "rairos-resource-monitor",
  "rairos-review-generator",
  "rairos-review-queue",
+ "rairos-rigor",
  "rairos-roadmap",
+ "rairos-scoring-momentum",
  "rairos-scout",
  "rairos-sections",
  "rairos-setup",
@@ -3575,6 +3598,7 @@ dependencies = [
  "rairos-snapstate",
  "rairos-story",
  "rairos-testextractor",
+ "rairos-trend-analyzer",
  "rairos-updaters",
  "rairos-validator",
  "rairos-value-quantifier",
@@ -3679,6 +3703,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-codegraph"
+version = "0.1.0"
+dependencies = [
+ "once_cell",
+ "parking_lot",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tree-sitter",
+ "tree-sitter-language",
+ "tree-sitter-rust",
+ "walkdir",
+]
+
+[[package]]
 name = "rairos-compare"
 version = "0.1.0"
 dependencies = [
@@ -3710,6 +3751,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "dirs",
  "lazy_static",
  "parking_lot",
  "rairos-auth",
@@ -4212,6 +4254,7 @@ dependencies = [
 name = "rairos-labor-displacement-tracker"
 version = "0.1.0"
 dependencies = [
+ "dirs",
  "rairos-core",
  "serde",
  "serde_json",
@@ -6674,6 +6717,34 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-log",
+]
+
+[[package]]
+name = "tree-sitter"
+version = "0.23.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0203df02a3b6dd63575cc1d6e609edc2181c9a11867a271b25cfd2abff3ec5ca"
+dependencies = [
+ "cc",
+ "regex",
+ "regex-syntax",
+ "tree-sitter-language",
+]
+
+[[package]]
+name = "tree-sitter-language"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782"
+
+[[package]]
+name = "tree-sitter-rust"
+version = "0.23.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca8ccb3e3a3495c8a943f6c3fd24c3804c471fd7f4f16087623c7fa4c0068e8a"
+dependencies = [
+ "cc",
+ "tree-sitter-language",
 ]
 
 [[package]]
