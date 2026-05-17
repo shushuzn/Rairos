@@ -1167,4 +1167,42 @@ mod tests {
         assert!(json.contains("github"));
         assert!(json.contains("test"));
     }
+
+    #[test]
+    fn test_repo_metadata_serialization() {
+        let meta = RepoMetadata {
+            full_name: "test/repo".to_string(),
+            description: Some("A test repo".to_string()),
+            stars: 100,
+            forks: 50,
+            language: Some("Rust".to_string()),
+            license: Some("MIT".to_string()),
+            topics: vec!["ai".to_string(), "ml".to_string()],
+            created_at: "2024-01-01T00:00:00Z".to_string(),
+            pushed_at: "2024-06-01T00:00:00Z".to_string(),
+            open_issues: 10,
+            subscribers_count: 5,
+        };
+        let json = serde_json::to_string(&meta).unwrap();
+        assert!(json.contains("test/repo"));
+        assert!(json.contains("100"));
+        assert!(json.contains("Rust"));
+        assert!(json.contains("MIT"));
+    }
+
+    #[test]
+    fn test_dataset_metadata_serialization() {
+        let meta = DatasetMetadata {
+            id: "imagenet-1k".to_string(),
+            name: "imagenet-1k".to_string(),
+            tags: vec!["image-classification".to_string(), "computer-vision".to_string()],
+            downloads: 50000,
+            papers_with_code: Some(100),
+            trending: false,
+        };
+        let json = serde_json::to_string(&meta).unwrap();
+        assert!(json.contains("imagenet-1k"));
+        assert!(json.contains("50000"));
+        assert!(json.contains("100"));
+    }
 }
