@@ -5,7 +5,7 @@
 - **150 crates** (Rust only, no Python)
 - **~73k+ Rust lines**
 - **123 CLI commands**
-- **82 MCP tools** (42 core + 40 LLM-backed)
+- **83 MCP tools** (43 core + 40 LLM-backed)
 - **License**: GPL-3.0
 
 ## Key Crates
@@ -14,7 +14,7 @@
 |-------|---------|
 | rairos-core | DB, FTS5, subscriptions, tags, constants |
 | rairos-cli | 123 commands in main.rs |
-| rairos-mcp | MCP protocol server (82 tools) |
+| rairos-mcp | MCP protocol server (83 tools) |
 | rairos-codegraph | CodeGraph MCP server + CLI |
 | rairos-llm | GenePool, Evolution, LLM clients |
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API |
@@ -27,9 +27,9 @@
 
 Sample: Add...
 
-## MCP Tools (82 total)
+## MCP Tools (83 total)
 
-**Core Rust (42)**: paper_search, paper_ingest, tag_add, tag_remove, tag_list, trends_detect_trending, paper_recommend, citation_graph, paper_query, paper_chat, kg_paper_subgraph, kg_tag_graph, kg_full_graph, kg_query, pdf_download, pdf_extract_text, pdf_extract_structured, trends_predict_next, trends_top_predictions, trends_compare_tags, cite_fetch, paper_search_multi, paper_lookup_doi, paper_citations, paper_verify_citations, paper_visualize_trends, paper_visualize_radar, paper_critical_analysis, paper_generate_review_pdf, paper_hypothesis_report, paper_generate_schematic, paper_science_discovery, paper_database_lookup, paper_peer_review, paper_format_citation, paper_literature_review, chart_query, paper_parse_full, replication_check_simple, github_repo_metadata, huggingface_dataset_metadata, pdf_extract_advanced
+**Core Rust (43)**: paper_search, paper_ingest, tag_add, tag_remove, tag_list, trends_detect_trending, paper_recommend, citation_graph, paper_query, paper_chat, kg_paper_subgraph, kg_tag_graph, kg_full_graph, kg_query, pdf_download, pdf_extract_text, pdf_extract_structured, trends_predict_next, trends_top_predictions, trends_compare_tags, cite_fetch, paper_search_multi, paper_lookup_doi, paper_citations, paper_verify_citations, paper_visualize_trends, paper_visualize_radar, paper_critical_analysis, paper_generate_review_pdf, paper_hypothesis_report, paper_generate_schematic, paper_science_discovery, paper_database_lookup, paper_peer_review, paper_format_citation, paper_literature_review, chart_query, paper_parse_full, replication_check_simple, github_repo_metadata, huggingface_dataset_metadata, pdf_extract_advanced, paper_generate
 
 **LLM-backed (40)**: briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build, citation_chain_families, citation_chain_silent, citation_chain_render, impact_score_paper, impact_rank, replication_check, paper_compare, paper_analyze, gap_submit, gap_evolve, gene_pool_decay, crossover, leaderboard, impact_leaderboard, claim_graph, hypothesis_generate, topic_discovery, orchestrator_run_cycle, deep_research_run, parallel_research_run, trust_scorer_compute, routeplan_create, tag_all, review_list, hypothesis_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, routeplan_list, routeplan_update_step, routeplan_revise, research_run
 
