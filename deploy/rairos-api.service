@@ -1,0 +1,24 @@
+[Unit]
+Description=Rairos API Gateway
+After=network.target postgresql.service redis.service
+
+[Service]
+Type=simple
+User=rairos
+WorkingDirectory=/opt/rairos
+EnvironmentFile=/opt/rairos/.env
+ExecStart=/opt/rairos/rairos-api-gateway
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/rairos
+
+[Install]
+WantedBy=multi-user.target
