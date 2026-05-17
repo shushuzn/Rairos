@@ -10,6 +10,8 @@ pub mod contradiction;
 pub use contradiction::*;
 pub mod trends;
 pub use trends::*;
+pub mod rigor;
+pub use rigor::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

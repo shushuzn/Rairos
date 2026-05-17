@@ -547,6 +547,12 @@ enum Commands {
         format: String,
     },
 
+    /// Score research rigor of a paper
+    Rigor {
+        /// Paper ID or arXiv ID to score
+        paper_id: String,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2153,6 +2159,9 @@ fn main() -> Result<()> {
                     eprintln!("Unknown format: {}. Use: text or mermaid", format);
                 }
             }
+        }
+        Commands::Rigor { paper_id } => {
+            handle_rigor_score(paper_id)?;
         }
         Commands::Agent {
             topic,

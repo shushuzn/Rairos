@@ -498,3 +498,11 @@ fn trends_mermaid_no_crash() {
     let result = handle_trends_mermaid("machine learning", None);
     assert!(result.is_ok());
 }
+
+// ─── rigor.rs ────────────────────────────────────────────────────────────────
+
+#[test]
+fn rigor_score_no_crash() {
+    let result = handle_rigor_score("test_paper");
+    assert!(result.is_ok());
+}
