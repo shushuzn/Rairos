@@ -1822,11 +1822,40 @@ pub fn handle_review(db: &Database, action: &str, paper: Option<&str>, _content:
 }
 
 pub fn handle_replicate(db: &Database, paper_id: &str) -> Result<()> {
-    let paper = db.search_papers(paper_id, 1)?.into_iter().next();
-    if let Some(p) = paper {
-        println!("🔬 Replication Check for: {}", p.title);
-        println!("   Paper: [{}] {}", p.id, p.title);
-        println!("   Status: Check complete");
+    let checker = rairos_replication::ReplicationChecker::new();
+    let papers = db.search_papers(paper_id, 1)?;
+    
+    if let Some(paper) = papers.into_iter().next() {
+        let full_text = db.get_paper_plain_text(&paper.id)?.unwrap_or_default();
+        let report = checker.check_paper(&paper.id, &paper.title, &paper.abstract_text, &full_text);
+        
+        println!("🔬 Replication Check for: {}", paper.title);
+        println!("   Paper: [{}]", paper.id);
+        
+        if report.links.is_empty() {
+            println!("   Code links: None found");
+        } else {
+            println!("   Code links found: {}", report.links.len());
+            if let Some(link) = &report.primary_link {
+                println!("   Primary: {} ({})", link.url, link.platform);
+            }
+        }
+        
+        println!("   Difficulty: {}", report.difficulty);
+        
+        if !report.notes.is_empty() {
+            println!("   Notes:");
+            for note in &report.notes {
+                println!("     - {}", note);
+            }
+        }
+        
+        if !report.reproducibility_issues.is_empty() {
+            println!("   Issues:");
+            for issue in &report.reproducibility_issues {
+                println!("     ⚠ {}", issue);
+            }
+        }
     } else {
         eprintln!("Paper not found: {}", paper_id);
     }
