@@ -720,7 +720,7 @@ impl Database {
     /// citations, queued jobs, then deletes the duplicates.
     /// Returns true if any duplicates were merged.
     pub fn merge_papers(&self, primary_id: &str, duplicate_ids: &[&str]) -> Result<bool> {
-        let conn = self.conn.lock();
+        let mut conn = self.conn.lock();
 
         // Check primary exists
         let primary_exists = conn
@@ -730,20 +730,24 @@ impl Database {
             return Ok(false);
         }
 
-        let mut merged = false;
+        // Filter to only duplicates that exist (do checks outside transaction)
+        let valid_dup_ids: Vec<&str> = duplicate_ids
+            .iter()
+            .filter(|&&id| id != primary_id)
+            .filter(|&&id| {
+                conn.query_row("SELECT 1 FROM papers WHERE id = ?1", params![id], |_| Ok(()))
+                    .is_ok()
+            })
+            .copied()
+            .collect();
 
-        for &dup_id in duplicate_ids {
-            if dup_id == primary_id {
-                continue;
-            }
+        if valid_dup_ids.is_empty() {
+            return Ok(false);
+        }
 
-            let dup_exists = conn
-                .query_row("SELECT 1 FROM papers WHERE id = ?1", params![dup_id], |_| Ok(()))
-                .is_ok();
-            if !dup_exists {
-                continue;
-            }
-
+        // Execute all operations under a single transaction
+        let tx = conn.transaction()?;
+        for &dup_id in &valid_dup_ids {
             // ── Text/string fields: copy if primary is empty and dup is not ──
             let text_fields = [
                 "title", "authors", "abstract_text", "doi", "pdf_url",
@@ -757,17 +761,17 @@ impl Database {
                      AND (SELECT {} FROM papers WHERE id = ?1) != ''",
                     field, field, field, field, field, field
                 );
-                conn.execute(&sql, params![dup_id, primary_id])?;
+                tx.execute(&sql, params![dup_id, primary_id])?;
             }
 
             // ── Integer fields: copy if primary is 0 and dup > 0 ──
-            conn.execute(
+            tx.execute(
                 "UPDATE papers SET cited_by = (SELECT cited_by FROM papers WHERE id = ?1) \
                  WHERE id = ?2 AND cited_by = 0 \
                  AND (SELECT cited_by FROM papers WHERE id = ?1) > 0",
                 params![dup_id, primary_id],
             )?;
-            conn.execute(
+            tx.execute(
                 "UPDATE papers SET references_cnt = (SELECT references_cnt FROM papers WHERE id = ?1) \
                  WHERE id = ?2 AND references_cnt = 0 \
                  AND (SELECT references_cnt FROM papers WHERE id = ?1) > 0",
@@ -783,11 +787,11 @@ impl Database {
                      AND (SELECT {} FROM papers WHERE id = ?1) > 0",
                     field, field, field, field, field, field
                 );
-                conn.execute(&sql, params![dup_id, primary_id])?;
+                tx.execute(&sql, params![dup_id, primary_id])?;
             }
 
             // ── Parse status: copy if primary is 'pending' and dup is not ──
-            conn.execute(
+            tx.execute(
                 "UPDATE papers SET parse_status = (SELECT parse_status FROM papers WHERE id = ?1) \
                  WHERE id = ?2 AND parse_status = 'pending' \
                  AND (SELECT parse_status FROM papers WHERE id = ?1) != 'pending'",
@@ -795,35 +799,34 @@ impl Database {
             )?;
 
             // ── Transfer tags from duplicate to primary ──
-            conn.execute(
+            tx.execute(
                 "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) \
                  SELECT ?1, tag_id FROM paper_tags WHERE paper_id = ?2",
                 params![primary_id, dup_id],
             )?;
 
             // ── Transfer queued jobs from duplicate to primary ──
-            conn.execute(
+            tx.execute(
                 "UPDATE job_queue SET paper_id = ?1 WHERE paper_id = ?2 AND status = 'queued'",
                 params![primary_id, dup_id],
             )?;
 
             // ── Transfer citations (both incoming and outgoing) ──
-            conn.execute(
+            tx.execute(
                 "UPDATE OR IGNORE citations SET target_id = ?1 WHERE target_id = ?2",
                 params![primary_id, dup_id],
             )?;
-            conn.execute(
+            tx.execute(
                 "UPDATE OR IGNORE citations SET source_id = ?1 WHERE source_id = ?2",
                 params![primary_id, dup_id],
             )?;
 
             // ── Delete duplicate (cascades to paper_tags, citations) ──
-            conn.execute("DELETE FROM papers WHERE id = ?1", [dup_id])?;
-
-            merged = true;
+            tx.execute("DELETE FROM papers WHERE id = ?1", [dup_id])?;
         }
 
-        Ok(merged)
+        tx.commit()?;
+        Ok(!valid_dup_ids.is_empty())
     }
 
     /// Log a deduplication event.
