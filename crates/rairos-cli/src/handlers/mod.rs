@@ -18,6 +18,8 @@ pub mod briefing;
 pub use briefing::*;
 pub mod paradigm;
 pub use paradigm::*;
+pub mod crossref;
+pub use crossref::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;

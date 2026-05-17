@@ -548,3 +548,17 @@ fn paradigm_list_no_crash() {
     let result = handle_paradigm_list();
     assert!(result.is_ok());
 }
+
+// ─── crossref.rs ───────────────────────────────────────────────────────────
+
+#[test]
+fn crossref_analyze_no_crash() {
+    let result = handle_crossref_analyze("test_paper");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn crossref_list_no_crash() {
+    let result = handle_crossref_list();
+    assert!(result.is_ok());
+}
