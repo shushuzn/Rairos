@@ -2277,9 +2277,7 @@ fn main() -> Result<()> {
                         eprintln!("Error: --achievement-id required for unlock action");
                     }
                 }
-                _ => {
-                    eprintln!("Unknown action: {}. Use: list, report, stats, or unlock", action);
-                }
+                _ => unknown_action(action, &["list", "report", "stats", "unlock"]),
             }
         }
         Commands::Badges { action, badge_id } => {
@@ -2292,27 +2290,21 @@ fn main() -> Result<()> {
                         eprintln!("Error: --badge-id required for award action");
                     }
                 }
-                _ => {
-                    eprintln!("Unknown action: {}. Use: list or award", action);
-                }
+                _ => unknown_action(action, &["list", "award"]),
             }
         }
         Commands::Contradictions { action, limit } => {
             match action.as_str() {
                 "list" => handle_contradictions_list(*limit)?,
                 "render" => handle_contradictions_render()?,
-                _ => {
-                    eprintln!("Unknown action: {}. Use: list or render", action);
-                }
+                _ => unknown_action(action, &["list", "render"]),
             }
         }
         Commands::Trends { topic, years, format } => {
             match format.as_str() {
                 "text" => handle_trends_analyze(topic, *years)?,
                 "mermaid" => handle_trends_mermaid(topic, *years)?,
-                _ => {
-                    eprintln!("Unknown format: {}. Use: text or mermaid", format);
-                }
+                _ => unknown_action(format, &["text", "mermaid"]),
             }
         }
         Commands::Rigor { paper_id } => {
@@ -2328,9 +2320,7 @@ fn main() -> Result<()> {
                         eprintln!("Error: --paper-id required for score action");
                     }
                 }
-                _ => {
-                    eprintln!("Unknown action: {}. Use: leaderboard or score", action);
-                }
+                _ => unknown_action(action, &["leaderboard", "score"]),
             }
         }
         Commands::Briefing { arxiv_id, list, limit } => {
@@ -3082,6 +3072,11 @@ fn handle_roadmap(
     }
 
     Ok(())
+}
+
+/// Print unknown action error.
+fn unknown_action(action: &str, valid: &[&str]) {
+    eprintln!("Unknown action: {}. Use: {}", action, valid.join(", "));
 }
 
 
