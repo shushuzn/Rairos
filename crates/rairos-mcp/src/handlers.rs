@@ -972,6 +972,74 @@ impl ToolHandler for ReplicationCheckSimpleHandler {
     }
 }
 
+// ─── GitHub Repo Metadata ─────────────────────────────────────────────────
+
+pub struct GitHubRepoMetadataHandler;
+
+#[async_trait]
+impl ToolHandler for GitHubRepoMetadataHandler {
+    fn name(&self) -> &str { "github_repo_metadata" }
+    fn description(&self) -> &str { "Fetch GitHub repository metadata (stars, forks, language, license, etc.)" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("owner".into(), ToolProperty::string("Repository owner (user or organization)")),
+                ("repo".into(), ToolProperty::string("Repository name")),
+                ("include_readme".into(), ToolProperty::string("Include README preview: \"true\" or \"false\" (default: false)")),
+            ].into_iter().collect(),
+            vec!["owner".into(), "repo".into()],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let owner = params["owner"].as_str().ok_or("Missing owner")?;
+        let repo = params["repo"].as_str().ok_or("Missing repo")?;
+        let include_readme = params.get("include_readme")
+            .and_then(|v| v.as_str())
+            .map(|s| s.eq_ignore_ascii_case("true"))
+            .unwrap_or(false);
+
+        let github = rairos_replication_checker::GitHubClient::new();
+        let metadata = github.get_repo_metadata(owner, repo).await
+            .map_err(|e| format!("Failed to fetch repo metadata: {}", e))?;
+
+        let mut result = serde_json::json!({
+            "content": [{
+                "type": "text",
+                "text": format!(
+                    "## {}\nStars: {} | Forks: {} | Language: {}\nLicense: {}\nCreated: {} | Last push: {}\nOpen Issues: {}\nTopics: {}",
+                    metadata.full_name,
+                    metadata.stars,
+                    metadata.forks,
+                    metadata.language.as_deref().unwrap_or("N/A"),
+                    metadata.license.as_deref().unwrap_or("N/A"),
+                    metadata.created_at,
+                    metadata.pushed_at,
+                    metadata.open_issues,
+                    metadata.topics.join(", ")
+                )
+            }],
+            "metadata": metadata,
+        });
+
+        if include_readme {
+            match github.get_readme_preview(owner, repo, 500).await {
+                Ok(readme) => {
+                    if let Some(content) = result["content"].as_array_mut() {
+                        if let Some(text) = content[0].as_object_mut() {
+                            text.insert("text".to_string(), serde_json::json!(format!("{}\n\n## README Preview\n{}", text["text"], readme)));
+                        }
+                    }
+                }
+                Err(e) => {
+                    tracing::warn!("Failed to fetch README: {}", e);
+                }
+            }
+        }
+
+        Ok(result)
+    }
+}
+
 // ─── PDF Extract Advanced ─────────────────────────────────────────────────
 
 pub struct PdfExtractAdvancedHandler;
@@ -1025,6 +1093,7 @@ pub async fn register_all(server: &crate::McpServer) {
     server.register(PaperIngestHandler).await;
     server.register(PaperParseFullHandler).await;
     server.register(ReplicationCheckSimpleHandler).await;
+    server.register(GitHubRepoMetadataHandler).await;
     server.register(PdfExtractAdvancedHandler).await;
     server.register(PaperQueryHandler).await;
     server.register(PaperChatHandler).await;

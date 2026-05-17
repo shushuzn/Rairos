@@ -709,6 +709,138 @@ impl Default for ReplicationChecker {
     }
 }
 
+// ─── GitHub API Client ────────────────────────────────────────────────────────
+
+#[derive(Debug, Clone)]
+pub struct GitHubClient {
+    client: reqwest::Client,
+    token: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RepoMetadata {
+    pub full_name: String,
+    pub description: Option<String>,
+    pub stars: u32,
+    pub forks: u32,
+    pub language: Option<String>,
+    pub license: Option<String>,
+    pub topics: Vec<String>,
+    pub created_at: String,
+    pub pushed_at: String,
+    pub open_issues: u32,
+    pub subscribers_count: u32,
+}
+
+impl GitHubClient {
+    pub fn new() -> Self {
+        Self {
+            client: reqwest::Client::new(),
+            token: std::env::var("GITHUB_TOKEN").ok(),
+        }
+    }
+
+    pub fn with_token(token: String) -> Self {
+        Self {
+            client: reqwest::Client::new(),
+            token: Some(token),
+        }
+    }
+
+    pub async fn get_repo_metadata(&self, owner: &str, repo: &str) -> Result<RepoMetadata, String> {
+        let url = format!("https://api.github.com/repos/{}/{}", owner, repo);
+
+        let mut request = self.client.get(&url)
+            .header("User-Agent", "Rairos-Research-OS")
+            .header("Accept", "application/vnd.github.v3+json");
+
+        if let Some(token) = &self.token {
+            request = request.header("Authorization", format!("Bearer {}", token));
+        }
+
+        let response = request.send().await
+            .map_err(|e| format!("GitHub API request failed: {}", e))?;
+
+        if response.status() == 404 {
+            return Err(format!("Repository not found: {}/{}", owner, repo));
+        }
+
+        if response.status() == 403 {
+            return Err("GitHub API rate limit exceeded".to_string());
+        }
+
+        if !response.status().is_success() {
+            return Err(format!("GitHub API error: {}", response.status()));
+        }
+
+        let json: serde_json::Value = response.json().await
+            .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+        let full_name = json["full_name"].as_str().unwrap_or("").to_string();
+        let description = json["description"].as_str().map(|s| s.to_string());
+        let stars = json["stargazers_count"].as_u64().unwrap_or(0) as u32;
+        let forks = json["forks_count"].as_u64().unwrap_or(0) as u32;
+        let language = json["language"].as_str().map(|s| s.to_string());
+        let license = json["license"]["name"].as_str().map(|s| s.to_string());
+        let topics = json["topics"]
+            .as_array()
+            .map(|arr| arr.iter().filter_map(|t| t.as_str().map(String::from)).collect())
+            .unwrap_or_default();
+        let created_at = json["created_at"].as_str().unwrap_or("").to_string();
+        let pushed_at = json["pushed_at"].as_str().unwrap_or("").to_string();
+        let open_issues = json["open_issues_count"].as_u64().unwrap_or(0) as u32;
+        let subscribers_count = json["subscribers_count"].as_u64().unwrap_or(0) as u32;
+
+        Ok(RepoMetadata {
+            full_name,
+            description,
+            stars,
+            forks,
+            language,
+            license,
+            topics,
+            created_at,
+            pushed_at,
+            open_issues,
+            subscribers_count,
+        })
+    }
+
+    pub async fn get_readme_preview(&self, owner: &str, repo: &str, max_len: usize) -> Result<String, String> {
+        let url = format!("https://api.github.com/repos/{}/{}/readme", owner, repo);
+
+        let mut request = self.client.get(&url)
+            .header("User-Agent", "Rairos-Research-OS")
+            .header("Accept", "application/vnd.github.v3.raw");
+
+        if let Some(token) = &self.token {
+            request = request.header("Authorization", format!("Bearer {}", token));
+        }
+
+        let response = request.send().await
+            .map_err(|e| format!("GitHub API request failed: {}", e))?;
+
+        if !response.status().is_success() {
+            return Err(format!("Failed to fetch README: {}", response.status()));
+        }
+
+        let text = response.text().await
+            .map_err(|e| format!("Failed to read README: {}", e))?;
+
+        Ok(if text.len() > max_len {
+            format!("{}...[truncated]", &text[..max_len])
+        } else {
+            text
+        })
+    }
+}
+
+impl Default for GitHubClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
