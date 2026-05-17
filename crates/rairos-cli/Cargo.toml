@@ -72,6 +72,7 @@ rairos-paradigm = { path = "../rairos-paradigm" }
 rairos-cross-referencer = { path = "../rairos-cross-referencer" }
 rairos-scoring-momentum = { path = "../rairos-scoring-momentum" }
 rairos-crossover = { path = "../rairos-crossover" }
+rairos-gene-pool-decay = { path = "../rairos-gene-pool-decay" }
 rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
 rairos-batch-optimizer = { path = "../rairos-batch-optimizer" }
 rairos-bold-vault = { path = "../rairos-bold-vault" }

@@ -627,6 +627,17 @@ enum Commands {
         list: bool,
     },
 
+    /// Analyze gene pool decay and resurrection
+    Decay {
+        /// Capsule ID to check (optional)
+        #[arg(short, long, default_value = "")]
+        capsule_id: String,
+
+        /// Show decay statistics
+        #[arg(short, long, default_value = "false")]
+        stats: bool,
+    },
+
     /// Run the research agent (autonomous research loop)
     Agent {
         /// Research topic or question
@@ -2287,6 +2298,13 @@ fn main() -> Result<()> {
                 handle_crossover_list()?;
             } else {
                 handle_crossover_run()?;
+            }
+        }
+        Commands::Decay { capsule_id, stats } => {
+            if !capsule_id.is_empty() {
+                handle_decay_status(capsule_id)?;
+            } else {
+                handle_decay_stats()?;
             }
         }
         Commands::Agent {

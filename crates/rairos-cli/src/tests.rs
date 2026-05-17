@@ -590,3 +590,17 @@ fn crossover_list_no_crash() {
     let result = handle_crossover_list();
     assert!(result.is_ok());
 }
+
+// ─── decay.rs ──────────────────────────────────────────────────────────────
+
+#[test]
+fn decay_stats_no_crash() {
+    let result = handle_decay_stats();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn decay_status_no_crash() {
+    let result = handle_decay_status("test_capsule");
+    assert!(result.is_ok());
+}

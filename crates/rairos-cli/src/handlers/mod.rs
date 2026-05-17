@@ -24,6 +24,8 @@ pub mod momentum;
 pub use momentum::*;
 pub mod crossover;
 pub use crossover::*;
+pub mod decay;
+pub use decay::*;
 pub mod cite;
 pub use cite::*;
 pub mod evo;
