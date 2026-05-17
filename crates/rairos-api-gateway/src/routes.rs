@@ -478,8 +478,25 @@ pub async fn create_portal(
 }
 
 pub async fn stripe_webhook(
-    Json(payload): Json<serde_json::Value>,
+    State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+    body: axum::body::Body,
 ) -> Result<impl axum::response::IntoResponse> {
+    let stripe_signature = headers
+        .get("stripe-signature")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+
+    let raw_bytes = axum::body::to_bytes(body, 10_000_000)
+        .await
+        .map_err(|e| ApiError::ValidationError(format!("Failed to read body: {}", e)))?;
+
+    let raw_body = String::from_utf8(raw_bytes.to_vec())
+        .map_err(|e| ApiError::ValidationError(format!("Invalid UTF-8: {}", e)))?;
+
+    let payload: serde_json::Value = serde_json::from_str(&raw_body)
+        .map_err(|e| ApiError::ValidationError(format!("Invalid JSON: {}", e)))?;
+
     let event_type = payload
         .get("type")
         .and_then(|v| v.as_str())
@@ -487,26 +504,121 @@ pub async fn stripe_webhook(
 
     tracing::info!("Received Stripe webhook: {}", event_type);
 
+    let event_id = payload
+        .get("id")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    let existing = conn.query_opt(
+        "SELECT id FROM webhook_events WHERE event_id = $1",
+        &[&event_id],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+    if existing.is_some() {
+        tracing::debug!("Duplicate webhook event: {}", event_id);
+        return Ok(Json(serde_json::json!({ "received": true, "duplicate": true })));
+    }
+
+    let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
     match event_type {
         "checkout.session.completed" => {
-            tracing::info!("Checkout completed");
+            if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
+                let customer_id = data.get("customer").and_then(|v| v.as_str());
+                let subscription_id = data.get("subscription").and_then(|v| v.as_str());
+                let customer_email = data.get("customer_details").and_then(|d| d.get("email")).and_then(|v| v.as_str());
+
+                if let (Some(cid), Some(sid)) = (customer_id, subscription_id) {
+                    tracing::info!("Checkout completed for customer {} subscription {}", cid, sid);
+
+                    let metadata = data.get("metadata");
+                    let user_id = metadata
+                        .and_then(|m| m.get("user_id"))
+                        .and_then(|v| v.as_str())
+                        .map(|s| s.to_string());
+
+                    if let Some(uid) = user_id {
+                        let tier = crate::stripe::get_tier_by_checkout_session(data)
+                            .map(|t| t.name.to_string())
+                            .unwrap_or_else(|| "free".to_string());
+
+                        conn.execute(
+                            "UPDATE users SET stripe_customer_id = $1, stripe_subscription_id = $2, tier = $3 WHERE id = $4",
+                            &[&cid, &sid, &tier, &uid],
+                        ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+                        tracing::info!("Updated user {} to tier {} via checkout", uid, tier);
+                    }
+                }
+            }
         }
-        "customer.subscription.created" => {
-            tracing::info!("Subscription created");
-        }
-        "customer.subscription.updated" => {
-            tracing::info!("Subscription updated");
+        "customer.subscription.created" | "customer.subscription.updated" => {
+            if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
+                let subscription_id = data.get("id").and_then(|v| v.as_str()).unwrap_or("");
+                let customer_id = data.get("customer").and_then(|v| v.as_str()).unwrap_or("");
+                let status = data.get("status").and_then(|v| v.as_str()).unwrap_or("");
+
+                tracing::info!("Subscription {} (customer {}) status: {}", subscription_id, customer_id, status);
+
+                let tier = if status == "active" || status == "trialing" {
+                    data.get("items").and_then(|items| items.get("data"))
+                        .and_then(|items| items.as_array())
+                        .and_then(|items| items.first())
+                        .and_then(|item| item.get("price"))
+                        .and_then(|price| price.get("id"))
+                        .and_then(|id| id.as_str())
+                        .and_then(|price_id| crate::stripe::get_tier_by_price_id(price_id))
+                        .map(|t| t.name.to_string())
+                        .unwrap_or_else(|| "free".to_string())
+                } else {
+                    "free".to_string()
+                };
+
+                conn.execute(
+                    "UPDATE users SET tier = $1 WHERE stripe_customer_id = $2",
+                    &[&tier, &customer_id],
+                ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+                tracing::info!("Updated customer {} to tier {} via subscription update", customer_id, tier);
+            }
         }
         "customer.subscription.deleted" => {
-            tracing::info!("Subscription deleted");
+            if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
+                let customer_id = data.get("customer").and_then(|v| v.as_str()).unwrap_or("");
+
+                tracing::info!("Subscription deleted for customer {}", customer_id);
+
+                conn.execute(
+                    "UPDATE users SET tier = 'free', stripe_subscription_id = NULL WHERE stripe_customer_id = $1",
+                    &[&customer_id],
+                ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+
+                tracing::info!("Downgraded customer {} to free tier", customer_id);
+            }
         }
         "invoice.payment_failed" => {
-            tracing::warn!("Invoice payment failed");
+            if let Some(data) = payload.get("data").and_then(|d| d.get("object")) {
+                let customer_id = data.get("customer").and_then(|v| v.as_str()).unwrap_or("");
+
+                tracing::warn!("Payment failed for customer {}", customer_id);
+
+                conn.execute(
+                    "UPDATE users SET tier = 'free' WHERE stripe_customer_id = $1 AND tier != 'free'",
+                    &[&customer_id],
+                ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
+            }
         }
         _ => {
             tracing::debug!("Unhandled event type: {}", event_type);
         }
     }
+
+    conn.execute(
+        "INSERT INTO webhook_events (event_id, event_type, processed_at) VALUES ($1, $2, NOW())",
+        &[&event_id, &event_type],
+    ).await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
     Ok(Json(serde_json::json!({
         "received": true

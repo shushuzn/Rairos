@@ -45,6 +45,19 @@ pub fn get_tier_by_price_id(price_id: &str) -> Option<&'static SubscriptionTier>
     SUBSCRIPTION_TIERS.iter().find(|t| t.price_id == price_id)
 }
 
+pub fn get_tier_by_checkout_session(data: &serde_json::Value) -> Option<&'static SubscriptionTier> {
+    let price_id = data
+        .get("line_items")
+        .and_then(|li| li.get("data"))
+        .and_then(|items| items.as_array())
+        .and_then(|items| items.first())
+        .and_then(|item| item.get("price"))
+        .and_then(|price| price.get("id"))
+        .and_then(|id| id.as_str())?;
+
+    get_tier_by_price_id(price_id)
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StripeWebhookEvent {
     pub id: String,
