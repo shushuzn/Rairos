@@ -1122,11 +1122,13 @@ impl ResearchOrchestrator {
 
         {
             let mut tracker = self.cost_tracker.write().await;
-            tracker.record(response.usage(), response.model(), self.llm.provider_name());
+            let usage = response.usage().map_err(|e| ResearchError::Llm(e.to_string()))?;
+            let model = response.model().map_err(|e| ResearchError::Llm(e.to_string()))?;
+            tracker.record(usage, model, self.llm.provider_name());
         }
 
         let suggestions: Vec<String> = response
-            .content()
+            .content().map_err(|e| ResearchError::Llm(e.to_string()))?
             .lines()
             .filter(|l| {
                 let trimmed = l.trim();

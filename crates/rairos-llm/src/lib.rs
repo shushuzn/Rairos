@@ -284,7 +284,7 @@ pub struct Message {
 }
 
 /// Response from an LLM call
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum LlmResponse {
     /// Non-streaming response
     NonStream(NonStreamResponse),
@@ -293,35 +293,43 @@ pub enum LlmResponse {
 }
 
 impl LlmResponse {
-    /// Returns a reference to the content (panics if streaming).
-    pub fn content(&self) -> &str {
+    /// Returns a reference to the content.
+    pub fn content(&self) -> Result<&str, LlmError> {
         match self {
-            LlmResponse::NonStream(r) => &r.content,
-            LlmResponse::Stream(_) => panic!("content() not available on streaming response"),
+            LlmResponse::NonStream(r) => Ok(&r.content),
+            LlmResponse::Stream(_) => Err(LlmError::InvalidResponse(
+                "content() not available on streaming response".into(),
+            )),
         }
     }
 
-    /// Returns a reference to the usage (panics if streaming).
-    pub fn usage(&self) -> &LlmUsage {
+    /// Returns a reference to the usage.
+    pub fn usage(&self) -> Result<&LlmUsage, LlmError> {
         match self {
-            LlmResponse::NonStream(r) => &r.usage,
-            LlmResponse::Stream(_) => panic!("usage() not available on streaming response"),
+            LlmResponse::NonStream(r) => Ok(&r.usage),
+            LlmResponse::Stream(_) => Err(LlmError::InvalidResponse(
+                "usage() not available on streaming response".into(),
+            )),
         }
     }
 
-    /// Returns a reference to the model name (panics if streaming).
-    pub fn model(&self) -> &str {
+    /// Returns a reference to the model name.
+    pub fn model(&self) -> Result<&str, LlmError> {
         match self {
-            LlmResponse::NonStream(r) => &r.model,
-            LlmResponse::Stream(_) => panic!("model() not available on streaming response"),
+            LlmResponse::NonStream(r) => Ok(&r.model),
+            LlmResponse::Stream(_) => Err(LlmError::InvalidResponse(
+                "model() not available on streaming response".into(),
+            )),
         }
     }
 
-    /// Unwrap the non-streaming response (panics if streaming).
-    pub fn unwrap_nonstream(self) -> NonStreamResponse {
+    /// Unwrap the non-streaming response.
+    pub fn unwrap_nonstream(self) -> Result<NonStreamResponse, LlmError> {
         match self {
-            LlmResponse::NonStream(r) => r,
-            LlmResponse::Stream(_) => panic!("unwrap_nonstream called on streaming response"),
+            LlmResponse::NonStream(r) => Ok(r),
+            LlmResponse::Stream(_) => Err(LlmError::InvalidResponse(
+                "unwrap_nonstream called on streaming response".into(),
+            )),
         }
     }
 }

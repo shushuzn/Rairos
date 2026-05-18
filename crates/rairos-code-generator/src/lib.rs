@@ -101,7 +101,7 @@ async fn generate_code_inner(
         .await
         .map_err(|e| e.to_string())?;
 
-    let content = response.content().trim().to_string();
+    let content = response.content().map_err(|e| e.to_string())?.trim().to_string();
 
     // Strip thinking/reasoning blocks that some models emit before code
     let stripped = strip_thinking_blocks(&content);
