@@ -6,6 +6,54 @@ pub use rairos_core::constants::{LLM_BASE_URL, LLM_MODEL};
 use regex::Regex;
 use sha2::{Digest, Sha256};
 use std::collections::{HashMap, HashSet};
+use std::sync::LazyLock;
+
+static FACTUAL_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"(?i)\b(who|whom|whose|who\'s)\b").unwrap(),
+        Regex::new(r"(?i)\b(when|what year|what date)\b").unwrap(),
+        Regex::new(r"(?i)\b(which (paper|author|model))\b").unwrap(),
+        Regex::new(r"(?i)\b(who proposed|who introduced|who published|who wrote|who created)\b").unwrap(),
+        Regex::new(r"(?i)\b(where (published|presented|introduced|released))\b").unwrap(),
+        Regex::new(r"(?i)\b(what organization|what institution|what company)\b").unwrap(),
+        Regex::new(r"(是|谁|哪篇|哪个作者|何时)").unwrap(),
+    ]
+});
+
+static CONCEPTUAL_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"(?i)\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b").unwrap(),
+        Regex::new(r"(原理|机制|概念|解释|是什么|如何|为什么|理解|定义)").unwrap(),
+    ]
+});
+
+static COMPARATIVE_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"(?i)\b(vs|versus|compared to|compared with)\b").unwrap(),
+        Regex::new(r"(?i)\b(difference between|differences between)\b").unwrap(),
+        Regex::new(r"(?i)\b(compare|comparison)\b").unwrap(),
+        Regex::new(r"(?i)\b(which is better|which is worse|which is stronger)\b").unwrap(),
+        Regex::new(r"(?i)\b(pros and cons|pros/cons|strengths? and weaknesses?)\b").unwrap(),
+        Regex::new(r"(和.*比较|比较.*和|对比|区别|差异)").unwrap(),
+    ]
+});
+
+static TEMPORAL_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"(?i)\b(recent|latest|newest|recently)\b").unwrap(),
+        Regex::new(r"(?i)\b(202[0-9]|20[2-9]\d)\b").unwrap(),
+        Regex::new(r"(?i)\b(published in|released in|presented in|from 20)\b").unwrap(),
+        Regex::new(r"(?i)\b(evolution|development|history|progress)\b").unwrap(),
+        Regex::new(r"(?i)\b(before|after|since|until|past|future)\b").unwrap(),
+    ]
+});
+
+static CLEAN_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"(?i)(是什么|什么是|请问|帮我|找找|解释|说明|介绍)").unwrap(),
+        Regex::new(r"(?i)(what is|what are|explain|describe|introduce)").unwrap(),
+    ]
+});
 
 pub use rairos_core::constants::OLLAMA_BASE_URL;
 pub use rairos_core::constants::OLLAMA_EMBEDDING_MODEL;
@@ -105,58 +153,29 @@ impl RagChat {
     }
 
     pub fn classify_query(&self, query: &str) -> QueryType {
-        let factual_patterns = [
-            r"(?i)\b(who|whom|whose|who\'s)\b",
-            r"(?i)\b(when|what year|what date)\b",
-            r"(?i)\b(which (paper|author|model))\b",
-            r"(?i)\b(who proposed|who introduced|who published|who wrote|who created)\b",
-            r"(?i)\b(where (published|presented|introduced|released))\b",
-            r"(?i)\b(what organization|what institution|what company)\b",
-            r"(是|谁|哪篇|哪个作者|何时)",
-        ];
-        let conceptual_patterns = [
-            r"(?i)\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b",
-            r"(原理|机制|概念|解释|是什么|如何|为什么|理解|定义)",
-        ];
-        let comparative_patterns = [
-            r"(?i)\b(vs|versus|compared to|compared with)\b",
-            r"(?i)\b(difference between|differences between)\b",
-            r"(?i)\b(compare|comparison)\b",
-            r"(?i)\b(which is better|which is worse|which is stronger)\b",
-            r"(?i)\b(pros and cons|pros/cons|strengths? and weaknesses?)\b",
-            r"(和.*比较|比较.*和|对比|区别|差异)",
-        ];
-        let temporal_patterns = [
-            r"(?i)\b(recent|latest|newest|recently)\b",
-            r"(?i)\b(202[0-9]|20[2-9]\d)\b",
-            r"(?i)\b(published in|released in|presented in|from 20)\b",
-            r"(?i)\b(evolution|development|history|progress)\b",
-            r"(?i)\b(before|after|since|until|past|future)\b",
-        ];
-
         let mut scores: HashMap<String, i32> = HashMap::new();
         scores.insert("factual".to_string(), 0);
         scores.insert("conceptual".to_string(), 0);
         scores.insert("comparative".to_string(), 0);
         scores.insert("temporal".to_string(), 0);
 
-        for pattern in factual_patterns {
-            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
+        for pattern in FACTUAL_PATTERNS.iter() {
+            if pattern.is_match(query) {
                 *scores.get_mut("factual").unwrap() += 1;
             }
         }
-        for pattern in conceptual_patterns {
-            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
+        for pattern in CONCEPTUAL_PATTERNS.iter() {
+            if pattern.is_match(query) {
                 *scores.get_mut("conceptual").unwrap() += 1;
             }
         }
-        for pattern in comparative_patterns {
-            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
+        for pattern in COMPARATIVE_PATTERNS.iter() {
+            if pattern.is_match(query) {
                 *scores.get_mut("comparative").unwrap() += 1;
             }
         }
-        for pattern in temporal_patterns {
-            if Regex::new(pattern).is_ok_and(|r| r.is_match(query)) {
+        for pattern in TEMPORAL_PATTERNS.iter() {
+            if pattern.is_match(query) {
                 *scores.get_mut("temporal").unwrap() += 1;
             }
         }
@@ -180,14 +199,9 @@ impl RagChat {
     }
 
     pub fn extract_topic(&self, text: &str) -> Option<String> {
-        let clean_patterns = [
-            r"(?i)(是什么|什么是|请问|帮我|找找|解释|说明|介绍)",
-            r"(?i)(what is|what are|explain|describe|introduce)",
-        ];
         let mut cleaned = text.to_string();
-        for p in clean_patterns {
-            cleaned =
-                Regex::new(p).map_or(cleaned.clone(), |r| r.replace_all(&cleaned, "").to_string());
+        for p in CLEAN_PATTERNS.iter() {
+            cleaned = p.replace_all(&cleaned, "").to_string();
         }
 
         let stop_words = ["的", "了", "是", "在", "和", "the", "a", "an", "is", "are"];
