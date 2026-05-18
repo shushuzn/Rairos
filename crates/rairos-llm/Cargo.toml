@@ -23,38 +23,6 @@ regex.workspace = true
 rusqlite.workspace = true
 rand.workspace = true
 
-# Orphan rescues — re-exported via llm_orphans module
-rairos-chat = { path = "../rairos-chat" }
-rairos-client = { path = "../rairos-client" }
-rairos-credibility = { path = "../rairos-credibility" }
-rairos-credibility-scorer = { path = "../rairos-credibility-scorer" }
-rairos-rigor = { path = "../rairos-rigor" }
-rairos-scoring-momentum = { path = "../rairos-scoring-momentum" }
-rairos-impact = { path = "../rairos-impact" }
-rairos-impact-scorer = { path = "../rairos-impact-scorer" }
-rairos-gene-pool-decay = { path = "../rairos-gene-pool-decay" }
-rairos-pool = { path = "../rairos-pool" }
-rairos-game-mode = { path = "../rairos-game-mode" }
-rairos-achievements = { path = "../rairos-achievements" }
-rairos-climate = { path = "../rairos-climate" }
-rairos-eval-gap-monitor = { path = "../rairos-eval-gap-monitor" }
-rairos-contradiction = { path = "../rairos-contradiction" }
-rairos-cross-referencer = { path = "../rairos-cross-referencer" }
-rairos-litreview = { path = "../rairos-litreview" }
-rairos-litreview-generator = { path = "../rairos-litreview-generator" }
-rairos-briefing-generator = { path = "../rairos-briefing-generator" }
-rairos-briefing-distributor = { path = "../rairos-briefing-distributor" }
-rairos-distributor = { path = "../rairos-distributor" }
-rairos-paradigm = { path = "../rairos-paradigm" }
-rairos-replication = { path = "../rairos-replication" }
-rairos-query = { path = "../rairos-query" }
-rairos-query-types = { path = "../rairos-query-types" }
-rairos-rankers = { path = "../rairos-rankers" }
-rairos-rankers-cosine = { path = "../rairos-rankers-cosine" }
-rairos-rankers-score = { path = "../rairos-rankers-score" }
-rairos-trend-analyzer = { path = "../rairos-trend-analyzer" }
-rairos-rankers-base = { path = "../rairos-rankers-base" }
-
 # Insight crates — direct dependencies on implementation crates
 rairos-crossover = { path = "../rairos-crossover" }
 rairos-insight-cards = { path = "../rairos-insight-cards" }
