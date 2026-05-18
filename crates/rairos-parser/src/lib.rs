@@ -4,7 +4,7 @@
 //! Supported sources: arXiv, CrossRef, Semantic Scholar, PDF extraction
 //! Replaces: parsers/arxiv.py, parsers/cross_search.py, pdf/parser.py
 
-use rairos_core::{constants::{ARXIV_API, SEMANTIC_API}, Paper, PaperMetadata};
+use rairos_core::{constants::{ARXIV_API, SEMANTIC_API}, identifiers::normalize_arxiv_id, Paper, PaperMetadata};
 use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
@@ -733,44 +733,6 @@ pub fn normalize_doi(s: &str) -> Option<String> {
     }
 }
 
-/// Normalize an arXiv ID (handles URLs, DOIs, bare IDs)
-pub fn normalize_arxiv_id(s: &str) -> Option<String> {
-    if s.is_empty() {
-        return None;
-    }
-    let s = s.trim();
-
-    // arXiv URL formats: arxiv.org/abs/2301.00001v1 or arxiv.org/pdf/2301.00001v1
-    let re_url = regex::Regex::new(r"(?:arxiv\.org/(?:abs|pdf)/)(\d{4}\.\d{4,5})(v\d+)?").unwrap();
-    if let Some(caps) = re_url.captures(s) {
-        let id = caps.get(1).map(|m| m.as_str()).unwrap_or("");
-        let version = caps.get(2).map(|m| m.as_str()).unwrap_or("");
-        return Some(format!("{}{}", id, version));
-    }
-
-    // New-style bare ID: 2301.00001 or 2301.00001v1
-    let re_new = regex::Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$").unwrap();
-    if re_new.is_match(s) {
-        return Some(s.to_string());
-    }
-
-    // Old-style bare ID: cs/1234567 or cs/1234567v1
-    let re_old = regex::Regex::new(r"^[a-zA-Z\-]+/\d{7}(v\d+)?$").unwrap();
-    if re_old.is_match(s) {
-        return Some(s.to_string());
-    }
-
-    // arXiv DOI format: 10.48550/arXiv.2301.00001
-    let re_doi = regex::Regex::new(r"10\.48550/arXiv\.(\d{4}\.\d{4,5})(v\d+)?").unwrap();
-    if let Some(caps) = re_doi.captures(s) {
-        let id = caps.get(1).map(|m| m.as_str()).unwrap_or("");
-        let version = caps.get(2).map(|m| m.as_str()).unwrap_or("");
-        return Some(format!("{}{}", id, version));
-    }
-
-    None
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -842,36 +804,6 @@ mod tests {
         );
         assert_eq!(normalize_doi(""), None);
         assert_eq!(normalize_doi("not-a-doi"), None);
-    }
-
-    #[test]
-    fn test_normalize_arxiv_id() {
-        assert_eq!(
-            normalize_arxiv_id("2301.00001"),
-            Some("2301.00001".to_string())
-        );
-        assert_eq!(
-            normalize_arxiv_id("2301.00001v1"),
-            Some("2301.00001v1".to_string())
-        );
-        assert_eq!(
-            normalize_arxiv_id("https://arxiv.org/abs/2301.00001v1"),
-            Some("2301.00001v1".to_string())
-        );
-        assert_eq!(
-            normalize_arxiv_id("https://arxiv.org/pdf/2301.00001.pdf"),
-            Some("2301.00001".to_string())
-        );
-        assert_eq!(
-            normalize_arxiv_id("cs/1234567"),
-            Some("cs/1234567".to_string())
-        );
-        assert_eq!(
-            normalize_arxiv_id("10.48550/arXiv.2301.00001"),
-            Some("2301.00001".to_string())
-        );
-        assert_eq!(normalize_arxiv_id(""), None);
-        assert_eq!(normalize_arxiv_id("not-an-arxiv-id"), None);
     }
 
     #[test]
