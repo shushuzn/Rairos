@@ -378,9 +378,12 @@ impl AutonomousOrchestrator {
                 }
             };
 
-            let trigger = new_papers.first().unwrap();
+            let Some(trigger) = new_papers.first().cloned() else {
+                tracing::warn!("[Orchestrator] No papers in subscription '{}' despite prior check", topic);
+                continue;
+            };
             let alerts =
-                self.generate_alerts(scored.clone(), &research_result.session_id, topic, trigger);
+                self.generate_alerts(scored.clone(), &research_result.session_id, topic, &trigger);
 
             for alert in &alerts {
                 self.send_webhook(alert);
