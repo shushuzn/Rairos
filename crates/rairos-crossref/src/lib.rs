@@ -1,6 +1,6 @@
 //! rairos-crossref — Crossref API metadata fetching.
 
-#![allow(clippy::regex_creation_in_loops, clippy::upper_case_acronyms)]
+#![allow(clippy::upper_case_acronyms)]
 #![allow(dead_code)]
 //!
 //! Ported from `parsers/crossref.py` (228 LOC).
@@ -10,9 +10,23 @@
 use chrono::NaiveDate;
 use rairos_core::constants::{CROSSREF_WORKS, DOI_RESOLVER};
 use rairos_core::identifiers::normalize_arxiv_id;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
+use std::sync::LazyLock;
 use std::time::Duration;
 use thiserror::Error;
+
+static RE_HTML_TAG: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"<[^>]+>").unwrap()
+});
+
+static RE_ARXIV_URL: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+});
+
+static RE_ARXIV_ID: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+});
 
 #[derive(Error, Debug)]
 pub enum CrossrefError {
@@ -197,8 +211,7 @@ fn parse_abstract(item: &CrossrefItem) -> String {
         return String::new();
     }
     // Strip HTML tags
-    let re = regex::Regex::new(r"<[^>]+>").unwrap();
-    let cleaned = re.replace_all(ab, "");
+    let cleaned = RE_HTML_TAG.replace_all(ab, "");
     let cleaned = cleaned.split_whitespace().collect::<Vec<_>>().join(" ");
     cleaned.trim().to_string()
 }
@@ -212,10 +225,7 @@ fn try_find_arxiv_id(item: &CrossrefItem, doi: &str) -> Option<String> {
     // Try relation field
     if let Some(rel) = &item.relation {
         let blob = rel.to_string();
-        if let Some(m) = regex::Regex::new(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?")
-            .unwrap()
-            .captures(&blob)
-        {
+        if let Some(m) = RE_ARXIV_URL.captures(&blob) {
             let id = m.get(1).map(|g| g.as_str()).unwrap_or("");
             let ver = m.get(2).map(|g| g.as_str()).unwrap_or("");
             return Some(format!("{}{}", id, ver));
@@ -230,11 +240,7 @@ fn try_find_arxiv_id(item: &CrossrefItem, doi: &str) -> Option<String> {
             _ => None,
         } {
             for v in val {
-                if let Some(m) =
-                    regex::Regex::new(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?")
-                        .unwrap()
-                        .captures(v)
-                {
+                if let Some(m) = RE_ARXIV_URL.captures(v) {
                     let id = m.get(1).map(|g| g.as_str()).unwrap_or("");
                     let ver = m.get(2).map(|g| g.as_str()).unwrap_or("");
                     return Some(format!("{}{}", id, ver));
@@ -242,10 +248,7 @@ fn try_find_arxiv_id(item: &CrossrefItem, doi: &str) -> Option<String> {
                 // Check if the string itself looks like an arxiv ID in a sea of "arxiv"
                 let blob = v.to_lowercase();
                 if blob.contains("arxiv") {
-                    if let Some(m) = regex::Regex::new(r"(\d{4}\.\d{4,5})(v\d+)?")
-                        .unwrap()
-                        .captures(&blob)
-                    {
+                    if let Some(m) = RE_ARXIV_ID.captures(&blob) {
                         return Some(format!(
                             "{}{}",
                             m.get(1).map(|g| g.as_str()).unwrap_or(""),
