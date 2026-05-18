@@ -5,15 +5,15 @@
 //! Mirrors llm/research/paper_analyzer.py
 
 use crate::{LlmClient, Message};
-use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::LazyLock;
 
-lazy_static! {
-    static ref SECTION_RE: Regex = Regex::new(r"^##\s*\d+\.?\d*\s*.*$").unwrap();
-    static ref RUBRIC_RE: Regex = Regex::new(r#""([^"]+)":\s*(\d+)"#).unwrap();
-}
+static SECTION_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^##\s*\d+\.?\d*\s*.*$").unwrap());
+static RUBRIC_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#""([^"]+)":\s*(\d+)"#).unwrap());
 
 // ─── Section Keys ─────────────────────────────────────────────────────────────
 

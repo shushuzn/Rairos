@@ -5,38 +5,36 @@
 //! Ported from `llm/evolution_report.py`.
 
 use chrono::{Duration, Utc};
-use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::PathBuf;
+use std::sync::LazyLock;
 
 use rairos_evolution::{get_evolution_memory, EvolutionMemory};
 
-lazy_static! {
-    static ref STOPWORDS: HashSet<&'static str> = {
-        let mut s = HashSet::new();
-        s.insert("the");
-        s.insert("is");
-        s.insert("are");
-        s.insert("a");
-        s.insert("an");
-        s.insert("what");
-        s.insert("how");
-        s.insert("why");
-        s.insert("this");
-        s.insert("that");
-        s.insert("and");
-        s.insert("or");
-        s.insert("的");
-        s.insert("是");
-        s.insert("如何");
-        s.insert("什么");
-        s.insert("怎么");
-        s
-    };
-}
+static STOPWORDS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
+    let mut s = HashSet::new();
+    s.insert("the");
+    s.insert("is");
+    s.insert("are");
+    s.insert("a");
+    s.insert("an");
+    s.insert("what");
+    s.insert("how");
+    s.insert("why");
+    s.insert("this");
+    s.insert("that");
+    s.insert("and");
+    s.insert("or");
+    s.insert("的");
+    s.insert("是");
+    s.insert("如何");
+    s.insert("什么");
+    s.insert("怎么");
+    s
+});
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PaperInsight {

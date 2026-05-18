@@ -2,10 +2,9 @@
 //!
 //! Ported from `core/profiler.py`.
 
-use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, LazyLock, RwLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -204,9 +203,8 @@ impl PerformanceProfiler {
     }
 }
 
-lazy_static! {
-    static ref GLOBAL_PROFILER: Arc<PerformanceProfiler> = Arc::new(PerformanceProfiler::new());
-}
+static GLOBAL_PROFILER: LazyLock<Arc<PerformanceProfiler>> =
+    LazyLock::new(|| Arc::new(PerformanceProfiler::new()));
 
 pub fn get_profiler() -> Arc<PerformanceProfiler> {
     GLOBAL_PROFILER.clone()
