@@ -4,7 +4,7 @@
 //! Supported sources: arXiv, CrossRef, Semantic Scholar, PDF extraction
 //! Replaces: parsers/arxiv.py, parsers/cross_search.py, pdf/parser.py
 
-use rairos_core::{constants::{ARXIV_API, SEMANTIC_API}, identifiers::normalize_arxiv_id, Paper, PaperMetadata};
+use rairos_core::{constants::{ARXIV_API, SEMANTIC_API}, Paper, PaperMetadata};
 use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
@@ -712,29 +712,6 @@ pub async fn search_all_sources(
 
 // ============================================================================
 // Input Normalization Utilities
-// ============================================================================
-
-/// Check if string looks like a DOI
-pub fn is_probably_doi(s: &str) -> bool {
-    let re_doi = regex::Regex::new(r"(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+").unwrap();
-    re_doi.is_match(s.trim())
-}
-
-/// Normalize a DOI string to bare DOI form
-pub fn normalize_doi(s: &str) -> Option<String> {
-    if s.is_empty() {
-        return None;
-    }
-    let re_url = regex::Regex::new(r"^https?://(dx\.)?doi\.org/").unwrap();
-    let normalized = re_url.replace(s.trim(), "");
-    let result = normalized.trim().trim_end_matches('.').to_string();
-    if result.starts_with("10.") {
-        Some(result)
-    } else {
-        None
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -783,6 +760,7 @@ mod tests {
 
     #[test]
     fn test_is_probably_doi() {
+        use rairos_core::identifiers::is_probably_doi;
         assert!(is_probably_doi("10.1038/nature12373"));
         assert!(is_probably_doi("https://doi.org/10.1038/nature12373"));
         assert!(is_probably_doi("https://dx.doi.org/10.1038/nature12373"));
@@ -792,6 +770,7 @@ mod tests {
 
     #[test]
     fn test_normalize_doi() {
+        use rairos_core::identifiers::normalize_doi;
         assert_eq!(
             normalize_doi("10.1038/nature12373"),
             Some("10.1038/nature12373".to_string())
