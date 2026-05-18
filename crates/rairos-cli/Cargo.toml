@@ -115,7 +115,7 @@ csv.workspace = true
 serde-xml-rs.workspace = true
 dirs.workspace = true
 indicatif.workspace = true
-console = "0.15"
+console = "0.16"
 tokio = { workspace = true, features = ["rt"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "blocking"], default-features = false }
 ratatui = "0.30"
