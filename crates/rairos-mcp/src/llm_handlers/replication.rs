@@ -35,6 +35,7 @@ impl ToolHandler for ReplicationCheckHandler {
             "has_code": result.has_code, "has_data": result.has_data,
             "has_method": result.has_method, "has_env": result.has_env,
             "reasoning": result.reasoning,
+            "verification_warnings": result.verification_warnings,
         }))
     }
 }

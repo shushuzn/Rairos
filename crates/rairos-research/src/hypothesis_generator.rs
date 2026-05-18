@@ -143,6 +143,23 @@ pub struct HypothesisResult {
     pub topic: String,
     pub summary: String,
     pub hypotheses: Vec<ResearchHypothesis>,
+    pub verification_warnings: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct HypothesisVerificationResult {
+    pub is_valid: bool,
+    pub warnings: Vec<String>,
+}
+
+impl HypothesisVerificationResult {
+    pub fn valid() -> Self {
+        Self { is_valid: true, warnings: Vec::new() }
+    }
+
+    pub fn with_warnings(warnings: Vec<String>) -> Self {
+        Self { is_valid: warnings.is_empty(), warnings }
+    }
 }
 
 // ============================================================================
@@ -532,6 +549,7 @@ impl HypothesisGenerator {
             topic: topic.to_string(),
             summary: self.generate_summary(&hypotheses),
             hypotheses,
+            verification_warnings: Vec::new(),
         }
     }
 
@@ -609,10 +627,13 @@ impl HypothesisGenerator {
         // Re-rank by trend data: adjust scores based on hot/cold research tags
         re_rank_by_trends(&mut hypotheses, topic);
 
+        let verification = Self::verify_hypotheses(llm, model, topic, gap_context, &hypotheses).await;
+
         let result = HypothesisResult {
             topic: topic.to_string(),
             summary: self.generate_summary(&hypotheses),
             hypotheses,
+            verification_warnings: verification.warnings,
         };
 
         // Auto-submit high-scoring hypotheses to GenePool
@@ -621,6 +642,87 @@ impl HypothesisGenerator {
         }
 
         result
+    }
+
+    const VERIFY_HYPOTHESES_PROMPT: &str = r#"你是一个严谨的研究假说验证助手。检查以下假说是否有效。
+
+研究主题: {topic}
+Gap上下文: {gap_context}
+
+假说列表:
+{hypotheses}
+
+请验证：
+1. 每个假说是否与研究主题相关？
+2. 假说是否具体且可测试？
+3. 创新性评分和创新性描述是否匹配？
+4. 可行性评分和实验设计是否合理？
+
+请以JSON格式返回：
+{{"is_valid": true/false, "warnings": ["问题1", "问题2"]}}
+
+如果所有假说有效，返回 {{"is_valid": true, "warnings": []}}。
+如果有问题，返回 {{"is_valid": false, "warnings": ["具体问题"]}}。"#;
+
+    async fn verify_hypotheses(
+        llm: &dyn LlmClient,
+        model: &str,
+        topic: &str,
+        gap_context: &str,
+        hypotheses: &[ResearchHypothesis],
+    ) -> HypothesisVerificationResult {
+        if hypotheses.is_empty() {
+            return HypothesisVerificationResult::valid();
+        }
+
+        let hypotheses_str = hypotheses.iter().enumerate().map(|(i, h)| {
+            format!("{}. {} (类型: {}, 创新性: {:.1}, 可行性: {:.1})\n   核心陈述: {}",
+                i + 1, h.title, h.hypothesis_type, h.novelty_score, h.feasibility_score, h.core_statement)
+        }).collect::<Vec<_>>().join("\n");
+
+        let prompt = Self::VERIFY_HYPOTHESES_PROMPT
+            .replace("{topic}", topic)
+            .replace("{gap_context}", &gap_context.chars().take(300).collect::<String>())
+            .replace("{hypotheses}", &hypotheses_str);
+
+        let msg = Message { role: "user".to_string(), content: prompt };
+
+        match llm.complete(vec![msg], model, 0.1, 300).await {
+            Ok(rairos_llm::LlmResponse::NonStream(ns)) => {
+                Self::parse_verification_result(&ns.content)
+            }
+            _ => HypothesisVerificationResult::valid(),
+        }
+    }
+
+    fn parse_verification_result(content: &str) -> HypothesisVerificationResult {
+        let content = content.trim();
+
+        let _is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
+            true
+        } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
+            false
+        } else {
+            return HypothesisVerificationResult::valid();
+        };
+
+        let mut warnings = Vec::new();
+        if let Some(start) = content.find("\"warnings\":") {
+            let warnings_str = &content[start..];
+            if let Some(arr_start) = warnings_str.find('[') {
+                if let Some(arr_end) = warnings_str.find(']') {
+                    let items = &warnings_str[arr_start + 1..arr_end];
+                    for item in items.split(',') {
+                        let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                        if !item.is_empty() && item != "[]" && item != "warnings" {
+                            warnings.push(item.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        HypothesisVerificationResult::with_warnings(warnings)
     }
 
     // ─── Template Generation ────────────────────────────────────────────────
@@ -1548,5 +1650,50 @@ mod tests {
         assert!(lc.contains(hid), "Should reference hypothesis_id");
 
         std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn test_parse_verification_result_valid() {
+        let json = r#"{"is_valid": true, "warnings": []}"#;
+        let result = HypothesisGenerator::parse_verification_result(json);
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_parse_verification_result_invalid() {
+        let json = r#"{"is_valid": false, "warnings": ["假说与主题不相关", "可行性评分过高"]}"#;
+        let result = HypothesisGenerator::parse_verification_result(json);
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings.len(), 2);
+    }
+
+    #[test]
+    fn test_parse_verification_result_malformed() {
+        let json = "not json at all";
+        let result = HypothesisGenerator::parse_verification_result(json);
+        assert!(result.is_valid);
+    }
+
+    #[test]
+    fn test_hypothesis_verification_result_valid() {
+        let result = HypothesisVerificationResult::valid();
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_hypothesis_verification_result_with_warnings() {
+        let warnings = vec!["创新性评分过高".to_string()];
+        let result = HypothesisVerificationResult::with_warnings(warnings);
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings.len(), 1);
+    }
+
+    #[test]
+    fn test_hypothesis_result_has_verification_warnings_field() {
+        let gen = HypothesisGenerator::new();
+        let result = gen.generate("machine learning", "method limitation", false);
+        assert!(result.verification_warnings.is_empty());
     }
 }

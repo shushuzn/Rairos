@@ -56,7 +56,7 @@ pub fn handle_validate(
     Ok(())
 }
 
-pub fn find_related_works(
+fn find_related_works(
     db: &rairos_core::Database,
     question: &str,
     limit: usize,
@@ -100,7 +100,7 @@ pub fn find_related_works(
     related
 }
 
-pub fn render_validation_json(result: &crate::validator::ValidationResult) -> String {
+fn render_validation_json(result: &crate::validator::ValidationResult) -> String {
     let dim_strs: Vec<&str> = result
         .innovation_score
         .dimensions
@@ -140,7 +140,7 @@ pub fn render_validation_json(result: &crate::validator::ValidationResult) -> St
     serde_json::to_string_pretty(&data).unwrap_or_else(|_| "{}".into())
 }
 
-pub fn handle_validate_interactive(
+fn handle_validate_interactive(
     db: &rairos_core::Database,
     mut no_llm: bool,
     mut json: bool,

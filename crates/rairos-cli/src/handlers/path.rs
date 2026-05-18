@@ -54,7 +54,7 @@ pub fn handle_path(
     Ok(())
 }
 
-pub fn handle_path_interactive(
+fn handle_path_interactive(
     db: &rairos_core::Database,
     mut level: rairos_pathfinder::ReadingLevel,
     mut max: usize,

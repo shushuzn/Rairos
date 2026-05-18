@@ -39,6 +39,38 @@ pub struct CodeGenConfig {
     pub timeout_secs: u64,
 }
 
+#[derive(Debug, Clone)]
+pub struct CodeGenResult {
+    pub code: String,
+    pub verification_warnings: Vec<String>,
+}
+
+impl CodeGenResult {
+    pub fn valid(code: String) -> Self {
+        Self { code, verification_warnings: Vec::new() }
+    }
+
+    pub fn with_warnings(code: String, warnings: Vec<String>) -> Self {
+        Self { code, verification_warnings: warnings }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct CodeVerificationResult {
+    pub is_valid: bool,
+    pub warnings: Vec<String>,
+}
+
+impl CodeVerificationResult {
+    pub fn valid() -> Self {
+        Self { is_valid: true, warnings: Vec::new() }
+    }
+
+    pub fn with_warnings(warnings: Vec<String>) -> Self {
+        Self { is_valid: warnings.is_empty(), warnings }
+    }
+}
+
 fn default_timeout() -> u64 {
     300
 }
@@ -94,6 +126,39 @@ pub fn generate_code<'a>(
     config: &'a CodeGenConfig,
 ) -> impl std::future::Future<Output = Result<String, String>> + 'a {
     generate_code_inner(client, paper_content, config)
+}
+
+/// Generate code with verification warnings.
+pub async fn generate_code_verified(
+    client: Arc<dyn LlmClient>,
+    paper_content: &PaperContent,
+    config: &CodeGenConfig,
+) -> Result<CodeGenResult, String> {
+    let model = config
+        .model_name
+        .clone()
+        .unwrap_or_else(|| "minimax-m2.7-highspeed".to_string());
+
+    let prompt = build_prompt(paper_content, &config.framework);
+
+    let messages = vec![Message {
+        role: "user".to_string(),
+        content: prompt,
+    }];
+
+    let response = client
+        .complete(messages, &model, 0.3, 4096)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let content = response.content().map_err(|e| e.to_string())?.trim().to_string();
+
+    let stripped = strip_thinking_blocks(&content);
+    let code = strip_markdown_wrappers(&stripped);
+
+    let verification = verify_code(&code, &config.framework);
+
+    Ok(CodeGenResult::with_warnings(code, verification.warnings))
 }
 
 async fn generate_code_inner(
@@ -152,6 +217,68 @@ pub fn strip_markdown_wrappers(input: &str) -> String {
     }
 
     result.trim().to_string()
+}
+
+fn verify_code(code: &str, framework: &str) -> CodeVerificationResult {
+    let mut warnings = Vec::new();
+
+    if code.is_empty() {
+        warnings.push("生成的代码为空".to_string());
+        return CodeVerificationResult::with_warnings(warnings);
+    }
+
+    let framework_imports: &[(&str, &[&str])] = &[
+        ("pytorch", &["torch", "import torch", "from torch"]),
+        ("jax", &["jax", "import jax", "from jax"]),
+        ("numpy", &["numpy", "import numpy", "from numpy"]),
+    ];
+
+    if let Some((_, imports)) = framework_imports.iter().find(|(f, _)| *f == framework) {
+        let has_import = imports.iter().any(|imp| code.contains(imp));
+        if !has_import {
+            warnings.push(format!("代码中未找到 {} 框架的导入语句", framework));
+        }
+    }
+
+    if code.contains("pass\npass") || code.contains("pass\n    pass") {
+        warnings.push("代码可能包含空的类或函数定义".to_string());
+    }
+
+    if !code.contains("def ") && !code.contains("class ") {
+        warnings.push("代码中未找到函数或类定义".to_string());
+    }
+
+    CodeVerificationResult::with_warnings(warnings)
+}
+
+fn parse_verification_result(content: &str) -> CodeVerificationResult {
+    let content = content.trim();
+
+    let _is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
+        true
+    } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
+        false
+    } else {
+        return CodeVerificationResult::valid();
+    };
+
+    let mut warnings = Vec::new();
+    if let Some(start) = content.find("\"warnings\":") {
+        let warnings_str = &content[start..];
+        if let Some(arr_start) = warnings_str.find('[') {
+            if let Some(arr_end) = warnings_str.find(']') {
+                let items = &warnings_str[arr_start + 1..arr_end];
+                for item in items.split(',') {
+                    let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                    if !item.is_empty() && item != "[]" && item != "warnings" {
+                        warnings.push(item.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    CodeVerificationResult::with_warnings(warnings)
 }
 
 /// Build the user prompt from paper content.
@@ -392,5 +519,62 @@ mod tests {
         let content = std::fs::read_to_string(&out_path).unwrap();
         assert!(content.contains("def hello"));
         assert_eq!(out_path.file_name().unwrap(), "test_model.py");
+    }
+
+    #[test]
+    fn test_verify_code_valid() {
+        let code = "import torch\n\nclass Model(nn.Module):\n    def forward(self, x):\n        return x";
+        let result = verify_code(code, "pytorch");
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_verify_code_empty() {
+        let result = verify_code("", "pytorch");
+        assert!(!result.is_valid);
+        assert!(result.warnings.len() > 0);
+    }
+
+    #[test]
+    fn test_verify_code_missing_framework() {
+        let code = "import something_else\n\ndef foo():\n    pass";
+        let result = verify_code(code, "pytorch");
+        assert!(!result.is_valid);
+    }
+
+    #[test]
+    fn test_verify_code_empty_functions() {
+        let code = "def foo():\n    pass\npass\nclass Bar:\n    pass";
+        let result = verify_code(code, "pytorch");
+        assert!(!result.is_valid);
+    }
+
+    #[test]
+    fn test_code_gen_result_valid() {
+        let result = CodeGenResult::valid("print('hello')".to_string());
+        assert!(result.verification_warnings.is_empty());
+        assert_eq!(result.code, "print('hello')");
+    }
+
+    #[test]
+    fn test_code_gen_result_with_warnings() {
+        let warnings = vec!["missing import".to_string()];
+        let result = CodeGenResult::with_warnings("code".to_string(), warnings.clone());
+        assert_eq!(result.verification_warnings, warnings);
+    }
+
+    #[test]
+    fn test_code_verification_result_valid() {
+        let result = CodeVerificationResult::valid();
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_code_verification_result_with_warnings() {
+        let warnings = vec!["问题1".to_string()];
+        let result = CodeVerificationResult::with_warnings(warnings);
+        assert!(!result.is_valid);
     }
 }

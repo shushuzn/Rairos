@@ -163,7 +163,7 @@ pub fn handle_rag(action: &RagAction) -> Result<()> {
     Ok(())
 }
 
-pub fn clean_arxiv_id(s: &str) -> String {
+fn clean_arxiv_id(s: &str) -> String {
     // Extract arXiv ID from URL or pattern
     if let Some(caps) = regex::Regex::new(r"(\d{4}\.\d{4,5})")
         .ok()
@@ -175,7 +175,7 @@ pub fn clean_arxiv_id(s: &str) -> String {
     }
 }
 
-pub fn run_paper2code(arxiv_id: &str, mode: &str, framework: &str) -> Result<()> {
+fn run_paper2code(arxiv_id: &str, mode: &str, framework: &str) -> Result<()> {
     // Check if paper2code CLI is available
     let available = std::process::Command::new("which")
         .arg("paper2code")
@@ -213,7 +213,7 @@ pub fn run_paper2code(arxiv_id: &str, mode: &str, framework: &str) -> Result<()>
     Ok(())
 }
 
-pub fn extract_and_generate_tests(arxiv_id: &str, paper_dir: &Path) -> Result<PathBuf> {
+fn extract_and_generate_tests(arxiv_id: &str, paper_dir: &Path) -> Result<PathBuf> {
     let test_csv = paper_dir.join("tests").join("test_cases.csv");
     std::fs::create_dir_all(test_csv.parent().unwrap())?;
 
@@ -240,7 +240,7 @@ pub fn extract_and_generate_tests(arxiv_id: &str, paper_dir: &Path) -> Result<Pa
     Ok(test_csv)
 }
 
-pub fn extract_from_code(paper_dir: &Path) -> Vec<(String, String, String)> {
+fn extract_from_code(paper_dir: &Path) -> Vec<(String, String, String)> {
     let mut cases = Vec::new();
 
     // Check README for code examples
@@ -296,7 +296,7 @@ pub fn extract_from_code(paper_dir: &Path) -> Vec<(String, String, String)> {
     cases
 }
 
-pub fn generate_default_cases(arxiv_id: &str) -> Vec<(String, String, String)> {
+fn generate_default_cases(arxiv_id: &str) -> Vec<(String, String, String)> {
     vec![
         (
             format!("Verify {} implementation correctness", arxiv_id),
@@ -316,7 +316,7 @@ pub fn generate_default_cases(arxiv_id: &str) -> Vec<(String, String, String)> {
     ]
 }
 
-pub fn generate_pytest_tests(_paper_dir: &Path, test_csv: &Path) -> Result<()> {
+fn generate_pytest_tests(_paper_dir: &Path, test_csv: &Path) -> Result<()> {
     let test_dir = test_csv.parent().unwrap();
 
     // conftest.py
@@ -371,7 +371,7 @@ class TestPaperImplementation:
     Ok(())
 }
 
-pub fn init_evoskill_benchmark(work_dir: &Path, task_name: &str, csv_path: &Path) -> Result<()> {
+fn init_evoskill_benchmark(work_dir: &Path, task_name: &str, csv_path: &Path) -> Result<()> {
     let evoskill_dir = work_dir.join(".evoskill");
     std::fs::create_dir_all(&evoskill_dir)?;
 

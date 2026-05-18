@@ -138,7 +138,7 @@ pub fn handle_analyze(db: &Database, kind: &str, paper: Option<String>, format: 
     Ok(())
 }
 
-pub fn extract_keywords(text: &str, top_n: usize) -> Vec<(String, f64)> {
+fn extract_keywords(text: &str, top_n: usize) -> Vec<(String, f64)> {
     let stop_words: std::collections::HashSet<&str> = [
         "the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
         "do", "does", "did", "will", "would", "could", "should", "may", "might", "must", "shall",
@@ -170,7 +170,7 @@ pub fn extract_keywords(text: &str, top_n: usize) -> Vec<(String, f64)> {
     scored.into_iter().take(top_n).collect()
 }
 
-pub fn classify_topics(title: &str, abstract_: &str, categories: &[String]) -> Vec<String> {
+fn classify_topics(title: &str, abstract_: &str, categories: &[String]) -> Vec<String> {
     let text = format!("{} {} {}", title, abstract_, categories.join(" ")).to_lowercase();
     let mut topics = Vec::new();
 
@@ -264,7 +264,7 @@ pub fn classify_topics(title: &str, abstract_: &str, categories: &[String]) -> V
     topics
 }
 
-pub fn estimate_quality(paper: &Paper) -> f64 {
+fn estimate_quality(paper: &Paper) -> f64 {
     let mut score: f64 = 5.0; // base
 
     // Citations boost

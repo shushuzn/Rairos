@@ -1,50 +1,46 @@
+# Pre-commit hooks for Rairos
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
 repos:
-  # Gitleaks — secret detection
+  # Scan for secrets before commit
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.24.0
+    rev: v8.18.2
     hooks:
       - id: gitleaks
 
-  # Rust fmt — Rust formatting
-  - repo: local
-    hooks:
-      - id: cargo-fmt
-        name: cargo fmt
-        entry: cargo fmt
-        language: system
-        types: [rust]
-        pass_filenames: false
-
-  # Trailing whitespace fixer
+  # Detect secrets in code
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      - id: trailing-whitespace
-        exclude: \\.(lock|svg|png|jpg|jpeg|gif|ico|bin)$
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        name: Detect Secrets
 
-  # End-of-file fixer
+  # Prevent .env files from being committed
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
+      - id: forbid-new-submodules
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      - id: check-merge-conflict
+      - id: check-yaml
       - id: end-of-file-fixer
 
-  # Check for merge conflict markers
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+  # Rust formatting
+  - repo: https://github.com/dkupreichik/rust-pre-commit
+    rev: v0.1.2
     hooks:
-      - id: check-merge-conflict
+      - id: rustfmt
+      - id: clippy
+        args: ['--', '-D', 'warnings']
 
-  # YAML/TOML: consistency checks
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+  # Ensure .env.example is present when .env exists
+  - repo: local
     hooks:
-      - id: check-yaml
-      - id: check-toml
-
-  # Branch name format (feature|fix|docs|refactor|chore|ci)/description
-  - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.6.0
-    hooks:
-      - id: branch-name-format
-        args: ['--pattern', '^(feature|fix|docs|refactor|chore|ci|test|build|deps)\\/[a-z0-9-]+$']
-        exclude: ^main$|^dev$
+      - id: env-file-check
+        name: Check .env files not committed
+        entry: bash -c 'if git diff --cached --name-only | grep -E "^\.env$" >/dev/null 2>&1; then echo "❌ .env file staged!"; exit 1; fi'
+        language: system
+        pass_filenames: false

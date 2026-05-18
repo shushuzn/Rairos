@@ -62,6 +62,39 @@ pub struct ResearchGap {
     pub severity: String,
 }
 
+#[derive(Debug, Clone)]
+pub struct GapVerificationResult {
+    pub is_valid: bool,
+    pub confidence_adjustment: f64,
+    pub issues: Vec<String>,
+}
+
+impl GapVerificationResult {
+    pub fn valid() -> Self {
+        Self {
+            is_valid: true,
+            confidence_adjustment: 0.0,
+            issues: Vec::new(),
+        }
+    }
+
+    pub fn invalid(issues: Vec<String>) -> Self {
+        Self {
+            is_valid: false,
+            confidence_adjustment: -0.3,
+            issues,
+        }
+    }
+
+    pub fn questionable(issues: Vec<String>, adjustment: f64) -> Self {
+        Self {
+            is_valid: true,
+            confidence_adjustment: adjustment,
+            issues,
+        }
+    }
+}
+
 // ─── Detect gaps using keyword patterns ────────────────────────────────────────
 
 /// Detect research gaps using keyword pattern matching (no LLM needed).
@@ -132,12 +165,138 @@ pub async fn detect_gaps_llm(
         Ok(response) => {
             match response {
                 crate::LlmResponse::NonStream(non_stream) => {
-                    parse_gaps(&non_stream.content, topic)
+                    let gaps = parse_gaps(&non_stream.content, topic);
+                    verify_gaps(llm, model, gaps, paper_summaries).await
                 }
                 _ => Vec::new(),
             }
         }
         Err(_) => Vec::new(),
+    }
+}
+
+const VERIFY_GAP_PROMPT: &str = r#"你是一个严谨的研究Gap验证助手。对于给定的Gap，检查其evidence是否被论文内容真正支持。
+
+Gap类型: {gap_type}
+Gap描述: {description}
+引用的论文: {evidence_papers}
+论文内容: {paper_summaries}
+
+请验证：
+1. 这些论文真的支持这个Gap吗？
+2. 引用的论文内容是否与Gap描述匹配？
+3. 是否有矛盾或过度推断？
+
+请以JSON格式返回验证结果：
+{{"is_valid": true/false, "confidence_adjustment": -0.3到0.3, "issues": ["问题1", "问题2"]}}
+
+如果Gap有效且有充分证据支持，返回 {{"is_valid": true, "confidence_adjustment": 0.0, "issues": []}}。
+如果Gap存在问题（如证据不支持、引用错误、过度推断），返回 {{"is_valid": false, "confidence_adjustment": -0.3, "issues": ["具体问题描述"]}}。"#;
+
+async fn verify_gaps(
+    llm: &dyn LlmClient,
+    model: &str,
+    mut gaps: Vec<ResearchGap>,
+    paper_summaries: &str,
+) -> Vec<ResearchGap> {
+    if gaps.is_empty() || paper_summaries.is_empty() {
+        return gaps;
+    }
+
+    let mut verified_gaps = Vec::new();
+
+    for gap in gaps {
+        let verification = verify_single_gap(llm, model, &gap, paper_summaries).await;
+
+        let mut adjusted_gap = gap;
+        adjusted_gap.confidence = (adjusted_gap.confidence + verification.confidence_adjustment).clamp(0.0, 1.0);
+
+        if !verification.is_valid {
+            adjusted_gap.description.push_str(&format!(" [验证存疑: {}]", verification.issues.join("; ")));
+        }
+
+        verified_gaps.push(adjusted_gap);
+    }
+
+    verified_gaps
+}
+
+async fn verify_single_gap(
+    llm: &dyn LlmClient,
+    model: &str,
+    gap: &ResearchGap,
+    paper_summaries: &str,
+) -> GapVerificationResult {
+    let evidence_str = if gap.evidence_papers.is_empty() {
+        "无".to_string()
+    } else {
+        gap.evidence_papers.join(", ")
+    };
+
+    let prompt = VERIFY_GAP_PROMPT
+        .replace("{gap_type}", gap.gap_type.as_str())
+        .replace("{description}", &gap.description)
+        .replace("{evidence_papers}", &evidence_str)
+        .replace("{paper_summaries}", paper_summaries);
+
+    let messages = vec![Message {
+        role: "user".to_string(),
+        content: prompt,
+    }];
+
+    match llm.complete(messages, model, 0.1, 500).await {
+        Ok(response) => {
+            match response {
+                crate::LlmResponse::NonStream(non_stream) => {
+                    parse_verification_result(&non_stream.content)
+                }
+                _ => GapVerificationResult::valid(),
+            }
+        }
+        Err(_) => GapVerificationResult::valid(),
+    }
+}
+
+fn parse_verification_result(content: &str) -> GapVerificationResult {
+    let content = content.trim();
+
+    let is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
+        true
+    } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
+        false
+    } else {
+        return GapVerificationResult::valid();
+    };
+
+    let confidence_adjustment = if let Some(pos) = content.find("\"confidence_adjustment\":") {
+        let start = pos + "\"confidence_adjustment\":".len();
+        let end = content[start..].find(',').map(|i| start + i).unwrap_or(content.len());
+        let val_str = content[start..end].trim().trim_matches(|c| c == ' ' || c == '}' || c == ',');
+        val_str.parse::<f64>().unwrap_or(0.0)
+    } else {
+        0.0
+    };
+
+    let mut issues = Vec::new();
+    if let Some(start) = content.find("\"issues\":") {
+        let issues_str = &content[start..];
+        if let Some(arr_start) = issues_str.find('[') {
+            if let Some(arr_end) = issues_str.find(']') {
+                let items = &issues_str[arr_start + 1..arr_end];
+                for item in items.split(',') {
+                    let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                    if !item.is_empty() && item != "[]" && item != "issues" {
+                        issues.push(item.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    if is_valid {
+        GapVerificationResult::questionable(issues, confidence_adjustment)
+    } else {
+        GapVerificationResult::invalid(issues)
     }
 }
 
@@ -257,5 +416,47 @@ mod tests {
     fn test_gap_type_as_str() {
         assert_eq!(GapType::MethodLimitation.as_str(), "method_limitation");
         assert_eq!(GapType::Contradiction.as_str(), "contradiction");
+    }
+
+    #[test]
+    fn test_parse_verification_result_valid() {
+        let json = r#"{"is_valid": true, "confidence_adjustment": 0.1, "issues": []}"#;
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+        assert!((result.confidence_adjustment - 0.1).abs() < 0.01);
+        assert!(result.issues.is_empty());
+    }
+
+    #[test]
+    fn test_parse_verification_result_invalid() {
+        let json = r#"{"is_valid": false, "confidence_adjustment": -0.3, "issues": ["论文不支持此Gap", "引用错误"]}"#;
+        let result = parse_verification_result(json);
+        assert!(!result.is_valid);
+        assert!((result.confidence_adjustment - (-0.3)).abs() < 0.01);
+        assert_eq!(result.issues.len(), 2);
+    }
+
+    #[test]
+    fn test_parse_verification_result_malformed() {
+        let json = "not json at all";
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+    }
+
+    #[test]
+    fn test_gap_verification_result_valid() {
+        let result = GapVerificationResult::valid();
+        assert!(result.is_valid);
+        assert!((result.confidence_adjustment - 0.0).abs() < 0.001);
+        assert!(result.issues.is_empty());
+    }
+
+    #[test]
+    fn test_gap_verification_result_invalid() {
+        let issues = vec!["证据不支持".to_string()];
+        let result = GapVerificationResult::invalid(issues.clone());
+        assert!(!result.is_valid);
+        assert!((result.confidence_adjustment - (-0.3)).abs() < 0.001);
+        assert_eq!(result.issues, issues);
     }
 }

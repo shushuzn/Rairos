@@ -82,6 +82,8 @@ data/llm_cache/
 # Misc
 
 .env
+.env.*
+!.env.example
 
 AI-Research/
 

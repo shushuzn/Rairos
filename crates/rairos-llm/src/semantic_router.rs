@@ -54,6 +54,23 @@ pub struct RouteDecision {
     pub confidence: f64,
     pub primary_command: String,
     pub reasoning: String,
+    pub verification_warnings: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct RouteVerificationResult {
+    pub is_valid: bool,
+    pub warnings: Vec<String>,
+}
+
+impl RouteVerificationResult {
+    pub fn valid() -> Self {
+        Self { is_valid: true, warnings: Vec::new() }
+    }
+
+    pub fn with_warnings(warnings: Vec<String>) -> Self {
+        Self { is_valid: warnings.is_empty(), warnings }
+    }
 }
 
 // ─── Keyword patterns per query type ────────────────────────────────────────
@@ -115,6 +132,7 @@ pub fn route_by_keyword(query: &str) -> RouteDecision {
         confidence,
         primary_command: best_qt.command().to_string(),
         reasoning: format!("[keyword fallback: score={}]", best_score),
+        verification_warnings: Vec::new(),
     }
 }
 
@@ -177,17 +195,122 @@ pub async fn route_by_llm(
                 _ => None,
             };
             match qt {
-                Some(qt) => RouteDecision {
-                    query_type: qt.as_str().to_string(),
-                    confidence,
-                    primary_command: qt.command().to_string(),
-                    reasoning: reasoning.to_string(),
-                },
+                Some(qt) => {
+                    let verification = verify_route_decision(query, qt.as_str(), confidence);
+                    RouteDecision {
+                        query_type: qt.as_str().to_string(),
+                        confidence,
+                        primary_command: qt.command().to_string(),
+                        reasoning: reasoning.to_string(),
+                        verification_warnings: verification.warnings,
+                    }
+                }
                 None => route_by_keyword(query),
             }
         }
         Err(_) => route_by_keyword(query),
     }
+}
+
+const VERIFY_ROUTE_PROMPT: &str = r#"你是一个严谨的路由决策验证助手。检查以下路由决策是否合理。
+
+用户查询: {query}
+路由类型: {query_type}
+置信度: {confidence}
+
+请验证：
+1. 路由类型是否与查询匹配？
+2. 置信度是否合理？
+
+请以JSON格式返回：
+{{"is_valid": true/false, "warnings": ["问题1"]}}
+
+如果决策合理，返回 {{"is_valid": true, "warnings": []}}。
+如果有问题，返回 {{"is_valid": false, "warnings": ["具体问题"]}}。"#;
+
+async fn verify_route_decision_async(
+    llm: &dyn crate::LlmClient,
+    model: &str,
+    query: &str,
+    query_type: &str,
+    confidence: f64,
+) -> RouteVerificationResult {
+    if confidence > 0.8 {
+        return RouteVerificationResult::valid();
+    }
+
+    let prompt = VERIFY_ROUTE_PROMPT
+        .replace("{query}", &query.chars().take(100).collect::<String>())
+        .replace("{query_type}", query_type)
+        .replace("{confidence}", &format!("{:.2}", confidence));
+
+    let msg = crate::Message { role: "user".to_string(), content: prompt };
+
+    match llm.complete(vec![msg], model, 0.1, 200).await {
+        Ok(crate::LlmResponse::NonStream(ns)) => {
+            parse_route_verification_result(&ns.content)
+        }
+        _ => RouteVerificationResult::valid(),
+    }
+}
+
+fn verify_route_decision(query: &str, query_type: &str, confidence: f64) -> RouteVerificationResult {
+    let mut warnings = Vec::new();
+
+    if confidence < 0.3 {
+        warnings.push("置信度较低，可能需要人工确认".to_string());
+    }
+
+    let query_lower = query.to_lowercase();
+    let type_keywords: &[(&str, &[&str])] = &[
+        ("gap_analysis", &["gap", "gaps", "空白", "未解决", "missing", "opportunity", "limitation"]),
+        ("hypothesis_generation", &["hypothesis", "假设", "hypothesize", "predict", "预测"]),
+        ("experiment", &["experiment", "实验", "ab test", "evaluate", "评估", "validate", "验证"]),
+        ("insight", &["insight", "insights", "发现", "洞察", "pattern", "key finding"]),
+        ("narrative", &["narrative", "story", "线程", "progress", "跟踪", "进展"]),
+        ("paper_search", &["paper", "papers", "search", "论文", "搜索", "arxiv", "文献"]),
+        ("question_answer", &["what", "who", "how", "why", "explain", "什么", "如何", "为什么", "请问"]),
+        ("general", &["chat", "talk", "discuss", "对话", "聊聊", "tell me", "介绍"]),
+    ];
+
+    if let Some((_, keywords)) = type_keywords.iter().find(|(t, _)| *t == query_type) {
+        let match_count = keywords.iter().filter(|kw| query_lower.contains(*kw)).count();
+        if match_count == 0 && confidence < 0.5 {
+            warnings.push(format!("查询类型 '{}' 与关键词不匹配", query_type));
+        }
+    }
+
+    RouteVerificationResult::with_warnings(warnings)
+}
+
+fn parse_route_verification_result(content: &str) -> RouteVerificationResult {
+    let content = content.trim();
+
+    let _is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
+        true
+    } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
+        false
+    } else {
+        return RouteVerificationResult::valid();
+    };
+
+    let mut warnings = Vec::new();
+    if let Some(start) = content.find("\"warnings\":") {
+        let warnings_str = &content[start..];
+        if let Some(arr_start) = warnings_str.find('[') {
+            if let Some(arr_end) = warnings_str.find(']') {
+                let items = &warnings_str[arr_start + 1..arr_end];
+                for item in items.split(',') {
+                    let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                    if !item.is_empty() && item != "[]" && item != "warnings" {
+                        warnings.push(item.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    RouteVerificationResult::with_warnings(warnings)
 }
 
 #[cfg(test)]
@@ -241,5 +364,59 @@ mod tests {
     fn test_query_type_command() {
         assert_eq!(QueryType::GapAnalysis.command(), "gap");
         assert_eq!(QueryType::General.command(), "chat");
+    }
+
+    #[test]
+    fn test_route_decision_has_verification_warnings() {
+        let r = route_by_keyword("What are the research gaps in transformer efficiency?");
+        assert!(r.verification_warnings.is_empty());
+    }
+
+    #[test]
+    fn test_verify_route_decision_low_confidence() {
+        let result = verify_route_decision("some random text", "gap_analysis", 0.2);
+        assert!(!result.is_valid);
+        assert!(!result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_verify_route_decision_high_confidence() {
+        let result = verify_route_decision("gap gaps missing opportunity", "gap_analysis", 0.9);
+        assert!(result.is_valid);
+    }
+
+    #[test]
+    fn test_route_verification_result_valid() {
+        let result = RouteVerificationResult::valid();
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_route_verification_result_with_warnings() {
+        let warnings = vec!["置信度过低".to_string()];
+        let result = RouteVerificationResult::with_warnings(warnings);
+        assert!(!result.is_valid);
+    }
+
+    #[test]
+    fn test_parse_route_verification_result_valid() {
+        let json = r#"{"is_valid": true, "warnings": []}"#;
+        let result = parse_route_verification_result(json);
+        assert!(result.is_valid);
+    }
+
+    #[test]
+    fn test_parse_route_verification_result_invalid() {
+        let json = r#"{"is_valid": false, "warnings": ["查询类型不匹配"]}"#;
+        let result = parse_route_verification_result(json);
+        assert!(!result.is_valid);
+    }
+
+    #[test]
+    fn test_parse_route_verification_result_malformed() {
+        let json = "not json";
+        let result = parse_route_verification_result(json);
+        assert!(result.is_valid);
     }
 }

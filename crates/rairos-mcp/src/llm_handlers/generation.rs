@@ -36,6 +36,7 @@ impl ToolHandler for BriefingGenerateHandler {
             "key_contributions": result.key_contributions, "methodology": result.methodology,
             "results": result.results, "relevance": result.relevance, "verdict": result.verdict,
             "markdown": result.markdown,
+            "verification_warnings": result.verification_warnings,
         }))
     }
 }

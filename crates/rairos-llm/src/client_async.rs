@@ -24,35 +24,35 @@ impl AsyncClient {
     ) -> Result<String, String> {
         let url = format!("{}/chat/completions", self.base_url.trim_end_matches('/'));
 
-        let mut msgs: Vec<HashMap<String, String>> = messages;
+        let mut all_messages: Vec<serde_json::Value> = Vec::new();
+
         if let Some(sys) = system_prompt {
-            let mut system_msg = HashMap::new();
-            system_msg.insert("role".to_string(), "system".to_string());
-            system_msg.insert("content".to_string(), sys.to_string());
-            let mut new_msgs = vec![system_msg];
-            new_msgs.append(&mut msgs);
-            msgs = new_msgs;
+            all_messages.push(serde_json::json!({
+                "role": "system",
+                "content": sys
+            }));
         }
 
-        let mut payload = HashMap::new();
-        payload.insert("model".to_string(), self.model.clone());
-        payload.insert("temperature".to_string(), "0.2".to_string());
-        payload.insert(
-            "messages".to_string(),
-            serde_json::to_string(&msgs).unwrap_or_default(),
-        );
-        payload.insert("stream".to_string(), stream.to_string());
+        for msg in messages {
+            all_messages.push(serde_json::json!({
+                "role": msg.get("role").unwrap_or(&"user".to_string()),
+                "content": msg.get("content").unwrap_or(&"".to_string())
+            }));
+        }
 
         if let Some(prompt) = user_prompt {
-            let mut user_msg = HashMap::new();
-            user_msg.insert("role".to_string(), "user".to_string());
-            user_msg.insert("content".to_string(), prompt.to_string());
-            msgs.push(user_msg);
-            payload.insert(
-                "messages".to_string(),
-                serde_json::to_string(&msgs).unwrap_or_default(),
-            );
+            all_messages.push(serde_json::json!({
+                "role": "user",
+                "content": prompt
+            }));
         }
+
+        let payload = serde_json::json!({
+            "model": self.model,
+            "temperature": 0.2,
+            "messages": all_messages,
+            "stream": stream
+        });
 
         let client = reqwest::Client::new();
         let response = client

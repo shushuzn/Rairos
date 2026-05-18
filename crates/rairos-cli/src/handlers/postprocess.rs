@@ -102,7 +102,7 @@ pub fn handle_postprocess(
     Ok(())
 }
 
-pub fn find_pnote_path(root: &std::path::Path, paper: Option<&rairos_core::Paper>) -> Option<std::path::PathBuf> {
+fn find_pnote_path(root: &std::path::Path, paper: Option<&rairos_core::Paper>) -> Option<std::path::PathBuf> {
     let paper = paper?;
     let category_dir = "02-Models";
     let title_slug = slugify(&paper.title);
@@ -120,7 +120,7 @@ pub fn find_pnote_path(root: &std::path::Path, paper: Option<&rairos_core::Paper
     }
 }
 
-pub fn slugify(title: &str) -> String {
+fn slugify(title: &str) -> String {
     let mut slug = String::new();
     for c in title.chars() {
         if c.is_alphanumeric() || c == '-' || c == '_' {

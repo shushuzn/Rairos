@@ -1,7 +1,6 @@
 use chrono::Utc;
 use serde::Serialize;
 use serde_json::{json, Value};
-use std::collections::HashMap;
 
 use crate::types::{NotifyError, Platform, Result};
 use crate::payloads::{GapAlertPayload, PaperIngestedPayload, ParadigmShiftPayload};

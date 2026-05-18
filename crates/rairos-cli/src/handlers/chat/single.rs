@@ -68,7 +68,7 @@ pub fn handle_chat(
     Ok(())
 }
 
-pub fn run_chat_single(
+fn run_chat_single(
     question: &str,
     db: &Database,
     rt: &tokio::runtime::Runtime,
@@ -125,6 +125,14 @@ pub fn run_chat_single(
         client.chat_completions(messages, None, Some(rag_system_prompt), false).await
     }).map_err(|e| anyhow::anyhow!("LLM call failed: {}", e))?;
 
+    let verification = rt.block_on(async {
+        verify_chat_answer(&answer, question, &context_str, api_key, &base_url, &chat_model).await
+    });
+
+    if let Some(warning) = verification {
+        eprintln!("\n⚠️  Verification Warning: {}", warning);
+    }
+
     println!("{}", answer);
     println!("{}", "═".repeat(60));
 
@@ -140,4 +148,90 @@ pub fn run_chat_single(
     }
 
     Ok(())
+}
+
+const VERIFY_ANSWER_PROMPT: &str = r#"你是一个答案验证助手。检查以下回答是否准确基于提供的上下文。
+
+问题: {question}
+上下文: {context}
+回答: {answer}
+
+检查：
+1. 回答中的事实是否在上下文中找到支持？
+2. 是否有捏造的内容？
+3. 是否正确引用了原文？
+
+请以JSON格式返回验证结果：
+{{"is_valid": true/false, "issues": ["问题1", "问题2"]}}
+
+如果回答有效，返回 {{"is_valid": true, "issues": []}}。
+如果回答存在问题，返回 {{"is_valid": false, "issues": ["具体问题描述"]}}。"#;
+
+async fn verify_chat_answer(
+    answer: &str,
+    question: &str,
+    context: &str,
+    api_key: &str,
+    base_url: &str,
+    chat_model: &str,
+) -> Option<String> {
+    let prompt = VERIFY_ANSWER_PROMPT
+        .replace("{question}", question)
+        .replace("{context}", context)
+        .replace("{answer}", answer);
+
+    let client = rairos_llm::client_async::AsyncClient::new(
+        api_key.to_string(),
+        base_url.to_string(),
+        chat_model.to_string(),
+    );
+
+    let messages = vec![
+        std::collections::HashMap::from([
+            ("role".to_string(), "user".to_string()),
+            ("content".to_string(), prompt),
+        ]),
+    ];
+
+    match client.chat_completions(messages, None, None, false).await {
+        Ok(response) => {
+            parse_verification_response(&response)
+        }
+        Err(_) => None,
+    }
+}
+
+fn parse_verification_response(response: &str) -> Option<String> {
+    let response = response.trim();
+
+    if response.contains("\"is_valid\": true") || response.contains("\"is_valid\":true") {
+        return None;
+    }
+
+    if response.contains("\"is_valid\": false") || response.contains("\"is_valid\":false") {
+        let mut issues = Vec::new();
+
+        if let Some(start) = response.find("\"issues\":") {
+            let issues_str = &response[start..];
+            if let Some(arr_start) = issues_str.find('[') {
+                if let Some(arr_end) = issues_str.find(']') {
+                    let items = &issues_str[arr_start + 1..arr_end];
+                    for item in items.split(',') {
+                        let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                        if !item.is_empty() && item != "[]" && item != "issues" {
+                            issues.push(item.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        if issues.is_empty() {
+            Some("回答可能存在准确性问题".to_string())
+        } else {
+            Some(issues.join("; "))
+        }
+    } else {
+        None
+    }
 }

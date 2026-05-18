@@ -139,6 +139,23 @@ pub struct ResearchPlan {
     pub parent_plan_id: String,
     pub created_at: String,
     pub updated_at: String,
+    pub verification_warnings: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct RoutePlanVerificationResult {
+    pub is_valid: bool,
+    pub warnings: Vec<String>,
+}
+
+impl RoutePlanVerificationResult {
+    pub fn valid() -> Self {
+        Self { is_valid: true, warnings: Vec::new() }
+    }
+
+    pub fn with_warnings(warnings: Vec<String>) -> Self {
+        Self { is_valid: warnings.is_empty(), warnings }
+    }
 }
 
 impl ResearchPlan {
@@ -155,6 +172,7 @@ impl ResearchPlan {
             parent_plan_id: String::new(),
             created_at: now.clone(),
             updated_at: now,
+            verification_warnings: Vec::new(),
         }
     }
 
@@ -350,8 +368,91 @@ pub async fn create_plan(
         _ => default_steps(hypothesis),
     };
 
-    
-    ResearchPlan::new(&plan_id, hypothesis, goal, steps)
+    let verification = verify_route_plan(llm, model, hypothesis, goal, &steps).await;
+
+    let mut plan = ResearchPlan::new(&plan_id, hypothesis, goal, steps);
+    plan.verification_warnings = verification.warnings;
+    plan
+}
+
+const VERIFY_ROUTE_PLAN_PROMPT: &str = r#"你是一个严谨的研究计划验证助手。检查以下计划是否合理。
+
+假说: {hypothesis}
+目标: {goal}
+步骤数: {step_count}
+
+请验证：
+1. 步骤是否与假说和目标相关？
+2. 步骤顺序是否合理（依赖关系是否正确）？
+3. 每个步骤是否可行？
+4. 估计时间是否合理？
+
+请以JSON格式返回：
+{{"is_valid": true/false, "warnings": ["问题1", "问题2"]}}
+
+如果计划合理，返回 {{"is_valid": true, "warnings": []}}。
+如果有问题，返回 {{"is_valid": false, "warnings": ["具体问题"]}}。"#;
+
+async fn verify_route_plan(
+    llm: &dyn crate::LlmClient,
+    model: &str,
+    hypothesis: &str,
+    goal: &str,
+    steps: &[PlanStep],
+) -> RoutePlanVerificationResult {
+    if steps.is_empty() {
+        return RoutePlanVerificationResult::valid();
+    }
+
+    let step_count = steps.len();
+    let steps_str = steps.iter().enumerate().map(|(i, s)| {
+        format!("{}. [{}] {} (预计{}小时)", i + 1, s.step_type, s.description, s.estimated_hours)
+    }).collect::<Vec<_>>().join("\n");
+
+    let prompt = VERIFY_ROUTE_PLAN_PROMPT
+        .replace("{hypothesis}", hypothesis)
+        .replace("{goal}", goal)
+        .replace("{step_count}", &step_count.to_string())
+        .replace("{steps}", &steps_str);
+
+    let msg = crate::Message { role: "user".to_string(), content: prompt };
+
+    match llm.complete(vec![msg], model, 0.1, 300).await {
+        Ok(crate::LlmResponse::NonStream(ns)) => {
+            parse_verification_result(&ns.content)
+        }
+        _ => RoutePlanVerificationResult::valid(),
+    }
+}
+
+fn parse_verification_result(content: &str) -> RoutePlanVerificationResult {
+    let content = content.trim();
+
+    let _is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
+        true
+    } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
+        false
+    } else {
+        return RoutePlanVerificationResult::valid();
+    };
+
+    let mut warnings = Vec::new();
+    if let Some(start) = content.find("\"warnings\":") {
+        let warnings_str = &content[start..];
+        if let Some(arr_start) = warnings_str.find('[') {
+            if let Some(arr_end) = warnings_str.find(']') {
+                let items = &warnings_str[arr_start + 1..arr_end];
+                for item in items.split(',') {
+                    let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                    if !item.is_empty() && item != "[]" && item != "warnings" {
+                        warnings.push(item.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    RoutePlanVerificationResult::with_warnings(warnings)
 }
 
 fn parse_plan_steps(body: &str) -> Vec<PlanStep> {
@@ -506,5 +607,50 @@ mod tests {
         for t in &["read_paper", "run_experiment", "write_analysis", "survey_baselines"] {
             assert_eq!(StepType::from_string(t).as_str(), *t);
         }
+    }
+
+    #[test]
+    fn test_parse_verification_result_valid() {
+        let json = r#"{"is_valid": true, "warnings": []}"#;
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_parse_verification_result_invalid() {
+        let json = r#"{"is_valid": false, "warnings": ["步骤顺序不合理", "估计时间过长"]}"#;
+        let result = parse_verification_result(json);
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings.len(), 2);
+    }
+
+    #[test]
+    fn test_parse_verification_result_malformed() {
+        let json = "not json at all";
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+    }
+
+    #[test]
+    fn test_route_plan_verification_result_valid() {
+        let result = RoutePlanVerificationResult::valid();
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_route_plan_verification_result_with_warnings() {
+        let warnings = vec!["依赖关系错误".to_string()];
+        let result = RoutePlanVerificationResult::with_warnings(warnings);
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings.len(), 1);
+    }
+
+    #[test]
+    fn test_research_plan_has_verification_warnings() {
+        let steps = vec![PlanStep::new("s1", "read_paper", "R1", 1.0, vec![])];
+        let plan = ResearchPlan::new("p1", "h", "g", steps);
+        assert!(plan.verification_warnings.is_empty());
     }
 }

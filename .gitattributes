@@ -21,3 +21,7 @@
 *.pdf   binary
 *.zip   binary
 *.gz    binary
+
+# Secret protection - filters keys from commits
+.env    filter=secretsFilter
+secrets.txt filter=secretsFilter

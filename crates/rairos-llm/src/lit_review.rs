@@ -29,6 +29,23 @@ pub struct LitReviewResult {
     pub sections: Vec<LitReviewSection>,
     pub summary: String,
     pub references: Vec<String>,
+    pub verification_warnings: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct LitReviewVerificationResult {
+    pub is_valid: bool,
+    pub warnings: Vec<String>,
+}
+
+impl LitReviewVerificationResult {
+    pub fn valid() -> Self {
+        Self { is_valid: true, warnings: Vec::new() }
+    }
+
+    pub fn with_warnings(warnings: Vec<String>) -> Self {
+        Self { is_valid: warnings.is_empty(), warnings }
+    }
 }
 
 pub async fn generate_lit_review(
@@ -57,11 +74,97 @@ pub async fn generate_lit_review(
             sections: vec![],
             summary: "Failed to generate.".to_string(),
             references: vec![],
+            verification_warnings: Vec::new(),
         },
     };
 
     let (sections, summary, references) = parse_review(&ns.content, papers);
-    LitReviewResult { title: topic.to_string(), sections, summary, references }
+    let verification = verify_lit_review(llm, model, topic, papers, &sections, &summary).await;
+    LitReviewResult {
+        title: topic.to_string(),
+        sections,
+        summary,
+        references,
+        verification_warnings: verification.warnings,
+    }
+}
+
+const VERIFY_LIT_REVIEW_PROMPT: &str = r#"你是一个严谨的文献综述验证助手。检查以下文献综述是否准确基于提供的论文。
+
+主题: {topic}
+论文数量: {paper_count}
+
+综述摘要: {summary}
+
+请验证：
+1. 综述是否涵盖所有论文的主要贡献？
+2. 综述是否准确反映论文之间的关系？
+3. 总结是否与论文内容一致？
+
+请以JSON格式返回：
+{{"is_valid": true/false, "warnings": ["问题1", "问题2"]}}
+
+如果综述准确，返回 {{"is_valid": true, "warnings": []}}。
+如果有问题，返回 {{"is_valid": false, "warnings": ["具体问题"]}}。"#;
+
+async fn verify_lit_review(
+    llm: &dyn LlmClient,
+    model: &str,
+    topic: &str,
+    papers: &[LitReviewPaper],
+    sections: &[LitReviewSection],
+    summary: &str,
+) -> LitReviewVerificationResult {
+    if sections.is_empty() || summary.is_empty() {
+        return LitReviewVerificationResult::valid();
+    }
+
+    let paper_count = papers.len();
+    let summary_preview = summary.chars().take(300).collect::<String>();
+
+    let prompt = VERIFY_LIT_REVIEW_PROMPT
+        .replace("{topic}", topic)
+        .replace("{paper_count}", &paper_count.to_string())
+        .replace("{summary}", &summary_preview);
+
+    let msg = crate::Message { role: "user".to_string(), content: prompt };
+
+    match llm.complete(vec![msg], model, 0.1, 300).await {
+        Ok(crate::LlmResponse::NonStream(ns)) => {
+            parse_verification_result(&ns.content)
+        }
+        _ => LitReviewVerificationResult::valid(),
+    }
+}
+
+fn parse_verification_result(content: &str) -> LitReviewVerificationResult {
+    let content = content.trim();
+
+    let _is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
+        true
+    } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
+        false
+    } else {
+        return LitReviewVerificationResult::valid();
+    };
+
+    let mut warnings = Vec::new();
+    if let Some(start) = content.find("\"warnings\":") {
+        let warnings_str = &content[start..];
+        if let Some(arr_start) = warnings_str.find('[') {
+            if let Some(arr_end) = warnings_str.find(']') {
+                let items = &warnings_str[arr_start + 1..arr_end];
+                for item in items.split(',') {
+                    let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                    if !item.is_empty() && item != "[]" && item != "warnings" {
+                        warnings.push(item.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    LitReviewVerificationResult::with_warnings(warnings)
 }
 
 fn parse_review(text: &str, papers: &[LitReviewPaper]) -> (Vec<LitReviewSection>, String, Vec<String>) {
@@ -142,5 +245,43 @@ mod tests {
         let (sections, summary, _) = parse_review(text, &papers);
         assert_eq!(sections.len(), 2);
         assert!(!summary.is_empty());
+    }
+
+    #[test]
+    fn test_parse_verification_result_valid() {
+        let json = r#"{"is_valid": true, "warnings": []}"#;
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_parse_verification_result_invalid() {
+        let json = r#"{"is_valid": false, "warnings": ["综述未涵盖所有论文"]}"#;
+        let result = parse_verification_result(json);
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings.len(), 1);
+    }
+
+    #[test]
+    fn test_parse_verification_result_malformed() {
+        let json = "not json at all";
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+    }
+
+    #[test]
+    fn test_lit_review_verification_result_valid() {
+        let result = LitReviewVerificationResult::valid();
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_lit_review_verification_result_with_warnings() {
+        let warnings = vec!["总结不准确".to_string()];
+        let result = LitReviewVerificationResult::with_warnings(warnings);
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings.len(), 1);
     }
 }

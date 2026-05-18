@@ -1,4 +1,3 @@
-use crate::payloads::GapAlertPayload;
 use crate::types::Result;
 use crate::webhook::WebhookDispatcher;
 

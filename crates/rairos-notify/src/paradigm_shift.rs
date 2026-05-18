@@ -1,4 +1,4 @@
-use crate::payloads::{ContradictionEntry, ParadigmShiftPayload};
+use crate::payloads::ContradictionEntry;
 use crate::types::Result;
 use crate::webhook::WebhookDispatcher;
 

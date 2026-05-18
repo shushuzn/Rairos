@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::types::{NotifyError, Result};
+use crate::types::Result;
 use crate::webhook::WebhookDispatcher;
 
 #[derive(Debug, Clone, Default)]

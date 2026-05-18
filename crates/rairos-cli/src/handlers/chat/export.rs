@@ -28,7 +28,7 @@ pub fn export_chat_history(history: &[(String, String)], path: &str, fmt: Option
     let _ = std::fs::write(path, content);
 }
 
-pub fn export_chat_to_markdown(history: &[(String, String)]) -> String {
+fn export_chat_to_markdown(history: &[(String, String)]) -> String {
     use chrono::Local;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S");
     let mut md = format!("# AI Research OS — Chat Export\n\n**Exported**: {now}\n\n---\n\n", now = now);
@@ -38,7 +38,7 @@ pub fn export_chat_to_markdown(history: &[(String, String)]) -> String {
     md
 }
 
-pub fn export_chat_to_html(history: &[(String, String)]) -> String {
+fn export_chat_to_html(history: &[(String, String)]) -> String {
     use chrono::Local;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S");
     let mut html = format!(

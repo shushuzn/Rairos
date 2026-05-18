@@ -1,4 +1,3 @@
-use crate::payloads::PaperIngestedPayload;
 use crate::types::Result;
 use crate::webhook::WebhookDispatcher;
 

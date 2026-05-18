@@ -15,6 +15,29 @@ pub struct BriefingResult {
     pub relevance: String,
     pub verdict: String,
     pub markdown: String,
+    pub verification_warnings: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct BriefingVerificationResult {
+    pub is_valid: bool,
+    pub warnings: Vec<String>,
+}
+
+impl BriefingVerificationResult {
+    pub fn valid() -> Self {
+        Self {
+            is_valid: true,
+            warnings: Vec::new(),
+        }
+    }
+
+    pub fn with_warnings(warnings: Vec<String>) -> Self {
+        Self {
+            is_valid: warnings.is_empty(),
+            warnings,
+        }
+    }
 }
 
 pub async fn generate_briefing(
@@ -49,6 +72,8 @@ pub async fn generate_briefing(
             let verdict = extract_section(&markdown, "## Verdict")
                 .unwrap_or_else(|| "No verdict.".to_string());
 
+            let verification = verify_briefing(llm, model, title, abstract_text, &summary, &contributions, &methodology, &results).await;
+
             BriefingResult {
                 success: true,
                 arxiv_id: arxiv_id.to_string(),
@@ -59,6 +84,7 @@ pub async fn generate_briefing(
                 relevance,
                 verdict,
                 markdown,
+                verification_warnings: verification.warnings,
             }
         }
         _ => BriefingResult {
@@ -71,7 +97,102 @@ pub async fn generate_briefing(
             relevance: String::new(),
             verdict: String::new(),
             markdown: String::new(),
+            verification_warnings: Vec::new(),
         },
+    }
+}
+
+const VERIFY_BRIEFING_PROMPT: &str = r#"你是一个严谨的研究简报验证助手。检查以下简报内容是否准确基于论文。
+
+论文标题: {title}
+论文摘要: {abstract}
+
+简报摘要: {summary}
+关键贡献: {contributions}
+方法论: {methodology}
+结果: {results}
+
+请验证：
+1. 摘要是否准确反映论文主题？
+2. 关键贡献是否有论文支持？
+3. 方法论描述是否与论文一致？
+4. 结果描述是否有原文支持？
+
+请以JSON格式返回：
+{{"is_valid": true/false, "warnings": ["问题1", "问题2"]}}
+
+如果简报准确，返回 {{"is_valid": true, "warnings": []}}。
+如果有问题，返回 {{"is_valid": false, "warnings": ["具体问题"]}}。"#;
+
+async fn verify_briefing(
+    llm: &dyn LlmClient,
+    model: &str,
+    title: &str,
+    abstract_text: &str,
+    summary: &str,
+    contributions: &[String],
+    methodology: &str,
+    results: &str,
+) -> BriefingVerificationResult {
+    if summary.is_empty() || summary == "No summary generated." {
+        return BriefingVerificationResult::valid();
+    }
+
+    let contributions_str = if contributions.is_empty() {
+        "无".to_string()
+    } else {
+        contributions.iter().map(|s| format!("- {}", s)).collect::<Vec<_>>().join("\n")
+    };
+
+    let prompt = VERIFY_BRIEFING_PROMPT
+        .replace("{title}", title)
+        .replace("{abstract}", &abstract_text.chars().take(500).collect::<String>())
+        .replace("{summary}", summary)
+        .replace("{contributions}", &contributions_str)
+        .replace("{methodology}", methodology)
+        .replace("{results}", results);
+
+    let msg = Message { role: "user".to_string(), content: prompt };
+
+    match llm.complete(vec![msg], model, 0.1, 300).await {
+        Ok(crate::LlmResponse::NonStream(ns)) => {
+            parse_verification_result(&ns.content)
+        }
+        _ => BriefingVerificationResult::valid(),
+    }
+}
+
+fn parse_verification_result(content: &str) -> BriefingVerificationResult {
+    let content = content.trim();
+
+    let is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
+        true
+    } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
+        false
+    } else {
+        return BriefingVerificationResult::valid();
+    };
+
+    let mut warnings = Vec::new();
+    if let Some(start) = content.find("\"warnings\":") {
+        let warnings_str = &content[start..];
+        if let Some(arr_start) = warnings_str.find('[') {
+            if let Some(arr_end) = warnings_str.find(']') {
+                let items = &warnings_str[arr_start + 1..arr_end];
+                for item in items.split(',') {
+                    let item = item.trim().trim_matches('"').trim_matches(|c| c == '"' || c == ' ');
+                    if !item.is_empty() && item != "[]" && item != "warnings" {
+                        warnings.push(item.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    if is_valid {
+        BriefingVerificationResult::with_warnings(warnings)
+    } else {
+        BriefingVerificationResult::with_warnings(warnings)
     }
 }
 
@@ -116,5 +237,43 @@ mod tests {
         let bullets = extract_bullets(text, "## Key Contributions");
         assert_eq!(bullets.len(), 2);
         assert_eq!(bullets[0], "Contribution 1");
+    }
+
+    #[test]
+    fn test_parse_verification_result_valid() {
+        let json = r#"{"is_valid": true, "warnings": []}"#;
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_parse_verification_result_invalid() {
+        let json = r#"{"is_valid": false, "warnings": ["摘要与论文不符", "方法论描述错误"]}"#;
+        let result = parse_verification_result(json);
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings.len(), 2);
+    }
+
+    #[test]
+    fn test_parse_verification_result_malformed() {
+        let json = "not json at all";
+        let result = parse_verification_result(json);
+        assert!(result.is_valid);
+    }
+
+    #[test]
+    fn test_briefing_verification_result_valid() {
+        let result = BriefingVerificationResult::valid();
+        assert!(result.is_valid);
+        assert!(result.warnings.is_empty());
+    }
+
+    #[test]
+    fn test_briefing_verification_result_with_warnings() {
+        let warnings = vec!["摘要过短".to_string(), "缺少方法论描述".to_string()];
+        let result = BriefingVerificationResult::with_warnings(warnings.clone());
+        assert!(!result.is_valid);
+        assert_eq!(result.warnings, warnings);
     }
 }
