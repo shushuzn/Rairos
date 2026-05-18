@@ -35,9 +35,7 @@ impl ToolHandler for PaperGenerateHandler {
         let year_start = params.get("year_start").and_then(|v| v.as_i64()).unwrap_or(2010) as i32;
         let generate_pdf = params.get("generate_pdf").and_then(|v| v.as_str()).unwrap_or("false") == "true";
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(30))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client(30)?;
 
         let query_enc = urlencoding::encode(topic);
         let fields = "title,abstract,year,citationCount,externalIds,venue,journal,authors";

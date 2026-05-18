@@ -22,9 +22,7 @@ impl ToolHandler for PaperScienceDiscoveryHandler {
         let query = params["query"].as_str().ok_or("Missing query")?;
         let resource_type = params.get("resource_type").and_then(|v| v.as_str()).unwrap_or("all");
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(15))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client_default()?;
 
         let query_encoded = urlencoding::encode(query);
 
@@ -123,9 +121,7 @@ impl ToolHandler for PaperDatabaseLookupHandler {
         let term = params["term"].as_str().ok_or("Missing term")?;
         let limit = params.get("limit").and_then(|v| v.as_u64()).unwrap_or(5) as usize;
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(20))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client(20)?;
 
         let term_enc = urlencoding::encode(term);
 
@@ -721,9 +717,7 @@ impl ToolHandler for PaperFormatCitationHandler {
         let identifier = params["identifier"].as_str().ok_or("Missing identifier")?;
         let style = params.get("style").and_then(|v| v.as_str()).unwrap_or("all");
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(15))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client_default()?;
 
         let (metadata, id_type) = if identifier.starts_with("10.") {
             let url = format!("https://doi.org/{}", identifier);
@@ -1056,9 +1050,7 @@ impl ToolHandler for PaperLiteratureReviewHandler {
         let year_start = params.get("year_start").and_then(|v| v.as_i64()).unwrap_or(2010) as i32;
         let generate_pdf = params.get("generate_pdf").and_then(|v| v.as_str()).unwrap_or("false") == "true";
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(30))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client(30)?;
 
         let query_enc = urlencoding::encode(topic);
         let fields = "title,abstract,year,citationCount,externalIds,venue,journal,authors";

@@ -189,3 +189,14 @@ pub fn parse_arxiv_citation(xml: &str) -> Result<serde_json::Value, String> {
         "arxiv_id": arxiv_id,
     }))
 }
+
+pub fn http_client(timeout_secs: u64) -> Result<reqwest::Client, String> {
+    reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(timeout_secs))
+        .build()
+        .map_err(|e| format!("HTTP client error: {}", e))
+}
+
+pub fn http_client_default() -> Result<reqwest::Client, String> {
+    http_client(15)
+}

@@ -72,9 +72,7 @@ impl ToolHandler for CiteFetchHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let paper_id = params["paper_id"].as_str().ok_or("Missing paper_id")?;
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(15))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client_default()?;
 
         let url = format!(
             "https://api.semanticscholar.org/graph/v1/paper/{}?fields=title,citationCount,externalIds",
@@ -120,9 +118,7 @@ impl ToolHandler for PaperSearchMultiHandler {
         let limit = (params["limit"].as_u64().unwrap_or(10) as usize).min(100);
         let year_from = params.get("year_from").and_then(|v| v.as_u64()).map(|y| y as i32);
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(15))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client_default()?;
 
         let mut url = format!(
             "https://api.semanticscholar.org/graph/v1/paper/search?query={}&fields=title,year,abstract,citationCount,authors,openAccessPdf,externalIds&limit={}",
@@ -176,9 +172,7 @@ impl ToolHandler for PaperLookupDoiHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let doi = params["doi"].as_str().ok_or("Missing required parameter: doi")?;
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(15))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client_default()?;
 
         let url = format!(
             "https://api.crossref.org/works/{}?mailto=rairos@example.com",
@@ -244,9 +238,7 @@ impl ToolHandler for PaperCitationsHandler {
         let paper_id = params["paper_id"].as_str().ok_or("Missing required parameter: paper_id")?;
         let limit = (params["limit"].as_u64().unwrap_or(20) as usize).min(100);
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(20))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client(20)?;
 
         let fields = "title,year,citationCount,externalIds";
         let citing_url = format!(
@@ -333,9 +325,7 @@ impl ToolHandler for PaperVerifyCitationsHandler {
             return Err("Maximum 50 DOIs at a time".to_string());
         }
 
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(30))
-            .build().map_err(|e| format!("HTTP client error: {}", e))?;
+        let client = crate::handlers::helpers::http_client(30)?;
 
         let mut results = Vec::new();
         for doi in dois {
