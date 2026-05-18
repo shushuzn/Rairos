@@ -5,6 +5,19 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::LazyLock;
+
+static RE_KEY: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"^\s*([A-Za-z0-9_\-]+)\s*:\s*(.*)\s*$"#).unwrap()
+});
+
+static RE_LIST_ITEM: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"^\s+-\s+(.*)\s*$"#).unwrap()
+});
+
+static RE_DATE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
+});
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Frontmatter {
@@ -24,9 +37,6 @@ impl Frontmatter {
         let lines: Vec<&str> = md.lines().collect();
         let mut i = 0;
 
-        let re_key = Regex::new(r#"^\s*([A-Za-z0-9_\-]+)\s*:\s*(.*)\s*$"#).unwrap();
-        let re_list_item = Regex::new(r#"^\s+-\s+(.*)\s*$"#).unwrap();
-
         // Skip opening ------------------ delimiter if present
         if lines
             .first()
@@ -42,16 +52,16 @@ impl Frontmatter {
                 break;
             }
 
-            if let Some(caps) = re_key.captures(line) {
+            if let Some(caps) = RE_KEY.captures(line) {
                 let key = caps.get(1).unwrap().as_str().trim().to_string();
                 let val = caps.get(2).unwrap().as_str().trim().to_string();
 
                 if val.is_empty() && i + 1 < lines.len() {
-                    if re_list_item.is_match(lines[i + 1]) {
+                    if RE_LIST_ITEM.is_match(lines[i + 1]) {
                         let mut items = Vec::new();
                         let mut j = i + 1;
                         while j < lines.len() {
-                            if let Some(item_caps) = re_list_item.captures(lines[j]) {
+                            if let Some(item_caps) = RE_LIST_ITEM.captures(lines[j]) {
                                 items.push(item_caps.get(1).unwrap().as_str().trim().to_string());
                                 j += 1;
                             } else {
@@ -129,8 +139,7 @@ pub fn parse_date_from_frontmatter(fm: &Frontmatter) -> Option<String> {
     if d.is_empty() {
         return None;
     }
-    let re_date = Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap();
-    if re_date.is_match(&d) {
+    if RE_DATE.is_match(&d) {
         Some(d)
     } else {
         tracing::warn!("Unrecognized date format in frontmatter: {:?}", d);

@@ -4,11 +4,20 @@ use crate::pnote::wikilink_for_pnote;
 use crate::render::render_cnote;
 use regex::Regex;
 use std::path::Path;
+use std::sync::LazyLock;
 
-const RE_LEADING_HASHES: &str = r"^#+\s+";
-const RE_BLANK_LINES: &str = r"(\s*\n)*";
-const RE_SECTION_END: &str = r"\n##\s+";
-const RE_WIKILINK_LINE: &str = r"^-\s*\[\[[^\]]+\]\](?:[^\n]*)?\n?";
+static RE_LEADING_HASHES: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^#+\s+").unwrap()
+});
+static RE_BLANK_LINES: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(\s*\n)*").unwrap()
+});
+static RE_SECTION_END: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\n##\s+").unwrap()
+});
+static RE_WIKILINK_LINE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^-\s*\[\[[^\]]+\]\](?:[^\n]*)?\n?").unwrap()
+});
 
 pub fn ensure_cnote(concept_dir: &Path, concept: &str) -> std::path::PathBuf {
     let path = concept_dir.join(format!("C - {concept}.md"));
@@ -28,8 +37,7 @@ fn write_text(path: &Path, content: &str) -> std::io::Result<()> {
 }
 
 pub fn upsert_link_under_heading(md: &str, heading: &str, link_line: &str) -> String {
-    let re_leading = Regex::new(RE_LEADING_HASHES).unwrap();
-    let clean_heading = re_leading.replace(heading, "").trim().to_string();
+    let clean_heading = RE_LEADING_HASHES.replace(heading, "").trim().to_string();
 
     let pattern = format!(r"(^##\s+{}(?:\s*|\s+.*)$)", regex::escape(&clean_heading));
     let re_pattern = Regex::new(&pattern).unwrap();
@@ -49,19 +57,16 @@ pub fn upsert_link_under_heading(md: &str, heading: &str, link_line: &str) -> St
     let start = m.start() + match_line.len();
     let after = &md[start..];
 
-    let re_blank = Regex::new(RE_BLANK_LINES).unwrap();
-    let m2 = re_blank.find(after);
+    let m2 = RE_BLANK_LINES.find(after);
     let insert_pos = start + m2.map(|m| m.end()).unwrap_or(0);
 
-    let re_section_end = Regex::new(RE_SECTION_END).unwrap();
     let rest = &after[m2.map(|m| m.end()).unwrap_or(0)..];
-    let m3 = re_section_end.find(rest);
+    let m3 = RE_SECTION_END.find(rest);
     let section_end = m3.map(|m| insert_pos + m.start()).unwrap_or(md.len());
 
     let section_content = &md[insert_pos..section_end].trim_start_matches('\n');
 
-    let re_wikilink = Regex::new(RE_WIKILINK_LINE).unwrap();
-    let cleaned = re_wikilink.replace_all(section_content, "");
+    let cleaned = RE_WIKILINK_LINE.replace_all(section_content, "");
     let cleaned = cleaned.trim();
 
     let new_section = if cleaned.is_empty() {

@@ -2,9 +2,14 @@
 
 use crate::frontmatter::Frontmatter;
 use regex::Regex;
+use std::sync::LazyLock;
 
-const RE_TITLE: &str = r"(?m)^#\s+(.+)$";
-const RE_SOURCE: &str = r"\*\*Source:\*\*\s+(\w+):\s+(\S+)";
+static RE_TITLE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)^#\s+(.+)$").unwrap()
+});
+static RE_SOURCE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\*\*Source:\*\*\s+(\w+):\s+(\S+)").unwrap()
+});
 
 pub struct PnoteMetadata {
     pub title: String,
@@ -29,15 +34,13 @@ impl PnoteMetadata {
             String::new()
         };
 
-        let re_title = Regex::new(RE_TITLE).unwrap();
-        let title = re_title
+        let title = RE_TITLE
             .captures(md)
             .and_then(|c| c.get(1))
             .map(|m| m.as_str().trim().to_string())
             .unwrap_or_else(|| path.file_stem().unwrap().to_string_lossy().to_string());
 
-        let re_source = Regex::new(RE_SOURCE).unwrap();
-        let (source, uid) = re_source
+        let (source, uid) = RE_SOURCE
             .captures(md)
             .map(|c| {
                 (

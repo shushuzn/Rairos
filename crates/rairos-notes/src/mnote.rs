@@ -4,10 +4,26 @@ use crate::render::render_mnote;
 use glob::glob;
 use regex::Regex;
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
+
+static RE_SHORT: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^P\s*-\s*\d{4}\s*-\s*").unwrap()
+});
+static RE_VIEW_EVOLUTION_LOG: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^##\s+View Evolution Log\s*$").unwrap()
+});
+static RE_ABC_A: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^\-\s*A:\s*.*$").unwrap()
+});
+static RE_ABC_B: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^\-\s*B:\s*.*$").unwrap()
+});
+static RE_ABC_C: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^\-\s*C:\s*.*$").unwrap()
+});
 
 fn short(stem: &str, n: usize) -> String {
-    let re = Regex::new(r"^P\s*-\s*\d{4}\s*-\s*").unwrap();
-    let s = re.replace(stem, "").trim().to_string();
+    let s = RE_SHORT.replace(stem, "").trim().to_string();
     if s.len() <= n {
         return s;
     }
@@ -79,8 +95,7 @@ fn append_view_evolution_log(
         new_abc.2.as_deref().unwrap_or("?"),
     );
 
-    let re = Regex::new(r"^##\s+View Evolution Log\s*$").unwrap();
-    if let Some(m) = re.find(md) {
+    if let Some(m) = RE_VIEW_EVOLUTION_LOG.find(md) {
         let insert_pos = m.end();
         format!(
             "{}{}{}{}",
@@ -147,12 +162,9 @@ pub fn ensure_or_update_mnote(mnote_dir: &Path, tag: &str, top3: &[PathBuf]) -> 
             Some(new_c.as_ref()),
         )
     {
-        let re_a = Regex::new(r"^\-\s*A:\s*.*$").unwrap();
-        let re_b = Regex::new(r"^\-\s*B:\s*.*$").unwrap();
-        let re_c = Regex::new(r"^\-\s*C:\s*.*$").unwrap();
-        let mut md2 = re_a.replace(&md, format!("- A: {new_a}")).to_string();
-        md2 = re_b.replace(&md2, format!("- B: {new_b}")).to_string();
-        md2 = re_c.replace(&md2, format!("- C: {new_c}")).to_string();
+        let mut md2 = RE_ABC_A.replace(&md, format!("- A: {new_a}")).to_string();
+        md2 = RE_ABC_B.replace(&md2, format!("- B: {new_b}")).to_string();
+        md2 = RE_ABC_C.replace(&md2, format!("- C: {new_c}")).to_string();
         md2 = append_view_evolution_log(
             &md2,
             (cur_a, cur_b, cur_c),
