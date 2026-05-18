@@ -25,7 +25,7 @@
 
 ## CLI Commands (123 total)
 
-Sample: Add...
+Sample: ...
 
 ## MCP Tools (0 total)
 
