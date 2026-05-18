@@ -65,7 +65,7 @@ impl ToolHandler for RouteQueryHandler {
                 .unwrap_or_default();
 
             let plan = rairos_llm::route_planner::create_plan(
-                client.as_ref(), crate::llm_handlers::helpers::llm_model(), hypothesis, goal, &known_papers,
+                client, crate::llm_handlers::helpers::llm_model(), hypothesis, goal, &known_papers,
             ).await;
             let _ = rairos_llm::route_planner::save_plan(&plan);
             return Ok(serde_json::json!(plan));

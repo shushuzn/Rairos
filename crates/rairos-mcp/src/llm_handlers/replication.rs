@@ -26,7 +26,7 @@ impl ToolHandler for ReplicationCheckHandler {
         let title = params.get("title").and_then(|v| v.as_str()).unwrap_or(arxiv_id);
 
         let result = if let Some(client) = llm_client() {
-            rairos_llm::replication::llm_assess_replication(client.as_ref(), crate::llm_handlers::helpers::llm_model(), title, abstract_text).await
+            rairos_llm::replication::llm_assess_replication(client, crate::llm_handlers::helpers::llm_model(), title, abstract_text).await
         } else {
             rairos_llm::replication::keyword_check(abstract_text)
         };

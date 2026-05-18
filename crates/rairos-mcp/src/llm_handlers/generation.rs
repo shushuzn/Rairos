@@ -27,7 +27,7 @@ impl ToolHandler for BriefingGenerateHandler {
             .unwrap_or_default();
 
         let result = rairos_llm::briefing::generate_briefing(
-            client.as_ref(), llm_model(), arxiv_id, title, abstract_text, &authors,
+            client, llm_model(), arxiv_id, title, abstract_text, &authors,
         ).await;
 
         if !result.success { return Err("Briefing generation failed".into()); }
@@ -69,7 +69,7 @@ impl ToolHandler for LitReviewGenerateHandler {
             }).collect())
             .unwrap_or_default();
 
-        let result = rairos_llm::lit_review::generate_lit_review(client.as_ref(), llm_model(), topic, &papers).await;
+        let result = rairos_llm::lit_review::generate_lit_review(client, llm_model(), topic, &papers).await;
         Ok(serde_json::json!(result))
     }
 }
@@ -93,7 +93,7 @@ impl ToolHandler for SlidesGenerateHandler {
         let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
         let briefing = params.get("briefing_markdown").and_then(|v| v.as_str()).unwrap_or("");
         let client = llm_client().ok_or("No LLM client available".to_string())?;
-        let result = rairos_llm::slides::generate_slides(client.as_ref(), llm_model(), arxiv_id, briefing).await;
+        let result = rairos_llm::slides::generate_slides(client, llm_model(), arxiv_id, briefing).await;
         Ok(serde_json::json!(result))
     }
 }

@@ -58,7 +58,7 @@ impl ToolHandler for PaperAnalyzeMcpHandler {
         if let Some(client) = llm_client() {
             let body = params.get("body").and_then(|v| v.as_str()).unwrap_or("");
             let result = rairos_llm::paper_analyzer::analyze_paper(
-                client.as_ref(), crate::llm_handlers::helpers::llm_model(), title, abstract_text, authors, body,
+                client, crate::llm_handlers::helpers::llm_model(), title, abstract_text, authors, body,
             ).await;
             Ok(serde_json::json!(result))
         } else {

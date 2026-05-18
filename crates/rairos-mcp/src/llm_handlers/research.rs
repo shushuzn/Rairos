@@ -300,7 +300,7 @@ impl ToolHandler for HypothesisGenerateHandler {
         if let Some(client) = llm_client() {
             let gen = rairos_research::hypothesis_generator::HypothesisGenerator::new();
             let result = gen.generate_llm(
-                client.as_ref(), llm_model(), topic, gap_context, creative, auto_submit,
+                client, llm_model(), topic, gap_context, creative, auto_submit,
             ).await;
             return Ok(serde_json::to_value(result).unwrap_or_else(|_| serde_json::json!({
                 "topic": topic, "summary": "Error serializing result", "hypotheses": []
