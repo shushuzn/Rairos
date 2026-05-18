@@ -9,6 +9,7 @@
 
 use chrono::NaiveDate;
 use rairos_core::constants::{CROSSREF_WORKS, DOI_RESOLVER};
+use rairos_core::identifiers::normalize_arxiv_id;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use thiserror::Error;
@@ -204,7 +205,7 @@ fn parse_abstract(item: &CrossrefItem) -> String {
 
 fn try_find_arxiv_id(item: &CrossrefItem, doi: &str) -> Option<String> {
     // Try DOI directly
-    if let Some(arxid) = normalize_arxiv_id_from_doi(doi) {
+    if let Some(arxid) = normalize_arxiv_id(doi) {
         return Some(arxid);
     }
 
@@ -256,20 +257,6 @@ fn try_find_arxiv_id(item: &CrossrefItem, doi: &str) -> Option<String> {
         }
     }
 
-    None
-}
-
-fn normalize_arxiv_id_from_doi(doi: &str) -> Option<String> {
-    // Direct arXiv DOI pattern: 10.48550/arXiv.XXXXX
-    if let Some(rest) = doi.strip_prefix("10.48550/arXiv.") {
-        let id = rest.trim();
-        if regex::Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$")
-            .unwrap()
-            .is_match(id)
-        {
-            return Some(id.to_string());
-        }
-    }
     None
 }
 
@@ -465,14 +452,14 @@ mod tests {
     #[test]
     fn test_normalize_arxiv_id_from_doi() {
         assert_eq!(
-            normalize_arxiv_id_from_doi("10.48550/arXiv.2301.12345"),
+            normalize_arxiv_id("10.48550/arXiv.2301.12345"),
             Some("2301.12345".to_string())
         );
         assert_eq!(
-            normalize_arxiv_id_from_doi("10.48550/arXiv.2301.12345v1"),
+            normalize_arxiv_id("10.48550/arXiv.2301.12345v1"),
             Some("2301.12345v1".to_string())
         );
-        assert_eq!(normalize_arxiv_id_from_doi("10.1007/something"), None);
+        assert_eq!(normalize_arxiv_id("10.1007/something"), None);
     }
 
     #[test]
