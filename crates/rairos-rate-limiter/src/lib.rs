@@ -66,18 +66,18 @@ impl RateLimiter {
 
     fn refill_tokens(&self) {
         let now = Self::now_secs();
-        let last = *self.last_update.read().unwrap();
+        let last = *self.last_update.read().expect("last_update lock poisoned");
         let elapsed = now - last;
         let refill = elapsed * self.config.requests_per_second;
-        let mut tokens = self.tokens.write().unwrap();
+        let mut tokens = self.tokens.write().expect("tokens lock poisoned");
         *tokens = (self.config.burst_size as f64).min(*tokens + refill);
-        *self.last_update.write().unwrap() = now;
+        *self.last_update.write().expect("last_update lock poisoned") = now;
     }
 
     fn clean_history(&self) {
         let now = Self::now_secs();
 
-        let mut second = self.second_history.write().unwrap();
+        let mut second = self.second_history.write().expect("second_history lock poisoned");
         while let Some(&front) = second.front() {
             if now - front > 1.0 {
                 second.pop_front();
@@ -86,7 +86,7 @@ impl RateLimiter {
             }
         }
 
-        let mut minute = self.minute_history.write().unwrap();
+        let mut minute = self.minute_history.write().expect("minute_history lock poisoned");
         while let Some(&front) = minute.front() {
             if now - front > 60.0 {
                 minute.pop_front();
@@ -95,7 +95,7 @@ impl RateLimiter {
             }
         }
 
-        let mut hour = self.hour_history.write().unwrap();
+        let mut hour = self.hour_history.write().expect("hour_history lock poisoned");
         while let Some(&front) = hour.front() {
             if now - front > 3600.0 {
                 hour.pop_front();
@@ -108,9 +108,9 @@ impl RateLimiter {
     pub fn can_make_request(&self) -> bool {
         self.clean_history();
 
-        let second = self.second_history.read().unwrap();
-        let minute = self.minute_history.read().unwrap();
-        let hour = self.hour_history.read().unwrap();
+        let second = self.second_history.read().expect("second_history lock poisoned");
+        let minute = self.minute_history.read().expect("minute_history lock poisoned");
+        let hour = self.hour_history.read().expect("hour_history lock poisoned");
 
         if second.len() >= self.config.requests_per_second as usize {
             return false;
@@ -135,23 +135,23 @@ impl RateLimiter {
             let now = Self::now_secs();
 
             if self.can_make_request() {
-                let mut second = self.second_history.write().unwrap();
-                let mut minute = self.minute_history.write().unwrap();
-                let mut hour = self.hour_history.write().unwrap();
+                let mut second = self.second_history.write().expect("second_history lock poisoned");
+                let mut minute = self.minute_history.write().expect("minute_history lock poisoned");
+                let mut hour = self.hour_history.write().expect("hour_history lock poisoned");
 
                 second.push_back(now);
                 minute.push_back(now);
                 hour.push_back(now);
-                *self.tokens.write().unwrap() -= 1.0;
+                *self.tokens.write().expect("tokens lock poisoned") -= 1.0;
 
-                let mut total = self.total_requests.write().unwrap();
+                let mut total = self.total_requests.write().expect("total_requests lock poisoned");
                 *total += 1;
                 return true;
             }
 
             let wait_time = {
-                let second = self.second_history.read().unwrap();
-                let minute = self.minute_history.read().unwrap();
+                let second = self.second_history.read().expect("second_history lock poisoned");
+                let minute = self.minute_history.read().expect("minute_history lock poisoned");
 
                 if !second.is_empty() {
                     1.0 - (now - second[0])
@@ -165,14 +165,14 @@ impl RateLimiter {
             let wait_time = wait_time.clamp(0.01, 10.0);
 
             if !blocking {
-                let mut rejected = self.total_rejected.write().unwrap();
+                let mut rejected = self.total_rejected.write().expect("total_rejected lock poisoned");
                 *rejected += 1;
                 return false;
             }
 
             if let Some(timeout) = timeout_secs {
                 if start_time.elapsed().as_secs_f64() >= timeout {
-                    let mut rejected = self.total_rejected.write().unwrap();
+                    let mut rejected = self.total_rejected.write().expect("total_rejected lock poisoned");
                     *rejected += 1;
                     return false;
                 }
@@ -180,7 +180,7 @@ impl RateLimiter {
 
             std::thread::sleep(Duration::from_secs_f64(wait_time));
 
-            let mut total_wait = self.total_wait_time.write().unwrap();
+            let mut total_wait = self.total_wait_time.write().expect("total_wait_time lock poisoned");
             *total_wait += wait_time;
         }
     }
@@ -195,13 +195,13 @@ impl RateLimiter {
         self.clean_history();
 
         RateLimiterStats {
-            total_requests: *self.total_requests.read().unwrap(),
-            total_wait_time: *self.total_wait_time.read().unwrap(),
-            total_rejected: *self.total_rejected.read().unwrap(),
-            current_second_requests: self.second_history.read().unwrap().len(),
-            current_minute_requests: self.minute_history.read().unwrap().len(),
-            current_hour_requests: self.hour_history.read().unwrap().len(),
-            tokens_available: *self.tokens.read().unwrap(),
+            total_requests: *self.total_requests.read().expect("total_requests lock poisoned"),
+            total_wait_time: *self.total_wait_time.read().expect("total_wait_time lock poisoned"),
+            total_rejected: *self.total_rejected.read().expect("total_rejected lock poisoned"),
+            current_second_requests: self.second_history.read().expect("second_history lock poisoned").len(),
+            current_minute_requests: self.minute_history.read().expect("minute_history lock poisoned").len(),
+            current_hour_requests: self.hour_history.read().expect("hour_history lock poisoned").len(),
+            tokens_available: *self.tokens.read().expect("tokens lock poisoned"),
             limits: RateLimitLimits {
                 per_second: self.config.requests_per_second,
                 per_minute: self.config.requests_per_minute,
@@ -212,11 +212,11 @@ impl RateLimiter {
     }
 
     pub fn reset_stats(&self) {
-        let mut total = self.total_requests.write().unwrap();
+        let mut total = self.total_requests.write().expect("total_requests lock poisoned");
         *total = 0;
-        let mut wait = self.total_wait_time.write().unwrap();
+        let mut wait = self.total_wait_time.write().expect("total_wait_time lock poisoned");
         *wait = 0.0;
-        let mut rejected = self.total_rejected.write().unwrap();
+        let mut rejected = self.total_rejected.write().expect("total_rejected lock poisoned");
         *rejected = 0;
     }
 }
@@ -254,11 +254,11 @@ impl APIRateLimitManager {
     }
 
     pub fn get_limiter(&self, endpoint: &str, config: Option<RateLimitConfig>) -> RateLimiter {
-        let mut limiters = self.limiters.write().unwrap();
+        let mut limiters = self.limiters.write().expect("limiters lock poisoned");
         if !limiters.contains_key(endpoint) {
             limiters.insert(endpoint.to_string(), RateLimiter::new(config));
         }
-        limiters.get(endpoint).unwrap().clone()
+        limiters.get(endpoint).expect("limiter missing after insert").clone()
     }
 
     pub fn wait_for_endpoint(&self, endpoint: &str, config: Option<RateLimitConfig>) -> f64 {
@@ -267,7 +267,7 @@ impl APIRateLimitManager {
     }
 
     pub fn can_call_endpoint(&self, endpoint: &str) -> bool {
-        let limiters = self.limiters.read().unwrap();
+        let limiters = self.limiters.read().expect("limiters lock poisoned");
         match limiters.get(endpoint) {
             Some(limiter) => limiter.can_make_request(),
             None => true,
@@ -275,7 +275,7 @@ impl APIRateLimitManager {
     }
 
     pub fn get_all_stats(&self) -> HashMap<String, RateLimiterStats> {
-        let limiters = self.limiters.read().unwrap();
+        let limiters = self.limiters.read().expect("limiters lock poisoned");
         limiters
             .iter()
             .map(|(k, v)| (k.clone(), v.get_stats()))
