@@ -1,6 +1,4 @@
 //! LLM-based experiment table parser with regex fallback.
-
-#![allow(clippy::regex_creation_in_loops)]
 //!
 //! Provides [`ExperimentTableParser`] which parses raw table data into structured
 //! JSON. When no LLM client is provided, it falls back to heuristic regex parsing.
@@ -8,7 +6,11 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::LazyLock;
 use thiserror::Error;
+
+static RE_TABLE_NUM: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\s*[\d.]+\s*$").unwrap());
+static RE_NUM: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[\d.]+").unwrap());
 
 /// Metric keyword list for column identification.
 const METRIC_KW: &[&str] = &[
@@ -140,11 +142,10 @@ impl ExperimentTableParser {
         }
 
         // If no metric columns found, detect numeric-only columns
-        let table_num_re = Regex::new(r"^\s*[\d.]+\s*$").unwrap();
         if metric_cols.is_empty() {
             for row in rows.iter().take(3) {
                 for (j, cell) in row.iter().enumerate() {
-                    if table_num_re.is_match(cell.trim()) {
+                    if RE_TABLE_NUM.is_match(cell.trim()) {
                         metric_cols.push((j, format!("metric_{}", j)));
                     }
                 }
@@ -196,11 +197,10 @@ impl ExperimentTableParser {
                 }
 
                 // Metrics
-                let num_re = Regex::new(r"[\d.]+").unwrap();
                 for &(mi, ref mname) in &metric_cols {
                     if mi < row.len() {
                         let raw = row[mi].trim().to_string();
-                        if let Some(caps) = num_re.find(&raw) {
+                        if let Some(caps) = RE_NUM.find(&raw) {
                             if let Ok(val) = caps.as_str().parse::<f64>() {
                                 metrics.push((mname.clone(), val, model_name.clone()));
                                 if val > ours_best_val {

@@ -62,14 +62,13 @@ impl CircuitBreaker {
 
     /// Check if a request is allowed through the circuit breaker
     pub fn is_allowed(&self) -> bool {
-        let state = *self.state.read().unwrap();
+        let state = *self.state.read().expect("state lock poisoned");
         match state {
             CircuitState::Closed => true,
             CircuitState::Open => {
                 let cooldown = Duration::from_secs(self.config.cooldown_secs);
-                if self.last_failure_time.read().unwrap().elapsed() >= cooldown {
-                    // Transition to half-open
-                    *self.state.write().unwrap() = CircuitState::HalfOpen;
+                if self.last_failure_time.read().expect("last_failure_time lock poisoned").elapsed() >= cooldown {
+                    *self.state.write().expect("state lock poisoned") = CircuitState::HalfOpen;
                     self.half_open_requests.store(0, Ordering::Relaxed);
                     true
                 } else {
@@ -85,28 +84,28 @@ impl CircuitBreaker {
 
     /// Record a successful call
     pub fn record_success(&self) {
-        *self.state.write().unwrap() = CircuitState::Closed;
+        *self.state.write().expect("state lock poisoned") = CircuitState::Closed;
         self.failure_count.store(0, Ordering::Relaxed);
         self.half_open_requests.store(0, Ordering::Relaxed);
     }
 
     /// Record a failed call
     pub fn record_failure(&self) {
-        *self.last_failure_time.write().unwrap() = Instant::now();
+        *self.last_failure_time.write().expect("last_failure_time lock poisoned") = Instant::now();
         let count = self.failure_count.fetch_add(1, Ordering::Relaxed) + 1;
         if count >= self.config.failure_threshold {
-            *self.state.write().unwrap() = CircuitState::Open;
+            *self.state.write().expect("state lock poisoned") = CircuitState::Open;
         }
     }
 
     /// Get current state
     pub fn state(&self) -> CircuitState {
-        *self.state.read().unwrap()
+        *self.state.read().expect("state lock poisoned")
     }
 
     /// Reset to closed state
     pub fn reset(&self) {
-        *self.state.write().unwrap() = CircuitState::Closed;
+        *self.state.write().expect("state lock poisoned") = CircuitState::Closed;
         self.failure_count.store(0, Ordering::Relaxed);
         self.half_open_requests.store(0, Ordering::Relaxed);
     }
@@ -146,7 +145,7 @@ impl RateLimiter {
     }
 
     fn refill(&self) {
-        let mut last = self.last_refill.write().unwrap();
+        let mut last = self.last_refill.write().expect("last_refill lock poisoned");
         let elapsed = last.elapsed().as_secs_f64();
         if elapsed > 0.0 {
             let new_tokens = (elapsed * self.refill_rate) as u32;

@@ -1,14 +1,58 @@
 //! rairos-replication-checker — Experiment Replication Checker for AI Research OS.
 
-#![allow(clippy::regex_creation_in_loops)]
 //!
 //! Ported from `llm/replication_checker.py` (568 LOC, pure stdlib).
 //!
 //! Given a paper, extracts GitHub/GitLab/HuggingFace links, detects dependency
 //! info (Python version, hardware, packages), and assesses replication difficulty.
 
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::LazyLock;
+
+// ─── Static Regex Patterns ─────────────────────────────────────────────────
+
+static GITHUB_REGEX: LazyLock<Vec<(Regex, bool)>> = LazyLock::new(|| {
+    vec![
+        (Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(), true),
+        (Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(), true),
+        (Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").unwrap(), false),
+    ]
+});
+
+static GITLAB_REGEX: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(),
+    ]
+});
+
+static HF_REGEX: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
+        Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
+    ]
+});
+
+static MARKDOWN_LINK_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").unwrap()
+});
+
+static CITATION_BRACKET_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\[(\d+)\]").unwrap()
+});
+
+static PYTHON_VERSION_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"python\s*3?\.\d+").unwrap()
+});
+
+static MEMORY_SIZE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(\d+)\s*(GB|TB|MB)").unwrap()
+});
+
+static RAM_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(\d+)\s*GB\s+(RAM|memory)").unwrap()
+});
 
 // ─── Data Structures ─────────────────────────────────────────────────────────
 
@@ -70,28 +114,7 @@ pub struct ReplicationReport {
     pub smoke_test_output: String,
 }
 
-// ─── Regex Helpers ────────────────────────────────────────────────────────────
 
-fn github_regex() -> Vec<(regex::Regex, bool)> {
-    vec![
-        (regex::Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(), true),
-        (regex::Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(), true),
-        (regex::Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").unwrap(), false),
-    ]
-}
-
-fn gitlab_regex() -> Vec<regex::Regex> {
-    vec![
-        regex::Regex::new(r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(),
-    ]
-}
-
-fn hf_regex() -> Vec<regex::Regex> {
-    vec![
-        regex::Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
-        regex::Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
-    ]
-}
 
 const DEPENDENCY_FILES: &[&str] = &[
     "requirements.txt",
@@ -215,13 +238,10 @@ impl ReplicationChecker {
         let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
 
         // Remove markdown URLs
-        let clean = regex::Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)")
-            .unwrap()
-            .replace_all(text, "$2")
-            .to_string();
+        let clean = MARKDOWN_LINK_REGEX.replace_all(text, "$2").to_string();
 
         // GitHub
-        for (pattern, _needs_https) in github_regex() {
+        for (pattern, _needs_https) in GITHUB_REGEX.iter() {
             for caps in pattern.captures_iter(&clean) {
                 let m = caps.get(0).unwrap();
                 let owner = caps.get(1).map(|g| g.as_str()).unwrap_or("");
@@ -250,10 +270,7 @@ impl ReplicationChecker {
                 };
 
                 let confidence =
-                    if regex::Regex::new(r"\[(\d+)\]")
-                        .unwrap()
-                        .find(ctx)
-                        .is_some()
+                    if CITATION_BRACKET_REGEX.find(ctx).is_some()
                     {
                         confidence * 0.5
                     } else {
@@ -273,7 +290,7 @@ impl ReplicationChecker {
         }
 
         // GitLab
-        for pattern in gitlab_regex() {
+        for pattern in GITLAB_REGEX.iter() {
             for caps in pattern.captures_iter(&clean) {
                 let m = caps.get(0).unwrap();
                 let owner = caps.get(1).map(|g| g.as_str()).unwrap_or("");
@@ -311,7 +328,7 @@ impl ReplicationChecker {
         }
 
         // HuggingFace
-        for pattern in hf_regex() {
+        for pattern in HF_REGEX.iter() {
             for caps in pattern.captures_iter(&clean) {
                 let m = caps.get(0).unwrap();
                 let owner = caps.get(1).map(|g| g.as_str()).unwrap_or("");
@@ -382,9 +399,7 @@ impl ReplicationChecker {
         }
 
         // Python version
-        if let Some(py_match) =
-            regex::Regex::new(r"python\s*3?\.\d+").unwrap().find(&text_lower)
-        {
+        if let Some(py_match) = PYTHON_VERSION_REGEX.find(&text_lower) {
             info.python_version = py_match.as_str().to_string();
         }
 
@@ -413,11 +428,7 @@ impl ReplicationChecker {
         }
 
         // Disk space
-        if let Some(disk_match) =
-            regex::Regex::new(r"(\d+)\s*(GB|TB|MB)")
-                .unwrap()
-                .captures(text)
-        {
+        if let Some(disk_match) = MEMORY_SIZE_REGEX.captures(text) {
             if let Some(val_str) = disk_match.get(1) {
                 if let Ok(val) = val_str.as_str().parse::<usize>() {
                     let unit = disk_match.get(2).map(|g| g.as_str()).unwrap_or("MB");
@@ -431,11 +442,7 @@ impl ReplicationChecker {
         }
 
         // RAM
-        if let Some(ram_match) =
-            regex::Regex::new(r"(\d+)\s*GB\s+(RAM|memory)")
-                .unwrap()
-                .captures(text)
-        {
+        if let Some(ram_match) = RAM_REGEX.captures(text) {
             if let Some(ram_str) = ram_match.get(1) {
                 if let Ok(ram) = ram_str.as_str().parse::<usize>() {
                     info.ram_gb = ram;

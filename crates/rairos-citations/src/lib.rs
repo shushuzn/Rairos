@@ -12,6 +12,11 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
+use std::sync::LazyLock;
+
+static RE_WORD: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\b[a-z][a-z0-9-]{3,}\b").unwrap()
+});
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CitationNode {
@@ -365,8 +370,6 @@ impl CitationChainBuilder {
         .into_iter()
         .collect();
 
-        let re_word = Regex::new(r"\b[a-z][a-z0-9-]{3,}\b").unwrap();
-
         fn extract_terms(text: &str, terms: &HashSet<&str>, re: &Regex) -> HashSet<String> {
             re.find_iter(text.to_lowercase().as_str())
                 .map(|m| m.as_str().to_string())
@@ -379,7 +382,7 @@ impl CitationChainBuilder {
 
         for node in &nodes {
             let terms = if !node.abstract_text.is_empty() {
-                extract_terms(&node.abstract_text, &method_terms, &re_word)
+                extract_terms(&node.abstract_text, &method_terms, &RE_WORD)
             } else {
                 HashSet::new()
             };

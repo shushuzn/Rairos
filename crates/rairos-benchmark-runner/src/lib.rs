@@ -1,8 +1,5 @@
 //! Benchmark Runner — run pytest tests and encode results to Gene Pool.
 
-#![allow(
-    clippy::regex_creation_in_loops,
-)]
 //!
 //!闭环核心:
 //! - 运行 pytest 测试
@@ -18,9 +15,20 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::LazyLock;
 use std::time::Instant;
 
 use rairos_diagnostics::{check_ruff, Diagnostic};
+
+static RE_PASSED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+passed").unwrap());
+static RE_FAILED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r",\s*(\d+)\s+failed").unwrap());
+static RE_FAILED2: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+failed").unwrap());
+static RE_SKIPPED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r",\s*(\d+)\s+skipped").unwrap());
+static RE_SKIPPED2: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+skipped").unwrap());
+static RE_ERROR: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+error").unwrap());
+static RE_SKIP_PATTERN: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"pytest\.skip\(").unwrap());
+static RE_FUNC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"def (test_numerical_claim_\d+.*?):").unwrap());
+static RE_WORD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[a-zA-Z]{3,}").unwrap());
 
 /// Result of a single benchmark run.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -178,33 +186,22 @@ pub fn run_benchmark(config: &BenchmarkConfig) -> BenchmarkResult {
 
 /// Parse pytest stdout/stderr for pass/fail counts.
 fn parse_pytest_output(result: &mut BenchmarkResult, output: &str) {
-    // Matches: "N passed", "N passed, M failed", "N passed, M failed, K skipped"
-    let re_passed = Regex::new(r"(\d+)\s+passed").unwrap();
-    if let Some(caps) = re_passed.captures(output) {
+    if let Some(caps) = RE_PASSED.captures(output) {
         result.passed = caps.get(1).unwrap().as_str().parse().unwrap_or(0);
-        // Check for failed
-        let re_failed = Regex::new(r",\s*(\d+)\s+failed").unwrap();
-        if let Some(fcaps) = re_failed.captures(output) {
+        if let Some(fcaps) = RE_FAILED.captures(output) {
             result.failed = fcaps.get(1).unwrap().as_str().parse().unwrap_or(0);
         }
-        // Check for skipped
-        let re_skipped = Regex::new(r",\s*(\d+)\s+skipped").unwrap();
-        if let Some(scaps) = re_skipped.captures(output) {
+        if let Some(scaps) = RE_SKIPPED.captures(output) {
             result.skipped = scaps.get(1).unwrap().as_str().parse().unwrap_or(0);
         }
     } else {
-        // Handle all-skipped or all-failed
-        let re_skipped = Regex::new(r"(\d+)\s+skipped").unwrap();
-        if let Some(m) = re_skipped.captures(output) {
+        if let Some(m) = RE_SKIPPED2.captures(output) {
             result.skipped = m.get(1).unwrap().as_str().parse().unwrap_or(0);
         }
-        let re_failed = Regex::new(r"(\d+)\s+failed").unwrap();
-        if let Some(m) = re_failed.captures(output) {
+        if let Some(m) = RE_FAILED2.captures(output) {
             result.failed = m.get(1).unwrap().as_str().parse().unwrap_or(0);
         }
-        // Handle collection errors
-        let re_error = Regex::new(r"(\d+)\s+error").unwrap();
-        if let Some(m) = re_error.captures(output) {
+        if let Some(m) = RE_ERROR.captures(output) {
             result.failed = m.get(1).unwrap().as_str().parse().unwrap_or(0);
         }
     }
@@ -247,8 +244,6 @@ fn parse_json_report(result: &mut BenchmarkResult, report_path: &Path) {
 /// A numerical claim is "covered" if the test executes a real assertion
 /// (not a skip). Skips indicate the model couldn't be evaluated.
 fn populate_coverage_fields(result: &mut BenchmarkResult, config: &BenchmarkConfig) {
-    let skip_pattern = Regex::new(r"pytest\.skip\(").unwrap();
-
     let mut covered: Vec<String> = Vec::new();
     let mut uncovered: Vec<String> = Vec::new();
 
@@ -257,8 +252,7 @@ fn populate_coverage_fields(result: &mut BenchmarkResult, config: &BenchmarkConf
             let path = entry.path();
             if path.file_name().is_some_and(|n| n == "test_claims.py") {
                 if let Ok(content) = fs::read_to_string(&path) {
-                    let re_func = Regex::new(r"def (test_numerical_claim_\d+.*?):").unwrap();
-                    for caps in re_func.captures_iter(&content) {
+                    for caps in RE_FUNC.captures_iter(&content) {
                         let func_name = caps.get(1).unwrap().as_str().to_string();
                         let func_start = caps.get(0).unwrap().end();
                         let next_def = content[func_start..].find("\ndef ");
@@ -268,7 +262,7 @@ fn populate_coverage_fields(result: &mut BenchmarkResult, config: &BenchmarkConf
                             &content[func_start..]
                         };
 
-                        if skip_pattern.is_match(func_body) {
+                        if RE_SKIP_PATTERN.is_match(func_body) {
                             uncovered.push(func_name);
                         } else {
                             covered.push(func_name);
@@ -302,11 +296,10 @@ pub fn extract_keywords(text: &str) -> Vec<String> {
     .cloned()
     .collect();
 
-    let re_word = Regex::new(r"[a-zA-Z]{3,}").unwrap();
     let mut seen: std::collections::HashSet<&str> = std::collections::HashSet::new();
     let mut result: Vec<String> = Vec::new();
 
-    for m in re_word.find_iter(&text.to_lowercase()) {
+    for m in RE_WORD.find_iter(&text.to_lowercase()) {
         let w = m.as_str();
         if !stopwords.contains(w) && seen.insert(w) {
             result.push(w.to_string());
