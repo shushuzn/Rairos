@@ -9,6 +9,23 @@ use rairos_llm::{LlmClient, Message};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use std::sync::LazyLock;
+
+static RE_THINK: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?s)^去想.*?```python\n").unwrap()
+});
+
+static RE_REASON: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?s)^<think>.*?```python\n").unwrap()
+});
+
+static RE_LEAD_MARKDOWN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)^\s*```(?:python)?\s*\n").unwrap()
+});
+
+static RE_TRAIL_MARKDOWN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)\n\s*```\s*$").unwrap()
+});
 
 /// Configuration for code generation.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -114,12 +131,9 @@ async fn generate_code_inner(
 
 /// Strip MiniMax/DeepSeek-style thinking blocks: 去想...```python and 「reasoning」...```
 pub fn strip_thinking_blocks(input: &str) -> String {
-    let re_think = Regex::new(r"(?s)^去想.*?```python\n").unwrap();
-    let re_reason = Regex::new(r"(?s)^<think>.*?```python\n").unwrap();
-
     let mut result = input.to_string();
-    result = re_think.replace_all(&result, "").to_string();
-    result = re_reason.replace_all(&result, "").to_string();
+    result = RE_THINK.replace_all(&result, "").to_string();
+    result = RE_REASON.replace_all(&result, "").to_string();
     result.trim().to_string()
 }
 
@@ -127,15 +141,9 @@ pub fn strip_thinking_blocks(input: &str) -> String {
 pub fn strip_markdown_wrappers(input: &str) -> String {
     let mut result = input.to_string();
 
-    // Strip leading ```python / ``` markers
-    let re_lead = Regex::new(r"(?m)^\s*```(?:python)?\s*\n").unwrap();
-    result = re_lead.replace_all(&result, "").to_string();
+    result = RE_LEAD_MARKDOWN.replace_all(&result, "").to_string();
+    result = RE_TRAIL_MARKDOWN.replace_all(&result, "").to_string();
 
-    // Strip trailing ``` markers
-    let re_trail = Regex::new(r"(?m)\n\s*```\s*$").unwrap();
-    result = re_trail.replace_all(&result, "").to_string();
-
-    // Strip plain leading/trailing triple backticks
     if result.starts_with("```") {
         result = result[3..].to_string();
     }
