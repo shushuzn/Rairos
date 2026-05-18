@@ -73,7 +73,7 @@ lazy_static::lazy_static! {
 }
 
 pub fn get_cache_config() -> CacheConfig {
-    GLOBAL_CACHE.read().unwrap().config.clone()
+    GLOBAL_CACHE.read().expect("cache lock poisoned").config.clone()
 }
 
 pub fn configure_cache(
@@ -82,7 +82,7 @@ pub fn configure_cache(
     max_cache_files: usize,
     memory_cache_max_size: usize,
 ) {
-    let mut cache = GLOBAL_CACHE.write().unwrap();
+    let mut cache = GLOBAL_CACHE.write().expect("cache lock poisoned");
     cache.config = CacheConfig {
         cache_dir,
         ttl_seconds,
@@ -92,7 +92,7 @@ pub fn configure_cache(
 }
 
 fn cache_dir(source: &str) -> PathBuf {
-    let config = GLOBAL_CACHE.read().unwrap();
+    let config = GLOBAL_CACHE.read().expect("cache lock poisoned");
     let dir = config.config.source_dir(source);
     drop(config);
     fs::create_dir_all(&dir).ok();
@@ -106,7 +106,7 @@ fn cache_path(source: &str, key: &str) -> PathBuf {
 
 fn evict_memory_cache_if_needed() {
     let items_to_evict: Vec<MemoryCacheKey> = {
-        let cache = GLOBAL_CACHE.read().unwrap();
+        let cache = GLOBAL_CACHE.read().expect("cache lock poisoned");
         let max_size = cache.config.memory_cache_max_size;
         let memory_len = cache.memory.len();
 
@@ -130,7 +130,7 @@ fn evict_memory_cache_if_needed() {
     };
 
     if !items_to_evict.is_empty() {
-        let mut cache = GLOBAL_CACHE.write().unwrap();
+        let mut cache = GLOBAL_CACHE.write().expect("cache lock poisoned");
         for key in items_to_evict {
             cache.memory.remove(&key);
         }
@@ -139,10 +139,10 @@ fn evict_memory_cache_if_needed() {
 
 pub fn get_cached(source: &str, key: &str) -> Option<serde_json::Value> {
     let cache_key = (source.to_string(), key.to_string());
-    let ttl = GLOBAL_CACHE.read().unwrap().config.ttl_seconds;
+    let ttl = GLOBAL_CACHE.read().expect("cache lock poisoned").config.ttl_seconds;
 
     {
-        let mut cache = GLOBAL_CACHE.write().unwrap();
+        let mut cache = GLOBAL_CACHE.write().expect("cache lock poisoned");
         if let Some((timestamp, data)) = cache.memory.get(&cache_key) {
             if now_secs() - timestamp < ttl as f64 {
                 return Some(data.clone());
@@ -176,7 +176,7 @@ pub fn get_cached(source: &str, key: &str) -> Option<serde_json::Value> {
     match fs::read_to_string(&path) {
         Ok(contents) => match serde_json::from_str::<serde_json::Value>(&contents) {
             Ok(data) => {
-                let mut cache = GLOBAL_CACHE.write().unwrap();
+                let mut cache = GLOBAL_CACHE.write().expect("cache lock poisoned");
                 cache.memory.insert(cache_key, (now_secs(), data.clone()));
                 evict_memory_cache_if_needed();
                 Some(data)
@@ -191,7 +191,7 @@ pub fn set_cached(source: &str, key: &str, data: &serde_json::Value) {
     let cache_key = (source.to_string(), key.to_string());
 
     let should_evict = {
-        let mut cache = GLOBAL_CACHE.write().unwrap();
+        let mut cache = GLOBAL_CACHE.write().expect("cache lock poisoned");
         cache.memory.insert(cache_key, (now_secs(), data.clone()));
         cache.memory.len() > cache.config.memory_cache_max_size
     };
@@ -207,7 +207,7 @@ pub fn set_cached(source: &str, key: &str, data: &serde_json::Value) {
 }
 
 pub fn clear_cache(source: Option<&str>) {
-    let mut cache = GLOBAL_CACHE.write().unwrap();
+    let mut cache = GLOBAL_CACHE.write().expect("cache lock poisoned");
 
     if let Some(src) = source {
         let keys: Vec<_> = cache
@@ -255,7 +255,7 @@ pub struct CacheStats {
 }
 
 pub fn get_cache_stats() -> CacheStats {
-    let cache = GLOBAL_CACHE.read().unwrap();
+    let cache = GLOBAL_CACHE.read().expect("cache lock poisoned");
     let memory_size = cache.memory.len();
     let config = cache.config.clone();
     let mut disk_sizes = HashMap::new();
@@ -374,14 +374,14 @@ impl SmartCache {
     }
 
     fn get_total_size(&self) -> usize {
-        let index = self.index.read().unwrap();
+        let index = self.index.read().expect("cache lock poisoned");
         index.values().map(|e| e.size_bytes).sum()
     }
 
     fn evict_if_needed(&self) {
         while self.get_total_size() > self.max_size_bytes {
             let did_evict = {
-                let mut index = self.index.write().unwrap();
+                let mut index = self.index.write().expect("cache lock poisoned");
                 if index.is_empty() {
                     break;
                 }
@@ -415,7 +415,7 @@ impl SmartCache {
             };
 
             if did_evict {
-                let mut stats = self.stats.write().unwrap();
+                let mut stats = self.stats.write().expect("cache lock poisoned");
                 stats.evictions += 1;
             } else {
                 break;
@@ -429,7 +429,7 @@ impl SmartCache {
 
         let data_to_store = if compressed {
             let compressed_data = self.compress(&serialized);
-            let mut stats = self.stats.write().unwrap();
+            let mut stats = self.stats.write().expect("cache lock poisoned");
             stats.compressions += 1;
             stats.bytes_saved += serialized.len().saturating_sub(compressed_data.len()) as u64;
             compressed_data
@@ -455,28 +455,28 @@ impl SmartCache {
         }
 
         {
-            let mut index = self.index.write().unwrap();
+            let mut index = self.index.write().expect("cache lock poisoned");
             index.insert(key.to_string(), entry);
         }
 
         self.evict_if_needed();
 
         {
-            let mut stats = self.stats.write().unwrap();
+            let mut stats = self.stats.write().expect("cache lock poisoned");
             stats.total_writes += 1;
         }
     }
 
     pub fn get(&self, key: &str) -> Option<serde_json::Value> {
         let entry = {
-            let index = self.index.read().unwrap();
+            let index = self.index.read().expect("cache lock poisoned");
             index.get(key).cloned()
         };
 
         let entry = match entry {
             Some(e) => e,
             None => {
-                let mut stats = self.stats.write().unwrap();
+                let mut stats = self.stats.write().expect("cache lock poisoned");
                 stats.misses += 1;
                 return None;
             }
@@ -485,7 +485,7 @@ impl SmartCache {
         let ttl = entry.ttl.unwrap_or(self.default_ttl);
         if (Self::now_secs() - entry.created_at) > ttl as f64 {
             self.remove(key);
-            let mut stats = self.stats.write().unwrap();
+            let mut stats = self.stats.write().expect("cache lock poisoned");
             stats.misses += 1;
             return None;
         }
@@ -493,7 +493,7 @@ impl SmartCache {
         let path = self.get_cache_path(key);
         if !path.exists() {
             self.remove(key);
-            let mut stats = self.stats.write().unwrap();
+            let mut stats = self.stats.write().expect("cache lock poisoned");
             stats.misses += 1;
             return None;
         }
@@ -502,21 +502,21 @@ impl SmartCache {
             Ok(f) => f,
             Err(_) => {
                 self.remove(key);
-                let mut stats = self.stats.write().unwrap();
+                let mut stats = self.stats.write().expect("cache lock poisoned");
                 stats.misses += 1;
                 return None;
             }
         };
         let mut data = Vec::new();
         if file.read_to_end(&mut data).is_err() {
-            let mut stats = self.stats.write().unwrap();
+            let mut stats = self.stats.write().expect("cache lock poisoned");
             stats.misses += 1;
             return None;
         }
 
         let decompressed = if entry.compressed {
             let decompressed_data = self.decompress(&data);
-            let mut stats = self.stats.write().unwrap();
+            let mut stats = self.stats.write().expect("cache lock poisoned");
             stats.decompressions += 1;
             decompressed_data
         } else {
@@ -526,14 +526,14 @@ impl SmartCache {
         let result = match serde_json::from_slice(&decompressed) {
             Ok(r) => r,
             Err(_) => {
-                let mut stats = self.stats.write().unwrap();
+                let mut stats = self.stats.write().expect("cache lock poisoned");
                 stats.misses += 1;
                 return None;
             }
         };
 
         {
-            let mut index = self.index.write().unwrap();
+            let mut index = self.index.write().expect("cache lock poisoned");
             if let Some(e) = index.get_mut(key) {
                 e.accessed_at = Self::now_secs();
                 e.access_count += 1;
@@ -541,7 +541,7 @@ impl SmartCache {
         }
 
         {
-            let mut stats = self.stats.write().unwrap();
+            let mut stats = self.stats.write().expect("cache lock poisoned");
             stats.hits += 1;
         }
 
@@ -552,13 +552,13 @@ impl SmartCache {
         let path = self.get_cache_path(key);
         let _ = fs::remove_file(&path);
 
-        let mut index = self.index.write().unwrap();
+        let mut index = self.index.write().expect("cache lock poisoned");
         index.remove(key);
     }
 
     pub fn clear(&self) {
         let keys: Vec<String> = {
-            let index = self.index.read().unwrap();
+            let index = self.index.read().expect("cache lock poisoned");
             index.keys().cloned().collect()
         };
 
@@ -566,16 +566,16 @@ impl SmartCache {
             self.remove(&key);
         }
 
-        let mut index = self.index.write().unwrap();
+        let mut index = self.index.write().expect("cache lock poisoned");
         index.clear();
     }
 
     pub fn get_stats(&self) -> SmartCacheStats {
         let total_size = self.get_total_size();
-        let total_entries = self.index.read().unwrap().len();
+        let total_entries = self.index.read().expect("cache lock poisoned").len();
 
         let (hits, misses) = {
-            let stats = self.stats.read().unwrap();
+            let stats = self.stats.read().expect("cache lock poisoned");
             (stats.hits, stats.misses)
         };
 
@@ -585,7 +585,7 @@ impl SmartCache {
             0.0
         };
 
-        let more_stats = self.stats.read().unwrap().clone();
+        let more_stats = self.stats.read().expect("cache lock poisoned").clone();
 
         SmartCacheStats {
             total_entries,
@@ -612,7 +612,7 @@ impl SmartCache {
         let mut removed = 0;
 
         let keys_to_remove: Vec<String> = {
-            let index = self.index.read().unwrap();
+            let index = self.index.read().expect("cache lock poisoned");
             index
                 .iter()
                 .filter(|(_, entry)| {
@@ -653,7 +653,7 @@ lazy_static::lazy_static! {
 }
 
 pub fn get_smart_cache() -> SmartCache {
-    let cache = GLOBAL_SMART_CACHE.read().unwrap();
+    let cache = GLOBAL_SMART_CACHE.read().expect("cache lock poisoned");
     if let Some(ref c) = *cache {
         return SmartCache::new(
             c.cache_dir.clone(),
@@ -676,7 +676,7 @@ pub fn get_smart_cache_with_defaults() -> SmartCache {
 
 pub fn configure_smart_cache(cache_dir: PathBuf, max_size_mb: f64) {
     let cache = SmartCache::new(cache_dir, max_size_mb, 10.0, 86400, 6);
-    let mut global = GLOBAL_SMART_CACHE.write().unwrap();
+    let mut global = GLOBAL_SMART_CACHE.write().expect("cache lock poisoned");
     *global = Some(cache);
 }
 
