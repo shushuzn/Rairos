@@ -15,7 +15,7 @@ regex.workspace = true
 anyhow.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
-warp = "0.3"
+warp = "0.4"
 rairos-llm = { path = "../rairos-llm" }
 rairos-events = { path = "../rairos-events" }
 
