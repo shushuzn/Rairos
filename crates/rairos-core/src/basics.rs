@@ -31,6 +31,7 @@ pub static DEFAULT_RESEARCH_DIRS: LazyLock<Vec<&'static str>> = LazyLock::new(||
 static RE_SPACES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r" {2,}").unwrap());
 static RE_NONWORD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^\w\s\-]").unwrap());
 static RE_DASHES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"-{2,}").unwrap());
+static RE_SAFE_UID: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^\w\.-]+").unwrap());
 
 // ============================================================================
 // Config File Loading
@@ -115,8 +116,7 @@ pub fn slugify_title(title: &str, max_len: usize) -> String {
 
 /// Create a safe UID from a string by replacing invalid characters.
 pub fn safe_uid(s: &str) -> String {
-    let re = Regex::new(r"[^\w\.-]+").unwrap();
-    re.replace_all(s.trim(), "_").to_string()
+    RE_SAFE_UID.replace_all(s.trim(), "_").to_string()
 }
 
 // ============================================================================

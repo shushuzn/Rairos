@@ -3,6 +3,8 @@
 //! Ported from `notifications/dispatcher.py`. Sends rich notifications to Discord
 //! (embeds) and Feishu (interactive cards) via webhooks, with a generic JSON fallback.
 
+pub mod limits;
+
 pub mod types;
 pub use types::*;
 

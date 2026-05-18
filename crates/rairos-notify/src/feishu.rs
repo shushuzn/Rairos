@@ -1,6 +1,7 @@
 use serde_json::json;
 use serde_json::Value;
 
+use crate::limits;
 use crate::payloads::{GapAlertPayload, ParadigmShiftPayload};
 
 pub struct FeishuRenderer;
@@ -79,8 +80,8 @@ impl FeishuRenderer {
             }]
         }));
 
-        let title = if payload.title.len() > 100 {
-            payload.title[..100].to_string()
+        let title = if payload.title.len() > limits::feishu::TITLE_MAX_LEN {
+            payload.title[..limits::feishu::TITLE_MAX_LEN].to_string()
         } else {
             payload.title.clone()
         };
@@ -113,8 +114,8 @@ impl FeishuRenderer {
             "yellow"
         };
 
-        let message = if payload.message.len() > 2000 {
-            payload.message[..2000].to_string()
+        let message = if payload.message.len() > limits::feishu::MESSAGE_MAX_LEN {
+            payload.message[..limits::feishu::MESSAGE_MAX_LEN].to_string()
         } else {
             payload.message.clone()
         };

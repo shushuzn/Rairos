@@ -1,6 +1,7 @@
 use chrono::Utc;
 use serde_json::{json, Value};
 
+use crate::limits;
 use crate::payloads::{GapAlertPayload, ParadigmShiftPayload};
 
 pub struct DiscordRenderer;
@@ -84,8 +85,8 @@ impl DiscordRenderer {
             }));
         }
 
-        let title = if payload.title.len() > 256 {
-            payload.title[..256].to_string()
+        let title = if payload.title.len() > limits::discord::TITLE_MAX_LEN {
+            payload.title[..limits::discord::TITLE_MAX_LEN].to_string()
         } else {
             payload.title.clone()
         };
@@ -132,8 +133,8 @@ impl DiscordRenderer {
             }),
         ];
 
-        let description = if payload.message.len() > 2048 {
-            payload.message[..2048].to_string()
+        let description = if payload.message.len() > limits::discord::MESSAGE_MAX_LEN {
+            payload.message[..limits::discord::MESSAGE_MAX_LEN].to_string()
         } else {
             payload.message.clone()
         };
@@ -154,13 +155,13 @@ impl DiscordRenderer {
 
         if !payload.contradictions.is_empty() {
             let c = &payload.contradictions[0];
-            let paper_a = if c.paper_a.len() > 32 {
-                format!("{}...", &c.paper_a[..32])
+            let paper_a = if c.paper_a.len() > limits::discord::PAPER_NAME_MAX_LEN {
+                format!("{}...", &c.paper_a[..limits::discord::PAPER_NAME_MAX_LEN])
             } else {
                 c.paper_a.clone()
             };
-            let paper_b = if c.paper_b.len() > 32 {
-                format!("{}...", &c.paper_b[..32])
+            let paper_b = if c.paper_b.len() > limits::discord::PAPER_NAME_MAX_LEN {
+                format!("{}...", &c.paper_b[..limits::discord::PAPER_NAME_MAX_LEN])
             } else {
                 c.paper_b.clone()
             };
@@ -176,8 +177,8 @@ impl DiscordRenderer {
     }
 
     pub fn render_paper_ingested(title: &str, arxiv_id: &str, tags: &[String]) -> Value {
-        let title = if title.len() > 256 {
-            &title[..256]
+        let title = if title.len() > limits::discord::TITLE_MAX_LEN {
+            &title[..limits::discord::TITLE_MAX_LEN]
         } else {
             title
         };

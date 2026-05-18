@@ -31,6 +31,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use thiserror::Error;
 
+const HTTP_STATUS_RATE_LIMITED: u16 = 429;
+
 // ============================================================================
 // Error Types
 // ============================================================================
@@ -576,7 +578,7 @@ impl LlmClient for OpenAiClient {
             .await?;
 
         let status = resp.status();
-        if status.as_u16() == 429 {
+        if status.as_u16() == HTTP_STATUS_RATE_LIMITED {
             return Err(LlmError::RateLimited);
         }
         if !status.is_success() {
@@ -661,7 +663,7 @@ impl LlmClient for OpenAiClient {
             .await?;
 
         let status = resp.status();
-        if status.as_u16() == 429 {
+        if status.as_u16() == HTTP_STATUS_RATE_LIMITED {
             return Err(LlmError::RateLimited);
         }
         if !status.is_success() {
@@ -740,7 +742,7 @@ impl LlmClient for AnthropicClient {
             .await?;
 
         let status = resp.status();
-        if status.as_u16() == 429 {
+        if status.as_u16() == HTTP_STATUS_RATE_LIMITED {
             return Err(LlmError::RateLimited);
         }
         if !status.is_success() {
@@ -828,7 +830,7 @@ impl LlmClient for AnthropicClient {
             .await?;
 
         let status = resp.status();
-        if status.as_u16() == 429 {
+        if status.as_u16() == HTTP_STATUS_RATE_LIMITED {
             return Err(LlmError::RateLimited);
         }
         if !status.is_success() {
