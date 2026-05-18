@@ -21,6 +21,15 @@ static RE_ABC_B: LazyLock<Regex> = LazyLock::new(|| {
 static RE_ABC_C: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^\-\s*C:\s*.*$").unwrap()
 });
+static RE_ABC_A_VALUE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)^\-\s*A:\s*(.+)\s*$").unwrap()
+});
+static RE_ABC_B_VALUE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)^\-\s*B:\s*(.+)\s*$").unwrap()
+});
+static RE_ABC_C_VALUE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)^\-\s*C:\s*(.+)\s*$").unwrap()
+});
 
 fn short(stem: &str, n: usize) -> String {
     let s = RE_SHORT.replace(stem, "").trim().to_string();
@@ -58,13 +67,11 @@ pub fn mnote_filename(tag: &str, a: &Path, b: &Path, c: &Path) -> String {
 }
 
 fn parse_current_abc(md: &str) -> (Option<String>, Option<String>, Option<String>) {
-    fn find(label: &str, md: &str) -> Option<String> {
-        let pattern = format!(r"(?m)^\-\s*{}:\s*(.+)\s*$", regex::escape(label));
-        let re = Regex::new(&pattern).unwrap();
+    fn find(re: &Regex, md: &str) -> Option<String> {
         re.captures(md)
             .map(|c| c.get(1).unwrap().as_str().trim().to_string())
     }
-    (find("A", md), find("B", md), find("C", md))
+    (find(&RE_ABC_A_VALUE, md), find(&RE_ABC_B_VALUE, md), find(&RE_ABC_C_VALUE, md))
 }
 
 fn today_iso() -> String {
