@@ -12,9 +12,31 @@
     clippy::manual_range_contains
 )]
 
+use std::sync::LazyLock;
 use anyhow::Result;
 use chrono::Datelike;
+use regex::Regex;
 use rairos_core::Database;
+
+static ARXIV_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\barXiv:\s*(\d+\.\d+\b)").unwrap()
+});
+
+static DOI_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\b10\.\d{4,}/[^\s]+").unwrap()
+});
+
+static PMID_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\bPMID:\s*(\d{6,})\b").unwrap()
+});
+
+static ISBN_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b").unwrap()
+});
+
+static REFS_SECTION_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)").unwrap()
+});
 
 pub fn handle_cite_import(
     db: &Database,
@@ -47,12 +69,12 @@ pub fn handle_cite_import(
             }
         };
 
-        let arxiv_re = regex::Regex::new(r"(?i)\barXiv:\s*(\d+\.\d+\b)").unwrap();
-        let doi_re = regex::Regex::new(r"(?i)\b10\.\d{4,}/[^\s]+").unwrap();
-        let pmid_re = regex::Regex::new(r"(?i)\bPMID:\s*(\d{6,})\b").unwrap();
-        let isbn_re = regex::Regex::new(r"(?i)\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b").unwrap();
+        let arxiv_re = &*ARXIV_REF_REGEX;
+        let doi_re = &*DOI_REF_REGEX;
+        let pmid_re = &*PMID_REF_REGEX;
+        let isbn_re = &*ISBN_REF_REGEX;
 
-        let refs_section_re = regex::Regex::new(r"(?i)(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)").unwrap();
+        let refs_section_re = &*REFS_SECTION_REGEX;
         let refs_text = if let Some(m) = refs_section_re.find(&text) {
             &text[m.start()..]
         } else {

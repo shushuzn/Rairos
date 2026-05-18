@@ -19,6 +19,7 @@ pub mod identifiers;
 pub mod logging_utils;
 pub mod i18n;
 pub mod basics;
+pub use basics::safe_uid;
 
 // Re-exported orphan utility crates
 pub mod retry;
@@ -2237,9 +2238,9 @@ mod tests {
 
     #[test]
     fn test_safe_uid() {
-        assert_eq!(super::safe_uid("hello world"), "hello_world");
-        assert_eq!(super::safe_uid("test@123"), "test_123");
-        assert_eq!(super::safe_uid(""), "");
+        assert_eq!(basics::safe_uid("hello world"), "hello_world");
+        assert_eq!(basics::safe_uid("test@123"), "test_123");
+        assert_eq!(basics::safe_uid(""), "");
     }
 
     #[test]
@@ -2299,14 +2300,6 @@ pub fn slugify(title: &str, max_len: usize) -> String {
 /// Create a slug with default max_len of 80.
 pub fn slugify_default(title: &str) -> String {
     slugify(title, 80)
-}
-
-/// Create a safe UID from a string (alphanumeric, underscore, dash, dot only).
-pub fn safe_uid(s: &str) -> String {
-    regex::Regex::new(r"[^\w\.-]+")
-        .unwrap()
-        .replace_all(s.trim(), "_")
-        .to_string()
 }
 
 // Default research directory names (canonical order).
