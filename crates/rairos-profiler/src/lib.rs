@@ -66,19 +66,19 @@ impl PerformanceProfiler {
     }
 
     pub fn enable(&self) {
-        *self.enabled.write().unwrap() = true;
+        *self.enabled.write().expect("profiler lock poisoned") = true;
     }
 
     pub fn disable(&self) {
-        *self.enabled.write().unwrap() = false;
+        *self.enabled.write().expect("profiler lock poisoned") = false;
     }
 
     pub fn is_enabled(&self) -> bool {
-        *self.enabled.read().unwrap()
+        *self.enabled.read().expect("profiler lock poisoned")
     }
 
     fn record_call(&self, name: &str, elapsed: f64) {
-        let mut profiles = self.profiles.write().unwrap();
+        let mut profiles = self.profiles.write().expect("profiler lock poisoned");
         let profile = profiles
             .entry(name.to_string())
             .or_insert_with(|| FunctionProfile::new(name));
@@ -86,12 +86,12 @@ impl PerformanceProfiler {
     }
 
     pub fn get_profile(&self, name: &str) -> Option<FunctionProfile> {
-        let profiles = self.profiles.read().unwrap();
+        let profiles = self.profiles.read().expect("profiler lock poisoned");
         profiles.get(name).cloned()
     }
 
     pub fn get_all_profiles(&self) -> Vec<FunctionProfile> {
-        let profiles = self.profiles.read().unwrap();
+        let profiles = self.profiles.read().expect("profiler lock poisoned");
         let mut result: Vec<_> = profiles.values().cloned().collect();
         result.sort_by(|a, b| {
             b.total_time
@@ -107,7 +107,7 @@ impl PerformanceProfiler {
     }
 
     pub fn get_most_called(&self, count: usize) -> Vec<FunctionProfile> {
-        let profiles = self.profiles.read().unwrap();
+        let profiles = self.profiles.read().expect("profiler lock poisoned");
         let mut result: Vec<_> = profiles.values().cloned().collect();
         result.sort_by_key(|b| std::cmp::Reverse(b.call_count));
         result.into_iter().take(count).collect()
@@ -122,7 +122,7 @@ impl PerformanceProfiler {
             format!("Total profiling time: {:.2}s", now_secs() - self.start_time),
             format!(
                 "Total functions tracked: {}",
-                self.profiles.read().unwrap().len()
+                self.profiles.read().expect("profiler lock poisoned").len()
             ),
             String::new(),
             "TOP 10 SLOWEST FUNCTIONS (by total time):".to_string(),
@@ -164,7 +164,7 @@ impl PerformanceProfiler {
     }
 
     pub fn reset(&self) {
-        self.profiles.write().unwrap().clear();
+        self.profiles.write().expect("profiler lock poisoned").clear();
     }
 
     pub fn get_stats_dict(&self) -> serde_json::Value {
@@ -196,7 +196,7 @@ impl PerformanceProfiler {
             .collect();
 
         serde_json::json!({
-            "total_functions": self.profiles.read().unwrap().len(),
+            "total_functions": self.profiles.read().expect("profiler lock poisoned").len(),
             "total_time": now_secs() - self.start_time,
             "slowest": slowest,
             "most_called": most_called,

@@ -29,12 +29,12 @@ impl PerformanceMonitor {
     }
 
     pub fn record(&self, name: &str, value: f64) {
-        let mut metrics = self.metrics.write().unwrap();
+        let mut metrics = self.metrics.write().expect("metrics lock poisoned");
         metrics.entry(name.to_string()).or_default().push(value);
     }
 
     pub fn get_stats(&self, name: &str) -> Option<MetricStats> {
-        let metrics = self.metrics.read().unwrap();
+        let metrics = self.metrics.read().expect("metrics lock poisoned");
         let values = metrics.get(name)?;
 
         if values.is_empty() {
@@ -57,7 +57,7 @@ impl PerformanceMonitor {
     }
 
     pub fn get_all_stats(&self) -> HashMap<String, MetricStats> {
-        let metrics = self.metrics.read().unwrap();
+        let metrics = self.metrics.read().expect("metrics lock poisoned");
         metrics
             .keys()
             .filter_map(|k| self.get_stats(k).map(|stats| (k.clone(), stats)))
@@ -65,12 +65,12 @@ impl PerformanceMonitor {
     }
 
     pub fn reset(&self) {
-        let mut metrics = self.metrics.write().unwrap();
+        let mut metrics = self.metrics.write().expect("metrics lock poisoned");
         metrics.clear();
     }
 
     pub fn reset_metric(&self, name: &str) {
-        let mut metrics = self.metrics.write().unwrap();
+        let mut metrics = self.metrics.write().expect("metrics lock poisoned");
         metrics.remove(name);
     }
 }
