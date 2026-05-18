@@ -11,7 +11,55 @@ use std::collections::HashSet;
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
+use std::sync::LazyLock;
 use thiserror::Error;
+
+static INTENT_PATTERNS: LazyLock<Vec<(ResearchIntent, Vec<Regex>)>> = LazyLock::new(|| {
+    vec![
+        (
+            ResearchIntent::Reproducing,
+            vec![
+                Regex::new(r"复现|实现|copy|paste|跑通|代码|code|reproduce|implement|build").unwrap(),
+                Regex::new(r"怎么实现|如何复现|有代码吗|show me|给我代码").unwrap(),
+            ],
+        ),
+        (
+            ResearchIntent::Improving,
+            vec![
+                Regex::new(r"改进|优化|提升|更好|improve|better|enhance|boost").unwrap(),
+                Regex::new(r"如何改进|能不能更好|超越|outperform|beat").unwrap(),
+            ],
+        ),
+        (
+            ResearchIntent::Comparing,
+            vec![
+                Regex::new(r"比较|对比|差异|哪个更好|vs|versus|compare|differ").unwrap(),
+                Regex::new(r"和.*区别|相比.*如何|哪个更强").unwrap(),
+            ],
+        ),
+        (
+            ResearchIntent::Learning,
+            vec![
+                Regex::new(r"是什么|原理|如何理解|学习|了解|入门|概念|definition|learn|understand|explain").unwrap(),
+                Regex::new(r"什么意思|怎么理解|有什么用|what is|how does").unwrap(),
+            ],
+        ),
+        (
+            ResearchIntent::Exploring,
+            vec![
+                Regex::new(r"有哪些|有什么最新|研究|最近|探索|发现|what are|latest|recent|discover").unwrap(),
+                Regex::new(r"有什么新|还有什么|还有什么方法").unwrap(),
+            ],
+        ),
+        (
+            ResearchIntent::Citing,
+            vec![
+                Regex::new(r"引用|cite|参考文献|写论文|写作|如何引用|citation|bibliography").unwrap(),
+                Regex::new(r"格式|规范|apa|ieee").unwrap(),
+            ],
+        ),
+    ]
+});
 
 // ============================================================================
 // Prompt constants (LLM-driven follow-up question generation)
@@ -185,51 +233,7 @@ struct IntentDetector {
 
 impl IntentDetector {
     fn new() -> Self {
-        let patterns = vec![
-            (
-                ResearchIntent::Reproducing,
-                vec![
-                    Regex::new(r"复现|实现|copy|paste|跑通|代码|code|reproduce|implement|build").unwrap(),
-                    Regex::new(r"怎么实现|如何复现|有代码吗|show me|给我代码").unwrap(),
-                ],
-            ),
-            (
-                ResearchIntent::Improving,
-                vec![
-                    Regex::new(r"改进|优化|提升|更好|improve|better|enhance|boost").unwrap(),
-                    Regex::new(r"如何改进|能不能更好|超越|outperform|beat").unwrap(),
-                ],
-            ),
-            (
-                ResearchIntent::Comparing,
-                vec![
-                    Regex::new(r"比较|对比|差异|哪个更好|vs|versus|compare|differ").unwrap(),
-                    Regex::new(r"和.*区别|相比.*如何|哪个更强").unwrap(),
-                ],
-            ),
-            (
-                ResearchIntent::Learning,
-                vec![
-                    Regex::new(r"是什么|原理|如何理解|学习|了解|入门|概念|definition|learn|understand|explain").unwrap(),
-                    Regex::new(r"什么意思|怎么理解|有什么用|what is|how does").unwrap(),
-                ],
-            ),
-            (
-                ResearchIntent::Exploring,
-                vec![
-                    Regex::new(r"有哪些|有什么|最新|研究|最近|探索|发现|what are|latest|recent|discover").unwrap(),
-                    Regex::new(r"有什么新|还有什么|还有什么方法").unwrap(),
-                ],
-            ),
-            (
-                ResearchIntent::Citing,
-                vec![
-                    Regex::new(r"引用|cite|参考文献|写论文|写作|如何引用|citation|bibliography").unwrap(),
-                    Regex::new(r"格式|规范|apa|ieee").unwrap(),
-                ],
-            ),
-        ];
-        Self { patterns }
+        Self { patterns: INTENT_PATTERNS.clone() }
     }
 
     fn detect(&self, question: &str) -> ResearchIntent {
