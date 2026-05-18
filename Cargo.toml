@@ -189,7 +189,7 @@ opentelemetry_sdk = { version = "0.24", features = ["rt-tokio"] }
 tracing-opentelemetry = "0.25"
 axum = "0.7"
 bcrypt = "0.16"
-redis = { version = "0.25", features = ["tokio-comp"] }
+redis = { version = "1.2", features = ["tokio-comp"] }
 tokio-postgres = { version = "0.7", features = ["with-uuid-1", "with-chrono-0_4"] }
 bb8-postgres = "0.8"
 tower = { version = "0.4", features = ["timeout"] }
