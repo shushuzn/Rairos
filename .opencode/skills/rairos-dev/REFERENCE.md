@@ -5,7 +5,7 @@
 - **150 crates** (Rust only, no Python)
 - **~73k+ Rust lines**
 - **123 CLI commands**
-- **40 MCP tools** (0 core + 40 LLM-backed)
+- **0 MCP tools** (0 core + 0 LLM-backed)
 - **License**: GPL-3.0
 
 ## Key Crates
@@ -14,7 +14,7 @@
 |-------|---------|
 | rairos-core | DB, FTS5, subscriptions, tags, constants |
 | rairos-cli | 123 commands in main.rs |
-| rairos-mcp | MCP protocol server (40 tools) |
+| rairos-mcp | MCP protocol server (0 tools) |
 | rairos-codegraph | CodeGraph MCP server + CLI |
 | rairos-llm | GenePool, Evolution, LLM clients |
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API |
@@ -27,11 +27,11 @@
 
 Sample: Add...
 
-## MCP Tools (40 total)
+## MCP Tools (0 total)
 
 **Core Rust (0)**: 
 
-**LLM-backed (40)**: briefing_generate, litreview_generate, slides_generate, gap_detect, citation_chain_build, citation_chain_families, citation_chain_silent, citation_chain_render, impact_score_paper, impact_rank, replication_check, paper_compare, paper_analyze, gap_submit, gap_evolve, gene_pool_decay, crossover, leaderboard, impact_leaderboard, claim_graph, hypothesis_generate, topic_discovery, orchestrator_run_cycle, deep_research_run, parallel_research_run, trust_scorer_compute, routeplan_create, tag_all, review_list, hypothesis_list, experiment_record, litreview_list, review_simulate, gene_pool_watcher, replication_compare, routeplan_list, routeplan_update_step, routeplan_revise, research_run
+**LLM-backed (0)**: 
 
 ## Data Paths
 
