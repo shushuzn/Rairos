@@ -23,6 +23,14 @@ static TEST_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     ]
 });
 
+static IO_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"(?i)input\s*[:=]\s*(.+?)\s*[,\n]\s*output\s*[:=]\s*(.+?)(?:\n|$)").unwrap(),
+        Regex::new(r"(?i)given\s+(.+?)\s*,\s*(?:the\s+)?(?:result|output)\s+(?:is|:)\s*(.+?)(?:\n|$)").unwrap(),
+        Regex::new(r"(?i)(?:example|eg\.?)\s*[:.]?\s*['\x22]?(.+?)['\x22]?\s*(?:->|->|gives|produces)\s*['\x22]?(.+?)['\x22]?(?:\n|$)").unwrap(),
+    ]
+});
+
 // ─── Data structs ───────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -345,13 +353,7 @@ fn extract_equation_tests(equations: &[String]) -> Vec<TestCase> {
 
 // ─── IO example tests ───────────────────────────────────────────────────────────
 
-fn get_io_patterns() -> Vec<Regex> {
-    vec![
-        Regex::new(r"(?i)input\s*[:=]\s*(.+?)\s*[,\n]\s*output\s*[:=]\s*(.+?)(?:\n|$)").unwrap(),
-        Regex::new(r"(?i)given\s+(.+?)\s*,\s*(?:the\s+)?(?:result|output)\s+(?:is|:)\s*(.+?)(?:\n|$)").unwrap(),
-        Regex::new(r"(?i)(?:example|eg\.?)\s*[:.]?\s*['\x22]?(.+?)['\x22]?\s*(?:->|->|gives|produces)\s*['\x22]?(.+?)['\x22]?(?:\n|$)").unwrap(),
-    ]
-}
+
 
 fn extract_io_examples(
     abstract_text: &str,
@@ -362,7 +364,7 @@ fn extract_io_examples(
     let text = format!("{} {}", abstract_text, algorithm_descriptions.join(" "));
     let mut seen: HashSet<String> = HashSet::new();
 
-    for pat in get_io_patterns().iter() {
+    for pat in IO_PATTERNS.iter() {
         for cap in pat.captures_iter(&text) {
             let inp = match cap.get(1) {
                 Some(i) => i.as_str(),
