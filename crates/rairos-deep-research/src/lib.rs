@@ -609,7 +609,7 @@ impl DeepResearchAgent {
         let session_id = generate_session_id();
         let strategy = AdaptiveQueryStrategy::new(&self.config.query);
 
-        *self.adaptive_strategy.write().unwrap() = strategy;
+        *self.adaptive_strategy.write().expect("adaptive_strategy write lock poisoned") = strategy;
 
         let session =
             ResearchSession::new(&session_id, &self.config.query, self.config.max_iterations);
@@ -720,7 +720,7 @@ impl DeepResearchAgent {
             );
 
             // Use adaptive strategy to build query
-            let strategy = self.adaptive_strategy.read().unwrap();
+            let strategy = self.adaptive_strategy.read().expect("adaptive_strategy read lock poisoned");
             let planned = strategy.build_adaptive_query(
                 iteration,
                 &latest_gap.title,
