@@ -86,7 +86,7 @@ thread_local! {
 }
 
 pub fn get_trace_id() -> Option<String> {
-    CORRELATION.with(|c| c.read().unwrap().trace_id.clone())
+    CORRELATION.with(|c| c.read().expect("correlation context lock poisoned").trace_id.clone())
 }
 
 pub fn new_span_id() -> String {
@@ -96,7 +96,7 @@ pub fn new_span_id() -> String {
         .map(char::from)
         .collect();
     CORRELATION.with(|c| {
-        let mut ctx = c.write().unwrap();
+        let mut ctx = c.write().expect("correlation context lock poisoned");
         ctx.span_id = Some(id.clone());
     });
     id
@@ -104,7 +104,7 @@ pub fn new_span_id() -> String {
 
 pub fn set_trace_id(trace_id: Option<String>) {
     CORRELATION.with(|c| {
-        let mut ctx = c.write().unwrap();
+        let mut ctx = c.write().expect("correlation context lock poisoned");
         ctx.trace_id = trace_id;
     });
 }
@@ -114,7 +114,7 @@ where
     F: FnOnce() -> R,
 {
     let (prev_trace, prev_span, prev_parent) = CORRELATION.with(|c| {
-        let mut ctx = c.write().unwrap();
+        let mut ctx = c.write().expect("correlation context lock poisoned");
         let prev_trace = ctx.trace_id.clone();
         let prev_span = ctx.span_id.clone();
         let prev_parent = ctx.parent_span_id.clone();
@@ -151,7 +151,7 @@ where
     let result = f();
 
     CORRELATION.with(|c| {
-        let mut ctx = c.write().unwrap();
+        let mut ctx = c.write().expect("correlation context lock poisoned");
         ctx.trace_id = prev_trace;
         ctx.span_id = prev_span;
         ctx.parent_span_id = prev_parent;
@@ -191,7 +191,7 @@ impl EventEmitter {
     pub fn emit(&self, event_name: &str, extra: Option<HashMap<String, serde_json::Value>>) {
         let trace_id = get_trace_id().unwrap_or_default();
         let span_id = CORRELATION
-            .with(|c| c.read().unwrap().span_id.clone())
+            .with(|c| c.read().expect("correlation context lock poisoned").span_id.clone())
             .unwrap_or_default();
 
         let event = Event {
@@ -202,7 +202,7 @@ impl EventEmitter {
             extra,
         };
 
-        let mut buffer = self.buffer.write().unwrap();
+        let mut buffer = self.buffer.write().expect("correlation context lock poisoned");
         buffer.push(event);
         if buffer.len() > self.capacity {
             buffer.remove(0);
@@ -215,7 +215,7 @@ impl EventEmitter {
         trace_id: Option<&str>,
         limit: usize,
     ) -> Vec<Event> {
-        let buffer = self.buffer.read().unwrap();
+        let buffer = self.buffer.read().expect("correlation context lock poisoned");
         let mut events: Vec<Event> = buffer.clone();
 
         if let Some(et) = event_type {
@@ -234,7 +234,7 @@ impl EventEmitter {
     }
 
     pub fn clear(&self) {
-        self.buffer.write().unwrap().clear();
+        self.buffer.write().expect("correlation context lock poisoned").clear();
     }
 }
 
@@ -270,7 +270,7 @@ impl MetricsCollector {
 
     pub fn inc(&self, subsystem: &str, name: &str, value: f64) {
         let key = format!("{}.{}", subsystem, name);
-        let mut counters = self.counters.write().unwrap();
+        let mut counters = self.counters.write().expect("correlation context lock poisoned");
         *counters.entry(key).or_insert(0.0) += value;
     }
 
@@ -286,17 +286,17 @@ impl MetricsCollector {
 
     pub fn set(&self, subsystem: &str, name: &str, value: f64) {
         let key = format!("{}.{}", subsystem, name);
-        self.gauges.write().unwrap().insert(key, value);
+        self.gauges.write().expect("correlation context lock poisoned").insert(key, value);
     }
 
     pub fn gauge(&self, subsystem: &str, name: &str) -> Option<f64> {
         let key = format!("{}.{}", subsystem, name);
-        self.gauges.read().unwrap().get(&key).copied()
+        self.gauges.read().expect("correlation context lock poisoned").get(&key).copied()
     }
 
     pub fn observe(&self, subsystem: &str, name: &str, value: f64) {
         let key = format!("{}.{}", subsystem, name);
-        let mut histograms = self.histograms.write().unwrap();
+        let mut histograms = self.histograms.write().expect("correlation context lock poisoned");
         let hist = histograms.entry(key).or_default();
         hist.push(value);
         if hist.len() > 1000 {
@@ -306,7 +306,7 @@ impl MetricsCollector {
 
     pub fn histogram_stats(&self, subsystem: &str, name: &str) -> HashMap<String, f64> {
         let key = format!("{}.{}", subsystem, name);
-        let histograms = self.histograms.read().unwrap();
+        let histograms = self.histograms.read().expect("correlation context lock poisoned");
         let values: Vec<f64> = histograms.get(&key).cloned().unwrap_or_default();
 
         if values.is_empty() {
@@ -339,19 +339,19 @@ impl MetricsCollector {
         let ts = now_secs_f64();
         let mut lines = Vec::new();
 
-        let counters = self.counters.read().unwrap();
+        let counters = self.counters.read().expect("correlation context lock poisoned");
         for (key, value) in counters.iter() {
             lines.push(format!("# TYPE {} counter", key));
             lines.push(format!("{} {} {}", key, value, (ts * 1000.0) as i64));
         }
 
-        let gauges = self.gauges.read().unwrap();
+        let gauges = self.gauges.read().expect("correlation context lock poisoned");
         for (key, value) in gauges.iter() {
             lines.push(format!("# TYPE {} gauge", key));
             lines.push(format!("{} {} {}", key, value, (ts * 1000.0) as i64));
         }
 
-        let histograms = self.histograms.read().unwrap();
+        let histograms = self.histograms.read().expect("correlation context lock poisoned");
         for (key, values) in histograms.iter() {
             if values.is_empty() {
                 continue;
@@ -385,19 +385,19 @@ impl MetricsCollector {
     pub fn summary(&self) -> HashMap<String, serde_json::Value> {
         let mut result = HashMap::new();
 
-        let counters = self.counters.read().unwrap();
+        let counters = self.counters.read().expect("correlation context lock poisoned");
         result.insert(
             "counters".to_string(),
             serde_json::to_value(&*counters).unwrap_or(serde_json::Value::Null),
         );
 
-        let gauges = self.gauges.read().unwrap();
+        let gauges = self.gauges.read().expect("correlation context lock poisoned");
         result.insert(
             "gauges".to_string(),
             serde_json::to_value(&*gauges).unwrap_or(serde_json::Value::Null),
         );
 
-        let histograms = self.histograms.read().unwrap();
+        let histograms = self.histograms.read().expect("correlation context lock poisoned");
         let hist_summary: HashMap<String, HashMap<String, f64>> = histograms
             .keys()
             .map(|k| {
