@@ -3441,7 +3441,6 @@ version = "0.1.0"
 dependencies = [
  "dirs",
  "flate2",
- "lazy_static",
  "serde",
  "serde_json",
 ]
@@ -3752,7 +3751,6 @@ dependencies = [
  "anyhow",
  "chrono",
  "dirs",
- "lazy_static",
  "parking_lot",
  "rairos-auth",
  "rairos-cache",
@@ -3983,7 +3981,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
- "lazy_static",
  "rairos-evolution",
  "regex",
  "serde",
@@ -4317,7 +4314,6 @@ dependencies = [
  "chrono",
  "dirs",
  "futures-util",
- "lazy_static",
  "mockito",
  "rairos-achievements",
  "rairos-briefing-distributor",
@@ -4611,7 +4607,6 @@ dependencies = [
  "chrono",
  "futures",
  "hex",
- "lazy_static",
  "lopdf 0.34.0",
  "rairos-code-generator",
  "regex",
@@ -4674,7 +4669,6 @@ dependencies = [
 name = "rairos-profiler"
 version = "0.1.0"
 dependencies = [
- "lazy_static",
  "serde",
  "serde_json",
 ]
