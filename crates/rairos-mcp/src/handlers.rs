@@ -19,7 +19,7 @@ pub use trends::{TrendsDetectTrendingHandler, TrendsPredictNextHandler, TrendsTo
 pub use knowledge::{CitationGraphHandler, KgPaperSubgraphHandler, KgTagGraphHandler, KgFullGraphHandler, KgQueryHandler};
 pub use citation::{CiteFetchHandler, PaperSearchMultiHandler, PaperLookupDoiHandler, PaperCitationsHandler, PaperVerifyCitationsHandler, CitationStyle, format_citation_apa, format_citation_nature, format_citation_vancouver};
 pub use generation::{PaperVisualizeTrendsHandler, PaperVisualizeRadarHandler, PaperCriticalAnalysisHandler, PaperGenerateReviewPdfHandler, HypothesisReportHandler, PaperGenerateSchematicHandler};
-pub use external::{PaperScienceDiscoveryHandler, PaperDatabaseLookupHandler, PaperPeerReviewHandler, PaperFormatCitationHandler, PaperLiteratureReviewHandler, ChartQueryHandler};
+pub use external::*;
 pub use paper_ops::{PaperParseFullHandler, ReplicationCheckSimpleHandler, GitHubRepoMetadataHandler, HuggingFaceDatasetHandler, PdfExtractAdvancedHandler};
 pub use synthesis::{PaperGenerateHandler, WhatIfOracleHandler, PaperDocxHandler, PaperSlidesHandler, PaperGrantProposalHandler, StatisticalAnalysisHandler};
 
