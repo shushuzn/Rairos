@@ -3,7 +3,7 @@
 use anyhow::Result;
 
 pub fn handle_crossref_analyze(paper_id: &str) -> Result<()> {
-    use rairos_cross_referencer::{CrossReferencer, CrossReferenceResult};
+    use rairos_cross_referencer::CrossReferencer;
 
     let referencer = CrossReferencer::new();
     let result = referencer.analyze(

@@ -228,6 +228,7 @@ const VERIFY_ROUTE_PROMPT: &str = r#"你是一个严谨的路由决策验证助�
 如果决策合理，返回 {{"is_valid": true, "warnings": []}}。
 如果有问题，返回 {{"is_valid": false, "warnings": ["具体问题"]}}。"#;
 
+#[allow(dead_code)]
 async fn verify_route_decision_async(
     llm: &dyn crate::LlmClient,
     model: &str,

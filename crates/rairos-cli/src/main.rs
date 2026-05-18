@@ -41,7 +41,7 @@ pub mod discover;
 pub mod scout;
 
 use anyhow::{Context, Result};
-use clap::{CommandFactory, Parser, Subcommand};
+use clap::{CommandFactory, Parser};
 use clap_complete::{generate, shells};
 use rairos_core::{Database, ParseStatus};
 use std::path::PathBuf;
@@ -191,14 +191,14 @@ fn main() -> Result<()> {
                 handle_briefing_generate(arxiv_id)?;
             }
         }
-        Commands::Paradigm { topic, list, limit } => {
+        Commands::Paradigm { topic, list, limit: _ } => {
             if *list {
                 handle_paradigm_list()?;
             } else {
                 handle_paradigm_detect(topic)?;
             }
         }
-        Commands::Crossref { paper_id, list, limit } => {
+        Commands::Crossref { paper_id, list, limit: _ } => {
             if *list {
                 handle_crossref_list()?;
             } else {
@@ -221,7 +221,7 @@ fn main() -> Result<()> {
                 handle_crossover_run()?;
             }
         }
-        Commands::Decay { capsule_id, stats } => {
+        Commands::Decay { capsule_id, stats: _ } => {
             if !capsule_id.is_empty() {
                 handle_decay_status(capsule_id)?;
             } else {
@@ -242,7 +242,7 @@ fn main() -> Result<()> {
                 handle_credibility_score()?;
             }
         }
-        Commands::ClaimGraph { stats, contradictions } => {
+        Commands::ClaimGraph { stats: _, contradictions } => {
             if *contradictions {
                 handle_claimgraph_contradictions()?;
             } else {

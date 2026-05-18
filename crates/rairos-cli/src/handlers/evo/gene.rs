@@ -15,7 +15,6 @@
 use anyhow::{Context, Result};
 use rairos_llm::{Capsule, CapsuleStatus, GenePool, GenePoolDiversityCalculator};
 
-use crate::InsightAction;
 
 pub fn handle_gene_show(id: &str, format: &str) -> Result<()> {
     let pool = GenePool::load().context("Failed to load gene pool")?;

@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 
-pub fn handle_impact_leaderboard(limit: usize) -> Result<()> {
+pub fn handle_impact_leaderboard(_limit: usize) -> Result<()> {
     println!("📊 Impact Leaderboard");
     println!("   Use 'rairos rank' to rank papers in your database");
     println!("   Use 'rairos impact <paper_id>' to score a specific paper");
@@ -19,7 +19,7 @@ pub fn handle_impact_score(paper_id: &str) -> Result<()> {
 pub fn handle_rigor_score(paper_id: &str) -> Result<()> {
     use rairos_rigor::RigorScorer;
 
-    let scorer = RigorScorer::new();
+    let _scorer = RigorScorer::new();
     println!("🔬 Rigor Score for: {}", paper_id);
     println!("   Use 'rairos replicate <paper_id>' for full replication check");
     Ok(())
@@ -28,7 +28,7 @@ pub fn handle_rigor_score(paper_id: &str) -> Result<()> {
 pub fn handle_momentum_score(tag: &str) -> Result<()> {
     use rairos_scoring_momentum::ResearchMomentum;
 
-    let mut scorer = ResearchMomentum::new();
+    let _scorer = ResearchMomentum::new();
     println!("📈 Scoring Momentum: {}", tag);
     println!("   Use 'rairos momentum leaderboard' for top tags");
     Ok(())

@@ -13,7 +13,6 @@
 )]
 
 use anyhow::Result;
-use rairos_core::constants::{LLM_BASE_URL, LLM_MODEL};
 use rairos_core::Database;
 use crate::handlers::*;
 

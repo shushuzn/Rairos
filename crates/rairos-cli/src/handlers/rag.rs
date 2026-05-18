@@ -15,7 +15,6 @@
 use anyhow::{Context, Result};
 use std::path::{Path, PathBuf};
 use crate::RagAction;
-use crate::handlers::*;
 
 pub fn handle_rag(action: &RagAction) -> Result<()> {
     match action {

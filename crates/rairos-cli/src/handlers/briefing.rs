@@ -3,7 +3,7 @@
 use anyhow::Result;
 
 pub fn handle_briefing_generate(arxiv_id: &str) -> Result<()> {
-    use rairos_briefing_generator::{BriefingGenerator, BriefingResult};
+    use rairos_briefing_generator::BriefingGenerator;
 
     let generator = BriefingGenerator::new();
     let result = generator.generate(arxiv_id, false, None, None, None, None);

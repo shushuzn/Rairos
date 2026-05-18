@@ -13,7 +13,6 @@
 )]
 
 use anyhow::Result;
-use crate::handlers::*;
 
 pub fn handle_discover(force: bool) -> Result<()> {
     let result = crate::discover::discover(force);

@@ -14,7 +14,6 @@
 
 use anyhow::Result;
 use crate::CacheAction;
-use crate::handlers::*;
 
 pub fn handle_cache(action: &CacheAction) -> Result<()> {
     match action {

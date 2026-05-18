@@ -12,17 +12,10 @@
     clippy::manual_range_contains
 )]
 
-use anyhow::{Context, Result};
-use chrono::Utc;
-use rairos_core::{Database, Paper};
-use rairos_pdf;
-use std::collections::HashSet;
+use anyhow::Result;
+use rairos_core::Database;
 use std::path::PathBuf;
 
-use crate::{
-    DedupAction,
-    parse_status_arg, status_str,
-};
 
 pub fn handle_init(db_path: &PathBuf) -> Result<()> {
     if db_path.exists() {

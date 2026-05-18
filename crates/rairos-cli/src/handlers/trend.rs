@@ -14,7 +14,6 @@
 
 use anyhow::Result;
 use rairos_core::Database;
-use crate::handlers::*;
 
 pub fn handle_trend(db: &Database, topic: &str, range: &str, format: &str) -> Result<()> {
     use chrono::{Duration, Utc};

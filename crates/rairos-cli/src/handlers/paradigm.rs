@@ -3,7 +3,7 @@
 use anyhow::Result;
 
 pub fn handle_paradigm_detect(topic: &str) -> Result<()> {
-    use rairos_paradigm::{ParadigmMonitor, ParadigmResult};
+    use rairos_paradigm::ParadigmMonitor;
 
     let sample_papers: Vec<[&str; 3]> = vec![
         [topic, "2020", "10"],

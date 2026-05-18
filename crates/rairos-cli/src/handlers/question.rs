@@ -14,7 +14,6 @@
 
 use anyhow::Result;
 use crate::QuestionAction;
-use crate::handlers::*;
 
 pub fn handle_question(action: &QuestionAction) -> Result<()> {
     use rairos_questions::{QuestionSource, QuestionStatus};

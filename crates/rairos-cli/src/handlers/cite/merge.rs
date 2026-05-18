@@ -13,7 +13,6 @@
 )]
 
 use anyhow::Result;
-use chrono::Datelike;
 use rairos_core::Database;
 
 pub fn handle_merge(

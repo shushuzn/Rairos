@@ -12,17 +12,8 @@
     clippy::manual_range_contains
 )]
 
-use anyhow::{Context, Result};
-use chrono::Utc;
-use rairos_core::{Database, Paper};
-use rairos_pdf;
-use std::collections::HashSet;
-use std::path::PathBuf;
+use anyhow::Result;
 
-use crate::{
-    DedupAction,
-    parse_status_arg, status_str,
-};
 
 pub fn handle_ingest(paper_id: Option<&str>, json: bool, no_pdf: bool, source: &str) -> Result<()> {
     let Some(pid) = paper_id else {

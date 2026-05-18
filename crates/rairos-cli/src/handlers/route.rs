@@ -13,7 +13,6 @@
 )]
 
 use anyhow::Result;
-use crate::handlers::*;
 
 pub fn handle_route(query: &[String], json: bool, exec: bool, all: bool) -> Result<()> {
     if query.is_empty() {

@@ -13,7 +13,6 @@
 )]
 
 use anyhow::Result;
-use crate::handlers::*;
 
 pub fn handle_journal(action: &str, content: Option<&str>, tags: Option<&str>, mood: Option<&str>) -> Result<()> {
     let journal = crate::journal::Journal::new(None);

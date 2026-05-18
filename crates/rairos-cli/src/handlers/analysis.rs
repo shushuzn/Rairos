@@ -14,7 +14,6 @@
 
 use anyhow::Result;
 use rairos_core::Database;
-use crate::handlers::*;
 
 pub fn handle_friction(friction_type: Option<&str>, days: usize, json: bool, limit: usize) -> Result<()> {
     let tracker = rairos_friction::FrictionTracker::new(None);

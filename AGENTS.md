@@ -2,7 +2,7 @@
 
 ## Project
 
-Self-Evolving Research OS — **100% Rust**: 154 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
+Self-Evolving Research OS — **100% Rust**: 149 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
 Python CLI fully migrated to Rust. All Python source code removed.
 
 ## Rust Build
@@ -29,7 +29,7 @@ CARGO_BUILD_JOBS=1 cargo build
 | indicatif | 0.18 | Progress bars |
 | tokio | 1.x | Async runtime |
 
-## Key Crates (22 of 154)
+## Key Crates (22 of 149)
 
 | Crate | Purpose |
 |-------|---------|
@@ -38,7 +38,7 @@ CARGO_BUILD_JOBS=1 cargo build
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API, PDF extraction |
 | rairos-research | DeepResearchAgent, gap detection |
 | rairos-web | REST API + HTML frontend |
-| rairos-cli | 104 commands (2721 lines, main.rs) |
+| rairos-cli | 104 commands (955 lines, main.rs) |
 | rairos-kg | Knowledge graph, PageRank, communities |
 | rairos-memory | Research stance tracking, anomaly detection |
 | rairos-rankers | Paper ranking and scoring |

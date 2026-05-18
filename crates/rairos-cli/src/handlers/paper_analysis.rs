@@ -14,7 +14,6 @@
 
 use anyhow::Result;
 use rairos_core::{Database, Paper};
-use crate::handlers::*;
 
 pub fn handle_analyze(db: &Database, kind: &str, paper: Option<String>, format: &str) -> Result<()> {
     match kind {

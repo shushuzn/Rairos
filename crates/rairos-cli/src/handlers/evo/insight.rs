@@ -13,7 +13,6 @@
 )]
 
 use anyhow::Result;
-use std::time::{Duration, Instant};
 
 use crate::InsightAction;
 

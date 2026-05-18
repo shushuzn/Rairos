@@ -13,14 +13,11 @@
 )]
 
 use anyhow::{Context, Result};
-use chrono::Utc;
 use rairos_core::{Database, Paper};
 use rairos_pdf;
-use std::collections::HashSet;
 use std::path::PathBuf;
 
 use crate::{
-    DedupAction,
     parse_status_arg, status_str,
 };
 

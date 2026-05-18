@@ -13,7 +13,6 @@
 )]
 
 use anyhow::Result;
-use rairos_core::Database;
 use crate::handlers::*;
 
 pub fn handle_demo(quick: bool, papers: Option<usize>, insights: bool) -> Result<()> {

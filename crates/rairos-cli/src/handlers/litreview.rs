@@ -14,7 +14,6 @@
 
 use anyhow::Result;
 use rairos_core::Database;
-use crate::handlers::*;
 
 pub fn handle_litreview(db: &Database, topic: Option<&str>, limit: usize, _format: &str) -> Result<()> {
     let topic_str = topic.unwrap_or("machine learning");

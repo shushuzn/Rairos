@@ -12,17 +12,11 @@
     clippy::manual_range_contains
 )]
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use chrono::Utc;
 use rairos_core::{Database, Paper};
-use rairos_pdf;
 use std::collections::HashSet;
-use std::path::PathBuf;
 
-use crate::{
-    DedupAction,
-    parse_status_arg, status_str,
-};
 
 pub fn handle_search(
     db: &Database,
@@ -132,7 +126,7 @@ pub fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()>
             let sim = title_similarity(&target_title, &p.title.to_lowercase());
             (p.id.clone(), sim, p)
         })
-        .filter(|(id, sim, _)| *sim > 0.3 && *sim < 1.0)
+        .filter(|(_id, sim, _)| *sim > 0.3 && *sim < 1.0)
         .collect();
 
     similarities.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
@@ -144,7 +138,7 @@ pub fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()>
     }
 
     println!("{} similar papers found:\n", similarities.len());
-    for (i, (id, sim, p)) in similarities.iter().enumerate() {
+    for (i, (_id, sim, p)) in similarities.iter().enumerate() {
         println!(
             "{}. {} [{:.2}]",
             i + 1,

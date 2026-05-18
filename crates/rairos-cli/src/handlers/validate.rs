@@ -14,8 +14,6 @@
 
 use anyhow::Result;
 use chrono::Datelike;
-use rairos_core::Database;
-use crate::handlers::*;
 
 pub fn handle_validate(
     db: &rairos_core::Database,
