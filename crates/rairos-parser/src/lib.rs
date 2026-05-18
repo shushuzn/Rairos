@@ -9,6 +9,8 @@ use serde::Deserialize;
 use std::time::Duration;
 use thiserror::Error;
 
+const DEFAULT_TIMEOUT_SECS: u64 = 30;
+
 // ============================================================================
 // Error Types
 // ============================================================================
@@ -84,7 +86,7 @@ pub async fn fetch_arxiv(arxiv_id: &str) -> Result<Paper, ParseError> {
     let url = format!("{}?id_list={}", ARXIV_API, arxiv_id);
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(DEFAULT_TIMEOUT_SECS))
         .build()?;
 
     let resp = client.get(&url).send().await?;
@@ -263,7 +265,7 @@ pub async fn fetch_crossref(doi: &str) -> Result<Paper, ParseError> {
     let url = format!("{}/{}", CROSSREF_API, doi);
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(DEFAULT_TIMEOUT_SECS))
         .build()?;
 
     let resp = client
@@ -378,7 +380,7 @@ pub async fn fetch_semantic(paper_id: &str) -> Result<Paper, ParseError> {
     );
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(DEFAULT_TIMEOUT_SECS))
         .build()?;
 
     let resp = client.get(&url).send().await?;
@@ -506,7 +508,7 @@ pub async fn search_arxiv(query: &str, max_results: usize) -> Result<Vec<Paper>,
     );
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(DEFAULT_TIMEOUT_SECS))
         .build()?;
 
     let resp = client.get(&url).send().await?;
@@ -558,7 +560,7 @@ pub async fn search_semantic(query: &str, max_results: usize) -> Result<Vec<Pape
     );
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(DEFAULT_TIMEOUT_SECS))
         .build()?;
 
     let resp = client.get(&url).header("User-Agent", "Rairos/1.0").send().await?;
@@ -619,7 +621,7 @@ pub async fn search_crossref(query: &str, max_results: usize) -> Result<Vec<Pape
     );
 
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(DEFAULT_TIMEOUT_SECS))
         .build()?;
 
     let resp = client
