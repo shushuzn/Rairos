@@ -1,6 +1,5 @@
 //! Test Extractor — generate pytest test suite from paper content + generated code.
 
-#![allow(clippy::regex_creation_in_loops)]
 //!
 //! Python original: `research_loop/test_extractor.py` (492 lines)
 
@@ -9,10 +8,11 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
+use std::sync::LazyLock;
 
 // ─── Patterns ─────────────────────────────────────────────────────────────────
 
-fn get_patterns() -> Vec<Regex> {
+static TEST_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
         Regex::new(r"([\d.]+)\s*(?:%%|%)\s*(?:accuracy| Accuracy)").unwrap(),
         Regex::new(r"([\d.]+)\s*(?:%%|%)\s*(?:reduces?|reduction|improve)").unwrap(),
@@ -21,7 +21,7 @@ fn get_patterns() -> Vec<Regex> {
         Regex::new(r"accuracy\s*(?:of|:)\s*([\d.]+)").unwrap(),
         Regex::new(r"(?:up to |≈|~)?([\d.]+)\s*(?:%%|%)\s*(?:on|over)").unwrap(),
     ]
-}
+});
 
 // ─── Data structs ───────────────────────────────────────────────────────────────
 
@@ -81,7 +81,7 @@ fn extract_numerical_claims(_arxiv_id: &str, text_sources: &[String]) -> Vec<Tes
             continue;
         }
         let mut seen_in_pat: std::collections::HashSet<String> = std::collections::HashSet::new();
-        for pat in get_patterns().iter() {
+        for pat in TEST_PATTERNS.iter() {
             for cap in pat.captures_iter(text) {
                 let value_str = match cap.get(1) {
                     Some(v) => v.as_str(),
