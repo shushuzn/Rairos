@@ -12,7 +12,7 @@ use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::{Read, Write};
 use std::path::PathBuf;
-use std::sync::RwLock;
+use std::sync::{LazyLock, RwLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 // ---------------------------------------------------------------------------
@@ -68,9 +68,7 @@ fn now_secs() -> f64 {
         .as_secs_f64()
 }
 
-lazy_static::lazy_static! {
-    static ref GLOBAL_CACHE: RwLock<GlobalCache> = RwLock::new(GlobalCache::default());
-}
+static GLOBAL_CACHE: LazyLock<RwLock<GlobalCache>> = LazyLock::new(|| RwLock::new(GlobalCache::default()));
 
 pub fn get_cache_config() -> CacheConfig {
     GLOBAL_CACHE.read().expect("cache lock poisoned").config.clone()
@@ -648,9 +646,7 @@ pub struct SmartCacheStats {
     pub total_writes: u64,
 }
 
-lazy_static::lazy_static! {
-    static ref GLOBAL_SMART_CACHE: RwLock<Option<SmartCache>> = RwLock::new(None);
-}
+static GLOBAL_SMART_CACHE: LazyLock<RwLock<Option<SmartCache>>> = LazyLock::new(|| RwLock::new(None));
 
 pub fn get_smart_cache() -> SmartCache {
     let cache = GLOBAL_SMART_CACHE.read().expect("cache lock poisoned");

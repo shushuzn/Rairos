@@ -9,17 +9,12 @@
 
 use regex::Regex;
 use std::path::Path;
+use std::sync::LazyLock;
 
 use crate::{PdfError, Result};
 
-// ============================================================================
-// Text Cleaning
-// ============================================================================
-
-lazy_static::lazy_static! {
-    static ref RE_CLEAN_WHITESPACE: Regex = Regex::new(r"[ \t]+\n").unwrap();
-    static ref RE_COLLAPSE_BLANK_LINES: Regex = Regex::new(r"\n{3,}").unwrap();
-}
+static RE_CLEAN_WHITESPACE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[ \t]+\n").unwrap());
+static RE_COLLAPSE_BLANK_LINES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\n{3,}").unwrap());
 
 fn clean_text(text: &str) -> String {
     let text = text.replace('\r', "\n");

@@ -9,7 +9,7 @@ use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -2274,11 +2274,9 @@ mod tests {
 // String Utilities
 // ============================================================================
 
-lazy_static::lazy_static! {
-    static ref RE_SPACES: regex::Regex = regex::Regex::new(r" {2,}").unwrap();
-    static ref RE_NONWORD: regex::Regex = regex::Regex::new(r"[^\w\s\-]").unwrap();
-    static ref RE_DASHES: regex::Regex = regex::Regex::new(r"-{2,}").unwrap();
-}
+static RE_SPACES: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r" {2,}").unwrap());
+static RE_NONWORD: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"[^\w\s\-]").unwrap());
+static RE_DASHES: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"-{2,}").unwrap());
 
 /// Create a slug from a title. Use slugify_default for the standard 80-char limit.
 pub fn slugify(title: &str, max_len: usize) -> String {
