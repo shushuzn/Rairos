@@ -1,10 +1,37 @@
 //! rairos-identifiers — Canonical identifier parsing and normalization.
+use std::sync::LazyLock;
 use regex::Regex;
 
+static DOI_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+$").unwrap()
+});
+
+static DOI_STRIP_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^(?:https?://)?(?:dx\.)?doi\.org/").unwrap()
+});
+
+static ARXIV_URL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+});
+
+static ARXIV_NEW_STYLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$").unwrap()
+});
+
+static ARXIV_OLD_STYLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^[a-zA-Z\-]+/\d{7}(v\d+)?$").unwrap()
+});
+
+static ARXIV_DOI_PREFIX_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)10\.48550/arXiv\.(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+});
+
+static ARXIV_PREFIX_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^arxiv:(\d{4}\.\d{4,5})(v\d+)?$").unwrap()
+});
+
 pub fn is_probably_doi(s: &str) -> bool {
-    let s = s.trim();
-    let doi_regex = Regex::new(r"(?i)^(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+$").unwrap();
-    doi_regex.is_match(s)
+    DOI_REGEX.is_match(s.trim())
 }
 
 pub fn normalize_doi(s: &str) -> Option<String> {
@@ -12,11 +39,7 @@ pub fn normalize_doi(s: &str) -> Option<String> {
     if s.is_empty() {
         return None;
     }
-    // Strip URL prefix and extract the DOI suffix after "doi.org/"
-    let stripped = Regex::new(r"(?i)^(?:https?://)?(?:dx\.)?doi\.org/")
-        .unwrap()
-        .replace(s, "");
-    // The remainder should start with "10." and have a "/" followed by more content
+    let stripped = DOI_STRIP_REGEX.replace(s, "");
     if !stripped.starts_with("10.") || !stripped.contains('/') {
         return None;
     }
@@ -28,35 +51,23 @@ pub fn normalize_arxiv_id(s: &str) -> Option<String> {
     if s.is_empty() {
         return None;
     }
-    if let Some(caps) = Regex::new(r"(?i)arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?")
-        .unwrap()
-        .captures(s)
-    {
+    if let Some(caps) = ARXIV_URL_REGEX.captures(s) {
         let id = caps.get(1).unwrap().as_str().to_string();
         let version = caps.get(2).map(|m| m.as_str()).unwrap_or("");
         return Some(format!("{}{}", id, version));
     }
-    if Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$").unwrap().is_match(s) {
+    if ARXIV_NEW_STYLE_REGEX.is_match(s) {
         return Some(s.to_string());
     }
-    if Regex::new(r"^[a-zA-Z\-]+/\d{7}(v\d+)?$")
-        .unwrap()
-        .is_match(s)
-    {
+    if ARXIV_OLD_STYLE_REGEX.is_match(s) {
         return Some(s.to_string());
     }
-    if let Some(caps) = Regex::new(r"(?i)10\.48550/arXiv\.(\d{4}\.\d{4,5})(v\d+)?")
-        .unwrap()
-        .captures(s)
-    {
+    if let Some(caps) = ARXIV_DOI_PREFIX_REGEX.captures(s) {
         let id = caps.get(1).unwrap().as_str().to_string();
         let version = caps.get(2).map(|m| m.as_str()).unwrap_or("");
         return Some(format!("{}{}", id, version));
     }
-    if let Some(caps) = Regex::new(r"(?i)^arxiv:(\d{4}\.\d{4,5})(v\d+)?$")
-        .unwrap()
-        .captures(s)
-    {
+    if let Some(caps) = ARXIV_PREFIX_REGEX.captures(s) {
         let id = caps.get(1).unwrap().as_str().to_string();
         let version = caps.get(2).map(|m| m.as_str()).unwrap_or("");
         return Some(format!("{}{}", id, version));
