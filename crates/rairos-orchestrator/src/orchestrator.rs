@@ -359,8 +359,12 @@ impl AutonomousOrchestrator {
 
         let pattern_gaps = self.detect_pattern_gaps(&papers, topic);
         let cross_paper_gaps = self.detect_cross_paper_gaps(&papers, topic);
+        let method_gaps = self.detect_method_limitations(&papers);
+        let eval_gaps = self.detect_evaluation_gaps(&papers);
         let mut gaps: Vec<ResearchGap> = pattern_gaps;
         gaps.extend(cross_paper_gaps);
+        gaps.extend(method_gaps);
+        gaps.extend(eval_gaps);
 
         for desc in gap_descriptions {
             let novelty = if existing_papers.is_empty() {
@@ -928,6 +932,94 @@ impl AutonomousOrchestrator {
                     &format!("Gap in '{}': Multiple papers on '{}' but no unified approach ({} papers)",
                         topic, phrase, titles.len()),
                     "MEDIUM",
+                ));
+            }
+        }
+
+        gaps
+    }
+
+    fn detect_method_limitations(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+        let limitation_phrases = [
+            ("limited by", "scalability_gap", "HIGH", 2),
+            ("struggle with", "method_limitation", "MEDIUM", 2),
+            ("inefficient", "efficiency_gap", "HIGH", 2),
+            ("suboptimal", "efficiency_gap", "MEDIUM", 2),
+            ("no theoretical guarantee", "theoretical_gap", "HIGH", 3),
+            ("lack of theoretical", "theoretical_gap", "HIGH", 3),
+            ("empirical only", "theoretical_gap", "MEDIUM", 2),
+            ("not robust to", "robustness_gap", "HIGH", 2),
+            ("sensitive to", "robustness_gap", "MEDIUM", 2),
+            ("breaks down", "robustness_gap", "HIGH", 2),
+            ("collapses", "training_gap", "HIGH", 2),
+            ("fails to converge", "training_gap", "HIGH", 2),
+            ("gradient", "training_gap", "MEDIUM", 2),
+            ("vanishing", "training_gap", "MEDIUM", 2),
+            ("exploding", "training_gap", "MEDIUM", 2),
+        ];
+
+        let mut gaps: Vec<ResearchGap> = Vec::new();
+        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        for paper in papers {
+            let text_lower = paper.abstract_text.to_lowercase();
+            for (phrase, gap_type, severity, _min_words) in &limitation_phrases {
+                if text_lower.contains(phrase) {
+                    let title_short = paper.title.chars().take(30).collect::<String>();
+                    let key = format!("{}:{}", phrase, title_short);
+                    if !seen.contains(&key) {
+                        seen.insert(key);
+                        gaps.push(ResearchGap::new_simple(
+                            gap_type,
+                            &format!("Method limitation: '{}' in paper '{}'", phrase, title_short),
+                            severity,
+                        ));
+                    }
+                }
+            }
+        }
+
+        gaps
+    }
+
+    fn detect_evaluation_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+        let eval_patterns = [
+            ("no baseline", "evaluation_gap", "HIGH"),
+            ("without comparison", "evaluation_gap", "HIGH"),
+            ("compare to", "evaluation_gap", "LOW"),
+            ("outperforms", "evaluation_gap", "LOW"),
+            ("state-of-the-art", "evaluation_gap", "LOW"),
+            ("previous methods", "evaluation_gap", "LOW"),
+        ];
+
+        let mut gaps: Vec<ResearchGap> = Vec::new();
+        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        for paper in papers {
+            let text_lower = paper.abstract_text.to_lowercase();
+            let mut has_comparison = false;
+            let mut baseline_mentioned = false;
+
+            for (phrase, _, _) in &eval_patterns {
+                if text_lower.contains(phrase) {
+                    if *phrase == "no baseline" || *phrase == "without comparison" {
+                        baseline_mentioned = true;
+                    }
+                    if *phrase == "compare to" || *phrase == "outperforms" || *phrase == "previous methods" {
+                        has_comparison = true;
+                    }
+                }
+            }
+
+            let title_short = paper.title.chars().take(30).collect::<String>();
+            let key = format!("eval:{}", title_short);
+
+            if baseline_mentioned && !has_comparison && !seen.contains(&key) {
+                seen.insert(key);
+                gaps.push(ResearchGap::new_simple(
+                    "evaluation_gap",
+                    &format!("Evaluation gap: lacks comparative analysis in '{}'", title_short),
+                    "HIGH",
                 ));
             }
         }
