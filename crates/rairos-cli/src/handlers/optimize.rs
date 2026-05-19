@@ -944,7 +944,8 @@ pub fn handle_code_gene_feedback(
 ) -> Result<()> {
     let all_genes = get_top_code_candidates(1000);
 
-    let gene = all_genes.iter().find(|g| g.capsule_id == gene_id);
+    // Support short ID prefix matching (e.g., "695eb954" matches "695eb954-c820-414a-ae13-1de2dca310ee")
+    let gene = all_genes.iter().find(|g| g.capsule_id == gene_id || g.capsule_id.starts_with(gene_id));
 
     match gene {
         Some(g) => {
