@@ -65,7 +65,7 @@ fn find_related_works(
     let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     for kw in keywords.iter().take(3) {
-        if let Ok(papers) = db.search_papers(kw, limit) {
+        if let Ok(papers) = db.search_papers_smart(kw, limit) {
             for paper in &papers {
                 if seen.contains(&paper.id) {
                     continue;

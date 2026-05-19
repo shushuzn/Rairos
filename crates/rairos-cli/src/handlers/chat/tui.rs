@@ -175,7 +175,7 @@ pub fn handle_chat_tui() -> Result<()> {
                         input.clear();
 
                         // Search papers and call LLM
-                        let papers = db.search_papers(&q, 5).unwrap_or_default();
+                        let papers = db.search_papers_smart(&q, 5).unwrap_or_default();
                         if papers.is_empty() {
                             messages.push(ChatMsg {
                                 role: "info".to_string(),

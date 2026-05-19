@@ -294,7 +294,7 @@ async fn search_papers(
     let limit = query.limit.unwrap_or(20);
     let papers = state
         .db
-        .search_papers(&query.q, limit)
+        .search_papers_smart(&query.q, limit)
         .map_err(|e| WebError::Database(e.to_string()))?;
 
     Ok(Json(papers.into_iter().map(PaperResponse::from).collect()))

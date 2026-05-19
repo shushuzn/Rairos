@@ -41,7 +41,7 @@ pub fn handle_benchmark(kind: &str, iterations: usize) -> Result<()> {
 
                 let start = Instant::now();
                 for _ in 0..iterations.min(100) {
-                    let _ = db.search_papers("machine learning", 10);
+                    let _ = db.search_papers_smart("machine learning", 10);
                 }
                 let elapsed = start.elapsed();
                 let ops = iterations.min(100);

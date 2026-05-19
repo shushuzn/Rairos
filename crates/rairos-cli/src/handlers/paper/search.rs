@@ -25,7 +25,7 @@ pub fn handle_search(
     field: &str,
     format: &str,
 ) -> Result<()> {
-    let papers = db.search_papers(query, limit)?;
+    let papers = db.search_papers_smart(query, limit)?;
 
     let filtered: Vec<&Paper> = if field == "all" {
         papers.iter().collect()

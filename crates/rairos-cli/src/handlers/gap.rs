@@ -24,7 +24,7 @@ pub fn handle_gap(
 ) -> Result<()> {
     println!("Detecting research gaps for topic: {}", topic);
 
-    let papers = db.search_papers(topic, limit * 3)?;
+    let papers = db.search_papers_smart(topic, limit * 3)?;
 
     if papers.is_empty() {
         println!(

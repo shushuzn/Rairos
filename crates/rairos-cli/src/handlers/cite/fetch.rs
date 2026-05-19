@@ -288,13 +288,13 @@ pub fn handle_cite_graph(db: &Database, paper: Option<&str>, depth: i32, max_nod
         return Ok(());
     };
 
-    let papers = db.search_papers(pid, 1)?;
+    let papers = db.search_papers_smart(pid, 1)?;
     let root_title = papers.first().map(|p| p.title.as_str()).unwrap_or(pid);
 
     println!("Citation graph for {} (depth={}):", root_title, depth);
 
     let mut builder = rairos_citation_chain::CitationChainBuilder::new();
-    for p in db.search_papers(pid, 5)? {
+    for p in db.search_papers_smart(pid, 5)? {
         builder.add_paper(p.id.clone(), p.title.clone(), p.published.year(), Vec::new(), Vec::new(), String::new(), 0);
     }
     let chain = builder.build_from_db(pid, depth);

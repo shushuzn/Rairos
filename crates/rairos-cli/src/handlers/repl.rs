@@ -29,7 +29,7 @@ pub fn handle_repl(query: Option<String>) -> Result<()> {
 
     if let Some(q) = query {
         println!("Pre-loading papers matching: {}", q);
-        match db.search_papers(&q, 10) {
+        match db.search_papers_smart(&q, 10) {
             Ok(papers) if !papers.is_empty() => {
                 println!("Found {} papers:\n", papers.len());
                 for (i, p) in papers.iter().enumerate() {
@@ -83,7 +83,7 @@ pub fn handle_repl(query: Option<String>) -> Result<()> {
                 println!("Usage: search <query>\n");
             }
             "search" => {
-                match db.search_papers(arg, 20) {
+                match db.search_papers_smart(arg, 20) {
                     Ok(papers) if papers.is_empty() => {
                         println!("No papers found for: {}", arg);
                     }

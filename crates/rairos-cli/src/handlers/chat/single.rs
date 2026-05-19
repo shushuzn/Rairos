@@ -82,7 +82,7 @@ fn run_chat_single(
     _verbose: bool,
     _stream: bool,
 ) -> Result<()> {
-    let papers = db.search_papers(question, limit)?;
+    let papers = db.search_papers_smart(question, limit)?;
     if papers.is_empty() {
         eprintln!("No papers found matching your question.");
         return Ok(());

@@ -205,7 +205,7 @@ impl<'a> ResearchPathPlanner<'a> {
 
         // 2. Search DB by FTS
         if let Some(db) = self.db {
-            if let Ok(rows) = db.search_papers(topic, 50) {
+            if let Ok(rows) = db.search_papers_smart(topic, 50) {
                 for row in &rows {
                     if seen.contains(&row.id) {
                         continue;

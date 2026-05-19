@@ -93,7 +93,7 @@ impl AutonomousOrchestrator {
             let db = db_guard.as_ref().unwrap();
             let mut results = HashMap::new();
             for (topic, _sub_id) in &topics {
-                if let Ok(papers) = db.search_papers(topic, 20) {
+                if let Ok(papers) = db.search_papers_smart(topic, 20) {
                     if !papers.is_empty() {
                         let paper_infos: Vec<PaperInfo> = papers
                             .into_iter()

@@ -37,7 +37,7 @@ pub fn handle_trend(db: &Database, topic: &str, range: &str, format: &str) -> Re
     println!("Time range: {} (papers from last {} days)", range, days);
     println!();
 
-    let all_papers = db.search_papers(topic, 500)?;
+    let all_papers = db.search_papers_smart(topic, 500)?;
     let papers: Vec<_> = all_papers
         .into_iter()
         .filter(|p| p.published >= cutoff)

@@ -228,7 +228,7 @@ pub fn handle_pipeline(
         println!("═══════════════════════════════════════════════════════");
     }
 
-    let papers: Vec<Paper> = db.search_papers(topic, min_papers.max(5) * 2)?;
+    let papers: Vec<Paper> = db.search_papers_smart(topic, min_papers.max(5) * 2)?;
     if papers.is_empty() {
         // Try a broader search if initial search fails
         println!("   No papers found; you may want to ingest some papers first.");

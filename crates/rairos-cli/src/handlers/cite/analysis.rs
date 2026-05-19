@@ -311,7 +311,7 @@ pub fn handle_citation_chain(
 
         if influencers {
             println!("Finding influences for: {}", pid);
-            if let Ok(papers) = db.search_papers(pid, 1) {
+            if let Ok(papers) = db.search_papers_smart(pid, 1) {
                 if let Some(p) = papers.first() {
                 builder.add_paper(pid.to_string(), p.title.clone(), p.published.year(), Vec::new(), Vec::new(), String::new(), 0);
             }
@@ -332,7 +332,7 @@ pub fn handle_citation_chain(
         return Ok(());
     };
 
-    if let Ok(papers) = db.search_papers(pid, 5) {
+    if let Ok(papers) = db.search_papers_smart(pid, 5) {
         for p in &papers {
             builder.add_paper(p.id.clone(), p.title.clone(), p.published.year(), Vec::new(), Vec::new(), String::new(), 0);
         }

@@ -17,7 +17,7 @@ use rairos_core::Database;
 
 pub fn handle_litreview(db: &Database, topic: Option<&str>, limit: usize, _format: &str) -> Result<()> {
     let topic_str = topic.unwrap_or("machine learning");
-    let papers = db.search_papers(topic_str, limit)?;
+    let papers = db.search_papers_smart(topic_str, limit)?;
     let rust_papers: Vec<rairos_litreview_analyzer::Paper> = papers
         .iter()
         .map(|p| rairos_litreview_analyzer::Paper {
@@ -218,7 +218,7 @@ pub fn handle_review(db: &Database, action: &str, paper: Option<&str>, _content:
 
 pub fn handle_replicate(db: &Database, paper_id: &str) -> Result<()> {
     let checker = rairos_replication::ReplicationChecker::new();
-    let papers = db.search_papers(paper_id, 1)?;
+    let papers = db.search_papers_smart(paper_id, 1)?;
 
     if let Some(paper) = papers.into_iter().next() {
         let full_text = db.get_paper_plain_text(&paper.id)?.unwrap_or_default();

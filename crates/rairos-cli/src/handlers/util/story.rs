@@ -24,7 +24,7 @@ pub fn handle_story(db: &Database, topic: Option<&str>) -> Result<()> {
     };
     println!("📖 Weaving story for: {}", topic);
 
-    let papers = db.search_papers(topic, 20)?;
+    let papers = db.search_papers_smart(topic, 20)?;
     let inputs: Vec<crate::story::PaperInput> = papers
         .iter()
         .map(|p| crate::story::PaperInput {

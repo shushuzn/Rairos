@@ -194,7 +194,7 @@ pub fn handle_visual(db: &Database, paper: Option<&str>, query: Option<&str>, li
 
     if let Some(q) = query {
         println!("📊 Searching papers for: {}", q);
-        let papers = db.search_papers(q, limit)?;
+        let papers = db.search_papers_smart(q, limit)?;
         println!("Found {} papers", papers.len());
         return Ok(());
     }
