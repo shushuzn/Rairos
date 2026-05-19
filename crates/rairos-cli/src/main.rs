@@ -77,6 +77,10 @@ struct Cli {
 // Helpers
 // ============================================================================
 
+fn load_env() {
+    let _ = rairos_cli_shared::load_dotenv();
+}
+
 fn open_db(path: &PathBuf) -> Result<Database> {
     if !path.exists() {
         eprintln!(
@@ -112,6 +116,7 @@ fn status_str(status: &ParseStatus) -> &'static str {
 mod tests;
 
 fn main() -> Result<()> {
+    load_env();
     let cli = Cli::parse();
 
     // Simple logging setup (no tracing-subscriber dependency for now)

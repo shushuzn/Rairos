@@ -35,8 +35,12 @@ pub fn handle_chat(
         .or_else(|_| std::env::var("LLM_API_KEY"))
         .map_err(|_| anyhow::anyhow!("OPENAI_API_KEY not set. Please set it to enable chat."))?;
     let base_url = std::env::var("LLM_BASE_URL")
+        .or_else(|_| std::env::var("OPENAI_BASE_URL"))
         .unwrap_or_else(|_| LLM_BASE_URL.to_string());
-    let chat_model = model.unwrap_or(LLM_MODEL).to_string();
+    let chat_model = model
+        .map(|m| m.to_string())
+        .or_else(|| std::env::var("LLM_MODEL").ok())
+        .unwrap_or_else(|| LLM_MODEL.to_string());
 
     let db_path = PathBuf::from("rairos.db");
     let db = Database::open(&db_path)?;
