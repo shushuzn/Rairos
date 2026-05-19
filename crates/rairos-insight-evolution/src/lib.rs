@@ -6,6 +6,8 @@ use rairos_insight_credibility::CapsuleGene;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+type FitnessCallback = Box<dyn Fn(&CapsuleGene) -> f64 + Send + Sync>;
+
 pub const HIGH_QUALITY_THRESHOLD: f64 = 0.70;
 pub const LOW_QUALITY_THRESHOLD: f64 = 0.30;
 pub const RETIRE_COUNT_THRESHOLD: usize = 3;
@@ -64,7 +66,7 @@ pub struct EvaluationResult {
 
 pub struct EvolutionEngine {
     capsules: Vec<CapsuleGene>,
-    fitness_callback: Option<Box<dyn Fn(&CapsuleGene) -> f64 + Send + Sync>>,
+    fitness_callback: Option<FitnessCallback>,
 }
 
 impl EvolutionEngine {

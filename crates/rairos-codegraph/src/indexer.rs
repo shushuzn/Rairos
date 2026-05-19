@@ -138,24 +138,19 @@ impl Indexer {
     fn extract_name(&self, source: &str, node: &tree_sitter::Node) -> String {
         let bytes = source.as_bytes();
         let (start, end) = (node.byte_range().start, node.byte_range().end);
-        
-        let mut name_start = start;
-        for i in start..end.min(start + 200) {
-            if bytes[i].is_ascii_alphabetic() || bytes[i] == b'_' {
-                name_start = i;
-                break;
-            }
-        }
-        
-        let mut name_end = name_start;
-        for i in name_start..end.min(start + 300) {
-            if bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_' {
-                name_end = i + 1;
-            } else {
-                break;
-            }
-        }
-        
+
+        let name_start = bytes[start..end.min(start + 200)]
+            .iter()
+            .position(|&b| b.is_ascii_alphabetic() || b == b'_')
+            .map(|p| start + p)
+            .unwrap_or(start);
+
+        let name_end = bytes[name_start..end.min(start + 300)]
+            .iter()
+            .take_while(|&&b| b.is_ascii_alphanumeric() || b == b'_')
+            .count()
+            + name_start;
+
         String::from_utf8_lossy(&bytes[name_start..name_end]).to_string()
     }
 
