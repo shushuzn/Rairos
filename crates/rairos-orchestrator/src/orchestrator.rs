@@ -358,7 +358,9 @@ impl AutonomousOrchestrator {
         let novelty_threshold = 0.3;
 
         let pattern_gaps = self.detect_pattern_gaps(&papers, topic);
+        let cross_paper_gaps = self.detect_cross_paper_gaps(&papers, topic);
         let mut gaps: Vec<ResearchGap> = pattern_gaps;
+        gaps.extend(cross_paper_gaps);
 
         for desc in gap_descriptions {
             let novelty = if existing_papers.is_empty() {
@@ -828,21 +830,35 @@ impl AutonomousOrchestrator {
             ("not scalable", "scalability_gap", "HIGH"),
             ("limited to", "scalability_gap", "MEDIUM"),
             ("computational cost", "scalability_gap", "MEDIUM"),
+            ("quadratic", "scalability_gap", "MEDIUM"),
+            ("attention bottleneck", "scalability_gap", "HIGH"),
             ("no benchmark", "evaluation_gap", "HIGH"),
             ("unevaluated", "evaluation_gap", "MEDIUM"),
             ("not evaluated on", "evaluation_gap", "MEDIUM"),
             ("missing evaluation", "evaluation_gap", "MEDIUM"),
+            ("metric", "evaluation_gap", "LOW"),
+            ("reproducibility", "reproducibility_gap", "HIGH"),
             ("future work", "method_limitation", "LOW"),
             ("limitation", "method_limitation", "MEDIUM"),
             ("cannot handle", "method_limitation", "MEDIUM"),
             ("restricted to", "method_limitation", "LOW"),
             ("only works for", "method_limitation", "MEDIUM"),
+            ("fail to", "method_limitation", "MEDIUM"),
             ("theoretical gap", "theoretical_gap", "HIGH"),
             ("not theoretically", "theoretical_gap", "MEDIUM"),
             ("no proof", "theoretical_gap", "HIGH"),
+            ("lacks theory", "theoretical_gap", "MEDIUM"),
+            ("empirical only", "theoretical_gap", "MEDIUM"),
             ("unexplored", "unexplored_application", "HIGH"),
             ("not applied to", "unexplored_application", "MEDIUM"),
             ("novel application", "unexplored_application", "LOW"),
+            ("memory bottleneck", "memory_gap", "HIGH"),
+            ("context length", "context_gap", "HIGH"),
+            ("long-context", "context_gap", "HIGH"),
+            ("interpretability", "interpretability_gap", "HIGH"),
+            ("internal representation", "interpretability_gap", "MEDIUM"),
+            ("feature extraction", "feature_gap", "MEDIUM"),
+            ("representation learning", "feature_gap", "MEDIUM"),
         ];
 
         let mut detected: Vec<ResearchGap> = Vec::new();
@@ -862,6 +878,61 @@ impl AutonomousOrchestrator {
         }
 
         detected
+    }
+
+    fn extract_key_phrases(&self, papers: &[rairos_core::Paper]) -> std::collections::HashMap<String, Vec<String>> {
+        let mut phrase_papers: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        let significant_bigrams = [
+            "sparse autoencoder", "attention mechanism", "variational autoencoder",
+            "large language", "neural network", "deep learning", "reinforcement learning",
+            "machine translation", "object detection", "semantic segmentation",
+            "transformer architecture", "pre-trained model", "foundation model",
+            "representation learning", "self-supervised learning", "contrastive learning",
+        ];
+
+        for paper in papers {
+            let text_lower = paper.abstract_text.to_lowercase();
+            for bigram in significant_bigrams {
+                if text_lower.contains(bigram) {
+                    phrase_papers
+                        .entry(bigram.to_string())
+                        .or_insert_with(Vec::new)
+                        .push(paper.title.clone());
+                }
+            }
+        }
+
+        phrase_papers
+    }
+
+    fn detect_cross_paper_gaps(&self, papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
+        let phrase_map = self.extract_key_phrases(papers);
+        let mut gaps: Vec<ResearchGap> = Vec::new();
+
+        for (phrase, titles) in phrase_map {
+            if titles.len() >= 2 {
+                let gap_type = if phrase.contains("sparse") || phrase.contains("autoencoder") {
+                    "architecture_gap"
+                } else if phrase.contains("attention") || phrase.contains("transformer") {
+                    "architecture_gap"
+                } else if phrase.contains("variational") || phrase.contains("representation") {
+                    "learning_gap"
+                } else if phrase.contains("language") || phrase.contains("translation") {
+                    "application_gap"
+                } else {
+                    "method_gap"
+                };
+
+                gaps.push(ResearchGap::new_simple(
+                    gap_type,
+                    &format!("Gap in '{}': Multiple papers on '{}' but no unified approach ({} papers)",
+                        topic, phrase, titles.len()),
+                    "MEDIUM",
+                ));
+            }
+        }
+
+        gaps
     }
 
     pub async fn start_watch(&self, interval_minutes: i32) -> Result<()> {
