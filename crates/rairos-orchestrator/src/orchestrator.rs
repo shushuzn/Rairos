@@ -182,14 +182,17 @@ impl AutonomousOrchestrator {
     }
 
     pub async fn run_deep_research(
-        &self,
-        _topic: &str,
+        &mut self,
+        topic: &str,
         new_papers: Vec<PaperInfo>,
     ) -> Result<DeepResearchResult> {
         self.init_components().await?;
 
         let session_id = Uuid::new_v4().to_string()[..8].to_string();
         let papers_analyzed = new_papers.len() as i32;
+
+        let mut all_categories: Vec<String> = Vec::new();
+        let mut papers: Vec<rairos_core::Paper> = Vec::new();
 
         {
             let db_guard = self.db.read().await;
@@ -201,15 +204,49 @@ impl AutonomousOrchestrator {
                         p.abstract_text.clone(),
                     );
                     let _ = db.insert_paper(&paper);
+                    papers.push(paper);
+
+                    for cat in p.categories.split_whitespace() {
+                        if !cat.is_empty() && !all_categories.contains(&cat.to_string()) {
+                            all_categories.push(cat.to_string());
+                        }
+                    }
                 }
             }
         }
 
+        let keywords: Vec<&str> = all_categories.iter().map(|s| s.as_str()).collect();
+        let gap_descriptions = rairos_llm::GapDetector::detect_gaps(&papers, &keywords);
+        let under_explored = rairos_llm::GapDetector::find_underexplored_areas(&papers, 3);
+
+        let gap_types = &["unexplored_application", "scalability_issue", "evaluation_gap",
+                          "method_limitation", "theoretical_gap", "reproducibility_gap"];
+        let suggested_gap_type = self.regret_selector.select(gap_types);
+
+        let mut gaps: Vec<ResearchGap> = Vec::new();
+
+        for desc in gap_descriptions {
+            let gap_type = suggested_gap_type.clone().unwrap_or_else(|| "keyword_gap".to_string());
+            gaps.push(ResearchGap::new_simple(&gap_type, &desc, "medium"));
+        }
+
+        for cat in under_explored {
+            let gap_type = suggested_gap_type.clone().unwrap_or_else(|| "category_gap".to_string());
+            gaps.push(ResearchGap::new_simple(
+                &gap_type,
+                &format!("Under-explored category in {}: {}", topic, cat),
+                "low",
+            ));
+        }
+
+        tracing::info!("[DeepResearch] Detected {} gaps from {} papers for '{}'",
+            gaps.len(), papers.len(), topic);
+
         Ok(DeepResearchResult {
-            gaps: Vec::new(),
+            gaps,
             papers_analyzed,
             session_id,
-            iterations: 0,
+            iterations: 1,
             error: None,
         })
     }
