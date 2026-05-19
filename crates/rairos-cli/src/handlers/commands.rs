@@ -636,6 +636,36 @@ pub enum Commands {
         min_score: f64,
     },
 
+    /// Create implementation plan (draft PR) for code gene review
+    CodeGenePlan {
+        /// Gene IDs to plan (comma-separated, or "all")
+        #[arg(short, long, default_value = "all")]
+        ids: String,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+
+        /// Filter by crate
+        #[arg(short, long)]
+        crate_name: Option<String>,
+
+        /// Minimum score to include
+        #[arg(short = 's', long, default_value = "0.0")]
+        min_score: f64,
+    },
+
+    /// Approve plan and create actual PR for code gene
+    CodeGeneApprove {
+        /// Gene IDs to approve and implement
+        #[arg(short, long)]
+        ids: String,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+    },
+
     /// Sync code genes from GitHub Issues
     CodeGeneSyncFromIssue {
         /// Issue numbers to import (comma-separated, or "all")

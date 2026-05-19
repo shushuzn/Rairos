@@ -485,6 +485,12 @@ fn main() -> Result<()> {
         Commands::CodeGeneSyncToPr { ids, repo, crate_name, min_score } => {
             handle_code_gene_sync_to_pr(ids, repo, crate_name.clone(), *min_score)?;
         }
+        Commands::CodeGenePlan { ids, repo, crate_name, min_score } => {
+            handle_code_gene_plan(ids, repo, crate_name.clone(), *min_score)?;
+        }
+        Commands::CodeGeneApprove { ids, repo } => {
+            handle_code_gene_approve(ids, repo)?;
+        }
         Commands::CodeGeneSyncFromIssue { issues, repo } => {
             handle_code_gene_sync_from_issue(issues, repo)?;
         }
