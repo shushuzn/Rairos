@@ -359,6 +359,93 @@ pub fn handle_gap(
         gaps.push(gap);
     }
 
+    // ============================================================
+    // GAP 6: Scalability gap (papers mentioning scaling issues)
+    // ============================================================
+    let scalability_keywords = ["scale", "scalable", "computational", "efficiency", "memory", "gpu", "training cost", "inference time"];
+    let scalability_mentions: Vec<&str> = scalability_keywords
+        .iter()
+        .filter(|k| keyword_counts.contains_key(&k.to_string()))
+        .copied()
+        .collect();
+
+    if !scalability_mentions.is_empty() && scalability_mentions.len() >= 3 && total_papers >= 5 {
+        let gap = ResearchGap::new_simple(
+            category.as_deref().unwrap_or("scalability"),
+            &format!(
+                "Scalability concerns detected: {} papers mention scaling/efficiency issues. \
+                Research opportunity: improve scalability of current approaches.",
+                scalability_mentions.len()
+            ),
+            "medium",
+        );
+        gaps.push(gap);
+    }
+
+    // ============================================================
+    // GAP 7: Evaluation gap (papers lacking benchmarks)
+    // ============================================================
+    let eval_keywords = ["benchmark", "evaluate", "experiment", "result", "performance"];
+    let eval_coverage: Vec<&str> = eval_keywords
+        .iter()
+        .filter(|k| keyword_counts.contains_key(&k.to_string()))
+        .copied()
+        .collect();
+
+    if eval_coverage.len() < 3 && total_papers >= 5 {
+        let missing: Vec<&str> = eval_keywords
+            .iter()
+            .filter(|k| !keyword_counts.contains_key(&k.to_string()))
+            .copied()
+            .collect();
+        if !missing.is_empty() {
+            let gap = ResearchGap::new_simple(
+                category.as_deref().unwrap_or("evaluation"),
+                &format!(
+                    "Evaluation gaps detected: limited mention of {} in papers. \
+                    Consider rigorous evaluation methodology.",
+                    missing.join(", ")
+                ),
+                "medium",
+            );
+            gaps.push(gap);
+        }
+    }
+
+    // ============================================================
+    // GAP 8: Novelty gap (same topics treated differently)
+    // ============================================================
+    let novelty_patterns = [
+        ("novel", "novelty"),
+        ("new", "newness"),
+        ("improve", "improvement"),
+        ("state-of-the-art", "advancement"),
+        ("previous", "prior_work"),
+    ];
+    let novelty_counts: Vec<(&str, usize)> = novelty_patterns
+        .iter()
+        .filter_map(|(p, _)| {
+            let count = keyword_counts.get(*p).copied().unwrap_or(0);
+            if count > 0 { Some((*p, count)) } else { None }
+        })
+        .collect();
+
+    if novelty_counts.len() >= 3 && total_papers >= 5 {
+        let total_claims: usize = novelty_counts.iter().map(|(_, c)| c).sum();
+        if total_claims > total_papers * 2 {
+            let gap = ResearchGap::new_simple(
+                category.as_deref().unwrap_or("novelty"),
+                &format!(
+                    "High novelty claims detected: {} mentions across {} papers. \
+                    Verify if claims represent genuine contributions.",
+                    total_claims, novelty_counts.len()
+                ),
+                "low",
+            );
+            gaps.push(gap);
+        }
+    }
+
     // Save gaps to database
     for g in &gaps {
         db.insert_gap(g)?;
