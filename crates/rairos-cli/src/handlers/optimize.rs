@@ -938,6 +938,56 @@ pub fn handle_optimize_pipeline(
     Ok(())
 }
 
+pub fn handle_code_gene_add(
+    crate_name: &str,
+    gap_type: &str,
+    code_snippet: &str,
+    optimization: &str,
+    keywords: &str,
+) -> Result<()> {
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    let capsule_id = format!("{:x}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos());
+
+    let keywords: Vec<String> = if keywords.is_empty() {
+        vec![]
+    } else {
+        keywords.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect()
+    };
+
+    let gene = CodeCapsuleGene {
+        capsule_id,
+        created_at: chrono::Utc::now().to_rfc3339(),
+        trigger_topic: String::new(),
+        trigger_keywords: keywords.clone(),
+        source_paper_id: String::new(),
+        source_paper_title: String::new(),
+        target_crate: crate_name.to_string(),
+        gap_type: gap_type.to_string(),
+        gap_location: crate_name.to_string(),
+        code_snippet: code_snippet.to_string(),
+        optimization: optimization.to_string(),
+        outcome_success_score: 0.5,
+        feedback_count: 0,
+        evolved_generation: 0,
+        archetype: std::collections::HashMap::new(),
+        status: "active".to_string(),
+        low_score_streak: 0,
+        credibility_score: 0.5,
+        credibility_badge: "medium".to_string(),
+    };
+
+    save_code_capsule(&gene)?;
+    println!("✅ Code gene added to pool");
+    println!("  ID: {}", gene.capsule_id);
+    println!("  Crate: {}", gene.target_crate);
+    println!("  Gap type: {}", gene.gap_type);
+    println!("  Keywords: {:?}", gene.trigger_keywords);
+    println!("  Code length: {} chars", gene.code_snippet.len());
+
+    Ok(())
+}
+
 pub fn handle_code_gene_feedback(
     gene_id: &str,
     positive: bool,

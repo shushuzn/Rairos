@@ -628,6 +628,29 @@ pub enum Commands {
         repo: String,
     },
 
+    /// Add a code gene to the pool from code snippet
+    CodeGeneAdd {
+        /// Target crate (e.g., rairos-rankers-base)
+        #[arg(short = 'c', long)]
+        crate_name: String,
+
+        /// Gap type (performance, memory, concurrency, architecture, evaluation)
+        #[arg(short = 'g', long)]
+        gap_type: String,
+
+        /// Code snippet (multiline string)
+        #[arg(long)]
+        code: String,
+
+        /// Optimization description
+        #[arg(short = 'o', long)]
+        optimization: String,
+
+        /// Keywords for discovery (comma-separated)
+        #[arg(short = 'k', long, default_value = "")]
+        keywords: String,
+    },
+
     /// Implement code gene from GitHub Issue with workflow
     /// Workflow: 1) Search existing code 2) Post plan to issue 3) Confirm 4) Implement
     CodeGeneImplement {
