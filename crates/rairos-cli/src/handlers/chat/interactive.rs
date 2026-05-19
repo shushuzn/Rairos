@@ -93,7 +93,7 @@ pub fn run_chat_interactive(
         if verbose {
             println!("🔍 Retrieving papers...");
         }
-        let papers = match db.search_papers(&question, limit) {
+        let papers = match db.search_papers_smart(&question, limit) {
             Ok(p) => p,
             Err(e) => {
                 eprintln!("Search failed: {}", e);

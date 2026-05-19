@@ -1081,6 +1081,41 @@ impl Database {
         Ok(papers)
     }
 
+    pub fn search_papers_smart(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
+        let query = query.trim();
+        if query.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let word_count = query.split_whitespace().count();
+        if word_count >= 2 {
+            let fts_query = query.split_whitespace().collect::<Vec<_>>().join(" ");
+            if let Ok(papers) = self.search_papers_fts(&fts_query, limit) {
+                if !papers.is_empty() {
+                    return Ok(papers);
+                }
+            }
+        }
+
+        let pattern = format!("%{}%", query);
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
+                    parse_status, cited_by, references_cnt, doi, pdf_url
+             FROM papers
+             WHERE title LIKE ?1 OR abstract_text LIKE ?1
+             ORDER BY published DESC LIMIT ?2",
+        )?;
+        let rows = stmt.query_map(params![pattern, limit as i64], |row| {
+            Ok(Self::row_to_paper(row))
+        })?;
+        let mut papers: Vec<Paper> = Vec::new();
+        for paper in rows {
+            papers.push(paper??);
+        }
+        Ok(papers)
+    }
+
     pub fn update_paper_full_text(
         &self,
         id: &str,

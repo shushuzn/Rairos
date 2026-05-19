@@ -27,7 +27,7 @@ pub fn handle_agent(
     println!("Max papers: {}", max_papers);
     println!();
 
-    let papers = db.search_papers(topic, max_papers)?;
+    let papers = db.search_papers_smart(topic, max_papers)?;
 
     if papers.is_empty() {
         println!("No papers found for topic '{}'.", topic);
