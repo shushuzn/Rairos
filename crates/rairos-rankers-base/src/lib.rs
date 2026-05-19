@@ -415,3 +415,26 @@ mod ranker_property_tests {
         }
     }
 }
+
+// ========== Code Gene Implementation ==========
+/// Compute weighted score from multiple ranking signals.
+/// Each signal contributes with a specific weight to the final score.
+pub fn weighted_score(signals: &[f64], weights: &[f64]) -> f64 {
+    if signals.len() != weights.len() {
+        panic!("signals and weights must have same length");
+    }
+    signals.iter()
+        .zip(weights.iter())
+        .map(|(s, w)| s * w)
+        .sum()
+}
+
+// ========== Test Code ==========
+    // From code gene test: test-gene-001
+    #[test]
+    fn test_weighted_score_basic() {
+        let signals = vec![0.9, 0.8, 0.7];
+        let weights = vec![0.5, 0.3, 0.2];
+        let result = weighted_score(&signals, &weights);
+        assert!((result - 0.83).abs() < 0.01);
+    }

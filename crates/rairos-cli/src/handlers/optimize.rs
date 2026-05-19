@@ -1510,7 +1510,43 @@ pub fn handle_code_gene_implement(
 
             // Append code snippet with separator
             let separator = "\n\n// ========== Code Gene Implementation ==========\n";
-            let new_content = format!("{}{}{}\n", existing_content.trim_end(), separator, code_snippet);
+            // Unescape common escape sequences from GitHub markdown
+            let unescaped_snippet = code_snippet
+                .replace("\\\"", "\"")
+                .replace("\\n", "\n")
+                .replace("\\t", "\t")
+                .replace("\\r", "\r");
+
+            // Handle test module: if code has both regular code and a #[cfg(test)] mod tests { ... },
+            // we need to extract properly
+            let code_to_append = if unescaped_snippet.contains("#[cfg(test)]") && unescaped_snippet.contains("mod tests {") {
+                // Split into non-test code (before #[cfg(test)]) and test code
+                let cfg_test_pos = unescaped_snippet.find("#[cfg(test)]").unwrap_or(usize::MAX);
+
+                // Non-test code (before #[cfg(test)])
+                let non_test_code = unescaped_snippet[..cfg_test_pos].trim();
+
+                // Test module content - extract inner functions
+                let test_module_start = unescaped_snippet[cfg_test_pos..].find("mod tests {").unwrap_or(usize::MAX);
+                let after_mod = &unescaped_snippet[cfg_test_pos..][test_module_start + "mod tests {".len()..];
+                let last_brace = after_mod.rfind('}').unwrap_or(usize::MAX);
+                let test_inner = &after_mod[..last_brace];
+
+                // Remove use super::*; and format for existing tests module
+                let test_funcs = test_inner.lines()
+                    .filter(|l| !l.trim().is_empty() && !l.trim().starts_with("use super::*;"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+
+                format!("{}\n\n// ========== Test Code ==========\n    // From code gene test: {}\n{}",
+                    non_test_code,
+                    gene_id.as_deref().unwrap_or("unknown"),
+                    test_funcs)
+            } else {
+                unescaped_snippet
+            };
+
+            let new_content = format!("{}{}{}\n", existing_content.trim_end(), separator, code_to_append);
 
             // Write updated content
             std::fs::write(&lib_rs_path, new_content)
