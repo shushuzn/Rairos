@@ -1283,7 +1283,7 @@ pub fn handle_code_gene_sync_to_issue(
         );
 
         let gap_type_labels: Vec<String> = gene.gap_type
-            .split(|c| c == ',' || c == '/')
+            .split([',', '/'])
             .flat_map(|t| t.split_whitespace())
             .map(|t| t.trim_matches(|c| c == ',' || c == '/' || c == ' '))
             .filter(|t| !t.is_empty())
@@ -3214,7 +3214,7 @@ VERDICT: APPROVE or VERDICT: REJECT
             _ if r.error.is_some() => "❌",
             _ => "⏳",
         };
-        print!("  {} {}", icon, r.gene_id[..8.min(r.gene_id.len())].to_string());
+        print!("  {} {}", icon, &r.gene_id[..8.min(r.gene_id.len())]);
         print!(" [{}]", r.status);
         if let Some(ref url) = r.pr_url {
             print!(" {}", url);
@@ -3392,23 +3392,17 @@ pub fn handle_code_gene_dashboard() -> Result<()> {
         })?;
 
         // Handle input
-        if let Ok(event) = crossterm::event::read() {
-            match event {
-                crossterm::event::Event::Key(key) => {
-                    match key.code {
-                        crossterm::event::KeyCode::Up => {
-                            selected = selected.saturating_sub(1);
-                        }
-                        crossterm::event::KeyCode::Down => {
-                            if selected < max_selected {
-                                selected += 1;
-                            }
-                        }
-                        crossterm::event::KeyCode::Char('q') | crossterm::event::KeyCode::Esc => {
-                            break;
-                        }
-                        _ => {}
+        if let crossterm::event::Event::Key(key) = crossterm::event::read()? {
+            match key.code {
+                crossterm::event::KeyCode::Up => {
+                    selected = selected.saturating_sub(1);
+                }
+                crossterm::event::KeyCode::Down
+                    if selected < max_selected => {
+                        selected += 1;
                     }
+                crossterm::event::KeyCode::Char('q') | crossterm::event::KeyCode::Esc => {
+                    break;
                 }
                 _ => {}
             }

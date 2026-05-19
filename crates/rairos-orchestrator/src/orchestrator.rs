@@ -746,7 +746,7 @@ impl AutonomousOrchestrator {
 
         if self.config.run_evolution_in_cycle && !all_alerts.is_empty() {
             tracing::info!("[Orchestrator] Running evolution cycle...");
-            if let Ok(_) = self.run_evolution_cycle("").await {
+            if self.run_evolution_cycle("").await.is_ok() {
                 tracing::info!("[Orchestrator] Evolution cycle complete");
             }
         }
@@ -801,7 +801,7 @@ impl AutonomousOrchestrator {
 
         let quality_ratio = high_quality.len() as f64 / recent_window as f64;
         let adjusted = (avg_interval as f64 * quality_ratio).max(5.0) as i32;
-        adjusted.min(240).max(5)
+        adjusted.clamp(5, 240)
     }
 
     pub fn suggest_new_topics(&self, current_topics: &[String]) -> Vec<String> {
@@ -921,9 +921,8 @@ impl AutonomousOrchestrator {
 
         for (phrase, titles) in phrase_map {
             if titles.len() >= 2 {
-                let gap_type = if phrase.contains("sparse") || phrase.contains("autoencoder") {
-                    "architecture_gap"
-                } else if phrase.contains("attention") || phrase.contains("transformer") {
+                let gap_type = if phrase.contains("sparse") || phrase.contains("autoencoder")
+                    || phrase.contains("attention") || phrase.contains("transformer") {
                     "architecture_gap"
                 } else if phrase.contains("variational") || phrase.contains("representation") {
                     "learning_gap"
@@ -1258,10 +1257,10 @@ impl AutonomousOrchestrator {
             let offspring_count = created.len();
             if offspring_count > 0 {
                 let avg_fitness: f64 = created.iter()
-                    .filter_map(|v| {
+                    .map(|v| {
                         let f_a = v.get("fitness_a").and_then(|f| f.as_f64()).unwrap_or(0.5);
                         let f_b = v.get("fitness_b").and_then(|f| f.as_f64()).unwrap_or(0.5);
-                        Some((f_a + f_b) / 2.0)
+                        (f_a + f_b) / 2.0
                     })
                     .sum::<f64>() / offspring_count as f64;
 

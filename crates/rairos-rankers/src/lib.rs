@@ -660,7 +660,7 @@ impl OptimalScalingLearner {
 
         let norm_adjusted_lr = optimal_lr * (self.target_norm / (model_scale.sqrt() + 1e-6));
 
-        (norm_adjusted_lr.max(1e-6).min(1.0), optimal_bs.max(1.0).min(16384.0))
+        (norm_adjusted_lr.clamp(1e-6, 1.0), optimal_bs.clamp(1.0, 16384.0))
     }
 
     pub fn learning_rate_schedule(&self, step: usize, warmup_steps: usize) -> f64 {

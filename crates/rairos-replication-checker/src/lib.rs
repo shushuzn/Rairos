@@ -1417,7 +1417,7 @@ impl CriticalThinkingChecker {
             .filter(|c| c.severity == "High")
             .count() as f64 * 0.05;
 
-        let overall_score = (design_score - bias_penalty - concern_penalty).max(0.0).min(1.0);
+        let overall_score = (design_score - bias_penalty - concern_penalty).clamp(0.0, 1.0);
 
         let evidence_quality = EvidenceQuality::from_score(overall_score);
 

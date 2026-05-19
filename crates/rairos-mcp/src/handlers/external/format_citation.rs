@@ -238,7 +238,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                 title,
                 nature_journal,
                 if !volume.is_empty() { volume.to_string() } else { String::new() },
-                if !pages.is_empty() { format!(", {}", pages.replace("-", "-")) } else { String::new() },
+                if !pages.is_empty() { format!(", {}", pages) } else { String::new() },
                 if !doi.is_empty() { format!(" https://doi.org/{}", doi) } else { String::new() }
             ));
         }
@@ -262,7 +262,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                 vancouver_author, year, title, journal,
                 if !volume.is_empty() { format!(" {}", volume) } else { String::new() },
                 if !issue.is_empty() { format!("({})", issue) } else { String::new() },
-                if !pages.is_empty() { pages.replace("-", "-") } else { "".into() }
+                if !pages.is_empty() { pages.clone() } else { "".into() }
             ));
         }
 
@@ -275,7 +275,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                 if !volume.is_empty() { format!(" {}", volume) } else { String::new() },
                 if !issue.is_empty() { format!(", no. {}", issue) } else { String::new() },
                 if !year.is_empty() { format!(" ({})", year) } else { String::new() },
-                if !pages.is_empty() { format!(": {}", pages.replace("-", "-")) } else { String::new() }
+                if !pages.is_empty() { format!(": {}", pages) } else { String::new() }
             ));
         }
 

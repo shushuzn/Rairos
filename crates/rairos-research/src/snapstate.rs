@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 // ─── PaperSnapshot ─────────────────────────────────────────────────────────────
 
@@ -362,7 +362,7 @@ impl PlanCheckpoint {
     }
 
     /// Save checkpoint to file
-    pub fn save(&self, base_dir: &PathBuf) -> Result<PathBuf, String> {
+    pub fn save(&self, base_dir: &Path) -> Result<PathBuf, String> {
         let dir = base_dir.join("checkpoints");
         std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
         let filename = format!("{}_{}.json", self.plan_id, self.checkpoint_id);
@@ -373,7 +373,7 @@ impl PlanCheckpoint {
     }
 
     /// Load latest checkpoint for a plan
-    pub fn load_latest(base_dir: &PathBuf, plan_id: &str) -> Option<Self> {
+    pub fn load_latest(base_dir: &Path, plan_id: &str) -> Option<Self> {
         let dir = base_dir.join("checkpoints");
         if !dir.exists() {
             return None;
