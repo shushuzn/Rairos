@@ -1,5 +1,5 @@
 use crate::types::Result;
-use crate::webhook::WebhookDispatcher;
+use crate::webhook::{GapAlertParams, WebhookDispatcher};
 
 pub struct GapAlertSender<'a> {
     dispatcher: &'a WebhookDispatcher,
@@ -56,16 +56,16 @@ impl<'a> GapAlertSender<'a> {
 
     pub async fn send(self) -> Result<()> {
         self.dispatcher
-            .send_gap_alert(
-                &self.gap_type,
-                &self.title,
-                self.novelty,
-                &self.severity,
-                Some(&self.supporting_papers),
-                Some(&self.source),
-                Some(self.confidence),
-                Some(self.impact_score),
-            )
+            .send_gap_alert(GapAlertParams {
+                gap_type: &self.gap_type,
+                title: &self.title,
+                novelty: self.novelty,
+                severity: &self.severity,
+                supporting_papers: Some(&self.supporting_papers),
+                source: Some(&self.source),
+                confidence: Some(self.confidence),
+                impact_score: Some(self.impact_score),
+            })
             .await
     }
 }

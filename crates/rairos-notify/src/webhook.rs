@@ -8,6 +8,33 @@ use crate::discord::DiscordRenderer;
 use crate::feishu::FeishuRenderer;
 
 #[derive(Debug, Clone)]
+pub struct GapAlertParams<'a> {
+    pub gap_type: &'a str,
+    pub title: &'a str,
+    pub novelty: f64,
+    pub severity: &'a str,
+    pub supporting_papers: Option<&'a [String]>,
+    pub source: Option<&'a str>,
+    pub confidence: Option<f64>,
+    pub impact_score: Option<f64>,
+}
+
+impl<'a> GapAlertParams<'a> {
+    pub fn to_payload(&self) -> GapAlertPayload {
+        GapAlertPayload {
+            gap_type: self.gap_type.to_string(),
+            title: self.title.to_string(),
+            novelty: self.novelty,
+            severity: self.severity.to_string(),
+            supporting_papers: self.supporting_papers.map(|v| v.to_vec()).unwrap_or_default(),
+            source: self.source.unwrap_or("deep_research").to_string(),
+            confidence: self.confidence.unwrap_or(0.0),
+            impact_score: self.impact_score.unwrap_or(0.0),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct WebhookDispatcher {
     pub webhook_url: String,
     pub platform: Platform,
@@ -65,27 +92,8 @@ impl WebhookDispatcher {
         }
     }
 
-    pub async fn send_gap_alert(
-        &self,
-        gap_type: &str,
-        title: &str,
-        novelty: f64,
-        severity: &str,
-        supporting_papers: Option<&[String]>,
-        source: Option<&str>,
-        confidence: Option<f64>,
-        impact_score: Option<f64>,
-    ) -> Result<()> {
-        let payload = GapAlertPayload {
-            gap_type: gap_type.to_string(),
-            title: title.to_string(),
-            novelty,
-            severity: severity.to_string(),
-            supporting_papers: supporting_papers.map(|v| v.to_vec()).unwrap_or_default(),
-            source: source.unwrap_or("deep_research").to_string(),
-            confidence: confidence.unwrap_or(0.0),
-            impact_score: impact_score.unwrap_or(0.0),
-        };
+    pub async fn send_gap_alert(&self, params: GapAlertParams<'_>) -> Result<()> {
+        let payload = params.to_payload();
 
         let rendered = match self.platform {
             Platform::Discord => DiscordRenderer::render_gap_alert(&payload),
@@ -154,16 +162,16 @@ impl WebhookDispatcher {
     }
 
     pub async fn test(&self) -> Result<()> {
-        self.send_gap_alert(
-            "test",
-            "Test notification from Rairos",
-            0.5,
-            "low",
-            None,
-            Some("webhook_test"),
-            None,
-            None,
-        )
+        self.send_gap_alert(GapAlertParams {
+            gap_type: "test",
+            title: "Test notification from Rairos",
+            novelty: 0.5,
+            severity: "low",
+            supporting_papers: None,
+            source: Some("webhook_test"),
+            confidence: None,
+            impact_score: None,
+        })
         .await
     }
 }

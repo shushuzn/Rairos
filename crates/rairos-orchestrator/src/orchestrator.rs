@@ -495,9 +495,9 @@ impl AutonomousOrchestrator {
 
         let suggested_thresholds = self.bayesian_optimizer.suggest(2.0);
         let bo_threshold = suggested_thresholds.first().copied().unwrap_or(0.3);
-        let min_threshold = (self.config.min_gene_pool_score_for_alert as f64 * 0.7
+        let min_threshold = (self.config.min_gene_pool_score_for_alert * 0.7
             + bo_threshold * 0.3)
-            .clamp(0.1, 0.9) as f64;
+            .clamp(0.1, 0.9);
 
         let scored_len = scored_gaps.len();
         let mut alerts = Vec::new();
@@ -906,7 +906,7 @@ impl AutonomousOrchestrator {
                 if text_lower.contains(bigram) {
                     phrase_papers
                         .entry(bigram.to_string())
-                        .or_insert_with(Vec::new)
+                        .or_default()
                         .push(paper.title.clone());
                 }
             }

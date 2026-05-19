@@ -1557,7 +1557,7 @@ impl RegretOptimalSelector {
     }
 
     pub fn regret(&self, optimal_score: f64) -> f64 {
-        let empirical_best = self.capsule_scores.values().map(|&s| s).fold(0.0, f64::max);
+        let empirical_best = self.capsule_scores.values().copied().fold(0.0, f64::max);
         (optimal_score * self.total_selections as f64) - empirical_best
     }
 
@@ -1597,7 +1597,7 @@ impl MinimaxRanker {
     pub fn add_observation(&mut self, paper_id: &str, score: f64) {
         self.paper_scores
             .entry(paper_id.to_string())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(score);
     }
 

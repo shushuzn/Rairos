@@ -66,7 +66,7 @@ impl StripeWebhookPayload {
         let subscription_id = obj.subscription.clone()?;
 
         let tier = if let Some(price) = &obj.price {
-            crate::stripe::get_tier_by_price_id(&price.id.as_deref().unwrap_or(""))
+            crate::stripe::get_tier_by_price_id(price.id.as_deref().unwrap_or(""))
                 .map(|t| t.name.to_string())
                 .unwrap_or_else(|| "free".to_string())
         } else {

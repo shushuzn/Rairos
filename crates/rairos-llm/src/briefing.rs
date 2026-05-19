@@ -24,6 +24,16 @@ pub struct BriefingVerificationResult {
     pub warnings: Vec<String>,
 }
 
+#[derive(Debug, Clone)]
+pub struct BriefingVerificationInput<'a> {
+    pub title: &'a str,
+    pub abstract_text: &'a str,
+    pub summary: &'a str,
+    pub contributions: &'a [String],
+    pub methodology: &'a str,
+    pub results: &'a str,
+}
+
 impl BriefingVerificationResult {
     pub fn valid() -> Self {
         Self {
@@ -72,7 +82,19 @@ pub async fn generate_briefing(
             let verdict = extract_section(&markdown, "## Verdict")
                 .unwrap_or_else(|| "No verdict.".to_string());
 
-            let verification = verify_briefing(llm, model, title, abstract_text, &summary, &contributions, &methodology, &results).await;
+            let verification = verify_briefing(
+                llm,
+                model,
+                BriefingVerificationInput {
+                    title,
+                    abstract_text,
+                    summary: &summary,
+                    contributions: &contributions,
+                    methodology: &methodology,
+                    results: &results,
+                },
+            )
+            .await;
 
             BriefingResult {
                 success: true,
@@ -127,30 +149,25 @@ const VERIFY_BRIEFING_PROMPT: &str = r#"你是一个严谨的研究简报验证�
 async fn verify_briefing(
     llm: &dyn LlmClient,
     model: &str,
-    title: &str,
-    abstract_text: &str,
-    summary: &str,
-    contributions: &[String],
-    methodology: &str,
-    results: &str,
+    input: BriefingVerificationInput<'_>,
 ) -> BriefingVerificationResult {
-    if summary.is_empty() || summary == "No summary generated." {
+    if input.summary.is_empty() || input.summary == "No summary generated." {
         return BriefingVerificationResult::valid();
     }
 
-    let contributions_str = if contributions.is_empty() {
+    let contributions_str = if input.contributions.is_empty() {
         "无".to_string()
     } else {
-        contributions.iter().map(|s| format!("- {}", s)).collect::<Vec<_>>().join("\n")
+        input.contributions.iter().map(|s| format!("- {}", s)).collect::<Vec<_>>().join("\n")
     };
 
     let prompt = VERIFY_BRIEFING_PROMPT
-        .replace("{title}", title)
-        .replace("{abstract}", &abstract_text.chars().take(500).collect::<String>())
-        .replace("{summary}", summary)
+        .replace("{title}", input.title)
+        .replace("{abstract}", &input.abstract_text.chars().take(500).collect::<String>())
+        .replace("{summary}", input.summary)
         .replace("{contributions}", &contributions_str)
-        .replace("{methodology}", methodology)
-        .replace("{results}", results);
+        .replace("{methodology}", input.methodology)
+        .replace("{results}", input.results);
 
     let msg = Message { role: "user".to_string(), content: prompt };
 
@@ -165,13 +182,10 @@ async fn verify_briefing(
 fn parse_verification_result(content: &str) -> BriefingVerificationResult {
     let content = content.trim();
 
-    let is_valid = if content.contains("\"is_valid\": true") || content.contains("\"is_valid\":true") {
-        true
-    } else if content.contains("\"is_valid\": false") || content.contains("\"is_valid\":false") {
-        false
-    } else {
+    if !content.contains("\"is_valid\": true") && !content.contains("\"is_valid\":true")
+        && !content.contains("\"is_valid\": false") && !content.contains("\"is_valid\":false") {
         return BriefingVerificationResult::valid();
-    };
+    }
 
     let mut warnings = Vec::new();
     if let Some(start) = content.find("\"warnings\":") {
@@ -189,11 +203,7 @@ fn parse_verification_result(content: &str) -> BriefingVerificationResult {
         }
     }
 
-    if is_valid {
-        BriefingVerificationResult::with_warnings(warnings)
-    } else {
-        BriefingVerificationResult::with_warnings(warnings)
-    }
+    BriefingVerificationResult::with_warnings(warnings)
 }
 
 fn extract_section(text: &str, heading: &str) -> Option<String> {

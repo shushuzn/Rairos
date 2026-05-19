@@ -11,6 +11,18 @@ use crate::state::AppState;
 const DEFAULT_THRESHOLD_PERCENT: i32 = 80;
 const MIN_ALERT_INTERVAL_HOURS: i64 = 24;
 
+#[derive(Debug, Clone)]
+pub struct AlertSentRecord<'a> {
+    pub user_id: Uuid,
+    pub alert_type: &'a str,
+    pub threshold_percent: i32,
+    pub usage_percent: f64,
+    pub requests_used: i64,
+    pub requests_limit: i64,
+    pub status: &'a str,
+    pub error_message: Option<&'a str>,
+}
+
 impl AlertConfig {
     pub fn should_send_alert(&self, usage_percent: f64) -> bool {
         if usage_percent < self.threshold_percent as f64 {
@@ -272,14 +284,7 @@ impl AlertService {
 
     pub async fn record_alert_sent(
         state: &AppState,
-        user_id: Uuid,
-        alert_type: &str,
-        threshold_percent: i32,
-        usage_percent: f64,
-        requests_used: i64,
-        requests_limit: i64,
-        status: &str,
-        error_message: Option<&str>,
+        record: AlertSentRecord<'_>,
     ) -> Result<(), ApiError> {
         let conn = state.db.get().await.map_err(|e| ApiError::DatabaseError(e.to_string()))?;
 
@@ -289,14 +294,14 @@ impl AlertService {
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
             &[
                 &Uuid::new_v4().to_string(),
-                &user_id.to_string(),
-                &alert_type.to_string(),
-                &threshold_percent,
-                &(usage_percent as i32),
-                &requests_used,
-                &requests_limit,
-                &status.to_string(),
-                &error_message,
+                &record.user_id.to_string(),
+                &record.alert_type.to_string(),
+                &record.threshold_percent,
+                &(record.usage_percent as i32),
+                &record.requests_used,
+                &record.requests_limit,
+                &record.status.to_string(),
+                &record.error_message,
             ],
         )
         .await

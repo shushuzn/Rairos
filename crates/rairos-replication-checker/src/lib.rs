@@ -1513,8 +1513,8 @@ impl CriticalThinkingChecker {
     fn check_statistical_concerns(&self, text: &str, concerns: &mut Vec<StatisticalConcern>) {
         let lower = text.to_lowercase();
 
-        if lower.contains("p <") || lower.contains("p-value") || lower.contains("p value") {
-            if !lower.contains("correction") && !lower.contains("bonferroni") && !lower.contains("fdr") {
+        if (lower.contains("p <") || lower.contains("p-value") || lower.contains("p value"))
+            && !lower.contains("correction") && !lower.contains("bonferroni") && !lower.contains("fdr") {
                 concerns.push(StatisticalConcern {
                     concern_type: "Multiple Comparisons".to_string(),
                     severity: "Medium".to_string(),
@@ -1522,10 +1522,9 @@ impl CriticalThinkingChecker {
                     suggestion: "Apply multiple comparison correction (Bonferroni, FDR)".to_string(),
                 });
             }
-        }
 
-        if lower.contains("sample size") || lower.contains("n =") {
-            if lower.contains("small") || lower.contains("limited") {
+        if (lower.contains("sample size") || lower.contains("n ="))
+            && (lower.contains("small") || lower.contains("limited")) {
                 concerns.push(StatisticalConcern {
                     concern_type: "Small Sample Size".to_string(),
                     severity: "Medium".to_string(),
@@ -1533,7 +1532,6 @@ impl CriticalThinkingChecker {
                     suggestion: "Conduct power analysis and increase sample size if possible".to_string(),
                 });
             }
-        }
 
         if lower.contains("post-hoc") || lower.contains("posthoc") || lower.contains("post hoc") {
             concerns.push(StatisticalConcern {
@@ -1559,11 +1557,10 @@ impl CriticalThinkingChecker {
     fn check_logical_fallacies(&self, text: &str, fallacies: &mut Vec<String>) {
         let lower = text.to_lowercase();
 
-        if lower.contains("this proves") || lower.contains("clearly demonstrates") {
-            if lower.contains("correlation") || lower.contains("association") {
+        if (lower.contains("this proves") || lower.contains("clearly demonstrates"))
+            && (lower.contains("correlation") || lower.contains("association")) {
                 fallacies.push("Causation fallacy: Using causal language (proves, demonstrates) with correlational evidence".to_string());
             }
-        }
 
         if lower.contains("while this") && lower.contains("may") {
             // Hedging detected - not a fallacy

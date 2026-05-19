@@ -456,7 +456,7 @@ impl KgDatabase {
         };
         let rows: Vec<KgEdge> = match rel_type {
             Some(rt) => {
-                let mut params_vec: Vec<String> = node_ids.iter().cloned().collect();
+                let mut params_vec: Vec<String> = node_ids.to_vec();
                 if direction != "out" && direction != "in" {
                     params_vec.push(node_ids.last().unwrap().clone());
                 }
@@ -465,7 +465,7 @@ impl KgDatabase {
                 stmt.query_map(params.as_slice(), map_fn)?.collect::<Result<Vec<_>, _>>()?
             }
             None => {
-                let mut params_vec: Vec<String> = node_ids.iter().cloned().collect();
+                let mut params_vec: Vec<String> = node_ids.to_vec();
                 if direction != "out" && direction != "in" {
                     params_vec.push(node_ids.last().unwrap().clone());
                 }

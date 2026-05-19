@@ -45,7 +45,7 @@ impl PriceIds {
     }
 
     pub fn get() -> &'static PriceIds {
-        PRICE_IDS.get_or_init(|| PriceIds::from_env())
+        PRICE_IDS.get_or_init(PriceIds::from_env)
     }
 }
 

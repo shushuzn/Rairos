@@ -1004,7 +1004,7 @@ fn extract_subscription_data(data: &serde_json::Value) -> Option<SubscriptionDat
             .and_then(|item| item.get("price"))
             .and_then(|price| price.get("id"))
             .and_then(|id| id.as_str())
-            .and_then(|price_id| crate::stripe::get_tier_by_price_id(price_id))
+            .and_then(crate::stripe::get_tier_by_price_id)
             .map(|t| t.name.to_string())
             .unwrap_or_else(|| "free".to_string())
     } else {

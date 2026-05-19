@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::types::Result;
-use crate::webhook::WebhookDispatcher;
+use crate::webhook::{GapAlertParams, WebhookDispatcher};
 
 #[derive(Debug, Clone, Default)]
 pub struct NotificationCenter {
@@ -32,37 +32,14 @@ impl NotificationCenter {
         &self.dispatchers
     }
 
-    pub async fn send_gap_alert(
-        &self,
-        gap_type: &str,
-        title: &str,
-        novelty: f64,
-        severity: &str,
-        supporting_papers: Option<&[String]>,
-        source: Option<&str>,
-        confidence: Option<f64>,
-        impact_score: Option<f64>,
-    ) -> HashMap<String, Result<()>> {
+    pub async fn send_gap_alert(&self, params: GapAlertParams<'_>) -> HashMap<String, Result<()>> {
         let mut results = HashMap::new();
         for d in &self.dispatchers {
             if d.webhook_url.is_empty() {
                 continue;
             }
             let label = d.label.clone();
-            results.insert(
-                label,
-                d.send_gap_alert(
-                    gap_type,
-                    title,
-                    novelty,
-                    severity,
-                    supporting_papers,
-                    source,
-                    confidence,
-                    impact_score,
-                )
-                .await,
-            );
+            results.insert(label, d.send_gap_alert(params.clone()).await);
         }
         results
     }

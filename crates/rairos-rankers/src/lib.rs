@@ -702,8 +702,8 @@ impl AdaptiveMomentum {
     pub fn update(&mut self, gradient: f64) -> f64 {
         self.t += 1;
         self.velocity = self.momentum * self.velocity + (1.0 - self.momentum) * gradient;
-        let bias_corrected = self.velocity / (1.0 - self.beta1.powi(self.t as i32));
-        bias_corrected
+        
+        self.velocity / (1.0 - self.beta1.powi(self.t as i32))
     }
 
     pub fn nesterov_update(&mut self, gradient: f64) -> f64 {
