@@ -124,12 +124,22 @@ pub fn handle_gene_diversity(format: &str) -> Result<()> {
 
 pub fn handle_gene_evolve(max_crossovers: usize, format: &str) -> Result<()> {
     let pool = GenePool::load().context("Failed to load gene pool")?;
-    let gaps = vec!["capability", "improvement", "reasoning"];
+    let active: Vec<&Capsule> = pool.active_capsules();
+    
     let mut suggestions = Vec::new();
-    for gap_type in &gaps {
-        let pairs = pool.suggest_crossover(gap_type, max_crossovers / gaps.len());
-        for (id1, id2) in pairs {
-            suggestions.push((gap_type.to_string(), id1, id2));
+    for i in 0..active.len() {
+        for j in (i + 1)..active.len() {
+            if suggestions.len() >= max_crossovers {
+                break;
+            }
+            suggestions.push((
+                active[i].action_gap_type.clone(),
+                active[i].capsule_id.clone(),
+                active[j].capsule_id.clone(),
+            ));
+        }
+        if suggestions.len() >= max_crossovers {
+            break;
         }
     }
 

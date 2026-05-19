@@ -230,28 +230,79 @@ pub struct CapsuleGene {
 
 impl CapsuleGene {
     fn from_json(value: serde_json::Value) -> Option<Self> {
+        let capsule_id = value.get("capsule_id")?.as_str()?.to_string();
+        let created_at = value.get("created_at")?.as_str()?.to_string();
+
+        let action_gap_title = value
+            .get("action_gap_title")
+            .and_then(|v| v.as_str())
+            .map(String::from)
+            .or_else(|| {
+                value.get("archetype")?.get("approach_summary")?.as_str().map(String::from)
+            })
+            .unwrap_or_else(|| "Untitled capsule".to_string());
+
+        let action_gap_type = value
+            .get("action_gap_type")
+            .and_then(|v| v.as_str())
+            .map(String::from)
+            .unwrap_or_else(|| "unknown".to_string());
+
+        let trigger_topic = value
+            .get("trigger_topic")
+            .and_then(|v| v.as_str())
+            .map(String::from)
+            .or_else(|| {
+                value.get("trigger_keywords")?.as_array()?.first()?.as_str().map(String::from)
+            })
+            .unwrap_or_default();
+
+        let trigger_gap_type = value
+            .get("trigger_gap_type")
+            .and_then(|v| v.as_str())
+            .map(String::from)
+            .unwrap_or_else(|| action_gap_type.clone());
+
+        let trigger_keywords: Vec<String> = value
+            .get("trigger_keywords")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(String::from))
+                    .collect()
+            })
+            .unwrap_or_default();
+
         Some(Self {
-            capsule_id: value.get("capsule_id")?.as_str()?.to_string(),
-            created_at: value.get("created_at")?.as_str()?.to_string(),
-            trigger_topic: value.get("trigger_topic")?.as_str()?.to_string(),
-            trigger_gap_type: value.get("trigger_gap_type")?.as_str()?.to_string(),
-            trigger_keywords: value
-                .get("trigger_keywords")?
-                .as_array()?
-                .iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect(),
-            action_gap_type: value.get("action_gap_type")?.as_str()?.to_string(),
-            action_gap_title: value.get("action_gap_title")?.as_str()?.to_string(),
-            outcome_success_score: value.get("outcome_success_score")?.as_f64().unwrap_or(0.0),
-            feedback_count: value.get("feedback_count")?.as_i64().unwrap_or(0) as i32,
-            evolved_generation: value.get("evolved_generation")?.as_i64().unwrap_or(0) as i32,
+            capsule_id,
+            created_at,
+            trigger_topic,
+            trigger_gap_type,
+            trigger_keywords,
+            action_gap_type,
+            action_gap_title,
+            outcome_success_score: value
+                .get("outcome_success_score")
+                .and_then(|v| v.as_f64())
+                .unwrap_or(0.5),
+            feedback_count: value
+                .get("feedback_count")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32,
+            evolved_generation: value
+                .get("evolved_generation")
+                .and_then(|v| v.as_i64())
+                .unwrap_or(0) as i32,
             archetype: value
                 .get("archetype")
                 .and_then(|v| v.as_object().cloned())
                 .map(|m| m.into_iter().collect())
                 .unwrap_or_default(),
-            status: value.get("status")?.as_str()?.to_string(),
+            status: value
+                .get("status")
+                .and_then(|v| v.as_str())
+                .map(String::from)
+                .unwrap_or_else(|| "active".to_string()),
             low_score_streak: value
                 .get("low_score_streak")
                 .and_then(|v| v.as_i64())
@@ -642,7 +693,7 @@ pub fn run_evolution_with_engine(
         .filter(|c| {
             c.status == "active"
                 && c.credibility_badge != "low"
-                && compute_fitness(c) >= MIN_FITNESS_THRESHOLD
+                && (compute_fitness(c) >= MIN_FITNESS_THRESHOLD || c.feedback_count == 0)
         })
         .collect();
     parents.sort_by(|a, b| {

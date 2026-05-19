@@ -7,12 +7,14 @@ pub fn handle_crossover_run() -> Result<()> {
 
     println!("🧬 Crossover Evolution");
     let result = run_evolution(5, 10);
-    if result.contains_key("error") {
-        if let Some(err) = result.get("error") {
-            println!("   Error: {}", err);
-        }
-    } else {
-        println!("   Evolution completed successfully");
+    if let Some(err) = result.get("error") {
+        println!("   Error: {}", err);
+    }
+    if let Some(created) = result.get("created") {
+        println!("   Created: {}", created);
+    }
+    if let Some(crossovers) = result.get("crossovers") {
+        println!("   Crossovers: {}", crossovers);
     }
     Ok(())
 }
