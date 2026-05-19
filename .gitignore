@@ -132,3 +132,4 @@ research_loop_api_report.json
 *.so
 docs/superpowers
 rairos.db-shm\nrairos.db-wal
+.agents/
