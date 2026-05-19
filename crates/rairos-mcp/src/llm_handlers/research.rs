@@ -229,37 +229,16 @@ impl ToolHandler for ResearchRunHandler {
         let topic = params["topic"].as_str().ok_or("Missing topic")?;
         let limit = (params["limit"].as_u64().unwrap_or(5) as usize).min(20);
 
-        let arxiv_url = "http://export.arxiv.org/api/query";
-        let url = format!("{}?search_query=all:{}&start=0&max_results={}", arxiv_url, topic.replace(' ', "+"), limit);
-        let resp = reqwest::get(&url).await.map_err(|e| format!("arXiv request failed: {}", e))?;
-        let text = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
-        let papers = crate::handlers::parse_arxiv_response(&text);
+        let papers = rairos_parser::search_arxiv(topic, limit)
+            .await
+            .map_err(|e| format!("Search failed: {}", e))?;
 
         let db_path = std::env::var("RAIROS_DB").unwrap_or_else(|_| "rairos.db".to_string());
         let db = rairos_core::Database::open(&db_path).map_err(|e| format!("DB error: {}", e))?;
 
         let mut saved = 0;
-        for p in &papers {
-            let arxiv_id = p["arxiv_id"].as_str().unwrap_or("");
-            if arxiv_id.is_empty() { continue; }
-            let title = p["title"].as_str().unwrap_or("");
-            let abstract_text = p["abstract"].as_str().unwrap_or("");
-            let authors: Vec<String> = p["authors"].as_array()
-                .map(|a| a.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-                .unwrap_or_default();
-            let categories: Vec<String> = p["categories"].as_array()
-                .map(|c| c.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-                .unwrap_or_default();
-
-            let paper = rairos_core::Paper::with_metadata(
-                Some(arxiv_id.to_string()),
-                title.to_string(),
-                abstract_text.to_string(),
-                authors,
-                categories,
-                rairos_core::PaperMetadata::default(),
-            );
-            if db.insert_paper(&paper).is_ok() {
+        for paper in &papers {
+            if db.insert_paper(paper).is_ok() {
                 saved += 1;
             }
         }

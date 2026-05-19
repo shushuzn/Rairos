@@ -1,8 +1,6 @@
 use crate::handlers::helpers::kg;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
-use crate::handlers::helpers::parse_arxiv_response;
 use async_trait::async_trait;
-use rairos_core::constants::ARXIV_API;
 use serde_json::Value;
 use std::collections::HashMap;
 
@@ -22,11 +20,9 @@ impl ToolHandler for CitationGraphHandler {
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
         let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
-        let url = format!("{}?id_list={}", ARXIV_API, arxiv_id);
-        let resp = reqwest::get(&url).await.map_err(|e| format!("arXiv request failed: {}", e))?;
-        let text = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
-        let papers = parse_arxiv_response(&text);
-        let paper = papers.into_iter().next().ok_or_else(|| format!("Paper not found: {}", arxiv_id))?;
+        let paper = rairos_parser::fetch_arxiv(arxiv_id)
+            .await
+            .map_err(|e| format!("arXiv fetch failed: {}", e))?;
         Ok(serde_json::json!({
             "paper": paper,
             "citations": [],
