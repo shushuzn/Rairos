@@ -713,6 +713,22 @@ impl AutonomousOrchestrator {
         state.last_check = Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string();
         let _ = save_state(&state);
 
+        let current_topics: Vec<String> = {
+            let db_guard = self.db.read().await;
+            if let Some(db) = db_guard.as_ref() {
+                db.list_subscriptions(false)
+                    .map(|subs| subs.into_iter().map(|s| s.query).collect())
+                    .unwrap_or_default()
+            } else {
+                Vec::new()
+            }
+        };
+
+        let suggested_new = self.suggest_new_topics(&current_topics);
+        if !suggested_new.is_empty() {
+            tracing::info!("[Orchestrator] Suggested new topics: {:?}", suggested_new);
+        }
+
         tracing::info!("[Orchestrator] Cycle complete: {} alerts", all_alerts.len());
 
         if self.config.run_evolution_in_cycle && !all_alerts.is_empty() {
@@ -773,6 +789,36 @@ impl AutonomousOrchestrator {
         let quality_ratio = high_quality.len() as f64 / recent_window as f64;
         let adjusted = (avg_interval as f64 * quality_ratio).max(5.0) as i32;
         adjusted.min(240).max(5)
+    }
+
+    pub fn suggest_new_topics(&self, current_topics: &[String]) -> Vec<String> {
+        let state = load_state();
+        let mut topic_scores: std::collections::HashMap<String, f64> = std::collections::HashMap::new();
+
+        for alert in &state.alerts {
+            let words: std::collections::HashSet<_> = alert.top_gap_title.split_whitespace()
+                .filter(|w| w.len() > 4)
+                .map(|w| w.to_lowercase())
+                .collect();
+            for word in words {
+                *topic_scores.entry(word).or_insert(0.0) += alert.gene_pool_score;
+            }
+        }
+
+        let current_set: std::collections::HashSet<_> = current_topics.iter()
+            .map(|t| t.to_lowercase())
+            .collect();
+
+        let mut suggestions: Vec<(String, f64)> = topic_scores.into_iter()
+            .filter(|(topic, _)| !current_set.contains(&topic.to_lowercase()))
+            .filter(|(_, score)| *score > 0.5)
+            .collect();
+        suggestions.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Less));
+
+        suggestions.into_iter()
+            .take(5)
+            .map(|(topic, _)| topic)
+            .collect()
     }
 
     pub async fn start_watch(&self, interval_minutes: i32) -> Result<()> {
