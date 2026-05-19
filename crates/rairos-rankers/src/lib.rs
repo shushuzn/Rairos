@@ -603,6 +603,101 @@ fn rand_simple() -> f64 {
 }
 
 // ============================================================================
+// Optimal Scaling Learner (arXiv:2510.03871)
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct OptimalScalingLearner {
+    observations: Vec<(f64, f64, f64)>,
+    target_norm: f64,
+    learning_rate: f64,
+}
+
+impl OptimalScalingLearner {
+    pub fn new(target_norm: f64, learning_rate: f64) -> Self {
+        Self {
+            observations: Vec::new(),
+            target_norm,
+            learning_rate,
+        }
+    }
+
+    pub fn observe(&mut self, learning_rate: f64, batch_size: f64, loss: f64) {
+        self.observations.push((learning_rate, batch_size, loss));
+    }
+
+    pub fn predict_optimal(&self, model_scale: f64, dataset_tokens: f64) -> (f64, f64) {
+        let (lr, bs) = self.observations
+            .iter()
+            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal))
+            .map(|(lr, bs, _)| (*lr, *bs))
+            .unwrap_or((1e-4, 32.0));
+
+        let scale_ratio = (dataset_tokens / 1e9).powf(0.5);
+        let optimal_lr = lr * scale_ratio;
+        let optimal_bs = bs * (model_scale / 1e9).powf(0.5);
+
+        let norm_adjusted_lr = optimal_lr * (self.target_norm / (model_scale.sqrt() + 1e-6));
+
+        (norm_adjusted_lr.max(1e-6).min(1.0), optimal_bs.max(1.0).min(16384.0))
+    }
+
+    pub fn learning_rate_schedule(&self, step: usize, warmup_steps: usize) -> f64 {
+        if step < warmup_steps {
+            return self.learning_rate * step as f64 / warmup_steps as f64;
+        }
+        let decay_steps = step - warmup_steps;
+        (self.learning_rate * (decay_steps as f64).powf(-0.5))
+            .max(self.learning_rate * 0.01)
+    }
+}
+
+// ============================================================================
+// Adaptive Momentum (Nesterov-style acceleration for research)
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct AdaptiveMomentum {
+    velocity: f64,
+    momentum: f64,
+    beta1: f64,
+    beta2: f64,
+    epsilon: f64,
+    t: usize,
+}
+
+impl AdaptiveMomentum {
+    pub fn new(momentum: f64) -> Self {
+        Self {
+            velocity: 0.0,
+            momentum,
+            beta1: 0.9,
+            beta2: 0.999,
+            epsilon: 1e-8,
+            t: 0,
+        }
+    }
+
+    pub fn update(&mut self, gradient: f64) -> f64 {
+        self.t += 1;
+        self.velocity = self.momentum * self.velocity + (1.0 - self.momentum) * gradient;
+        let bias_corrected = self.velocity / (1.0 - self.beta1.powi(self.t as i32));
+        bias_corrected
+    }
+
+    pub fn nesterov_update(&mut self, gradient: f64) -> f64 {
+        let look_ahead = self.momentum * self.velocity + (1.0 - self.momentum) * gradient;
+        self.velocity = look_ahead;
+        look_ahead / (1.0 - self.beta1.powi(self.t as i32))
+    }
+
+    pub fn adaptive_lr(&self, base_lr: f64, gradient_norm: f64) -> f64 {
+        let adapted = base_lr / (gradient_norm.sqrt() + self.epsilon);
+        adapted.max(base_lr * 0.01).min(base_lr * 10.0)
+    }
+}
+
+// ============================================================================
 // Tests
 // ============================================================================
 
