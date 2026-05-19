@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::sync::LazyLock;
 
-pub const LLM_BASE_URL: &str = "https://api.openai.com/v1";
+pub const LLM_BASE_URL: &str = "https://opencode.ai/zen/go/v1";
 
 pub fn data_dir() -> std::path::PathBuf {
     dirs::data_local_dir()
@@ -19,7 +19,7 @@ pub const GP_DIR_NAME: &str = ".ai_research_os/evolution";
 pub const GENE_POOL_JSONL: &str = "gene_pool.jsonl";
 pub const CAPSULES_JSON: &str = "capsules.json";
 pub const CLIMATE_CATS: &[&str] = &["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"];
-pub const LLM_MODEL: &str = "gpt-4o-mini";
+pub const LLM_MODEL: &str = "deepseek-v4-flash";
 
 pub const OLLAMA_BASE_URL: &str = "http://localhost:11434";
 pub const OLLAMA_EMBEDDING_MODEL: &str = "nomic-embed-text";
