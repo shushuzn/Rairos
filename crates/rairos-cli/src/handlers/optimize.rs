@@ -1236,6 +1236,7 @@ pub fn handle_code_gene_sync_from_issue(
 
     let mut imported = 0;
     let mut skipped = 0;
+    let mut errors = 0;
 
     for issue in &issues_data {
         let number = issue["number"].as_i64().unwrap_or(0);
@@ -1245,39 +1246,54 @@ pub fn handle_code_gene_sync_from_issue(
             .unwrap_or_default();
 
         if let Some(gene) = parse_gene_from_issue_body(number, body, &labels) {
-            save_code_capsule(&gene)?;
-            println!("  ✅ Imported #{}: {}", number, gene.trigger_topic.chars().take(50).collect::<String>());
-            imported += 1;
+            match save_code_capsule(&gene) {
+                Ok(_) => {
+                    println!("  ✅ Imported #{}: {}", number, gene.trigger_topic.chars().take(50).collect::<String>());
+                    imported += 1;
+                }
+                Err(e) => {
+                    eprintln!("  ❌ Error saving #{}: {}", number, e);
+                    errors += 1;
+                }
+            }
         } else {
             println!("  ⏭️  Skipped #{}: could not parse", number);
             skipped += 1;
         }
     }
 
-    println!("\n{} imported, {} skipped", imported, skipped);
+    println!("\n{} imported, {} skipped, {} errors", imported, skipped, errors);
     Ok(())
 }
 
 fn parse_gene_from_issue_body(number: i64, body: &str, labels: &[String]) -> Option<CodeCapsuleGene> {
     let capsule_id = format!("issue-{}", number);
+
+    let title = body.lines()
+        .find(|l| l.starts_with("# "))
+        .map(|l| l.trim_start_matches("# ").to_string())
+        .unwrap_or_else(|| format!("From issue #{}", number));
+
     let trigger_topic = labels.iter()
         .find(|l| l.starts_with("crate:"))
         .map(|l| l.replace("crate:", ""))
-        .unwrap_or_else(|| format!("From issue #{}", number));
+        .unwrap_or_else(|| title.clone());
 
     let gap_type = labels.iter()
         .find(|l| l.starts_with("gap-type:"))
         .map(|l| l.replace("gap-type:", ""))
         .unwrap_or_else(|| "evaluation".to_string());
 
-    let code_snippet = extract_code_block(body);
-    let optimization = body.lines()
-        .find(|l| l.starts_with("## Optimization"))
-        .map(|_| {
-            let start = body.find("## Optimization").map(|i| i + 14).unwrap_or(0);
-            let end = body[start..].find("## Code").unwrap_or(body[start..].len());
-            body[start..start + end].trim().to_string()
-        })
+    let code_snippet = extract_github_code_block(body);
+
+    let optimization = extract_section(body, "## Optimization", "## Code")
+        .or_else(|| extract_section(body, "## Description", "## Code"))
+        .unwrap_or_default();
+
+    let target_crate = labels.iter()
+        .find(|l| l.starts_with("crate:"))
+        .cloned()
+        .map(|l| l.replace("crate:", ""))
         .unwrap_or_default();
 
     Some(CodeCapsuleGene {
@@ -1287,10 +1303,10 @@ fn parse_gene_from_issue_body(number: i64, body: &str, labels: &[String]) -> Opt
         trigger_keywords: vec![],
         source_paper_id: String::new(),
         source_paper_title: String::new(),
-        target_crate: labels.iter().find(|l| l.starts_with("crate:")).cloned().unwrap_or_default(),
+        target_crate,
         gap_type,
         gap_location: format!("GitHub Issue #{}", number),
-        code_snippet: code_snippet.unwrap_or_default(),
+        code_snippet,
         optimization,
         outcome_success_score: 0.5,
         feedback_count: 0,
@@ -1301,4 +1317,32 @@ fn parse_gene_from_issue_body(number: i64, body: &str, labels: &[String]) -> Opt
         credibility_score: 0.5,
         credibility_badge: "medium".to_string(),
     })
+}
+
+fn extract_github_code_block(text: &str) -> String {
+    let markers = ["```rust", "```", "```toml", "```python", "```cpp"];
+    for marker in &markers {
+        if let Some(start) = text.find(marker) {
+            let after_marker = &text[start + marker.len()..];
+            if let Some(end) = after_marker.find("```") {
+                let code = after_marker[..end].trim();
+                if !code.is_empty() {
+                    return code.to_string();
+                }
+            }
+        }
+    }
+    String::new()
+}
+
+fn extract_section(text: &str, start_marker: &str, end_marker: &str) -> Option<String> {
+    let start_idx = text.find(start_marker)? + start_marker.len();
+    let remaining = &text[start_idx..];
+    let end_idx = remaining.find(end_marker).unwrap_or(remaining.len());
+    let section = remaining[..end_idx].trim();
+    if section.is_empty() {
+        None
+    } else {
+        Some(section.to_string())
+    }
 }

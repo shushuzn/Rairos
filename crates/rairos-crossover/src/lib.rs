@@ -13,7 +13,7 @@ use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
 
-pub const MAX_CODE_GENES: usize = 100;
+pub const MAX_CODE_GENES: usize = 200;
 
 // ============================================================================
 // Preference Ranker (arXiv:2505.08735)
