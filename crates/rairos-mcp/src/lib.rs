@@ -8,6 +8,7 @@ pub mod protocol;
 pub mod types;
 
 pub use protocol::{McpServer, Tool, ToolHandler, ToolInputSchema, ToolProperty};
+pub use llm_handlers::{llm_client, llm_model};
 pub use types::{
     JsonRpcError, JsonRpcErrorDetail, JsonRpcRequest, JsonRpcResponse, JsonRpcSuccess,
 };

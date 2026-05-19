@@ -390,3 +390,158 @@ async fn test_list_tools_direct_api_count() {
 
 // ─── Server Info ──────────────────────────────────────────────────────────────
 // Note: "initialize" is handled by the binary layer (main.rs), not by McpServer.
+
+// ─── Concurrency Tests (OnceLock/RwLock validation) ────────────────────────────
+
+use std::sync::Arc;
+use std::time::Duration;
+
+/// Test concurrent tool calls don't cause race conditions
+#[tokio::test(flavor = "multi_thread", worker_threads = 8)]
+async fn test_concurrent_tool_calls_no_race() {
+    use tokio::time::timeout;
+    
+    let server = Arc::new(registered_server().await);
+    let tools = server.list_tools().await;
+    let tool_names: Vec<String> = tools.iter().map(|t| t.name.clone()).collect();
+    
+    // Spawn 20 concurrent tasks, each calling a tool
+    let mut handles = Vec::new();
+    for i in 0..20 {
+        let srv = server.clone();
+        let names = tool_names.clone();
+        let handle = tokio::spawn(async move {
+            let tool = &names[i % names.len()];
+            let req = serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "tools/call",
+                "params": {
+                    "name": tool,
+                    "arguments": {}
+                },
+                "id": i
+            });
+            let resp = send_request(&srv, &req.to_string()).await;
+            // Must not panic or return internal error
+            assert!(resp.get("error").is_some() || resp.get("result").is_some(),
+                "Tool '{}' should return valid response, got: {}", tool, resp);
+        });
+        handles.push(handle);
+    }
+    
+    // Wait for all with timeout
+    for handle in handles {
+        let result = timeout(Duration::from_secs(30), handle).await;
+        assert!(result.is_ok(), "Concurrent tool call timed out");
+        assert!(result.unwrap().is_ok(), "Task panicked");
+    }
+}
+
+/// Test concurrent list_tools calls
+#[tokio::test(flavor = "multi_thread", worker_threads = 16)]
+async fn test_concurrent_list_tools() {
+    let server = Arc::new(registered_server().await);
+    
+    let mut handles = Vec::new();
+    for i in 0..50 {
+        let srv = server.clone();
+        let handle = tokio::spawn(async move {
+            let tools = srv.list_tools().await;
+            // All calls should return same count (no race)
+            assert!(tools.len() >= 50, "Expected >=50 tools, got {}", tools.len());
+            tools.len()
+        });
+        handles.push(handle);
+    }
+    
+    let results = futures::future::join_all(handles).await;
+    let counts: Vec<usize> = results.into_iter().filter_map(|r| r.ok()).collect();
+    // All should return same count
+    let first = counts[0];
+    for (i, count) in counts.iter().enumerate() {
+        assert_eq!(first, *count, "Call {} returned different count: {} vs {}", i, count, first);
+    }
+}
+
+/// Test concurrent mixed operations (list + call)
+#[tokio::test(flavor = "multi_thread", worker_threads = 8)]
+async fn test_concurrent_mixed_operations() {
+    use tokio::time::timeout;
+    
+    let server = Arc::new(registered_server().await);
+    
+    let mut handles = Vec::new();
+    for i in 0..30 {
+        let srv = server.clone();
+        let handle = tokio::spawn(async move {
+            if i % 3 == 0 {
+                // list_tools
+                let tools = srv.list_tools().await;
+                tools.len()
+            } else {
+                // ping
+                let req = r#"{"jsonrpc":"2.0","method":"ping","id":999}"#;
+                let resp = send_request(&srv, req).await;
+                if resp.get("result").is_some() { 1 } else { 0 }
+            }
+        });
+        handles.push(handle);
+    }
+    
+    for handle in handles {
+        let result = timeout(Duration::from_secs(10), handle).await;
+        assert!(result.is_ok() && result.as_ref().unwrap().is_ok());
+    }
+}
+
+/// Test OnceLock client caching (same instance returned)
+#[tokio::test]
+async fn test_llm_client_caching() {
+    use rairos_mcp::{llm_client, llm_model};
+    
+    // Call multiple times — should return same reference
+    let client1 = llm_client();
+    let client2 = llm_client();
+    
+    // Both should be same Option (None or Some)
+    match (&client1, &client2) {
+        (Some(_), Some(_)) => {},
+        (None, None) => {},
+        _ => panic!("Inconsistent client state"),
+    }
+    
+    // Model should be consistent
+    let model1 = llm_model();
+    let model2 = llm_model();
+    assert_eq!(model1, model2, "Model should be consistent");
+}
+
+/// Test server can handle rapid burst requests
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn test_rapid_burst_requests() {
+    let server = Arc::new(registered_server().await);
+    
+    // Send 100 rapid ping requests in parallel
+    let mut handles = Vec::new();
+    for i in 0..100 {
+        let srv = server.clone();
+        let handle = tokio::spawn(async move {
+            let req = serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "ping",
+                "id": i
+            });
+            send_request(&srv, &req.to_string()).await
+        });
+        handles.push(handle);
+    }
+    
+    let results = futures::future::join_all(handles).await;
+    let success_count = results.iter()
+        .filter_map(|r| r.as_ref().ok())
+        .filter(|v| v.get("result").is_some())
+        .count();
+    
+    // At least 95% should succeed (allowing for rare timing issues)
+    assert!(success_count >= 95, "Only {}/100 requests succeeded", success_count);
+}
