@@ -1498,11 +1498,45 @@ pub fn handle_code_gene_implement(
     println!("\nStep 5/6: {}", if execute { "Implementing..." } else { "Skipping implementation (dry-run)" });
 
     if execute && existing_code.is_empty() {
-        println!("  ⚠️  Implementation would require:");
-        println!("    1. Creating/modifying source files");
-        println!("    2. Adding tests");
-        println!("    3. Running cargo test");
-        println!("  📝 This is a placeholder - actual implementation needed.");
+        if let Some(ref crate_name) = crate_label {
+            let crate_src_path = format!("crates/{}/src", crate_name.replace("crate-", ""));
+            let lib_rs_path = format!("{}/lib.rs", crate_src_path);
+
+            println!("  📝 Implementing code in {}...", lib_rs_path);
+
+            // Read existing file
+            let existing_content = std::fs::read_to_string(&lib_rs_path)
+                .context(format!("Failed to read {}", lib_rs_path))?;
+
+            // Append code snippet with separator
+            let separator = "\n\n// ========== Code Gene Implementation ==========\n";
+            let new_content = format!("{}{}{}\n", existing_content.trim_end(), separator, code_snippet);
+
+            // Write updated content
+            std::fs::write(&lib_rs_path, new_content)
+                .context(format!("Failed to write to {}", lib_rs_path))?;
+
+            println!("  ✅ Written code to {}", lib_rs_path);
+
+            // Run tests
+            println!("  🧪 Running tests...");
+            let test_output = std::process::Command::new("cargo")
+                .args(&["test", "-p", &crate_name.replace("crate-", "")])
+                .current_dir(std::env::current_dir()?)
+                .output()?;
+
+            if test_output.status.success() {
+                println!("  ✅ Tests passed!");
+            } else {
+                let stderr = String::from_utf8_lossy(&test_output.stderr);
+                println!("  ⚠️  Tests output:");
+                for line in stderr.lines().take(10) {
+                    println!("    {}", line);
+                }
+            }
+        } else {
+            println!("  ⚠️  No crate label found - cannot implement");
+        }
     } else if existing_code.is_empty() {
         println!("  ℹ️  Run with --execute to actually implement");
     }
