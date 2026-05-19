@@ -114,6 +114,81 @@ impl UCBParentSelector {
             })
             .copied()
     }
+
+    pub fn select_idx(&mut self, candidates: &[&str]) -> Option<usize> {
+        if candidates.is_empty() {
+            return None;
+        }
+        self.total_selections += 1;
+        candidates
+            .iter()
+            .enumerate()
+            .max_by(|(_, a), (_, b)| {
+                self.ucb_score(a)
+                    .partial_cmp(&self.ucb_score(b))
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
+            .map(|(i, _)| i)
+    }
+}
+
+pub struct CrossoverEngine {
+    ucb_selector: UCBParentSelector,
+    preference_ranker: PreferenceRanker,
+    fitness_cache: HashMap<String, f64>,
+}
+
+impl CrossoverEngine {
+    pub fn new(exploration_param: f64, entropy_bonus: f64) -> Self {
+        Self {
+            ucb_selector: UCBParentSelector::new(exploration_param),
+            preference_ranker: PreferenceRanker::new(entropy_bonus),
+            fitness_cache: HashMap::new(),
+        }
+    }
+
+    pub fn select_parents_ucb(&mut self, candidates: &[&str]) -> Option<(usize, usize)> {
+        if candidates.len() < 2 {
+            return None;
+        }
+        let first_idx = self.ucb_selector.select_idx(candidates)?;
+        let second_candidates: Vec<&str> = candidates
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| *i != first_idx)
+            .map(|(_, &s)| s)
+            .collect();
+        if second_candidates.is_empty() {
+            return None;
+        }
+        let second_idx_opt = self.ucb_selector.select_idx(&second_candidates);
+        if let Some(second_relative) = second_idx_opt {
+            let actual_second = if second_relative >= first_idx {
+                second_relative + 1
+            } else {
+                second_relative
+            };
+            if actual_second < candidates.len() && actual_second != first_idx {
+                return Some((first_idx, actual_second));
+            }
+        }
+        let mut rng = rand::thread_rng();
+        let second_idx = (0..candidates.len())
+            .filter(|&i| i != first_idx)
+            .collect::<Vec<_>>()
+            .choose(&mut rng)
+            .copied()?;
+        Some((first_idx, second_idx))
+    }
+
+    pub fn record_comparison(&mut self, winner_id: &str, loser_id: &str, winner_score: f64) {
+        self.ucb_selector.record_comparison(winner_id, loser_id, winner_score);
+        self.preference_ranker.record_outcome(winner_id, loser_id);
+    }
+
+    pub fn get_fitness(&mut self, capsule_id: &str, fallback: f64) -> f64 {
+        *self.fitness_cache.entry(capsule_id.to_string()).or_insert(fallback)
+    }
 }
 
 const DEFAULT_POPULATION_SIZE: usize = 20;
@@ -553,6 +628,14 @@ pub fn run_evolution(
     offspring_count: usize,
     population_size: usize,
 ) -> HashMap<String, serde_json::Value> {
+    run_evolution_with_engine(offspring_count, population_size, None)
+}
+
+pub fn run_evolution_with_engine(
+    offspring_count: usize,
+    population_size: usize,
+    mut engine: Option<&mut CrossoverEngine>,
+) -> HashMap<String, serde_json::Value> {
     let capsules = load_capsules();
     let mut parents: Vec<CapsuleGene> = capsules
         .into_iter()
@@ -585,14 +668,39 @@ pub fn run_evolution(
         return result;
     }
 
+    let capsule_ids: Vec<&str> = parents.iter().map(|p| p.capsule_id.as_str()).collect();
     let mut rng = rand::thread_rng();
     let mut created = Vec::new();
     let mut used_pairs: std::collections::HashSet<(String, String)> =
         std::collections::HashSet::new();
+    let use_ucb = engine.is_some();
 
     for _ in 0..offspring_count {
-        let p_a = parents.choose(&mut rng).unwrap();
-        let p_b = parents.choose(&mut rng).unwrap();
+        let (p_a_idx, p_b_idx) = if use_ucb {
+            if let Some(eng) = engine.as_mut() {
+                if let Some((a_idx, b_idx)) = eng.select_parents_ucb(&capsule_ids) {
+                    (a_idx, b_idx)
+                } else {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+        } else {
+            let a = parents.choose(&mut rng);
+            let b = parents.choose(&mut rng);
+            match (a, b) {
+                (Some(p_a), Some(p_b)) if p_a.capsule_id != p_b.capsule_id => {
+                    let a_idx = parents.iter().position(|p| p.capsule_id == p_a.capsule_id).unwrap_or(0);
+                    let b_idx = parents.iter().position(|p| p.capsule_id == p_b.capsule_id).unwrap_or(1);
+                    (a_idx, b_idx)
+                }
+                _ => continue,
+            }
+        };
+
+        let p_a = &parents[p_a_idx];
+        let p_b = &parents[p_b_idx];
         if p_a.capsule_id == p_b.capsule_id {
             continue;
         }

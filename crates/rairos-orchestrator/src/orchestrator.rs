@@ -243,7 +243,7 @@ impl AutonomousOrchestrator {
         session_id: &str,
         topic: &str,
         trigger_paper: &PaperInfo,
-    ) -> Vec<ResearchAlert> {
+    ) -> (Vec<ResearchAlert>, f64, usize) {
         let severity_rank = |s: &str| match s {
             "HIGH" => 0,
             "MEDIUM" => 1,
@@ -259,6 +259,7 @@ impl AutonomousOrchestrator {
             + bo_threshold * 0.3)
             .clamp(0.1, 0.9) as f64;
 
+        let scored_len = scored_gaps.len();
         let mut alerts = Vec::new();
         for sg in scored_gaps {
             let sev_rank = severity_rank(&sg.severity);
@@ -285,7 +286,7 @@ impl AutonomousOrchestrator {
             alerts.push(alert);
         }
 
-        alerts
+        (alerts, min_threshold, scored_len)
     }
 
     pub fn record_threshold_feedback(&mut self, threshold: f64, alert_rate: f64) {
@@ -433,12 +434,18 @@ impl AutonomousOrchestrator {
                 tracing::warn!("[Orchestrator] No papers in subscription '{}' despite prior check", topic);
                 continue;
             };
-            let alerts =
+            let (alerts, threshold_used, scored_len) =
                 self.generate_alerts(scored.clone(), &research_result.session_id, topic, &trigger);
+
+            if !alerts.is_empty() {
+                let alert_rate = alerts.len() as f64 / scored_len.max(1) as f64;
+                self.observe_threshold_performance(&[threshold_used], alert_rate);
+            }
 
             for alert in &alerts {
                 self.send_webhook(alert);
                 all_alerts.push(alert.clone());
+                self.record_gap_outcome(&alert.top_gap_type, alert.gene_pool_score);
 
                 {
                     let mut tracker_guard = self.tracker.write().await;
