@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use serde_json::Value;
 
 #[derive(Clone)]
+#[allow(dead_code)]
 struct TestRecommendation {
     test_name: String,
     alternate_names: Vec<String>,
