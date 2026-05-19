@@ -954,6 +954,24 @@ pub fn handle_code_gene_add(
 ) -> Result<()> {
     use std::time::{SystemTime, UNIX_EPOCH};
 
+    let valid_gap_types = ["performance", "memory", "concurrency", "architecture", "evaluation", "reliability", "security", "usability"];
+
+    if crate_name.is_empty() {
+        anyhow::bail!("❌ crate_name cannot be empty");
+    }
+    if !crate_name.chars().all(|c| c.is_alphanumeric() || c == '-' || c == '_') {
+        anyhow::bail!("❌ crate_name contains invalid characters (use alphanumeric, -, _)");
+    }
+    if !valid_gap_types.contains(&gap_type.to_lowercase().as_str()) {
+        println!("⚠️  Warning: gap_type '{}' not in common types: {:?}", gap_type, valid_gap_types);
+    }
+    if code_snippet.trim().len() < 20 {
+        anyhow::bail!("❌ code_snippet too short (minimum 20 chars)");
+    }
+    if optimization.trim().len() < 5 {
+        anyhow::bail!("❌ optimization description too short (minimum 5 chars)");
+    }
+
     let capsule_id = format!("{:x}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos());
 
     let keywords: Vec<String> = if keywords.is_empty() {
@@ -3049,13 +3067,14 @@ pub fn handle_code_gene_cleanup(repo: &str, execute: bool) -> Result<()> {
     Ok(())
 }
 
-/// Parallel batch review for multiple genes
+/// Parallel batch review for multiple genes with progress bar
 pub fn handle_code_gene_batch_review(
     ids: &str,
     _repo: &str,
-    _auto_approve: bool,
+    auto_approve: bool,
 ) -> Result<()> {
     use rayon::prelude::*;
+    use indicatif::{ProgressBar, ProgressStyle};
 
     println!("\n{}", "═".repeat(60));
     println!("🚀 PARALLEL BATCH REVIEW");
@@ -3073,6 +3092,11 @@ pub fn handle_code_gene_batch_review(
         println!("\n⚠️  No genes match the IDs: {}", ids);
         return Ok(());
     }
+
+    let pb = ProgressBar::new(genes.len() as u64);
+    pb.set_style(ProgressStyle::default_bar()
+        .template("{spinner:.green} [{elapsed_precise}] {bar:40} {pos}/{len} {msg}")?
+        .progress_chars("██░"));
 
     println!("\n📋 Processing {} genes in parallel...", genes.len());
 
@@ -3096,7 +3120,8 @@ pub fn handle_code_gene_batch_review(
                 "needs_review".to_string()
             };
 
-            println!("  [{}] {} - {}", short_id, gene.gap_type, verdict);
+            pb.set_message(format!("{} - {}", short_id, verdict));
+            pb.inc(1);
 
             ReviewOutcome {
                 gene_id: gene.capsule_id.clone(),
@@ -3105,6 +3130,8 @@ pub fn handle_code_gene_batch_review(
             }
         })
         .collect();
+
+    pb.finish_with_message("done");
 
     println!("\n{}", "═".repeat(60));
     println!("📊 BATCH REVIEW SUMMARY");
@@ -3115,10 +3142,150 @@ pub fn handle_code_gene_batch_review(
     let needs_review = outcomes.iter().filter(|o| o.verdict == "needs_review").count();
     let rejected = outcomes.iter().filter(|o| o.verdict.starts_with("rejected")).count();
 
-    println!("Already approved: {}", approved);
-    println!("Needs review: {}", needs_review);
-    println!("Rejected: {}", rejected);
-    println!("\nRun code-gene-auto-review for detailed LLM review.");
+    println!("✅ Already approved: {}", approved);
+    println!("⏳ Needs review: {}", needs_review);
+    println!("❌ Rejected: {}", rejected);
+    println!("\nNext steps:");
+    println!("  code-gene-auto-review --ids {}", ids);
+    if auto_approve {
+        println!("  code-gene-approve --ids {} --execute", ids);
+    }
+    println!("{}", "═".repeat(60));
+
+    Ok(())
+}
+
+/// Rollback gene status to a previous state
+pub fn handle_code_gene_rollback(
+    id: &str,
+    steps: Option<u32>,
+) -> Result<()> {
+    let all_genes = get_all_code_capsules();
+
+    let gene = all_genes.iter().find(|g| {
+        g.capsule_id == id || g.capsule_id.starts_with(id)
+    });
+
+    let gene = match gene {
+        Some(g) => g,
+        None => {
+            println!("❌ Gene not found: {}", id);
+            return Ok(());
+        }
+    };
+
+    println!("\n{}", "═".repeat(60));
+    println!("🔄 ROLLBACK GENE: {}", &gene.capsule_id[..8.min(gene.capsule_id.len())]);
+    println!("{}", "═".repeat(60));
+    println!("Current status: {}", gene.status);
+    println!("Status history ({} entries):", gene.status_history.len());
+
+    if gene.status_history.is_empty() {
+        println!("  No history to rollback to.");
+        return Ok(());
+    }
+
+    let step_count = steps.unwrap_or(1) as usize;
+    let history_len = gene.status_history.len();
+
+    if step_count > history_len {
+        println!("  ⚠️  Only {} history entries, cannot rollback {} steps",
+            history_len, step_count);
+        return Ok(());
+    }
+
+    println!("\n📋 Recent status changes:");
+    for (i, change) in gene.status_history.iter().rev().take(5).enumerate() {
+        println!("  {}. {} → {} ({})",
+            i + 1,
+            change.from_status,
+            change.to_status,
+            &change.timestamp[..10]
+        );
+    }
+
+    let target_idx = history_len - step_count;
+    let target_status = if target_idx == 0 {
+        "active".to_string()
+    } else {
+        gene.status_history[target_idx - 1].from_status.clone()
+    };
+
+    println!("\n🎯 Will rollback {} step(s) to: {}", step_count, target_status);
+
+    let mut updated_gene = gene.clone();
+    updated_gene.status = target_status.clone();
+    updated_gene.status_history.push(StatusChange {
+        from_status: gene.status.clone(),
+        to_status: target_status.clone(),
+        reason: format!("Rollback {} step(s)", step_count),
+        timestamp: chrono_now(),
+    });
+
+    if let Err(e) = save_code_capsule(&updated_gene) {
+        eprintln!("  ❌ Failed to rollback: {}", e);
+        return Ok(());
+    }
+
+    println!("\n✅ Rolled back to '{}'", target_status);
+    println!("{}", "═".repeat(60));
+
+    Ok(())
+}
+
+/// Visualize gene status pipeline
+pub fn handle_code_gene_stats() -> Result<()> {
+    let all_genes = get_all_code_capsules();
+
+    println!("\n{}", "═".repeat(60));
+    println!("📊 CODE GENE PIPELINE STATUS");
+    println!("{}", "═".repeat(60));
+
+    let status_counts: std::collections::HashMap<&str, usize> = all_genes
+        .iter()
+        .fold(std::collections::HashMap::new(), |mut acc, g| {
+            *acc.entry(g.status.as_str()).or_insert(0) += 1;
+            acc
+        });
+
+    let total = all_genes.len();
+    let pipeline = ["active", "planned", "approved", "needs_revision", "implemented", "rejected"];
+
+    println!("\nTotal genes: {}", total);
+    println!();
+
+    for status in &pipeline {
+        let count = status_counts.get(status).copied().unwrap_or(0);
+        let pct = if total > 0 { count as f64 / total as f64 * 100.0 } else { 0.0 };
+        let bar_len = (pct / 5.0) as usize;
+        let bar: String = "█".repeat(bar_len) + &"░".repeat(20 - bar_len);
+
+        let icon = match *status {
+            "active" => "🆕",
+            "planned" => "📋",
+            "approved" => "✅",
+            "needs_revision" => "🔧",
+            "implemented" => "🎉",
+            "rejected" => "❌",
+            _ => "❓",
+        };
+
+        println!("{} {:16} [{:>4}] {:>6.1}% {}", icon, status, count, pct, bar);
+    }
+
+    println!();
+    println!("Recent activity:");
+    let recent: Vec<_> = all_genes.iter()
+        .filter(|g| !g.status_history.is_empty())
+        .map(|g| (g.capsule_id[..8.min(g.capsule_id.len())].to_string(), g.status.clone(), g.status_history.last().map(|h| h.timestamp.clone()).unwrap_or_default()))
+        .filter(|(_, _, t)| !t.is_empty())
+        .collect();
+
+    for (id, status, ts) in recent.iter().take(5) {
+        let date = if ts.len() >= 10 { &ts[..10] } else { ts };
+        println!("  {} {} ({})", id, status, date);
+    }
+
     println!("{}", "═".repeat(60));
 
     Ok(())

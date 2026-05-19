@@ -515,6 +515,12 @@ fn main() -> Result<()> {
         Commands::CodeGeneBatchReview { ids, repo, auto_approve } => {
             handle_code_gene_batch_review(ids, repo, *auto_approve)?;
         }
+        Commands::CodeGeneRollback { id, steps } => {
+            handle_code_gene_rollback(id, *steps)?;
+        }
+        Commands::CodeGeneStats => {
+            handle_code_gene_stats()?;
+        }
         Commands::GeneAdd {
             approach,
             gap_type,

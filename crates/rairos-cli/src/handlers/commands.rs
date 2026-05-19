@@ -741,6 +741,20 @@ pub enum Commands {
         auto_approve: bool,
     },
 
+    /// Rollback gene status to previous state
+    CodeGeneRollback {
+        /// Gene ID (can be short prefix)
+        #[arg(short, long)]
+        id: String,
+
+        /// Number of steps to rollback (default: 1)
+        #[arg(short, long)]
+        steps: Option<u32>,
+    },
+
+    /// Show code gene pipeline statistics
+    CodeGeneStats,
+
     /// Sync code genes from GitHub Issues
     CodeGeneSyncFromIssue {
         /// Issue numbers to import (comma-separated, or "all")
