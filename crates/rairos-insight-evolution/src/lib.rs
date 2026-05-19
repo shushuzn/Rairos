@@ -64,11 +64,29 @@ pub struct EvaluationResult {
 
 pub struct EvolutionEngine {
     capsules: Vec<CapsuleGene>,
+    fitness_callback: Option<Box<dyn Fn(&CapsuleGene) -> f64 + Send + Sync>>,
 }
 
 impl EvolutionEngine {
     pub fn new(capsules: Vec<CapsuleGene>) -> Self {
-        Self { capsules }
+        Self { capsules, fitness_callback: None }
+    }
+
+    pub fn with_fitness_callback<F>(capsules: Vec<CapsuleGene>, callback: F) -> Self
+    where
+        F: Fn(&CapsuleGene) -> f64 + Send + Sync + 'static,
+    {
+        Self {
+            capsules,
+            fitness_callback: Some(Box::new(callback)),
+        }
+    }
+
+    pub fn set_fitness_callback<F>(&mut self, callback: F)
+    where
+        F: Fn(&CapsuleGene) -> f64 + Send + Sync + 'static,
+    {
+        self.fitness_callback = Some(Box::new(callback));
     }
 
     pub fn audit(&self, min_capsules: usize) -> AuditResult {
@@ -164,6 +182,129 @@ impl EvolutionEngine {
             freshness,
             overall,
         }
+    }
+
+    /// Tournament selection - picks the best individual from a random subset
+    pub fn tournament_select<'a>(&self, population: &'a [CapsuleGene], tournament_size: usize) -> &'a CapsuleGene {
+        use rand::Rng;
+
+        if population.is_empty() {
+            panic!("Cannot select from empty population");
+        }
+        if population.len() == 1 {
+            return &population[0];
+        }
+
+        let size = tournament_size.min(population.len());
+        let mut rng = rand::thread_rng();
+        let mut best: Option<&CapsuleGene> = None;
+        let mut best_fitness = f64::NEG_INFINITY;
+
+        // Randomly sample tournament_size individuals
+        let len = population.len();
+        for _ in 0..size {
+            let idx = rng.gen_range(0..len);
+            let candidate = &population[idx];
+            let fitness = self.get_fitness(candidate);
+            if fitness > best_fitness {
+                best_fitness = fitness;
+                best = Some(candidate);
+            }
+        }
+        best.unwrap_or(&population[0])
+    }
+
+    /// Get fitness score for a capsule (uses callback if available)
+    fn get_fitness(&self, capsule: &CapsuleGene) -> f64 {
+        if let Some(ref callback) = self.fitness_callback {
+            callback(capsule)
+        } else {
+            self.score_capsule(capsule).overall
+        }
+    }
+
+    /// Crossover two capsules to create offspring
+    pub fn crossover(&self, parent1: &CapsuleGene, parent2: &CapsuleGene) -> CapsuleGene {
+        let child_keywords = self.merge_keywords(&parent1.trigger_keywords, &parent2.trigger_keywords);
+
+        // Use weighted random for gap type selection based on success score
+        let (trigger_gap_type, action_gap_type, action_gap_title) = if parent1.outcome_success_score >= parent2.outcome_success_score {
+            (parent1.trigger_gap_type.clone(), parent1.action_gap_type.clone(), parent1.action_gap_title.clone())
+        } else {
+            (parent2.trigger_gap_type.clone(), parent2.action_gap_type.clone(), parent2.action_gap_title.clone())
+        };
+
+        // Randomly select trigger topic from parents
+        let trigger_topic = if rand::random::<f64>() > 0.5 {
+            parent1.trigger_topic.clone()
+        } else {
+            parent2.trigger_topic.clone()
+        };
+
+        let avg_score = (parent1.outcome_success_score + parent2.outcome_success_score) / 2.0;
+        let max_generation = parent1.evolved_generation.max(parent2.evolved_generation);
+
+        CapsuleGene {
+            capsule_id: uuid::Uuid::new_v4().to_string(),
+            created_at: chrono::Utc::now().to_rfc3339(),
+            trigger_topic,
+            trigger_gap_type,
+            trigger_keywords: child_keywords,
+            action_gap_type,
+            action_gap_title,
+            outcome_success_score: avg_score,
+            feedback_count: 0,
+            evolved_generation: max_generation + 1,
+            archetype: std::collections::HashMap::new(),
+            status: "active".to_string(),
+            low_score_streak: 0,
+            credibility_score: (parent1.credibility_score + parent2.credibility_score) / 2.0,
+            trendslop: parent1.trendslop || parent2.trendslop,
+            trendslop_reason: String::new(),
+            credibility_badge: "medium".to_string(),
+            source_arxiv_category: String::new(),
+        }
+    }
+
+    /// Merge keywords from two capsules using set union
+    fn merge_keywords(&self, kws1: &[String], kws2: &[String]) -> Vec<String> {
+        let set: std::collections::HashSet<String> = kws1
+            .iter()
+            .chain(kws2.iter())
+            .map(|s| s.to_lowercase())
+            .collect();
+        let mut merged: Vec<String> = set.into_iter().collect();
+        merged.truncate(20);
+        merged
+    }
+
+    /// Full evolutionary cycle: tournament select -> crossover -> mutate -> apply
+    pub fn evolve_cycle(&mut self, topic: &str, population_size: usize) -> Vec<CapsuleGene> {
+        let mut offspring = Vec::new();
+        let tournament_size = (population_size as f64 * 0.1).max(2.0) as usize;
+
+        for _ in 0..population_size {
+            // Tournament selection
+            let p1 = self.tournament_select(&self.capsules, tournament_size).clone();
+            let p2 = self.tournament_select(&self.capsules, tournament_size).clone();
+
+            // Crossover
+            let mut child = self.crossover(&p1, &p2);
+
+            // Mutate trigger topic with current topic
+            if let Some(candidate) = self.mutate_trigger_broaden(&child, topic) {
+                child.trigger_topic = candidate.trigger_topic;
+            }
+
+            // Mutate keywords
+            if let Some(candidate) = self.mutate_keyword_expand(&child, topic) {
+                child.trigger_keywords = candidate.trigger_keywords;
+            }
+
+            offspring.push(child);
+        }
+
+        offspring
     }
 
     pub fn propose(
