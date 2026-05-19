@@ -187,6 +187,30 @@ impl AutonomousOrchestrator {
                     }
                 };
 
+                let similarity_threshold = 0.7;
+                let existing_abstracts: Vec<String> = if let Ok(existing) = db.search_papers_smart(&topic, 50) {
+                    existing.iter().map(|p| p.abstract_text.clone()).collect()
+                } else {
+                    Vec::new()
+                };
+
+                fn keyword_overlap(a: &str, b: &str) -> f64 {
+                    let a_words: std::collections::HashSet<_> = a.split_whitespace()
+                        .map(|w| w.to_lowercase())
+                        .filter(|w| w.len() > 4)
+                        .collect();
+                    let b_words: std::collections::HashSet<_> = b.split_whitespace()
+                        .map(|w| w.to_lowercase())
+                        .filter(|w| w.len() > 4)
+                        .collect();
+                    if a_words.is_empty() || b_words.is_empty() {
+                        return 0.0;
+                    }
+                    let intersection = a_words.intersection(&b_words).count() as f64;
+                    let union = a_words.union(&b_words).count() as f64;
+                    intersection / union
+                }
+
                 let new_papers: Vec<PaperInfo> = papers
                     .into_iter()
                     .filter_map(|p| {
@@ -194,6 +218,14 @@ impl AutonomousOrchestrator {
                         if existing_ids.contains(&arxiv_id) {
                             return None;
                         }
+
+                        let is_too_similar = existing_abstracts.iter().any(|existing_abs| {
+                            keyword_overlap(&p.abstract_text, existing_abs) > similarity_threshold
+                        });
+                        if is_too_similar {
+                            return None;
+                        }
+
                         Some(PaperInfo {
                             arxiv_id,
                             title: p.title.clone(),
