@@ -1,8 +1,6 @@
 use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
-use crate::handlers::helpers::parse_arxiv_response;
 use async_trait::async_trait;
-use rairos_core::constants::ARXIV_API;
 use serde_json::Value;
 use std::collections::HashMap;
 
@@ -25,15 +23,13 @@ impl ToolHandler for TrendsDetectTrendingHandler {
         let category = params["category"].as_str().unwrap_or("cs.LG");
         let max = (params["max_results"].as_u64().unwrap_or(100) as usize).min(200);
 
-        let query = if category == "all" { "cat:*".to_string() } else { format!("cat:{}", category) };
-        let url = format!("{}?search_query={}&sortBy=submittedDate&sortOrder=descending&max_results={}", ARXIV_API, query, max);
-        let resp = reqwest::get(&url).await.map_err(|e| format!("arXiv request failed: {}", e))?;
-        let text = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
-        let papers = parse_arxiv_response(&text);
+        let papers = rairos_parser::search_arxiv_by_category(category, max)
+            .await
+            .map_err(|e| format!("Search failed: {}", e))?;
 
         let mut word_count: HashMap<String, usize> = HashMap::new();
         for p in &papers {
-            let title = p["title"].as_str().unwrap_or("").to_lowercase();
+            let title = p.title.to_lowercase();
             for word in title.split_whitespace() {
                 let clean: String = word.chars().filter(|c| c.is_alphanumeric()).collect();
                 if clean.len() > 3 {
