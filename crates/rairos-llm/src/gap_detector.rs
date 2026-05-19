@@ -196,7 +196,7 @@ Gap描述: {description}
 async fn verify_gaps(
     llm: &dyn LlmClient,
     model: &str,
-    mut gaps: Vec<ResearchGap>,
+    gaps: Vec<ResearchGap>,
     paper_summaries: &str,
 ) -> Vec<ResearchGap> {
     if gaps.is_empty() || paper_summaries.is_empty() {
