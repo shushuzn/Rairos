@@ -2622,7 +2622,7 @@ pub fn jaccard_similarity(a: &[String], b: &[String]) -> f64 {
 }
 
 // ========== Code Gene: 18b0f121 ==========
-// add LRU cache for hot path optimization
-pub fn cached_hot_path(cache: &std::collections::HashMap<String, f32>, key: &str, compute: impl Fn() -> f32) -> f32 {
-    cache.entry(key.to_string()).or_insert_with(compute).clone()
+// add HashMap cache for hot path optimization
+pub fn cached_hot_path(cache: &std::collections::HashMap<String, f32>, key: String, compute: impl FnOnce() -> f32) -> f32 {
+    *cache.entry(key).or_insert_with(compute)
 }
