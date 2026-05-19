@@ -459,11 +459,34 @@ Focus on practical, implementable patterns. Prefer:
 - Property-based testing with proptest
 - Benchmarking with criterion
 
-Generate COMPLETE, COMPILABLE code patterns that can be directly inserted into a Rust project."#;
+Generate COMPLETE, COMPILABLE code patterns that can be directly inserted into a Rust project.
+
+CRITICAL: Before suggesting any optimization, you MUST check the EXISTING CODE in the target crate and EXISTING GENES to avoid duplication."#;
+
+    let gap_keywords: Vec<String> = gap.topic
+        .split_whitespace()
+        .map(|s| s.to_lowercase())
+        .chain(gap.gap_type.split_whitespace().map(|s| s.to_lowercase()))
+        .collect();
+
+    let existing_code_context = search_existing_code(&target_crate, &gap.topic, &gap_keywords);
+    let existing_gene_context = get_existing_gene_context(&target_crate, &gap_keywords);
+
+    if !existing_code_context.is_empty() {
+        println!("\n🔍 Searched existing code in crate...");
+    }
+    if !existing_gene_context.is_empty() {
+        println!("\n🔍 Found {} similar existing genes...", existing_gene_context.lines().count() / 3);
+    }
 
     let user_prompt = format!(
-        "Research Gap:\n  Topic: {}\n  Type: {}\n  Description: {}\n\nTarget crate: {}\n\nSuggest code optimizations to address this research gap.",
-        gap.topic, gap.gap_type, gap.description, target_crate
+        "Research Gap:\n  Topic: {}\n  Type: {}\n  Description: {}\n\nTarget crate: {}{}{}\n\nIMPORTANT: DO NOT duplicate existing code patterns or previously suggested genes. Build upon or extend them instead.",
+        gap.topic,
+        gap.gap_type,
+        gap.description,
+        target_crate,
+        existing_code_context,
+        existing_gene_context
     );
 
     let api_key = std::env::var("OPENAI_API_KEY")
@@ -608,6 +631,78 @@ fn extract_code_block(text: &str) -> Option<String> {
         }
     }
     None
+}
+
+fn search_existing_code(crate_name: &str, gap_topic: &str, gap_keywords: &[String]) -> String {
+    let mut context = String::new();
+
+    let search_terms: Vec<&str> = if !gap_topic.is_empty() {
+        gap_topic.split_whitespace().take(5).collect()
+    } else {
+        gap_keywords.iter().take(5).map(|s| s.as_str()).collect()
+    };
+
+    if search_terms.is_empty() {
+        return context;
+    }
+
+    for term in &search_terms {
+        if let Ok(output) = std::process::Command::new("grep")
+            .args(&["-r", "-l", "-i", term, &format!("crates/{}/src", crate_name.replace('-', "_"))])
+            .output()
+        {
+            if output.status.success() {
+                let files = String::from_utf8_lossy(&output.stdout);
+                for file in files.lines().take(3) {
+                    if let Ok(content) = std::fs::read_to_string(file.trim()) {
+                        let snippet: String = content
+                            .lines()
+                            .filter(|l| l.to_lowercase().contains(&term.to_lowercase()))
+                            .take(5)
+                            .map(|l| format!("  {}\n", l.trim()))
+                            .collect();
+                        if !snippet.is_empty() {
+                            context.push_str(&format!("\n=== Found in {} (for '{}') ===\n{}\n", file, term, snippet));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    context
+}
+
+fn get_existing_gene_context(target_crate: &str, gap_keywords: &[String]) -> String {
+    let capsules = get_all_code_capsules();
+    let relevant: Vec<_> = capsules
+        .iter()
+        .filter(|c| {
+            if !target_crate.is_empty() && !c.target_crate.contains(target_crate) {
+                return false;
+            }
+            c.trigger_keywords.iter().any(|k| {
+                gap_keywords.iter().any(|gk| gk.to_lowercase().contains(&k.to_lowercase()))
+            })
+        })
+        .take(3)
+        .collect();
+
+    if relevant.is_empty() {
+        return String::new();
+    }
+
+    let mut ctx = String::from("\n\n=== Existing code genes for similar gaps (DO NOT duplicate) ===\n");
+    for gene in &relevant {
+        ctx.push_str(&format!(
+            "- {} (gap: {}, crate: {})\n  Code: {:.50}...\n",
+            gene.optimization.trim(),
+            gene.gap_type,
+            gene.target_crate,
+            gene.code_snippet.trim()
+        ));
+    }
+    ctx
 }
 
 fn parse_optimizations_from_analysis(analysis: &str) -> Vec<ParsedOptimization> {
