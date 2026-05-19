@@ -156,17 +156,29 @@ impl AutonomousOrchestrator {
             let mut results = HashMap::new();
 
             let rt = tokio::runtime::Handle::current();
+            let mut handles = Vec::new();
+
             for (topic, _sub_id) in &topics {
-                let papers = rt.block_on(async {
-                    rairos_parser::search_arxiv(topic, 20).await.unwrap_or_default()
+                let topic_clone = topic.clone();
+                let rt_clone = rt.clone();
+                let handle = std::thread::spawn(move || {
+                    let papers = rt_clone.block_on(async {
+                        rairos_parser::search_arxiv(&topic_clone, 20).await.unwrap_or_default()
+                    });
+                    (topic_clone, papers)
                 });
+                handles.push(handle);
+            }
+
+            for handle in handles {
+                let (topic, papers) = handle.join().unwrap();
 
                 if papers.is_empty() {
                     continue;
                 }
 
                 let existing_ids: std::collections::HashSet<_> = {
-                    if let Ok(existing) = db.search_papers_smart(topic, 100) {
+                    if let Ok(existing) = db.search_papers_smart(&topic, 100) {
                         existing.iter()
                             .filter_map(|p| p.arxiv_id.clone())
                             .collect()
@@ -195,7 +207,7 @@ impl AutonomousOrchestrator {
                     .collect();
 
                 if !new_papers.is_empty() {
-                    results.insert(topic.clone(), new_papers);
+                    results.insert(topic, new_papers);
                 }
             }
             results
@@ -685,6 +697,26 @@ impl AutonomousOrchestrator {
             10,
             Some(&mut self.crossover_engine),
         );
+
+        if let Some(created) = result.get("created").and_then(|v| v.as_array()) {
+            let offspring_count = created.len();
+            if offspring_count > 0 {
+                let avg_fitness: f64 = created.iter()
+                    .filter_map(|v| {
+                        let f_a = v.get("fitness_a").and_then(|f| f.as_f64()).unwrap_or(0.5);
+                        let f_b = v.get("fitness_b").and_then(|f| f.as_f64()).unwrap_or(0.5);
+                        Some((f_a + f_b) / 2.0)
+                    })
+                    .sum::<f64>() / offspring_count as f64;
+
+                if let (Some(p_a), Some(p_b)) = (
+                    result.get("parent_a_id").and_then(|v| v.as_str()).map(|s| s.to_string()),
+                    result.get("parent_b_id").and_then(|v| v.as_str()).map(|s| s.to_string()),
+                ) {
+                    self.crossover_engine.record_comparison(&p_a, &p_b, avg_fitness);
+                }
+            }
+        }
 
         let mut output = HashMap::new();
         output.insert("topic".to_string(), serde_json::json!(evo_topic));
