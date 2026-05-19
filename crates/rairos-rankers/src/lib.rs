@@ -382,6 +382,27 @@ impl ResearchMomentum {
         scored
     }
 
+    /// Get top papers using robust (minimax) ranking.
+    /// Records observations for papers that have multiple scores.
+    pub fn get_robust_top_papers(&mut self, top_n: usize) -> Vec<(String, f32)> {
+        let papers = self.db.list_papers(None, 1000, 0).unwrap_or_default();
+        let paper_ids: Vec<&str> = papers.iter().map(|p| p.id.as_str()).collect();
+
+        for p in &papers {
+            let score = self.score_paper(&p.id);
+            self.minimax_ranker.add_observation(&p.id, score as f64);
+        }
+
+        let robust = self.minimax_ranker.robust_rank(&paper_ids);
+        let mut scored: Vec<(String, f32)> = robust
+            .into_iter()
+            .map(|(id, score)| (id.to_string(), score as f32))
+            .collect();
+        scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        scored.truncate(top_n);
+        scored
+    }
+
     /// Score a tag (category) by aggregate paper momentum.
     pub fn score_tag(&mut self, tag: &str) -> TagScore {
         let papers = self.db.list_papers(None, 1000, 0).unwrap_or_default();

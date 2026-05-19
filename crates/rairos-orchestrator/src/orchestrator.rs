@@ -199,6 +199,7 @@ impl AutonomousOrchestrator {
             .ok_or_else(|| OrchestratorError::NotInitialized("tracker".to_string()))?;
 
         let profile = tracker.get_profile();
+        let ucb_scores = self.regret_selector.get_ucb_scores();
 
         let scored = gaps
             .into_iter()
@@ -211,8 +212,13 @@ impl AutonomousOrchestrator {
                     .copied()
                     .unwrap_or(0.0);
 
-                let gene_pool_score = (raw_score.clamp(-1.0, 1.0) + 1.0) / 2.0;
+                let mut gene_pool_score = (raw_score.clamp(-1.0, 1.0) + 1.0) / 2.0;
                 let preference_boost = gene_pool_score >= 0.5;
+
+                if let Some(ucb) = ucb_scores.get(&gap_type_name) {
+                    let ucb_normalized = (ucb / 10.0).min(1.0);
+                    gene_pool_score = gene_pool_score * 0.7 + ucb_normalized * 0.3;
+                }
 
                 let severity = gap.severity.clone();
                 let description = gap.description.clone();
@@ -247,13 +253,19 @@ impl AutonomousOrchestrator {
 
         let min_sev = severity_rank(&self.config.min_gap_severity_for_alert);
 
+        let suggested_thresholds = self.bayesian_optimizer.suggest(2.0);
+        let bo_threshold = suggested_thresholds.first().copied().unwrap_or(0.3);
+        let min_threshold = (self.config.min_gene_pool_score_for_alert as f64 * 0.7
+            + bo_threshold * 0.3)
+            .clamp(0.1, 0.9) as f64;
+
         let mut alerts = Vec::new();
         for sg in scored_gaps {
             let sev_rank = severity_rank(&sg.severity);
             if sev_rank > min_sev {
                 continue;
             }
-            if sg.gene_pool_score < self.config.min_gene_pool_score_for_alert {
+            if sg.gene_pool_score < min_threshold {
                 continue;
             }
 
@@ -274,6 +286,10 @@ impl AutonomousOrchestrator {
         }
 
         alerts
+    }
+
+    pub fn record_threshold_feedback(&mut self, threshold: f64, alert_rate: f64) {
+        self.bayesian_optimizer.observe(&[threshold], alert_rate);
     }
 
     fn send_webhook(&self, alert: &ResearchAlert) {
@@ -336,7 +352,7 @@ impl AutonomousOrchestrator {
         Ok(())
     }
 
-    pub async fn run_cycle(&self) -> Result<Vec<ResearchAlert>> {
+    pub async fn run_cycle(&mut self) -> Result<Vec<ResearchAlert>> {
         self.init_components().await?;
         let mut all_alerts: Vec<ResearchAlert> = Vec::new();
 
@@ -493,7 +509,7 @@ impl AutonomousOrchestrator {
             loop {
                 tokio::select! {
                     _ = tokio::time::sleep(tokio::time::Duration::from_secs(interval_secs)) => {
-                        let orch = Self::new(config.clone(), true);
+                        let mut orch = Self::new(config.clone(), true);
                         if let Err(e) = orch.run_cycle().await {
                             tracing::error!("[Orchestrator] Cycle error: {}", e);
                         }

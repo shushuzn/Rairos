@@ -97,7 +97,7 @@ impl ToolHandler for OrchestratorRunCycleHandler {
             ..Default::default()
         };
 
-        let orchestrator = rairos_orchestrator::AutonomousOrchestrator::new(config, false);
+        let mut orchestrator = rairos_orchestrator::AutonomousOrchestrator::new(config, false);
         let alerts = orchestrator.run_cycle().await
             .map_err(|e| format!("Orchestrator cycle failed: {}", e))?;
 
