@@ -277,7 +277,7 @@ impl AutonomousOrchestrator {
     }
 
     pub async fn score_gaps_against_gene_pool(
-        &self,
+        &mut self,
         gaps: Vec<ResearchGap>,
         _topic: &str,
     ) -> Result<Vec<ScoredGap>> {
@@ -289,8 +289,9 @@ impl AutonomousOrchestrator {
 
         let profile = tracker.get_profile();
         let ucb_scores = self.regret_selector.get_ucb_scores();
+        drop(tracker_guard);
 
-        let scored = gaps
+        let mut scored: Vec<ScoredGap> = gaps
             .into_iter()
             .map(|gap| {
                 let gap_type_name = gap.category.clone();
@@ -322,6 +323,10 @@ impl AutonomousOrchestrator {
                 }
             })
             .collect();
+
+        for sg in &mut scored {
+            sg.gene_pool_score = self.apply_momentum_adjustment(sg.gene_pool_score, &sg.gap_type);
+        }
 
         Ok(scored)
     }
@@ -567,6 +572,14 @@ impl AutonomousOrchestrator {
         let _ = save_state(&state);
 
         tracing::info!("[Orchestrator] Cycle complete: {} alerts", all_alerts.len());
+
+        if self.config.run_evolution_in_cycle && !all_alerts.is_empty() {
+            tracing::info!("[Orchestrator] Running evolution cycle...");
+            if let Ok(_) = self.run_evolution_cycle("").await {
+                tracing::info!("[Orchestrator] Evolution cycle complete");
+            }
+        }
+
         Ok(all_alerts)
     }
 
