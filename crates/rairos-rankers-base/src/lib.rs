@@ -438,3 +438,41 @@ pub fn weighted_score(signals: &[f64], weights: &[f64]) -> f64 {
         let result = weighted_score(&signals, &weights);
         assert!((result - 0.83).abs() < 0.01);
     }
+
+// ========== Code Gene Implementation ==========
+/// LRU cache for ranker results
+pub struct LruRankerCache<K, V> {
+    cache: std::collections::HashMap<K, V>,
+    order: Vec<K>,
+    capacity: usize,
+}
+
+impl<K: std::hash::Hash + Eq + Clone, V: Clone> LruRankerCache<K, V> {
+    pub fn new(capacity: usize) -> Self {
+        Self { cache: std::collections::HashMap::new(), order: Vec::new(), capacity }
+    }
+    
+    pub fn get(&mut self, key: &K) -> Option<V> {
+        if let Some(v) = self.cache.get(key) {
+            // Move to end (most recently used)
+            self.order.retain(|k| k != key);
+            self.order.push(key.clone());
+            Some(v.clone())
+        } else {
+            None
+        }
+    }
+    
+    pub fn insert(&mut self, key: K, value: V) {
+        if self.cache.contains_key(&key) {
+            self.order.retain(|k| k != &key);
+        } else if self.cache.len() >= self.capacity {
+            if let Some(oldest) = self.order.first() {
+                self.cache.remove(oldest);
+            }
+            self.order.remove(0);
+        }
+        self.cache.insert(key.clone(), value);
+        self.order.push(key);
+    }
+}

@@ -1465,6 +1465,8 @@ pub fn handle_code_gene_implement(
     let crate_label = labels.iter().find(|l| l.starts_with("crate-")).cloned();
 
     // Extract function names and identifiers from code snippet for search
+    // Filter out common function names that cause false positives
+    let common_fn_names = ["new", "get", "insert", "set", "remove", "clear", "push", "pop", "len", "is_empty", "iter", "into_iter", "map", "filter", "fold"];
     let search_terms: Vec<String> = code_snippet.lines()
         .filter(|l| !l.trim().starts_with("//") && !l.trim().is_empty())
         .filter_map(|l| {
@@ -1479,7 +1481,15 @@ pub fn handle_code_gene_implement(
                 None
             }
         })
-        .filter(|s| s.len() > 2 && !s.contains('{'))
+        .filter_map(|s| {
+            // Strip generic type parameters for matching (e.g., "LruRankerCache<K," -> "LruRankerCache")
+            let stripped = s.split('<').next().unwrap_or(&s).trim().to_string();
+            if stripped.len() > 3 && !stripped.contains('{') && !common_fn_names.contains(&stripped.as_str()) {
+                Some(stripped)
+            } else {
+                None
+            }
+        })
         .take(5)
         .collect();
 
@@ -1548,6 +1558,8 @@ pub fn handle_code_gene_implement(
     // Step 5: Execute if --execute is set
     println!("\nStep 5/6: {}", if execute { "Implementing..." } else { "Skipping implementation (dry-run)" });
 
+    let mut implementation_succeeded = false;
+
     if execute && existing_code.is_empty() {
         if let Some(ref crate_name) = crate_label {
             let crate_src_path = format!("crates/{}/src", crate_name.replace("crate-", ""));
@@ -1612,11 +1624,12 @@ pub fn handle_code_gene_implement(
                 .current_dir(std::env::current_dir()?)
                 .output()?;
 
-            if test_output.status.success() {
+            implementation_succeeded = test_output.status.success();
+            if implementation_succeeded {
                 println!("  ✅ Tests passed!");
             } else {
                 let stderr = String::from_utf8_lossy(&test_output.stderr);
-                println!("  ⚠️  Tests output:");
+                println!("  ⚠️  Tests failed:");
                 for line in stderr.lines().take(10) {
                     println!("    {}", line);
                 }
@@ -1628,18 +1641,39 @@ pub fn handle_code_gene_implement(
         println!("  ℹ️  Run with --execute to actually implement");
     }
 
-    // Step 6: Close issue if --execute and already implemented (no duplicate needed)
+    // Step 6: Close issue if --execute, implementation succeeded, and no duplicate
     if execute {
-        println!("\nStep 6/6: Closing issue...");
-        let close_output = std::process::Command::new("gh")
-            .args(&["issue", "close", &format!("{}", issue_number), "--repo", repo, "--reason", "completed"])
-            .output()?;
+        if existing_code.is_empty() {
+            // New implementation - only close if tests passed
+            if implementation_succeeded {
+                println!("\nStep 6/6: Closing issue...");
+                let close_output = std::process::Command::new("gh")
+                    .args(&["issue", "close", &format!("{}", issue_number), "--repo", repo, "--reason", "completed"])
+                    .output()?;
 
-        if close_output.status.success() {
-            println!("  ✅ Closed issue #{}", issue_number);
+                if close_output.status.success() {
+                    println!("  ✅ Closed issue #{}", issue_number);
+                } else {
+                    let stderr = String::from_utf8_lossy(&close_output.stderr);
+                    eprintln!("  ⚠️  Could not close issue: {}", stderr.trim());
+                }
+            } else {
+                println!("\nStep 6/6: Keeping issue open (tests failed)");
+                println!("  ⚠️  Issue #{} remains open - fix compilation/test errors", issue_number);
+            }
         } else {
-            let stderr = String::from_utf8_lossy(&close_output.stderr);
-            eprintln!("  ⚠️  Could not close issue: {}", stderr.trim());
+            // Existing code found - close as completed
+            println!("\nStep 6/6: Closing issue (duplicate detection)...");
+            let close_output = std::process::Command::new("gh")
+                .args(&["issue", "close", &format!("{}", issue_number), "--repo", repo, "--reason", "completed"])
+                .output()?;
+
+            if close_output.status.success() {
+                println!("  ✅ Closed issue #{}", issue_number);
+            } else {
+                let stderr = String::from_utf8_lossy(&close_output.stderr);
+                eprintln!("  ⚠️  Could not close issue: {}", stderr.trim());
+            }
         }
     }
 
