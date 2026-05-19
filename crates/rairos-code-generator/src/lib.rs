@@ -251,6 +251,7 @@ fn verify_code(code: &str, framework: &str) -> CodeVerificationResult {
     CodeVerificationResult::with_warnings(warnings)
 }
 
+#[allow(dead_code)]
 fn parse_verification_result(content: &str) -> CodeVerificationResult {
     let content = content.trim();
 
