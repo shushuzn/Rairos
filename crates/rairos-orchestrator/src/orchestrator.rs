@@ -263,10 +263,26 @@ impl AutonomousOrchestrator {
         let mut all_categories: Vec<String> = Vec::new();
         let mut papers: Vec<rairos_core::Paper> = Vec::new();
 
+        let max_papers_for_analysis = 10;
+        let selected_papers: Vec<PaperInfo> = if new_papers.len() > max_papers_for_analysis {
+            let mut scored: Vec<(&PaperInfo, f64)> = new_papers.iter().map(|p| {
+                let abstract_len = p.abstract_text.len() as f64;
+                let title_words = p.title.split_whitespace().count() as f64;
+                let recency_score = 1.0;
+                let relevance_score = abstract_len / 1000.0 + title_words / 20.0;
+                let combined = recency_score * 0.4 + relevance_score * 0.6;
+                (p, combined)
+            }).collect();
+            scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Less));
+            scored.into_iter().take(max_papers_for_analysis).map(|(p, _)| p.clone()).collect()
+        } else {
+            new_papers.clone()
+        };
+
         {
             let db_guard = self.db.read().await;
             if let Some(db) = db_guard.as_ref() {
-                for p in &new_papers {
+                for p in &selected_papers {
                     let paper = rairos_core::Paper::new(
                         Some(p.arxiv_id.clone()),
                         p.title.clone(),
