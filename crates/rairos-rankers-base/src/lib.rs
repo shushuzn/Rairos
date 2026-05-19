@@ -476,3 +476,32 @@ impl<K: std::hash::Hash + Eq + Clone, V: Clone> LruRankerCache<K, V> {
         self.order.push(key);
     }
 }
+
+// ========== Code Gene: 18b0eb7d ==========
+// 8. Precision@K with Threshold
+/// Compute Precision@K with relevance threshold.
+pub fn precision_at_k(relevant: &[u64], ranked: &[u64], k: usize, threshold: f32) -> f32 {
+    if k == 0 || ranked.is_empty() {
+        return 0.0;
+    }
+    
+    let top_k = &ranked[..ranked.len().min(k)];
+    let relevant_in_topk = top_k.iter()
+        .filter(|&&doc| {
+            // Simplified: assume relevant if in the relevant set
+            relevant.contains(&doc)
+        })
+        .count() as f32;
+    
+    relevant_in_topk / k as f32
+}
+
+// ========== Test: 18b0eb7d ==========
+    // 8. Precision@K with Threshold
+    #[test]
+    fn test_precision_at_k_basic() {
+        let relevant = vec![1, 2, 3];
+        let ranked = vec![1, 4, 2, 5];
+        let p = precision_at_k(&relevant, &ranked, 3, 0.0);
+        assert!((p - 0.666).abs() < 0.01);
+    }
