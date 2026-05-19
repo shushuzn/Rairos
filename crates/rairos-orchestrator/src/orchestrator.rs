@@ -546,6 +546,15 @@ impl AutonomousOrchestrator {
             if !alerts.is_empty() {
                 let alert_rate = alerts.len() as f64 / scored_len.max(1) as f64;
                 self.observe_threshold_performance(&[threshold_used], alert_rate);
+
+                let model_scale = new_papers.len() as f64;
+                let dataset_tokens = new_papers.iter()
+                    .map(|p| p.abstract_text.len() as f64)
+                    .sum::<f64>();
+                let opt_lr = self.get_adaptive_lr(0.1, dataset_tokens / model_scale);
+                let opt_bs = opt_lr * 100.0;
+                let loss = 1.0 - alert_rate;
+                self.observe_scaling(opt_lr, opt_bs, loss);
             }
 
             for alert in &alerts {
