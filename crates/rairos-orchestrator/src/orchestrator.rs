@@ -670,7 +670,57 @@ impl AutonomousOrchestrator {
             }
         }
 
+        let high_quality_count = all_alerts.iter()
+            .filter(|a| a.gene_pool_score > 0.6)
+            .count();
+
+        if self.config.adaptive_interval && high_quality_count > 0 {
+            let interval = self.suggest_adaptive_interval();
+            tracing::info!("[Orchestrator] Suggested adaptive interval: {} minutes", interval);
+        }
+
         Ok(all_alerts)
+    }
+
+    pub fn suggest_adaptive_interval(&self) -> i32 {
+        let state = load_state();
+        let base_interval = self.config.interval_minutes;
+
+        if state.alerts.is_empty() {
+            return base_interval;
+        }
+
+        let recent_window = 10.min(state.alerts.len());
+        let recent_alerts = &state.alerts[..recent_window];
+
+        let high_quality: Vec<_> = recent_alerts.iter()
+            .filter(|a| a.gene_pool_score > 0.6)
+            .collect();
+
+        if high_quality.is_empty() {
+            return (base_interval as f64 * 1.5) as i32;
+        }
+
+        let avg_interval = if recent_alerts.len() > 1 {
+            let intervals: Vec<i64> = recent_alerts.windows(2)
+                .filter_map(|w| {
+                    let t1 = chrono::DateTime::parse_from_rfc3339(&w[0].created_at.to_string()).ok()?;
+                    let t0 = chrono::DateTime::parse_from_rfc3339(&w[1].created_at.to_string()).ok()?;
+                    Some((t1 - t0).num_minutes())
+                })
+                .collect();
+            if intervals.is_empty() {
+                base_interval as i64
+            } else {
+                intervals.iter().sum::<i64>() / intervals.len() as i64
+            }
+        } else {
+            base_interval as i64
+        };
+
+        let quality_ratio = high_quality.len() as f64 / recent_window as f64;
+        let adjusted = (avg_interval as f64 * quality_ratio).max(5.0) as i32;
+        adjusted.min(240).max(5)
     }
 
     pub async fn start_watch(&self, interval_minutes: i32) -> Result<()> {

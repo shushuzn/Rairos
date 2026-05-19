@@ -35,6 +35,7 @@ pub struct OrchestratorConfig {
     pub min_papers_for_deep_analysis: i32,
     pub max_alerts_stored: i32,
     pub run_evolution_in_cycle: bool,
+    pub adaptive_interval: bool,
 }
 
 impl Default for OrchestratorConfig {
@@ -46,6 +47,7 @@ impl Default for OrchestratorConfig {
             min_papers_for_deep_analysis: 3,
             max_alerts_stored: 50,
             run_evolution_in_cycle: true,
+            adaptive_interval: true,
         }
     }
 }
