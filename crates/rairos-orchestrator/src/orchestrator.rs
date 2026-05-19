@@ -361,10 +361,16 @@ impl AutonomousOrchestrator {
         let cross_paper_gaps = self.detect_cross_paper_gaps(&papers, topic);
         let method_gaps = self.detect_method_limitations(&papers);
         let eval_gaps = self.detect_evaluation_gaps(&papers);
+        let resource_gaps = self.detect_resource_gaps(&papers);
+        let dataset_gaps = self.detect_dataset_gaps(&papers);
+        let generalization_gaps = self.detect_generalization_gaps(&papers);
         let mut gaps: Vec<ResearchGap> = pattern_gaps;
         gaps.extend(cross_paper_gaps);
         gaps.extend(method_gaps);
         gaps.extend(eval_gaps);
+        gaps.extend(resource_gaps);
+        gaps.extend(dataset_gaps);
+        gaps.extend(generalization_gaps);
 
         for desc in gap_descriptions {
             let novelty = if existing_papers.is_empty() {
@@ -1021,6 +1027,124 @@ impl AutonomousOrchestrator {
                     &format!("Evaluation gap: lacks comparative analysis in '{}'", title_short),
                     "HIGH",
                 ));
+            }
+        }
+
+        gaps
+    }
+
+    fn detect_resource_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+        let resource_phrases = [
+            ("requires large", "resource_gap", "HIGH"),
+            ("computationally expensive", "resource_gap", "HIGH"),
+            ("memory intensive", "resource_gap", "HIGH"),
+            ("gpu", "resource_gap", "MEDIUM"),
+            ("training cost", "resource_gap", "MEDIUM"),
+            ("inference time", "efficiency_gap", "MEDIUM"),
+            ("latency", "efficiency_gap", "MEDIUM"),
+            ("throughput", "efficiency_gap", "MEDIUM"),
+            ("energy consumption", "resource_gap", "MEDIUM"),
+            ("carbon footprint", "resource_gap", "LOW"),
+        ];
+
+        let mut gaps: Vec<ResearchGap> = Vec::new();
+        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        for paper in papers {
+            let text_lower = paper.abstract_text.to_lowercase();
+            for (phrase, gap_type, severity) in &resource_phrases {
+                if text_lower.contains(phrase) {
+                    let title_short = paper.title.chars().take(30).collect::<String>();
+                    let key = format!("{}:{}", phrase, title_short);
+                    if !seen.contains(&key) {
+                        seen.insert(key);
+                        gaps.push(ResearchGap::new_simple(
+                            gap_type,
+                            &format!("Resource gap: '{}' in '{}'", phrase, title_short),
+                            severity,
+                        ));
+                    }
+                }
+            }
+        }
+
+        gaps
+    }
+
+    fn detect_dataset_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+        let dataset_patterns = [
+            ("no dataset", "dataset_gap", "HIGH"),
+            ("synthetic data", "dataset_gap", "MEDIUM"),
+            ("limited data", "dataset_gap", "MEDIUM"),
+            ("small dataset", "dataset_gap", "MEDIUM"),
+            ("benchmark", "dataset_gap", "LOW"),
+            ("real-world data", "dataset_gap", "MEDIUM"),
+            ("real data", "dataset_gap", "MEDIUM"),
+        ];
+
+        let mut gaps: Vec<ResearchGap> = Vec::new();
+        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        for paper in papers {
+            let text_lower = paper.abstract_text.to_lowercase();
+            let mut mentions_data = false;
+            let mut has_real = false;
+
+            for (phrase, _, _) in &dataset_patterns {
+                if text_lower.contains(phrase) {
+                    mentions_data = true;
+                    if phrase.contains(&"real".to_string()) || phrase.contains("benchmark") {
+                        has_real = true;
+                    }
+                }
+            }
+
+            let title_short = paper.title.chars().take(30).collect::<String>();
+            let key = format!("data:{}", title_short);
+
+            if mentions_data && !has_real && !seen.contains(&key) {
+                seen.insert(key);
+                gaps.push(ResearchGap::new_simple(
+                    "dataset_gap",
+                    &format!("Dataset gap: limited real-world evaluation in '{}'", title_short),
+                    "MEDIUM",
+                ));
+            }
+        }
+
+        gaps
+    }
+
+    fn detect_generalization_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+        let generalization_phrases = [
+            ("generalize", "generalization_gap", "HIGH"),
+            ("out-of-distribution", "generalization_gap", "HIGH"),
+            ("distribution shift", "generalization_gap", "HIGH"),
+            ("domain adaptation", "generalization_gap", "MEDIUM"),
+            ("transfer learning", "generalization_gap", "MEDIUM"),
+            ("cross-domain", "generalization_gap", "MEDIUM"),
+            ("ood", "generalization_gap", "HIGH"),
+            ("adversarial", "robustness_gap", "HIGH"),
+        ];
+
+        let mut gaps: Vec<ResearchGap> = Vec::new();
+        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        for paper in papers {
+            let text_lower = paper.abstract_text.to_lowercase();
+            for (phrase, gap_type, severity) in &generalization_phrases {
+                if text_lower.contains(phrase) {
+                    let title_short = paper.title.chars().take(30).collect::<String>();
+                    let key = format!("{}:{}", phrase, title_short);
+                    if !seen.contains(&key) {
+                        seen.insert(key);
+                        gaps.push(ResearchGap::new_simple(
+                            gap_type,
+                            &format!("Generalization gap: '{}' in '{}'", phrase, title_short),
+                            severity,
+                        ));
+                    }
+                }
             }
         }
 
