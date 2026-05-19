@@ -163,7 +163,7 @@ impl AutonomousOrchestrator {
                 let rt_clone = rt.clone();
                 let handle = std::thread::spawn(move || {
                     let papers = rt_clone.block_on(async {
-                        rairos_parser::search_arxiv(&topic_clone, 20).await.unwrap_or_default()
+                        rairos_parser::search_arxiv_recent(&topic_clone, 20).await.unwrap_or_default()
                     });
                     (topic_clone, papers)
                 });

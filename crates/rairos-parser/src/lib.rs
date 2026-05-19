@@ -547,6 +547,56 @@ pub async fn search_arxiv(query: &str, max_results: usize) -> Result<Vec<Paper>,
     Ok(papers)
 }
 
+/// Search arXiv by query string, sorted by submission date (most recent first)
+pub async fn search_arxiv_recent(query: &str, max_results: usize) -> Result<Vec<Paper>, ParseError> {
+    let max = max_results.clamp(1, 50);
+    let url = format!(
+        "{}?search_query=all:{}&start=0&max_results={}&sortBy=submittedDate&sortOrder=descending",
+        ARXIV_API,
+        query.replace(' ', "+"),
+        max
+    );
+
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(DEFAULT_TIMEOUT_SECS))
+        .build()?;
+
+    let resp = client.get(&url).send().await?;
+    let text = resp.text().await?;
+
+    let mut papers = Vec::new();
+    let mut pos = 0;
+    while let Some(entry_start) = text[pos..].find("<entry>") {
+        let abs_start = pos + entry_start;
+        let Some(entry_end) = text[abs_start..].find("</entry>") else { break; };
+        let entry = &text[abs_start..abs_start + entry_end + 8];
+
+        let entry_id = extract_tag(entry, "id").unwrap_or_default();
+        let title = extract_tag(entry, "title").unwrap_or_default();
+        let summary = extract_tag(entry, "summary").unwrap_or_default();
+        let authors = extract_authors(entry);
+        let categories = extract_categories(entry);
+
+        let arxiv_id = entry_id
+            .strip_prefix("http://arxiv.org/abs/")
+            .or_else(|| entry_id.strip_prefix("https://arxiv.org/abs/"))
+            .map(|s| s.to_string());
+
+        let paper = Paper::with_metadata(
+            arxiv_id,
+            clean_arxiv_title(&title),
+            clean_text(&summary),
+            authors,
+            categories,
+            PaperMetadata::default(),
+        );
+        papers.push(paper);
+        pos = abs_start + entry_end + 8;
+    }
+
+    Ok(papers)
+}
+
 /// Search arXiv by category with date sorting
 pub async fn search_arxiv_by_category(category: &str, max_results: usize) -> Result<Vec<Paper>, ParseError> {
     let max = max_results.clamp(1, 200);
