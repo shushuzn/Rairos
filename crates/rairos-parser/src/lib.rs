@@ -968,3 +968,7 @@ mod tests {
         }
     }
 }
+
+// ========== Code Gene: 18b0f287 ==========
+// add regex-based metadata extraction from HTML
+pub fn extract_metadata(html: &str) -> std::collections::HashMap<String, String> { let mut meta = std::collections::HashMap::new(); for cap in regex::Regex::new(r"<meta[^>]+content=\"([^\"]+)\"[^>]+name=\"([^\"]+)\"").unwrap().captures_iter(html) { meta.insert(cap[2].to_string(), cap[1].to_string()); } meta }
