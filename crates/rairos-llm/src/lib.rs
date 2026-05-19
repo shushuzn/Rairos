@@ -1505,6 +1505,108 @@ impl LearnedPattern {
 }
 
 // ============================================================================
+// Regret-Optimal Selector (arXiv:2101.00041)
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct RegretOptimalSelector {
+    capsule_scores: HashMap<String, f64>,
+    capsule_counts: HashMap<String, usize>,
+    total_selections: usize,
+    exploration_param: f64,
+}
+
+impl RegretOptimalSelector {
+    pub fn new(exploration_param: f64) -> Self {
+        Self {
+            capsule_scores: HashMap::new(),
+            capsule_counts: HashMap::new(),
+            total_selections: 0,
+            exploration_param,
+        }
+    }
+
+    pub fn record_outcome(&mut self, capsule_id: &str, score: f64) {
+        *self.capsule_scores.entry(capsule_id.to_string()).or_insert(0.0) += score;
+        *self.capsule_counts.entry(capsule_id.to_string()).or_insert(0) += 1;
+    }
+
+    pub fn ucb_score(&self, capsule_id: &str) -> f64 {
+        let total = self.total_selections.max(1) as f64;
+        let avg = self.capsule_scores.get(capsule_id).copied().unwrap_or(0.0)
+            / self.capsule_counts.get(capsule_id).copied().unwrap_or(1).max(1) as f64;
+        let count = self.capsule_counts.get(capsule_id).copied().unwrap_or(0).max(1) as f64;
+        let exploration_bonus = self.exploration_param * (total.ln() / count).sqrt();
+        avg + exploration_bonus
+    }
+
+    pub fn select(&mut self, capsule_ids: &[&str]) -> Option<String> {
+        if capsule_ids.is_empty() {
+            return None;
+        }
+        self.total_selections += 1;
+        let best = capsule_ids
+            .iter()
+            .max_by(|a, b| {
+                self.ucb_score(a)
+                    .partial_cmp(&self.ucb_score(b))
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
+            .map(|s| s.to_string());
+        best
+    }
+
+    pub fn regret(&self, optimal_score: f64) -> f64 {
+        let empirical_best = self.capsule_scores.values().map(|&s| s).fold(0.0, f64::max);
+        (optimal_score * self.total_selections as f64) - empirical_best
+    }
+}
+
+// ============================================================================
+// Minimax Paper Ranker (arXiv:2002.02417)
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct MinimaxRanker {
+    paper_scores: HashMap<String, Vec<f64>>,
+    perturbation_scale: f64,
+}
+
+impl MinimaxRanker {
+    pub fn new(perturbation_scale: f64) -> Self {
+        Self {
+            paper_scores: HashMap::new(),
+            perturbation_scale,
+        }
+    }
+
+    pub fn add_observation(&mut self, paper_id: &str, score: f64) {
+        self.paper_scores
+            .entry(paper_id.to_string())
+            .or_insert_with(Vec::new)
+            .push(score);
+    }
+
+    pub fn robust_rank<'a>(&self, paper_ids: &'a [&str]) -> Vec<(&'a str, f64)> {
+        paper_ids
+            .iter()
+            .map(|id| {
+                let scores = self.paper_scores.get(*id).map(|v| v.as_slice()).unwrap_or(&[]);
+                let robust_score = if scores.is_empty() {
+                    0.0
+                } else {
+                    let mean = scores.iter().sum::<f64>() / scores.len() as f64;
+                    let variance = scores.iter().map(|s| (s - mean).powi(2)).sum::<f64>() / scores.len() as f64;
+                    let worst_case = mean - self.perturbation_scale * variance.sqrt();
+                    worst_case.max(0.0)
+                };
+                (*id, robust_score)
+            })
+            .collect()
+    }
+}
+
+// ============================================================================
 // Gene Pool Manager
 // ============================================================================
 

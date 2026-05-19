@@ -467,6 +467,132 @@ pub struct TagScore {
 }
 
 // ============================================================================
+// Bayesian Optimizer for Hyperparameter Tuning (arXiv:1810.04336)
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct BayesianOptimizer {
+    observations: Vec<(Vec<f64>, f64)>,
+    bounds: Vec<(f64, f64)>,
+    lipschitz_constant: f64,
+    noise_variance: f64,
+}
+
+impl BayesianOptimizer {
+    pub fn new(bounds: Vec<(f64, f64)>, lipschitz_constant: f64) -> Self {
+        Self {
+            observations: Vec::new(),
+            bounds,
+            lipschitz_constant,
+            noise_variance: 0.01,
+        }
+    }
+
+    pub fn observe(&mut self, params: &[f64], score: f64) {
+        self.observations.push((params.to_vec(), score));
+    }
+
+    fn kernel(&self, x: &[f64], y: &[f64]) -> f64 {
+        let mut sum = 0.0;
+        for (xi, yi) in x.iter().zip(y.iter()) {
+            sum += (xi - yi).powi(2);
+        }
+        (-sum * 0.5).exp()
+    }
+
+    fn mean(&self, x: &[f64]) -> f64 {
+        if self.observations.is_empty() {
+            return 0.0;
+        }
+        let mut pred = 0.0;
+        let mut weights = 0.0;
+        for (obs_x, obs_y) in &self.observations {
+            let k = self.kernel(x, obs_x);
+            pred += k * obs_y;
+            weights += k;
+        }
+        if weights > 0.0 {
+            pred / weights
+        } else {
+            0.0
+        }
+    }
+
+    fn variance(&self, x: &[f64]) -> f64 {
+        if self.observations.len() < 2 {
+            return 1.0;
+        }
+        let k_xx = self.kernel(x, x);
+        let mut cov = 0.0;
+        for (obs_x, _) in &self.observations {
+            let k = self.kernel(x, obs_x);
+            cov += k * k;
+        }
+        (k_xx - cov).max(0.001)
+    }
+
+    pub fn upper_confidence_bound(&self, x: &[f64], beta: f64) -> f64 {
+        let mu = self.mean(x);
+        let sigma = self.variance(x).sqrt();
+        mu + beta * sigma
+    }
+
+    pub fn lipschitz_ucb(&self, x: &[f64], beta: f64) -> f64 {
+        let base_ucb = self.upper_confidence_bound(x, beta);
+        let mut max_lipschitz_bonus: f64 = 0.0;
+        for (obs_x, _obs_y) in &self.observations {
+            let dist: f64 = x.iter().zip(obs_x.iter()).map(|(a, b)| (a - b).powi(2)).sum::<f64>().sqrt();
+            if dist > 0.0 {
+                let lipschitz_bonus = self.lipschitz_constant * dist / (dist + 1.0);
+                max_lipschitz_bonus = max_lipschitz_bonus.max(lipschitz_bonus);
+            }
+        }
+        base_ucb + max_lipschitz_bonus
+    }
+
+    pub fn suggest(&self, beta: f64) -> Vec<f64> {
+        let dim = self.bounds.len();
+        if dim == 0 {
+            return vec![];
+        }
+        let mut best_score = f64::NEG_INFINITY;
+        let mut best_params = vec![];
+
+        for _ in 0..100 {
+            let candidate: Vec<f64> = self.bounds
+                .iter()
+                .map(|(lo, hi)| lo + (hi - lo) * rand_simple())
+                .collect();
+            let score = self.lipschitz_ucb(&candidate, beta);
+            if score > best_score {
+                best_score = score;
+                best_params = candidate;
+            }
+        }
+        if best_params.is_empty() {
+            best_params = self.bounds.iter().map(|(lo, hi)| (lo + hi) / 2.0).collect();
+        }
+        best_params
+    }
+
+    pub fn best_observation(&self) -> Option<(Vec<f64>, f64)> {
+        self.observations
+            .iter()
+            .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
+            .map(|(p, s)| (p.clone(), *s))
+    }
+}
+
+fn rand_simple() -> f64 {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .subsec_nanos();
+    (nanos as f64 % 1000.0) / 1000.0
+}
+
+// ============================================================================
 // Tests
 // ============================================================================
 
