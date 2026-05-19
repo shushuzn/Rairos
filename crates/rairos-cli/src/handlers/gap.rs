@@ -13,7 +13,7 @@
 )]
 
 use anyhow::Result;
-use rairos_core::{Database, ResearchGap};
+use rairos_core::{Database, Paper, ResearchGap};
 
 pub fn handle_gap(
     db: &Database,
@@ -24,7 +24,29 @@ pub fn handle_gap(
 ) -> Result<()> {
     println!("Detecting research gaps for topic: {}", topic);
 
-    let papers = db.search_papers_smart(topic, limit * 3)?;
+    let mut papers = db.search_papers_smart(topic, limit * 3)?;
+
+    if papers.len() < 5 {
+        println!("Not enough local papers ({}), fetching from arXiv...", papers.len());
+        let rt = tokio::runtime::Runtime::new().ok();
+        if let Some(ref rt) = rt {
+            if let Ok(arxiv_papers) = rt.block_on(rairos_parser::search_arxiv_recent(topic, 20)) {
+                for arxiv_paper in arxiv_papers {
+                    let paper = Paper::with_metadata(
+                        arxiv_paper.arxiv_id,
+                        arxiv_paper.title,
+                        arxiv_paper.abstract_text,
+                        arxiv_paper.authors,
+                        arxiv_paper.categories,
+                        rairos_core::PaperMetadata::default(),
+                    );
+                    if db.insert_paper(&paper).is_ok() {
+                        papers.push(paper);
+                    }
+                }
+            }
+        }
+    }
 
     if papers.is_empty() {
         println!(
