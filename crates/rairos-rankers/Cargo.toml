@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 rairos-core = { path = "../rairos-core" }
+rairos-llm = { path = "../rairos-llm" }
 ndarray = "0.17"
 rusqlite.workspace = true
 thiserror.workspace = true

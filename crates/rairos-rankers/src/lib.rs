@@ -264,6 +264,7 @@ pub struct ResearchMomentum {
     db: Database,
     scores_cache: HashMap<String, f32>,
     radar_data: HashMap<String, RadarEntry>,
+    minimax_ranker: rairos_llm::MinimaxRanker,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -277,6 +278,7 @@ impl ResearchMomentum {
             db,
             scores_cache: HashMap::new(),
             radar_data: HashMap::new(),
+            minimax_ranker: rairos_llm::MinimaxRanker::new(1.0),
         }
     }
 
@@ -445,6 +447,14 @@ impl ResearchMomentum {
 
         scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         scored
+    }
+
+    pub fn record_observation(&mut self, paper_id: &str, score: f64) {
+        self.minimax_ranker.add_observation(paper_id, score);
+    }
+
+    pub fn robust_rank_papers<'a>(&self, paper_ids: &'a [&str]) -> Vec<(&'a str, f64)> {
+        self.minimax_ranker.robust_rank(paper_ids)
     }
 
     /// Recompute all scores from scratch.

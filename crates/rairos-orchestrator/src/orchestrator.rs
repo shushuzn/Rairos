@@ -1,6 +1,8 @@
 use chrono::Utc;
 use rairos_core::{Database, ResearchGap};
 use rairos_llm::insight::tracker::EvolutionTracker;
+use rairos_llm::RegretOptimalSelector;
+use rairos_rankers::BayesianOptimizer as RankerBayesianOptimizer;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -21,6 +23,8 @@ pub struct AutonomousOrchestrator {
     watch_handle: Arc<RwLock<Option<tokio::task::JoinHandle<()>>>>,
     db: Arc<RwLock<Option<Database>>>,
     tracker: Arc<RwLock<Option<EvolutionTracker>>>,
+    regret_selector: RegretOptimalSelector,
+    bayesian_optimizer: RankerBayesianOptimizer,
 }
 
 impl Default for AutonomousOrchestrator {
@@ -32,13 +36,34 @@ impl Default for AutonomousOrchestrator {
 impl AutonomousOrchestrator {
     pub fn new(config: OrchestratorConfig, webhook_enabled: bool) -> Self {
         Self {
-            config,
+            config: config.clone(),
             webhook_enabled,
             stop_tx: Arc::new(RwLock::new(None)),
             watch_handle: Arc::new(RwLock::new(None)),
             db: Arc::new(RwLock::new(None)),
             tracker: Arc::new(RwLock::new(None)),
+            regret_selector: RegretOptimalSelector::new(0.1),
+            bayesian_optimizer: RankerBayesianOptimizer::new(
+                vec![(0.1, 1.0), (0.1, 1.0), (1.0, 10.0)],
+                1.0,
+            ),
         }
+    }
+
+    pub fn record_gap_outcome(&mut self, gap_type: &str, score: f64) {
+        self.regret_selector.record_outcome(gap_type, score);
+    }
+
+    pub fn suggest_next_gap_type(&mut self, gap_types: &[&str]) -> Option<String> {
+        self.regret_selector.select(gap_types)
+    }
+
+    pub fn get_optimal_thresholds(&self, beta: f64) -> Vec<f64> {
+        self.bayesian_optimizer.suggest(beta)
+    }
+
+    pub fn observe_threshold_performance(&mut self, thresholds: &[f64], alert_rate: f64) {
+        self.bayesian_optimizer.observe(thresholds, alert_rate);
     }
 
     async fn init_components(&self) -> Result<()> {
