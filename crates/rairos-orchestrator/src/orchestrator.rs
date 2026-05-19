@@ -20,6 +20,16 @@ use crate::state::{
     PaperInfo, ResearchAlert, ScoredGap,
 };
 
+const STOP_WORDS: &[&str] = &[
+    "about", "after", "also", "among", "approach", "areas", "based", "between",
+    "certain", "could", "different", "does", "during", "each", "effects", "etc",
+    "first", "following", "forms", "found", "from", "given", "however", "into",
+    "many", "moreover", "most", "need", "neither", "only", "other", "paper",
+    "papers", "problem", "problems", "proposed", "provide", "provides", "results",
+    "same", "should", "since", "state", "states", "study", "such", "therefore",
+    "these", "those", "through", "thus", "where", "which", "while", "within",
+];
+
 pub struct AutonomousOrchestrator {
     config: OrchestratorConfig,
     webhook_enabled: bool,
@@ -268,9 +278,16 @@ impl AutonomousOrchestrator {
             let mut scored: Vec<(&PaperInfo, f64)> = new_papers.iter().map(|p| {
                 let abstract_len = p.abstract_text.len() as f64;
                 let title_words = p.title.split_whitespace().count() as f64;
+                let category_count = p.categories.split_whitespace().count() as f64;
+                let author_count = p.authors.len() as f64;
+
                 let recency_score = 1.0;
+                let quality_score = (abstract_len / 500.0).min(2.0) * 0.3
+                    + (title_words / 15.0).min(1.5) * 0.2
+                    + (category_count / 3.0).min(1.5) * 0.2
+                    + (author_count / 5.0).min(1.0) * 0.1;
                 let relevance_score = abstract_len / 1000.0 + title_words / 20.0;
-                let combined = recency_score * 0.4 + relevance_score * 0.6;
+                let combined = recency_score * 0.3 + relevance_score * 0.4 + quality_score * 0.3;
                 (p, combined)
             }).collect();
             scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Less));
@@ -301,6 +318,25 @@ impl AutonomousOrchestrator {
         }
 
         let keywords: Vec<&str> = all_categories.iter().map(|s| s.as_str()).collect();
+
+        let _extracted_keywords: std::collections::HashSet<String> = {
+            let mut term_freq: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+            for paper in &papers {
+                let words: std::collections::HashSet<_> = paper.abstract_text.split_whitespace()
+                    .map(|w| w.to_lowercase())
+                    .filter(|w| w.len() > 5)
+                    .filter(|w| !STOP_WORDS.contains(&w.as_str()))
+                    .collect();
+                for word in words {
+                    *term_freq.entry(word).or_insert(0) += 1;
+                }
+            }
+            term_freq.into_iter()
+                .filter(|(_, count)| *count >= 2)
+                .map(|(word, _)| word)
+                .collect()
+        };
+
         let gap_descriptions = rairos_llm::GapDetector::detect_gaps(&papers, &keywords);
         let under_explored = rairos_llm::GapDetector::find_underexplored_areas(&papers, 3);
 
