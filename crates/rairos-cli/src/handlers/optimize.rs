@@ -1370,7 +1370,7 @@ pub fn handle_code_gene_implement(
     println!();
 
     // Step 1: Fetch issue from GitHub
-    println!("Step 1/5: Fetching issue from GitHub...");
+    println!("Step 1/6: Fetching issue from GitHub...");
     let output = std::process::Command::new("gh")
         .args(&["issue", "view", &format!("{}", issue_number), "--repo", repo, "--json", "number,title,body,labels,state"])
         .output()?;
@@ -1392,7 +1392,7 @@ pub fn handle_code_gene_implement(
     println!("  ✅ Fetched: {}", title);
 
     // Step 2: Parse gene ID and optimization from issue body
-    println!("\nStep 2/5: Parsing gene information...");
+    println!("\nStep 2/6: Parsing gene information...");
     let gene_id = body.lines()
         .find(|l| l.starts_with("**ID:**"))
         .and_then(|l| l.split("`").nth(1))
@@ -1410,7 +1410,7 @@ pub fn handle_code_gene_implement(
     println!("  ✅ Code snippet: {} chars", code_snippet.len());
 
     // Step 3: Search existing code to prevent duplicates
-    println!("\nStep 3/5: Searching for existing code (duplicate check)...");
+    println!("\nStep 3/6: Searching for existing code (duplicate check)...");
     let crate_label = labels.iter().find(|l| l.starts_with("crate-")).cloned();
 
     // Extract function names and identifiers from code snippet for search
@@ -1461,7 +1461,7 @@ pub fn handle_code_gene_implement(
     }
 
     // Step 4: Post implementation plan as comment
-    println!("\nStep 4/5: Posting implementation plan to issue...");
+    println!("\nStep 4/6: Posting implementation plan to issue...");
 
     let plan = if existing_code.is_empty() {
         format!("## Implementation Plan\n\n### Status: Ready to Implement ✅\n\n**Gene ID:** `{}`\n**Search Results:** No existing code found - safe to implement.\n\n### Implementation Steps\n\n1. [ ] Create implementation in target crate\n2. [ ] Add tests\n3. [ ] Run tests to verify\n4. [ ] Mark issue as `Implemented`\n5. [ ] Update gene feedback\n\n### Code to Implement\n\n```rust\n{}\n```\n\n---\n*Workflow: Search → Plan → Confirm → Implement*", gene_id.as_deref().unwrap_or("N/A"), code_snippet)
@@ -1495,7 +1495,7 @@ pub fn handle_code_gene_implement(
     }
 
     // Step 5: Execute if --execute is set
-    println!("\nStep 5/5: {}", if execute { "Implementing..." } else { "Skipping implementation (dry-run)" });
+    println!("\nStep 5/6: {}", if execute { "Implementing..." } else { "Skipping implementation (dry-run)" });
 
     if execute && existing_code.is_empty() {
         println!("  ⚠️  Implementation would require:");
@@ -1505,6 +1505,21 @@ pub fn handle_code_gene_implement(
         println!("  📝 This is a placeholder - actual implementation needed.");
     } else if existing_code.is_empty() {
         println!("  ℹ️  Run with --execute to actually implement");
+    }
+
+    // Step 6: Close issue if --execute and already implemented (no duplicate needed)
+    if execute {
+        println!("\nStep 6/6: Closing issue...");
+        let close_output = std::process::Command::new("gh")
+            .args(&["issue", "close", &format!("{}", issue_number), "--repo", repo, "--reason", "completed"])
+            .output()?;
+
+        if close_output.status.success() {
+            println!("  ✅ Closed issue #{}", issue_number);
+        } else {
+            let stderr = String::from_utf8_lossy(&close_output.stderr);
+            eprintln!("  ⚠️  Could not close issue: {}", stderr.trim());
+        }
     }
 
     println!("\n{}", "═".repeat(60));
