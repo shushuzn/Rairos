@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 rairos-core = { path = "../rairos-core" }
+rairos-crossover = { path = "../rairos-crossover" }
 rairos-llm = { path = "../rairos-llm" }
 rairos-rankers = { path = "../rairos-rankers" }
 serde = { workspace = true, features = ["derive"] }

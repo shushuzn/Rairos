@@ -388,3 +388,75 @@ impl ToolHandler for HypothesisListHandler {
         }))
     }
 }
+
+pub struct RobustRankHandler;
+
+#[async_trait]
+impl ToolHandler for RobustRankHandler {
+    fn name(&self) -> &str { "robust_rank_papers" }
+    fn description(&self) -> &str { "Get top papers using minimax robust ranking for worst-case performance" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("top_n".into(), ToolProperty::integer("Number of top papers to return (default 10)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let top_n = params.get("top_n").and_then(|v| v.as_i64()).unwrap_or(10) as usize;
+
+        let home = dirs::home_dir().ok_or("Cannot find home directory")?;
+        let db_path = home.join(".ai_research_os").join("rairos.db");
+        let db = rairos_core::Database::open(&db_path)
+            .map_err(|e| format!("Failed to open database: {}", e))?;
+
+        let mut momentum = rairos_rankers::ResearchMomentum::new(db);
+        let ranked = momentum.get_robust_top_papers(top_n);
+
+        let rows: Vec<Value> = ranked.into_iter().map(|(id, score)| {
+            serde_json::json!({
+                "paper_id": id,
+                "momentum_score": score,
+            })
+        }).collect();
+
+        Ok(serde_json::json!({
+            "papers": rows,
+            "count": rows.len(),
+        }))
+    }
+}
+
+pub struct EvolutionCycleHandler;
+
+#[async_trait]
+impl ToolHandler for EvolutionCycleHandler {
+    fn name(&self) -> &str { "evolution_cycle" }
+    fn description(&self) -> &str { "Run one evolution cycle with UCB-guided parent selection" }
+    fn input_schema(&self) -> ToolInputSchema {
+        ToolInputSchema::object(
+            vec![
+                ("topic".into(), ToolProperty::string("Research topic for evolution (default: auto)")),
+            ].into_iter().collect(),
+            vec![],
+        )
+    }
+    async fn call(&self, params: Value) -> Result<Value, String> {
+        let topic = params.get("topic")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string();
+
+        let config = rairos_orchestrator::OrchestratorConfig::default();
+        let mut orchestrator = rairos_orchestrator::AutonomousOrchestrator::new(config, false);
+
+        let result = orchestrator.run_evolution_cycle(&topic).await
+            .map_err(|e| format!("Evolution cycle failed: {}", e))?;
+
+        Ok(serde_json::json!({
+            "content": [{"type": "text", "text": serde_json::to_string_pretty(&result).unwrap_or_default()}],
+            "result": result,
+        }))
+    }
+}

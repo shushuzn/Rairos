@@ -1,8 +1,12 @@
 use chrono::Utc;
 use rairos_core::{Database, ResearchGap};
+use rairos_crossover::CrossoverEngine;
 use rairos_llm::insight::tracker::EvolutionTracker;
 use rairos_llm::RegretOptimalSelector;
-use rairos_rankers::BayesianOptimizer as RankerBayesianOptimizer;
+use rairos_rankers::{
+    AdaptiveMomentum as RankerAdaptiveMomentum,
+    BayesianOptimizer as RankerBayesianOptimizer, OptimalScalingLearner,
+};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -25,6 +29,9 @@ pub struct AutonomousOrchestrator {
     tracker: Arc<RwLock<Option<EvolutionTracker>>>,
     regret_selector: RegretOptimalSelector,
     bayesian_optimizer: RankerBayesianOptimizer,
+    crossover_engine: CrossoverEngine,
+    scaling_learner: OptimalScalingLearner,
+    adaptive_momentum: RankerAdaptiveMomentum,
 }
 
 impl Default for AutonomousOrchestrator {
@@ -47,11 +54,31 @@ impl AutonomousOrchestrator {
                 vec![(0.1, 1.0), (0.1, 1.0), (1.0, 10.0)],
                 1.0,
             ),
+            crossover_engine: CrossoverEngine::new(1.0, 0.1),
+            scaling_learner: OptimalScalingLearner::new(1.0, 1e-4),
+            adaptive_momentum: RankerAdaptiveMomentum::new(0.9),
         }
     }
 
     pub fn record_gap_outcome(&mut self, gap_type: &str, score: f64) {
         self.regret_selector.record_outcome(gap_type, score);
+    }
+
+    pub fn apply_momentum_adjustment(&mut self, base_score: f64, gap_type: &str) -> f64 {
+        let ucb_scores = self.regret_selector.get_ucb_scores();
+        let ucb_bonus = ucb_scores.get(gap_type).copied().unwrap_or(0.0);
+        let gradient = -(base_score - ucb_bonus);
+        let momentum = self.adaptive_momentum.nesterov_update(gradient);
+        (base_score + momentum * 0.1).clamp(0.0, 1.0)
+    }
+
+    pub fn get_adaptive_lr(&self, base_lr: f64, dataset_tokens: f64) -> f64 {
+        let (lr, _) = self.scaling_learner.predict_optimal(1.0, dataset_tokens);
+        self.adaptive_momentum.adaptive_lr(base_lr * lr, 1.0)
+    }
+
+    pub fn observe_scaling(&mut self, lr: f64, batch_size: f64, loss: f64) {
+        self.scaling_learner.observe(lr, batch_size, loss);
     }
 
     pub fn suggest_next_gap_type(&mut self, gap_types: &[&str]) -> Option<String> {
@@ -560,7 +587,7 @@ impl AutonomousOrchestrator {
     }
 
     pub async fn run_evolution_cycle(
-        &self,
+        &mut self,
         topic: &str,
     ) -> Result<HashMap<String, serde_json::Value>> {
         self.init_components().await?;
@@ -571,12 +598,25 @@ impl AutonomousOrchestrator {
             topic.to_string()
         };
 
-        Ok({
-            let mut m = HashMap::new();
-            m.insert("topic".to_string(), serde_json::json!(evo_topic));
-            m.insert("status".to_string(), serde_json::json!("stub"));
-            m
-        })
+        let gap_types: Vec<String> = self.regret_selector.get_ucb_scores().keys().cloned().collect();
+        let gap_type_refs: Vec<&str> = gap_types.iter().map(|s| s.as_str()).collect();
+
+        if gap_type_refs.len() >= 2 {
+            self.regret_selector.select(&gap_type_refs);
+        }
+
+        let result = rairos_crossover::run_evolution_with_engine(
+            3,
+            10,
+            Some(&mut self.crossover_engine),
+        );
+
+        let mut output = HashMap::new();
+        output.insert("topic".to_string(), serde_json::json!(evo_topic));
+        for (k, v) in result {
+            output.insert(k, v);
+        }
+        Ok(output)
     }
 
     fn best_evolution_topic(&self) -> String {

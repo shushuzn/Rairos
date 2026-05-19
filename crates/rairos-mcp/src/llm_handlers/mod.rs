@@ -23,7 +23,7 @@ pub use evolution::{GenePoolDecayHandler, CrossoverHandler, GenePoolWatcherHandl
 pub use research::{
     TopicDiscoveryHandler, OrchestratorRunCycleHandler, DeepResearchRunHandler,
     ParallelResearchRunHandler, ResearchRunHandler, HypothesisGenerateHandler,
-    HypothesisListHandler,
+    HypothesisListHandler, RobustRankHandler, EvolutionCycleHandler,
 };
 pub use memory::{
     ResearchMemoryAddStanceHandler, ResearchMemoryListStancesHandler,
@@ -84,4 +84,6 @@ pub async fn register_llm_handlers(server: &crate::McpServer) {
     server.register(OrchestratorRunCycleHandler).await;
     server.register(DeepResearchRunHandler).await;
     server.register(ParallelResearchRunHandler).await;
+    server.register(RobustRankHandler).await;
+    server.register(EvolutionCycleHandler).await;
 }

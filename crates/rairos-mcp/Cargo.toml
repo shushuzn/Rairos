@@ -20,6 +20,7 @@ rairos-review-simulator = { path = "../rairos-review-simulator" }
 rairos-replication-checker = { path = "../rairos-replication-checker" }
 rairos-replication = { path = "../rairos-replication" }
 rairos-research = { path = "../rairos-research" }
+rairos-rankers = { path = "../rairos-rankers" }
 dirs.workspace = true
 uuid = { workspace = true, features = ["v4"] }
 rand.workspace = true
