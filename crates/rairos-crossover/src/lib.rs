@@ -6,10 +6,11 @@
 
 use rand::seq::SliceRandom;
 use rand::Rng;
-use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL, CODE_GENE_POOL_JSONL};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
+use std::io::Write;
 use std::path::PathBuf;
 
 // ============================================================================
@@ -332,11 +333,12 @@ impl CapsuleGene {
                 .to_string(),
         })
     }
+}
 
+impl CapsuleGene {
     pub fn trigger_match(&self, topic: &str, gap_type: &str, keywords: &[String]) -> f64 {
         let mut score = 0.0;
 
-        // 1. action_gap_title substring match — strongest recall signal
         let action_title = self.action_gap_title.trim();
         if !action_title.is_empty() && !topic.is_empty() {
             if action_title.to_lowercase().contains(&topic.to_lowercase()) {
@@ -346,7 +348,6 @@ impl CapsuleGene {
             }
         }
 
-        // 2. trigger_topic substring match
         if !topic.is_empty() && !self.trigger_topic.is_empty() {
             if self
                 .trigger_topic
@@ -362,7 +363,6 @@ impl CapsuleGene {
             }
         }
 
-        // 3. Gap type exact match + partial category match
         if !gap_type.is_empty() && !self.trigger_gap_type.is_empty() {
             if gap_type == self.trigger_gap_type {
                 score += 0.3;
@@ -382,7 +382,6 @@ impl CapsuleGene {
             }
         }
 
-        // 4. Keyword overlap
         if !keywords.is_empty() && !self.trigger_keywords.is_empty() {
             let kw_set: std::collections::HashSet<String> =
                 keywords.iter().map(|k| k.to_lowercase()).collect();
@@ -398,7 +397,6 @@ impl CapsuleGene {
             }
         }
 
-        // 5. Token-level Jaccard on topic vs action_gap_title
         if !action_title.is_empty() && !topic.is_empty() {
             let stopwords: std::collections::HashSet<&str> = [
                 "for", "with", "and", "the", "a", "an", "of", "in", "on", "to", "is", "are",
@@ -432,6 +430,157 @@ impl CapsuleGene {
 
         score.min(1.0)
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CodeCapsuleGene {
+    pub capsule_id: String,
+    pub created_at: String,
+    pub trigger_topic: String,
+    pub trigger_keywords: Vec<String>,
+    pub source_paper_id: String,
+    pub source_paper_title: String,
+    pub target_crate: String,
+    pub gap_type: String,
+    pub gap_location: String,
+    pub code_snippet: String,
+    pub optimization: String,
+    pub outcome_success_score: f64,
+    pub feedback_count: i32,
+    pub evolved_generation: i32,
+    pub archetype: HashMap<String, serde_json::Value>,
+    pub status: String,
+    pub low_score_streak: i32,
+    pub credibility_score: f64,
+    pub credibility_badge: String,
+}
+
+impl CodeCapsuleGene {
+    pub fn trigger_match(&self, topic: &str, keywords: &[String]) -> f64 {
+        let mut score = 0.0;
+        if self.trigger_topic.to_lowercase().contains(&topic.to_lowercase()) {
+            score += 0.4;
+        }
+        if !keywords.is_empty() && !self.trigger_keywords.is_empty() {
+            let kw_set: std::collections::HashSet<String> = keywords.iter().map(|k| k.to_lowercase()).collect();
+            let trigger_set: std::collections::HashSet<String> = self.trigger_keywords.iter().map(|k| k.to_lowercase()).collect();
+            let overlap: std::collections::HashSet<_> = kw_set.intersection(&trigger_set).collect();
+            if !overlap.is_empty() {
+                score += 0.3 * (overlap.len() as f64 / keywords.len().max(self.trigger_keywords.len()) as f64);
+            }
+        }
+        if self.target_crate.to_lowercase().contains(&topic.to_lowercase()) {
+            score += 0.3;
+        }
+        score.min(1.0)
+    }
+}
+
+pub fn code_gene_pool_path() -> PathBuf {
+    gp_dir().join(CODE_GENE_POOL_JSONL)
+}
+
+fn load_code_capsules() -> Vec<CodeCapsuleGene> {
+    let path = code_gene_pool_path();
+    if !path.exists() {
+        return Vec::new();
+    }
+    let text = match fs::read_to_string(&path) {
+        Ok(t) => t.trim().to_string(),
+        Err(_) => return Vec::new(),
+    };
+    if text.is_empty() {
+        return Vec::new();
+    }
+    text.lines()
+        .filter(|l| !l.trim().is_empty())
+        .filter_map(|l| serde_json::from_str::<serde_json::Value>(l).ok())
+        .filter_map(|v| {
+            Some(CodeCapsuleGene {
+                capsule_id: v.get("capsule_id")?.as_str()?.to_string(),
+                created_at: v.get("created_at")?.as_str()?.to_string(),
+                trigger_topic: v.get("trigger_topic")?.as_str()?.to_string(),
+                trigger_keywords: v.get("trigger_keywords")?.as_array()?.iter().filter_map(|x| x.as_str().map(String::from)).collect(),
+                source_paper_id: v.get("source_paper_id").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                source_paper_title: v.get("source_paper_title").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                target_crate: v.get("target_crate").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                gap_type: v.get("gap_type").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                gap_location: v.get("gap_location").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                code_snippet: v.get("code_snippet").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                optimization: v.get("optimization").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                outcome_success_score: v.get("outcome_success_score").and_then(|x| x.as_f64()).unwrap_or(0.5),
+                feedback_count: v.get("feedback_count").and_then(|x| x.as_i64()).unwrap_or(0) as i32,
+                evolved_generation: v.get("evolved_generation").and_then(|x| x.as_i64()).unwrap_or(0) as i32,
+                archetype: v.get("archetype").and_then(|x| x.as_object()).map(|m| m.clone().into_iter().collect()).unwrap_or_default(),
+                status: v.get("status").and_then(|x| x.as_str()).unwrap_or("active").to_string(),
+                low_score_streak: v.get("low_score_streak").and_then(|x| x.as_i64()).unwrap_or(0) as i32,
+                credibility_score: v.get("credibility_score").and_then(|x| x.as_f64()).unwrap_or(0.5),
+                credibility_badge: v.get("credibility_badge").and_then(|x| x.as_str()).unwrap_or("medium").to_string(),
+            })
+        })
+        .collect()
+}
+
+pub fn get_top_code_candidates(limit: usize) -> Vec<CodeCapsuleGene> {
+    let capsules = load_code_capsules();
+    let mut active: Vec<CodeCapsuleGene> = capsules
+        .into_iter()
+        .filter(|c| c.status == "active" && c.credibility_badge != "low")
+        .collect();
+    active.sort_by(|a, b| {
+        let fitness_a = a.outcome_success_score * (1.0 + a.feedback_count as f64).ln();
+        let fitness_b = b.outcome_success_score * (1.0 + b.feedback_count as f64).ln();
+        fitness_b.partial_cmp(&fitness_a).unwrap_or(std::cmp::Ordering::Equal)
+    });
+    active.truncate(limit);
+    active
+}
+
+pub fn get_all_code_capsules() -> Vec<CodeCapsuleGene> {
+    load_code_capsules()
+}
+
+pub fn save_code_capsule(capsule: &CodeCapsuleGene) -> std::io::Result<()> {
+    let path = code_gene_pool_path();
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+
+    let capsules = load_code_capsules();
+    let exists = capsules.iter().any(|c| c.capsule_id == capsule.capsule_id);
+
+    if exists {
+        return update_code_capsule(capsule);
+    }
+
+    let json = serde_json::to_string(capsule)?;
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&path)?;
+    file.write_all(json.as_bytes())?;
+    file.write_all(b"\n")?;
+    Ok(())
+}
+
+pub fn update_code_capsule(capsule: &CodeCapsuleGene) -> std::io::Result<()> {
+    let path = code_gene_pool_path();
+
+    let capsules = load_code_capsules();
+    let mut updated: Vec<CodeCapsuleGene> = capsules
+        .into_iter()
+        .filter(|c| c.capsule_id != capsule.capsule_id)
+        .collect();
+    updated.push(capsule.clone());
+
+    let mut file = fs::File::create(&path)?;
+    for cap in &updated {
+        let json = serde_json::to_string(cap)?;
+        file.write_all(json.as_bytes())?;
+        file.write_all(b"\n")?;
+    }
+
+    Ok(())
 }
 
 fn load_capsules() -> Vec<CapsuleGene> {

@@ -426,6 +426,59 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_gap_delete(&db, id)?;
         }
+        Commands::GapSuggestCode {
+            gap_id,
+            crate_name,
+            format,
+        } => {
+            let db = open_db(&cli.db)?;
+            handle_gap_suggest_code(&db, gap_id, crate_name.clone(), format)?;
+        }
+        Commands::Optimize {
+            topic,
+            crate_name,
+            limit,
+            format,
+        } => {
+            let db = open_db(&cli.db)?;
+            handle_optimize(&db, topic, crate_name.clone(), *limit, format)?;
+        }
+        Commands::CodeGeneList {
+            crate_name,
+            limit,
+            format,
+        } => {
+            let db = open_db(&cli.db)?;
+            handle_code_gene_list(&db, crate_name.clone(), *limit, format)?;
+        }
+        Commands::CodeEvolve {
+            crate_name,
+            max_crossovers,
+            format,
+        } => {
+            handle_code_evolve(crate_name.clone(), *max_crossovers, format)?;
+        }
+        Commands::WorkflowStats => {
+            let db = open_db(&cli.db)?;
+            handle_workflow_stats(&db)?;
+        }
+        Commands::GapCodeLink { gap_id } => {
+            let db = open_db(&cli.db)?;
+            handle_gap_code_link(&db, gap_id.clone())?;
+        }
+        Commands::OptimizePipeline { topic, crate_name, optimizations, evolutions } => {
+            let db = open_db(&cli.db)?;
+            handle_optimize_pipeline(&db, topic, crate_name.clone(), *optimizations, *evolutions)?;
+        }
+        Commands::CodeGeneFeedback { id, positive } => {
+            handle_code_gene_feedback(id, *positive)?;
+        }
+        Commands::CodeGeneExport { output, crate_name } => {
+            handle_code_gene_export(output, crate_name.clone())?;
+        }
+        Commands::CodeGeneClean { min_score, min_feedback, dry_run } => {
+            handle_code_gene_clean(*min_score, *min_feedback, *dry_run)?;
+        }
         Commands::GeneAdd {
             approach,
             gap_type,

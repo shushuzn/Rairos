@@ -8,6 +8,8 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 anyhow.workspace = true
 thiserror.workspace = true
+rayon = "1.10"
 
 [dev-dependencies]
 tempfile.workspace = true
+proptest = "1.5"

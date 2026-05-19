@@ -468,6 +468,136 @@ pub enum Commands {
         id: String,
     },
 
+    /// Suggest code optimizations for a research gap
+    GapSuggestCode {
+        /// Gap ID to generate code optimizations for
+        #[arg(short, long)]
+        gap_id: String,
+
+        /// Target crate to optimize
+        #[arg(short, long)]
+        crate_name: Option<String>,
+
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Detect code optimization opportunities from papers
+    Optimize {
+        /// Research/technology topic to analyze
+        #[arg(short, long)]
+        topic: String,
+
+        /// Target crate to optimize (e.g., rairos-core, rairos-llm)
+        #[arg(short, long)]
+        crate_name: Option<String>,
+
+        /// Maximum number of optimization suggestions
+        #[arg(short, long, default_value = "10")]
+        limit: usize,
+
+        /// Output format (table/json)
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// List code optimization genes
+    CodeGeneList {
+        /// Filter by target crate
+        #[arg(short, long)]
+        crate_name: Option<String>,
+
+        /// Maximum number to show
+        #[arg(short, long, default_value = "50")]
+        limit: usize,
+
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Run evolution on code optimization genes
+    CodeEvolve {
+        /// Filter by target crate
+        #[arg(short, long)]
+        crate_name: Option<String>,
+
+        /// Maximum number of crossovers to suggest
+        #[arg(short, long, default_value = "10")]
+        max_crossovers: usize,
+
+        /// Output format
+        #[arg(short, long, default_value = "table")]
+        format: String,
+    },
+
+    /// Show workflow statistics (gaps ↔ code genes)
+    WorkflowStats,
+
+    /// Show gap to code gene linkage details
+    GapCodeLink {
+        /// Gap ID to show links for
+        #[arg(short, long)]
+        gap_id: Option<String>,
+    },
+
+    /// Full pipeline: detect gap → generate code optimizations → evolve
+    OptimizePipeline {
+        /// Research topic
+        #[arg(short, long)]
+        topic: String,
+
+        /// Target crate
+        #[arg(short, long)]
+        crate_name: Option<String>,
+
+        /// Number of optimizations to generate
+        #[arg(short, long, default_value = "5")]
+        optimizations: usize,
+
+        /// Number of evolutions to run
+        #[arg(short, long, default_value = "3")]
+        evolutions: usize,
+    },
+
+    /// Record feedback for a code gene
+    CodeGeneFeedback {
+        /// Code gene ID
+        #[arg(short, long)]
+        id: String,
+
+        /// Positive or negative feedback
+        #[arg(short, long)]
+        positive: bool,
+    },
+
+    /// Export code genes to file
+    CodeGeneExport {
+        /// Output file path
+        #[arg(short, long)]
+        output: String,
+
+        /// Filter by crate
+        #[arg(short, long)]
+        crate_name: Option<String>,
+    },
+
+    /// Clean low-quality code genes
+    CodeGeneClean {
+        /// Minimum score threshold (0.0-1.0)
+        #[arg(short = 's', long, default_value = "0.3")]
+        min_score: f64,
+
+        /// Also remove genes with feedback_count < min_feedback
+        #[arg(long, default_value = "0")]
+        min_feedback: i32,
+
+        /// Actually delete (dry-run if not set)
+        #[arg(short, long)]
+        dry_run: bool,
+    },
+
     /// Add a gene/capsule to the Gene Pool
     GeneAdd {
         /// Approach summary

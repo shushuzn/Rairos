@@ -223,3 +223,195 @@ mod mock_tests {
         assert_eq!(found.len(), 2);
     }
 }
+
+// ============================================================================
+// Parallel Evaluation Metrics with Rayon
+// ============================================================================
+
+use rayon::prelude::*;
+
+#[derive(Debug, Clone)]
+struct ScoredDocument {
+    doc_id: u64,
+    score: f64,
+}
+
+#[derive(Debug, Clone)]
+struct QueryResult {
+    query_id: u64,
+    documents: Vec<ScoredDocument>,
+}
+
+fn ndcg_at_k(query_result: &QueryResult, relevant_docs: &[u64], k: usize) -> f64 {
+    let top_k_len = query_result.documents.len().min(k);
+    let top_k = &query_result.documents[..top_k_len];
+
+    let dcg: f64 = top_k
+        .iter()
+        .enumerate()
+        .map(|(i, doc)| {
+            let rel = if relevant_docs.contains(&doc.doc_id) { 1.0 } else { 0.0 };
+            rel / (i as f64 + 2.0).log2()
+        })
+        .sum();
+
+    let idcg: f64 = (0..top_k_len.min(relevant_docs.len()))
+        .map(|i| 1.0 / (i as f64 + 2.0).log2())
+        .sum();
+
+    if idcg == 0.0 {
+        0.0
+    } else {
+        dcg / idcg
+    }
+}
+
+pub fn average_ndcg_parallel(
+    query_results: &[QueryResult],
+    relevant_per_query: &[&[u64]],
+    k: usize,
+) -> f64 {
+    if query_results.is_empty() {
+        return 0.0;
+    }
+
+    let sum: f64 = query_results
+        .par_iter()
+        .zip(relevant_per_query.par_iter())
+        .map(|(qr, rels)| ndcg_at_k(qr, rels, k))
+        .sum();
+
+    sum / query_results.len() as f64
+}
+
+#[cfg(test)]
+mod ndcg_tests {
+    use super::*;
+
+    #[test]
+    fn test_ndcg_empty_results() {
+        let qr = QueryResult {
+            query_id: 1,
+            documents: vec![],
+        };
+        let relevant = &[1u64, 2, 3];
+        assert_eq!(ndcg_at_k(&qr, relevant, 10), 0.0);
+    }
+
+    #[test]
+    fn test_ndcg_perfect_ranking() {
+        let qr = QueryResult {
+            query_id: 1,
+            documents: vec![
+                ScoredDocument { doc_id: 1, score: 0.9 },
+                ScoredDocument { doc_id: 2, score: 0.8 },
+                ScoredDocument { doc_id: 3, score: 0.7 },
+            ],
+        };
+        let relevant = &[1u64, 2, 3];
+        let ndcg = ndcg_at_k(&qr, relevant, 3);
+        assert!((ndcg - 1.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_ndcg_parallel_empty() {
+        let results: &[QueryResult] = &[];
+        let relevant: &[&[u64]] = &[];
+        assert_eq!(average_ndcg_parallel(results, relevant, 10), 0.0);
+    }
+
+    #[test]
+    fn test_ndcg_parallel_multiple_queries() {
+        let results = vec![
+            QueryResult {
+                query_id: 1,
+                documents: vec![
+                    ScoredDocument { doc_id: 1, score: 0.9 },
+                    ScoredDocument { doc_id: 2, score: 0.8 },
+                ],
+            },
+            QueryResult {
+                query_id: 2,
+                documents: vec![
+                    ScoredDocument { doc_id: 3, score: 0.95 },
+                    ScoredDocument { doc_id: 4, score: 0.85 },
+                ],
+            },
+        ];
+        let relevant: &[&[u64]] = &[&[1u64, 2], &[3u64, 4]];
+        let avg = average_ndcg_parallel(&results, relevant, 10);
+        assert!((avg - 1.0).abs() < 1e-6);
+    }
+}
+
+// ============================================================================
+// Property-Based Testing for Ranker Correctness
+// ============================================================================
+
+#[cfg(test)]
+mod ranker_property_tests {
+    use super::*;
+    use proptest::prelude::*;
+
+    fn ranked_result_vec() -> impl Strategy<Value = Vec<RankedResult<String>>> {
+        prop::collection::vec(
+            (any::<String>(), any::<f32>()),
+            1..50,
+        )
+        .prop_map(|v| {
+            v.into_iter()
+                .map(|(paper, score)| RankedResult { paper, score })
+                .collect()
+        })
+    }
+
+    proptest! {
+        #[test]
+        fn mock_ranker_respects_threshold(results in ranked_result_vec(), threshold: f32) {
+            let ranker = MockRanker::new("prop_test", results.clone());
+            let found = ranker.rank("query", threshold, 100).unwrap();
+
+            prop_assert!(found.iter().all(|r| r.score >= threshold));
+        }
+
+        #[test]
+        fn mock_ranker_respects_limit(results in ranked_result_vec(), limit: usize) {
+            let limit = (limit % 100).max(1);
+            let ranker = MockRanker::new("prop_test", results);
+            let found = ranker.rank("query", 0.0, limit).unwrap();
+
+            prop_assert!(found.len() <= limit);
+        }
+
+        #[test]
+        fn ranked_results_sorted_by_score_descending(results in ranked_result_vec()) {
+            if results.len() < 2 {
+                return Ok(());
+            }
+
+            let mut sorted_results = results.clone();
+            sorted_results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+
+            let ranker = MockRanker::new("prop_test", sorted_results);
+            let found = ranker.rank("query", 0.0, 100).unwrap();
+
+            if found.len() >= 2 {
+                for window in found.windows(2) {
+                    prop_assert!(window[0].score >= window[1].score,
+                        "Scores not decreasing: {:?} >= {:?}", window[0].score, window[1].score);
+                }
+            }
+        }
+
+        #[test]
+        fn ranker_returns_subset_of_original(results in ranked_result_vec()) {
+            let ranker = MockRanker::new("prop_test", results.clone());
+            let original_ids: std::collections::HashSet<_> = results.iter().map(|r| r.paper.clone()).collect();
+
+            let found = ranker.rank("query", 0.0, 100).unwrap();
+            for r in &found {
+                prop_assert!(original_ids.contains(&r.paper));
+            }
+        }
+    }
+}
