@@ -696,7 +696,7 @@ pub enum Commands {
         auto_approve: bool,
     },
 
-    /// Run complete workflow: plan → auto-review → auto-approve (with optional review)
+    /// Run complete workflow: plan → auto-review → auto-approve → implement
     CodeGeneWorkflow {
         /// Gene IDs to process (comma-separated, or "all")
         #[arg(short, long, default_value = "all")]
@@ -713,6 +713,10 @@ pub enum Commands {
         /// Auto-approve after review (instead of waiting)
         #[arg(long)]
         auto_approve: bool,
+
+        /// Auto-implement after approval
+        #[arg(long)]
+        auto_implement: bool,
     },
 
     /// Clean up merged Git branches

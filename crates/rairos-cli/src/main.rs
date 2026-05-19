@@ -506,8 +506,8 @@ fn main() -> Result<()> {
         Commands::CodeGeneImplement { issue, repo, execute } => {
             handle_code_gene_implement(*issue, repo, *execute)?;
         }
-        Commands::CodeGeneWorkflow { ids, repo, skip_review, auto_approve } => {
-            handle_code_gene_workflow(ids, repo, *skip_review, *auto_approve)?;
+        Commands::CodeGeneWorkflow { ids, repo, skip_review, auto_approve, auto_implement } => {
+            handle_code_gene_workflow(ids, repo, *skip_review, *auto_approve, *auto_implement)?;
         }
         Commands::CodeGeneCleanup { repo, execute } => {
             handle_code_gene_cleanup(repo, *execute)?;
