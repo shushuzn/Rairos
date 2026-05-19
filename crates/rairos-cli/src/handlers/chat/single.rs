@@ -268,3 +268,57 @@ fn parse_verification_response(response: &str) -> Option<String> {
         None
     }
 }
+
+pub fn analyze_papers_with_llm(
+    topic: &str,
+    papers: &[rairos_core::Paper],
+    api_key: &str,
+    base_url: &str,
+    chat_model: &str,
+) -> Result<String> {
+    let rt = tokio::runtime::Runtime::new()?;
+
+    let context_parts: Vec<String> = papers.iter().enumerate().map(|(i, p)| {
+        let abstract_text = if p.abstract_text.len() > 800 {
+            format!("{}...", &p.abstract_text[..800])
+        } else {
+            p.abstract_text.clone()
+        };
+        format!(
+            "[Paper {}] Title: {}\nAuthors: {}\nCategories: {}\nAbstract: {}",
+            i + 1,
+            p.title,
+            p.authors.join(", "),
+            p.categories.join(", "),
+            abstract_text
+        )
+    }).collect();
+    let context_str = context_parts.join("\n\n");
+
+    let system_prompt = "You are a research analyst AI. Analyze papers for a given topic and provide:
+1. Key themes and methodologies
+2. Research gaps and opportunities
+3. Potential research directions
+
+Be concise and analytical.";
+
+    let user_prompt = format!(
+        "Topic: {}\n\nPapers:\n{}\n\nAnalyze these papers and provide insights about key themes, methodologies, research gaps, and potential research directions. Format your response with clear sections.",
+        topic, context_str
+    );
+
+    rt.block_on(async {
+        let client = rairos_llm::client_async::AsyncClient::new(
+            api_key.to_string(),
+            base_url.to_string(),
+            chat_model.to_string(),
+        );
+        let messages = vec![
+            std::collections::HashMap::from([
+                ("role".to_string(), "user".to_string()),
+                ("content".to_string(), user_prompt.clone()),
+            ]),
+        ];
+        client.chat_completions(messages, None, Some(system_prompt), false).await
+    }).map_err(|e| anyhow::anyhow!("LLM call failed: {}", e))
+}
