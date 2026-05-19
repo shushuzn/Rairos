@@ -314,10 +314,10 @@ fn extract_dataset_tests(datasets: &[String], code: &str) -> Vec<TestCase> {
 fn extract_equation_tests(equations: &[String]) -> Vec<TestCase> {
     let math_functions = ["log", "exp", "sin", "cos", "tan", "sqrt", "max", "min"];
     let mut tests = Vec::new();
+    let var_regex = regex::Regex::new(r"[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
 
     for (i, eq) in equations.iter().take(3).enumerate() {
-        let variables: Vec<&str> = regex::Regex::new(r"[a-zA-Z_][a-zA-Z0-9_]*")
-            .unwrap()
+        let variables: Vec<&str> = var_regex
             .find_iter(eq)
             .map(|m| m.as_str())
             .filter(|v| !math_functions.contains(v))

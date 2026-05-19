@@ -2076,10 +2076,7 @@ pub fn handle_code_gene_reject(
         }
 
         let stdout = String::from_utf8_lossy(&pr_list_output.stdout);
-        let prs: Vec<serde_json::Value> = match serde_json::from_str(&stdout) {
-            Ok(v) => v,
-            Err(_) => vec![],
-        };
+        let prs: Vec<serde_json::Value> = serde_json::from_str(&stdout).unwrap_or_default();
 
         // Find plan PR for this gene
         let plan_pr = prs.iter().find(|pr| {
@@ -2205,10 +2202,7 @@ pub fn handle_code_gene_auto_review(
         }
 
         let stdout = String::from_utf8_lossy(&pr_list_output.stdout);
-        let prs: Vec<serde_json::Value> = match serde_json::from_str(&stdout) {
-            Ok(v) => v,
-            Err(_) => vec![],
-        };
+        let prs: Vec<serde_json::Value> = serde_json::from_str(&stdout).unwrap_or_default();
 
         let plan_pr = prs.iter().find(|pr| {
             pr["title"].as_str().unwrap_or("").contains(&format!("plan] code-gene {}", short_id))

@@ -86,7 +86,7 @@ fn md_to_docx_xml(markdown: &str) -> String {
             ));
         }
         else if trimmed.starts_with("1. ") || trimmed.starts_with("1) ") {
-            let text = if trimmed.starts_with("1. ") { &trimmed[3..] } else { &trimmed[2..] };
+            let text = trimmed.strip_prefix("1. ").or_else(|| trimmed.strip_prefix("1) ")).unwrap_or(trimmed);
             if !in_list || list_type != "number" {
                 if in_list { xml.push_str("</w:p>"); }
                 xml.push_str(r#"<w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr></w:pPr>"#);

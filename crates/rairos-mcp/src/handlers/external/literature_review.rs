@@ -217,7 +217,7 @@ impl ToolHandler for PaperLiteratureReviewHandler {
         let max_cites = papers.last().and_then(|p| p.get("citationCount").and_then(|v| v.as_u64())).unwrap_or(0);
         let top10_cites: u64 = papers.iter().take(10).filter_map(|p| p.get("citationCount").and_then(|v| v.as_u64())).sum();
         let all_cites: u64 = papers.iter().filter_map(|p| p.get("citationCount").and_then(|v| v.as_u64())).sum();
-        let top10_pct = if all_cites > 0 { (top10_cites * 100 / all_cites) as usize } else { 0 };
+        let top10_pct = (top10_cites * 100).checked_div(all_cites).unwrap_or(0) as usize;
         md.push_str(&max_cites.to_string());
         md.push_str(" citations (median: ");
         md.push_str(&median_cites.to_string());
