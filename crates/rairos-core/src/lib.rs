@@ -2620,3 +2620,7 @@ pub fn jaccard_similarity(a: &[String], b: &[String]) -> f64 {
     let union = set_a.union(&set_b).count();
     intersection as f64 / union as f64
 }
+
+// ========== Code Gene: 18b0f0dc ==========
+// add hot path caching
+pub fn hot_path(&self) -> Vec<f32> { self.cache.iter().map(|(k,v)| *v).collect() }
