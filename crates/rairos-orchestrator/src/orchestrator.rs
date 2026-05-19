@@ -292,11 +292,48 @@ impl AutonomousOrchestrator {
                           "method_limitation", "theoretical_gap", "reproducibility_gap"];
         let suggested_gap_type = self.regret_selector.select(gap_types);
 
+        let existing_papers: Vec<String> = {
+            let db_guard = self.db.read().await;
+            if let Some(db) = db_guard.as_ref() {
+                db.search_papers_smart(topic, 100)
+                    .map(|p| p.into_iter().map(|p| p.abstract_text).collect())
+                    .unwrap_or_default()
+            } else {
+                Vec::new()
+            }
+        };
+
+        let novelty_threshold = 0.3;
+
         let mut gaps: Vec<ResearchGap> = Vec::new();
 
         for desc in gap_descriptions {
+            let novelty = if existing_papers.is_empty() {
+                1.0
+            } else {
+                let max_overlap = existing_papers.iter()
+                    .map(|existing| {
+                        let words_new: std::collections::HashSet<_> = desc.split_whitespace()
+                            .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
+                        let words_exist: std::collections::HashSet<_> = existing.split_whitespace()
+                            .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
+                        if words_new.is_empty() || words_exist.is_empty() {
+                            return 0.0;
+                        }
+                        let intersection = words_new.intersection(&words_exist).count() as f64;
+                        intersection / words_new.len() as f64
+                    })
+                    .fold(0.0f64, |a, b| a.max(b));
+                1.0 - max_overlap
+            };
+
+            if novelty < novelty_threshold && !existing_papers.is_empty() {
+                continue;
+            }
+
+            let severity = if novelty > 0.7 { "HIGH" } else if novelty > 0.4 { "MEDIUM" } else { "LOW" };
             let gap_type = suggested_gap_type.clone().unwrap_or_else(|| "keyword_gap".to_string());
-            gaps.push(ResearchGap::new_simple(&gap_type, &desc, "medium"));
+            gaps.push(ResearchGap::new_simple(&gap_type, &desc, severity));
         }
 
         for cat in under_explored {
