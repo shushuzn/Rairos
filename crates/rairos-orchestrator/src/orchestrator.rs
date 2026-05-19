@@ -357,7 +357,8 @@ impl AutonomousOrchestrator {
 
         let novelty_threshold = 0.3;
 
-        let mut gaps: Vec<ResearchGap> = Vec::new();
+        let pattern_gaps = self.detect_pattern_gaps(&papers, topic);
+        let mut gaps: Vec<ResearchGap> = pattern_gaps;
 
         for desc in gap_descriptions {
             let novelty = if existing_papers.is_empty() {
@@ -819,6 +820,48 @@ impl AutonomousOrchestrator {
             .take(5)
             .map(|(topic, _)| topic)
             .collect()
+    }
+
+    fn detect_pattern_gaps(&self, papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
+        let limitation_patterns = [
+            ("does not scale", "scalability_gap", "HIGH"),
+            ("not scalable", "scalability_gap", "HIGH"),
+            ("limited to", "scalability_gap", "MEDIUM"),
+            ("computational cost", "scalability_gap", "MEDIUM"),
+            ("no benchmark", "evaluation_gap", "HIGH"),
+            ("unevaluated", "evaluation_gap", "MEDIUM"),
+            ("not evaluated on", "evaluation_gap", "MEDIUM"),
+            ("missing evaluation", "evaluation_gap", "MEDIUM"),
+            ("future work", "method_limitation", "LOW"),
+            ("limitation", "method_limitation", "MEDIUM"),
+            ("cannot handle", "method_limitation", "MEDIUM"),
+            ("restricted to", "method_limitation", "LOW"),
+            ("only works for", "method_limitation", "MEDIUM"),
+            ("theoretical gap", "theoretical_gap", "HIGH"),
+            ("not theoretically", "theoretical_gap", "MEDIUM"),
+            ("no proof", "theoretical_gap", "HIGH"),
+            ("unexplored", "unexplored_application", "HIGH"),
+            ("not applied to", "unexplored_application", "MEDIUM"),
+            ("novel application", "unexplored_application", "LOW"),
+        ];
+
+        let mut detected: Vec<ResearchGap> = Vec::new();
+        let mut seen_patterns: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        for paper in papers {
+            let text_lower = paper.abstract_text.to_lowercase();
+            for (pattern, gap_type, severity) in &limitation_patterns {
+                if text_lower.contains(&pattern.to_lowercase()) {
+                    let desc = format!("Gap in '{}': {} (found in {})", topic, pattern, paper.title.chars().take(40).collect::<String>());
+                    if !seen_patterns.contains(&pattern.to_string()) {
+                        seen_patterns.insert(pattern.to_string());
+                        detected.push(ResearchGap::new_simple(gap_type, &desc, severity));
+                    }
+                }
+            }
+        }
+
+        detected
     }
 
     pub async fn start_watch(&self, interval_minutes: i32) -> Result<()> {
