@@ -476,8 +476,8 @@ fn main() -> Result<()> {
         Commands::CodeGeneExport { output, crate_name } => {
             handle_code_gene_export(output, crate_name.clone())?;
         }
-        Commands::CodeGeneClean { min_score, min_feedback, dry_run } => {
-            handle_code_gene_clean(*min_score, *min_feedback, *dry_run)?;
+        Commands::CodeGeneClean { min_score, min_feedback, min_code_length, dry_run } => {
+            handle_code_gene_clean(*min_score, *min_feedback, *min_code_length, *dry_run)?;
         }
         Commands::GeneAdd {
             approach,

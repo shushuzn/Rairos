@@ -593,6 +593,10 @@ pub enum Commands {
         #[arg(long, default_value = "0")]
         min_feedback: i32,
 
+        /// Also remove genes with code_snippet.len() < min_code_length
+        #[arg(long, default_value = "100")]
+        min_code_length: usize,
+
         /// Actually delete (dry-run if not set)
         #[arg(short, long)]
         dry_run: bool,

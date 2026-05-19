@@ -1031,6 +1031,7 @@ pub fn handle_code_gene_export(
 pub fn handle_code_gene_clean(
     min_score: f64,
     min_feedback: i32,
+    min_code_length: usize,
     dry_run: bool,
 ) -> Result<()> {
     let all_genes = get_all_code_capsules();
@@ -1038,7 +1039,8 @@ pub fn handle_code_gene_clean(
     let low_quality: Vec<CodeCapsuleGene> = all_genes.iter()
         .filter(|g| {
             g.outcome_success_score < min_score ||
-            g.feedback_count < min_feedback
+            g.feedback_count < min_feedback ||
+            g.code_snippet.len() < min_code_length
         })
         .cloned()
         .collect();
@@ -1046,7 +1048,8 @@ pub fn handle_code_gene_clean(
     let high_quality: Vec<CodeCapsuleGene> = all_genes.iter()
         .filter(|g| {
             g.outcome_success_score >= min_score &&
-            g.feedback_count >= min_feedback
+            g.feedback_count >= min_feedback &&
+            g.code_snippet.len() >= min_code_length
         })
         .cloned()
         .collect();
@@ -1055,7 +1058,8 @@ pub fn handle_code_gene_clean(
     println!("🧹 Code Gene Cleanup Report");
     println!("{}", "═".repeat(60));
     println!();
-    println!("  Threshold: score >= {:.2}, feedback >= {}", min_score, min_feedback);
+    println!("  Threshold: score >= {:.2}, feedback >= {}, code_len >= {}",
+        min_score, min_feedback, min_code_length);
     println!("  Total genes: {}", all_genes.len());
     println!("  Low quality: {} (will remove)", low_quality.len());
     println!("  High quality: {} (will keep)", high_quality.len());
