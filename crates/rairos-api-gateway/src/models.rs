@@ -38,6 +38,7 @@ impl std::fmt::Display for Tier {
 }
 
 impl Tier {
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str<S: AsRef<str>>(s: S) -> Self {
         match s.as_ref() {
             "pro" => Tier::Pro,

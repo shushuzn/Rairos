@@ -879,6 +879,7 @@ impl AutonomousOrchestrator {
             for (pattern, gap_type, severity) in &limitation_patterns {
                 if text_lower.contains(&pattern.to_lowercase()) {
                     let desc = format!("Gap in '{}': {} (found in {})", topic, pattern, paper.title.chars().take(40).collect::<String>());
+                    #[allow(clippy::unnecessary_to_owned)]
                     if !seen_patterns.contains(&pattern.to_string()) {
                         seen_patterns.insert(pattern.to_string());
                         detected.push(ResearchGap::new_simple(gap_type, &desc, severity));

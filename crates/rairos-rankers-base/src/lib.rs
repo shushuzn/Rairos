@@ -231,17 +231,20 @@ mod mock_tests {
 use rayon::prelude::*;
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 struct ScoredDocument {
     doc_id: u64,
     score: f64,
 }
 
 #[derive(Debug, Clone)]
-struct QueryResult {
+#[allow(dead_code)]
+pub(crate) struct QueryResult {
     query_id: u64,
     documents: Vec<ScoredDocument>,
 }
 
+#[allow(dead_code)]
 fn ndcg_at_k(query_result: &QueryResult, relevant_docs: &[u64], k: usize) -> f64 {
     let top_k_len = query_result.documents.len().min(k);
     let top_k = &query_result.documents[..top_k_len];
@@ -266,6 +269,8 @@ fn ndcg_at_k(query_result: &QueryResult, relevant_docs: &[u64], k: usize) -> f64
     }
 }
 
+#[allow(dead_code)]
+#[allow(private_interfaces)]
 pub fn average_ndcg_parallel(
     query_results: &[QueryResult],
     relevant_per_query: &[&[u64]],
