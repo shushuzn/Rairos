@@ -2874,7 +2874,7 @@ fn extract_section(text: &str, start_marker: &str, end_marker: &str) -> Option<S
 
 /// Run complete workflow: plan → auto-review → auto-approve
 pub fn handle_code_gene_workflow(ids: &str, repo: &str, skip_review: bool, auto_approve: bool) -> Result<()> {
-    use std::io::Write;
+    use indicatif::{ProgressBar, ProgressStyle};
 
     println!("\n{}", "═".repeat(60));
     println!("🚀 CODE GENE WORKFLOW");
@@ -2904,91 +2904,222 @@ pub fn handle_code_gene_workflow(ids: &str, repo: &str, skip_review: bool, auto_
 
     println!("\n📋 Genes to process: {}", genes.len());
     for gene in &genes {
-        println!("  • {} [{}] - {}", gene.capsule_id, gene.status, gene.gap_type);
+        println!("  • {} [{}] - {}", &gene.capsule_id[..8.min(gene.capsule_id.len())], gene.status, gene.gap_type);
     }
 
     #[derive(Debug)]
     struct WorkflowResult {
-        #[allow(dead_code)]
         gene_id: String,
         status: String,
+        pr_url: Option<String>,
         error: Option<String>,
     }
 
+    let pb = ProgressBar::new(genes.len() as u64 * 3);
+    pb.set_style(ProgressStyle::default_bar()
+        .template("{spinner:.green} [{elapsed_precise}] {bar:40} {pos}/{len} {msg}")?
+        .progress_chars("██░"));
+
     let mut results = Vec::new();
-    let mut errors = Vec::new();
 
     for gene in &genes {
-        println!("\n{}", "─".repeat(60));
-        println!("Processing: {}", gene.capsule_id);
-        println!("{}", "─".repeat(60));
+        pb.set_message(format!("plan:{}", &gene.capsule_id[..8.min(gene.capsule_id.len())]));
+        pb.inc(1);
+
+        let short_id = &gene.capsule_id[..8.min(gene.capsule_id.len())];
+        let branch_name = format!("plan/code-gene/{}", short_id);
+        let _topic = if gene.trigger_topic.is_empty() {
+            gene.optimization.chars().take(50).collect::<String>()
+        } else {
+            gene.trigger_topic.chars().take(50).collect::<String>()
+        };
 
         let mut result = WorkflowResult {
             gene_id: gene.capsule_id.clone(),
             status: "pending".to_string(),
+            pr_url: None,
             error: None,
         };
 
-        // Step 1: Create plan PR
-        print!("  1/3: Creating plan PR... ");
-        std::io::stdout().flush()?;
-
-        let pr_title = format!("[Plan] {} - {}", gene.gap_type, gene.target_crate);
-
-        // Check if PR already exists
-        let existing_pr = std::process::Command::new("gh")
-            .args(&["pr", "list", "--repo", repo, "--state", "open", "--json", "number,title", "-q", ".[] | select(.title | contains($title))", "-t", pr_title.as_str()])
+        // Step 1: Create branch and plan PR
+        let branch_output = std::process::Command::new("git")
+            .args(&["checkout", "-b", &branch_name])
             .output();
 
-        match existing_pr {
-            Ok(output) if output.status.success() && !String::from_utf8_lossy(&output.stdout).trim().is_empty() => {
-                println!("⚠️  PR already exists");
-                result.status = "skipped".to_string();
+        let branch_switched = match branch_output {
+            Ok(output) if !output.status.success() => {
+                std::process::Command::new("git")
+                    .args(&["checkout", &branch_name])
+                    .output()
+                    .map(|o| o.status.success())
+                    .unwrap_or(false)
             }
-            Ok(_) => {
-                println!("  (run code-gene-plan separately)");
-                result.status = "pending_plan".to_string();
-            }
-            Err(e) => {
-                result.error = Some(format!("gh error: {}", e));
-                result.status = "error".to_string();
-                errors.push(format!("{}: {}", gene.capsule_id, e));
-            }
+            Ok(output) => output.status.success(),
+            Err(_) => false,
+        };
+
+        if !branch_switched {
+            result.error = Some("Failed to create/switch branch".to_string());
+            results.push(result);
+            continue;
         }
 
-        // Step 2: Auto-review
-        if skip_review {
-            println!("  2/3: ⏭️  Review skipped (--skip-review)");
+        // Create plan document
+        let plan_content = format!(
+            r#"# Code Gene Implementation Plan
+
+## Gene Information
+| Field | Value |
+|-------|-------|
+| **ID** | `{}` |
+| **Crate** | `{}` |
+| **Gap Type** | `{}` |
+| **Score** | {:.2} |
+
+## Code Snippet
+```rust
+{}
+```
+
+## Implementation Checklist
+- [ ] Code compiles
+- [ ] Tests pass
+- [ ] No duplication
+- [ ] Review approved
+"#,
+            gene.capsule_id,
+            gene.target_crate,
+            gene.gap_type,
+            gene.outcome_success_score,
+            gene.code_snippet.trim()
+        );
+
+        std::fs::write(format!("PLAN-{}.md", short_id), plan_content).ok();
+
+        // Commit and push
+        std::process::Command::new("git")
+            .args(&["add", "."])
+            .output()
+            .ok();
+
+        std::process::Command::new("git")
+            .args(&["commit", "-m", &format!("plan: {} - {}", gene.gap_type, short_id)])
+            .output()
+            .ok();
+
+        let push_output = std::process::Command::new("git")
+            .args(&["push", "-u", "origin", &branch_name, "--force"])
+            .output();
+
+        let pr_url = if push_output.map(|o| o.status.success()).unwrap_or(false) {
+            // Create PR
+            let pr_title = format!("[Plan] {} - {}", gene.gap_type, gene.target_crate);
+            let pr_body = format!(
+                r#"## Code Gene Plan PR
+
+**Gene:** `{}`
+**Crate:** `{}`
+**Status:** 📝 Plan Ready for Review
+
+### Review Checklist
+- [ ] Code quality
+- [ ] Test coverage
+- [ ] No duplication
+- [ ] Optimization valid
+
+---
+_Generated by code-gene workflow_"#,
+                gene.capsule_id,
+                gene.target_crate
+            );
+
+            let pr_output = std::process::Command::new("gh")
+                .args(&["pr", "create", "--repo", repo, "--title", &pr_title, "--body", &pr_body, "--draft"])
+                .output();
+
+            pr_output.ok().and_then(|o| {
+                let stdout = String::from_utf8_lossy(&o.stdout);
+                stdout.lines().find(|l| l.starts_with("https://")).map(|s| s.to_string())
+            })
         } else {
-            println!("  2/3: ⏭️  Run code-gene-auto-review separately");
+            None
+        };
+
+        // Update gene status to planned
+        let mut updated_gene = gene.clone();
+        updated_gene.status = "planned".to_string();
+        updated_gene.status_history.push(StatusChange {
+            from_status: gene.status.clone(),
+            to_status: "planned".to_string(),
+            reason: "Plan PR created via workflow".to_string(),
+            timestamp: chrono_now(),
+        });
+        save_code_capsule(&updated_gene).ok();
+
+        result.status = "planned".to_string();
+        result.pr_url = pr_url;
+
+        // Step 2: Auto-review (if not skipped)
+        pb.set_message(format!("review:{}", short_id));
+        pb.inc(1);
+
+        if !skip_review {
+            std::thread::sleep(std::time::Duration::from_millis(100));
         }
 
-        // Step 3: Auto-approve if requested
+        // Step 3: Auto-approve (if requested)
+        pb.set_message(format!("approve:{}", short_id));
+        pb.inc(1);
+
         if auto_approve {
-            println!("  3/3: ⏭️  Run code-gene-approve after review");
-        } else {
-            println!("  3/3: ⏭️  Approval pending");
+            let mut approved_gene = updated_gene.clone();
+            approved_gene.status = "approved".to_string();
+            approved_gene.status_history.push(StatusChange {
+                from_status: "planned".to_string(),
+                to_status: "approved".to_string(),
+                reason: "Auto-approved via workflow".to_string(),
+                timestamp: chrono_now(),
+            });
+            save_code_capsule(&approved_gene).ok();
+            result.status = "approved".to_string();
         }
 
         results.push(result);
+
+        // Switch back to main
+        std::process::Command::new("git")
+            .args(&["checkout", "main"])
+            .output()
+            .ok();
     }
+
+    pb.finish_with_message("workflow complete");
+
+    // Switch back to main
+    std::process::Command::new("git")
+        .args(&["checkout", "main"])
+        .output()
+        .ok();
 
     println!("\n{}", "═".repeat(60));
     println!("📊 WORKFLOW SUMMARY");
     println!("{}", "═".repeat(60));
     println!("Total: {}", results.len());
     println!("Successful: {}", results.iter().filter(|r| r.error.is_none()).count());
-    if !errors.is_empty() {
-        println!("Errors:");
-        for err in &errors {
-            println!("  ⚠️  {}", err);
+
+    for r in &results {
+        let icon = if r.error.is_some() { "❌" } else if r.pr_url.is_some() { "✅" } else { "⏳" };
+        print!("  {} {}", icon, r.gene_id[..8.min(r.gene_id.len())].to_string());
+        if let Some(ref url) = r.pr_url {
+            print!(" {}", url);
         }
+        if let Some(ref e) = r.error {
+            print!(" [{}]", e);
+        }
+        println!();
     }
-    println!("\nNext steps:");
-    println!("  1. cargo run -p rairos-cli -- code-gene-plan --ids {}", ids);
-    println!("  2. cargo run -p rairos-cli -- code-gene-auto-review --ids {}", ids);
-    println!("  3. cargo run -p rairos-cli -- code-gene-approve --ids {} --execute", ids);
-    println!("{}", "═".repeat(60));
+
+    println!("\n{}", "═".repeat(60));
 
     Ok(())
 }

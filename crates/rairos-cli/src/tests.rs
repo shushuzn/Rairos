@@ -668,3 +668,36 @@ fn profiler_stats_no_crash() {
     let result = handle_profiler_stats();
     assert!(result.is_ok());
 }
+
+// ─── code_gene.rs ─────────────────────────────────────────────────────────
+
+#[test]
+fn code_gene_list_no_crash() {
+    let (db, _dir) = test_db("code_gene_list");
+    let result = handle_code_gene_list(&db, None, 10, "table");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn code_gene_stats_no_crash() {
+    let result = handle_code_gene_stats();
+    assert!(result.is_ok());
+}
+
+#[test]
+fn code_gene_batch_review_no_crash() {
+    let result = handle_code_gene_batch_review("nonexistent", "shushuzn/Rairos", false);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn code_gene_rollback_not_found() {
+    let result = handle_code_gene_rollback("nonexistent_id", None);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn code_gene_cleanup_dry_run() {
+    let result = handle_code_gene_cleanup("shushuzn/Rairos", false);
+    assert!(result.is_ok());
+}
