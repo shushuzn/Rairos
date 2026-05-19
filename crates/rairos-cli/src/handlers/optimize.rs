@@ -951,6 +951,8 @@ pub fn handle_code_gene_add(
     code_snippet: &str,
     optimization: &str,
     keywords: &str,
+    paper_id: &str,
+    paper_title: &str,
 ) -> Result<()> {
     use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -985,8 +987,8 @@ pub fn handle_code_gene_add(
         created_at: chrono::Utc::now().to_rfc3339(),
         trigger_topic: String::new(),
         trigger_keywords: keywords.clone(),
-        source_paper_id: String::new(),
-        source_paper_title: String::new(),
+        source_paper_id: paper_id.to_string(),
+        source_paper_title: paper_title.to_string(),
         target_crate: crate_name.to_string(),
         gap_type: gap_type.to_string(),
         gap_location: crate_name.to_string(),
@@ -1010,6 +1012,9 @@ pub fn handle_code_gene_add(
     println!("  Gap type: {}", gene.gap_type);
     println!("  Keywords: {:?}", gene.trigger_keywords);
     println!("  Code length: {} chars", gene.code_snippet.len());
+    if !paper_id.is_empty() {
+        println!("  Paper: {} - {}", paper_id, paper_title);
+    }
 
     Ok(())
 }
@@ -2969,6 +2974,26 @@ pub fn handle_code_gene_workflow(
             continue;
         }
 
+        // Step 0: Search existing files for relevant code
+        let search_results = std::process::Command::new("grep")
+            .args(&["-r", "-l", "--include=*.rs", &gene.gap_type, "crates/"])
+            .output()
+            .map(|o| String::from_utf8_lossy(&o.stdout).to_string())
+            .unwrap_or_default();
+
+        let existing_files: Vec<&str> = search_results.lines().take(5).collect();
+        let existing_files_section = if existing_files.is_empty() {
+            String::from("## Existing Related Files\n*None found*\n")
+        } else {
+            format!("## Existing Related Files\n{}\n", existing_files.iter().map(|f| format!("- `{}`", f)).collect::<Vec<_>>().join("\n"))
+        };
+
+        let paper_section = if !gene.source_paper_id.is_empty() {
+            format!("\n## Source Paper\n- **ID:** `{}`\n- **Title:** {}\n", gene.source_paper_id, gene.source_paper_title)
+        } else {
+            String::new()
+        };
+
         // Create plan document
         let plan_content = format!(
             r#"# Code Gene Implementation Plan
@@ -2980,12 +3005,12 @@ pub fn handle_code_gene_workflow(
 | **Crate** | `{}` |
 | **Gap Type** | `{}` |
 | **Score** | {:.2} |
-
+{}
 ## Code Snippet
 ```rust
 {}
 ```
-
+{}
 ## Implementation Checklist
 - [ ] Code compiles
 - [ ] Tests pass
@@ -2996,7 +3021,9 @@ pub fn handle_code_gene_workflow(
             gene.target_crate,
             gene.gap_type,
             gene.outcome_success_score,
-            gene.code_snippet.trim()
+            paper_section,
+            gene.code_snippet.trim(),
+            existing_files_section
         );
 
         std::fs::write(format!("PLAN-{}.md", short_id), plan_content).ok();

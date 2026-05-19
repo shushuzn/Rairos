@@ -500,8 +500,8 @@ fn main() -> Result<()> {
         Commands::CodeGeneSyncFromIssue { issues, repo } => {
             handle_code_gene_sync_from_issue(issues, repo)?;
         }
-        Commands::CodeGeneAdd { crate_name, gap_type, code, optimization, keywords } => {
-            handle_code_gene_add(crate_name, gap_type, code, optimization, keywords)?;
+        Commands::CodeGeneAdd { crate_name, gap_type, code, optimization, keywords, paper_id, paper_title } => {
+            handle_code_gene_add(crate_name, gap_type, code, optimization, keywords, paper_id, paper_title)?;
         }
         Commands::CodeGeneImplement { issue, repo, execute } => {
             handle_code_gene_implement(*issue, repo, *execute)?;

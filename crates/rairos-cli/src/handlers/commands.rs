@@ -794,6 +794,14 @@ pub enum Commands {
         /// Keywords for discovery (comma-separated)
         #[arg(short = 'k', long, default_value = "")]
         keywords: String,
+
+        /// Source paper ID (e.g., arXiv ID or DOI)
+        #[arg(short = 'p', long, default_value = "")]
+        paper_id: String,
+
+        /// Source paper title
+        #[arg(short = 't', long, default_value = "")]
+        paper_title: String,
     },
 
     /// Implement code gene from GitHub Issue with workflow
