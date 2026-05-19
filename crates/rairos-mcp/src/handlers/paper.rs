@@ -1,8 +1,7 @@
 use crate::handlers::helpers::{data_dir, gene_pool_path, read_jsonl};
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
-use crate::handlers::helpers::parse_arxiv_response;
 use async_trait::async_trait;
-use rairos_core::constants::{ARXIV_API, GP_DIR_NAME, GENE_POOL_JSONL};
+use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
 use serde_json::Value;
 
 pub struct PaperSearchHandler;
@@ -125,10 +124,12 @@ impl ToolHandler for PaperQueryHandler {
 
         let mut papers = Vec::new();
         for id in ids {
-            let url = format!("{}?id_list={}", ARXIV_API, id);
-            if let Ok(resp) = reqwest::get(&url).await {
-                if let Ok(text) = resp.text().await {
-                    papers.extend(parse_arxiv_response(&text));
+            match rairos_parser::fetch_arxiv(id).await {
+                Ok(paper) => {
+                    papers.push(serde_json::to_value(&paper).unwrap_or_default());
+                }
+                Err(e) => {
+                    return Err(format!("Failed to fetch paper {}: {}", id, e));
                 }
             }
         }
@@ -155,23 +156,22 @@ impl ToolHandler for PaperChatHandler {
         let query = params["query"].as_str().ok_or("Missing query")?;
         let max = (params["max_results"].as_u64().unwrap_or(5) as usize).min(20);
 
-        let url = format!("{}?search_query=all:{}&start=0&max_results={}", ARXIV_API, query.replace(' ', "+"), max);
-        let resp = reqwest::get(&url).await.map_err(|e| format!("arXiv request failed: {}", e))?;
-        let text = resp.text().await.map_err(|e| format!("Read failed: {}", e))?;
-        let papers = parse_arxiv_response(&text);
+        let papers = rairos_parser::search_arxiv(query, max)
+            .await
+            .map_err(|e| format!("Search failed: {}", e))?;
 
         let summaries: Vec<Value> = papers.iter().map(|p| {
-            let abstract_text = p["abstract"].as_str().unwrap_or("");
+            let abstract_text = &p.abstract_text;
             let preview = if abstract_text.len() > 200 {
                 format!("{}...", &abstract_text[..200])
-            } else { abstract_text.to_string() };
+            } else { abstract_text.clone() };
 
             serde_json::json!({
-                "arxiv_id": p["arxiv_id"],
-                "title": p["title"],
-                "authors": p["authors"],
+                "arxiv_id": p.arxiv_id,
+                "title": p.title,
+                "authors": p.authors,
                 "abstract_preview": preview,
-                "published": p["published"],
+                "published": p.published,
             })
         }).collect();
 
