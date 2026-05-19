@@ -1199,7 +1199,22 @@ pub fn handle_code_gene_sync_to_issue(
             gene.evolved_generation
         );
 
-        let labels_arg = format!("code-gene,crate-{}", crate_name);
+        let gap_type_labels: Vec<String> = gene.gap_type
+            .split(|c| c == ',' || c == '/')
+            .flat_map(|t| t.split_whitespace())
+            .map(|t| t.trim_matches(|c| c == ',' || c == '/' || c == ' '))
+            .filter(|t| !t.is_empty())
+            .filter(|t| *t != "gap" && *t != "gaps")
+            .map(|t| t.replace("_gap", "").replace("_gaps", "").to_lowercase())
+            .filter(|t| !t.is_empty())
+            .map(|t| format!("gap-type-{}", t))
+            .collect();
+        let gap_labels_str = if gap_type_labels.is_empty() {
+            String::new()
+        } else {
+            format!(",{}", gap_type_labels.join(","))
+        };
+        let labels_arg = format!("code-gene,crate-{}{}", crate_name, gap_labels_str);
         let output = std::process::Command::new("gh")
             .args(&["issue", "create", "--repo", repo, "--title", &title, "--body", &body, "--label", &labels_arg])
             .output()?;
