@@ -435,6 +435,14 @@ impl CapsuleGene {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatusChange {
+    pub from_status: String,
+    pub to_status: String,
+    pub reason: String,
+    pub timestamp: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CodeCapsuleGene {
     pub capsule_id: String,
     pub created_at: String,
@@ -452,6 +460,7 @@ pub struct CodeCapsuleGene {
     pub evolved_generation: i32,
     pub archetype: HashMap<String, serde_json::Value>,
     pub status: String,
+    pub status_history: Vec<StatusChange>,
     pub low_score_streak: i32,
     pub credibility_score: f64,
     pub credibility_badge: String,
@@ -515,6 +524,16 @@ fn load_code_capsules() -> Vec<CodeCapsuleGene> {
                 evolved_generation: v.get("evolved_generation").and_then(|x| x.as_i64()).unwrap_or(0) as i32,
                 archetype: v.get("archetype").and_then(|x| x.as_object()).map(|m| m.clone().into_iter().collect()).unwrap_or_default(),
                 status: v.get("status").and_then(|x| x.as_str()).unwrap_or("active").to_string(),
+                status_history: v.get("status_history").and_then(|x| x.as_array()).map(|arr| {
+                    arr.iter().filter_map(|item| {
+                        Some(StatusChange {
+                            from_status: item.get("from_status")?.as_str()?.to_string(),
+                            to_status: item.get("to_status")?.as_str()?.to_string(),
+                            reason: item.get("reason")?.as_str()?.to_string(),
+                            timestamp: item.get("timestamp")?.as_str()?.to_string(),
+                        })
+                    }).collect()
+                }).unwrap_or_default(),
                 low_score_streak: v.get("low_score_streak").and_then(|x| x.as_i64()).unwrap_or(0) as i32,
                 credibility_score: v.get("credibility_score").and_then(|x| x.as_f64()).unwrap_or(0.5),
                 credibility_badge: v.get("credibility_badge").and_then(|x| x.as_str()).unwrap_or("medium").to_string(),

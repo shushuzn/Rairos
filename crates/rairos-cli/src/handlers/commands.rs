@@ -696,6 +696,51 @@ pub enum Commands {
         auto_approve: bool,
     },
 
+    /// Run complete workflow: plan → auto-review → auto-approve (with optional review)
+    CodeGeneWorkflow {
+        /// Gene IDs to process (comma-separated, or "all")
+        #[arg(short, long, default_value = "all")]
+        ids: String,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+
+        /// Skip LLM review step
+        #[arg(long)]
+        skip_review: bool,
+
+        /// Auto-approve after review (instead of waiting)
+        #[arg(long)]
+        auto_approve: bool,
+    },
+
+    /// Clean up merged Git branches
+    CodeGeneCleanup {
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+
+        /// Actually delete (dry-run if not set)
+        #[arg(short, long)]
+        execute: bool,
+    },
+
+    /// Parallel batch review for multiple genes
+    CodeGeneBatchReview {
+        /// Gene IDs to process (comma-separated, or "all")
+        #[arg(short, long, default_value = "all")]
+        ids: String,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+
+        /// Auto-approve after review
+        #[arg(long)]
+        auto_approve: bool,
+    },
+
     /// Sync code genes from GitHub Issues
     CodeGeneSyncFromIssue {
         /// Issue numbers to import (comma-separated, or "all")

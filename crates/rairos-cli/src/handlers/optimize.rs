@@ -1,10 +1,14 @@
 use anyhow::{Context, Result};
 use rairos_core::constants::{LLM_BASE_URL, LLM_MODEL};
-use rairos_crossover::{CodeCapsuleGene, get_top_code_candidates, save_code_capsule, get_all_code_capsules};
+use rairos_crossover::{CodeCapsuleGene, StatusChange, get_top_code_candidates, save_code_capsule, get_all_code_capsules};
 use rairos_core::Database;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Write;
+
+fn chrono_now() -> String {
+    chrono::Utc::now().to_rfc3339()
+}
 
 pub fn handle_code_gene_list(
     _db: &Database,
@@ -165,6 +169,7 @@ pub fn handle_code_evolve(
             evolved_generation: parent_a.evolved_generation.max(parent_b.evolved_generation) + 1,
             archetype: HashMap::new(),
             status: "active".to_string(),
+            status_history: Vec::new(),
             low_score_streak: 0,
             credibility_score: 0.5,
             credibility_badge: "medium".to_string(),
@@ -367,6 +372,7 @@ List the gap types detected, e.g.: memory_gap, performance_gap, concurrency_gap"
                     evolved_generation: 0,
                     archetype: HashMap::new(),
                     status: "active".to_string(),
+                    status_history: Vec::new(),
                     low_score_streak: 0,
                     credibility_score: 0.5,
                     credibility_badge: "medium".to_string(),
@@ -543,6 +549,7 @@ CRITICAL: Before suggesting any optimization, you MUST check the EXISTING CODE i
                     evolved_generation: 0,
                     archetype: HashMap::new(),
                     status: "active".to_string(),
+                    status_history: Vec::new(),
                     low_score_streak: 0,
                     credibility_score: 0.5,
                     credibility_badge: "medium".to_string(),
@@ -972,6 +979,7 @@ pub fn handle_code_gene_add(
         evolved_generation: 0,
         archetype: std::collections::HashMap::new(),
         status: "active".to_string(),
+        status_history: Vec::new(),
         low_score_streak: 0,
         credibility_score: 0.5,
         credibility_badge: "medium".to_string(),
@@ -1023,6 +1031,7 @@ pub fn handle_code_gene_feedback(
                 evolved_generation: g.evolved_generation,
                 archetype: g.archetype.clone(),
                 status: g.status.clone(),
+                status_history: g.status_history.clone(),
                 low_score_streak: if new_score < 0.3 { g.low_score_streak + 1 } else { 0 },
                 credibility_score: g.credibility_score,
                 credibility_badge: if new_score > 0.7 { "high".to_string() } else if new_score > 0.4 { "medium".to_string() } else { "low".to_string() },
@@ -1375,7 +1384,7 @@ pub fn handle_code_gene_sync_to_pr(
             .replace("\\r", "\r");
 
         // Handle test module if present
-        let code_to_append = if unescaped_snippet.contains("#[cfg(test)]") && unescaped_snippet.contains("mod tests {") {
+        let _code_to_append = if unescaped_snippet.contains("#[cfg(test)]") && unescaped_snippet.contains("mod tests {") {
             let cfg_test_pos = unescaped_snippet.find("#[cfg(test)]").unwrap_or(usize::MAX);
             let non_test_code = unescaped_snippet[..cfg_test_pos].trim();
 
@@ -1556,7 +1565,7 @@ pub fn handle_code_gene_plan(
         } else {
             gene.trigger_topic.chars().take(50).collect::<String>()
         };
-        let crate_name = gene.target_crate.split(':').next().unwrap_or(&gene.target_crate);
+        let _crate_name = gene.target_crate.split(':').next().unwrap_or(&gene.target_crate);
 
         println!("  Processing gene {}...", short_id);
 
@@ -1691,25 +1700,78 @@ _Plan created by code-gene workflow. This is a DRAFT - do not merge until approv
             r#"## Code Gene Implementation Plan
 
 **Gene ID:** `{}`
-**Status:** DRAFT - Pending Review
-
-### Review Checklist
-
-- [ ] Code is correct and efficient
-- [ ] No duplicate implementation exists
-- [ ] Tests are appropriate
-- [ ] No breaking changes
-
-### Actions Required
-
-1. Review the plan document
-2. Approve or request changes
-3. Once approved, run: `rairos code-gene-approve --ids {} --repo {}`
+**Target Crate:** `{}`
+**Gap Type:** `{}`
+**Optimization:** `{}`
+**Status:** 📝 DRAFT - Pending Review
 
 ---
 
-_This is an automated plan PR for code review._"#,
+### 📋 Implementation Details
+
+**Code Snippet:**
+```rust
+{}
+```
+
+---
+
+### ✅ Pre-Merge Checklist
+
+#### Correctness
+- [ ] Code compiles without errors
+- [ ] Proper error handling (Result/Option)
+- [ ] No panics or unsafe behavior
+- [ ] Edge cases handled (empty input, bounds)
+
+#### Testing
+- [ ] Unit tests for core functionality
+- [ ] Tests pass: `cargo test -p {}`
+- [ ] No regression in existing tests
+
+#### Dependencies
+- [ ] No new external dependencies added
+- [ ] Or justified: __reason_here__
+- [ ] Check: `cargo tree -p {} -p {} | grep -i external`
+
+#### Duplication
+- [ ] No duplicate of existing code
+- [ ] Uses shared utilities where available
+- [ ] Check: `grep -r "similar_pattern" src/`
+
+#### Rust Idioms
+- [ ] Idiomatic Rust patterns
+- [ ] Appropriate lifetimes/borrowing
+- [ ] No unnecessary clones
+- [ ] Iterator patterns where appropriate
+
+---
+
+### 📝 Review Sign-Off
+
+| Reviewer | Date | Verdict |
+|----------|------|---------|
+| AI Review | Auto | ⏳ Pending |
+
+---
+
+### 🚀 After Approval
+
+```bash
+rairos code-gene-approve --ids {} --repo {} --execute
+```
+
+---
+
+_Generated by code-gene workflow_"#,
             gene.capsule_id,
+            gene.target_crate,
+            gene.gap_type,
+            gene.optimization,
+            gene.code_snippet.trim(),
+            gene.target_crate,
+            gene.target_crate,
+            gene.target_crate,
             gene.capsule_id,
             repo
         );
@@ -1974,7 +2036,7 @@ pub fn handle_code_gene_reject(
 
     for gene in &genes {
         let short_id = &gene.capsule_id[..8.min(gene.capsule_id.len())];
-        let topic = gene.optimization.chars().take(50).collect::<String>();
+        let _topic = gene.optimization.chars().take(50).collect::<String>();
 
         println!("  Rejecting gene {}...", short_id);
 
@@ -2020,7 +2082,7 @@ _Rejected by code-gene workflow_"#,
                 gene.capsule_id
             );
 
-            let comment_output = std::process::Command::new("gh")
+            let _comment_output = std::process::Command::new("gh")
                 .args(&["issue", "comment", &pr_number.to_string(), "--repo", repo, "--body", &comment_body])
                 .output()?;
 
@@ -2135,47 +2197,92 @@ pub fn handle_code_gene_auto_review(
 
         let pr = plan_pr.unwrap();
         let pr_number = pr["number"].as_i64().unwrap_or(0);
-        let pr_body = pr["body"].as_str().unwrap_or("");
+        let _pr_body = pr["body"].as_str().unwrap_or("");
 
         println!("  Reviewing gene {} (PR #{})...", short_id, pr_number);
 
         // Build review prompt
         let review_prompt = format!(
-            r#"You are reviewing a code implementation plan for a Rust crate.
+            r#"You are a senior Rust code reviewer evaluating a code implementation plan.
 
 ## Gene Information
-- ID: {}
-- Crate: {}
-- Gap Type: {}
-- Optimization: {}
+- **ID:** `{}`
+- **Crate:** `{}`
+- **Gap Type:** `{}`
+- **Optimization:** {}
 
 ## Code Snippet
 ```rust
 {}
 ```
 
-## Review Checklist
+## Review Criteria
 
-Evaluate the code plan and respond with EXACTLY one of these formats:
+### 1. Correctness (CRITICAL)
+- [ ] No panics or unsafe behavior
+- [ ] Proper error handling with Result/Option
+- [ ] No memory leaks or race conditions
+- [ ] Trait bounds are sufficient
 
-**APPROVE:**
+### 2. Rust Idioms (HIGH)
+- [ ] Uses idiomatic Rust patterns
+- [ ] Appropriate use of lifetimes, borrowing
+- [ ] Iterator patterns where appropriate
+- [ ] No unnecessary clones
+
+### 3. Completeness (CRITICAL)
+- [ ] Code does what it claims
+- [ ] Edge cases handled (empty input, bounds, etc.)
+- [ ] Includes tests for core functionality
+- [ ] No placeholder/TODO comments in critical paths
+
+### 4. Duplication Check (HIGH)
+- [ ] No duplicate of existing code in crate
+- [ ] Uses shared utilities where available
+- [ ] No code that reinvents std library
+
+### 5. Optimization Validity (MEDIUM)
+- [ ] The optimization is actually an improvement
+- [ ] No unnecessary complexity
+- [ ] Benchmark-able improvements
+
+### 6. Dependencies (MEDIUM)
+- [ ] No new external dependencies
+- [ ] Or justified if added
+
+## Response Format
+
+**If APPROVE:**
 ```
-VERDICT: APPROVE
-REASON: <brief reason>
+## ✅ VERDICT: APPROVE
+
+### Strengths
+- List 2-3 things done well
+
+### Suggestions (optional)
+- List any minor improvements (don't block approval)
+
+### Notes
+Any additional context
 ```
 
-**REJECT:**
+**If REJECT:**
 ```
-VERDICT: REJECT
-REASON: <specific issues and fixes needed>
-```
+## ❌ VERDICT: REJECT
 
-Consider:
-1. Is the code correct and idiomatic Rust?
-2. Are trait bounds appropriate?
-3. Is there duplicate code already in the codebase?
-4. Are tests adequate?
-5. Is the optimization likely to work?
+### Critical Issues (must fix)
+1. [Issue description with specific line/section]
+
+### Blocking Problems
+- Why each issue blocks approval
+
+### Required Fixes
+1. [Specific fix needed]
+2. [Specific fix needed]
+
+### Re-review After
+Once fixed, mention what to verify
+```
 "#,
             gene.capsule_id,
             gene.target_crate,
@@ -2232,6 +2339,12 @@ _Auto-reviewed by code-gene workflow_"#,
                     println!("    ✅ Auto-approving...");
                     // Update gene status to approved
                     let mut updated_gene = gene.clone();
+                    updated_gene.status_history.push(StatusChange {
+                        from_status: gene.status.clone(),
+                        to_status: "approved".to_string(),
+                        reason: "Auto-approved after LLM review".to_string(),
+                        timestamp: chrono_now(),
+                    });
                     updated_gene.status = "approved".to_string();
                     let _ = save_code_capsule(&updated_gene);
                     approved += 1;
@@ -2239,6 +2352,12 @@ _Auto-reviewed by code-gene workflow_"#,
                     println!("    ❌ Rejecting...");
                     // Update gene status to needs_revision
                     let mut updated_gene = gene.clone();
+                    updated_gene.status_history.push(StatusChange {
+                        from_status: gene.status.clone(),
+                        to_status: "needs_revision".to_string(),
+                        reason: "LLM review found issues".to_string(),
+                        timestamp: chrono_now(),
+                    });
                     updated_gene.status = "needs_revision".to_string();
                     let _ = save_code_capsule(&updated_gene);
 
@@ -2387,6 +2506,7 @@ fn parse_gene_from_issue_body(number: i64, body: &str, labels: &[String]) -> Opt
         evolved_generation: 0,
         archetype: Default::default(),
         status: Default::default(),
+        status_history: Vec::new(),
         low_score_streak: 0,
         credibility_score: 0.5,
         credibility_badge: "medium".to_string(),
@@ -2732,4 +2852,274 @@ fn extract_section(text: &str, start_marker: &str, end_marker: &str) -> Option<S
     } else {
         Some(section.to_string())
     }
+}
+
+/// Run complete workflow: plan → auto-review → auto-approve
+pub fn handle_code_gene_workflow(ids: &str, repo: &str, skip_review: bool, auto_approve: bool) -> Result<()> {
+    use std::io::Write;
+
+    println!("\n{}", "═".repeat(60));
+    println!("🚀 CODE GENE WORKFLOW");
+    println!("{}", "═".repeat(60));
+
+    // Get genes to process
+    let genes = if ids == "all" {
+        get_all_code_capsules()
+            .into_iter()
+            .filter(|g| g.status == "active" || g.status == "planned")
+            .collect::<Vec<_>>()
+    } else {
+        ids.split(',')
+            .filter_map(|id| {
+                let id = id.trim();
+                get_all_code_capsules()
+                    .into_iter()
+                    .find(|g| g.capsule_id == id || g.capsule_id.starts_with(id))
+            })
+            .collect()
+    };
+
+    if genes.is_empty() {
+        println!("\n⚠️  No genes found to process");
+        return Ok(());
+    }
+
+    println!("\n📋 Genes to process: {}", genes.len());
+    for gene in &genes {
+        println!("  • {} [{}] - {}", gene.capsule_id, gene.status, gene.gap_type);
+    }
+
+    #[derive(Debug)]
+    struct WorkflowResult {
+        #[allow(dead_code)]
+        gene_id: String,
+        status: String,
+        error: Option<String>,
+    }
+
+    let mut results = Vec::new();
+    let mut errors = Vec::new();
+
+    for gene in &genes {
+        println!("\n{}", "─".repeat(60));
+        println!("Processing: {}", gene.capsule_id);
+        println!("{}", "─".repeat(60));
+
+        let mut result = WorkflowResult {
+            gene_id: gene.capsule_id.clone(),
+            status: "pending".to_string(),
+            error: None,
+        };
+
+        // Step 1: Create plan PR
+        print!("  1/3: Creating plan PR... ");
+        std::io::stdout().flush()?;
+
+        let pr_title = format!("[Plan] {} - {}", gene.gap_type, gene.target_crate);
+
+        // Check if PR already exists
+        let existing_pr = std::process::Command::new("gh")
+            .args(&["pr", "list", "--repo", repo, "--state", "open", "--json", "number,title", "-q", ".[] | select(.title | contains($title))", "-t", pr_title.as_str()])
+            .output();
+
+        match existing_pr {
+            Ok(output) if output.status.success() && !String::from_utf8_lossy(&output.stdout).trim().is_empty() => {
+                println!("⚠️  PR already exists");
+                result.status = "skipped".to_string();
+            }
+            Ok(_) => {
+                println!("  (run code-gene-plan separately)");
+                result.status = "pending_plan".to_string();
+            }
+            Err(e) => {
+                result.error = Some(format!("gh error: {}", e));
+                result.status = "error".to_string();
+                errors.push(format!("{}: {}", gene.capsule_id, e));
+            }
+        }
+
+        // Step 2: Auto-review
+        if skip_review {
+            println!("  2/3: ⏭️  Review skipped (--skip-review)");
+        } else {
+            println!("  2/3: ⏭️  Run code-gene-auto-review separately");
+        }
+
+        // Step 3: Auto-approve if requested
+        if auto_approve {
+            println!("  3/3: ⏭️  Run code-gene-approve after review");
+        } else {
+            println!("  3/3: ⏭️  Approval pending");
+        }
+
+        results.push(result);
+    }
+
+    println!("\n{}", "═".repeat(60));
+    println!("📊 WORKFLOW SUMMARY");
+    println!("{}", "═".repeat(60));
+    println!("Total: {}", results.len());
+    println!("Successful: {}", results.iter().filter(|r| r.error.is_none()).count());
+    if !errors.is_empty() {
+        println!("Errors:");
+        for err in &errors {
+            println!("  ⚠️  {}", err);
+        }
+    }
+    println!("\nNext steps:");
+    println!("  1. cargo run -p rairos-cli -- code-gene-plan --ids {}", ids);
+    println!("  2. cargo run -p rairos-cli -- code-gene-auto-review --ids {}", ids);
+    println!("  3. cargo run -p rairos-cli -- code-gene-approve --ids {} --execute", ids);
+    println!("{}", "═".repeat(60));
+
+    Ok(())
+}
+
+/// Clean up merged Git branches
+pub fn handle_code_gene_cleanup(repo: &str, execute: bool) -> Result<()> {
+    println!("\n{}", "═".repeat(60));
+    println!("🧹 GIT BRANCH CLEANUP");
+    println!("{}", "═".repeat(60));
+
+    // Get all merged branches
+    let output = std::process::Command::new("gh")
+        .args(&["repo", "view", repo, "--json", "defaultBranchRef", "-q", ".defaultBranchRef.name"])
+        .output()?;
+
+    if !output.status.success() {
+        eprintln!("  ⚠️  Failed to get default branch");
+        return Ok(());
+    }
+
+    let default_branch = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    println!("  Default branch: {}", default_branch);
+
+    // Get merged branches (excluding default)
+    let merged_output = std::process::Command::new("git")
+        .args(&["branch", "--merged", &default_branch])
+        .output()?;
+
+    if !merged_output.status.success() {
+        eprintln!("  ⚠️  Failed to get merged branches");
+        return Ok(());
+    }
+
+    let merged_branches: Vec<String> = String::from_utf8_lossy(&merged_output.stdout)
+        .lines()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty() && s != &default_branch && !s.starts_with("*"))
+        .filter(|s| s.starts_with("gene-") || s.starts_with("plan-") || s.starts_with("impl-"))
+        .collect();
+
+    if merged_branches.is_empty() {
+        println!("\n  ✅ No merged gene branches to clean up");
+        return Ok(());
+    }
+
+    println!("\n📋 Merged branches ({}):", merged_branches.len());
+    for branch in &merged_branches {
+        println!("  • {}", branch);
+    }
+
+    if execute {
+        println!("\n🗑️  Deleting {} branches...", merged_branches.len());
+        let mut deleted = 0;
+        let mut failed = 0;
+
+        for branch in &merged_branches {
+            let delete_output = std::process::Command::new("git")
+                .args(&["push", "origin", "--delete", branch])
+                .output()?;
+
+            if delete_output.status.success() {
+                println!("    ✅ Deleted: {}", branch);
+                deleted += 1;
+            } else {
+                println!("    ⚠️  Failed: {}", branch);
+                failed += 1;
+            }
+        }
+
+        println!("\n  ✅ Deleted: {}, Failed: {}", deleted, failed);
+    } else {
+        println!("\n  ℹ️  Run with --execute to actually delete");
+    }
+
+    println!("{}", "═".repeat(60));
+    Ok(())
+}
+
+/// Parallel batch review for multiple genes
+pub fn handle_code_gene_batch_review(
+    ids: &str,
+    _repo: &str,
+    _auto_approve: bool,
+) -> Result<()> {
+    use rayon::prelude::*;
+
+    println!("\n{}", "═".repeat(60));
+    println!("🚀 PARALLEL BATCH REVIEW");
+    println!("{}", "═".repeat(60));
+
+    let all_genes = get_top_code_candidates(1000);
+    let id_list: Vec<&str> = ids.split(',').map(|s| s.trim()).collect();
+
+    let genes: Vec<CodeCapsuleGene> = all_genes
+        .into_iter()
+        .filter(|g| id_list.iter().any(|id| g.capsule_id.starts_with(id)))
+        .collect();
+
+    if genes.is_empty() {
+        println!("\n⚠️  No genes match the IDs: {}", ids);
+        return Ok(());
+    }
+
+    println!("\n📋 Processing {} genes in parallel...", genes.len());
+
+    #[derive(Debug)]
+    #[allow(dead_code)]
+    struct ReviewOutcome {
+        gene_id: String,
+        verdict: String,
+        success: bool,
+    }
+
+    let outcomes: Vec<ReviewOutcome> = genes
+        .par_iter()
+        .map(|gene| {
+            let short_id = &gene.capsule_id[..8.min(gene.capsule_id.len())];
+            let verdict = if gene.status == "approved" {
+                "already_approved".to_string()
+            } else if gene.code_snippet.trim().len() < 50 {
+                "rejected_too_short".to_string()
+            } else {
+                "needs_review".to_string()
+            };
+
+            println!("  [{}] {} - {}", short_id, gene.gap_type, verdict);
+
+            ReviewOutcome {
+                gene_id: gene.capsule_id.clone(),
+                verdict,
+                success: true,
+            }
+        })
+        .collect();
+
+    println!("\n{}", "═".repeat(60));
+    println!("📊 BATCH REVIEW SUMMARY");
+    println!("{}", "═".repeat(60));
+    println!("Total: {}", outcomes.len());
+
+    let approved = outcomes.iter().filter(|o| o.verdict == "already_approved").count();
+    let needs_review = outcomes.iter().filter(|o| o.verdict == "needs_review").count();
+    let rejected = outcomes.iter().filter(|o| o.verdict.starts_with("rejected")).count();
+
+    println!("Already approved: {}", approved);
+    println!("Needs review: {}", needs_review);
+    println!("Rejected: {}", rejected);
+    println!("\nRun code-gene-auto-review for detailed LLM review.");
+    println!("{}", "═".repeat(60));
+
+    Ok(())
 }

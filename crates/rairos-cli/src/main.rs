@@ -506,6 +506,15 @@ fn main() -> Result<()> {
         Commands::CodeGeneImplement { issue, repo, execute } => {
             handle_code_gene_implement(*issue, repo, *execute)?;
         }
+        Commands::CodeGeneWorkflow { ids, repo, skip_review, auto_approve } => {
+            handle_code_gene_workflow(ids, repo, *skip_review, *auto_approve)?;
+        }
+        Commands::CodeGeneCleanup { repo, execute } => {
+            handle_code_gene_cleanup(repo, *execute)?;
+        }
+        Commands::CodeGeneBatchReview { ids, repo, auto_approve } => {
+            handle_code_gene_batch_review(ids, repo, *auto_approve)?;
+        }
         Commands::GeneAdd {
             approach,
             gap_type,
