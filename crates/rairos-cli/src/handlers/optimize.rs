@@ -1285,6 +1285,229 @@ pub fn handle_code_gene_sync_to_issue(
     Ok(())
 }
 
+pub fn handle_code_gene_sync_to_pr(
+    ids: &str,
+    repo: &str,
+    crate_name: Option<String>,
+    min_score: f64,
+) -> Result<()> {
+    let all_genes = get_top_code_candidates(1000);
+
+    let genes: Vec<CodeCapsuleGene> = {
+        let filtered: Vec<CodeCapsuleGene> = if ids == "all" {
+            all_genes
+        } else {
+            let id_list: Vec<&str> = ids.split(',').map(|s| s.trim()).collect();
+            all_genes.into_iter().filter(|g| id_list.iter().any(|id| g.capsule_id.starts_with(id))).collect()
+        };
+
+        let filtered = if let Some(ref cn) = crate_name {
+            let cn_clean = cn.replace(|c: char| !c.is_alphanumeric(), "");
+            filtered.into_iter().filter(|c| {
+                let target_clean = c.target_crate.replace(|c: char| !c.is_alphanumeric(), "");
+                target_clean.contains(&cn_clean)
+            }).collect()
+        } else {
+            filtered
+        };
+
+        filtered.into_iter().filter(|g| g.outcome_success_score >= min_score).collect()
+    };
+
+    if genes.is_empty() {
+        println!("No code genes match the criteria.");
+        return Ok(());
+    }
+
+    println!("Syncing {} genes to GitHub PRs...\n", genes.len());
+
+    let mut created = 0;
+    let mut errors = 0;
+
+    for gene in &genes {
+        let short_id = &gene.capsule_id[..8.min(gene.capsule_id.len())];
+        let branch_name = format!("code-gene/{}", short_id);
+
+        let topic = if gene.trigger_topic.is_empty() {
+            gene.optimization.chars().take(50).collect::<String>()
+        } else {
+            gene.trigger_topic.chars().take(50).collect::<String>()
+        };
+        let crate_name = gene.target_crate.split(':').next().unwrap_or(&gene.target_crate);
+
+        println!("  Processing gene {}...", short_id);
+
+        // Create branch
+        let branch_output = std::process::Command::new("git")
+            .args(&["checkout", "-b", &branch_name])
+            .output()?;
+
+        if !branch_output.status.success() {
+            let stderr = String::from_utf8_lossy(&branch_output.stderr);
+            // Branch might already exist, try to switch to it
+            let switch_output = std::process::Command::new("git")
+                .args(&["checkout", &branch_name])
+                .output()?;
+
+            if !switch_output.status.success() {
+                eprintln!("  ❌ Failed to create/switch to branch {}: {}", branch_name, stderr.trim());
+                errors += 1;
+                continue;
+            }
+        }
+
+        // Add code to lib.rs
+        let lib_rs_path = format!("crates/{}/src/lib.rs", crate_name);
+        let existing_content = match std::fs::read_to_string(&lib_rs_path) {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("  ❌ Failed to read {}: {}", lib_rs_path, e);
+                errors += 1;
+                continue;
+            }
+        };
+
+        // Unescape code snippet
+        let unescaped_snippet = gene.code_snippet
+            .replace("\\\"", "\"")
+            .replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace("\\r", "\r");
+
+        // Handle test module if present
+        let code_to_append = if unescaped_snippet.contains("#[cfg(test)]") && unescaped_snippet.contains("mod tests {") {
+            let cfg_test_pos = unescaped_snippet.find("#[cfg(test)]").unwrap_or(usize::MAX);
+            let non_test_code = unescaped_snippet[..cfg_test_pos].trim();
+
+            let test_module_start = unescaped_snippet[cfg_test_pos..].find("mod tests {").unwrap_or(usize::MAX);
+            let after_mod = &unescaped_snippet[cfg_test_pos..][test_module_start + "mod tests {".len()..];
+            let last_brace = after_mod.rfind('}').unwrap_or(usize::MAX);
+            let test_inner = &after_mod[..last_brace];
+
+            let test_funcs = test_inner.lines()
+                .filter(|l| !l.trim().is_empty() && !l.trim().starts_with("use super::*;"))
+                .collect::<Vec<_>>()
+                .join("\n");
+
+            format!("{}\n\n// ========== Code Gene: {} ==========\n    // {}\n{}",
+                non_test_code,
+                short_id,
+                gene.optimization.chars().take(60).collect::<String>(),
+                test_funcs)
+        } else {
+            format!("{}\n\n// ========== Code Gene: {} ==========\n// {}\n{}",
+                existing_content.trim_end(),
+                short_id,
+                gene.optimization.chars().take(60).collect::<String>(),
+                unescaped_snippet)
+        };
+
+        // Write updated content (only if we have non-test code)
+        if !unescaped_snippet.contains("#[cfg(test)]") {
+            let new_content = format!("{}\n\n// ========== Code Gene: {} ==========\n// {}\n{}\n",
+                existing_content.trim_end(),
+                short_id,
+                gene.optimization.chars().take(60).collect::<String>(),
+                unescaped_snippet);
+
+            if let Err(e) = std::fs::write(&lib_rs_path, new_content) {
+                eprintln!("  ❌ Failed to write to {}: {}", lib_rs_path, e);
+                errors += 1;
+                continue;
+            }
+        }
+
+        // Stage and commit
+        let add_output = std::process::Command::new("git")
+            .args(&["add", &lib_rs_path])
+            .output()?;
+
+        if !add_output.status.success() {
+            eprintln!("  ❌ Failed to stage changes");
+            errors += 1;
+            continue;
+        }
+
+        let commit_msg = format!("feat({}): implement code gene {} - {}",
+            crate_name,
+            short_id,
+            topic.replace("\"", "\\\""));
+        let commit_output = std::process::Command::new("git")
+            .args(&["commit", "-m", &commit_msg])
+            .output()?;
+
+        if !commit_output.status.success() {
+            let stderr = String::from_utf8_lossy(&commit_output.stderr);
+            eprintln!("  ❌ Failed to commit: {}", stderr.trim());
+            errors += 1;
+            continue;
+        }
+
+        // Push branch
+        let push_output = std::process::Command::new("git")
+            .args(&["push", "-u", "origin", &branch_name])
+            .output()?;
+
+        if !push_output.status.success() {
+            let stderr = String::from_utf8_lossy(&push_output.stderr);
+            eprintln!("  ❌ Failed to push branch: {}", stderr.trim());
+            errors += 1;
+            continue;
+        }
+
+        // Create PR
+        let pr_title = format!("[code-gene] {}: {}", crate_name, topic);
+        let pr_body = format!(
+            r#"## Code Gene Implementation
+
+**Gene ID:** `{}`
+**Crate:** `{}`
+**Gap Type:** `{}`
+
+### Optimization
+
+{}
+
+### Code
+
+```rust
+{}
+```
+
+---
+
+_This PR was auto-generated by the code-gene workflow._"#,
+            gene.capsule_id,
+            gene.target_crate,
+            gene.gap_type,
+            gene.optimization,
+            gene.code_snippet.trim()
+        );
+
+        let pr_output = std::process::Command::new("gh")
+            .args(&["pr", "create", "--repo", repo, "--title", &pr_title, "--body", &pr_body])
+            .output()?;
+
+        if pr_output.status.success() {
+            let stdout = String::from_utf8_lossy(&pr_output.stdout);
+            println!("  ✅ Created PR: {}", stdout.trim());
+            created += 1;
+        } else {
+            let stderr = String::from_utf8_lossy(&pr_output.stderr);
+            eprintln!("  ❌ Failed to create PR: {}", stderr.trim());
+            errors += 1;
+        }
+
+        // Switch back to main
+        let _ = std::process::Command::new("git")
+            .args(&["checkout", "main"])
+            .output()?;
+    }
+
+    println!("\n{} PRs created, {} errors", created, errors);
+    Ok(())
+}
+
 pub fn handle_code_gene_sync_from_issue(
     _issues: &str,
     repo: &str,
@@ -1627,6 +1850,19 @@ pub fn handle_code_gene_implement(
             implementation_succeeded = test_output.status.success();
             if implementation_succeeded {
                 println!("  ✅ Tests passed!");
+
+                // Update gene status to "implemented"
+                if let Some(ref gid) = gene_id {
+                    if let Some(gene) = get_all_code_capsules().iter().find(|g| g.capsule_id == *gid) {
+                        let mut updated_gene = gene.clone();
+                        updated_gene.status = "implemented".to_string();
+                        if let Err(e) = save_code_capsule(&updated_gene) {
+                            eprintln!("  ⚠️  Failed to update gene status: {}", e);
+                        } else {
+                            println!("  ✅ Gene status updated to 'implemented'");
+                        }
+                    }
+                }
             } else {
                 let stderr = String::from_utf8_lossy(&test_output.stderr);
                 println!("  ⚠️  Tests failed:");

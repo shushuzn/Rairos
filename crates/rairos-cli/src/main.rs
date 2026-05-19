@@ -482,6 +482,9 @@ fn main() -> Result<()> {
         Commands::CodeGeneSyncToIssue { ids, crate_name, min_score } => {
             handle_code_gene_sync_to_issue(ids, crate_name.clone(), *min_score)?;
         }
+        Commands::CodeGeneSyncToPr { ids, repo, crate_name, min_score } => {
+            handle_code_gene_sync_to_pr(ids, repo, crate_name.clone(), *min_score)?;
+        }
         Commands::CodeGeneSyncFromIssue { issues, repo } => {
             handle_code_gene_sync_from_issue(issues, repo)?;
         }
