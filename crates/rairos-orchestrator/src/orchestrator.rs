@@ -66,6 +66,16 @@ impl AutonomousOrchestrator {
         self.bayesian_optimizer.observe(thresholds, alert_rate);
     }
 
+    pub fn suggest_research_direction(&mut self, available_gap_types: &[&str]) -> Option<String> {
+        self.regret_selector.select(available_gap_types)
+    }
+
+    pub fn get_regret_stats(&self) -> (usize, f64) {
+        let total = self.regret_selector.total_selections();
+        let empirical_best = self.regret_selector.empirical_best_score();
+        (total, empirical_best)
+    }
+
     async fn init_components(&self) -> Result<()> {
         {
             let mut db_guard = self.db.write().await;

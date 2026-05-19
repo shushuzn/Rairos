@@ -1560,6 +1560,20 @@ impl RegretOptimalSelector {
         let empirical_best = self.capsule_scores.values().map(|&s| s).fold(0.0, f64::max);
         (optimal_score * self.total_selections as f64) - empirical_best
     }
+
+    pub fn total_selections(&self) -> usize {
+        self.total_selections
+    }
+
+    pub fn empirical_best_score(&self) -> f64 {
+        self.capsule_scores.values().fold(0.0, |best, &score| best.max(score))
+    }
+
+    pub fn get_ucb_scores(&self) -> HashMap<String, f64> {
+        self.capsule_scores.keys()
+            .map(|id| (id.clone(), self.ucb_score(id)))
+            .collect()
+    }
 }
 
 // ============================================================================
