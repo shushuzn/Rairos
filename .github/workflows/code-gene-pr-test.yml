@@ -1,0 +1,75 @@
+name: Code Gene PR Tests
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  code-gene-test:
+    runs-on: ubuntu-latest
+    if: |
+      startsWith(github.head_ref, 'plan/code-gene/') ||
+      startsWith(github.head_ref, 'impl/code-gene/')
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Get target crate
+        id: crate
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
+
+          # Extract crate from PR title like "[Plan] Performance - rairos-rankers-base"
+          CRATE=$(echo "$PR_TITLE" | grep -oE 'rairos-[a-z-]+' | head -1)
+          if [ -z "$CRATE" ]; then
+            CRATE="rairos-cli"
+          fi
+          echo "target_crate=$CRATE" >> $GITHUB_OUTPUT
+
+      - name: Build target crate
+        run: cargo build -p ${{ steps.crate.outputs.target_crate }}
+
+      - name: Run crate tests
+        run: cargo test -p ${{ steps.crate.outputs.target_crate }} --lib --bins
+
+      - name: Post test results as PR comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const crateName = '${{ steps.crate.outputs.target_crate }}';
+
+            const testComment = `
+            ## 🧪 Code Gene Test Results
+
+            **Crate:** \`${{ steps.crate.outputs.target_crate }}\`
+
+            **Branch:** \`${context.payload.pull_request.head.ref}\`
+
+            **Status:** ${context.job.status === 'success' ? '✅ Tests Passed' : '❌ Tests Failed'}
+
+            ---
+            _Automated test results from code-gene workflow_
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: testComment
+            });
