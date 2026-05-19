@@ -476,3 +476,65 @@ impl<K: std::hash::Hash + Eq + Clone, V: Clone> LruRankerCache<K, V> {
         self.order.push(key);
     }
 }
+
+// ========== Code Gene Implementation ==========
+/// Normalize scores across multiple rankers using z-score normalization.
+pub fn normalize_scores_batch(scores: &[f32]) -> Vec<f32> {
+    if scores.is_empty() {
+        return vec![];
+    }
+    
+    let mean = scores.iter().sum::<f32>() / scores.len() as f32;
+    let variance = scores.iter()
+        .map(|&s| (s - mean).powi(2))
+        .sum::<f32>() / scores.len() as f32;
+    let std_dev = variance.sqrt();
+    
+    if std_dev == 0.0 {
+        return vec![0.0; scores.len()];
+    }
+    
+    scores.iter()
+        .map(|&s| (s - mean) / std_dev)
+        .collect()
+}
+
+// ========== Code Gene: 18b0eb7b ==========
+// 7. Async Ranker with Shutdown
+/// Async ranker that supports graceful shutdown.
+use tokio::sync::RwLock;
+use std::sync::Arc;
+
+pub struct AsyncRanker {
+    inner: Arc<RwLock<RankerState>>,
+    shutdown: Arc<RwLock<bool>>,
+}
+
+struct RankerState {
+    results: Vec<RankedResult<String>>,
+    version: u64,
+}
+
+impl AsyncRanker {
+    pub fn new() -> Self {
+        Self {
+            inner: Arc::new(RwLock::new(RankerState {
+                results: vec![],
+                version: 0,
+            })),
+            shutdown: Arc::new(RwLock::new(false)),
+        }
+    }
+    
+    pub async fn rank(&self, query: &str) -> Vec<RankedResult<String>> {
+        if *self.shutdown.read().await {
+            return vec![];
+        }
+        self.inner.read().await.results.clone()
+    }
+    
+    pub async fn shutdown(&self) {
+        let mut s = self.shutdown.write().await;
+        *s = true;
+    }
+}
