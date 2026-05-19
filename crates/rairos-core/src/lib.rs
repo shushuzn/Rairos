@@ -2620,3 +2620,7 @@ pub fn jaccard_similarity(a: &[String], b: &[String]) -> f64 {
     let union = set_a.union(&set_b).count();
     intersection as f64 / union as f64
 }
+
+// ========== Code Gene: 18b0f121 ==========
+// add LRU cache for hot path optimization
+pub fn cached_hot_path(&self) -> Vec<f32> { self.lru_cache.get_or_insert_with(|| self.compute()) }
