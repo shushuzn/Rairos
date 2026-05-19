@@ -13,6 +13,8 @@ use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
 
+pub const MAX_CODE_GENES: usize = 100;
+
 // ============================================================================
 // Preference Ranker (arXiv:2505.08735)
 // ============================================================================
@@ -546,20 +548,30 @@ pub fn save_code_capsule(capsule: &CodeCapsuleGene) -> std::io::Result<()> {
         fs::create_dir_all(parent)?;
     }
 
-    let capsules = load_code_capsules();
+    let mut capsules = load_code_capsules();
     let exists = capsules.iter().any(|c| c.capsule_id == capsule.capsule_id);
 
     if exists {
         return update_code_capsule(capsule);
     }
 
-    let json = serde_json::to_string(capsule)?;
-    let mut file = fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&path)?;
-    file.write_all(json.as_bytes())?;
-    file.write_all(b"\n")?;
+    capsules.push(capsule.clone());
+
+    if capsules.len() > MAX_CODE_GENES {
+        capsules.sort_by(|a, b| {
+            let score_a = a.outcome_success_score * 100.0 + a.feedback_count as f64;
+            let score_b = b.outcome_success_score * 100.0 + b.feedback_count as f64;
+            score_b.partial_cmp(&score_a).unwrap_or(std::cmp::Ordering::Equal)
+        });
+        capsules.truncate(MAX_CODE_GENES);
+    }
+
+    let mut file = fs::File::create(&path)?;
+    for cap in &capsules {
+        let json = serde_json::to_string(cap)?;
+        file.write_all(json.as_bytes())?;
+        file.write_all(b"\n")?;
+    }
     Ok(())
 }
 
