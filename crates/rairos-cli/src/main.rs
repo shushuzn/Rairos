@@ -485,6 +485,9 @@ fn main() -> Result<()> {
         Commands::CodeGeneSyncFromIssue { issues, repo } => {
             handle_code_gene_sync_from_issue(issues, repo)?;
         }
+        Commands::CodeGeneImplement { issue, repo, execute } => {
+            handle_code_gene_implement(*issue, repo, *execute)?;
+        }
         Commands::GeneAdd {
             approach,
             gap_type,

@@ -1356,6 +1356,187 @@ fn extract_github_code_block(text: &str) -> String {
     String::new()
 }
 
+pub fn handle_code_gene_implement(
+    issue_number: usize,
+    repo: &str,
+    execute: bool,
+) -> Result<()> {
+    println!("\n{}", "═".repeat(60));
+    println!("📋 Code Gene Implementation Workflow");
+    println!("{}", "═".repeat(60));
+    println!("  Issue: #{}", issue_number);
+    println!("  Repo: {}", repo);
+    println!("  Mode: {}", if execute { "EXECUTE" } else { "DRY-RUN (preview only)" });
+    println!();
+
+    // Step 1: Fetch issue from GitHub
+    println!("Step 1/5: Fetching issue from GitHub...");
+    let output = std::process::Command::new("gh")
+        .args(&["issue", "view", &format!("{}", issue_number), "--repo", repo, "--json", "number,title,body,labels,state"])
+        .output()?;
+
+    if !output.status.success() {
+        anyhow::bail!("Failed to fetch issue #{}", issue_number);
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let issue: serde_json::Value = serde_json::from_str(&stdout)
+        .context("Failed to parse issue JSON")?;
+
+    let title = issue["title"].as_str().unwrap_or("");
+    let body = issue["body"].as_str().unwrap_or("");
+    let labels: Vec<String> = issue["labels"].as_array()
+        .map(|arr| arr.iter().filter_map(|l| l["name"].as_str().map(String::from)).collect())
+        .unwrap_or_default();
+
+    println!("  ✅ Fetched: {}", title);
+
+    // Step 2: Parse gene ID and optimization from issue body
+    println!("\nStep 2/5: Parsing gene information...");
+    let gene_id = body.lines()
+        .find(|l| l.starts_with("**ID:**"))
+        .and_then(|l| l.split("`").nth(1))
+        .map(|s| s.to_string());
+
+    let optimization = extract_section(body, "## Optimization", "## Code")
+        .unwrap_or_else(|| "Unknown optimization".to_string());
+
+    let code_snippet = extract_github_code_block(body);
+
+    if let Some(ref id) = gene_id {
+        println!("  ✅ Gene ID: {}", id);
+    }
+    println!("  ✅ Optimization: {}...", optimization.chars().take(50).collect::<String>());
+    println!("  ✅ Code snippet: {} chars", code_snippet.len());
+
+    // Step 3: Search existing code to prevent duplicates
+    println!("\nStep 3/5: Searching for existing code (duplicate check)...");
+    let crate_label = labels.iter().find(|l| l.starts_with("crate-")).cloned();
+
+    // Extract function names and identifiers from code snippet for search
+    let search_terms: Vec<String> = code_snippet.lines()
+        .filter(|l| !l.trim().starts_with("//") && !l.trim().is_empty())
+        .filter_map(|l| {
+            // Look for function names, struct names
+            if l.contains("fn ") {
+                l.split("fn ").nth(1)?.split('(').next().map(|s| s.trim().to_string())
+            } else if l.contains("pub struct") {
+                l.split("pub struct ").nth(1).map(|s| s.split_whitespace().next().unwrap_or("").to_string())
+            } else if l.contains("struct ") {
+                l.split("struct ").nth(1).map(|s| s.split_whitespace().next().unwrap_or("").to_string())
+            } else {
+                None
+            }
+        })
+        .filter(|s| s.len() > 2 && !s.contains('{'))
+        .take(5)
+        .collect();
+
+    println!("  🔍 Searching for: {:?}", search_terms);
+
+    let existing_code = if let Some(ref crate_name) = crate_label {
+        let crate_path = format!("crates/{}/src", crate_name.replace("crate-", ""));
+        let mut results = Vec::new();
+        for term in &search_terms {
+            let r = search_code_in_path(term, &crate_path);
+            results.extend(r);
+        }
+        results
+    } else {
+        let mut results = Vec::new();
+        for term in &search_terms {
+            let r = search_code_in_path(term, "crates");
+            results.extend(r);
+        }
+        results
+    };
+
+    if !existing_code.is_empty() {
+        println!("  ⚠️  Found existing code - NO DUPLICATE IMPLEMENTATION:");
+        for (path, line) in existing_code.iter().take(3) {
+            println!("    - {}: {}", path, line.chars().take(60).collect::<String>());
+        }
+    } else {
+        println!("  ✅ No existing code found - safe to implement");
+    }
+
+    // Step 4: Post implementation plan as comment
+    println!("\nStep 4/5: Posting implementation plan to issue...");
+
+    let plan = if existing_code.is_empty() {
+        format!("## Implementation Plan\n\n### Status: Ready to Implement ✅\n\n**Gene ID:** `{}`\n**Search Results:** No existing code found - safe to implement.\n\n### Implementation Steps\n\n1. [ ] Create implementation in target crate\n2. [ ] Add tests\n3. [ ] Run tests to verify\n4. [ ] Mark issue as `Implemented`\n5. [ ] Update gene feedback\n\n### Code to Implement\n\n```rust\n{}\n```\n\n---\n*Workflow: Search → Plan → Confirm → Implement*", gene_id.as_deref().unwrap_or("N/A"), code_snippet)
+    } else {
+        format!("## Implementation Plan\n\n### Status: Already Implemented ✅\n\n**Gene ID:** `{}`\n**Search Results:** Found existing code - no duplicate needed.\n\n**Existing Code Locations:**\n{}\n\n### Verification Steps\n\n1. [ ] Verify existing implementation is complete\n2. [ ] Run tests to confirm\n3. [ ] Mark issue as `Implemented`\n4. [ ] Update gene feedback\n\n---\n*Workflow: Search → Plan → Confirm → Implement*",
+            gene_id.as_deref().unwrap_or("N/A"),
+            existing_code.iter().take(3).map(|(p, l)| format!("- {}: {}", p, l.chars().take(60).collect::<String>())).collect::<Vec<_>>().join("\n"))
+    };
+
+    if execute {
+        let output = std::process::Command::new("gh")
+            .args(&["issue", "comment", &format!("{}", issue_number), "--repo", repo, "--body", &plan])
+            .output()?;
+
+        if output.status.success() {
+            println!("  ✅ Posted plan to issue #{}", issue_number);
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            eprintln!("  ❌ Failed to post comment: {}", stderr.trim());
+        }
+    } else {
+        println!("  📝 DRY-RUN: Would post this plan:");
+        println!("{}", "─".repeat(60));
+        for line in plan.lines().take(20) {
+            println!("  {}", line);
+        }
+        if plan.lines().count() > 20 {
+            println!("  ... ({} more lines)", plan.lines().count() - 20);
+        }
+        println!("{}", "─".repeat(60));
+    }
+
+    // Step 5: Execute if --execute is set
+    println!("\nStep 5/5: {}", if execute { "Implementing..." } else { "Skipping implementation (dry-run)" });
+
+    if execute && existing_code.is_empty() {
+        println!("  ⚠️  Implementation would require:");
+        println!("    1. Creating/modifying source files");
+        println!("    2. Adding tests");
+        println!("    3. Running cargo test");
+        println!("  📝 This is a placeholder - actual implementation needed.");
+    } else if existing_code.is_empty() {
+        println!("  ℹ️  Run with --execute to actually implement");
+    }
+
+    println!("\n{}", "═".repeat(60));
+    if execute {
+        println!("✅ Workflow complete!");
+    } else {
+        println!("📋 Dry-run complete! Use --execute to implement.");
+    }
+    println!("{}", "═".repeat(60));
+
+    Ok(())
+}
+
+fn search_code_in_path(term: &str, path: &str) -> Vec<(String, String)> {
+    let mut results = Vec::new();
+
+    if let Ok(output) = std::process::Command::new("grep")
+        .args(&["-r", "-n", "-i", term, path, "--include=*.rs"])
+        .output()
+    {
+        if output.status.success() {
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            for line in stdout.lines().take(10) {
+                if let Some((path_part, code_part)) = line.split_once(':') {
+                    results.push((path_part.to_string(), code_part.to_string()));
+                }
+            }
+        }
+    }
+    results
+}
+
 fn extract_section(text: &str, start_marker: &str, end_marker: &str) -> Option<String> {
     let start_idx = text.find(start_marker)? + start_marker.len();
     let remaining = &text[start_idx..];

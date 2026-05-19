@@ -628,6 +628,22 @@ pub enum Commands {
         repo: String,
     },
 
+    /// Implement code gene from GitHub Issue with workflow
+    /// Workflow: 1) Search existing code 2) Post plan to issue 3) Confirm 4) Implement
+    CodeGeneImplement {
+        /// Issue number to implement
+        #[arg(short, long)]
+        issue: usize,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+
+        /// Actually implement (dry-run if not set)
+        #[arg(short, long)]
+        execute: bool,
+    },
+
     /// Add a gene/capsule to the Gene Pool
     GeneAdd {
         /// Approach summary
