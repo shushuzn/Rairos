@@ -32,9 +32,28 @@ This skill is _informed_ by the project's domain model. The domain language give
 
 ### 1. Explore
 
-Read the project's domain glossary and any ADRs in the area you're touching first.
+Read the project's domain glossary and any ADRs in the area you're touching first. If the project lacks `CONTEXT.md` or `docs/adr/`, proceed anyway — the absence doesn't block the process.
 
-Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
+Then use `delegate_task` with `tasks` array for parallel subagents.
+
+**Rule: max 3 concurrent children.** If you have 4+ exploration targets, split into sequential batches. NEVER exceed the limit — the agent will silently drop children and produce incomplete results.
+
+```
+# Batch 1 of 2 (3 targets)
+delegate_task(tasks=[
+  {goal: "Explore X", toolsets: ["terminal", "web"]},
+  {goal: "Explore Y", toolsets: ["terminal", "web"]},
+  {goal: "Explore Z", toolsets: ["terminal", "web"]},
+])
+# AFTER first batch completes, THEN start batch 2:
+delegate_task(tasks=[
+  {goal: "Explore W", toolsets: ["terminal", "web"]},
+])
+```
+
+**IMPORTANT: Do not jump ahead.** After exploration, you MUST present candidates and wait for the user to pick. Do NOT do additional research beyond what the exploration subagents returned, do NOT propose implementation plans, and do NOT make design decisions before the user selects a candidate. The grilling loop is for the user to challenge the design with you — you are not the one making unilateral choices.
+
+Don't follow rigid heuristics — explore organically and note where you experience friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow** — interface nearly as complex as the implementation?
@@ -46,10 +65,12 @@ Apply the **deletion test** to anything you suspect is shallow: would deleting i
 
 ### 2. Present candidates
 
+After subagent exploration completes, **synthesize raw findings into skill vocabulary before presenting**. Extract: module names, seam violations, depth problems. Do NOT dump subagent summaries verbatim — rewrite in the glossary's language (Module, Interface, Seam, Depth, Leverage, Locality).
+
 Present a numbered list of deepening opportunities. For each candidate:
 
 - **Files** — which files/modules are involved
-- **Problem** — why the current architecture is causing friction
+- **Problem** — why the current architecture is causing friction (use: shallow, seam leak, locality failure)
 - **Solution** — plain English description of what would change
 - **Benefits** — explained in terms of locality and leverage, and also in how tests would improve
 
@@ -57,11 +78,13 @@ Present a numbered list of deepening opportunities. For each candidate:
 
 **ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly (e.g. _"contradicts ADR-0007 — but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
 
-Do NOT propose interfaces yet. Ask the user: "Which of these would you like to explore?"
+Do NOT propose interfaces yet. Ask the user: "Which of these would you like to explore?" **Stop here. Do not proceed to step 3 until the user picks.** The grilling loop is for collaboratively walking the design tree — it requires a human in the loop to challenge assumptions and make tradeoffs. You do not get to skip the human.
 
 ### 3. Grilling loop
 
-Once the user picks a candidate, drop into a grilling conversation. Walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
+**Prerequisite: user has picked a candidate from step 2.** If they haven't, stay in step 2.
+
+Walk the design tree with the user — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive. **You propose nothing unilaterally. Your job is to answer questions, surface tradeoffs, and let the user drive the design direction.**
 
 Side effects happen inline as decisions crystallize:
 
@@ -69,3 +92,7 @@ Side effects happen inline as decisions crystallize:
 - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
 - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing — skip ephemeral reasons ("not worth it right now") and self-evident ones. See [ADR-FORMAT.md](../grill-with-docs/ADR-FORMAT.md).
 - **Want to explore alternative interfaces for the deepened module?** See [INTERFACE-DESIGN.md](INTERFACE-DESIGN.md).
+
+### References
+
+Session-specific architectural findings for Rairos (and generalizable patterns) are captured in [references/rairos-findings.md](references/rairos-findings.md).
