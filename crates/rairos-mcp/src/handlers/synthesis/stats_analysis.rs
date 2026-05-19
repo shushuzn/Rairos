@@ -1,4 +1,3 @@
-use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
@@ -198,7 +197,7 @@ fn build_analysis_markdown(
     md.push_str("---\n\n");
 
     md.push_str("## Analysis Plan\n\n");
-    md.push_str(&format!("Based on your inputs:\n"));
+    md.push_str("Based on your inputs:\n");
     md.push_str(&format!("- **Data Type:** {}\n", data_type));
     md.push_str(&format!("- **Group Structure:** {}\n", groups));
     md.push_str(&format!("- **Hypothesis Type:** {}\n\n", hypothesis));
@@ -215,13 +214,13 @@ fn build_analysis_markdown(
         for uw in &test.use_when {
             md.push_str(&format!("- {}\n", uw));
         }
-        md.push_str("\n");
+        md.push('\n');
 
         md.push_str("**Assumptions:**\n");
         for a in &test.assumptions {
             md.push_str(&format!("- {}\n", a));
         }
-        md.push_str("\n");
+        md.push('\n');
 
         md.push_str(&format!("**Effect Size:** {}\n\n", test.effect_size));
 

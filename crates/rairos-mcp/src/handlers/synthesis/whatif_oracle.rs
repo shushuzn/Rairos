@@ -1,4 +1,3 @@
-use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
@@ -20,7 +19,7 @@ struct ScenarioBranch {
     what_most_miss: String,
 }
 
-fn analyze_scenarios(question: &str, context: &str) -> Vec<ScenarioBranch> {
+fn analyze_scenarios(question: &str, _context: &str) -> Vec<ScenarioBranch> {
     let q_lower = question.to_lowercase();
 
     let (domain, focus) = if q_lower.contains("drug") || q_lower.contains("therapy") || q_lower.contains("clinical") || q_lower.contains("patient") {

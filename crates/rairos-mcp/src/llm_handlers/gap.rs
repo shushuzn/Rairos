@@ -1,5 +1,5 @@
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
-use crate::llm_handlers::helpers::{gene_pool_data_dir, llm_client};
+use crate::llm_handlers::helpers::gene_pool_data_dir;
 use async_trait::async_trait;
 use rairos_llm::insight::evolution::EvolutionEngine;
 use rairos_llm::insight::storage::CapsuleStorage;

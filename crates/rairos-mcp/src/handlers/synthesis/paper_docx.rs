@@ -36,13 +36,13 @@ fn md_to_docx_xml(markdown: &str) -> String {
     xml.push_str(r#" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk""#);
     xml.push_str(r#" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml""#);
     xml.push_str(r#" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape""#);
-    xml.push_str(">");
+    xml.push('>');
     xml.push_str("<w:body>");
 
     let lines: Vec<&str> = markdown.lines().collect();
     let mut in_list = false;
     let mut list_type = "";
-    let mut list_count = 0usize;
+    let _list_count = 0usize;
 
     for line in &lines {
         let trimmed = line.trim();
@@ -54,22 +54,19 @@ fn md_to_docx_xml(markdown: &str) -> String {
             continue;
         }
 
-        if trimmed.starts_with("# ") {
-            let text = &trimmed[2..];
+        if let Some(text) = trimmed.strip_prefix("# ") {
             xml.push_str(&format!(
                 r#"<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>{}</w:t></w:r></w:p>"#,
                 escape_xml(text)
             ));
         }
-        else if trimmed.starts_with("## ") {
-            let text = &trimmed[3..];
+        else if let Some(text) = trimmed.strip_prefix("## ") {
             xml.push_str(&format!(
                 r#"<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr><w:r><w:t>{}</w:t></w:r></w:p>"#,
                 escape_xml(text)
             ));
         }
-        else if trimmed.starts_with("### ") {
-            let text = &trimmed[4..];
+        else if let Some(text) = trimmed.strip_prefix("### ") {
             xml.push_str(&format!(
                 r#"<w:p><w:pPr><w:pStyle w:val="Heading3"/></w:pPr><w:r><w:t>{}</w:t></w:r></w:p>"#,
                 escape_xml(text)
@@ -104,8 +101,7 @@ fn md_to_docx_xml(markdown: &str) -> String {
         else if trimmed == "---" || trimmed == "***" || trimmed == "___" {
             xml.push_str(r#"<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="CCCCCC"/></w:pBdr></w:pPr></w:p>"#);
         }
-        else if trimmed.starts_with("> ") {
-            let text = &trimmed[2..];
+        else if let Some(text) = trimmed.strip_prefix("> ") {
             xml.push_str(&format!(
                 r#"<w:p><w:pPr><w:ind w:left="720" w:right="720"/><w:jc w:val="both"/></w:pPr><w:r><w:rPr><w:i/><w:color w:val="666666"/></w:rPr><w:t>{}</w:t></w:r></w:p>"#,
                 escape_xml(text)

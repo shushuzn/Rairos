@@ -150,9 +150,9 @@ impl ToolHandler for PaperGenerateHandler {
         if !top_venue.is_empty() {
             md.push_str(") published in *");
             md.push_str(top_venue);
-            md.push_str("*");
+            md.push('*');
         } else {
-            md.push_str(")");
+            md.push(')');
         }
         md.push_str(" provided critical insights that have shaped subsequent research directions. The collective body of ");
         md.push_str(&total.to_string());
@@ -176,10 +176,10 @@ impl ToolHandler for PaperGenerateHandler {
         md.push_str(" using the following parameters:\n\n");
         md.push_str("- **Search terms:** ");
         md.push_str(topic);
-        md.push_str("\n");
+        md.push('\n');
         md.push_str("- **Date range:** ");
         md.push_str(&year_range);
-        md.push_str("\n");
+        md.push('\n');
         md.push_str("- **Maximum results:** ");
         md.push_str(&max_papers.to_string());
         md.push_str(" papers\n");
@@ -219,7 +219,7 @@ impl ToolHandler for PaperGenerateHandler {
         md.push_str(&median_cites.to_string());
         md.push_str(" (range: ");
         md.push_str(&min_cites.to_string());
-        md.push_str("-");
+        md.push('-');
         md.push_str(&max_cites.to_string());
         md.push_str("). The total citation count across all included studies was ");
         md.push_str(&total_cites.to_string());
@@ -349,7 +349,7 @@ impl ToolHandler for PaperGenerateHandler {
             let mut cmd = std::process::Command::new("python3");
             cmd.arg("/root/Rairos/scripts/pdf_helper.py")
                 .arg("--type").arg("paper")
-                .arg("--data").arg(&paper_json.to_string())
+                .arg("--data").arg(paper_json.to_string())
                 .arg("--output").arg(pdf_output.to_str().unwrap());
             if let Ok(output) = cmd.output() {
                 if output.status.success() {

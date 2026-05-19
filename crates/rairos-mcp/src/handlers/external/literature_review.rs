@@ -247,7 +247,7 @@ impl ToolHandler for PaperLiteratureReviewHandler {
                 let authors: Vec<String> = paper.get("authors").and_then(|a| a.as_array())
                     .map(|arr| arr.iter().filter_map(|au| au.get("name").and_then(|n| n.as_str()).map(String::from)).take(3).collect())
                     .unwrap_or_default();
-                let author_str = if authors.is_empty() { "Unknown".into() } else { authors.join(", ") };
+                let _author_str = if authors.is_empty() { "Unknown".into() } else { authors.join(", ") };
 
                 md.push_str(&format!(
                     "**{}. {}** ({}). *{}*. Cited by: {} | DOI: {}\n\n{}\n\n",
@@ -323,7 +323,7 @@ impl ToolHandler for PaperLiteratureReviewHandler {
             let mut cmd = std::process::Command::new("python3");
             cmd.arg("/root/Rairos/scripts/pdf_helper.py")
                 .arg("--type").arg("review")
-                .arg("--data").arg(&review_json.to_string())
+                .arg("--data").arg(review_json.to_string())
                 .arg("--output").arg(pdf_output.to_str().unwrap());
             if let Ok(output) = cmd.output() {
                 if output.status.success() {

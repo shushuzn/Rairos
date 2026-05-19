@@ -1,7 +1,6 @@
-use crate::handlers::helpers::{data_dir, gene_pool_path, read_jsonl};
+use crate::handlers::helpers::{gene_pool_path, read_jsonl};
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
-use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL};
 use serde_json::Value;
 
 pub struct PaperSearchHandler;

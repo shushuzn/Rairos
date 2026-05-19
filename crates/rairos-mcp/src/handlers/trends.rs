@@ -1,4 +1,4 @@
-use crate::handlers::helpers::{data_dir, kg};
+use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use crate::handlers::helpers::parse_arxiv_response;
 use async_trait::async_trait;

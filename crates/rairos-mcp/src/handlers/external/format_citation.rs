@@ -1,4 +1,4 @@
-use crate::handlers::helpers::{data_dir, parse_arxiv_citation};
+use crate::handlers::helpers::parse_arxiv_citation;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
@@ -142,7 +142,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                 }
                 journal = msg.get("container-title")
                     .and_then(|v| v.as_array())
-                    .and_then(|v| v.get(0))
+                    .and_then(|v| v.first())
                     .and_then(|v| v.as_str())
                     .map(String::from)
                     .unwrap_or_default();
@@ -172,7 +172,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                 url = format!("https://pubmed.ncbi.nlm.nih.gov/{}", identifier);
             }
         } else if id_type == "arxiv" {
-            if let Some(entry) = metadata.get("entry").or(metadata.as_array().and_then(|v| v.get(0))) {
+            if let Some(entry) = metadata.get("entry").or(metadata.as_array().and_then(|v| v.first())) {
                 title = entry.get("title").and_then(|v| v.as_str())
                     .map(|s| s.trim().to_string())
                     .unwrap_or_default();
@@ -180,7 +180,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                     authors = a.iter().filter_map(|author| {
                         let name = author.get("name").and_then(|v| v.as_str()).unwrap_or("");
                         let parts: Vec<&str> = name.split_whitespace().collect();
-                        let family = parts.last().map(|s| *s).unwrap_or("");
+                        let family = parts.last().copied().unwrap_or("");
                         let given = if parts.len() > 1 { parts[..parts.len()-1].join(" ") } else { String::new() };
                         if family.is_empty() { None } else { Some(serde_json::json!({ "family": family, "given": given })) }
                     }).collect();
@@ -223,7 +223,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                 author_str, year,
                 title,
                 if !journal.is_empty() { format!("{}. ", journal) } else { String::new() },
-                if !volume.is_empty() { format!("{}", volume) } else { String::new() },
+                if !volume.is_empty() { volume.to_string() } else { String::new() },
                 if !issue.is_empty() { format!("({})", issue) } else { String::new() },
                 if !pages.is_empty() { format!(", {}", pages.replace("-", "--")) } else { String::new() }
             ));
@@ -237,7 +237,7 @@ impl ToolHandler for PaperFormatCitationHandler {
                 if !year.is_empty() { &year } else { "s" },
                 title,
                 nature_journal,
-                if !volume.is_empty() { format!("{}", volume) } else { String::new() },
+                if !volume.is_empty() { volume.to_string() } else { String::new() },
                 if !pages.is_empty() { format!(", {}", pages.replace("-", "-")) } else { String::new() },
                 if !doi.is_empty() { format!(" https://doi.org/{}", doi) } else { String::new() }
             ));
@@ -296,7 +296,7 @@ impl ToolHandler for PaperFormatCitationHandler {
             let ieee_str = format!(
                 "{} {}, \"{}\" {}{}{}{}.",
                 ieee_author, year, title,
-                if !journal.is_empty() { format!("{}", journal) } else { String::new() },
+                if !journal.is_empty() { journal.to_string() } else { String::new() },
                 if !volume.is_empty() { format!(", vol. {}", volume) } else { String::new() },
                 if !issue.is_empty() { format!(", no. {}", issue) } else { String::new() },
                 if !pages.is_empty() { format!(", pp. {}", pages.replace("-", "--")) } else { String::new() }

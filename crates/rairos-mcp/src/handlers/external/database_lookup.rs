@@ -1,4 +1,3 @@
-use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
@@ -86,9 +85,7 @@ impl ToolHandler for PaperDatabaseLookupHandler {
                                     { "name": "ChEMBL", "source": "chembl", "results": chems }
                                 ]);
                             } else {
-                                results["databases"].as_array_mut().map(|a| {
-                                    a.push(serde_json::json!({ "name": "ChEMBL", "source": "chembl", "results": chems }))
-                                });
+                                if let Some(a) = results["databases"].as_array_mut() { a.push(serde_json::json!({ "name": "ChEMBL", "source": "chembl", "results": chems })) }
                             }
                         }
                     }
@@ -164,9 +161,7 @@ impl ToolHandler for PaperDatabaseLookupHandler {
                                     { "name": "UniProt", "source": "uniprot", "results": prots }
                                 ]);
                             } else {
-                                results["databases"].as_array_mut().map(|a| {
-                                    a.push(serde_json::json!({ "name": "UniProt", "source": "uniprot", "results": prots }))
-                                });
+                                if let Some(a) = results["databases"].as_array_mut() { a.push(serde_json::json!({ "name": "UniProt", "source": "uniprot", "results": prots })) }
                             }
                         }
                     }
@@ -215,7 +210,7 @@ impl ToolHandler for PaperDatabaseLookupHandler {
                     if let Ok(data) = resp.json::<serde_json::Value>().await {
                         let paths: Vec<Value> = data["results"].as_array()
                             .map(|arr| arr.iter().filter_map(|r| {
-                                r["rows"].as_array().and_then(|rows| rows.get(0)).map(|row| {
+                                r["rows"].as_array().and_then(|rows| rows.first()).map(|row| {
                                     serde_json::json!({
                                         "stable_id": row["stId"],
                                         "name": row["name"],
@@ -288,9 +283,7 @@ impl ToolHandler for PaperDatabaseLookupHandler {
                                     { "name": "PDB", "source": "pdb", "results": pdb_ids.into_iter().map(|id| serde_json::json!({ "pdb_id": id })).collect::<Vec<_>>() }
                                 ]);
                             } else {
-                                results["databases"].as_array_mut().map(|a| {
-                                    a.push(serde_json::json!({ "name": "PDB", "source": "pdb", "results": pdb_ids.into_iter().map(|id| serde_json::json!({ "pdb_id": id })).collect::<Vec<_>>() }))
-                                });
+                                if let Some(a) = results["databases"].as_array_mut() { a.push(serde_json::json!({ "name": "PDB", "source": "pdb", "results": pdb_ids.into_iter().map(|id| serde_json::json!({ "pdb_id": id })).collect::<Vec<_>>() })) }
                             }
                         }
                     }

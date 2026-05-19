@@ -1,4 +1,3 @@
-use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
@@ -71,7 +70,7 @@ fn build_slide_markdown(
         for point in &slide.key_points {
             md.push_str(&format!("- {}\n", point));
         }
-        md.push_str("\n");
+        md.push('\n');
 
         md.push_str(&format!("**Visual Suggestion:** {}\n\n", slide.visual_suggestion));
 
@@ -119,7 +118,7 @@ impl ToolHandler for PaperSlidesHandler {
         let include_notes = params.get("include_notes").and_then(|v| v.as_str()).unwrap_or("false") == "true";
         let focus_str = params.get("focus_slides").and_then(|v| v.as_str()).unwrap_or("");
 
-        let (duration_min, slide_count, config_name) = talk_type_config(talk_type);
+        let (_duration_min, _slide_count, config_name) = talk_type_config(talk_type);
         let focus: Vec<&str> = if focus_str.is_empty() {
             vec!["introduction", "background", "methods", "results", "discussion", "conclusion"]
         } else {

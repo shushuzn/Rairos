@@ -1,7 +1,7 @@
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use crate::llm_handlers::helpers::{llm_client, llm_model};
 use async_trait::async_trait;
-use rairos_llm::{impact, LlmClient};
+use rairos_llm::impact;
 use serde_json::Value;
 
 pub struct BriefingGenerateHandler;
