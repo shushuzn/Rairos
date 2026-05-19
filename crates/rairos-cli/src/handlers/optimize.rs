@@ -1146,11 +1146,18 @@ pub fn handle_code_gene_sync_to_issue(
         } else {
             gene.trigger_topic.chars().take(60).collect::<String>()
         };
+        let crate_name = gene.target_crate.split(':').next().unwrap_or(&gene.target_crate);
         let title = format!(
             "[code-gene] {}: {}",
-            gene.target_crate.split(':').next().unwrap_or(&gene.target_crate),
+            crate_name,
             topic
         );
+
+        let code_snippet = if gene.code_snippet.contains("fn ") || gene.code_snippet.contains("struct ") || gene.code_snippet.contains("pub ") {
+            format!("```rust\n{}\n```", gene.code_snippet.trim())
+        } else {
+            format!("```\n{}\n```", gene.code_snippet.trim())
+        };
 
         let body = format!(
             r#"## Gene Information
@@ -1165,9 +1172,7 @@ pub fn handle_code_gene_sync_to_issue(
 
 ## Code Snippet
 
-```
 {}
-```
 
 ## Metrics
 
@@ -1188,14 +1193,15 @@ pub fn handle_code_gene_sync_to_issue(
             gene.target_crate,
             gene.gap_type,
             gene.optimization,
-            gene.code_snippet,
+            code_snippet,
             gene.outcome_success_score,
             gene.feedback_count,
             gene.evolved_generation
         );
 
+        let labels_arg = format!("code-gene,crate-{}", crate_name);
         let output = std::process::Command::new("gh")
-            .args(&["issue", "create", "--repo", repo, "--title", &title, "--body", &body])
+            .args(&["issue", "create", "--repo", repo, "--title", &title, "--body", &body, "--label", &labels_arg])
             .output()?;
 
         if output.status.success() {
