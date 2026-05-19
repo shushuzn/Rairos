@@ -476,3 +476,46 @@ impl<K: std::hash::Hash + Eq + Clone, V: Clone> LruRankerCache<K, V> {
         self.order.push(key);
     }
 }
+
+// ========== Code Gene: 695eb954 ==========
+// 1. Parallel Evaluation Metrics Computation with Rayon
+// Compute average NDCG@10 for multiple query results in parallel.
+use rayon::prelude::*;
+
+pub struct ScoredDocument {
+    pub doc_id: u64,
+    pub score: f64,
+}
+
+pub struct QueryResult {
+    pub query_id: u64,
+    pub documents: Vec<ScoredDocument>,
+}
+
+/// Compute NDCG@k for a single query result given a list of relevant document IDs.
+fn ndcg_at_k(query_result: &QueryResult, relevant_docs: &[u64], k: usize) -> f64 {
+    let top_k = &query_result.documents[..query_result.documents.len().min(k)];
+    let dcg: f64 = top_k
+        .iter()
+        .enumerate()
+        .map(|(i, doc)| {
+            let rel = if relevant_docs.contains(&doc.doc_id) { 1.0 } else { 0.0 };
+            rel / (i as f64 + 2.0).log2()
+        })
+        .sum();
+    // Ideal DCG: sort by relevance (all relevant first) – simplified for illustration
+    let idcg: f64 = (0..top_k.len().min(relevant_docs.len()))
+        .map(|i| 1.0 / (i as f64 + 2.0).log2())
+        .sum();
+    if idcg == 0.0 { 0.0 } else { dcg / idcg }
+}
+
+/// Compute average NDCG@k over multiple queries in parallel using rayon.
+pub fn average_ndcg_parallel(query_results: &[QueryResult], relevant_per_query: &[&[u64]], k: usize) -> f64 {
+    let sum: f64 = query_results
+        .par_iter()
+        .zip(relevant_per_query.par_iter())
+        .map(|(qr, rels)| ndcg_at_k(qr, rels, k))
+        .sum();
+    sum / query_results.len() as f64
+}
