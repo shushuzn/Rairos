@@ -82,7 +82,36 @@ fn run_chat_single(
     _verbose: bool,
     _stream: bool,
 ) -> Result<()> {
-    let papers = db.search_papers_smart(question, limit)?;
+    let stop_words: std::collections::HashSet<&str> = [
+        "what", "are", "the", "a", "an", "is", "was", "were", "be", "been",
+        "being", "have", "has", "had", "do", "does", "did", "will", "would",
+        "could", "should", "may", "might", "must", "can", "need", "to", "of",
+        "in", "for", "on", "with", "at", "by", "from", "as", "into", "through",
+        "during", "before", "after", "above", "below", "between", "under",
+        "again", "further", "then", "once", "here", "there", "when", "where",
+        "why", "how", "all", "each", "few", "more", "most", "other", "some",
+        "such", "no", "nor", "not", "only", "own", "same", "so", "than",
+        "too", "very", "just", "but", "and", "or", "if", "because", "as",
+        "until", "while", "this", "that", "these", "those", "about", "main",
+        "findings", "find", "found", "research", "study", "studies", "paper",
+        "papers", "your", "you", "i", "we", "they", "he", "she", "it",
+    ].into();
+
+    let query_terms: Vec<&str> = question
+        .split_whitespace()
+        .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
+        .filter(|w| w.len() > 2 && !stop_words.contains(&w.to_lowercase().as_str()))
+        .collect();
+
+    let search_query = if query_terms.is_empty() {
+        question.to_string()
+    } else if query_terms.len() == 1 {
+        query_terms[0].to_string()
+    } else {
+        query_terms.join(" ")
+    };
+
+    let papers = db.search_papers_smart(&search_query, limit)?;
     if papers.is_empty() {
         eprintln!("No papers found matching your question.");
         return Ok(());
