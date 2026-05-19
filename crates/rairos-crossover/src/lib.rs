@@ -1,6 +1,8 @@
 //! rairos-crossover — CapsuleGene Crossover
 //!
 //! Genetic algorithm on Gene Pool archetypes.
+//!
+//! Preference Optimization based on arXiv:2505.08735
 
 use rand::seq::SliceRandom;
 use rand::Rng;
@@ -9,6 +11,110 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+
+// ============================================================================
+// Preference Ranker (arXiv:2505.08735)
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct PreferenceRanker {
+    win_counts: HashMap<String, usize>,
+    total_comparisons: usize,
+    entropy_bonus: f64,
+}
+
+impl PreferenceRanker {
+    pub fn new(entropy_bonus: f64) -> Self {
+        Self {
+            win_counts: HashMap::new(),
+            total_comparisons: 0,
+            entropy_bonus,
+        }
+    }
+
+    pub fn record_outcome(&mut self, winner_id: &str, _loser_id: &str) {
+        *self.win_counts.entry(winner_id.to_string()).or_insert(0) += 1;
+        self.total_comparisons += 1;
+    }
+
+    fn preference_score(&self, id: &str) -> f64 {
+        let wins = self.win_counts.get(id).copied().unwrap_or(0) as f64;
+        let total = self.total_comparisons.max(1) as f64;
+        let base = wins / total;
+
+        let loss_rate = 1.0 - base;
+        let entropy = if loss_rate > 0.0 && loss_rate < 1.0 {
+            -loss_rate * loss_rate.ln() - base * base.ln()
+        } else {
+            0.0
+        };
+
+        base + self.entropy_bonus * entropy
+    }
+
+    pub fn rank_capsules<'a>(&self, capsule_ids: &'a [&str]) -> Vec<(&'a str, f64)> {
+        let mut scored: Vec<(&str, f64)> = capsule_ids
+            .iter()
+            .map(|id| (*id, self.preference_score(id)))
+            .collect();
+        scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        scored
+    }
+
+    pub fn select_parents<'a>(&self, candidates: &'a [&str], count: usize) -> Vec<&'a str> {
+        let ranked = self.rank_capsules(candidates);
+        ranked.into_iter().take(count).map(|(id, _)| id).collect()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct UCBParentSelector {
+    capsule_scores: HashMap<String, f64>,
+    capsule_counts: HashMap<String, usize>,
+    total_selections: usize,
+    exploration_param: f64,
+}
+
+impl UCBParentSelector {
+    pub fn new(exploration_param: f64) -> Self {
+        Self {
+            capsule_scores: HashMap::new(),
+            capsule_counts: HashMap::new(),
+            total_selections: 0,
+            exploration_param,
+        }
+    }
+
+    pub fn record_comparison(&mut self, winner_id: &str, loser_id: &str, winner_score: f64) {
+        *self.capsule_scores.entry(winner_id.to_string()).or_insert(0.0) += winner_score;
+        *self.capsule_counts.entry(winner_id.to_string()).or_insert(0) += 1;
+        *self.capsule_counts.entry(loser_id.to_string()).or_insert(0) += 0;
+    }
+
+    fn ucb_score(&self, id: &str) -> f64 {
+        let total = self.total_selections.max(1) as f64;
+        let avg = self.capsule_scores.get(id).copied().unwrap_or(0.0)
+            / self.capsule_counts.get(id).copied().unwrap_or(1).max(1) as f64;
+        let count = self.capsule_counts.get(id).copied().unwrap_or(0).max(1) as f64;
+        let exploration_bonus = self.exploration_param * (total.ln() / count).sqrt();
+        avg + exploration_bonus
+    }
+
+    pub fn select<'a>(&mut self, candidates: &'a [&str]) -> Option<&'a str> {
+        if candidates.is_empty() {
+            return None;
+        }
+        self.total_selections += 1;
+        candidates
+            .iter()
+            .max_by(|a, b| {
+                self.ucb_score(a)
+                    .partial_cmp(&self.ucb_score(b))
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
+            .copied()
+    }
+}
 
 const DEFAULT_POPULATION_SIZE: usize = 20;
 const _DEFAULT_OFFSPRING_COUNT: usize = 5;
