@@ -602,6 +602,32 @@ pub enum Commands {
         dry_run: bool,
     },
 
+    /// Sync code genes to GitHub Issues
+    CodeGeneSyncToIssue {
+        /// Gene IDs to sync (comma-separated, or "all")
+        #[arg(short, long, default_value = "all")]
+        ids: String,
+
+        /// Filter by crate
+        #[arg(short, long)]
+        crate_name: Option<String>,
+
+        /// Minimum score to include
+        #[arg(short = 's', long, default_value = "0.0")]
+        min_score: f64,
+    },
+
+    /// Sync code genes from GitHub Issues
+    CodeGeneSyncFromIssue {
+        /// Issue numbers to import (comma-separated, or "all")
+        #[arg(short, long, default_value = "all")]
+        issues: String,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+    },
+
     /// Add a gene/capsule to the Gene Pool
     GeneAdd {
         /// Approach summary

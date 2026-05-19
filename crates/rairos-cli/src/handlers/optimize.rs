@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use rairos_core::constants::{LLM_BASE_URL, LLM_MODEL};
 use rairos_crossover::{CodeCapsuleGene, get_top_code_candidates, save_code_capsule, get_all_code_capsules};
 use rairos_core::Database;
@@ -1099,4 +1099,206 @@ pub fn handle_code_gene_clean(
     println!("{}", "═".repeat(60));
 
     Ok(())
+}
+
+pub fn handle_code_gene_sync_to_issue(
+    ids: &str,
+    crate_name: Option<String>,
+    min_score: f64,
+) -> Result<()> {
+    let all_genes = get_top_code_candidates(1000);
+
+    let genes: Vec<CodeCapsuleGene> = {
+        let filtered: Vec<CodeCapsuleGene> = if ids == "all" {
+            all_genes
+        } else {
+            let id_list: Vec<&str> = ids.split(',').map(|s| s.trim()).collect();
+            all_genes.into_iter().filter(|g| id_list.iter().any(|id| g.capsule_id.starts_with(id))).collect()
+        };
+
+        let filtered = if let Some(ref cn) = crate_name {
+            let cn_clean = cn.replace(|c: char| !c.is_alphanumeric(), "");
+            filtered.into_iter().filter(|c| {
+                let target_clean = c.target_crate.replace(|c: char| !c.is_alphanumeric(), "");
+                target_clean.contains(&cn_clean)
+            }).collect()
+        } else {
+            filtered
+        };
+
+        filtered.into_iter().filter(|g| g.outcome_success_score >= min_score).collect()
+    };
+
+    if genes.is_empty() {
+        println!("No code genes match the criteria.");
+        return Ok(());
+    }
+
+    println!("Syncing {} genes to GitHub Issues...\n", genes.len());
+
+    let repo = "shushuzn/Rairos";
+    let mut created = 0;
+    let mut errors = 0;
+
+    for gene in &genes {
+        let topic = if gene.trigger_topic.is_empty() {
+            gene.optimization.chars().take(60).collect::<String>()
+        } else {
+            gene.trigger_topic.chars().take(60).collect::<String>()
+        };
+        let title = format!(
+            "[code-gene] {}: {}",
+            gene.target_crate.split(':').next().unwrap_or(&gene.target_crate),
+            topic
+        );
+
+        let body = format!(
+            r#"## Gene Information
+
+**ID:** `{}`
+**Crate:** `{}`
+**Gap Type:** `{}`
+
+## Optimization
+
+{}
+
+## Code Snippet
+
+```
+{}
+```
+
+## Metrics
+
+| Metric | Value |
+|--------|-------|
+| Score | {:.2} |
+| Feedback Count | {} |
+| Generation | {} |
+
+## Status
+
+- [ ] Not started
+- [ ] In progress
+- [ ] Implemented
+- [ ] Verified
+"#,
+            gene.capsule_id,
+            gene.target_crate,
+            gene.gap_type,
+            gene.optimization,
+            gene.code_snippet,
+            gene.outcome_success_score,
+            gene.feedback_count,
+            gene.evolved_generation
+        );
+
+        let output = std::process::Command::new("gh")
+            .args(&["issue", "create", "--repo", repo, "--title", &title, "--body", &body])
+            .output()?;
+
+        if output.status.success() {
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            println!("  ✅ Created: {}", stdout.trim());
+            created += 1;
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            eprintln!("  ❌ Error for {}: {}", gene.capsule_id.chars().take(8).collect::<String>(), stderr.trim());
+            errors += 1;
+        }
+    }
+
+    println!("\n{} created, {} errors", created, errors);
+    Ok(())
+}
+
+pub fn handle_code_gene_sync_from_issue(
+    _issues: &str,
+    repo: &str,
+) -> Result<()> {
+    println!("Syncing code genes from GitHub Issues in {}\n", repo);
+
+    let output = std::process::Command::new("gh")
+        .args(&["issue", "list", "--repo", repo, "--label", "code-gene", "--limit", "100", "--json", "number,title,body,labels"])
+        .output()?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        anyhow::bail!("Failed to list issues: {}", stderr.trim());
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let issues_data: Vec<serde_json::Value> = serde_json::from_str(&stdout)
+        .context("Failed to parse JSON response")?;
+
+    println!("Found {} code-gene issues\n", issues_data.len());
+
+    let mut imported = 0;
+    let mut skipped = 0;
+
+    for issue in &issues_data {
+        let number = issue["number"].as_i64().unwrap_or(0);
+        let body = issue["body"].as_str().unwrap_or("");
+        let labels: Vec<String> = issue["labels"].as_array()
+            .map(|arr| arr.iter().filter_map(|l| l["name"].as_str().map(String::from)).collect())
+            .unwrap_or_default();
+
+        if let Some(gene) = parse_gene_from_issue_body(number, body, &labels) {
+            save_code_capsule(&gene)?;
+            println!("  ✅ Imported #{}: {}", number, gene.trigger_topic.chars().take(50).collect::<String>());
+            imported += 1;
+        } else {
+            println!("  ⏭️  Skipped #{}: could not parse", number);
+            skipped += 1;
+        }
+    }
+
+    println!("\n{} imported, {} skipped", imported, skipped);
+    Ok(())
+}
+
+fn parse_gene_from_issue_body(number: i64, body: &str, labels: &[String]) -> Option<CodeCapsuleGene> {
+    let capsule_id = format!("issue-{}", number);
+    let trigger_topic = labels.iter()
+        .find(|l| l.starts_with("crate:"))
+        .map(|l| l.replace("crate:", ""))
+        .unwrap_or_else(|| format!("From issue #{}", number));
+
+    let gap_type = labels.iter()
+        .find(|l| l.starts_with("gap-type:"))
+        .map(|l| l.replace("gap-type:", ""))
+        .unwrap_or_else(|| "evaluation".to_string());
+
+    let code_snippet = extract_code_block(body);
+    let optimization = body.lines()
+        .find(|l| l.starts_with("## Optimization"))
+        .map(|_| {
+            let start = body.find("## Optimization").map(|i| i + 14).unwrap_or(0);
+            let end = body[start..].find("## Code").unwrap_or(body[start..].len());
+            body[start..start + end].trim().to_string()
+        })
+        .unwrap_or_default();
+
+    Some(CodeCapsuleGene {
+        capsule_id,
+        created_at: chrono::Utc::now().to_rfc3339(),
+        trigger_topic,
+        trigger_keywords: vec![],
+        source_paper_id: String::new(),
+        source_paper_title: String::new(),
+        target_crate: labels.iter().find(|l| l.starts_with("crate:")).cloned().unwrap_or_default(),
+        gap_type,
+        gap_location: format!("GitHub Issue #{}", number),
+        code_snippet: code_snippet.unwrap_or_default(),
+        optimization,
+        outcome_success_score: 0.5,
+        feedback_count: 0,
+        evolved_generation: 0,
+        archetype: Default::default(),
+        status: Default::default(),
+        low_score_streak: 0,
+        credibility_score: 0.5,
+        credibility_badge: "medium".to_string(),
+    })
 }

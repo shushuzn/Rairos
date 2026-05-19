@@ -479,6 +479,12 @@ fn main() -> Result<()> {
         Commands::CodeGeneClean { min_score, min_feedback, min_code_length, dry_run } => {
             handle_code_gene_clean(*min_score, *min_feedback, *min_code_length, *dry_run)?;
         }
+        Commands::CodeGeneSyncToIssue { ids, crate_name, min_score } => {
+            handle_code_gene_sync_to_issue(ids, crate_name.clone(), *min_score)?;
+        }
+        Commands::CodeGeneSyncFromIssue { issues, repo } => {
+            handle_code_gene_sync_from_issue(issues, repo)?;
+        }
         Commands::GeneAdd {
             approach,
             gap_type,
