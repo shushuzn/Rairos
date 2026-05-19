@@ -2620,3 +2620,9 @@ pub fn jaccard_similarity(a: &[String], b: &[String]) -> f64 {
     let union = set_a.union(&set_b).count();
     intersection as f64 / union as f64
 }
+
+// ========== Code Gene: 18b0f121 ==========
+// add HashMap cache for hot path optimization
+pub fn cached_hot_path(cache: &std::collections::HashMap<String, f32>, key: String, compute: impl FnOnce() -> f32) -> f32 {
+    *cache.entry(key).or_insert_with(compute)
+}
