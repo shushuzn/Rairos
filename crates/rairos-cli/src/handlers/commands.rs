@@ -759,6 +759,9 @@ pub enum Commands {
     /// Show code gene pipeline statistics
     CodeGeneStats,
 
+    /// Open TUI dashboard for gene pipeline visualization
+    CodeGeneDashboard,
+
     /// Sync code genes from GitHub Issues
     CodeGeneSyncFromIssue {
         /// Issue numbers to import (comma-separated, or "all")

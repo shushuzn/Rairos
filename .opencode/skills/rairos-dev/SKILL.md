@@ -115,7 +115,7 @@ Commands::NewCommand { arg } => {
 
 ```
 crates/
-├── rairos-cli/       # 147 CLI commands
+├── rairos-cli/       # 148 CLI commands
 ├── rairos-core/      # DB, FTS5, constants
 ├── rairos-mcp/       # 0 MCP tools
 ├── rairos-codegraph/ # CodeGraph MCP server

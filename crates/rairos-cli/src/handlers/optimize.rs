@@ -3320,8 +3320,123 @@ pub fn handle_code_gene_cleanup(repo: &str, execute: bool) -> Result<()> {
     } else {
         println!("\n  ℹ️  Run with --execute to actually delete");
     }
-
     println!("{}", "═".repeat(60));
+
+    Ok(())
+}
+
+/// TUI Dashboard for gene pipeline visualization
+pub fn handle_code_gene_dashboard() -> Result<()> {
+    use ratatui::{
+        backend::CrosstermBackend,
+        widgets::{Block, Borders, List, ListItem, Paragraph},
+        layout::{Layout, Constraint, Direction, Alignment},
+        Terminal,
+    };
+    use std::io::stdout;
+
+    let backend = CrosstermBackend::new(stdout());
+    let mut terminal = Terminal::new(backend)?;
+
+    let all_genes = get_all_code_capsules();
+
+    let statuses = ["active", "planned", "approved", "needs_revision", "implemented", "rejected"];
+    let status_colors = ["🆕", "📋", "✅", "🔧", "🎉", "❌"];
+
+    let status_counts: std::collections::HashMap<&str, usize> = all_genes
+        .iter()
+        .fold(std::collections::HashMap::new(), |mut acc, g| {
+            *acc.entry(g.status.as_str()).or_insert(0) += 1;
+            acc
+        });
+
+    let total = all_genes.len();
+
+    let mut selected = 0usize;
+    let max_selected = all_genes.len().saturating_sub(1);
+
+    loop {
+        terminal.draw(|f| {
+            let area = f.area();
+
+            let layout = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([
+                    Constraint::Length(3),
+                    Constraint::Length(3),
+                    Constraint::Min(1),
+                    Constraint::Length(3),
+                ])
+                .split(area);
+
+            // Title
+            let title = Paragraph::new("🚀 Code Gene Pipeline Dashboard")
+                .alignment(Alignment::Center)
+                .block(Block::default().borders(Borders::ALL).title("Dashboard"));
+            f.render_widget(title, layout[0]);
+
+            // Status summary bar
+            let status_line: String = statuses.iter().enumerate()
+                .map(|(i, s)| {
+                    let count = status_counts.get(s).copied().unwrap_or(0);
+                    format!("{}:{}", status_colors[i], count)
+                })
+                .collect::<Vec<_>>()
+                .join(" | ");
+
+            let summary = Paragraph::new(format!("Total: {} genes | {}", total, status_line))
+                .alignment(Alignment::Center);
+            f.render_widget(summary, layout[1]);
+
+            // Gene list
+            let gene_items: Vec<ListItem> = all_genes.iter()
+                .enumerate()
+                .map(|(i, g)| {
+                    let icon = statuses.iter().position(|s| *s == g.status)
+                        .map(|idx| status_colors[idx])
+                        .unwrap_or("❓");
+                    let prefix = if i == selected { "▶ " } else { "  " };
+                    ListItem::new(format!("{}{} {} | {} | {:.2}",
+                        prefix, icon, &g.capsule_id[..8.min(g.capsule_id.len())],
+                        g.gap_type, g.outcome_success_score))
+                })
+                .collect();
+
+            let gene_list = List::new(gene_items)
+                .block(Block::default().borders(Borders::ALL).title("Genes"))
+                .highlight_symbol("▶ ");
+            f.render_widget(gene_list, layout[2]);
+
+            // Help bar
+            let help = Paragraph::new("↑↓ Navigate | q: Quit");
+            f.render_widget(help, layout[3]);
+        })?;
+
+        // Handle input
+        if let Ok(event) = crossterm::event::read() {
+            match event {
+                crossterm::event::Event::Key(key) => {
+                    match key.code {
+                        crossterm::event::KeyCode::Up => {
+                            selected = selected.saturating_sub(1);
+                        }
+                        crossterm::event::KeyCode::Down => {
+                            if selected < max_selected {
+                                selected += 1;
+                            }
+                        }
+                        crossterm::event::KeyCode::Char('q') | crossterm::event::KeyCode::Esc => {
+                            break;
+                        }
+                        _ => {}
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    println!();
     Ok(())
 }
 

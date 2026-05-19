@@ -521,6 +521,9 @@ fn main() -> Result<()> {
         Commands::CodeGeneStats => {
             handle_code_gene_stats()?;
         }
+        Commands::CodeGeneDashboard => {
+            handle_code_gene_dashboard()?;
+        }
         Commands::GeneAdd {
             approach,
             gap_type,
