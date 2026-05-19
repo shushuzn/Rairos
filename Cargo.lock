@@ -4488,6 +4488,7 @@ dependencies = [
  "rairos-core",
  "rairos-crossover",
  "rairos-llm",
+ "rairos-parser",
  "rairos-rankers",
  "regex",
  "serde",

@@ -154,23 +154,48 @@ impl AutonomousOrchestrator {
             let db_guard = db_arc.blocking_read();
             let db = db_guard.as_ref().unwrap();
             let mut results = HashMap::new();
+
+            let rt = tokio::runtime::Handle::current();
             for (topic, _sub_id) in &topics {
-                if let Ok(papers) = db.search_papers_smart(topic, 20) {
-                    if !papers.is_empty() {
-                        let paper_infos: Vec<PaperInfo> = papers
-                            .into_iter()
-                            .map(|p| PaperInfo {
-                                arxiv_id: p.arxiv_id.unwrap_or_default(),
-                                title: p.title.clone(),
-                                abstract_text: p.abstract_text.clone(),
-                                pdf_url: p.metadata.pdf_url.clone().unwrap_or_default(),
-                                categories: p.categories.join(" "),
-                                authors: p.authors.clone(),
-                                published: p.published.to_rfc3339(),
-                            })
-                            .collect();
-                        results.insert(topic.clone(), paper_infos);
+                let papers = rt.block_on(async {
+                    rairos_parser::search_arxiv(topic, 20).await.unwrap_or_default()
+                });
+
+                if papers.is_empty() {
+                    continue;
+                }
+
+                let existing_ids: std::collections::HashSet<_> = {
+                    if let Ok(existing) = db.search_papers_smart(topic, 100) {
+                        existing.iter()
+                            .filter_map(|p| p.arxiv_id.clone())
+                            .collect()
+                    } else {
+                        std::collections::HashSet::new()
                     }
+                };
+
+                let new_papers: Vec<PaperInfo> = papers
+                    .into_iter()
+                    .filter_map(|p| {
+                        let arxiv_id = p.arxiv_id.clone()?;
+                        if existing_ids.contains(&arxiv_id) {
+                            return None;
+                        }
+                        Some(PaperInfo {
+                            arxiv_id,
+                            title: p.title.clone(),
+                            abstract_text: p.abstract_text.clone(),
+                            pdf_url: p.metadata.pdf_url.clone().unwrap_or_default(),
+                            categories: p.categories.join(" "),
+                            authors: p.authors.clone(),
+                            published: p.published.to_rfc3339(),
+                        })
+                    })
+                    .collect();
+
+                if !new_papers.is_empty() {
+                    results.insert(topic.clone(), new_papers);
                 }
             }
             results
