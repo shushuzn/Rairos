@@ -5,12 +5,21 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened]
 
+# Set permissions for status checks
+permissions:
+  statuses: write
+  contents: read
+
 jobs:
   code-gene-test:
     runs-on: ubuntu-latest
     if: |
       startsWith(github.head_ref, 'plan/code-gene/') ||
       startsWith(github.head_ref, 'impl/code-gene/')
+    outputs:
+      build_status: ${{ steps.build.outputs.status }}
+      test_status: ${{ steps.test.outputs.status }}
+      target_crate: ${{ steps.crate.outputs.target_crate }}
     steps:
       - uses: actions/checkout@v6
 
@@ -39,13 +48,34 @@ jobs:
             CRATE="rairos-cli"
           fi
           echo "target_crate=$CRATE" >> $GITHUB_OUTPUT
+          echo "📦 Testing crate: $CRATE"
 
+      # Build step with status output
       - name: Build target crate
-        run: cargo build -p ${{ steps.crate.outputs.target_crate }}
+        id: build
+        run: |
+          echo "status=building" >> $GITHUB_OUTPUT
+          if cargo build -p ${{ steps.crate.outputs.target_crate }} 2>&1; then
+            echo "status=build_success" >> $GITHUB_OUTPUT
+          else
+            echo "status=build_failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
 
+      # Test step with status output
       - name: Run crate tests
-        run: cargo test -p ${{ steps.crate.outputs.target_crate }} --lib --bins
+        id: test
+        run: |
+          echo "status=testing" >> $GITHUB_OUTPUT
+          if cargo test -p ${{ steps.crate.outputs.target_crate }} --lib --bins 2>&1; then
+            echo "status=test_success" >> $GITHUB_OUTPUT
+            echo "test_result=passed" >> $GITHUB_OUTPUT
+          else
+            echo "status=test_failed" >> $GITHUB_OUTPUT
+            echo "test_result=failed" >> $GITHUB_OUTPUT
+          fi
 
+      # Post test results as PR comment
       - name: Post test results as PR comment
         if: always()
         uses: actions/github-script@v7
@@ -53,15 +83,24 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const crateName = '${{ steps.crate.outputs.target_crate }}';
+            const buildStatus = '${{ steps.build.outputs.status }}';
+            const testResult = '${{ steps.test.outputs.test_result }}';
+
+            const buildIcon = buildStatus.includes('success') ? '✅' : '❌';
+            const testIcon = testResult === 'passed' ? '✅' : '❌';
 
             const testComment = `
             ## 🧪 Code Gene Test Results
 
-            **Crate:** \`${{ steps.crate.outputs.target_crate }}\`
-
+            **Crate:** \`${crateName}\`
             **Branch:** \`${context.payload.pull_request.head.ref}\`
 
-            **Status:** ${context.job.status === 'success' ? '✅ Tests Passed' : '❌ Tests Failed'}
+            | Step | Status |
+            |------|--------|
+            | Build | ${buildIcon} ${buildStatus} |
+            | Tests | ${testIcon} ${testResult} |
+
+            ${testResult === 'failed' ? '⚠️ **Merge blocked** - Tests must pass before merging' : '✅ Ready to merge'}
 
             ---
             _Automated test results from code-gene workflow_
@@ -72,4 +111,28 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: testComment
+            });
+
+      # Set commit status for branch protection
+      - name: Set test status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const crateName = '${{ steps.crate.outputs.target_crate }}';
+            const buildStatus = '${{ steps.build.outputs.status }}';
+            const testResult = '${{ steps.test.outputs.test_result }}';
+
+            const isSuccess = buildStatus.includes('success') && testResult === 'passed';
+
+            // Set commit status for branch protection
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: isSuccess ? 'success' : 'failure',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions`,
+              description: `Code Gene Test: ${isSuccess ? 'All tests passed' : 'Tests failed'}`,
+              context: `code-gene/test/${crateName}`
             });
