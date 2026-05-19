@@ -666,6 +666,36 @@ pub enum Commands {
         repo: String,
     },
 
+    /// Reject plan and request changes for code gene
+    CodeGeneReject {
+        /// Gene IDs to reject
+        #[arg(short, long)]
+        ids: String,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+
+        /// Reason for rejection
+        #[arg(long)]
+        reason: String,
+    },
+
+    /// Auto-review plan PRs using LLM
+    CodeGeneAutoReview {
+        /// Gene IDs to review (comma-separated, or "all")
+        #[arg(short, long, default_value = "all")]
+        ids: String,
+
+        /// GitHub repo (owner/repo format)
+        #[arg(short, long, default_value = "shushuzn/Rairos")]
+        repo: String,
+
+        /// Auto-approve if passes review (otherwise just comment)
+        #[arg(short, long)]
+        auto_approve: bool,
+    },
+
     /// Sync code genes from GitHub Issues
     CodeGeneSyncFromIssue {
         /// Issue numbers to import (comma-separated, or "all")

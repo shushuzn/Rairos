@@ -1949,6 +1949,344 @@ _This PR was auto-generated after plan approval._"#,
     Ok(())
 }
 
+pub fn handle_code_gene_reject(
+    ids: &str,
+    repo: &str,
+    reason: &str,
+) -> Result<()> {
+    let all_genes = get_top_code_candidates(1000);
+
+    let id_list: Vec<&str> = ids.split(',').map(|s| s.trim()).collect();
+    let genes: Vec<CodeCapsuleGene> = all_genes
+        .into_iter()
+        .filter(|g| id_list.iter().any(|id| g.capsule_id.starts_with(id)))
+        .collect();
+
+    if genes.is_empty() {
+        println!("No code genes match the IDs: {}", ids);
+        return Ok(());
+    }
+
+    println!("Rejecting {} genes...\n", genes.len());
+
+    let mut rejected = 0;
+    let mut errors = 0;
+
+    for gene in &genes {
+        let short_id = &gene.capsule_id[..8.min(gene.capsule_id.len())];
+        let topic = gene.optimization.chars().take(50).collect::<String>();
+
+        println!("  Rejecting gene {}...", short_id);
+
+        // Find the draft PR for this gene
+        let pr_list_output = std::process::Command::new("gh")
+            .args(&["pr", "list", "--repo", repo, "--author", "kilo-code-bot", "--state", "open", "--json", "number,title,body"])
+            .output()?;
+
+        if !pr_list_output.status.success() {
+            let stderr = String::from_utf8_lossy(&pr_list_output.stderr);
+            eprintln!("  ❌ Failed to list PRs: {}", stderr.trim());
+            errors += 1;
+            continue;
+        }
+
+        let stdout = String::from_utf8_lossy(&pr_list_output.stdout);
+        let prs: Vec<serde_json::Value> = match serde_json::from_str(&stdout) {
+            Ok(v) => v,
+            Err(_) => vec![],
+        };
+
+        // Find plan PR for this gene
+        let plan_pr = prs.iter().find(|pr| {
+            pr["title"].as_str().unwrap_or("").contains(&format!("plan] code-gene {}", short_id))
+        });
+
+        if let Some(pr) = plan_pr {
+            let pr_number = pr["number"].as_i64().unwrap_or(0);
+
+            // Add rejection comment
+            let comment_body = format!(
+                r#"## ❌ Plan Rejected
+
+**Reason:** {}
+
+**Gene ID:** `{}`
+
+This plan requires changes before implementation. Please address the issues above and resubmit.
+
+---
+_Rejected by code-gene workflow_"#,
+                reason,
+                gene.capsule_id
+            );
+
+            let comment_output = std::process::Command::new("gh")
+                .args(&["issue", "comment", &pr_number.to_string(), "--repo", repo, "--body", &comment_body])
+                .output()?;
+
+            // Close the PR
+            let close_output = std::process::Command::new("gh")
+                .args(&["pr", "close", &pr_number.to_string(), "--repo", repo])
+                .output()?;
+
+            if close_output.status.success() {
+                println!("  ✅ Rejected and closed PR #{}", pr_number);
+
+                // Update gene status back to 'rejected'
+                let mut updated_gene = gene.clone();
+                updated_gene.status = "rejected".to_string();
+                if let Err(e) = save_code_capsule(&updated_gene) {
+                    eprintln!("  ⚠️  Failed to update gene status: {}", e);
+                }
+
+                rejected += 1;
+            } else {
+                let stderr = String::from_utf8_lossy(&close_output.stderr);
+                eprintln!("  ❌ Failed to close PR: {}", stderr.trim());
+                errors += 1;
+            }
+        } else {
+            println!("  ⚠️  No draft PR found for gene {}", short_id);
+
+            // Just update the gene status
+            let mut updated_gene = gene.clone();
+            updated_gene.status = "rejected".to_string();
+            if let Err(e) = save_code_capsule(&updated_gene) {
+                eprintln!("  ⚠️  Failed to update gene status: {}", e);
+            }
+            rejected += 1;
+        }
+    }
+
+    println!("\n{} genes rejected, {} errors", rejected, errors);
+    Ok(())
+}
+
+pub fn handle_code_gene_auto_review(
+    ids: &str,
+    repo: &str,
+    auto_approve: bool,
+) -> Result<()> {
+    let all_genes = get_all_code_capsules();
+
+    // Filter for genes that have a plan (status is not "implemented", "rejected", etc.)
+    let genes: Vec<CodeCapsuleGene> = {
+        let filtered: Vec<CodeCapsuleGene> = all_genes
+            .into_iter()
+            .filter(|g| g.status != "implemented" && g.status != "rejected" && g.status != "low")
+            .collect();
+
+        if ids == "all" {
+            filtered
+        } else {
+            let id_list: Vec<&str> = ids.split(',').map(|s| s.trim()).collect();
+            filtered.into_iter().filter(|g| id_list.iter().any(|id| g.capsule_id.starts_with(id))).collect()
+        }
+    };
+
+    if genes.is_empty() {
+        println!("No code genes match the criteria: {}", ids);
+        return Ok(());
+    }
+
+    println!("Auto-reviewing {} genes...\n", genes.len());
+
+    // Get LLM credentials
+    let api_key = std::env::var("OPENAI_API_KEY")
+        .or_else(|_| std::env::var("LLM_API_KEY"))
+        .map_err(|_| anyhow::anyhow!("OPENAI_API_KEY not set"))?;
+    let base_url = std::env::var("LLM_BASE_URL")
+        .or_else(|_| std::env::var("OPENAI_BASE_URL"))
+        .unwrap_or_else(|_| LLM_BASE_URL.to_string());
+    let chat_model = std::env::var("LLM_MODEL")
+        .unwrap_or_else(|_| LLM_MODEL.to_string());
+
+    let mut reviewed = 0;
+    let mut approved = 0;
+    let mut rejected = 0;
+    let mut errors = 0;
+
+    for gene in &genes {
+        let short_id = &gene.capsule_id[..8.min(gene.capsule_id.len())];
+
+        // Find the plan PR
+        let pr_list_output = std::process::Command::new("gh")
+            .args(&["pr", "list", "--repo", repo, "--state", "open", "--json", "number,title,body"])
+            .output()?;
+
+        if !pr_list_output.status.success() {
+            errors += 1;
+            continue;
+        }
+
+        let stdout = String::from_utf8_lossy(&pr_list_output.stdout);
+        let prs: Vec<serde_json::Value> = match serde_json::from_str(&stdout) {
+            Ok(v) => v,
+            Err(_) => vec![],
+        };
+
+        let plan_pr = prs.iter().find(|pr| {
+            pr["title"].as_str().unwrap_or("").contains(&format!("plan] code-gene {}", short_id))
+        });
+
+        if plan_pr.is_none() {
+            continue;
+        }
+
+        let pr = plan_pr.unwrap();
+        let pr_number = pr["number"].as_i64().unwrap_or(0);
+        let pr_body = pr["body"].as_str().unwrap_or("");
+
+        println!("  Reviewing gene {} (PR #{})...", short_id, pr_number);
+
+        // Build review prompt
+        let review_prompt = format!(
+            r#"You are reviewing a code implementation plan for a Rust crate.
+
+## Gene Information
+- ID: {}
+- Crate: {}
+- Gap Type: {}
+- Optimization: {}
+
+## Code Snippet
+```rust
+{}
+```
+
+## Review Checklist
+
+Evaluate the code plan and respond with EXACTLY one of these formats:
+
+**APPROVE:**
+```
+VERDICT: APPROVE
+REASON: <brief reason>
+```
+
+**REJECT:**
+```
+VERDICT: REJECT
+REASON: <specific issues and fixes needed>
+```
+
+Consider:
+1. Is the code correct and idiomatic Rust?
+2. Are trait bounds appropriate?
+3. Is there duplicate code already in the codebase?
+4. Are tests adequate?
+5. Is the optimization likely to work?
+"#,
+            gene.capsule_id,
+            gene.target_crate,
+            gene.gap_type,
+            gene.optimization,
+            gene.code_snippet.trim()
+        );
+
+        // Call LLM for review
+        let rt = tokio::runtime::Runtime::new()?;
+        let review_result = rt.block_on(async {
+            let client = rairos_llm::client_async::AsyncClient::new(
+                api_key.clone(),
+                base_url.clone(),
+                chat_model.clone(),
+            );
+            let messages = vec![
+                std::collections::HashMap::from([
+                    ("role".to_string(), "user".to_string()),
+                    ("content".to_string(), review_prompt.clone()),
+                ]),
+            ];
+            client.chat_completions(messages, None, None, false).await
+        });
+
+        match review_result {
+            Ok(review) => {
+                println!("    Review result: {}", review.chars().take(100).collect::<String>());
+
+                let verdict = if review.contains("VERDICT: APPROVE") {
+                    "approve"
+                } else if review.contains("VERDICT: REJECT") {
+                    "reject"
+                } else {
+                    "unknown"
+                };
+
+                // Add review comment
+                let comment_body = format!(
+                    r#"## 🔍 AI Review
+
+{}
+
+---
+_Auto-reviewed by code-gene workflow_"#,
+                    review
+                );
+
+                let _ = std::process::Command::new("gh")
+                    .args(&["pr", "comment", &pr_number.to_string(), "--repo", repo, "--body", &comment_body])
+                    .output()?;
+
+                if verdict == "approve" && auto_approve {
+                    println!("    ✅ Auto-approving...");
+                    // Update gene status to approved
+                    let mut updated_gene = gene.clone();
+                    updated_gene.status = "approved".to_string();
+                    let _ = save_code_capsule(&updated_gene);
+                    approved += 1;
+                } else if verdict == "reject" {
+                    println!("    ❌ Rejecting...");
+                    // Update gene status to needs_revision
+                    let mut updated_gene = gene.clone();
+                    updated_gene.status = "needs_revision".to_string();
+                    let _ = save_code_capsule(&updated_gene);
+
+                    // Close the PR with comment
+                    let reject_comment = format!(
+                        r#"## ❌ Plan Needs Revision
+
+The AI review found issues with this plan:
+
+{}
+
+Please address the issues and resubmit.
+
+---
+_Rejected by code-gene auto-review_"#,
+                        review
+                    );
+                    let _ = std::process::Command::new("gh")
+                        .args(&["pr", "comment", &pr_number.to_string(), "--repo", repo, "--body", &reject_comment])
+                        .output()?;
+                    let _ = std::process::Command::new("gh")
+                        .args(&["pr", "close", &pr_number.to_string(), "--repo", repo])
+                        .output()?;
+                    rejected += 1;
+                }
+
+                reviewed += 1;
+            }
+            Err(e) => {
+                eprintln!("    ❌ LLM review failed: {}", e);
+                errors += 1;
+            }
+        }
+    }
+
+    println!("\n📊 Auto-review complete:");
+    println!("  Reviewed: {}", reviewed);
+    println!("  Approved: {}", approved);
+    println!("  Rejected: {}", rejected);
+    println!("  Errors: {}", errors);
+
+    if auto_approve && approved > 0 {
+        println!("\n📋 Next step: Run `rairos code-gene-approve --ids <ids> --repo {}`", repo);
+    }
+
+    Ok(())
+}
+
 pub fn handle_code_gene_sync_from_issue(
     _issues: &str,
     repo: &str,

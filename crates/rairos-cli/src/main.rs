@@ -491,6 +491,12 @@ fn main() -> Result<()> {
         Commands::CodeGeneApprove { ids, repo } => {
             handle_code_gene_approve(ids, repo)?;
         }
+        Commands::CodeGeneReject { ids, repo, reason } => {
+            handle_code_gene_reject(ids, repo, reason)?;
+        }
+        Commands::CodeGeneAutoReview { ids, repo, auto_approve } => {
+            handle_code_gene_auto_review(ids, repo, *auto_approve)?;
+        }
         Commands::CodeGeneSyncFromIssue { issues, repo } => {
             handle_code_gene_sync_from_issue(issues, repo)?;
         }
