@@ -34,7 +34,7 @@
 - [ ] **Test Basic Flow**
   ```bash
   # Build
-  cargo build --release -p rairos-api-gateway
+  make build
 
   # Run
   RUST_LOG=info ./target/release/rairos-api-gateway
@@ -131,6 +131,6 @@ If issues arise:
 ```bash
 # Quick rollback
 git revert HEAD
-cargo build --release -p rairos-api-gateway
+make build
 sudo systemctl restart rairos-api-gateway
 ```
