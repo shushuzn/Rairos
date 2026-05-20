@@ -2,7 +2,7 @@
 
 ## Project
 
-Self-Evolving Research OS — **100% Rust**: 149 crates, ~73k+ Rust lines, 68 MCP tools, 105 CLI commands.
+Self-Evolving Research OS — **100% Rust**: 149 crates, ~73k+ Rust lines, 69 MCP tools, 105 CLI commands.
 Python CLI fully migrated to Rust. All Python source code removed.
 
 ## Rust Build
@@ -50,7 +50,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 | rairos-viz | Chart and visualization generation |
 | rairos-trends | Research trend analysis |
 | rairos-render | Lite review, paper rendering |
-| rairos-mcp | MCP protocol server (68 Rust tools, JSON-RPC 2.0) |
+| rairos-mcp | MCP protocol server (69 Rust tools, JSON-RPC 2.0) |
 | rairos-insight-types | Insight types (actions, profiles, events, trust) |
 | rairos-insight-credibility | Credibility scoring & trendslop detection |
 | rairos-insight-storage | Capsule storage — gene_pool.db (SQLite) |
@@ -66,7 +66,7 @@ make build-dev
 unset RUSTC_WRAPPER && cargo test
 ```
 
-## MCP Tools (70 Rust, zero Python)
+## MCP Tools (69 Rust, zero Python)
 
 | Source | Count | Tools |
 |--------|-------|-------|

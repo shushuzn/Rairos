@@ -5,9 +5,9 @@ Thank you for your interest in contributing to Rairos!
 ## Project Overview
 
 Rairos is a Self-Evolving Research OS built with **100% Rust**:
-- 150 crates
-- 122 CLI commands
-- 67 MCP tools
+- 154 crates
+- 105 CLI commands
+- 69 MCP tools
 - GPL-3.0 license
 
 ## Development Setup
