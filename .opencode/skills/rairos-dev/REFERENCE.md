@@ -62,7 +62,7 @@ Key constants:
 
 | Constraint | Value |
 |------------|-------|
-| Memory | Build with `CARGO_BUILD_JOBS=1` |
+| Memory | unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build |
 | tree-sitter | Must use 0.23 (not 0.24) |
 | Disk space | ~5GB free recommended |
 | Database | SQLite with FTS5 |

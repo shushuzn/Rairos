@@ -55,7 +55,7 @@ refactor(core): extract similarity functions
 ### Building
 
 ```bash
-# Always use CARGO_BUILD_JOBS=1 to avoid OOM
+# # For memory issues: unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
 make build-dev
 
 # Build specific crate

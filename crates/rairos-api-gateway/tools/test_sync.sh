@@ -14,7 +14,7 @@ echo ""
 
 # Check if SQLite DB exists
 if [ ! -f "rairos.db" ]; then
-    echo "ERROR: rairos.db not found. Run 'cargo run -p rairos-cli' first."
+    echo "ERROR: rairos.db not found. Run './rairos.sh' first."
     exit 1
 fi
 

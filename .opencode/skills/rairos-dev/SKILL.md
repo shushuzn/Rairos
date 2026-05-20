@@ -37,7 +37,7 @@ unset RUSTC_WRAPPER && cargo test -p rairos-cli -- --nocapture  # With output
 RUST_LOG=debug ./rairos.sh <command>
 
 # Or directly:
-unset RUSTC_WRAPPER && RUST_LOG=debug cargo run -p rairos-cli -- <command>
+RUST_LOG=debug ./rairos.sh <command>
 ```
 
 ## Code Analysis (CodeGraph MCP)
@@ -93,7 +93,7 @@ Commands::NewCommand { arg } => {
 
 | Issue | Solution |
 |-------|----------|
-| OOM during build | Use `CARGO_BUILD_JOBS=1` |
+| Memory | unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build |
 | Disk full | `rm -rf target/` |
 | Tree-sitter ABI error | Use tree-sitter 0.23, not 0.24 |
 | Slow tests | Test single crate: `-p <name>` |

@@ -60,7 +60,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 ## CLI (104 commands)
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build
+make build-dev
 ./rairos.sh --help
 ./rairos.sh daemon --foreground
 unset RUSTC_WRAPPER && cargo test
