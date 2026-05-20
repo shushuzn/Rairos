@@ -520,7 +520,7 @@ pub async fn search_arxiv(query: &str, max_results: usize) -> Result<Vec<Paper>,
     let resp = client.get(&url).send().await?;
     let text = resp.text().await?;
 
-    let mut papers = Vec::new();
+    let mut papers = Vec::with_capacity(max);
     let mut pos = 0;
     while let Some(entry_start) = text[pos..].find("<entry>") {
         let abs_start = pos + entry_start;
@@ -570,7 +570,7 @@ pub async fn search_arxiv_recent(query: &str, max_results: usize) -> Result<Vec<
     let resp = client.get(&url).send().await?;
     let text = resp.text().await?;
 
-    let mut papers = Vec::new();
+    let mut papers = Vec::with_capacity(max);
     let mut pos = 0;
     while let Some(entry_start) = text[pos..].find("<entry>") {
         let abs_start = pos + entry_start;
@@ -621,7 +621,7 @@ pub async fn search_arxiv_by_category(category: &str, max_results: usize) -> Res
     let resp = client.get(&url).send().await?;
     let text = resp.text().await?;
 
-    let mut papers = Vec::new();
+    let mut papers = Vec::with_capacity(max);
     let mut pos = 0;
     while let Some(entry_start) = text[pos..].find("<entry>") {
         let abs_start = pos + entry_start;

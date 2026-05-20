@@ -1029,7 +1029,7 @@ impl Database {
         let rows = stmt.query_map(params![pattern, limit as i64], |row| {
             Ok(Self::row_to_paper(row))
         })?;
-        let mut papers: Vec<Paper> = Vec::new();
+        let mut papers: Vec<Paper> = Vec::with_capacity(limit);
         for paper in rows {
             papers.push(paper??);
         }
@@ -1074,7 +1074,7 @@ impl Database {
                LIMIT ?2"#,
         )?;
         let rows = stmt.query_map(params![query, limit as i64], Self::row_to_paper)?;
-        let mut papers: Vec<Paper> = Vec::new();
+        let mut papers: Vec<Paper> = Vec::with_capacity(limit);
         for paper in rows {
             papers.push(paper?);
         }
@@ -1109,7 +1109,7 @@ impl Database {
         let rows = stmt.query_map(params![pattern, limit as i64], |row| {
             Ok(Self::row_to_paper(row))
         })?;
-        let mut papers: Vec<Paper> = Vec::new();
+        let mut papers: Vec<Paper> = Vec::with_capacity(limit);
         for paper in rows {
             papers.push(paper??);
         }
@@ -1329,7 +1329,7 @@ impl Database {
             Ok((id, blob))
         })?;
 
-        let mut results: Vec<(String, f32)> = Vec::new();
+        let mut results: Vec<(String, f32)> = Vec::with_capacity(limit);
         for row in rows {
             let (id, blob) = row?;
             if blob.len() != embedding.len() * 4 {
