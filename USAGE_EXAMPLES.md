@@ -235,4 +235,4 @@ unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
 
 ---
 
-**提示**: 使用 `./rairos.sh --help` 查看所有可用的 104 个命令！
+**提示**: 使用 `./rairos.sh --help` 查看所有可用的 105 个命令！
