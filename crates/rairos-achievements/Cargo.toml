@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 chrono = { workspace = true, features = ["serde"] }
+parking_lot.workspace = true
 serde = { workspace = true, features = ["derive"] }

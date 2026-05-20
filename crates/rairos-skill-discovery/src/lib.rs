@@ -5,11 +5,12 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use parking_lot::Mutex;
 
 /// Cached mtime of skill dirs for hot-reload detection.
-fn get_mtime_cache() -> &'static std::sync::Mutex<HashMap<PathBuf, f64>> {
-    static CACHE: std::sync::LazyLock<std::sync::Mutex<HashMap<PathBuf, f64>>> =
-        std::sync::LazyLock::new(|| std::sync::Mutex::new(HashMap::new()));
+fn get_mtime_cache() -> &'static Mutex<HashMap<PathBuf, f64>> {
+    static CACHE: std::sync::LazyLock<Mutex<HashMap<PathBuf, f64>>> =
+        std::sync::LazyLock::new(|| Mutex::new(HashMap::new()));
     &CACHE
 }
 
@@ -193,7 +194,7 @@ pub fn reload_skills(
                     .duration_since(std::time::UNIX_EPOCH)
                     .map(|d| d.as_secs_f64())
                     .unwrap_or(0.0);
-                let cache = get_mtime_cache().lock().unwrap();
+                let cache = get_mtime_cache().lock();
                 if cache.get(d).copied() != Some(mtime) {
                     changed = true;
                 }

@@ -345,15 +345,15 @@ impl AchievementSystem {
 
 // ─── Global system ──────────────────────────────────────────────────────────────
 
+use parking_lot::Mutex;
 use std::sync::LazyLock;
-use std::sync::Mutex;
 
 static GLOBAL_SYSTEM: LazyLock<Mutex<AchievementSystem>> =
     LazyLock::new(|| Mutex::new(AchievementSystem::new()));
 
 /// Get the global achievement system.
-pub fn get_achievement_system() -> std::sync::MutexGuard<'static, AchievementSystem> {
-    GLOBAL_SYSTEM.lock().unwrap()
+pub fn get_achievement_system() -> parking_lot::MutexGuard<'static, AchievementSystem> {
+    GLOBAL_SYSTEM.lock()
 }
 
 /// Print the achievement report to stdout.

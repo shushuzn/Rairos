@@ -3396,6 +3396,7 @@ name = "rairos-achievements"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "parking_lot",
  "serde",
 ]
 
@@ -4556,6 +4557,7 @@ dependencies = [
 name = "rairos-notifications"
 version = "0.1.0"
 dependencies = [
+ "parking_lot",
  "reqwest",
  "serde",
  "serde_json",
@@ -4955,6 +4957,7 @@ name = "rairos-resource-monitor"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "parking_lot",
  "serde",
  "serde_json",
  "sysinfo 0.34.2",
@@ -5079,6 +5082,7 @@ dependencies = [
 name = "rairos-skill-discovery"
 version = "0.1.0"
 dependencies = [
+ "parking_lot",
  "tempfile",
 ]
 

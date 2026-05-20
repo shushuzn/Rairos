@@ -3,6 +3,7 @@
 //! Ported from `core/progress_tracker.py` (42 LOC, pure stdlib + chrono).
 
 use chrono::Local;
+use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -75,11 +76,11 @@ impl ProgressTracker {
 
 // ─── Singleton ─────────────────────────────────────────────────────────────────
 
-static TRACKER: std::sync::LazyLock<std::sync::Mutex<ProgressTracker>> =
-    std::sync::LazyLock::new(|| std::sync::Mutex::new(ProgressTracker::new()));
+static TRACKER: std::sync::LazyLock<Mutex<ProgressTracker>> =
+    std::sync::LazyLock::new(|| Mutex::new(ProgressTracker::new()));
 
-pub fn get_tracker() -> std::sync::MutexGuard<'static, ProgressTracker> {
-    TRACKER.lock().unwrap()
+pub fn get_tracker() -> parking_lot::MutexGuard<'static, ProgressTracker> {
+    TRACKER.lock()
 }
 
 // ─── Tests ─────────────────────────────────────────────────────────────────────

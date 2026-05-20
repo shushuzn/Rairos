@@ -1,7 +1,7 @@
+use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use sysinfo::{CpuRefreshKind, Disks, System};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -94,7 +94,7 @@ impl ResourceMonitor {
     }
 
     pub fn get_memory_info(&self) -> (f64, f64, f32) {
-        let mut sys = self.sys.lock().unwrap();
+        let mut sys = self.sys.lock();
         sys.refresh_memory();
         let total = sys.total_memory() as f64;
         let used = sys.used_memory() as f64;
@@ -107,7 +107,7 @@ impl ResourceMonitor {
     }
 
     pub fn get_cpu_info(&self) -> (f32, usize) {
-        let mut sys = self.sys.lock().unwrap();
+        let mut sys = self.sys.lock();
         sys.refresh_cpu_specifics(CpuRefreshKind::everything());
         let pct = sys.global_cpu_usage();
         let count = sys.cpus().len();
@@ -116,7 +116,7 @@ impl ResourceMonitor {
 
     pub fn collect_stats(&self) -> ResourceStats {
         let _mem_used_mb = {
-            let mut sys = self.sys.lock().unwrap();
+            let mut sys = self.sys.lock();
             sys.refresh_memory();
             sys.used_memory() as f64 / 1_048_576.0
         };
@@ -140,7 +140,7 @@ impl ResourceMonitor {
             network_recv_mb: 0.0,
         };
 
-        let mut history = self.history.lock().unwrap();
+        let mut history = self.history.lock();
         history.push(stats.clone());
         while history.len() > self.max_history {
             history.remove(0);
@@ -149,7 +149,7 @@ impl ResourceMonitor {
     }
 
     pub fn get_average_stats(&self, count: usize) -> HashMap<String, f64> {
-        let history = self.history.lock().unwrap();
+        let history = self.history.lock();
         let samples: Vec<_> = history.iter().rev().take(count).collect();
         if samples.is_empty() {
             return HashMap::new();

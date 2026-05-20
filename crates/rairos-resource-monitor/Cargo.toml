@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 sysinfo = "0.34"
 serde = { workspace = true, features = ["derive"] }
+parking_lot.workspace = true
 serde_json.workspace = true
 chrono.workspace = true
 

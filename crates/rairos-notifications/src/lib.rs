@@ -2,9 +2,9 @@
 //!
 //! Ported from `core/notifications.py`.
 
+use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
-use std::sync::Mutex as StdMutex;
 
 /// Notification levels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -95,16 +95,16 @@ impl NotificationManager {
 }
 
 /// Global notification manager.
-static MANAGER: LazyLock<StdMutex<NotificationManager>> =
-    LazyLock::new(|| StdMutex::new(NotificationManager::new()));
+static MANAGER: LazyLock<Mutex<NotificationManager>> =
+    LazyLock::new(|| Mutex::new(NotificationManager::new()));
 
-fn get_global_manager() -> &'static StdMutex<NotificationManager> {
+fn get_global_manager() -> &'static Mutex<NotificationManager> {
     &MANAGER
 }
 
 /// Get the global notification manager.
-pub fn get_notification_manager() -> std::sync::MutexGuard<'static, NotificationManager> {
-    get_global_manager().lock().unwrap()
+pub fn get_notification_manager() -> parking_lot::MutexGuard<'static, NotificationManager> {
+    get_global_manager().lock()
 }
 
 // ─── Webhook Notifier ────────────────────────────────────────────────────────
@@ -349,17 +349,17 @@ impl WebhookNotifier {
 
 // ─── Global webhook notifier ─────────────────────────────────────────────────
 
-static WEBHOOK_NOTIFIER: StdMutex<Option<WebhookNotifier>> = StdMutex::new(None);
+static WEBHOOK_NOTIFIER: Mutex<Option<WebhookNotifier>> = Mutex::new(None);
 
 /// Get the global webhook notifier.
-pub fn get_webhook_notifier() -> Option<std::sync::MutexGuard<'static, Option<WebhookNotifier>>> {
-    Some(WEBHOOK_NOTIFIER.lock().unwrap())
+pub fn get_webhook_notifier() -> Option<parking_lot::MutexGuard<'static, Option<WebhookNotifier>>> {
+    Some(WEBHOOK_NOTIFIER.lock())
 }
 
 /// Configure the global webhook URL and return the notifier.
 pub fn configure_webhook(url: &str) -> WebhookNotifier {
     let notifier = WebhookNotifier::new(url);
-    let mut guard = WEBHOOK_NOTIFIER.lock().unwrap();
+    let mut guard = WEBHOOK_NOTIFIER.lock();
     *guard = Some(notifier.clone());
     notifier
 }
