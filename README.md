@@ -95,14 +95,18 @@ The **Rairos API** provides programmatic access to research intelligence.
 ### Quick Start
 
 ```bash
-# Install Python SDK (from source)
-cd sdks/python && pip install -e . && cd ../..
+# Install Python SDK
+pip install rairos
 
-# Or Node.js SDK (from source)
-cd sdks/js && npm install && cd ../..
+# Or Node.js SDK
+npm install rairos
 ```
 
-**Note**: SDK packages are available on PyPI and npm.
+**Note**: For development, install from source:
+```bash
+cd sdks/python && pip install -e . && cd ../..
+cd sdks/js && npm install && cd ../..
+```
 
 ```python
 from rairos import RairosClient
