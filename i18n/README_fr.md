@@ -1,7 +1,7 @@
 # AI Research OS
 
 <div align="center">
-  <img src="logo_hero.png" width="800" alt="AI Research OS Demo"/>
+  <img src="logo_hero.svg" width="900" alt="Rairos Demo"/>
 </div>
 
 **Un système d'exploitation de recherche auto-évolutif pour chercheurs en IA**

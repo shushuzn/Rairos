@@ -1,7 +1,7 @@
 # AI研究操作系统
 
 <div align="center">
-  <img src="logo_hero.png" width="800" alt="AI Research OS Demo"/>
+  <img src="logo_hero.svg" width="900" alt="Rairos Demo"/>
 </div>
 
 **面向AI研究者的自进化研究操作系统**
