@@ -164,7 +164,7 @@ impl ValueQuantifier {
 
 // ─── Global quantifier ──────────────────────────────────────────────────────────
 
-use std::sync::Mutex;
+use parking_lot::Mutex;
 static QUANTIFIER: Mutex<Option<ValueQuantifier>> = Mutex::new(None);
 
 pub fn get_quantifier() -> &'static Mutex<Option<ValueQuantifier>> {
@@ -172,27 +172,25 @@ pub fn get_quantifier() -> &'static Mutex<Option<ValueQuantifier>> {
 }
 
 pub fn print_value_report() {
-    if let Ok(mut g) = QUANTIFIER.lock() {
+    let mut g = QUANTIFIER.lock();
+    if let Some(ref q) = *g {
+        println!("{}", q.get_value_report());
+    } else {
+        *g = Some(ValueQuantifier::new());
         if let Some(ref q) = *g {
             println!("{}", q.get_value_report());
-        } else {
-            *g = Some(ValueQuantifier::new());
-            if let Some(ref q) = *g {
-                println!("{}", q.get_value_report());
-            }
         }
     }
 }
 
 pub fn print_vw_comparison() {
-    if let Ok(mut g) = QUANTIFIER.lock() {
+    let mut g = QUANTIFIER.lock();
+    if let Some(ref q) = *g {
+        println!("{}", q.get_vw_comparison());
+    } else {
+        *g = Some(ValueQuantifier::new());
         if let Some(ref q) = *g {
             println!("{}", q.get_vw_comparison());
-        } else {
-            *g = Some(ValueQuantifier::new());
-            if let Some(ref q) = *g {
-                println!("{}", q.get_vw_comparison());
-            }
         }
     }
 }

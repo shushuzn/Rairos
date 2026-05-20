@@ -787,14 +787,14 @@ impl Default for ResearchSessionTracker {
 // Global tracker instance (module-level)
 // ============================================================================
 
-use std::sync::Mutex;
+use parking_lot::Mutex;
 
 static SESSION_TRACKER: std::sync::LazyLock<Mutex<Option<ResearchSessionTracker>>> =
     std::sync::LazyLock::new(|| Mutex::new(None));
 
 /// Get the global session tracker instance.
-pub fn get_session_tracker() -> MutexGuard<'static, Option<ResearchSessionTracker>> {
-    SESSION_TRACKER.lock().expect("valid regex")
+pub fn get_session_tracker() -> parking_lot::MutexGuard<'static, Option<ResearchSessionTracker>> {
+    SESSION_TRACKER.lock()
 }
 
 /// Initialize and get the global tracker.
@@ -802,7 +802,7 @@ pub fn init_session_tracker(
     #[allow(dead_code)]
     memory_dir: Option<PathBuf>,
 ) -> &'static Mutex<Option<ResearchSessionTracker>> {
-    let mut guard = SESSION_TRACKER.lock().expect("valid regex");
+    let mut guard = SESSION_TRACKER.lock();
     if guard.is_none() {
         *guard = Some(ResearchSessionTracker::new(memory_dir));
     }
@@ -811,7 +811,7 @@ pub fn init_session_tracker(
 }
 
 // Type alias for the mutex guard return type
-pub type MutexGuard<'a, T> = std::sync::MutexGuard<'a, T>;
+pub type MutexGuard<'a, T> = parking_lot::MutexGuard<'a, T>;
 
 // ============================================================================
 // Tests

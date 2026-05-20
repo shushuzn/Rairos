@@ -116,8 +116,8 @@ impl SearchCache {
     }
 }
 
-static SEARCH_CACHE: std::sync::LazyLock<std::sync::Mutex<SearchCache>> =
-    std::sync::LazyLock::new(|| std::sync::Mutex::new(SearchCache::new()));
+static SEARCH_CACHE: std::sync::LazyLock<parking_lot::Mutex<SearchCache>> =
+    std::sync::LazyLock::new(|| parking_lot::Mutex::new(SearchCache::new()));
 
 #[derive(Debug, Deserialize)]
 struct RssEntry {
@@ -202,19 +202,17 @@ pub async fn fetch_rss_feed(feed_url: &str, feed_name: &str, max_items: usize) -
 
 pub fn search_arxiv_cached(_query: &str, _max_results: usize) -> Vec<CachedPaper> {
     let cache_key = format!("{}:{}", _query, _max_results);
-    if let Ok(cache) = SEARCH_CACHE.lock() {
-        if let Some(results) = cache.get(&cache_key) {
-            return results;
-        }
+    let cache = SEARCH_CACHE.lock();
+    if let Some(results) = cache.get(&cache_key) {
+        return results.clone();
     }
     vec![]
 }
 
 pub fn cache_arxiv_results(query: &str, max_results: usize, results: Vec<CachedPaper>) {
     let cache_key = format!("{}:{}", query, max_results);
-    if let Ok(mut cache) = SEARCH_CACHE.lock() {
-        cache.insert(cache_key, results);
-    }
+    let mut cache = SEARCH_CACHE.lock();
+    cache.insert(cache_key, results);
 }
 
 #[derive(Debug, Clone, Default)]
