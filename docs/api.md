@@ -2,11 +2,11 @@
 
 ## CLI (rairos-cli)
 
-All commands via `./rairos.sh <command>` or `rairos <command>`.
+All commands via `./rairos.sh <command>`.
 
 ```bash
-rairos --help                    # Full command list
-rairos <command> --help          # Per-command help
+./rairos.sh --help               # Full command list
+./rairos.sh <command> --help    # Per-command help
 ```
 
 ## Core Data Structures
@@ -92,12 +92,12 @@ let (papers, total) = db.list_papers(50, 0, None, None)?;
 For CLI access, all operations are available as subcommands:
 
 ```bash
-rairos search "query"
-rairos show <paper-id>
-rairos list
-rairos init
-rairos stats
-rairos status
+./rairos.sh search "query"
+./rairos.sh show <paper-id>
+./rairos.sh list
+./rairos.sh init
+./rairos.sh stats
+./rairos.sh status
 ```
 
 ## MCP Tools (68 Rust)

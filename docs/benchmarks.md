@@ -47,7 +47,7 @@ Rairos uses `BenchmarkComparator` to evaluate answer quality by cross-referencin
 | Hallucination Rate | 3.1% | Unverified claims per answer |
 
 > [!TIP]
-> Run `rairos benchmark --compare <paper_id1> <paper_id2>` to compare benchmark results across any two imported papers.
+> Run `./rairos.sh benchmark --compare <paper_id1> <paper_id2>` to compare benchmark results across any two imported papers.
 
 ## Core Module Test Coverage
 
@@ -76,11 +76,11 @@ The self-evolution system improves over time. Gene/capsule patterns that fail to
 
 ```bash
 # Full test suite
-cargo test
+make test
 
 # Profile paper import
-rairos benchmark --time-import 2601.00155
+./rairos.sh benchmark --time-import 2601.00155
 
 # Compare two papers' benchmark tables
-rairos benchmark --compare 2601.00155 2302.00763
+./rairos.sh benchmark --compare 2601.00155 2302.00763
 ```
