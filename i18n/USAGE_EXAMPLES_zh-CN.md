@@ -1,175 +1,175 @@
-# Rairos Usage Guide
+# AI Research OS 使用指南
 
-## Table of Contents
+## 📖 目录
 
-- [Quick Start](#quick-start)
-- [Common Operations](#common-operations)
-- [FAQ](#faq)
-- [More Resources](#more-resources)
+- [快速开始](#快速开始)
+- [常见操作](#常见操作)
+- [常见问题](#常见问题)
+- [更多资源](#更多资源)
 
 ---
 
-## Quick Start
+## 🚀 快速开始
 
-> Rairos has fully migrated to Rust (154 crates). Use `./rairos.sh` or `make run CMD='...'` for simplified commands.
+> Rairos 已完全迁移为 Rust 项目（154 crates）。使用 `./rairos.sh` 或 `make run CMD='...'` 简化操作。
 
-### 1. Search Papers
+### 1. 搜索论文
 
 ```bash
-# Search papers
+# 搜索论文
 ./rairos.sh search "machine learning"
 
-# View more details
+# 查看更多详情
 ./rairos.sh search "LLM agent" --limit 20
 
-# View paper details after search
+# 搜索后查看论文详情
 ./rairos.sh show <paper-id>
 ```
 
-### 2. Import Papers
+### 2. 导入论文
 
 ```bash
-# Import from arXiv
+# 从 arXiv 导入
 ./rairos.sh add 2301.001
 
-# Batch import
+# 批量导入
 ./rairos.sh import papers.json
 ```
 
-### 3. View Status
+### 3. 查看状态
 
 ```bash
-# View system status
+# 查看系统状态
 ./rairos.sh status
 
-# View detailed statistics
+# 查看详细统计
 ./rairos.sh stats
 
-# List all papers
+# 列出所有论文
 ./rairos.sh list
 
-# Filter by status
+# 按状态筛选
 ./rairos.sh list --status done
 ```
 
-### 4. Export Data
+### 4. 导出数据
 
 ```bash
-# JSON format
+# JSON格式
 ./rairos.sh export --format json ./papers.json
 
-# CSV format
+# CSV格式
 ./rairos.sh export --format csv ./papers.csv
 ```
 
 ---
 
-## Common Operations
+## 📚 常见操作
 
-### Paper Management
+### 论文管理
 
 ```bash
-# Delete paper
+# 删除论文
 ./rairos.sh delete <paper-id>
 
-# Update parse status
+# 更新解析状态
 ./rairos.sh update-status <paper-id> done
 
-# Find similar papers
+# 查找相似论文
 ./rairos.sh similar <paper-id>
 
-# Compare papers
+# 对比论文
 ./rairos.sh compare --papers <paper-a> <paper-b>
 
-# Deduplication
+# 去重
 ./rairos.sh dedup find
 ```
 
-### Knowledge Graph
+### 知识图谱
 
 ```bash
-# View KG statistics
+# 查看知识图谱统计
 ./rairos.sh kg-stats
 
-# Search KG nodes
+# 搜索知识图谱节点
 ./rairos.sh kg-search "transformer"
 
-# View paper's neighbor graph
+# 查看论文的邻居图
 ./rairos.sh kg-graph <paper-id> --hops 2
 ```
 
-### Research Analysis
+### 研究分析
 
 ```bash
-# Detect research gaps
+# 检测研究空白
 ./rairos.sh gap "reinforcement learning"
 
-# View research radar
+# 查看研究雷达
 ./rairos.sh radar
 
-# Analyze trends
+# 分析趋势
 ./rairos.sh trend --topic "LLM"
 
-# View research timeline
+# 查看研究时间线
 ./rairos.sh timeline
 ```
 
-### Gene Pool (Evolution)
+### Gene Pool（进化）
 
 ```bash
-# View gene list
+# 查看基因列表
 ./rairos.sh gene-list
 
-# View gene details
+# 查看基因详情
 ./rairos.sh gene-show <gene-id>
 
-# Calculate diversity
+# 计算多样性
 ./rairos.sh gene-diversity
 
-# Run evolution cycle
+# 运行进化周期
 ./rairos.sh gene-evolve
 ```
 
-### System Management
+### 系统管理
 
 ```bash
-# Initialize database
+# 初始化数据库
 ./rairos.sh init
 
-# Run diagnostics
+# 运行诊断
 ./rairos.sh doctor
 
-# Start daemon
+# 启动后台服务
 ./rairos.sh daemon --foreground
 
-# View version
+# 查看版本
 ./rairos.sh version
 
-# View help
+# 查看帮助
 ./rairos.sh --help
 ```
 
 ---
 
-## FAQ
+## 🔧 常见问题
 
-### Q: How to set environment variables?
+### Q: 如何设置环境变量？
 
 ```bash
-# Database path
+# 数据库路径
 export RAIROS_DB=/path/to/rairos.db
 
-# Data directory
+# 数据存储目录
 export RAIROS_DATA_DIR=/path/to/data
 
-# LLM API key (optional)
+# LLM API 密钥（按需）
 export OPENAI_API_KEY="sk-..."
 ```
 
-### Q: How to batch import papers?
+### Q: 如何批量导入论文？
 
 ```bash
-# Prepare JSON file
+# 准备 JSON 文件
 cat > papers.json << 'EOF'
 [
   {
@@ -186,53 +186,53 @@ cat > papers.json << 'EOF'
 ]
 EOF
 
-# Import
+# 导入
 ./rairos.sh import papers.json
 ```
 
-### Q: How to clear cache?
+### Q: 如何清理缓存？
 
 ```bash
-# View cache stats
+# 查看缓存
 ./rairos.sh cache stats
 
-# Clear cache
+# 清理缓存
 ./rairos.sh cache clear
 ```
 
-### Q: How to export papers?
+### Q: 如何导出论文？
 
 ```bash
-# JSON export
+# JSON导出
 ./rairos.sh export --format json ./papers.json
 
-# CSV export
+# CSV导出
 ./rairos.sh export --format csv ./papers.csv
 
-# Export filtered by status
+# 按状态筛选导出
 ./rairos.sh export --format json --status done ./papers_done.json
 ```
 
-### Q: Out of memory during build?
+### Q: 构建时内存不足怎么办？
 
 ```bash
-# Recommended: Use Makefile (auto-optimized)
+# 推荐：使用 Makefile（自动优化）
 make build-dev
 
-# Fallback: Single-threaded build
+# 备选：单线程构建
 unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
 ```
 
 ---
 
-## More Resources
+## 🎓 更多资源
 
-- [GitHub Repository](https://github.com/shushuzn/Rairos)
-- [Architecture Docs](docs/architecture.md)
-- [Installation Guide](docs/installation.md)
-- [AGENTS.md](AGENTS.md) — Full crate list and command reference
+- [项目 GitHub](https://github.com/shushuzn/Rairos)
+- [架构文档](docs/architecture.md)
+- [安装指南](docs/installation.md)
+- [AGENTS.md](AGENTS.md) — 完整 crate 列表和命令参考
 - [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-**Tip**: Use `./rairos.sh --help` to see all 105 available commands!
+**提示**: 使用 `./rairos.sh --help` 查看所有可用的 105 个命令！
