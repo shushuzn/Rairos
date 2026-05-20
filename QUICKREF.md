@@ -15,7 +15,7 @@ make build                    # Build release (first time: 10-20min)
 ./rairos.sh list --status pending  # List papers by status
 ./rairos.sh stats             # Show statistics
 ./rairos.sh radar             # View research radar
-./raros.sh trend --topic "AI" # Analyze trends
+./rairos.sh trend --topic "AI" # Analyze trends
 ```
 
 ## Development
