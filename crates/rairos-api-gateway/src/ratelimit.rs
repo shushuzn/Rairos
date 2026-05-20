@@ -140,10 +140,10 @@ impl RateLimiter {
             }
             RateLimiterInner::InMemory { daily, minute } => {
                 let mut daily_writer = daily.write().await;
-                *daily_writer.entry(key_hash.to_string()).or_insert(0) += 1;
+                *daily_writer.entry(key_hash.to_string()).or_default() += 1;
 
                 let mut minute_writer = minute.write().await;
-                *minute_writer.entry(key_hash.to_string()).or_insert(0) += 1;
+                *minute_writer.entry(key_hash.to_string()).or_default() += 1;
             }
         }
     }

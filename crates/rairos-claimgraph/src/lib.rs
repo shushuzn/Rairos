@@ -506,7 +506,7 @@ pub fn render_claim_graph_html(graph: Option<&ClaimGraph>) -> String {
         *entry
             .1
             .entry(node.claim_type.as_str().to_string())
-            .or_insert(0) += 1;
+            .or_default() += 1;
         if entry.2.is_empty() {
             entry.2 = node.source_text.chars().take(80).collect();
         }
@@ -738,7 +738,7 @@ pub fn claim_graph_action(
             for node in graph.nodes.values() {
                 *by_type
                     .entry(node.claim_type.as_str().to_string())
-                    .or_insert(0) += 1;
+                    .or_default() += 1;
             }
             serde_json::json!({
                 "total_claims": graph.node_count(),
