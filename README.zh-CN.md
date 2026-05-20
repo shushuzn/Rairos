@@ -7,6 +7,11 @@
 **一个自进化的研究操作系统 — 从你的反馈中学习，自动发现更好的研究方向。** — 100% Rust (154 crates)
 
 [![Build](https://github.com/shushuzn/Rairos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
+![Rust](https://img.shields.io/badge/rust-1.85+-orange.svg?logo=rust)
+![Crates](https://img.shields.io/badge/crates-154-blue.svg)
+![Lines](https://img.shields.io/badge/lines-116k%2B-green.svg)
+![MCP](https://img.shields.io/badge/mcp_tools-69-blue.svg?logo=robot)
+![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
 ## 它能做什么
