@@ -4765,6 +4765,7 @@ dependencies = [
 name = "rairos-profiler"
 version = "0.1.0"
 dependencies = [
+ "parking_lot",
  "serde",
  "serde_json",
 ]
@@ -4855,6 +4856,7 @@ dependencies = [
 name = "rairos-rate-limiter"
 version = "0.1.0"
 dependencies = [
+ "parking_lot",
  "serde",
  "serde_json",
 ]

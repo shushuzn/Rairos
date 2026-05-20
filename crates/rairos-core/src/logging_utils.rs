@@ -2,9 +2,10 @@
 //!
 //! Ported from `core/logging_utils.py`.
 
+use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::{Arc, LazyLock, RwLock};
+use std::sync::{Arc, LazyLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -29,12 +30,12 @@ impl PerformanceMonitor {
     }
 
     pub fn record(&self, name: &str, value: f64) {
-        let mut metrics = self.metrics.write().expect("metrics lock poisoned");
+        let mut metrics = self.metrics.write();
         metrics.entry(name.to_string()).or_default().push(value);
     }
 
     pub fn get_stats(&self, name: &str) -> Option<MetricStats> {
-        let metrics = self.metrics.read().expect("metrics lock poisoned");
+        let metrics = self.metrics.read();
         let values = metrics.get(name)?;
 
         if values.is_empty() {
@@ -57,7 +58,7 @@ impl PerformanceMonitor {
     }
 
     pub fn get_all_stats(&self) -> HashMap<String, MetricStats> {
-        let metrics = self.metrics.read().expect("metrics lock poisoned");
+        let metrics = self.metrics.read();
         metrics
             .keys()
             .filter_map(|k| self.get_stats(k).map(|stats| (k.clone(), stats)))
@@ -65,12 +66,12 @@ impl PerformanceMonitor {
     }
 
     pub fn reset(&self) {
-        let mut metrics = self.metrics.write().expect("metrics lock poisoned");
+        let mut metrics = self.metrics.write();
         metrics.clear();
     }
 
     pub fn reset_metric(&self, name: &str) {
-        let mut metrics = self.metrics.write().expect("metrics lock poisoned");
+        let mut metrics = self.metrics.write();
         metrics.remove(name);
     }
 }
