@@ -195,3 +195,13 @@ bb8-postgres = "0.8"
 tower = { version = "0.4", features = ["timeout"] }
 tower-http = { version = "0.5", features = ["cors", "trace"] }
 
+# Optimize dependencies in dev builds for ~orders-of-magnitude faster runtime
+# while keeping workspace crates at opt-level 0 for fast compilation + full debug info
+# Pattern from: typst, bitwarden/server, oxc-project/oxc
+[profile.dev]
+opt-level = 0
+
+[profile.dev.package."*"]
+opt-level = 2
+debug = false
+
