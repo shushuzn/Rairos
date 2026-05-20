@@ -214,6 +214,18 @@ See [API Documentation](docs/api/index.md) for full API reference.
 
 See [Deployment Checklist](deploy/CHECKLIST.md) for production setup.
 
+## Key Features
+
+| Feature | Description |
+|---------|-------------|
+| 🔍 **Paper Import** | arXiv, DOI, PDF, OCR support |
+| 🧬 **Gene Pool** | Self-evolving research patterns |
+| 🎯 **Gap Detection** | 36 AI research topics |
+| 💬 **RAG Chat** | Chat with your papers |
+| 📊 **Knowledge Graph** | Visualize paper relationships |
+| 🤖 **69 MCP Tools** | AI agent integration |
+| 🖥️ **105 CLI Commands** | Full terminal interface |
+
 ## Ecosystem
 
 Core crates that power Rairos:
@@ -306,6 +318,20 @@ rustup update  # Update to latest stable
 - Run `./rairos.sh <command> --help` for command-specific help
 - Check [docs/](docs/) for detailed documentation
 - Open an issue on GitHub for bugs or feature requests
+
+## Similar Programs
+
+Looking for alternatives? Compare with other research tools:
+
+| Tool | Type | Focus |
+|------|------|-------|
+| [Zotero](https://www.zotero.org/) | Reference manager | PDF storage, citations |
+| [Mendeley](https://www.mendeley.com/) | Reference manager | PDF annotation, sync |
+| [Semantic Scholar](https://www.semanticscholar.org/) | Search engine | AI-powered paper discovery |
+| [Consensus](https://consensus.app/) | Search engine | Q&A over papers |
+| [Elicit](https://elicit.org/) | Research assistant | AI analysis |
+
+**Rairos differs** by being **self-hosted** with **self-evolving** Gene Pool — it learns from your feedback to improve future searches.
 
 ## License
 

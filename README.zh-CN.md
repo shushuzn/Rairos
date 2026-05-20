@@ -155,6 +155,18 @@ CLI (rairos-cli) → crates/* 全 Rust
 
 所有数据存储在 `~/.ai_research_os/`，完全离线运行。
 
+## 核心功能
+
+| 功能 | 描述 |
+|------|------|
+| 🔍 **论文导入** | arXiv、DOI、PDF、OCR 支持 |
+| 🧬 **Gene Pool** | 自进化研究模式 |
+| 🎯 **空白检测** | 36 个 AI 研究主题 |
+| 💬 **RAG 问答** | 与论文对话 |
+| 📊 **知识图谱** | 可视化论文关系 |
+| 🤖 **69 个 MCP 工具** | AI Agent 集成 |
+| 🖥️ **105 个 CLI 命令** | 全功能终端界面 |
+
 ## 生态
 
 核心 crates：
@@ -254,6 +266,20 @@ rustup update  # 更新到最新稳定版
 - [架构文档](docs/architecture.md)
 - [安装指南](docs/installation.md)
 - [使用示例](USAGE_EXAMPLES.md)
+
+## 类似项目
+
+寻找替代品？与以下研究工具对比：
+
+| 工具 | 类型 | 特点 |
+|------|------|------|
+| [Zotero](https://www.zotero.org/) | 文献管理 | PDF 存储、引用管理 |
+| [Mendeley](https://www.mendeley.com/) | 文献管理 | PDF 标注、云同步 |
+| [Semantic Scholar](https://www.semanticscholar.org/) | 搜索引擎 | AI 驱动的论文发现 |
+| [Consensus](https://consensus.app/) | 搜索引擎 | 论文问答 |
+| [Elicit](https://elicit.org/) | 研究助手 | AI 分析 |
+
+**Rairos 的优势**：**自托管** + **自进化** Gene Pool——从你的反馈中学习，自动改进未来搜索。
 
 ## 许可证
 
