@@ -76,8 +76,8 @@ chmod 600 ~/.ai_research_os/secrets
 Rairos includes a pre-commit hook that scans for secrets:
 
 ```bash
-# Install pre-commit (optional, for local secret scanning)
-pip install pre-commit
+# Install pre-commit
+cargo install pre-commit
 pre-commit install
 
 # Or use the built-in hook (already in .git/hooks/pre-commit)
