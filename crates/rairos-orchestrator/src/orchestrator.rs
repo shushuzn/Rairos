@@ -186,8 +186,9 @@ impl AutonomousOrchestrator {
 
             // CPU-intensive filtering in spawn_blocking
         use tokio::task;
+        let topic_count = topics.len();
         let search_results = task::spawn_blocking(move || {
-            let mut results = HashMap::new();
+            let mut results = HashMap::with_capacity(topic_count);
 
             // Build owned lookup map to avoid repeated iteration
             let existing_map: std::collections::HashMap<String, Vec<Paper>> =
