@@ -1,4 +1,5 @@
 use chrono::Utc;
+use futures::future::join_all;
 use rairos_core::{Database, Paper, ResearchGap};
 use rairos_crossover::CrossoverEngine;
 use rairos_llm::insight::tracker::EvolutionTracker;
@@ -10,8 +11,16 @@ use rairos_rankers::{
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex as StdMutex;
 use tokio::sync::RwLock;
 use uuid::Uuid;
+
+use crate::error::{OrchestratorError, Result};
+use crate::persistence::{load_state, save_state};
+use crate::state::{
+    DeepResearchResult, FilterStats, GenePoolStats, OrchestratorConfig,
+    PaperInfo, ResearchAlert, ScoredGap,
+};
 
 /// Compute keyword overlap between two text strings (Jaccard similarity on words > 4 chars).
 #[inline(always)]
@@ -32,13 +41,6 @@ fn keyword_overlap(a: &str, b: &str) -> f64 {
     intersection / union
 }
 
-use crate::error::{OrchestratorError, Result};
-use crate::persistence::{load_state, save_state};
-use crate::state::{
-    DeepResearchResult, FilterStats, GenePoolStats, OrchestratorConfig,
-    PaperInfo, ResearchAlert, ScoredGap,
-};
-
 const STOP_WORDS: &[&str] = &[
     "about", "after", "also", "among", "approach", "areas", "based", "between",
     "certain", "could", "different", "does", "during", "each", "effects", "etc",
@@ -49,6 +51,757 @@ const STOP_WORDS: &[&str] = &[
     "these", "those", "through", "thus", "where", "which", "while", "within",
 ];
 
+/// Process a single topic's new papers and return generated alerts.
+/// This function inlines the logic from run_deep_research, filter_new_gaps,
+/// score_gaps_against_gene_pool, generate_alerts, record_gaps, and record_gap_outcome.
+async fn process_topic(
+    db: Arc<RwLock<Option<Database>>>,
+    tracker: Arc<RwLock<Option<EvolutionTracker>>>,
+    regret_selector: Arc<StdMutex<RegretOptimalSelector>>,
+    bayesian_optimizer: Arc<StdMutex<RankerBayesianOptimizer>>,
+    _crossover_engine: Arc<StdMutex<CrossoverEngine>>,
+    scaling_learner: Arc<StdMutex<OptimalScalingLearner>>,
+    adaptive_momentum: Arc<StdMutex<RankerAdaptiveMomentum>>,
+    config: OrchestratorConfig,
+    webhook_enabled: bool,
+    topic: String,
+    new_papers: Vec<PaperInfo>,
+) -> Result<Vec<ResearchAlert>> {
+    // Initialize components
+    {
+        let mut db_guard = db.write().await;
+        if db_guard.is_none() {
+            let database = Database::open(
+                dirs::home_dir()
+                    .unwrap_or_else(|| PathBuf::from("."))
+                    .join(".ai_research_os")
+                    .join("rairos.db"),
+            )
+            .map_err(|e| OrchestratorError::Database(e.to_string()))?;
+            *db_guard = Some(database);
+        }
+    }
+    {
+        let mut tracker_guard = tracker.write().await;
+        if tracker_guard.is_none() {
+            let evo_tracker = EvolutionTracker::new(None);
+            *tracker_guard = Some(evo_tracker);
+        }
+    }
+
+    let session_id = Uuid::new_v4().to_string()[..8].to_string();
+    let papers_analyzed = new_papers.len() as i32;
+
+    let mut all_categories: Vec<String> = Vec::new();
+    let mut papers: Vec<rairos_core::Paper> = Vec::new();
+
+    let max_papers_for_analysis = 10;
+    let selected_papers: Vec<PaperInfo> = if new_papers.len() > max_papers_for_analysis {
+        let mut scored: Vec<(&PaperInfo, f64)> = new_papers.iter().map(|p| {
+            let abstract_len = p.abstract_text.len() as f64;
+            let title_words = p.title.split_whitespace().count() as f64;
+            let category_count = p.categories.split_whitespace().count() as f64;
+            let author_count = p.authors.len() as f64;
+
+            let recency_score = 1.0;
+            let quality_score = (abstract_len / 500.0).min(2.0) * 0.3
+                + (title_words / 15.0).min(1.5) * 0.2
+                + (category_count / 3.0).min(1.5) * 0.2
+                + (author_count / 5.0).min(1.0) * 0.1;
+            let relevance_score = abstract_len / 1000.0 + title_words / 20.0;
+            let combined = recency_score * 0.3 + relevance_score * 0.4 + quality_score * 0.3;
+            (p, combined)
+        }).collect();
+        scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Less));
+        scored.into_iter().take(max_papers_for_analysis).map(|(p, _)| p.clone()).collect()
+    } else {
+        new_papers.clone()
+    };
+
+    {
+        let db_guard = db.read().await;
+        if let Some(db_ref) = db_guard.as_ref() {
+            for p in &selected_papers {
+                let paper = rairos_core::Paper::new(
+                    Some(p.arxiv_id.clone()),
+                    p.title.clone(),
+                    p.abstract_text.clone(),
+                );
+                let _ = db_ref.insert_paper(&paper);
+                papers.push(paper);
+
+                for cat in p.categories.split_whitespace() {
+                    if !cat.is_empty() && !all_categories.contains(&cat.to_string()) {
+                        all_categories.push(cat.to_string());
+                    }
+                }
+            }
+        }
+    }
+
+    let keywords: Vec<&str> = all_categories.iter().map(|s| s.as_str()).collect();
+
+    let _extracted_keywords: std::collections::HashSet<String> = {
+        let mut term_freq: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+        for paper in &papers {
+            let words: std::collections::HashSet<_> = paper.abstract_text.split_whitespace()
+                .map(|w| w.to_lowercase())
+                .filter(|w| w.len() > 5)
+                .filter(|w| !STOP_WORDS.contains(&w.as_str()))
+                .collect();
+            for word in words {
+                *term_freq.entry(word).or_insert(0) += 1;
+            }
+        }
+        term_freq.into_iter()
+            .filter(|(_, count)| *count >= 2)
+            .map(|(word, _)| word)
+            .collect()
+    };
+
+    let gap_descriptions = rairos_llm::GapDetector::detect_gaps(&papers, &keywords);
+    let under_explored = rairos_llm::GapDetector::find_underexplored_areas(&papers, 3);
+
+    let gap_types = &["unexplored_application", "scalability_issue", "evaluation_gap",
+                      "method_limitation", "theoretical_gap", "reproducibility_gap"];
+    let suggested_gap_type = {
+        let mut selector = regret_selector.lock().unwrap();
+        selector.select(gap_types)
+    };
+
+    let existing_papers: Vec<String> = {
+        let db_guard = db.read().await;
+        if let Some(db_ref) = db_guard.as_ref() {
+            db_ref.search_papers_smart(&topic, 100)
+                .map(|p| p.into_iter().map(|p| p.abstract_text).collect())
+                .unwrap_or_default()
+        } else {
+            Vec::new()
+        }
+    };
+
+    let novelty_threshold = 0.3;
+
+    let pattern_gaps = detect_pattern_gaps_impl(&papers, &topic);
+    let cross_paper_gaps = detect_cross_paper_gaps_impl(&papers, &topic);
+    let method_gaps = detect_method_limitations_impl(&papers);
+    let eval_gaps = detect_evaluation_gaps_impl(&papers);
+    let resource_gaps = detect_resource_gaps_impl(&papers);
+    let dataset_gaps = detect_dataset_gaps_impl(&papers);
+    let generalization_gaps = detect_generalization_gaps_impl(&papers);
+    let mut gaps: Vec<ResearchGap> = pattern_gaps;
+    gaps.extend(cross_paper_gaps);
+    gaps.extend(method_gaps);
+    gaps.extend(eval_gaps);
+    gaps.extend(resource_gaps);
+    gaps.extend(dataset_gaps);
+    gaps.extend(generalization_gaps);
+
+    for desc in gap_descriptions {
+        let novelty = if existing_papers.is_empty() {
+            1.0
+        } else {
+            let max_overlap = existing_papers.iter()
+                .map(|existing| {
+                    let words_new: std::collections::HashSet<_> = desc.split_whitespace()
+                        .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
+                    let words_exist: std::collections::HashSet<_> = existing.split_whitespace()
+                        .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
+                    if words_new.is_empty() || words_exist.is_empty() {
+                        return 0.0;
+                    }
+                    let intersection = words_new.intersection(&words_exist).count() as f64;
+                    intersection / words_new.len() as f64
+                })
+                .fold(0.0f64, |a, b| a.max(b));
+            1.0 - max_overlap
+        };
+
+        if novelty < novelty_threshold && !existing_papers.is_empty() {
+            continue;
+        }
+
+        let severity = if novelty > 0.7 { "HIGH" } else if novelty > 0.4 { "MEDIUM" } else { "LOW" };
+        let gap_type = suggested_gap_type.clone().unwrap_or_else(|| "keyword_gap".to_string());
+        gaps.push(ResearchGap::new_simple(&gap_type, &desc, severity));
+    }
+
+    for cat in under_explored {
+        let gap_type = suggested_gap_type.clone().unwrap_or_else(|| "category_gap".to_string());
+        gaps.push(ResearchGap::new_simple(
+            &gap_type,
+            &format!("Under-explored category in {}: {}", topic, cat),
+            "low",
+        ));
+    }
+
+    tracing::info!("[DeepResearch] Detected {} gaps from {} papers for '{}'",
+        gaps.len(), papers.len(), topic);
+
+    let research_result = DeepResearchResult {
+        gaps,
+        papers_analyzed,
+        session_id,
+        iterations: 1,
+        error: None,
+    };
+
+    let gaps = &research_result.gaps;
+    let session_id = &research_result.session_id;
+    if gaps.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    // Filter new gaps
+    let db_guard = db.read().await;
+    let db_ref = db_guard
+        .as_ref()
+        .ok_or_else(|| OrchestratorError::NotInitialized("database".to_string()))?;
+
+    let existing_gaps = db_ref
+        .list_gaps(200, 0)
+        .map_err(|e| OrchestratorError::Database(e.to_string()))?;
+
+    let seen_descriptions: std::collections::HashSet<_> = existing_gaps
+        .iter()
+        .map(|g| g.description.clone())
+        .collect();
+
+    let mut filtered = Vec::new();
+    let mut suppressed = 0i32;
+    for gap in gaps.clone() {
+        if seen_descriptions.contains(&gap.description) {
+            suppressed += 1;
+        } else {
+            filtered.push(gap);
+        }
+    }
+
+    let filter_stats = FilterStats {
+        seen: seen_descriptions.len() as i32,
+        suppressed,
+    };
+
+    drop(db_guard);
+
+    if filter_stats.suppressed > 0 {
+        tracing::info!(
+            "[Orchestrator] Suppressed {} already-seen gaps (total seen: {})",
+            filter_stats.suppressed,
+            filter_stats.seen
+        );
+    }
+    if filtered.is_empty() {
+        tracing::info!(
+            "[Orchestrator] All gaps already known for '{}' — skipping",
+            topic
+        );
+        return Ok(Vec::new());
+    }
+
+    // Record gaps
+    let db_guard = db.read().await;
+    if let Some(db_ref) = db_guard.as_ref() {
+        for gap in &filtered {
+            let _ = db_ref.insert_gap(gap);
+        }
+    }
+    drop(db_guard);
+
+    // Score gaps against gene pool
+    let tracker_guard = tracker.read().await;
+    let tracker_ref = tracker_guard
+        .as_ref()
+        .ok_or_else(|| OrchestratorError::NotInitialized("tracker".to_string()))?;
+
+    let profile = tracker_ref.get_profile();
+    let ucb_scores = {
+        let selector = regret_selector.lock().unwrap();
+        selector.get_ucb_scores()
+    };
+    drop(tracker_guard);
+
+    let mut scored: Vec<ScoredGap> = filtered
+        .into_iter()
+        .map(|gap| {
+            let gap_type_name = gap.category.clone();
+
+            let raw_score = profile
+                .gap_type_preferences
+                .get(&gap_type_name)
+                .copied()
+                .unwrap_or(0.0);
+
+            let mut gene_pool_score = (raw_score.clamp(-1.0, 1.0) + 1.0) / 2.0;
+            let preference_boost = gene_pool_score >= 0.5;
+
+            if let Some(ucb) = ucb_scores.get(&gap_type_name) {
+                let ucb_normalized = (ucb / 10.0).min(1.0);
+                gene_pool_score = gene_pool_score * 0.7 + ucb_normalized * 0.3;
+            }
+
+            let severity = gap.severity.clone();
+            let description = gap.description.clone();
+            ScoredGap {
+                gap,
+                gap_type: gap_type_name,
+                title: description.chars().take(60).collect(),
+                description,
+                severity,
+                gene_pool_score,
+                preference_boost,
+            }
+        })
+        .collect();
+
+    for sg in &mut scored {
+        let ucb_scores = {
+            let selector = regret_selector.lock().unwrap();
+            selector.get_ucb_scores()
+        };
+        let ucb_bonus = ucb_scores.get(&sg.gap_type).copied().unwrap_or(0.0);
+        let gradient = -(sg.gene_pool_score - ucb_bonus);
+        let momentum = {
+            let mut am = adaptive_momentum.lock().unwrap();
+            am.nesterov_update(gradient)
+        };
+        sg.gene_pool_score = (sg.gene_pool_score + momentum * 0.1).clamp(0.0, 1.0);
+    }
+
+    let Some(trigger) = new_papers.first().cloned() else {
+        tracing::warn!("[Orchestrator] No papers in subscription '{}' despite prior check", topic);
+        return Ok(Vec::new());
+    };
+
+    let (alerts, threshold_used, scored_len) = {
+        let severity_rank = |s: &str| match s {
+            "HIGH" => 0,
+            "MEDIUM" => 1,
+            "LOW" => 2,
+            _ => 3,
+        };
+
+        let min_sev = severity_rank(&config.min_gap_severity_for_alert);
+
+        let suggested_thresholds = {
+            let bo = bayesian_optimizer.lock().unwrap();
+            bo.suggest(2.0)
+        };
+        let bo_threshold = suggested_thresholds.first().copied().unwrap_or(0.3);
+        let min_threshold = (config.min_gene_pool_score_for_alert * 0.7
+            + bo_threshold * 0.3)
+            .clamp(0.1, 0.9);
+
+        let scored_len = scored.len();
+        let mut alerts = Vec::new();
+        for sg in scored {
+            let sev_rank = severity_rank(&sg.severity);
+            if sev_rank > min_sev {
+                continue;
+            }
+            if sg.gene_pool_score < min_threshold {
+                continue;
+            }
+
+            let alert = ResearchAlert::new(
+                Uuid::new_v4().to_string()[..8].to_string(),
+                session_id.to_string(),
+                topic.to_string(),
+                trigger.arxiv_id.clone(),
+                trigger.title.chars().take(80).collect(),
+                1,
+                sg.title.chars().take(80).collect(),
+                sg.gap_type.clone(),
+                sg.severity.clone(),
+                sg.gene_pool_score,
+                sg.preference_boost,
+            );
+            alerts.push(alert);
+        }
+
+        (alerts, min_threshold, scored_len)
+    };
+
+    if !alerts.is_empty() {
+        let alert_rate = alerts.len() as f64 / scored_len.max(1) as f64;
+        {
+            let mut bo = bayesian_optimizer.lock().unwrap();
+            bo.observe(&[threshold_used], alert_rate);
+        }
+
+        let model_scale = new_papers.len() as f64;
+        let dataset_tokens = new_papers.iter()
+            .map(|p| p.abstract_text.len() as f64)
+            .sum::<f64>();
+        let opt_lr = {
+            let (lr, _) = {
+                let sl = scaling_learner.lock().unwrap();
+                sl.predict_optimal(1.0, dataset_tokens / model_scale)
+            };
+            let am = adaptive_momentum.lock().unwrap();
+            am.adaptive_lr(0.1 * lr, 1.0)
+        };
+        let opt_bs = opt_lr * 100.0;
+        let loss = 1.0 - alert_rate;
+        {
+            let mut sl = scaling_learner.lock().unwrap();
+            sl.observe(opt_lr, opt_bs, loss);
+        }
+    }
+
+    for alert in &alerts {
+        {
+            let mut selector = regret_selector.lock().unwrap();
+            selector.record_outcome(&alert.top_gap_type, alert.gene_pool_score);
+        }
+
+        if webhook_enabled {
+            tracing::debug!(
+                "[Orchestrator] Would send webhook for alert: {} (topic={})",
+                alert.alert_id,
+                alert.topic
+            );
+        }
+
+        {
+            let mut tracker_guard = tracker.write().await;
+            if let Some(t) = tracker_guard.as_mut() {
+                let _ = t.record_gap_accept(
+                    &alert.topic,
+                    &alert.top_gap_type,
+                    &alert.top_gap_title,
+                    "",
+                );
+            }
+        }
+    }
+
+    tracing::info!(
+        "[Orchestrator] Generated {} alerts for '{}'",
+        alerts.len(),
+        topic
+    );
+
+    Ok(alerts)
+}
+
+// Detection helper implementations (extract logic from Orchestrator methods)
+fn detect_pattern_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
+    let limitation_patterns = [
+        ("does not scale", "scalability_gap", "HIGH"),
+        ("not scalable", "scalability_gap", "HIGH"),
+        ("limited to", "scalability_gap", "MEDIUM"),
+        ("computational cost", "scalability_gap", "MEDIUM"),
+        ("quadratic", "scalability_gap", "MEDIUM"),
+        ("attention bottleneck", "scalability_gap", "HIGH"),
+        ("no benchmark", "evaluation_gap", "HIGH"),
+        ("unevaluated", "evaluation_gap", "MEDIUM"),
+        ("not evaluated on", "evaluation_gap", "MEDIUM"),
+        ("missing evaluation", "evaluation_gap", "MEDIUM"),
+        ("metric", "evaluation_gap", "LOW"),
+        ("reproducibility", "reproducibility_gap", "HIGH"),
+        ("future work", "method_limitation", "LOW"),
+        ("limitation", "method_limitation", "MEDIUM"),
+        ("cannot handle", "method_limitation", "MEDIUM"),
+        ("restricted to", "method_limitation", "LOW"),
+        ("only works for", "method_limitation", "MEDIUM"),
+        ("fail to", "method_limitation", "MEDIUM"),
+        ("theoretical gap", "theoretical_gap", "HIGH"),
+        ("not theoretically", "theoretical_gap", "MEDIUM"),
+        ("no proof", "theoretical_gap", "HIGH"),
+        ("lacks theory", "theoretical_gap", "MEDIUM"),
+        ("empirical only", "theoretical_gap", "MEDIUM"),
+        ("unexplored", "unexplored_application", "HIGH"),
+        ("not applied to", "unexplored_application", "MEDIUM"),
+        ("novel application", "unexplored_application", "LOW"),
+        ("memory bottleneck", "memory_gap", "HIGH"),
+        ("context length", "context_gap", "HIGH"),
+        ("long-context", "context_gap", "HIGH"),
+        ("interpretability", "interpretability_gap", "HIGH"),
+        ("internal representation", "interpretability_gap", "MEDIUM"),
+        ("feature extraction", "feature_gap", "MEDIUM"),
+        ("representation learning", "feature_gap", "MEDIUM"),
+    ];
+
+    let mut detected: Vec<ResearchGap> = Vec::new();
+    let mut seen_patterns: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    for paper in papers {
+        let text_lower = paper.abstract_text.to_lowercase();
+        for (pattern, gap_type, severity) in &limitation_patterns {
+            if text_lower.contains(&pattern.to_lowercase()) {
+                let desc = format!("Gap in '{}': {} (found in {})", topic, pattern, paper.title.chars().take(40).collect::<String>());
+                if !seen_patterns.contains(&pattern.to_string()) {
+                    seen_patterns.insert(pattern.to_string());
+                    detected.push(ResearchGap::new_simple(gap_type, &desc, severity));
+                }
+            }
+        }
+    }
+
+    detected
+}
+
+fn extract_key_phrases_impl(papers: &[rairos_core::Paper]) -> std::collections::HashMap<String, Vec<String>> {
+    let mut phrase_papers: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+    let significant_bigrams = [
+        "sparse autoencoder", "attention mechanism", "variational autoencoder",
+        "large language", "neural network", "deep learning", "reinforcement learning",
+        "machine translation", "object detection", "semantic segmentation",
+        "transformer architecture", "pre-trained model", "foundation model",
+        "representation learning", "self-supervised learning", "contrastive learning",
+    ];
+
+    for paper in papers {
+        let text_lower = paper.abstract_text.to_lowercase();
+        for bigram in significant_bigrams {
+            if text_lower.contains(bigram) {
+                phrase_papers
+                    .entry(bigram.to_string())
+                    .or_default()
+                    .push(paper.title.clone());
+            }
+        }
+    }
+
+    phrase_papers
+}
+
+fn detect_cross_paper_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
+    let phrase_map = extract_key_phrases_impl(papers);
+    let mut gaps: Vec<ResearchGap> = Vec::new();
+
+    for (phrase, titles) in phrase_map {
+        if titles.len() >= 2 {
+            let gap_type = if phrase.contains("sparse") || phrase.contains("autoencoder")
+                || phrase.contains("attention") || phrase.contains("transformer") {
+                "architecture_gap"
+            } else if phrase.contains("variational") || phrase.contains("representation") {
+                "learning_gap"
+            } else if phrase.contains("language") || phrase.contains("translation") {
+                "application_gap"
+            } else {
+                "method_gap"
+            };
+
+            gaps.push(ResearchGap::new_simple(
+                gap_type,
+                &format!("Gap in '{}': Multiple papers on '{}' but no unified approach ({} papers)",
+                    topic, phrase, titles.len()),
+                "MEDIUM",
+            ));
+        }
+    }
+
+    gaps
+}
+
+fn detect_method_limitations_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    let limitation_phrases = [
+        ("limited by", "scalability_gap", "HIGH", 2),
+        ("struggle with", "method_limitation", "MEDIUM", 2),
+        ("inefficient", "efficiency_gap", "HIGH", 2),
+        ("suboptimal", "efficiency_gap", "MEDIUM", 2),
+        ("no theoretical guarantee", "theoretical_gap", "HIGH", 3),
+        ("lack of theoretical", "theoretical_gap", "HIGH", 3),
+        ("empirical only", "theoretical_gap", "MEDIUM", 2),
+        ("not robust to", "robustness_gap", "HIGH", 2),
+        ("sensitive to", "robustness_gap", "MEDIUM", 2),
+        ("breaks down", "robustness_gap", "HIGH", 2),
+        ("collapses", "training_gap", "HIGH", 2),
+        ("fails to converge", "training_gap", "HIGH", 2),
+        ("gradient", "training_gap", "MEDIUM", 2),
+        ("vanishing", "training_gap", "MEDIUM", 2),
+        ("exploding", "training_gap", "MEDIUM", 2),
+    ];
+
+    let mut gaps: Vec<ResearchGap> = Vec::new();
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    for paper in papers {
+        let text_lower = paper.abstract_text.to_lowercase();
+        for (phrase, gap_type, severity, _min_words) in &limitation_phrases {
+            if text_lower.contains(phrase) {
+                let title_short = paper.title.chars().take(30).collect::<String>();
+                let key = format!("{}:{}", phrase, title_short);
+                if !seen.contains(&key) {
+                    seen.insert(key);
+                    gaps.push(ResearchGap::new_simple(
+                        gap_type,
+                        &format!("Method limitation: '{}' in paper '{}'", phrase, title_short),
+                        severity,
+                    ));
+                }
+            }
+        }
+    }
+
+    gaps
+}
+
+fn detect_evaluation_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    let eval_patterns = [
+        ("no baseline", "evaluation_gap", "HIGH"),
+        ("without comparison", "evaluation_gap", "HIGH"),
+        ("compare to", "evaluation_gap", "LOW"),
+        ("outperforms", "evaluation_gap", "LOW"),
+        ("state-of-the-art", "evaluation_gap", "LOW"),
+        ("previous methods", "evaluation_gap", "LOW"),
+    ];
+
+    let mut gaps: Vec<ResearchGap> = Vec::new();
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    for paper in papers {
+        let text_lower = paper.abstract_text.to_lowercase();
+        let mut has_comparison = false;
+        let mut baseline_mentioned = false;
+
+        for (phrase, _, _) in &eval_patterns {
+            if text_lower.contains(phrase) {
+                if *phrase == "no baseline" || *phrase == "without comparison" {
+                    baseline_mentioned = true;
+                }
+                if *phrase == "compare to" || *phrase == "outperforms" || *phrase == "previous methods" {
+                    has_comparison = true;
+                }
+            }
+        }
+
+        let title_short = paper.title.chars().take(30).collect::<String>();
+        let key = format!("eval:{}", title_short);
+
+        if baseline_mentioned && !has_comparison && !seen.contains(&key) {
+            seen.insert(key);
+            gaps.push(ResearchGap::new_simple(
+                "evaluation_gap",
+                &format!("Evaluation gap: lacks comparative analysis in '{}'", title_short),
+                "HIGH",
+            ));
+        }
+    }
+
+    gaps
+}
+
+fn detect_resource_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    let resource_phrases = [
+        ("requires large", "resource_gap", "HIGH"),
+        ("computationally expensive", "resource_gap", "HIGH"),
+        ("memory intensive", "resource_gap", "HIGH"),
+        ("gpu", "resource_gap", "MEDIUM"),
+        ("training cost", "resource_gap", "MEDIUM"),
+        ("inference time", "efficiency_gap", "MEDIUM"),
+        ("latency", "efficiency_gap", "MEDIUM"),
+        ("throughput", "efficiency_gap", "MEDIUM"),
+        ("energy consumption", "resource_gap", "MEDIUM"),
+        ("carbon footprint", "resource_gap", "LOW"),
+    ];
+
+    let mut gaps: Vec<ResearchGap> = Vec::new();
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    for paper in papers {
+        let text_lower = paper.abstract_text.to_lowercase();
+        for (phrase, gap_type, severity) in &resource_phrases {
+            if text_lower.contains(phrase) {
+                let title_short = paper.title.chars().take(30).collect::<String>();
+                let key = format!("{}:{}", phrase, title_short);
+                if !seen.contains(&key) {
+                    seen.insert(key);
+                    gaps.push(ResearchGap::new_simple(
+                        gap_type,
+                        &format!("Resource gap: '{}' in '{}'", phrase, title_short),
+                        severity,
+                    ));
+                }
+            }
+        }
+    }
+
+    gaps
+}
+
+fn detect_dataset_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    let dataset_patterns = [
+        ("no dataset", "dataset_gap", "HIGH"),
+        ("synthetic data", "dataset_gap", "MEDIUM"),
+        ("limited data", "dataset_gap", "MEDIUM"),
+        ("small dataset", "dataset_gap", "MEDIUM"),
+        ("benchmark", "dataset_gap", "LOW"),
+        ("real-world data", "dataset_gap", "MEDIUM"),
+        ("real data", "dataset_gap", "MEDIUM"),
+    ];
+
+    let mut gaps: Vec<ResearchGap> = Vec::new();
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    for paper in papers {
+        let text_lower = paper.abstract_text.to_lowercase();
+        let mut mentions_data = false;
+        let mut has_real = false;
+
+        for (phrase, _, _) in &dataset_patterns {
+            if text_lower.contains(phrase) {
+                mentions_data = true;
+                if phrase.contains(&"real".to_string()) || phrase.contains("benchmark") {
+                    has_real = true;
+                }
+            }
+        }
+
+        let title_short = paper.title.chars().take(30).collect::<String>();
+        let key = format!("data:{}", title_short);
+
+        if mentions_data && !has_real && !seen.contains(&key) {
+            seen.insert(key);
+            gaps.push(ResearchGap::new_simple(
+                "dataset_gap",
+                &format!("Dataset gap: limited real-world evaluation in '{}'", title_short),
+                "MEDIUM",
+            ));
+        }
+    }
+
+    gaps
+}
+
+fn detect_generalization_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    let generalization_phrases = [
+        ("generalize", "generalization_gap", "HIGH"),
+        ("out-of-distribution", "generalization_gap", "HIGH"),
+        ("distribution shift", "generalization_gap", "HIGH"),
+        ("domain adaptation", "generalization_gap", "MEDIUM"),
+        ("transfer learning", "generalization_gap", "MEDIUM"),
+        ("cross-domain", "generalization_gap", "MEDIUM"),
+        ("ood", "generalization_gap", "HIGH"),
+        ("adversarial", "robustness_gap", "HIGH"),
+    ];
+
+    let mut gaps: Vec<ResearchGap> = Vec::new();
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    for paper in papers {
+        let text_lower = paper.abstract_text.to_lowercase();
+        for (phrase, gap_type, severity) in &generalization_phrases {
+            if text_lower.contains(phrase) {
+                let title_short = paper.title.chars().take(30).collect::<String>();
+                let key = format!("{}:{}", phrase, title_short);
+                if !seen.contains(&key) {
+                    seen.insert(key);
+                    gaps.push(ResearchGap::new_simple(
+                        gap_type,
+                        &format!("Generalization gap: '{}' in '{}'", phrase, title_short),
+                        severity,
+                    ));
+                }
+            }
+        }
+    }
+
+    gaps
+}
+
 pub struct AutonomousOrchestrator {
     config: OrchestratorConfig,
     webhook_enabled: bool,
@@ -56,11 +809,11 @@ pub struct AutonomousOrchestrator {
     watch_handle: Arc<RwLock<Option<tokio::task::JoinHandle<()>>>>,
     db: Arc<RwLock<Option<Database>>>,
     tracker: Arc<RwLock<Option<EvolutionTracker>>>,
-    regret_selector: RegretOptimalSelector,
-    bayesian_optimizer: RankerBayesianOptimizer,
-    crossover_engine: CrossoverEngine,
-    scaling_learner: OptimalScalingLearner,
-    adaptive_momentum: RankerAdaptiveMomentum,
+    regret_selector: Arc<StdMutex<RegretOptimalSelector>>,
+    bayesian_optimizer: Arc<StdMutex<RankerBayesianOptimizer>>,
+    crossover_engine: Arc<StdMutex<CrossoverEngine>>,
+    scaling_learner: Arc<StdMutex<OptimalScalingLearner>>,
+    adaptive_momentum: Arc<StdMutex<RankerAdaptiveMomentum>>,
 }
 
 impl Default for AutonomousOrchestrator {
@@ -78,57 +831,58 @@ impl AutonomousOrchestrator {
             watch_handle: Arc::new(RwLock::new(None)),
             db: Arc::new(RwLock::new(None)),
             tracker: Arc::new(RwLock::new(None)),
-            regret_selector: RegretOptimalSelector::new(0.1),
-            bayesian_optimizer: RankerBayesianOptimizer::new(
+            regret_selector: Arc::new(StdMutex::new(RegretOptimalSelector::new(0.1))),
+            bayesian_optimizer: Arc::new(StdMutex::new(RankerBayesianOptimizer::new(
                 vec![(0.1, 1.0), (0.1, 1.0), (1.0, 10.0)],
                 1.0,
-            ),
-            crossover_engine: CrossoverEngine::new(1.0, 0.1),
-            scaling_learner: OptimalScalingLearner::new(1.0, 1e-4),
-            adaptive_momentum: RankerAdaptiveMomentum::new(0.9),
+            ))),
+            crossover_engine: Arc::new(StdMutex::new(CrossoverEngine::new(1.0, 0.1))),
+            scaling_learner: Arc::new(StdMutex::new(OptimalScalingLearner::new(1.0, 1e-4))),
+            adaptive_momentum: Arc::new(StdMutex::new(RankerAdaptiveMomentum::new(0.9))),
         }
     }
 
     pub fn record_gap_outcome(&mut self, gap_type: &str, score: f64) {
-        self.regret_selector.record_outcome(gap_type, score);
+        self.regret_selector.lock().unwrap().record_outcome(gap_type, score);
     }
 
     pub fn apply_momentum_adjustment(&mut self, base_score: f64, gap_type: &str) -> f64 {
-        let ucb_scores = self.regret_selector.get_ucb_scores();
+        let ucb_scores = self.regret_selector.lock().unwrap().get_ucb_scores();
         let ucb_bonus = ucb_scores.get(gap_type).copied().unwrap_or(0.0);
         let gradient = -(base_score - ucb_bonus);
-        let momentum = self.adaptive_momentum.nesterov_update(gradient);
+        let momentum = self.adaptive_momentum.lock().unwrap().nesterov_update(gradient);
         (base_score + momentum * 0.1).clamp(0.0, 1.0)
     }
 
     pub fn get_adaptive_lr(&self, base_lr: f64, dataset_tokens: f64) -> f64 {
-        let (lr, _) = self.scaling_learner.predict_optimal(1.0, dataset_tokens);
-        self.adaptive_momentum.adaptive_lr(base_lr * lr, 1.0)
+        let (lr, _) = self.scaling_learner.lock().unwrap().predict_optimal(1.0, dataset_tokens);
+        self.adaptive_momentum.lock().unwrap().adaptive_lr(base_lr * lr, 1.0)
     }
 
     pub fn observe_scaling(&mut self, lr: f64, batch_size: f64, loss: f64) {
-        self.scaling_learner.observe(lr, batch_size, loss);
+        self.scaling_learner.lock().unwrap().observe(lr, batch_size, loss);
     }
 
     pub fn suggest_next_gap_type(&mut self, gap_types: &[&str]) -> Option<String> {
-        self.regret_selector.select(gap_types)
+        self.regret_selector.lock().unwrap().select(gap_types)
     }
 
     pub fn get_optimal_thresholds(&self, beta: f64) -> Vec<f64> {
-        self.bayesian_optimizer.suggest(beta)
+        self.bayesian_optimizer.lock().unwrap().suggest(beta)
     }
 
     pub fn observe_threshold_performance(&mut self, thresholds: &[f64], alert_rate: f64) {
-        self.bayesian_optimizer.observe(thresholds, alert_rate);
+        self.bayesian_optimizer.lock().unwrap().observe(thresholds, alert_rate);
     }
 
     pub fn suggest_research_direction(&mut self, available_gap_types: &[&str]) -> Option<String> {
-        self.regret_selector.select(available_gap_types)
+        self.regret_selector.lock().unwrap().select(available_gap_types)
     }
 
     pub fn get_regret_stats(&self) -> (usize, f64) {
-        let total = self.regret_selector.total_selections();
-        let empirical_best = self.regret_selector.empirical_best_score();
+        let selector = self.regret_selector.lock().unwrap();
+        let total = selector.total_selections();
+        let empirical_best = selector.empirical_best_score();
         (total, empirical_best)
     }
 
@@ -360,7 +1114,7 @@ impl AutonomousOrchestrator {
 
         let gap_types = &["unexplored_application", "scalability_issue", "evaluation_gap",
                           "method_limitation", "theoretical_gap", "reproducibility_gap"];
-        let suggested_gap_type = self.regret_selector.select(gap_types);
+        let suggested_gap_type = self.regret_selector.lock().unwrap().select(gap_types);
 
         let existing_papers: Vec<String> = {
             let db_guard = self.db.read().await;
@@ -452,7 +1206,7 @@ impl AutonomousOrchestrator {
             .ok_or_else(|| OrchestratorError::NotInitialized("tracker".to_string()))?;
 
         let profile = tracker.get_profile();
-        let ucb_scores = self.regret_selector.get_ucb_scores();
+        let ucb_scores = self.regret_selector.lock().unwrap().get_ucb_scores();
         drop(tracker_guard);
 
         let mut scored: Vec<ScoredGap> = gaps
@@ -511,7 +1265,7 @@ impl AutonomousOrchestrator {
 
         let min_sev = severity_rank(&self.config.min_gap_severity_for_alert);
 
-        let suggested_thresholds = self.bayesian_optimizer.suggest(2.0);
+        let suggested_thresholds = self.bayesian_optimizer.lock().unwrap().suggest(2.0);
         let bo_threshold = suggested_thresholds.first().copied().unwrap_or(0.3);
         let min_threshold = (self.config.min_gene_pool_score_for_alert * 0.7
             + bo_threshold * 0.3)
@@ -548,7 +1302,7 @@ impl AutonomousOrchestrator {
     }
 
     pub fn record_threshold_feedback(&mut self, threshold: f64, alert_rate: f64) {
-        self.bayesian_optimizer.observe(&[threshold], alert_rate);
+        self.bayesian_optimizer.lock().unwrap().observe(&[threshold], alert_rate);
     }
 
     fn send_webhook(&self, alert: &ResearchAlert) {
@@ -619,119 +1373,39 @@ impl AutonomousOrchestrator {
 
         let sub_results = self.check_subscriptions().await?;
 
-        for (topic, new_papers) in sub_results.iter() {
-            if new_papers.is_empty() {
-                continue;
+        // Spawn parallel tasks for each topic
+        let handles: Vec<_> = sub_results
+            .into_iter()
+            .filter(|(_, new_papers)| !new_papers.is_empty())
+            .filter(|(_, new_papers)| new_papers.len() >= self.config.min_papers_for_deep_analysis as usize)
+            .map(|(topic, new_papers)| {
+                let db = Arc::clone(&self.db);
+                let tracker = Arc::clone(&self.tracker);
+                let regret_selector = Arc::clone(&self.regret_selector);
+                let bayesian_optimizer = Arc::clone(&self.bayesian_optimizer);
+                let crossover_engine = Arc::clone(&self.crossover_engine);
+                let scaling_learner = Arc::clone(&self.scaling_learner);
+                let adaptive_momentum = Arc::clone(&self.adaptive_momentum);
+                let config = self.config.clone();
+                let webhook_enabled = self.webhook_enabled;
+
+                tokio::spawn(async move {
+                    process_topic(
+                        db, tracker, regret_selector, bayesian_optimizer,
+                        crossover_engine, scaling_learner, adaptive_momentum,
+                        config, webhook_enabled, topic, new_papers,
+                    ).await
+                })
+            })
+            .collect();
+
+        let results = join_all(handles).await;
+        for result in results {
+            match result {
+                Ok(Ok(alerts)) => all_alerts.extend(alerts),
+                Ok(Err(e)) => tracing::error!("Topic processing error: {}", e),
+                Err(e) => tracing::error!("Spawn error: {}", e),
             }
-
-            if new_papers.len() < self.config.min_papers_for_deep_analysis as usize {
-                tracing::debug!(
-                    "[Orchestrator] Skipping '{}': only {} papers (min={})",
-                    topic,
-                    new_papers.len(),
-                    self.config.min_papers_for_deep_analysis
-                );
-                continue;
-            }
-
-            tracing::info!(
-                "[Orchestrator] {} new papers for subscription '{}'",
-                new_papers.len(),
-                topic
-            );
-
-            let research_result = match self.run_deep_research(topic, new_papers.clone()).await {
-                Ok(r) => r,
-                Err(e) => {
-                    tracing::error!("Deep research failed for '{}': {}", topic, e);
-                    continue;
-                }
-            };
-
-            let gaps = &research_result.gaps;
-            let _session_id = &research_result.session_id;
-            if gaps.is_empty() {
-                tracing::info!("[Orchestrator] No gaps found for '{}'", topic);
-                continue;
-            }
-
-            let (gaps, filter_stats) = match self.filter_new_gaps(topic, gaps.clone()).await {
-                Ok(r) => r,
-                Err(e) => {
-                    tracing::error!("Gap filter failed for '{}': {}", topic, e);
-                    continue;
-                }
-            };
-
-            if filter_stats.suppressed > 0 {
-                tracing::info!(
-                    "[Orchestrator] Suppressed {} already-seen gaps (total seen: {})",
-                    filter_stats.suppressed,
-                    filter_stats.seen
-                );
-            }
-            if gaps.is_empty() {
-                tracing::info!(
-                    "[Orchestrator] All gaps already known for '{}' — skipping",
-                    topic
-                );
-                continue;
-            }
-
-            let _ = self.record_gaps(&gaps).await;
-
-            let scored = match self.score_gaps_against_gene_pool(gaps, topic).await {
-                Ok(s) => s,
-                Err(e) => {
-                    tracing::error!("Gene Pool scoring failed for '{}': {}", topic, e);
-                    continue;
-                }
-            };
-
-            let Some(trigger) = new_papers.first().cloned() else {
-                tracing::warn!("[Orchestrator] No papers in subscription '{}' despite prior check", topic);
-                continue;
-            };
-            let (alerts, threshold_used, scored_len) =
-                self.generate_alerts(scored.clone(), &research_result.session_id, topic, &trigger);
-
-            if !alerts.is_empty() {
-                let alert_rate = alerts.len() as f64 / scored_len.max(1) as f64;
-                self.observe_threshold_performance(&[threshold_used], alert_rate);
-
-                let model_scale = new_papers.len() as f64;
-                let dataset_tokens = new_papers.iter()
-                    .map(|p| p.abstract_text.len() as f64)
-                    .sum::<f64>();
-                let opt_lr = self.get_adaptive_lr(0.1, dataset_tokens / model_scale);
-                let opt_bs = opt_lr * 100.0;
-                let loss = 1.0 - alert_rate;
-                self.observe_scaling(opt_lr, opt_bs, loss);
-            }
-
-            for alert in &alerts {
-                self.send_webhook(alert);
-                all_alerts.push(alert.clone());
-                self.record_gap_outcome(&alert.top_gap_type, alert.gene_pool_score);
-
-                {
-                    let mut tracker_guard = self.tracker.write().await;
-                    if let Some(tracker) = tracker_guard.as_mut() {
-                        let _ = tracker.record_gap_accept(
-                            &alert.topic,
-                            &alert.top_gap_type,
-                            &alert.top_gap_title,
-                            "",
-                        );
-                    }
-                }
-            }
-
-            tracing::info!(
-                "[Orchestrator] Generated {} alerts for '{}'",
-                alerts.len(),
-                topic
-            );
         }
 
         let mut state = load_state();
@@ -1259,18 +1933,21 @@ impl AutonomousOrchestrator {
             topic.to_string()
         };
 
-        let gap_types: Vec<String> = self.regret_selector.get_ucb_scores().keys().cloned().collect();
+        let gap_types: Vec<String> = self.regret_selector.lock().unwrap().get_ucb_scores().keys().cloned().collect();
         let gap_type_refs: Vec<&str> = gap_types.iter().map(|s| s.as_str()).collect();
 
         if gap_type_refs.len() >= 2 {
-            self.regret_selector.select(&gap_type_refs);
+            self.regret_selector.lock().unwrap().select(&gap_type_refs);
         }
 
-        let result = rairos_crossover::run_evolution_with_engine(
-            3,
-            10,
-            Some(&mut self.crossover_engine),
-        );
+        let result = {
+            let mut crossover = self.crossover_engine.lock().unwrap();
+            rairos_crossover::run_evolution_with_engine(
+                3,
+                10,
+                Some(&mut *crossover),
+            )
+        };
 
         if let Some(created) = result.get("created").and_then(|v| v.as_array()) {
             let offspring_count = created.len();
@@ -1287,7 +1964,7 @@ impl AutonomousOrchestrator {
                     result.get("parent_a_id").and_then(|v| v.as_str()).map(|s| s.to_string()),
                     result.get("parent_b_id").and_then(|v| v.as_str()).map(|s| s.to_string()),
                 ) {
-                    self.crossover_engine.record_comparison(&p_a, &p_b, avg_fitness);
+                    self.crossover_engine.lock().unwrap().record_comparison(&p_a, &p_b, avg_fitness);
                 }
             }
         }
