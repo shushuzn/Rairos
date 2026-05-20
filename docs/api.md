@@ -100,9 +100,9 @@ For CLI access, all operations are available as subcommands:
 ./rairos.sh status
 ```
 
-## MCP Tools (68 Rust)
+## MCP Tools (69 Rust)
 
-Rairos exposes 68 MCP tools via JSON-RPC 2.0 at `crates/rairos-mcp/src/`.
+Rairos exposes 69 MCP tools via JSON-RPC 2.0 at `crates/rairos-mcp/src/`.
 
 Tool categories:
 - **Paper**: `paper_search`, `paper_ingest`, `paper_parse_full`, `paper_query`, `paper_recommend`

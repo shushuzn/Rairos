@@ -36,7 +36,7 @@ Feed it a paper → It learns what works → Next search is better
 | rairos-core | DB, FTS5, subscriptions, tags |
 | rairos-llm | GenePool, Evolution, LLM clients |
 | rairos-cli | 105 CLI commands |
-| rairos-mcp | 68 MCP tools (JSON-RPC 2.0) |
+| rairos-mcp | 69 MCP tools (JSON-RPC 2.0) |
 | rairos-web | REST API + HTML frontend |
 | rairos-kg | Knowledge graph, PageRank |
 | rairos-research | DeepResearchAgent, gap detection |
