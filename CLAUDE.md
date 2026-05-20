@@ -14,11 +14,11 @@
 
 **Self-Evolving Research OS (100% Rust, 149 crates, ~73k lines, 104 CLI commands, 68 MCP tools)**
 
-- **Rust CLI**: 104 commands via `cargo run -p rairos-cli -- <cmd>`
+- **Rust CLI**: 104 commands via `./rairos.sh <cmd>`
 - **Rust CLI main.rs**: `crates/rairos-cli/src/main.rs` (955 lines, Commands enum + handle_*())
 - **Rust MCP**: 68 pure-Rust tools in `crates/rairos-mcp/src/` — zero Python fallback
 - **Python**: Fully migrated to Rust. All Python source removed.
-- **Test**: `CARGO_BUILD_JOBS=1 cargo test --workspace`
+- **Test**: `make test`
 - **Linter**: `cargo clippy --workspace -- -D warnings`
 - **CI gate**: `cargo build + cargo test + clippy` ( `.github/workflows/rust.yml`)
 

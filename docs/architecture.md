@@ -25,7 +25,7 @@ AI Research OS is a **local-first** research tool. No cloud dependency — all d
 `rairos-cli` — 105 CLI commands registered via `clap` derives. All commands dispatch to pure Rust handlers:
 
 ```bash
-cargo run -p rairos-cli -- <command> [options]
+./rairos.sh <command> [options]
 ```
 
 ### CodeGraph
@@ -33,7 +33,7 @@ cargo run -p rairos-cli -- <command> [options]
 `rairos-codegraph` — Pre-indexed code knowledge graph for Claude Code. Provides fast code exploration via MCP tools (codegraph_search, codegraph_context, codegraph_callers, etc.) without expensive file scanning.
 
 ```bash
-cargo run -p rairos-cli -- <command> [options]
+./rairos.sh <command> [options]
 ```
 
 ### Database Layer

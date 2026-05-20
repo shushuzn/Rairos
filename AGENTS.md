@@ -61,9 +61,9 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 
 ```bash
 CARGO_BUILD_JOBS=1 cargo build
-cargo run -p rairos-cli -- --help
-cargo run -p rairos-cli -- daemon --foreground
-CARGO_BUILD_JOBS=1 cargo test
+./rairos.sh --help
+./rairos.sh daemon --foreground
+unset RUSTC_WRAPPER && cargo test
 ```
 
 ## MCP Tools (70 Rust, zero Python)

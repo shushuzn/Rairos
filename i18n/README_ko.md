@@ -50,7 +50,7 @@ AI Research OS는 여러분의 사용 패턴에서 학습하는 **자기 진화�
 ## 빠른 시작
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 
 # Run Rairos (from repo root)
 cd Rairos
@@ -108,7 +108,7 @@ rairos 2601.00155 --tags LLM --ai
 ## 설치
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 ```
 
 ## 문서

@@ -50,7 +50,7 @@ Esto **no es un gestor de PDFs**. Es un **Sistema Auto-Evolutivo** que:
 ## Inicio rápido
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 
 # Run Rairos (from repo root)
 cd Rairos
@@ -108,7 +108,7 @@ Los artículos se organizan en 12 directorios:
 ## Instalación
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 ```
 
 ## Documentación

@@ -124,9 +124,9 @@ make completions
 
 Or manually:
 ```bash
-cargo run -p rairos-cli -- completions bash > completions/bash
-cargo run -p rairos-cli -- completions zsh > completions/zsh
-cargo run -p rairos-cli -- completions fish > completions/fish
+./rairos.sh completions bash > completions/bash
+./rairos.sh completions zsh > completions/zsh
+./rairos.sh completions fish > completions/fish
 ```
 
 ## Pull Request Process

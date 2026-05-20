@@ -50,7 +50,7 @@ AI Research OS — это **самоэволюционирующая иссле�
 ## Быстрый старт
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 
 # Run Rairos (from repo root)
 cd Rairos
@@ -108,7 +108,7 @@ rairos 2601.00155 --tags LLM --ai
 ## Установка
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 ```
 
 ## Документация

@@ -50,7 +50,7 @@ AI研究操作系统是一个**自进化研究系统**，能从你的使用模�
 ## 快速开始
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 
 # Run Rairos (from repo root)
 cd Rairos
@@ -108,7 +108,7 @@ rairos 2601.00155 --tags LLM --ai
 ## 安装
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 ```
 
 ## 文档

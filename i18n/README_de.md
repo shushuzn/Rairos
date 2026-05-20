@@ -50,7 +50,7 @@ Dies ist **kein PDF-Manager**. Es ist ein **selbst-evolvierendes System**, das:
 ## Schnellstart
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 
 # Run Rairos (from repo root)
 cd Rairos
@@ -108,7 +108,7 @@ Papers sind in 12 Verzeichnisse organisiert:
 ## Installation
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 ```
 
 ## Dokumentation

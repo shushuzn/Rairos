@@ -485,11 +485,11 @@ ollama pull nomic-embed-text
 
 ```bash
 # Build (memory-intensive — single job required)
-CARGO_BUILD_JOBS=1 cargo build
+make build-dev
 
 # Run all tests
-CARGO_BUILD_JOBS=1 cargo test
+make test
 
 # Test a specific crate
-CARGO_BUILD_JOBS=1 cargo test -p rairos-core
+make test -p rairos-core
 ```
