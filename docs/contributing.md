@@ -139,7 +139,7 @@ Example:
 ```
 feat(cli): add semantic search command
 
-Add `rairos similar` command for finding semantically similar papers
+Add `./rairos.sh similar` command for finding semantically similar papers
 using embedding vectors from Ollama.
 
 Closes #123
