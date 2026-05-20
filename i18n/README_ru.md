@@ -41,10 +41,10 @@ AI Research OS — это **самоэволюционирующая иссле�
 
 | Функция | Описание |
 |---------|-------------|
-| `airos import` | Импорт статей из arXiv, DOI, PDF |
-| `airos chat` | RAG-powered Q&A по вашим статьям |
-| `airos slides` | Автоматическая генерация презентаций |
-| `airos kg` | Визуализация графа знаний |
+| `./rairos.sh import` | Импорт статей из arXiv, DOI, PDF |
+| `./rairos.sh chat` | RAG-powered Q&A по вашим статьям |
+| `./rairos.sh slides` | Автоматическая генерация презентаций |
+| `./rairos.sh kg` | Визуализация графа знаний |
 | Evolution | Самоулучшение через паттерны Gene/Capsule |
 
 ## Быстрый старт

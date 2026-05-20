@@ -41,10 +41,10 @@ AI研究操作系统是一个**自进化研究系统**，能从你的使用模�
 
 | 功能 | 描述 |
 |---------|-------------|
-| `airos import` | 从arXiv、DOI、PDF导入论文 |
-| `airos chat` | 基于RAG的论文问答 |
-| `airos slides` | 自动生成演示文稿 |
-| `airos kg` | 知识图谱可视化 |
+| `./rairos.sh import` | 从arXiv、DOI、PDF导入论文 |
+| `./rairos.sh chat` | 基于RAG的论文问答 |
+| `./rairos.sh slides` | 自动生成演示文稿 |
+| `./rairos.sh kg` | 知识图谱可视化 |
 | Evolution | 通过Gene/Capsule模式自改进 |
 
 ## 快速开始

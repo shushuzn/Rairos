@@ -41,10 +41,10 @@ Isto **não é um gerenciador de PDFs**. É um **Sistema Auto-Evolutivo** que:
 
 | Funcionalidade | Descrição |
 |---------|-------------|
-| `airos import` | Importar artigos de arXiv, DOI, PDF |
-| `airos chat` | Q&A com RAG sobre seus artigos |
-| `airos slides` | Gerar apresentações automaticamente |
-| `airos kg` | Visualização de grafo de conhecimento |
+| `./rairos.sh import` | Importar artigos de arXiv, DOI, PDF |
+| `./rairos.sh chat` | Q&A com RAG sobre seus artigos |
+| `./rairos.sh slides` | Gerar apresentações automaticamente |
+| `./rairos.sh kg` | Visualização de grafo de conhecimento |
 | Evolution | Auto-melhoria via padrões Gene/Capsule |
 
 ## Início rápido

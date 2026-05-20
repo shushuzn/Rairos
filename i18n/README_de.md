@@ -41,10 +41,10 @@ Dies ist **kein PDF-Manager**. Es ist ein **selbst-evolvierendes System**, das:
 
 | Funktion | Beschreibung |
 |---------|-------------|
-| `airos import` | Papers von arXiv, DOI, PDF importieren |
-| `airos chat` | RAG-gestützte Q&A mit Ihren Papers |
-| `airos slides` | Präsentationen automatisch generieren |
-| `airos kg` | Wissensgraph-Visualisierung |
+| `./rairos.sh import` | Papers von arXiv, DOI, PDF importieren |
+| `./rairos.sh chat` | RAG-gestützte Q&A mit Ihren Papers |
+| `./rairos.sh slides` | Präsentationen automatisch generieren |
+| `./rairos.sh kg` | Wissensgraph-Visualisierung |
 | Evolution | Selbstverbesserung via Gene/Capsule-Muster |
 
 ## Schnellstart

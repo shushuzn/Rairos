@@ -41,10 +41,10 @@ AI研究OSは、あなたの使用パターンから学習する**自己進化�
 
 | 機能 | 説明 |
 |---------|-------------|
-| `airos import` | arXiv、DOI、PDFから論文をインポート |
-| `airos chat` | RAG対応のQ&A |
-| `airos slides` | プレゼンテーション自動生成 |
-| `airos kg` | ナレッジグラフ可視化 |
+| `./rairos.sh import` | arXiv、DOI、PDFから論文をインポート |
+| `./rairos.sh chat` | RAG対応のQ&A |
+| `./rairos.sh slides` | プレゼンテーション自動生成 |
+| `./rairos.sh kg` | ナレッジグラフ可視化 |
 | Evolution | Gene/Capsuleパターンによる自己改善 |
 
 ## クイックスタート

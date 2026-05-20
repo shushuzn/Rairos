@@ -41,10 +41,10 @@ AI Research OS는 여러분의 사용 패턴에서 학습하는 **자기 진화�
 
 | 기능 | 설명 |
 |---------|-------------|
-| `airos import` | arXiv, DOI, PDF에서 논문 가져오기 |
-| `airos chat` | RAG 기반 Q&A |
-| `airos slides` | 프레젠테이션 자동 생성 |
-| `airos kg` | 지식 그래프 시각화 |
+| `./rairos.sh import` | arXiv, DOI, PDF에서 논문 가져오기 |
+| `./rairos.sh chat` | RAG 기반 Q&A |
+| `./rairos.sh slides` | 프레젠테이션 자동 생성 |
+| `./rairos.sh kg` | 지식 그래프 시각화 |
 | Evolution | Gene/Capsule 패턴을 통한 자기 개선 |
 
 ## 빠른 시작
