@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Rust 1.81+ (tested on 1.81–1.86)
+- Rust 1.85+ (tested on 1.85–1.86)
 - SQLite 3.x (bundled via `rusqlite`)
 
 ## Install from Source
