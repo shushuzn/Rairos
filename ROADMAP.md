@@ -41,7 +41,7 @@ Each research plan follows the same pipeline:
 1. `./rairos.sh research "LAPO PPO comparison latent reasoning" --limit 15 --no-ai`
 2. Import key comparison papers: PPO-based VLA methods, latent reasoning papers
 3. `./rairos.sh gap extract <paper_id>` on each to extract claimed convergence rates
-4. `rairos insight rate --card <id> --stars <N>` to rank findings
+4. `./rairos.sh insight rate --card <id> --stars <N>` to rank findings
 
 **Expected output:** A literature map showing convergence speed vs sample efficiency trade-off across methods, with Gene Pool capsules encoding the discovered patterns.
 
@@ -56,7 +56,7 @@ Each research plan follows the same pipeline:
 **Rairos pipeline:**
 1. `./rairos.sh gap "adaptive latent chain length reasoning robotics" --no-llm`
 2. Import LaST-R1's adaptive CoT mechanism paper + related work on chain length
-3. Use `rairos compare` on papers that study reasoning depth vs performance
+3. Use `./rairos.sh compare` on papers that study reasoning depth vs performance
 4. Track saturation thresholds as Gene Pool capsules with `outcome_success_score`
 
 **Measurement framework:**
@@ -76,7 +76,7 @@ Each research plan follows the same pipeline:
 1. `./rairos.sh research "zero-shot generalization robot manipulation latent reasoning" --no-ai`
 2. Import LaST-R1 + all papers studying VLA generalization
 3. Extract gap: `./rairos.sh gap extract <id>` on each generalization study
-4. Build evidence table via `rairos insight`
+4. Build evidence table via `./rairos.sh insight`
 
 **Evidence table schema:**
 ```
@@ -96,7 +96,7 @@ Each research plan follows the same pipeline:
 **Rairos pipeline:**
 1. `./rairos.sh gap "reasoning action interleaving multi-step robot" --no-llm`
 2. Import hierarchical planning + VLA papers
-3. Use `rairos insight` to tag papers by their interleaving strategy
+3. Use `./rairos.sh insight` to tag papers by their interleaving strategy
 4. `./rairos.sh subscribe add "hierarchical VLA reasoning"` for continuous monitoring
 
 ---
@@ -151,7 +151,7 @@ Each research plan follows the same pipeline:
 **Rairos pipeline:**
 1. `./rairos.sh research "latent reasoning action conditioned policy robot" --no-ai`
 2. Import non-VLA architectures: Diffusion Policy, ACT, π0
-3. `rairos insight rate --card <id> --stars <N>` — tag by architecture type
+3. `./rairos.sh insight rate --card <id> --stars <N>` — tag by architecture type
 4. `./rairos.sh gap --no-llm "LAPO transfer non-VLA"` to detect missing evidence
 
 ---
@@ -179,7 +179,7 @@ Each research plan follows the same pipeline:
 - [ ] Q6: Attention 分布差异 — pipeline: `./rairos.sh gap contradictions`
 - [ ] Q7: 热启动策略 — pipeline: `./rairos.sh research "warmup VLA RL" --no-ai`
 - [ ] Q8: LIBERO 覆盖分析 — pipeline: `./rairos.sh research "LIBERO limitations" --no-ai`
-- [ ] Q9: 非 VLA 迁移 — pipeline: `rairos insight rate`
+- [ ] Q9: 非 VLA 迁移 — pipeline: `./rairos.sh insight rate`
 - [ ] Q10: 人类干预 — pipeline: `./rairos.sh gap contradictions`
 
 ## Implementation Priority

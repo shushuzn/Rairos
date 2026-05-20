@@ -54,7 +54,7 @@ make build
 
 # Run Rairos (from repo root)
 cd Rairos
-rairos 2601.00155 --tags LLM,Agent
+./rairos.sh 2601.00155 --tags LLM,Agent
 ```
 
  완료——몇 초 만에 논문을 가져옵니다.
@@ -62,18 +62,18 @@ rairos 2601.00155 --tags LLM,Agent
 ### 한 줄, 세 가지 입력
 
 ```bash
-rairos 2601.00155                          # arXiv ID
-rairos 10.48550/arXiv.2601.00155           # DOI
-rairos --pdf paper.pdf --tags RAG            # 로컬 PDF
-rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # 스캔 PDF
+./rairos.sh 2601.00155                          # arXiv ID
+./rairos.sh 10.48550/arXiv.2601.00155           # DOI
+./rairos.sh --pdf paper.pdf --tags RAG            # 로컬 PDF
+./rairos.sh --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # 스캔 PDF
 ```
 
 ### 세 가지 핵심 명령
 
 ```bash
-rairos import 2601.00155 10.1038/nature12373   # DB에 논문 추가
-rairos search "attention mechanism" --tag LLM    # 논문 검색
-rairos research "RLHF alignment" --limit 5       # 자율 연구 루프
+./rairos.sh import 2601.00155 10.1038/nature12373   # DB에 논문 추가
+./rairos.sh search "attention mechanism" --tag LLM    # 논문 검색
+./rairos.sh research "RLHF alignment" --limit 5       # 자율 연구 루프
 ```
 
 ### AI 초안 (선택)
@@ -81,7 +81,7 @@ rairos research "RLHF alignment" --limit 5       # 자율 연구 루프
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-rairos 2601.00155 --tags LLM --ai
+./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
 전체 설정은 [API_CONFIG.md](API_CONFIG.md)를 참조하세요.

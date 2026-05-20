@@ -54,7 +54,7 @@ make build
 
 # Run Rairos (from repo root)
 cd Rairos
-rairos 2601.00155 --tags LLM,Agent
+./rairos.sh 2601.00155 --tags LLM,Agent
 ```
 
 Fertig — ein Paper in Sekunden importiert.
@@ -62,18 +62,18 @@ Fertig — ein Paper in Sekunden importiert.
 ### Eine Zeile, drei Eingaben
 
 ```bash
-rairos 2601.00155                          # arXiv-ID
-rairos 10.48550/arXiv.2601.00155           # DOI
-rairos --pdf paper.pdf --tags RAG            # Lokale PDF
-rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # Gescannte PDF
+./rairos.sh 2601.00155                          # arXiv-ID
+./rairos.sh 10.48550/arXiv.2601.00155           # DOI
+./rairos.sh --pdf paper.pdf --tags RAG            # Lokale PDF
+./rairos.sh --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # Gescannte PDF
 ```
 
 ### Drei Kernbefehle
 
 ```bash
-rairos import 2601.00155 10.1038/nature12373   # Papers zur DB hinzufügen
-rairos search "attention mechanism" --tag LLM    # Papers durchsuchen
-rairos research "RLHF alignment" --limit 5       # Autonome Forschungsschleife
+./rairos.sh import 2601.00155 10.1038/nature12373   # Papers zur DB hinzufügen
+./rairos.sh search "attention mechanism" --tag LLM    # Papers durchsuchen
+./rairos.sh research "RLHF alignment" --limit 5       # Autonome Forschungsschleife
 ```
 
 ### KI-Entwurf (optional)
@@ -81,7 +81,7 @@ rairos research "RLHF alignment" --limit 5       # Autonome Forschungsschleife
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-rairos 2601.00155 --tags LLM --ai
+./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
 Für die vollständige Konfiguration, see [API_CONFIG.md](API_CONFIG.md).

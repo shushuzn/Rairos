@@ -54,7 +54,7 @@ make build
 
 # Run Rairos (from repo root)
 cd Rairos
-rairos 2601.00155 --tags LLM,Agent
+./rairos.sh 2601.00155 --tags LLM,Agent
 ```
 
 Готово — статья импортирована за секунды.
@@ -62,18 +62,18 @@ rairos 2601.00155 --tags LLM,Agent
 ### Одна строка, три входа
 
 ```bash
-rairos 2601.00155                          # arXiv ID
-rairos 10.48550/arXiv.2601.00155           # DOI
-rairos --pdf paper.pdf --tags RAG            # Локальный PDF
-rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # Скан PDF
+./rairos.sh 2601.00155                          # arXiv ID
+./rairos.sh 10.48550/arXiv.2601.00155           # DOI
+./rairos.sh --pdf paper.pdf --tags RAG            # Локальный PDF
+./rairos.sh --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # Скан PDF
 ```
 
 ### Три основных команды
 
 ```bash
-rairos import 2601.00155 10.1038/nature12373   # Добавить статьи в БД
-rairos search "attention mechanism" --tag LLM    # Поиск статей
-rairos research "RLHF alignment" --limit 5       # Автономный исследовательский цикл
+./rairos.sh import 2601.00155 10.1038/nature12373   # Добавить статьи в БД
+./rairos.sh search "attention mechanism" --tag LLM    # Поиск статей
+./rairos.sh research "RLHF alignment" --limit 5       # Автономный исследовательский цикл
 ```
 
 ### AI-черновик (опционально)
@@ -81,7 +81,7 @@ rairos research "RLHF alignment" --limit 5       # Автономный иссл
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-rairos 2601.00155 --tags LLM --ai
+./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
 Полная конфигурация — см. [API_CONFIG.md](API_CONFIG.md).

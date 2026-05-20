@@ -54,7 +54,7 @@ make build
 
 # Run Rairos (from repo root)
 cd Rairos
-rairos 2601.00155 --tags LLM,Agent
+./rairos.sh 2601.00155 --tags LLM,Agent
 ```
 
 完了——数秒で論文をインポート。
@@ -62,18 +62,18 @@ rairos 2601.00155 --tags LLM,Agent
 ### 1行、3つの入力
 
 ```bash
-rairos 2601.00155                          # arXiv ID
-rairos 10.48550/arXiv.2601.00155           # DOI
-rairos --pdf paper.pdf --tags RAG            # ローカルPDF
-rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # スキャンPDF
+./rairos.sh 2601.00155                          # arXiv ID
+./rairos.sh 10.48550/arXiv.2601.00155           # DOI
+./rairos.sh --pdf paper.pdf --tags RAG            # ローカルPDF
+./rairos.sh --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # スキャンPDF
 ```
 
 ### 3つのコアコマンド
 
 ```bash
-rairos import 2601.00155 10.1038/nature12373   # 論文をDBに追加
-rairos search "attention mechanism" --tag LLM    # 論文を検索
-rairos research "RLHF alignment" --limit 5       # 自主研究ループ
+./rairos.sh import 2601.00155 10.1038/nature12373   # 論文をDBに追加
+./rairos.sh search "attention mechanism" --tag LLM    # 論文を検索
+./rairos.sh research "RLHF alignment" --limit 5       # 自主研究ループ
 ```
 
 ### AI下書き（オプション）
@@ -81,7 +81,7 @@ rairos research "RLHF alignment" --limit 5       # 自主研究ループ
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-rairos 2601.00155 --tags LLM --ai
+./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
 完全な設定は [API_CONFIG.md](API_CONFIG.md) を参照。

@@ -54,7 +54,7 @@ make build
 
 # Run Rairos (from repo root)
 cd Rairos
-rairos 2601.00155 --tags LLM,Agent
+./rairos.sh 2601.00155 --tags LLM,Agent
 ```
 
 一行命令，几秒内完成论文导入。以上命令安装包并导入一篇arXiv论文。
@@ -62,18 +62,18 @@ rairos 2601.00155 --tags LLM,Agent
 ### 一行命令，三种输入
 
 ```bash
-rairos 2601.00155                          # arXiv ID
-rairos 10.48550/arXiv.2601.00155           # DOI
-rairos --pdf paper.pdf --tags RAG            # 本地PDF
-rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # 扫描PDF
+./rairos.sh 2601.00155                          # arXiv ID
+./rairos.sh 10.48550/arXiv.2601.00155           # DOI
+./rairos.sh --pdf paper.pdf --tags RAG            # 本地PDF
+./rairos.sh --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # 扫描PDF
 ```
 
 ### 三个核心命令
 
 ```bash
-rairos import 2601.00155 10.1038/nature12373   # 添加论文到数据库
-rairos search "attention mechanism" --tag LLM    # 搜索论文
-rairos research "RLHF alignment" --limit 5       # 自主研究循环
+./rairos.sh import 2601.00155 10.1038/nature12373   # 添加论文到数据库
+./rairos.sh search "attention mechanism" --tag LLM    # 搜索论文
+./rairos.sh research "RLHF alignment" --limit 5       # 自主研究循环
 ```
 
 ### AI草稿（可选）
@@ -81,7 +81,7 @@ rairos research "RLHF alignment" --limit 5       # 自主研究循环
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-rairos 2601.00155 --tags LLM --ai
+./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
 完整配置参见 [API_CONFIG.md](API_CONFIG.md)。

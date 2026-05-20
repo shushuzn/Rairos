@@ -54,7 +54,7 @@ make build
 
 # Run Rairos (from repo root)
 cd Rairos
-rairos 2601.00155 --tags LLM,Agent
+./rairos.sh 2601.00155 --tags LLM,Agent
 ```
 
 C'est tout — un article importé en quelques secondes.
@@ -62,18 +62,18 @@ C'est tout — un article importé en quelques secondes.
 ### Une ligne, trois entrées
 
 ```bash
-rairos 2601.00155                          # ID arXiv
-rairos 10.48550/arXiv.2601.00155           # DOI
-rairos --pdf paper.pdf --tags RAG            # PDF local
-rairos --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # PDF scanné
+./rairos.sh 2601.00155                          # ID arXiv
+./rairos.sh 10.48550/arXiv.2601.00155           # DOI
+./rairos.sh --pdf paper.pdf --tags RAG            # PDF local
+./rairos.sh --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # PDF scanné
 ```
 
 ### Trois commandes principales
 
 ```bash
-rairos import 2601.00155 10.1038/nature12373   # Ajouter des articles à la DB
-rairos search "attention mechanism" --tag LLM    # Rechercher des articles
-rairos research "RLHF alignment" --limit 5       # Boucle de recherche autonome
+./rairos.sh import 2601.00155 10.1038/nature12373   # Ajouter des articles à la DB
+./rairos.sh search "attention mechanism" --tag LLM    # Rechercher des articles
+./rairos.sh research "RLHF alignment" --limit 5       # Boucle de recherche autonome
 ```
 
 ### Brouillon IA (optionnel)
@@ -81,7 +81,7 @@ rairos research "RLHF alignment" --limit 5       # Boucle de recherche autonome
 ```bash
 export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-rairos 2601.00155 --tags LLM --ai
+./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
 Pour la configuration complète, voir [API_CONFIG.md](API_CONFIG.md).
