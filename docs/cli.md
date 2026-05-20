@@ -1,6 +1,6 @@
 # CLI Reference
 
-All commands follow the pattern `rairos <subcommand> [options]` (or `cargo run -p rairos-cli -- <subcommand>`).
+All commands follow the pattern `./rairos.sh <subcommand> [options]` or `make run CMD='<subcommand> [options]'`.
 
 ## Core Research
 

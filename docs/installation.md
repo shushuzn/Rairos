@@ -10,44 +10,37 @@
 ```bash
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 ```
 
 ## Initialize Database
 
 ```bash
-cargo run -p rairos-cli -- init
+./rairos.sh init
 ```
 
 ## Run a Paper Search
 
 ```bash
-cargo run -p rairos-cli -- add <arxiv-id>
-cargo run -p rairos-cli -- list
+./rairos.sh add <arxiv-id>
+./rairos.sh list
 ```
 
-## Optimize for Memory
-
-The Rust workspace has 154 crates. For builds on memory-constrained machines:
+## For Developers
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build-dev    # Debug build (faster for iterative development)
+make test         # Run tests
+make clippy       # Run linter
+make clean        # Clean build artifacts
 ```
 
-For faster repeated builds, install [sccache](https://github.com/mozilla/sccache):
+For faster repeated builds, ccache is automatically configured. For sccache:
 
 ```bash
-# Linux/macOS
 cargo install sccache
 sccache --start-server
-CARGO_BUILD_JOBS=1 cargo build --workspace
-sccache --show-stats
-```
-
-For incremental dev builds:
-
-```bash
-cargo build -p rairos-cli
+unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 ```
 
 ## Environment Variables
