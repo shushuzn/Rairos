@@ -7,11 +7,30 @@ use rairos_rankers::{
     AdaptiveMomentum as RankerAdaptiveMomentum,
     BayesianOptimizer as RankerBayesianOptimizer, OptimalScalingLearner,
 };
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
+
+/// Compute keyword overlap between two text strings (Jaccard similarity on words > 4 chars).
+#[inline(always)]
+fn keyword_overlap(a: &str, b: &str) -> f64 {
+    let a_words: HashSet<String> = a.split_whitespace()
+        .map(|w| w.to_lowercase())
+        .filter(|w| w.len() > 4)
+        .collect();
+    let b_words: HashSet<String> = b.split_whitespace()
+        .map(|w| w.to_lowercase())
+        .filter(|w| w.len() > 4)
+        .collect();
+    if a_words.is_empty() || b_words.is_empty() {
+        return 0.0;
+    }
+    let intersection = a_words.intersection(&b_words).count() as f64;
+    let union = a_words.union(&b_words).count() as f64;
+    intersection / union
+}
 
 use crate::error::{OrchestratorError, Result};
 use crate::persistence::{load_state, save_state};
@@ -209,7 +228,7 @@ impl AutonomousOrchestrator {
 
                 let existing = existing_map.get(topic).cloned().unwrap_or_default();
 
-                let existing_ids: std::collections::HashSet<_> = existing
+                let existing_ids: HashSet<_> = existing
                     .iter()
                     .filter_map(|p| p.arxiv_id.clone())
                     .collect();
@@ -218,23 +237,6 @@ impl AutonomousOrchestrator {
                     .iter()
                     .map(|p| p.abstract_text.clone())
                     .collect();
-
-                fn keyword_overlap(a: &str, b: &str) -> f64 {
-                    let a_words: std::collections::HashSet<_> = a.split_whitespace()
-                        .map(|w| w.to_lowercase())
-                        .filter(|w| w.len() > 4)
-                        .collect();
-                    let b_words: std::collections::HashSet<_> = b.split_whitespace()
-                        .map(|w| w.to_lowercase())
-                        .filter(|w| w.len() > 4)
-                        .collect();
-                    if a_words.is_empty() || b_words.is_empty() {
-                        return 0.0;
-                    }
-                    let intersection = a_words.intersection(&b_words).count() as f64;
-                    let union = a_words.union(&b_words).count() as f64;
-                    intersection / union
-                }
 
                 let similarity_threshold = 0.7;
                 let new_papers: Vec<PaperInfo> = papers
