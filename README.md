@@ -137,6 +137,45 @@ See [API Documentation](docs/api/index.md) for full API reference.
 
 See [Deployment Checklist](deploy/CHECKLIST.md) for production setup.
 
+## Ecosystem
+
+Core crates that power Rairos:
+
+| Crate | Description |
+|-------|-------------|
+| [rairos-core](crates/rairos-core/) | Database, FTS5 search, subscriptions, tags |
+| [rairos-llm](crates/rairos-llm/) | GenePool evolution, LLM clients |
+| [rairos-cli](crates/rairos-cli/) | 105 CLI commands |
+| [rairos-mcp](crates/rairos-mcp/) | 69 MCP tools (JSON-RPC 2.0) |
+| [rairos-kg](crates/rairos-kg/) | Knowledge graph, PageRank |
+| [rairos-research](crates/rairos-research/) | DeepResearchAgent, gap detection |
+
+## FAQ
+
+### How does Rairos differ from Zotero or Mendeley?
+
+Rairos is not a PDF manager — it's a **self-evolving research partner** that learns from your research patterns and improves over time. It focuses on detecting research gaps and generating insights, not just storing papers.
+
+### Does Rairos require an internet connection?
+
+Rairos works **fully offline** with local LLM support (Ollama). Cloud features (OpenAI, DashScope) are optional.
+
+### What's the minimum Rust version?
+
+**Rust 1.85+** is required. Rairos uses modern Rust features for performance and safety.
+
+### How does Gene Pool work?
+
+Gene Pool encodes successful research patterns as "genes" that evolve over time. When you mark papers as useful, the system learns what matters to you and prioritizes similar findings in future searches.
+
+### Can I use Rairos programmatically?
+
+Yes! Rairos provides:
+- **CLI**: 105 commands via `./rairos.sh`
+- **MCP**: 69 tools for AI agent integration
+- **REST API**: Built-in web server with OpenAPI docs
+- **SDKs**: Python (`pip install rairos`) and Node.js (`npm install rairos`)
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE) for details.
