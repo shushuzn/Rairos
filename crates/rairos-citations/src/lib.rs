@@ -448,7 +448,7 @@ impl CitationChainBuilder {
             }
         }
 
-        silent.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap());
+        silent.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap_or(std::cmp::Ordering::Equal));
         silent.truncate(10);
         silent
     }

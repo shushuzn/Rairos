@@ -554,7 +554,7 @@ impl EvolutionEngine {
             }
         }
 
-        results.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap());
+        results.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap_or(std::cmp::Ordering::Equal));
         results
     }
 
@@ -584,7 +584,7 @@ impl EvolutionEngine {
                     (c.capsule_id.clone(), q.overall)
                 })
                 .collect();
-            capsule_scores.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+            capsule_scores.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
 
             let ids_to_remove: Vec<_> = capsule_scores
                 .iter()

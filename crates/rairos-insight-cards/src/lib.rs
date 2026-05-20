@@ -341,7 +341,7 @@ impl InsightManager {
                 }
             }
         }
-        results.sort_by(|a, b| b.usefulness_score.partial_cmp(&a.usefulness_score).unwrap());
+        results.sort_by(|a, b| b.usefulness_score.partial_cmp(&a.usefulness_score).unwrap_or(std::cmp::Ordering::Equal));
         results
     }
 
@@ -363,7 +363,7 @@ impl InsightManager {
                 }
             }
         }
-        results.sort_by(|a, b| a.usefulness_score.partial_cmp(&b.usefulness_score).unwrap());
+        results.sort_by(|a, b| a.usefulness_score.partial_cmp(&b.usefulness_score).unwrap_or(std::cmp::Ordering::Equal));
         results
     }
 

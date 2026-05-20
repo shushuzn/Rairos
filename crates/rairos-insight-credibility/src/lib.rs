@@ -337,7 +337,7 @@ impl CredibilityScorer {
         lines.push("<tbody>".to_string());
 
         let mut sorted_scores = score_list.clone();
-        sorted_scores.sort_by(|a, b| b.overall.partial_cmp(&a.overall).unwrap());
+        sorted_scores.sort_by(|a, b| b.overall.partial_cmp(&a.overall).unwrap_or(std::cmp::Ordering::Equal));
         for s in sorted_scores {
             let c = capsule_map.get(&s.capsule_id);
             let title = c
@@ -431,7 +431,7 @@ impl CredibilityScorer {
         let mut trendslop_list: Vec<_> = all_scores.iter().filter(|s| s.trendslop).collect();
         if !trendslop_list.is_empty() {
             lines.push("── Trendslop Capsules ──".to_string());
-            trendslop_list.sort_by(|a, b| a.overall.partial_cmp(&b.overall).unwrap());
+            trendslop_list.sort_by(|a, b| a.overall.partial_cmp(&b.overall).unwrap_or(std::cmp::Ordering::Equal));
             for s in trendslop_list.iter().take(top_n) {
                 let c = capsule_map.get(&s.capsule_id);
                 let title = c
@@ -448,7 +448,7 @@ impl CredibilityScorer {
         let mut high_list: Vec<_> = all_scores.iter().filter(|s| s.badge == "high").collect();
         if !high_list.is_empty() {
             lines.push("── Top Credible Capsules ──".to_string());
-            high_list.sort_by(|a, b| b.overall.partial_cmp(&a.overall).unwrap());
+            high_list.sort_by(|a, b| b.overall.partial_cmp(&a.overall).unwrap_or(std::cmp::Ordering::Equal));
             for s in high_list.iter().take(10) {
                 let c = capsule_map.get(&s.capsule_id);
                 let title = c

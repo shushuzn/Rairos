@@ -747,4 +747,4 @@ mod tests {
 
 // ========== Code Gene: 18b0f27f ==========
 // add ranking by impact score for paper retrieval
-pub fn rank_by_impact(papers: &[(String, f32)], top_k: usize) -> Vec<String> { let mut sorted = papers.to_vec(); sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap()); sorted.into_iter().take(top_k).map(|(id, _)| id).collect() }
+pub fn rank_by_impact(papers: &[(String, f32)], top_k: usize) -> Vec<String> { let mut sorted = papers.to_vec(); sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal)); sorted.into_iter().take(top_k).map(|(id, _)| id).collect() }

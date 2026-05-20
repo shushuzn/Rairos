@@ -159,7 +159,7 @@ pub fn get_bold_capsules() -> Vec<BoldCapsule> {
         });
     }
 
-    results.sort_by(|a, b| b.novelty_score.partial_cmp(&a.novelty_score).unwrap());
+    results.sort_by(|a, b| b.novelty_score.partial_cmp(&a.novelty_score).unwrap_or(std::cmp::Ordering::Equal));
     results
 }
 
