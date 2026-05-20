@@ -21,7 +21,7 @@ The goal is not to be another PDF manager or reference manager. It's to be an **
 
 ## Current State
 
-**v1.5.4** — Core infrastructure is solid. The CLI is functional with 104 commands. Research loop, gap analysis, and RAG pipeline are operational.
+**v1.5.4** — Core infrastructure is solid. The CLI is functional with 105 commands. Research loop, gap analysis, and RAG pipeline are operational.
 
 Strengths:
 - 3,800+ tests, CI gate at 83%+ coverage

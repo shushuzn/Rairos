@@ -81,7 +81,7 @@ git commit -m "feat(parser): add arXiv ID normalization"
 ```
 crates/
 ├── rairos-core/         # Database layer (SQLite, FTS5, migrations)
-├── rairos-cli/          # CLI (104 commands, clap-based)
+├── rairos-cli/          # CLI (105 commands, clap-based)
 ├── rairos-llm/          # LLM integrations (GenePool, evolution)
 ├── rairos-parser/       # Paper parsers (arXiv, DOI, PDF)
 ├── rairos-pdf/          # PDF extraction (lopdf)
