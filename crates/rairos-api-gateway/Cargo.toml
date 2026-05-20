@@ -23,6 +23,7 @@ anyhow = "1"
 sha2 = "0.10"
 hmac = "0.12"
 rand = "0.8"
+rustc-hash.workspace = true
 tower.workspace = true
 tower-http = { version = "0.5", features = ["cors", "trace"] }
 utoipa = "4"

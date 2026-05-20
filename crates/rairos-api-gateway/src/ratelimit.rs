@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use crate::models::Tier;
 
@@ -21,8 +21,8 @@ enum RateLimiterInner {
         client: redis::Client,
     },
     InMemory {
-        daily: Arc<RwLock<HashMap<String, u32>>>,
-        minute: Arc<RwLock<HashMap<String, u32>>>,
+        daily: Arc<RwLock<FxHashMap<String, u32>>>,
+        minute: Arc<RwLock<FxHashMap<String, u32>>>,
     },
 }
 
@@ -31,8 +31,8 @@ impl RateLimiter {
         let inner = match redis_client {
             Some(client) => RateLimiterInner::Redis { client },
             None => RateLimiterInner::InMemory {
-                daily: Arc::new(RwLock::new(HashMap::new())),
-                minute: Arc::new(RwLock::new(HashMap::new())),
+                daily: Arc::new(RwLock::new(FxHashMap::default())),
+                minute: Arc::new(RwLock::new(FxHashMap::default())),
             },
         };
 
@@ -99,8 +99,8 @@ impl RateLimiter {
     }
 
     async fn check_in_memory_rate_limit(
-        daily: &Arc<RwLock<HashMap<String, u32>>>,
-        minute: &Arc<RwLock<HashMap<String, u32>>>,
+        daily: &Arc<RwLock<FxHashMap<String, u32>>>,
+        minute: &Arc<RwLock<FxHashMap<String, u32>>>,
         key_hash: &str,
         limits: TierLimits,
     ) -> Option<(u32, chrono::DateTime<chrono::Utc>)> {

@@ -3,15 +3,15 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 #[derive(Default)]
 pub struct ApiMetrics {
     pub requests_total: AtomicU64,
-    pub requests_by_endpoint: RwLock<HashMap<String, AtomicU64>>,
-    pub requests_by_tier: RwLock<HashMap<String, AtomicU64>>,
+    pub requests_by_endpoint: RwLock<FxHashMap<String, AtomicU64>>,
+    pub requests_by_tier: RwLock<FxHashMap<String, AtomicU64>>,
     pub errors_total: AtomicU64,
-    pub subscriptions_by_tier: RwLock<HashMap<String, AtomicU64>>,
+    pub subscriptions_by_tier: RwLock<FxHashMap<String, AtomicU64>>,
     pub mrr_cents: AtomicU64,
     pub active_users: AtomicU64,
     pub dau: AtomicU64,
