@@ -102,7 +102,7 @@ cd sdks/python && pip install -e . && cd ../..
 cd sdks/js && npm install && cd ../..
 ```
 
-**Note**: SDK packages will be available on PyPI/npm soon. For now, install from source.
+**Note**: SDK packages are available on PyPI and npm.
 
 ```python
 from rairos import RairosClient
