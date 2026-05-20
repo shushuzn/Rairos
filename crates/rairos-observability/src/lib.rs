@@ -8,7 +8,7 @@
 use chrono::Utc;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use std::sync::{Arc, LazyLock};
 use parking_lot::RwLock;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -62,7 +62,7 @@ pub struct LogRecord {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub exception: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<HashMap<String, serde_json::Value>>,
+    pub extra: Option<FxHashMap<String, serde_json::Value>>,
 }
 
 impl LogRecord {
@@ -168,7 +168,7 @@ pub struct Event {
     pub trace_id: String,
     pub span_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<HashMap<String, serde_json::Value>>,
+    pub extra: Option<FxHashMap<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -189,7 +189,7 @@ impl EventEmitter {
         }
     }
 
-    pub fn emit(&self, event_name: &str, extra: Option<HashMap<String, serde_json::Value>>) {
+    pub fn emit(&self, event_name: &str, extra: Option<FxHashMap<String, serde_json::Value>>) {
         let trace_id = get_trace_id().unwrap_or_default();
         let span_id = CORRELATION
             .with(|c| c.read().span_id.clone())
@@ -242,7 +242,7 @@ impl EventEmitter {
 static GLOBAL_EMITTER: LazyLock<EventEmitter, fn() -> EventEmitter> =
     LazyLock::new(|| EventEmitter::with_capacity(10000));
 
-pub fn emit_research_event(event: &str, extra: Option<HashMap<String, serde_json::Value>>) {
+pub fn emit_research_event(event: &str, extra: Option<FxHashMap<String, serde_json::Value>>) {
     GLOBAL_EMITTER.emit(event, extra);
 }
 
@@ -252,19 +252,19 @@ pub fn get_recent_events(n: usize) -> Vec<Event> {
 
 #[derive(Debug, Clone, Default)]
 pub struct MetricsCollector {
-    counters: Arc<RwLock<HashMap<String, f64>>>,
-    gauges: Arc<RwLock<HashMap<String, f64>>>,
+    counters: Arc<RwLock<FxHashMap<String, f64>>>,
+    gauges: Arc<RwLock<FxHashMap<String, f64>>>,
     #[allow(dead_code)]
     hist_maxlen: usize,
-    histograms: Arc<RwLock<HashMap<String, Vec<f64>>>>,
+    histograms: Arc<RwLock<FxHashMap<String, Vec<f64>>>>,
 }
 
 impl MetricsCollector {
     pub fn new() -> Self {
         Self {
-            counters: Arc::new(RwLock::new(HashMap::new())),
-            gauges: Arc::new(RwLock::new(HashMap::new())),
-            histograms: Arc::new(RwLock::new(HashMap::new())),
+            counters: Arc::new(RwLock::new(FxHashMap::default())),
+            gauges: Arc::new(RwLock::new(FxHashMap::default())),
+            histograms: Arc::new(RwLock::new(FxHashMap::default())),
             hist_maxlen: 1000,
         }
     }
@@ -304,20 +304,20 @@ impl MetricsCollector {
         }
     }
 
-    pub fn histogram_stats(&self, subsystem: &str, name: &str) -> HashMap<String, f64> {
+    pub fn histogram_stats(&self, subsystem: &str, name: &str) -> FxHashMap<String, f64> {
         let key = format!("{}.{}", subsystem, name);
         let histograms = self.histograms.read();
         let values: Vec<f64> = histograms.get(&key).cloned().unwrap_or_default();
 
         if values.is_empty() {
-            return HashMap::new();
+            return FxHashMap::default();
         }
 
         let mut sorted = values.clone();
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         let n = sorted.len();
 
-        let mut stats = HashMap::new();
+        let mut stats = FxHashMap::default();
         stats.insert("count".to_string(), n as f64);
         stats.insert("min".to_string(), sorted[0]);
         stats.insert("max".to_string(), sorted[n - 1]);
@@ -382,8 +382,8 @@ impl MetricsCollector {
         lines.join("\n")
     }
 
-    pub fn summary(&self) -> HashMap<String, serde_json::Value> {
-        let mut result = HashMap::new();
+    pub fn summary(&self) -> FxHashMap<String, serde_json::Value> {
+        let mut result = FxHashMap::default();
 
         let counters = self.counters.read();
         result.insert(
@@ -398,7 +398,7 @@ impl MetricsCollector {
         );
 
         let histograms = self.histograms.read();
-        let hist_summary: HashMap<String, HashMap<String, f64>> = histograms
+        let hist_summary: FxHashMap<String, FxHashMap<String, f64>> = histograms
             .keys()
             .map(|k| {
                 let stats = Self::new().histogram_stats(
