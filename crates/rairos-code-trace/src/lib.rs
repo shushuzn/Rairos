@@ -5,6 +5,15 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
+use std::sync::LazyLock;
+
+static SOURCE_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"#\s*source:\s*((?:@(?:\w+)\[\d+\]\s*(?:,\s*)?)+)").expect("valid regex")
+});
+
+static TAG_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"@(\w+)\[(\d+)]").expect("valid regex")
+});
 
 /// A parsed `# source:` comment from generated code.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16,15 +25,12 @@ pub struct ParsedSourceComment {
 
 /// Extract all `# source:` comments from generated code.
 pub fn parse_source_comments(code: &str) -> Vec<ParsedSourceComment> {
-    let source_re = Regex::new(r"#\s*source:\s*((?:@(?:\w+)\[\d+\]\s*(?:,\s*)?)+)").expect("valid regex");
-    let tag_re = Regex::new(r"@(\w+)\[(\d+)\]").expect("valid regex");
-
     let mut results = vec![];
     for (lineno, line) in code.lines().enumerate() {
         let lineno = (lineno + 1) as u32;
-        if let Some(m) = source_re.captures(line) {
+        if let Some(m) = SOURCE_RE.captures(line) {
             let caps = m.get(1).unwrap().as_str();
-            let tags: Vec<_> = tag_re
+            let tags: Vec<_> = TAG_RE
                 .captures_iter(caps)
                 .map(|c| {
                     (

@@ -5,6 +5,11 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::LazyLock;
+
+static RE_CROSS_REF: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\[?(\S+?)\]?\s*\((\w+)\)").expect("valid regex")
+});
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CrossReferenceItem {
@@ -163,10 +168,9 @@ impl CrossReferencer {
         raw: &str,
         candidates: &[(String, String, String)],
     ) -> Vec<CrossReferenceItem> {
-        let pattern = Regex::new(r"\[?(\S+?)\]?\s*\((\w+)\)").expect("valid regex");
         let mut items = Vec::new();
 
-        for cap in pattern.captures_iter(raw) {
+        for cap in RE_CROSS_REF.captures_iter(raw) {
             let pid = cap
                 .get(1)
                 .map(|m| m.as_str().trim_matches(|c| c == '[' || c == ']'))

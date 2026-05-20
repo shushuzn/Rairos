@@ -47,6 +47,20 @@ static CAPTION_PAT: LazyLock<Regex> = LazyLock::new(|| {
 static FOOTNOTE_PAT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\[\d+\]$|^\^\d+$").expect("valid regex"));
 static LIST_PAT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[-*+]\s|^\d+\.\s").expect("valid regex"));
 
+// Heading detection patterns (used in looks_like_heading)
+static RE_NAMED_HEADING: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(\d+(\.\d+)*)\.?\s+[A-Za-z].{2,}$").expect("valid regex")
+});
+
+static RE_ROMAN_HEADING: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(I|II|III|IV|V|VI|VII|VIII|IX|X)\.?\s+[A-Za-z].{2,}$").expect("valid regex")
+});
+
+// Markdown heading capture pattern (used in segment_into_sections)
+static RE_MD_HEADING_CAPTURE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(#{1,6})\s+(.+)$").expect("valid regex")
+});
+
 // ============================================================================
 // Error Types
 // ============================================================================
@@ -451,16 +465,10 @@ pub fn looks_like_heading(line: &str) -> bool {
         return false;
     }
 
-    if Regex::new(r"^(\d+(\.\d+)*)\.?\s+[A-Za-z].{2,}$")
-        .unwrap()
-        .is_match(s)
-    {
+    if RE_NAMED_HEADING.is_match(s) {
         return true;
     }
-    if Regex::new(r"^(I|II|III|IV|V|VI|VII|VIII|IX|X)\.?\s+[A-Za-z].{2,}$")
-        .unwrap()
-        .is_match(s)
-    {
+    if RE_ROMAN_HEADING.is_match(s) {
         return true;
     }
 
@@ -490,11 +498,10 @@ pub fn segment_into_sections(text: &str, max_sections: usize) -> Vec<(String, St
     let mut sections: Vec<(String, Vec<String>)> = Vec::new();
     let mut cur_title = "BODY".to_string();
     let mut cur_buf: Vec<String> = Vec::new();
-    let md_heading_pat = Regex::new(r"^(#{1,6})\s+(.+)$").expect("valid regex");
 
     for line in &lines {
         let stripped = line.trim();
-        let md_heading_match = md_heading_pat.captures(stripped);
+        let md_heading_match = RE_MD_HEADING_CAPTURE.captures(stripped);
         if let Some(caps) = md_heading_match {
             if !cur_buf.is_empty() {
                 sections.push((cur_title.clone(), cur_buf));

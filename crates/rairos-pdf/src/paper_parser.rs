@@ -13,6 +13,24 @@
 use crate::provenance::{AlgorithmSource, ClaimSource, EquationSource, PaperLocation};
 use rairos_code_generator::PaperContent as CodeGenPaperContent;
 use regex::Regex;
+use std::sync::LazyLock;
+
+// Algorithm fingerprint regex patterns
+static RE_EQ_OPS: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?:softmax|attention|matmul|@|linear|layer.?norm|residual|dropout|encoder|decoder|self.?attention|cross.?attention|multi.?head|positional|embedding|relu|gelu|swiglu|feed.?forward|normalization|convolution|pooling|gru|lstm|rnn|transformer|cross.?entropy|BCE|CE|adam|sgd|rmsprop|weight)").expect("valid regex")
+});
+
+static RE_STRIP_VERSION: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"[-_]?[0-9]+$").expect("valid regex")
+});
+
+static RE_STRIP_NON_ALPHA: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"[^a-z]+").expect("valid regex")
+});
+
+static RE_ARXIV_ID_SUFFIX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"v\d+$").expect("valid regex")
+});
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
@@ -88,15 +106,10 @@ impl From<PaperContent> for CodeGenPaperContent {
 pub fn compute_algorithm_fingerprint(content: &PaperContent) -> String {
     let mut signals: Vec<String> = Vec::new();
 
-    // Regex for extracting operation keywords from equations
-    let eq_ops_re = Regex::new(
-        r"(?:softmax|attention|matmul|@|linear|layer.?norm|residual|dropout|encoder|decoder|self.?attention|cross.?attention|multi.?head|positional|embedding|relu|gelu|swiglu|feed.?forward|normalization|convolution|pooling|gru|lstm|rnn|transformer|cross.?entropy| BCE|CE|adam|sgd|rmsprop|weight)"
-    ).expect("valid regex");
-
     // 1. Equations: extract structural skeleton (op signature only, no vars)
     for eq in &content.equations {
         let eq_lower = eq.to_lowercase();
-        let ops: Vec<String> = eq_ops_re
+        let ops: Vec<String> = RE_EQ_OPS
             .find_iter(&eq_lower)
             .map(|m| m.as_str().to_string())
             .collect();
@@ -132,13 +145,10 @@ pub fn compute_algorithm_fingerprint(content: &PaperContent) -> String {
         vec!["convolution", "conv", "convlayer"],
     ];
 
-    let strip_version_re = Regex::new(r"[-_]?[0-9]+$").expect("valid regex");
-    let strip_non_alpha_re = Regex::new(r"[^a-z]+").expect("valid regex");
-
     for method in &content.methods {
         let mut m = method.to_lowercase();
-        m = strip_version_re.replace_all(&m, "").to_string();
-        m = strip_non_alpha_re.replace_all(&m, "").to_string();
+        m = RE_STRIP_VERSION.replace_all(&m, "").to_string();
+        m = RE_STRIP_NON_ALPHA.replace_all(&m, "").to_string();
 
         // Collapse synonym groups to canonical name
         for group in &synonym_groups {
@@ -291,8 +301,7 @@ pub async fn download_and_parse(arxiv_id: &str) -> PaperContent {
         .last()
         .unwrap_or(arxiv_id.trim())
         .trim();
-    let aid = Regex::new(r"v\d+$")
-        .unwrap()
+    let aid = RE_ARXIV_ID_SUFFIX
         .replace_all(aid, "")
         .to_string();
 
@@ -568,8 +577,7 @@ fn _minimal_content(input: &str) -> PaperContent {
         .last()
         .unwrap_or(input.trim())
         .trim();
-    let aid = Regex::new(r"v\d+$")
-        .unwrap()
+    let aid = RE_ARXIV_ID_SUFFIX
         .replace_all(aid, "")
         .to_string();
 

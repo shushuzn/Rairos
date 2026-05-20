@@ -27,6 +27,14 @@ static RE_TRAIL_MARKDOWN: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?m)\n\s*```\s*$").expect("valid regex")
 });
 
+static RE_PY_KEYWORDS: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(class |def |async |@|if |elif |for |while |with |try:|except:|finally:|raise |return |yield |pass |break |continue |assert |import |from |#|$)").expect("valid regex")
+});
+
+static RE_MAIN_BLOCK: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$"#).expect("valid regex")
+});
+
 /// Configuration for code generation.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CodeGenConfig {
@@ -398,11 +406,6 @@ Tag each distinct functional block (class, main function, key sub-routine) that 
 /// Applied after primary marker-based stripping for models (e.g. MiniMax)
 /// that output plain-text descriptions without markdown fences.
 pub fn strip_prose_secondary(code: &str) -> String {
-    let re_py_kw = Regex::new(
-        r"^(class |def |async |@|if |elif |for |while |with |try:|except:|finally:|raise |return |yield |pass |break |continue |assert |import |from |#|$)",
-    )
-    .unwrap();
-
     let markers: std::collections::HashSet<char> = "(){}=[]<>:@#\"".chars().collect();
 
     let mut result: Vec<&str> = Vec::new();
@@ -417,7 +420,7 @@ pub fn strip_prose_secondary(code: &str) -> String {
         let ratio = alpha as f64 / total as f64;
         let has_marker = stripped.chars().any(|c| markers.contains(&c));
         let is_import = stripped.starts_with("import ") || stripped.starts_with("from ");
-        let is_py_kw = re_py_kw.is_match(stripped);
+        let is_py_kw = RE_PY_KEYWORDS.is_match(stripped);
         if total > 10 && ratio > 0.75 && !has_marker && !is_import && !is_py_kw {
             continue; // drop prose line
         }
@@ -432,18 +435,14 @@ pub fn save_code(
     output_dir: &std::path::Path,
     module_name: &str,
 ) -> std::path::PathBuf {
-    let re_fence = Regex::new(r"(?m)^\s*```(?:python)?\s*\n").expect("valid regex");
-    let code = re_fence.replace_all(code, "").to_string();
-
-    let re_end_fence = Regex::new(r"(?m)\n\s*```\s*$").expect("valid regex");
-    let code = re_end_fence.replace_all(&code, "\n").to_string();
+    let code = RE_LEAD_MARKDOWN.replace_all(code, "").to_string();
+    let code = RE_TRAIL_MARKDOWN.replace_all(&code, "\n").to_string();
 
     // Strip thinking/reasoning blocks
     let code = strip_thinking_blocks(&code);
 
     // Strip text appended after valid Python entry point
-    let re_main = Regex::new(r#"\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$"#).expect("valid regex");
-    let code = re_main.replace_all(&code, "").to_string();
+    let code = RE_MAIN_BLOCK.replace_all(&code, "").to_string();
 
     // Secondary prose stripping
     let code = strip_prose_secondary(&code);

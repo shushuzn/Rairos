@@ -25,10 +25,14 @@ static TEST_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
 
 static IO_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"(?i)input\s*[:=]\s*(.+?)\s*[,\n]\s*output\s*[:=]\s*(.+?)(?:\n|$)").expect("valid regex"),
+        Regex::new(r"(?i)input\s* [:=]\s*(.+?)\s*[,\n]\s*output\s*[:=]\s*(.+?)(?:\n|$)").expect("valid regex"),
         Regex::new(r"(?i)given\s+(.+?)\s*,\s*(?:the\s+)?(?:result|output)\s+(?:is|:)\s*(.+?)(?:\n|$)").expect("valid regex"),
-        Regex::new(r"(?i)(?:example|eg\.?)\s*[:.]?\s*['\x22]?(.+?)['\x22]?\s*(?:->|->|gives|produces)\s*['\x22]?(.+?)['\x22]?(?:\n|$)").expect("valid regex"),
+        Regex::new(r"(?i)(?:example|eg\.?)\s*[:.]?\s*['\x22]?(.+?)['\x22]?\s*->|->|gives|produces)\s*['\x22]?(.+?)['\x22]?(?:\n|$)").expect("valid regex"),
     ]
+});
+
+static VAR_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"[a-zA-Z_][a-zA-Z0-9_]*").expect("valid regex")
 });
 
 // ─── Data structs ───────────────────────────────────────────────────────────────
@@ -314,10 +318,9 @@ fn extract_dataset_tests(datasets: &[String], code: &str) -> Vec<TestCase> {
 fn extract_equation_tests(equations: &[String]) -> Vec<TestCase> {
     let math_functions = ["log", "exp", "sin", "cos", "tan", "sqrt", "max", "min"];
     let mut tests = Vec::new();
-    let var_regex = regex::Regex::new(r"[a-zA-Z_][a-zA-Z0-9_]*").expect("valid regex");
 
     for (i, eq) in equations.iter().take(3).enumerate() {
-        let variables: Vec<&str> = var_regex
+        let variables: Vec<&str> = VAR_REGEX
             .find_iter(eq)
             .map(|m| m.as_str())
             .filter(|v| !math_functions.contains(v))

@@ -5,11 +5,17 @@
 //! Replaces: parsers/arxiv.py, parsers/cross_search.py, pdf/parser.py
 
 use rairos_core::{constants::{ARXIV_API, SEMANTIC_API}, Paper, PaperMetadata};
+use regex::Regex;
 use serde::Deserialize;
+use std::sync::LazyLock;
 use std::time::Duration;
 use thiserror::Error;
 
 const DEFAULT_TIMEOUT_SECS: u64 = 30;
+
+static RE_META_TAG: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"<meta[^>]+content="([^"]+)"[^>]+name="([^"]+)""#).expect("valid regex")
+});
 
 // ============================================================================
 // Error Types
@@ -971,4 +977,4 @@ mod tests {
 
 // ========== Code Gene: 18b0f287 ==========
 // add regex-based metadata extraction from HTML
-pub fn extract_metadata(html: &str) -> std::collections::HashMap<String, String> { let mut meta = std::collections::HashMap::new(); for cap in regex::Regex::new(r#"<meta[^>]+content="([^"]+)"[^>]+name="([^"]+)"#).expect("valid regex").captures_iter(html) { meta.insert(cap[2].to_string(), cap[1].to_string()); } meta }
+pub fn extract_metadata(html: &str) -> std::collections::HashMap<String, String> { let mut meta = std::collections::HashMap::new(); for cap in RE_META_TAG.captures_iter(html) { meta.insert(cap[2].to_string(), cap[1].to_string()); } meta }
