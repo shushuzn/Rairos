@@ -336,7 +336,7 @@ impl CredibilityScorer {
         );
         lines.push("<tbody>".to_string());
 
-        let mut sorted_scores = score_list.clone();
+        let mut sorted_scores = score_list;
         sorted_scores.sort_by(|a, b| b.overall.partial_cmp(&a.overall).unwrap_or(std::cmp::Ordering::Equal));
         for s in sorted_scores {
             let c = capsule_map.get(&s.capsule_id);

@@ -798,7 +798,7 @@ impl EvolutionTracker {
             .and_then(|c| serde_json::from_str(&c).ok())
             .unwrap_or_default();
 
-        let mut data = incoming.clone();
+        let mut data = incoming;
         data.remove("_exported_at");
         data.remove("_version");
 

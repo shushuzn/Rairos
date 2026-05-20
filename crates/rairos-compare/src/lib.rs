@@ -408,8 +408,8 @@ impl PaperComparator {
         ));
         lines.push(format!("--- {} ---", field));
 
-        let mut a_sorted = a_items.clone();
-        let mut b_sorted = b_items.clone();
+        let mut a_sorted = a_items;
+        let mut b_sorted = b_items;
         a_sorted.sort();
         b_sorted.sort();
 

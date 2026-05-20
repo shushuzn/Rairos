@@ -313,7 +313,7 @@ impl MetricsCollector {
             return FxHashMap::default();
         }
 
-        let mut sorted = values.clone();
+let mut sorted = values;
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         let n = sorted.len();
 
@@ -357,7 +357,7 @@ impl MetricsCollector {
                 continue;
             }
             lines.push(format!("# TYPE {} histogram", key));
-            let mut sorted = values.clone();
+            let mut sorted = values.to_vec();
             sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
             let n = sorted.len();
             for boundary in [0.5, 0.95, 0.99] {
