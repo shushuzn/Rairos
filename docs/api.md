@@ -2,7 +2,7 @@
 
 ## CLI (rairos-cli)
 
-All commands via `cargo run -p rairos-cli -- <command>` or `rairos <command>`.
+All commands via `./rairos.sh <command>` or `rairos <command>`.
 
 ```bash
 rairos --help                    # Full command list

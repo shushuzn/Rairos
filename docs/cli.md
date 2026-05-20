@@ -133,7 +133,7 @@ All commands follow the pattern `./rairos.sh <subcommand> [options]` or `make ru
 
 ```bash
 # Install
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build-dev
 rairos --help                    # Show all commands
 
 # Paper operations

@@ -10,10 +10,10 @@ git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
 
 # Build (memory-intensive — use single job)
-CARGO_BUILD_JOBS=1 cargo build
+make build-dev
 
 # Run tests
-CARGO_BUILD_JOBS=1 cargo test
+make test
 ```
 
 ## Prerequisites
@@ -48,7 +48,7 @@ git checkout -b feature/my-feature
 # Make your changes, then:
 cargo fmt            # Format code
 cargo clippy         # Lint checks
-CARGO_BUILD_JOBS=1 cargo build  # Compile
+make build-dev  # Compile
 
 # Commit (use conventional commits)
 git commit -m "feat(parser): add arXiv ID normalization"
@@ -73,7 +73,7 @@ git commit -m "feat(parser): add arXiv ID normalization"
 ### Testing
 - All new features need tests
 - Use `#[cfg(test)] mod tests { ... }` pattern
-- Run `CARGO_BUILD_JOBS=1 cargo test -p CRATE_NAME` for fast iteration
+- Run `make test -p CRATE_NAME` for fast iteration
 - Use `cargo test --doc` for doc tests
 
 ### Crate Structure
@@ -96,15 +96,15 @@ crates/
 
 ## Build Tips
 
-- **Always** use `CARGO_BUILD_JOBS=1` — the project has 154 crates and parallel builds easily OOM
+- **For memory issues: unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
 - To build a specific crate: `cargo build -p rairos-core`
-- For incremental compilation: `CARGO_BUILD_JOBS=1 cargo check`
+- For incremental compilation: `make build-dev`
 - Install [sccache](https://github.com/mozilla/sccache) for faster rebuilds:
 
 ```bash
 # On Linux/macOS
 sccache --start-server
-CARGO_BUILD_JOBS=1 cargo build
+make build-dev
 
 # Check stats
 sccache --show-stats
