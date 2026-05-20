@@ -527,7 +527,7 @@ impl KgDatabase {
         for d in 1..=depth {
             let edges = self.get_edges_by_nodes_batch(&current_level, "both", relation_type)?;
             let mut next_level_ids = Vec::new();
-            let mut discovered: HashMap<String, KgEdge> = HashMap::new();
+            let mut discovered: HashMap<String, KgEdge> = HashMap::with_capacity(edges.len());
 
             for edge in &edges {
                 let neighbor_id = if current_level.contains(&edge.source) { &edge.target } else { &edge.source };
@@ -1012,7 +1012,7 @@ impl GraphAlgorithms {
         let mut scores: HashMap<String, f32> = graph.nodes.keys().map(|id| (id.clone(), 1.0)).collect();
         let damping = 0.85;
         for _ in 0..20 {
-            let mut new_scores: HashMap<String, f32> = std::collections::HashMap::new();
+            let mut new_scores: HashMap<String, f32> = HashMap::with_capacity(scores.len());
             for node_id in scores.keys() {
                 let incoming = graph.incoming.get(node_id);
                 let mut contribution = 0.0;
@@ -1045,7 +1045,7 @@ impl GraphAlgorithms {
             for node_id in graph.nodes.keys() {
                 let neighbors = graph.outgoing.get(node_id).map(|v| v.as_slice()).unwrap_or(&[]);
                 if neighbors.is_empty() { continue; }
-                let mut label_counts: HashMap<usize, usize> = std::collections::HashMap::new();
+                let mut label_counts: HashMap<usize, usize> = HashMap::with_capacity(neighbors.len());
                 for neighbor_id in neighbors {
                     if let Some(&label) = communities.get(neighbor_id) {
                         *label_counts.entry(label).or_insert(0) += 1;
