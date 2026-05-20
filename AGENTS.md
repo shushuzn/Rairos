@@ -39,7 +39,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API, PDF extraction |
 | rairos-research | DeepResearchAgent, gap detection |
 | rairos-web | REST API + HTML frontend |
-| rairos-cli | 105 commands (main.rs) |
+| rairos-cli | 105 commands (handlers/commands.rs) |
 | rairos-kg | Knowledge graph, PageRank, communities |
 | rairos-memory | Research stance tracking, anomaly detection |
 | rairos-rankers | Paper ranking and scoring |
