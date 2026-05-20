@@ -98,7 +98,7 @@ Paper → P-Note (per paper)
 | Metric | Value |
 |--------|-------|
 | Tests | 3800+ across 154 crates |
-| Rust | 1.81+ |
+| Rust | 1.85+ |
 | License | GPL v3 |
 | Version | 1.5.4 |
 
