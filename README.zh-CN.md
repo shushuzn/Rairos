@@ -113,6 +113,25 @@ tar -xzf rairos-cli-*.tar.gz
 sudo mv rairos /usr/local/bin/
 ```
 
+### 通过包管理器安装
+
+```bash
+# Homebrew (macOS/Linux)
+brew install rairos
+
+# Arch Linux (AUR)
+paru -S rairos-cli
+
+# Nix/NixOS
+nix-env -iA nixpkgs.rairos
+
+# Guix
+guix install rairos
+
+# FreeBSD
+pkg install rairos
+```
+
 ## Rust 技术栈 (154 crates)
 
 | Crate | 用途 |
@@ -174,6 +193,60 @@ Gene Pool 将成功的研究模式编码为"基因"，随时间进化。当你�
 - **MCP**: 69 个 AI agent 集成工具
 - **REST API**: 内置 web 服务器，带 OpenAPI 文档
 - **SDK**: Python (`pip install rairos`) 和 Node.js (`npm install rairos`)
+
+## 常见问题排查
+
+### 构建失败 "memory allocation failed"
+
+```bash
+# 减少并行构建
+unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
+
+# 或使用 make
+make build CARGO_BUILD_JOBS=1
+```
+
+### 数据库锁定错误
+
+```bash
+# 确保只有一个 Rairos 进程在运行
+pkill rairos  # 关闭所有实例
+./rairos.sh init  # 如需要重新初始化
+```
+
+### Ollama 连接失败
+
+```bash
+# 检查 Ollama 是否运行
+ollama list
+
+# 下载模型（如需要）
+ollama pull qwen2.5
+
+# 设置显式 URL
+export OLLAMA_BASE_URL=http://localhost:11434
+```
+
+### arXiv 论文找不到
+
+某些论文需要认证或不在 arXiv 上。尝试：
+- DOI 导入：`./rairos.sh add --doi 10.xxxx/xxxxx`
+- 直接 PDF：`./rairos.sh import /path/to/paper.pdf`
+
+### Rust 版本不匹配
+
+```bash
+# Rairos 需要 Rust 1.85+
+rustc --version
+rustup update  # 更新到最新稳定版
+```
+
+### 需要帮助？
+
+- 运行 `./rairos.sh --help` 查看所有命令
+- 运行 `./rairos.sh <command> --help` 查看具体命令帮助
+- 查看 [docs/](docs/) 了解详细文档
+- 在 GitHub 上提交 issue 报告 bug 或请求功能
 
 ## 文档
 

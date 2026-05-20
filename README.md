@@ -128,6 +128,25 @@ tar -xzf rairos-cli-*.tar.gz
 sudo mv rairos /usr/local/bin/
 ```
 
+### Via Package Managers
+
+```bash
+# Homebrew (macOS/Linux)
+brew install rairos
+
+# Arch Linux (AUR)
+paru -S rairos-cli
+
+# Nix/NixOS
+nix-env -iA nixpkgs.rairos
+
+# Guix
+guix install rairos
+
+# FreeBSD
+pkg install rairos
+```
+
 ## Documentation
 
 | Doc | Description |
@@ -233,6 +252,60 @@ Yes! Rairos provides:
 - **MCP**: 69 tools for AI agent integration
 - **REST API**: Built-in web server with OpenAPI docs
 - **SDKs**: Python (`pip install rairos`) and Node.js (`npm install rairos`)
+
+## Troubleshooting
+
+### Build fails with "memory allocation failed"
+
+```bash
+# Reduce parallelism
+unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
+
+# Or use make with reduced jobs
+make build CARGO_BUILD_JOBS=1
+```
+
+### Database locked errors
+
+```bash
+# Ensure only one Rairos process is running
+pkill rairos  # Kill any running instances
+./rairos.sh init  # Reinitialize if needed
+```
+
+### Ollama connection fails
+
+```bash
+# Check Ollama is running
+ollama list
+
+# Pull a model if needed
+ollama pull qwen2.5
+
+# Set explicit base URL
+export OLLAMA_BASE_URL=http://localhost:11434
+```
+
+### arXiv paper not found
+
+Some papers require authentication or are not on arXiv. Try:
+- DOI import: `./rairos.sh add --doi 10.xxxx/xxxxx`
+- Direct PDF: `./rairos.sh import /path/to/paper.pdf`
+
+### Rust version mismatch
+
+```bash
+# Rairos requires Rust 1.85+
+rustc --version
+rustup update  # Update to latest stable
+```
+
+### Need help?
+
+- Run `./rairos.sh --help` for all commands
+- Run `./rairos.sh <command> --help` for command-specific help
+- Check [docs/](docs/) for detailed documentation
+- Open an issue on GitHub for bugs or feature requests
 
 ## License
 
