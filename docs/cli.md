@@ -134,23 +134,23 @@ All commands follow the pattern `./rairos.sh <subcommand> [options]` or `make ru
 ```bash
 # Install
 make build-dev
-rairos --help                    # Show all commands
+./rairos.sh --help                    # Show all commands
 
 # Paper operations
-rairos import 2601.00155
-rairos search "attention"
-rairos list --status done
+./rairos.sh import 2601.00155
+./rairos.sh search "attention"
+./rairos.sh list --status done
 
 # Research
-rairos research "RLHF alignment" --limit 5
-rairos gap --papers "2601.00155"
-rairos chat-tui
+./rairos.sh research "RLHF alignment" --limit 5
+./rairos.sh gap --papers "2601.00155"
+./rairos.sh chat-tui
 
 # Knowledge graph
-rairos kg --query "transformer"
-rairos cite-graph 2601.00155
+./rairos.sh kg --query "transformer"
+./rairos.sh cite-graph 2601.00155
 
 # Gene Pool
-rairos scout --topic "mixture of experts"
-rairos daemon start
+./rairos.sh scout --topic "mixture of experts"
+./rairos.sh daemon start
 ```
