@@ -199,7 +199,7 @@ Embedding-based deduplication via Ollama (`nomic-embed-text`, 768-dim):
 
 ### CLI Commands
 
-104 commands across the Rairos CLI. Run `rairos --help` to list all.
+104 commands across the Rairos CLI. Run `./rairos.sh --help` to list all.
 
 ---
 
