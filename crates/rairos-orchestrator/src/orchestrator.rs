@@ -182,7 +182,10 @@ impl AutonomousOrchestrator {
         });
         let arxiv_results = join_all(arxiv_futures).await;
         let arxiv_map: std::collections::HashMap<String, Vec<Paper>> =
-            arxiv_results.into_iter().collect();
+            arxiv_results.into_iter().fold(
+                std::collections::HashMap::with_capacity(topics.len()),
+                |mut m, (t, p)| { m.insert(t, p); m },
+            );
 
             // CPU-intensive filtering in spawn_blocking
         use tokio::task;
@@ -192,7 +195,10 @@ impl AutonomousOrchestrator {
 
             // Build owned lookup map to avoid repeated iteration
             let existing_map: std::collections::HashMap<String, Vec<Paper>> =
-                existing_papers.into_iter().collect();
+                existing_papers.into_iter().fold(
+                    std::collections::HashMap::with_capacity(topic_count),
+                    |mut m, (t, p)| { m.insert(t, p); m },
+                );
 
             for (topic, _sub_id) in &topics {
                 let papers = arxiv_map.get(topic).cloned().unwrap_or_default();
