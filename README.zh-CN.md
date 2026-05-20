@@ -55,8 +55,8 @@ make clippy       # 运行 linter
 | Crate | 用途 |
 |-------|------|
 | rairos-core | 核心数据库、FTS5、订阅管理 |
-| rairos-cli | CLI 入口 (104 命令) |
-| rairos-mcp | MCP 协议服务器 (68 工具) |
+| rairos-cli | CLI 入口 (105 命令) |
+| rairos-mcp | MCP 协议服务器 (69 工具) |
 | rairos-llm | LLM 客户端、Gene Pool、进化引擎 |
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API |
 | rairos-research | 深度研究 Agent、空白检测 |
