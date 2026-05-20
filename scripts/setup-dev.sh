@@ -68,7 +68,7 @@ fi
 echo ""
 echo "4. Verifying build..."
 echo "   Building rairos-cli (this may take a few minutes)..."
-if unset RUSTC_WRAPPER && cargo build -p rairos-cli 2>&1 | grep -q "error"; then
+if make build-dev 2>&1 | grep -q "error"; then
     echo "   WARNING: Build had errors"
 else
     echo "   Build check passed"

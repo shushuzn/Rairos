@@ -1,6 +1,6 @@
 # Justfile — developer commands for Rairos
-# NOTE: This file is for legacy Python CLI. Use Makefile for Rust development.
-# Install just: winget install just | cargo install just | scoop install just
+# NOTE: For Rust development, use Makefile instead (make build, make test, etc.)
+# Install just: cargo install just
 
 default:
     @just --list
