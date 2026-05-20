@@ -62,7 +62,7 @@ See [Installation](installation.md) for full setup instructions.
 - **Rich Webhooks** — Discord embeds + Feishu cards for gap and paradigm shift alerts
 - **Structured Observability** — JSON logging with correlation IDs and event tracking
 
-### 104 CLI Commands
+### 105 CLI Commands
 
 - `import` — Bulk import from arXiv, DOI, PDF
 - `search` — Full-text search with BM25 ranking

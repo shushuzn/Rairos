@@ -2,7 +2,7 @@
 
 ## Project
 
-Self-Evolving Research OS — **100% Rust**: 149 crates, ~73k+ Rust lines, 68 MCP tools, 104 CLI commands.
+Self-Evolving Research OS — **100% Rust**: 149 crates, ~73k+ Rust lines, 68 MCP tools, 105 CLI commands.
 Python CLI fully migrated to Rust. All Python source code removed.
 
 ## Rust Build
@@ -39,7 +39,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 | rairos-parser | arXiv/CrossRef/Semantic Scholar API, PDF extraction |
 | rairos-research | DeepResearchAgent, gap detection |
 | rairos-web | REST API + HTML frontend |
-| rairos-cli | 104 commands (955 lines, main.rs) |
+| rairos-cli | 105 commands (main.rs) |
 | rairos-kg | Knowledge graph, PageRank, communities |
 | rairos-memory | Research stance tracking, anomaly detection |
 | rairos-rankers | Paper ranking and scoring |
@@ -57,7 +57,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 | rairos-insight-tracker | EvolutionTracker — event recording, profile management |
 | rairos-insight-evolution | Evolution engine — audit, propose, evaluate, apply |
 
-## CLI (104 commands)
+## CLI (105 commands)
 
 ```bash
 make build-dev
