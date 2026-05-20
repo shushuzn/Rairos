@@ -16,6 +16,22 @@
 ![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
 [![Stars](https://img.shields.io/github/stars/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/stargazers)
 [![Forks](https://img.shields.io/github/forks/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/network/members)
+[![Downloads](https://img.shields.io/github/downloads/shushuzn/Rairos/total?style=social)](https://github.com/shushuzn/Rairos/releases)
+
+[Key Features](#key-features) •
+[Quick Start](#quick-start-rust-cli) •
+[Installation](#installation) •
+[Integration](#integration) •
+[Shell Completions](#shell-completions) •
+[Documentation](#documentation) •
+[Troubleshooting](#troubleshooting)
+![Rust](https://img.shields.io/badge/rust-1.85+-orange.svg?logo=rust)
+![Crates](https://img.shields.io/badge/crates-154-blue.svg)
+![Lines](https://img.shields.io/badge/lines-116k%2B-green.svg)
+![MCP](https://img.shields.io/badge/mcp_tools-69-blue.svg?logo=robot)
+![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
+[![Stars](https://img.shields.io/github/stars/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/stargazers)
+[![Forks](https://img.shields.io/github/forks/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/network/members)
 [![Downloads](https://img.shields.io/github/releases-downloads/shushuzn/Rairos/total?style=social)](https://github.com/shushuzn/Rairos/releases)
 
 ## Why Rairos?
@@ -31,6 +47,22 @@
 | 105 CLI commands | ❌ | ❌ | ✅ |
 
 Rairos is the **first research tool that evolves with you** — it learns what you find valuable and improves future searches automatically.
+
+### Why use Rairos?
+
+- **Not just a PDF manager** — Rairos actively finds research gaps, not just stores papers
+- **Self-evolving** — Gene Pool learns from your feedback; searches improve over time
+- **Fully local** — Run entirely offline with Ollama; zero API costs
+- **AI agent native** — 69 MCP tools built-in for AI assistant integration
+- **Rust-powered** — Fast startup (<50ms), low memory (~10MB), single binary
+- **CLI-first** — Scriptable, composable, keyboard-driven workflow
+- **Open source** — No vendor lock-in, inspect all code
+
+### Why NOT use Rairos?
+
+- **You need cloud sync** — Try Zotero or Mendeley for cross-device sync
+- **You need collaborative features** — Not designed for team sharing yet
+- **You need mobile apps** — Currently CLI/web only
 
 ## What It Does
 
@@ -75,6 +107,46 @@ Built in **100% Rust** for maximum performance:
 | Parallel processing | **Rayon** | Full CPU utilization |
 
 Run `./rairos.sh benchmark` to see full performance metrics.
+
+## Integration
+
+Rairos works great with other tools:
+
+### With fzf (fuzzy finder)
+```bash
+# Find papers with fzf
+./rairos.sh list --format json | fzf --preview './rairos.sh show {1}'
+```
+
+### With git (auto-commit papers)
+```bash
+# Add paper changes to git
+git add papers/ && git commit -m "Update papers"
+```
+
+### With xargs (batch processing)
+```bash
+# Process multiple papers
+./rairos.sh list --status pending | xargs -I {} ./rairos.sh parse {}
+```
+
+### With jq (JSON processing)
+```bash
+# Query papers as JSON
+./rairos.sh search "transformer" --format json | jq '.[] | select(.citations > 100)'
+```
+
+### With curl (API gateway)
+```bash
+# Query the API gateway
+curl -X POST http://localhost:8081/api/search -d '{"query": "LLM"}'
+```
+
+### With watch (monitoring)
+```bash
+# Watch for new papers every hour
+watch -n 3600 './rairos.sh subscribe list'
+```
 
 ## Quick Start (Rust CLI)
 
@@ -335,6 +407,41 @@ rustup update  # Update to latest stable
 - Run `./rairos.sh <command> --help` for command-specific help
 - Check [docs/](docs/) for detailed documentation
 - Open an issue on GitHub for bugs or feature requests
+
+## Shell Completions
+
+Enable tab completion for faster command entry:
+
+### Bash
+```bash
+# Generate completions
+./rairos.sh completions bash > ~/.local/share/bash-completion/completions/rairos
+source ~/.bashrc
+```
+
+### Zsh
+```bash
+# Generate completions
+./rairos.sh completions zsh > ~/.zfunc/_rairos
+autoload -Uz compinit && compinit
+```
+
+### Fish
+```bash
+# Generate completions
+./rairos.sh completions fish > ~/.config/fish/completions/rairos.fish
+```
+
+### PowerShell
+```powershell
+# Generate completions
+./rairos.sh completions powershell >> $PROFILE
+```
+
+Or use `make completions` for all shells:
+```bash
+make completions
+```
 
 ## Similar Programs
 

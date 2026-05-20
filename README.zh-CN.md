@@ -17,6 +17,23 @@
 [![Forks](https://img.shields.io/github/forks/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/network/members)
 [![Downloads](https://img.shields.io/github/downloads/shushuzn/Rairos/total?style=social)](https://github.com/shushuzn/Rairos/releases)
 
+[核心功能](#核心功能) •
+[快速开始](#快速开始) •
+[安装](#安装) •
+[集成](#集成) •
+[Shell 补全](#shell-补全) •
+[文档](#文档) •
+[故障排查](#常见问题排查)
+![Rust](https://img.shields.io/badge/rust-1.85+-orange.svg?logo=rust)
+![Crates](https://img.shields.io/badge/crates-154-blue.svg)
+![Lines](https://img.shields.io/badge/lines-116k%2B-green.svg)
+![MCP](https://img.shields.io/badge/mcp_tools-69-blue.svg?logo=robot)
+![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
+[![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
+[![Stars](https://img.shields.io/github/stars/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/stargazers)
+[![Forks](https://img.shields.io/github/forks/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/network/members)
+[![Downloads](https://img.shields.io/github/downloads/shushuzn/Rairos/total?style=social)](https://github.com/shushuzn/Rairos/releases)
+
 ## 为什么选择 Rairos？
 
 | 功能 | Zotero | Mendeley | **Rairos** |
@@ -30,6 +47,22 @@
 | 105 个 CLI 命令 | ❌ | ❌ | ✅ |
 
 Rairos 是**第一个会随你进化的研究工具**——它学习你发现有价值的内容，自动改进未来搜索。
+
+### 为什么要用 Rairos？
+
+- **不只是 PDF 管理器** — Rairos 主动发现研究空白，而非只是存储论文
+- **自进化** — Gene Pool 从你的反馈中学习，搜索效果越来越好
+- **完全本地** — 支持 Ollama 离线运行，零 API 费用，完全私密
+- **AI Agent 原生** — 内置 69 个 MCP 工具，支持 AI 助手集成
+- **Rust 驱动** — 快速启动（<50ms），低内存（~10MB），单二进制
+- **CLI 优先** — 可脚本化、可组合、键盘驱动的工作流
+- **开源** — 无供应商锁定，代码完全透明
+
+### 为什么不使用 Rairos？
+
+- **需要云同步** — 试试 Zotero 或 Mendeley 的跨设备同步
+- **需要协作功能** — 暂无团队共享设计
+- **需要移动端** — 目前仅支持 CLI/Web
 
 ## 它能做什么
 
@@ -58,6 +91,46 @@ Rairos 是一个**自主研究助手**，可以：
 | 并行处理 | **Rayon** | 充分利用多核 |
 
 运行 `./rairos.sh benchmark` 查看完整性能数据。
+
+## 集成
+
+Rairos 可以与其他工具配合使用：
+
+### 与 fzf（模糊搜索）
+```bash
+# 用 fzf 查找论文
+./rairos.sh list --format json | fzf --preview './rairos.sh show {1}'
+```
+
+### 与 git（自动提交论文）
+```bash
+# 将论文变更添加到 git
+git add papers/ && git commit -m "Update papers"
+```
+
+### 与 xargs（批量处理）
+```bash
+# 批量处理多篇论文
+./rairos.sh list --status pending | xargs -I {} ./rairos.sh parse {}
+```
+
+### 与 jq（JSON 处理）
+```bash
+# 查询 JSON 格式论文
+./rairos.sh search "transformer" --format json | jq '.[] | select(.citations > 100)'
+```
+
+### 与 curl（API 网关）
+```bash
+# 查询 API 网关
+curl -X POST http://localhost:8081/api/search -d '{"query": "LLM"}'
+```
+
+### 与 watch（监控）
+```bash
+# 每小时监控新论文
+watch -n 3600 './rairos.sh subscribe list'
+```
 
 ## 快速开始
 
@@ -222,6 +295,41 @@ Gene Pool 将成功的研究模式编码为"基因"，随时间进化。当你�
 - **MCP**: 69 个 AI agent 集成工具
 - **REST API**: 内置 web 服务器，带 OpenAPI 文档
 - **SDK**: Python (`pip install rairos`) 和 Node.js (`npm install rairos`)
+
+## Shell 补全
+
+启用 Tab 补全加快命令输入：
+
+### Bash
+```bash
+# 生成补全脚本
+./rairos.sh completions bash > ~/.local/share/bash-completion/completions/rairos
+source ~/.bashrc
+```
+
+### Zsh
+```bash
+# 生成补全脚本
+./rairos.sh completions zsh > ~/.zfunc/_rairos
+autoload -Uz compinit && compinit
+```
+
+### Fish
+```bash
+# 生成补全脚本
+./rairos.sh completions fish > ~/.config/fish/completions/rairos.fish
+```
+
+### PowerShell
+```powershell
+# 生成补全脚本
+./rairos.sh completions powershell >> $PROFILE
+```
+
+或使用 `make completions` 一次生成所有 shell 的补全：
+```bash
+make completions
+```
 
 ## 常见问题排查
 
