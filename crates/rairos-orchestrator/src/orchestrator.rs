@@ -8,7 +8,8 @@ use rairos_rankers::{
     AdaptiveMomentum as RankerAdaptiveMomentum,
     BayesianOptimizer as RankerBayesianOptimizer, OptimalScalingLearner,
 };
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
+use rustc_hash::FxHashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
@@ -939,7 +940,7 @@ impl AutonomousOrchestrator {
         Ok(())
     }
 
-    pub async fn check_subscriptions(&self) -> Result<HashMap<String, Vec<PaperInfo>>> {
+    pub async fn check_subscriptions(&self) -> Result<FxHashMap<String, Vec<PaperInfo>>> {
         self.init_components().await?;
 
         let topics: Vec<(String, String)> = {
@@ -954,7 +955,7 @@ impl AutonomousOrchestrator {
         };
 
         if topics.is_empty() {
-            return Ok(HashMap::new());
+            return Ok(FxHashMap::default());
         }
 
         // Pre-fetch existing papers for all topics to release db lock quickly
@@ -991,7 +992,8 @@ impl AutonomousOrchestrator {
         use tokio::task;
         let topic_count = topics.len();
         let search_results = task::spawn_blocking(move || {
-            let mut results = HashMap::with_capacity(topic_count);
+            let mut results = FxHashMap::default();
+            results.reserve(topic_count);
 
             // Build owned lookup map to avoid repeated iteration
             let existing_map: std::collections::HashMap<String, Vec<Paper>> =
@@ -1951,7 +1953,7 @@ impl AutonomousOrchestrator {
     pub async fn run_evolution_cycle(
         &mut self,
         topic: &str,
-    ) -> Result<HashMap<String, serde_json::Value>> {
+    ) -> Result<FxHashMap<String, serde_json::Value>> {
         self.init_components().await?;
 
         let evo_topic = if topic.is_empty() {
@@ -1996,7 +1998,7 @@ impl AutonomousOrchestrator {
             }
         }
 
-        let mut output = HashMap::new();
+        let mut output = FxHashMap::default();
         output.insert("topic".to_string(), serde_json::json!(evo_topic));
         for (k, v) in result {
             output.insert(k, v);
@@ -2024,11 +2026,11 @@ impl AutonomousOrchestrator {
         "machine learning".to_string()
     }
 
-    pub async fn get_status(&self) -> Result<HashMap<String, serde_json::Value>> {
+    pub async fn get_status(&self) -> Result<FxHashMap<String, serde_json::Value>> {
         let state = load_state();
         let pool_stats = self.gene_pool_stats().await;
 
-        let mut status = HashMap::new();
+        let mut status = FxHashMap::default();
         status.insert("running".to_string(), serde_json::json!(state.running));
         status.insert(
             "interval_minutes".to_string(),
