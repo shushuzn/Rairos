@@ -5,7 +5,11 @@
 AI Research OS is a local-first research tool that grows smarter over time. It learns your research patterns, surfaces what matters, and generates insights from your paper library.
 
 
-![Rust](https://img.shields.io/badge/Rust-100%25-orange)
+ ![Rust](https://img.shields.io/badge/Rust-100%25-orange)
+![Crates](https://img.shields.io/badge/crates-154-blue.svg)
+![Lines](https://img.shields.io/badge/lines-116k%2B-green.svg)
+![MCP](https://img.shields.io/badge/mcp_tools-69-blue.svg?logo=robot)
+![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
 [![Build](https://github.com/shushuzn/Rairos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
