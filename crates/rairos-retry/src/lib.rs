@@ -10,8 +10,8 @@
 //! - Thread-safe retry statistics tracking
 //! - Circuit breaker pattern (CLOSED → OPEN → HALF_OPEN)
 
+use parking_lot::Mutex;
 use std::collections::HashMap;
-use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
@@ -62,7 +62,7 @@ impl RetryStats {
         success: bool,
         error_type: Option<&str>,
     ) {
-        let mut guard = self.stats.lock().unwrap();
+        let mut guard = self.stats.lock();
         let entry = guard.entry(func_name.to_string()).or_default();
         entry.total_attempts += 1;
         if success {
@@ -78,7 +78,7 @@ impl RetryStats {
 
     /// Get stats for a specific function or all functions.
     pub fn get_stats(&self, func_name: Option<&str>) -> HashMap<String, FuncStats> {
-        let guard = self.stats.lock().unwrap();
+        let guard = self.stats.lock();
         match func_name {
             Some(name) => guard
                 .get(name)
@@ -90,7 +90,7 @@ impl RetryStats {
 
     /// Reset stats for a function or all functions.
     pub fn reset(&self, func_name: Option<&str>) {
-        let mut guard = self.stats.lock().unwrap();
+        let mut guard = self.stats.lock();
         match func_name {
             Some(name) => {
                 guard.remove(name);
@@ -203,13 +203,13 @@ impl CircuitBreaker {
 
     /// Get current state.
     pub fn state(&self) -> CircuitState {
-        let state = *self.state.lock().unwrap();
+        let state = *self.state.lock();
         if state == CircuitState::Open {
-            let last_fail = *self.last_failure_time.lock().unwrap();
+            let last_fail = *self.last_failure_time.lock();
             if let Some(t) = last_fail {
                 let now = now_secs();
                 if now - t >= self.recovery_timeout_secs {
-                    *self.state.lock().unwrap() = CircuitState::HalfOpen;
+                    *self.state.lock() = CircuitState::HalfOpen;
                     return CircuitState::HalfOpen;
                 }
             }
@@ -219,18 +219,18 @@ impl CircuitBreaker {
 
     /// Record a successful call (resets failure count).
     pub fn record_success(&self) {
-        let mut count = self.failure_count.lock().unwrap();
+        let mut count = self.failure_count.lock();
         *count = 0;
-        *self.state.lock().unwrap() = CircuitState::Closed;
+        *self.state.lock() = CircuitState::Closed;
     }
 
     /// Record a failed call.
     pub fn record_failure(&self) {
-        let mut count = self.failure_count.lock().unwrap();
+        let mut count = self.failure_count.lock();
         *count += 1;
-        *self.last_failure_time.lock().unwrap() = Some(now_secs());
+        *self.last_failure_time.lock() = Some(now_secs());
         if *count >= self.failure_threshold {
-            *self.state.lock().unwrap() = CircuitState::Open;
+            *self.state.lock() = CircuitState::Open;
         }
     }
 
@@ -275,14 +275,14 @@ impl CircuitBreaker {
 
     /// Manually reset to closed state.
     pub fn reset(&self) {
-        *self.state.lock().unwrap() = CircuitState::Closed;
-        *self.failure_count.lock().unwrap() = 0;
-        *self.last_failure_time.lock().unwrap() = None;
+        *self.state.lock() = CircuitState::Closed;
+        *self.failure_count.lock() = 0;
+        *self.last_failure_time.lock() = None;
     }
 
     /// Get failure count.
     pub fn failure_count(&self) -> u32 {
-        *self.failure_count.lock().unwrap()
+        *self.failure_count.lock()
     }
 }
 

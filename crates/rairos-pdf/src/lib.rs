@@ -15,7 +15,37 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::io::Read;
 use std::path::Path;
+use std::sync::LazyLock;
 use thiserror::Error;
+
+// ============================================================================
+// Regex Patterns (compiled once at startup)
+// ============================================================================
+
+static DISPLAY_MATH_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\[\s\S]+?\s*\\]").expect("valid regex"),
+        Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\begin\{multline\*?\}[\s\S]+?\\end\{multline\*?\}\s*$").expect("valid regex"),
+    ]
+});
+
+static INLINE_MATH_PAT: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").expect("valid regex")
+});
+
+static HEADING_PAT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^#{1,6}\s+").expect("valid regex"));
+static NUMBERED_HEADING_PAT: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(\d+(\.\d+)*\.?|I{1,3}|IV|V|VI{0,3})\s+[A-Z][A-Za-z ]{2,40}$").expect("valid regex")
+});
+static CAPTION_PAT: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^(Figure|Fig\.|Table|Alg\.?|Algorithm|Listing|Plate)\s+\d").expect("valid regex")
+});
+static FOOTNOTE_PAT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\[\d+\]$|^\^\d+$").expect("valid regex"));
+static LIST_PAT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[-*+]\s|^\d+\.\s").expect("valid regex"));
 
 // ============================================================================
 // Error Types
@@ -298,27 +328,9 @@ pub fn compute_pdf_hash(pdf_path: &Path) -> Result<String> {
 // ============================================================================
 
 #[allow(dead_code)]
-fn make_display_math_patterns() -> Vec<Regex> {
-    vec![
-        Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").expect("valid regex"),
-        Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").expect("valid regex"),
-        // Use separate patterns for each environment (no backreferences)
-        Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").expect("valid regex"),
-        Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").expect("valid regex"),
-        Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").expect("valid regex"),
-        Regex::new(r"^\s*\\begin\{multline\*?\}[\s\S]+?\\end\{multline\*?\}\s*$").expect("valid regex"),
-    ]
-}
-
-#[allow(dead_code)]
-fn make_inline_math_pat() -> Regex {
-    Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").expect("valid regex")
-}
-
-#[allow(dead_code)]
 fn is_display_math(line: &str) -> bool {
     let s = line.trim();
-    for pat in make_display_math_patterns() {
+    for pat in DISPLAY_MATH_PATTERNS.iter() {
         if pat.is_match(s) {
             return true;
         }
@@ -328,8 +340,8 @@ fn is_display_math(line: &str) -> bool {
 
 #[allow(dead_code)]
 fn extract_inline_math(line: &str) -> Vec<MathBlock> {
-    let pat = make_inline_math_pat();
-    pat.captures_iter(line)
+    INLINE_MATH_PAT
+        .captures_iter(line)
         .map(|m| MathBlock {
             text: m.get(0).map(|x| x.as_str().to_string()).unwrap_or_default(),
             is_display: false,
@@ -368,7 +380,7 @@ pub fn detect_block_type(line: &str) -> BlockType {
     }
 
     // Markdown heading: "# text"
-    if Regex::new(r"^#{1,6}\s+").expect("valid regex").is_match(s) {
+    if HEADING_PAT.is_match(s) {
         return BlockType::Heading;
     }
 
@@ -378,29 +390,22 @@ pub fn detect_block_type(line: &str) -> BlockType {
     }
 
     // Numbered section heading: "1. Introduction" or Roman numerals
-    if Regex::new(r"^(\d+(\.\d+)*\.?|I{1,3}|IV|V|VI{0,3})\s+[A-Z][A-Za-z ]{2,40}$")
-        .unwrap()
-        .is_match(s)
-    {
+    if NUMBERED_HEADING_PAT.is_match(s) {
         return BlockType::Heading;
     }
 
     // Figure / Table caption pattern (case insensitive)
-    let caption_pat =
-        Regex::new(r"(?i)^(Figure|Fig\.|Table|Alg\.?|Algorithm|Listing|Plate)\s+\d").expect("valid regex");
-    if caption_pat.is_match(s) {
+    if CAPTION_PAT.is_match(s) {
         return BlockType::Caption;
     }
 
     // Footnote / reference mark
-    if Regex::new(r"^\[\d+\]$").expect("valid regex").is_match(s) || Regex::new(r"^\^\d+$").expect("valid regex").is_match(s)
-    {
+    if FOOTNOTE_PAT.is_match(s) {
         return BlockType::Footnote;
     }
 
     // List item
-    if Regex::new(r"^[-*+]\s").expect("valid regex").is_match(s) || Regex::new(r"^\d+\.\s").expect("valid regex").is_match(s)
-    {
+    if LIST_PAT.is_match(s) {
         return BlockType::ListItem;
     }
 

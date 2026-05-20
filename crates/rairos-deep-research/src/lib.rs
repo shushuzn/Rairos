@@ -12,7 +12,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
-use std::sync::RwLock;
+use parking_lot::RwLock;
 use thiserror::Error;
 
 // ============================================================================
@@ -609,7 +609,7 @@ impl DeepResearchAgent {
         let session_id = generate_session_id();
         let strategy = AdaptiveQueryStrategy::new(&self.config.query);
 
-        *self.adaptive_strategy.write().expect("adaptive_strategy write lock poisoned") = strategy;
+        *self.adaptive_strategy.write() = strategy;
 
         let session =
             ResearchSession::new(&session_id, &self.config.query, self.config.max_iterations);
@@ -720,7 +720,7 @@ impl DeepResearchAgent {
             );
 
             // Use adaptive strategy to build query
-            let strategy = self.adaptive_strategy.read().expect("adaptive_strategy read lock poisoned");
+            let strategy = self.adaptive_strategy.read();
             let planned = strategy.build_adaptive_query(
                 iteration,
                 &latest_gap.title,

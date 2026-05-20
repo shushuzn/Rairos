@@ -11,7 +11,7 @@ pub mod paper_ops;
 pub mod synthesis;
 pub use synthesis::*;
 
-pub use helpers::{data_dir, gene_pool_path, chrono_now, kg, read_jsonl, append_jsonl, write_jsonl, tags_path, home_dir, parse_arxiv_response};
+pub use helpers::{data_dir, gene_pool_path, chrono_now, kg, read_jsonl, read_jsonl_async, append_jsonl, write_jsonl, tags_path, home_dir, parse_arxiv_response};
 pub use tags::{TagAddHandler, TagRemoveHandler, TagListHandler};
 pub use paper::{PaperSearchHandler, PaperIngestHandler, PaperRecommendHandler, PaperQueryHandler, PaperChatHandler};
 pub use pdf::{PdfDownloadHandler, PdfExtractTextHandler, PdfExtractStructuredHandler};

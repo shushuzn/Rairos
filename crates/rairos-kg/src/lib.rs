@@ -786,16 +786,18 @@ impl KnowledgeGraph {
     }
 
     pub fn add_edge(&mut self, edge: KgEdge) {
-        if !self.nodes.contains_key(&edge.source) || !self.nodes.contains_key(&edge.target) {
-            tracing::warn!("Edge references unknown node: {} -> {}", edge.source, edge.target);
+        let source = edge.source.clone();
+        let target = edge.target.clone();
+        if !self.nodes.contains_key(&source) || !self.nodes.contains_key(&target) {
+            tracing::warn!("Edge references unknown node: {} -> {}", source, target);
             return;
         }
         if let Some(ref db) = self.db {
-            let _ = db.add_edge(&edge.source, &edge.target, &edge.relation, edge.weight as f64, edge.properties.clone());
+            let _ = db.add_edge(&source, &target, &edge.relation, edge.weight as f64, edge.properties.clone());
         }
-        self.edges.push(edge.clone());
-        self.outgoing.entry(edge.source.clone()).or_default().push(edge.target.clone());
-        self.incoming.entry(edge.target.clone()).or_default().push(edge.source.clone());
+        self.edges.push(edge);
+        self.outgoing.entry(source.clone()).or_default().push(target.clone());
+        self.incoming.entry(target).or_default().push(source);
     }
 
     pub fn add_citation(&mut self, source_id: &str, target_id: &str) {

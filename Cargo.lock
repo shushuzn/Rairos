@@ -3546,6 +3546,7 @@ version = "0.1.0"
 dependencies = [
  "dirs",
  "flate2",
+ "parking_lot",
  "serde",
  "serde_json",
 ]
@@ -3888,6 +3889,7 @@ name = "rairos-core-utils"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "parking_lot",
  "serde",
  "serde_json",
  "sysinfo 0.34.2",
@@ -3993,6 +3995,7 @@ name = "rairos-deep-research"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "parking_lot",
  "rairos-core",
  "regex",
  "reqwest",
@@ -4038,6 +4041,9 @@ dependencies = [
 [[package]]
 name = "rairos-ecosystem"
 version = "0.1.0"
+dependencies = [
+ "parking_lot",
+]
 
 [[package]]
 name = "rairos-eval-gap-monitor"
@@ -4281,6 +4287,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
+ "parking_lot",
  "rairos-insight-credibility",
  "rusqlite",
  "serde",
@@ -4422,6 +4429,7 @@ dependencies = [
  "dirs",
  "futures-util",
  "mockito",
+ "parking_lot",
  "rairos-core",
  "rairos-crossover",
  "rairos-insight-cards",
@@ -4576,6 +4584,7 @@ dependencies = [
  "opentelemetry",
  "opentelemetry-otlp",
  "opentelemetry_sdk",
+ "parking_lot",
  "rand 0.8.6",
  "serde",
  "serde_json",
@@ -4689,6 +4698,7 @@ dependencies = [
  "futures",
  "hex",
  "lopdf 0.34.0",
+ "parking_lot",
  "rairos-code-generator",
  "regex",
  "reqwest",
@@ -4707,6 +4717,9 @@ dependencies = [
 [[package]]
 name = "rairos-perf"
 version = "0.1.0"
+dependencies = [
+ "parking_lot",
+]
 
 [[package]]
 name = "rairos-policy-impact-tracer"
@@ -4952,6 +4965,7 @@ dependencies = [
 name = "rairos-retry"
 version = "0.1.0"
 dependencies = [
+ "parking_lot",
  "serde",
 ]
 

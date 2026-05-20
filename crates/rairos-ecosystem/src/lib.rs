@@ -6,9 +6,9 @@
 //!
 //! Inspired by Volkswagen's V2G ecosystem model.
 
+use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use std::sync::Mutex;
 
 /// Status of an ecosystem component.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -150,14 +150,13 @@ impl Ecosystem {
 
     /// Get a component by ID.
     pub fn get(&self, id: &str) -> Option<EcosystemComponent> {
-        self.components.lock().unwrap().get(id).cloned()
+        self.components.lock().get(id).cloned()
     }
 
     /// Get all components.
     pub fn all_components(&self) -> Vec<(String, EcosystemComponent)> {
         self.components
             .lock()
-            .unwrap()
             .iter()
             .map(|(k, v)| (k.clone(), v.clone()))
             .collect()
@@ -167,7 +166,6 @@ impl Ecosystem {
     pub fn by_status(&self, status: ComponentStatus) -> Vec<EcosystemComponent> {
         self.components
             .lock()
-            .unwrap()
             .values()
             .filter(|c| c.status == status)
             .cloned()

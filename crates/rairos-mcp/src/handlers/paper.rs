@@ -1,4 +1,4 @@
-use crate::handlers::helpers::{gene_pool_path, read_jsonl};
+use crate::handlers::helpers::{gene_pool_path, read_jsonl_async};
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
@@ -69,7 +69,7 @@ impl ToolHandler for PaperRecommendHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let topic = params["topic"].as_str().ok_or("Missing topic")?;
         let gp_path = gene_pool_path();
-        let entries = read_jsonl(&gp_path);
+        let entries = read_jsonl_async(&gp_path).await;
 
         let topic_lower = topic.to_lowercase();
         let mut scored: Vec<(f64, Value)> = entries.into_iter().filter_map(|e| {

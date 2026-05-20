@@ -20,6 +20,7 @@ uuid = { workspace = true, features = ["v4", "serde"] }
 chrono = { workspace = true, features = ["serde"] }
 dirs.workspace = true
 regex.workspace = true
+parking_lot.workspace = true
 rusqlite.workspace = true
 rand.workspace = true
 

@@ -1,8 +1,8 @@
 use chrono::Local;
+use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use sysinfo::System;
 
 // ============================================================================
@@ -111,7 +111,7 @@ impl WaterMarker {
     }
 
     pub fn add_mark(&self, mark_type: &str, content: &str) {
-        let mut marks = self.marks.lock().unwrap();
+        let mut marks = self.marks.lock();
         marks.push(WaterMark {
             mark_type: mark_type.to_string(),
             content: content.to_string(),
@@ -120,13 +120,12 @@ impl WaterMarker {
     }
 
     pub fn get_marks(&self) -> Vec<WaterMark> {
-        self.marks.lock().unwrap().clone()
+        self.marks.lock().clone()
     }
 
     pub fn get_marks_by_type(&self, mark_type: &str) -> Vec<WaterMark> {
         self.marks
             .lock()
-            .unwrap()
             .iter()
             .filter(|m| m.mark_type == mark_type)
             .cloned()
@@ -134,7 +133,7 @@ impl WaterMarker {
     }
 
     pub fn count(&self) -> usize {
-        self.marks.lock().unwrap().len()
+        self.marks.lock().len()
     }
 }
 
@@ -264,12 +263,12 @@ impl SearchOptimizer {
     }
 
     pub fn cache_result(&self, query: &str, results: Vec<String>) {
-        let mut cache = self.cache.lock().unwrap();
+        let mut cache = self.cache.lock();
         cache.insert(query.to_string(), results);
     }
 
     pub fn get_cached(&self, query: &str) -> Option<Vec<String>> {
-        self.cache.lock().unwrap().get(query).cloned()
+        self.cache.lock().get(query).cloned()
     }
 }
 
@@ -309,7 +308,7 @@ impl PerformanceGuard {
     }
 
     pub fn check_performance(&self) -> PerformanceMetrics {
-        let mut sys = self.sys.lock().unwrap();
+        let mut sys = self.sys.lock();
         sys.refresh_memory();
         sys.refresh_cpu_specifics(sysinfo::CpuRefreshKind::everything());
 

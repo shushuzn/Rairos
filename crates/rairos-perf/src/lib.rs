@@ -9,9 +9,9 @@
 //! - ScopedTimer RAII guard for automatic timing via Drop
 //! - Global performance monitor with LazyLock
 
+use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use std::sync::Mutex;
 use std::time::Instant;
 
 /// Statistics for a named metric.
@@ -37,13 +37,13 @@ impl PerformanceMonitor {
 
     /// Record a value for a named metric.
     pub fn record(&self, name: &str, value: f64) {
-        let mut guard = self.metrics.lock().unwrap();
+        let mut guard = self.metrics.lock();
         guard.entry(name.to_string()).or_default().push(value);
     }
 
     /// Get statistics for a named metric.
     pub fn get_stats(&self, name: &str) -> Option<MetricStats> {
-        let guard = self.metrics.lock().unwrap();
+        let guard = self.metrics.lock();
         guard.get(name).map(|values| {
             let count = values.len();
             let total = values.iter().sum::<f64>();
@@ -62,7 +62,7 @@ impl PerformanceMonitor {
 
     /// Get statistics for all metrics.
     pub fn get_all_stats(&self) -> HashMap<String, MetricStats> {
-        let guard = self.metrics.lock().unwrap();
+        let guard = self.metrics.lock();
         guard
             .iter()
             .filter_map(|(name, values)| {
@@ -90,13 +90,13 @@ impl PerformanceMonitor {
 
     /// Reset all metrics.
     pub fn reset(&self) {
-        let mut guard = self.metrics.lock().unwrap();
+        let mut guard = self.metrics.lock();
         guard.clear();
     }
 
     /// Reset a specific metric.
     pub fn reset_metric(&self, name: &str) {
-        let mut guard = self.metrics.lock().unwrap();
+        let mut guard = self.metrics.lock();
         guard.remove(name);
     }
 

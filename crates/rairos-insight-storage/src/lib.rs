@@ -4,12 +4,12 @@
 //!
 //! Ported from `llm/insight/storage.py`.
 
+use parking_lot::Mutex;
 use rairos_insight_credibility::CapsuleGene;
 use rusqlite::{params, Connection, Result as SqliteResult};
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
 use thiserror::Error;
 
 const GENEPOOL_DB: &str = "gene_pool.db";
@@ -213,7 +213,7 @@ impl CapsuleStorage {
     }
 
     pub fn archive_capsule(&self, capsule_id: &str) -> Result<bool, StorageError> {
-        let conn = self.conn.lock().unwrap();
+        let conn = self.conn.lock();
         let rows = conn.query_row(
             "SELECT action_gap_title, action_gap_type FROM capsules WHERE capsule_id = ?",
             params![capsule_id],
@@ -232,7 +232,7 @@ impl CapsuleStorage {
     }
 
     pub fn get_capsule_by_id(&self, capsule_id: &str) -> Result<Option<CapsuleGene>, StorageError> {
-        let conn = self.conn.lock().unwrap();
+        let conn = self.conn.lock();
         let mut stmt = conn.prepare("SELECT * FROM capsules WHERE capsule_id = ?")?;
         let result = stmt.query_row(params![capsule_id], capsule_from_row);
         match result {
@@ -247,7 +247,7 @@ impl CapsuleStorage {
         gap_title: &str,
         topic: &str,
     ) -> Result<Option<CapsuleGene>, StorageError> {
-        let conn = self.conn.lock().unwrap();
+        let conn = self.conn.lock();
         let query = if topic.is_empty() {
             "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND status = 'active'"
         } else {
@@ -273,7 +273,7 @@ impl CapsuleStorage {
     }
 
     pub fn get_gene_pool_stats(&self) -> Result<HashMap<String, serde_json::Value>, StorageError> {
-        let conn = self.conn.lock().unwrap();
+        let conn = self.conn.lock();
         let total: i32 = conn.query_row("SELECT COUNT(*) FROM capsules", [], |row| row.get(0))?;
 
         if total == 0 {
@@ -357,7 +357,7 @@ impl CapsuleStorage {
     }
 
     fn insert_capsule(&self, capsule: &CapsuleGene) -> Result<(), StorageError> {
-        let conn = self.conn.lock().unwrap();
+        let conn = self.conn.lock();
         conn.execute(
             "INSERT OR REPLACE INTO capsules (
                 capsule_id, created_at, trigger_topic, trigger_gap_type,
@@ -395,7 +395,7 @@ impl CapsuleStorage {
     }
 
     fn load_capsules(&self) -> Result<Vec<CapsuleGene>, StorageError> {
-        let conn = self.conn.lock().unwrap();
+        let conn = self.conn.lock();
         let mut stmt = conn.prepare("SELECT * FROM capsules")?;
         let rows = stmt.query_map([], capsule_from_row)?;
         let capsules: Vec<CapsuleGene> = rows.filter_map(|r| r.ok()).collect();

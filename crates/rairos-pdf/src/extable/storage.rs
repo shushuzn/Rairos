@@ -6,7 +6,7 @@
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use std::sync::RwLock;
+use parking_lot::RwLock;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -114,28 +114,25 @@ impl ExperimentDB {
     /// Closes the database connection by dropping the guard (releases lock).
     pub fn close(&self) {
         // Set closed flag first to reject future operations
-        if let Ok(mut guard) = self.closed.write() {
-            *guard = true;
-        }
+        let mut guard = self.closed.write();
+        *guard = true;
         // Drop the connection
-        if let Ok(guard) = self.conn.write() {
-            drop(guard);
-        }
+        let guard = self.conn.write();
+        drop(guard);
     }
 
     /// Checks if the database is closed.
     fn check_closed(&self) -> Result<(), StorageError> {
-        if let Ok(guard) = self.closed.read() {
-            if *guard {
-                return Err(StorageError::Lock);
-            }
+        let guard = self.closed.read();
+        if *guard {
+            return Err(StorageError::Lock);
         }
         Ok(())
     }
 
     /// Initializes the database schema.
     fn init_db(&self) -> Result<(), StorageError> {
-        let conn = self.conn.read().map_err(|_| StorageError::Lock)?;
+        let conn = self.conn.read();
         conn.execute(
             "CREATE TABLE IF NOT EXISTS extable_papers (
                 paper_uid TEXT PRIMARY KEY,
@@ -174,7 +171,7 @@ impl ExperimentDB {
     /// Adds a paper to the database.
     pub fn add_paper(&self, paper_uid: &str, title: &str) -> Result<(), StorageError> {
         self.check_closed()?;
-        let conn = self.conn.read().map_err(|_| StorageError::Lock)?;
+        let conn = self.conn.read();
         conn.execute(
             "INSERT OR IGNORE INTO extable_papers (paper_uid, title, added_at) VALUES (?1, ?2, ?3)",
             params![paper_uid, title, self.now()],
@@ -191,7 +188,7 @@ impl ExperimentDB {
     ) -> Result<String, StorageError> {
         self.check_closed()?;
         let table_id = Uuid::new_v4().to_string();
-        let conn = self.conn.read().map_err(|_| StorageError::Lock)?;
+        let conn = self.conn.read();
         conn.execute(
             "INSERT INTO extable_tables
              (id, paper_uid, caption, metrics_json, datasets_json, models_json,
@@ -217,7 +214,7 @@ impl ExperimentDB {
     pub fn get_paper_tables(&self, paper_uid: &str) -> Result<Vec<StoredTable>, StorageError> {
         self.check_closed()?;
 
-        let conn = self.conn.read().map_err(|_| StorageError::Lock)?;
+        let conn = self.conn.read();
         let mut stmt = conn.prepare("SELECT * FROM extable_tables WHERE paper_uid = ?1")?;
         let rows = stmt.query_map([paper_uid], |row| self.row_to_table(row))?;
         let mut tables = Vec::new();
@@ -267,7 +264,7 @@ impl ExperimentDB {
         min_value: Option<f64>,
     ) -> Result<Vec<StoredTable>, StorageError> {
         self.check_closed()?;
-        let conn = self.conn.read().map_err(|_| StorageError::Lock)?;
+        let conn = self.conn.read();
         let mut conditions = Vec::new();
         let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
@@ -325,7 +322,7 @@ impl ExperimentDB {
         let tables: Vec<StoredTable> = if let Some(p) = paper_uid {
             self.get_paper_tables(p)?
         } else {
-            let conn = self.conn.read().map_err(|_| StorageError::Lock)?;
+            let conn = self.conn.read();
             let mut stmt = conn.prepare("SELECT * FROM extable_tables")?;
             let result: Vec<StoredTable> = stmt
                 .query_map([], |row| self.row_to_table(row))?
@@ -354,7 +351,7 @@ impl ExperimentDB {
     pub fn stats(&self) -> Result<DbStats, StorageError> {
         self.check_closed()?;
 
-        let conn = self.conn.read().map_err(|_| StorageError::Lock)?;
+        let conn = self.conn.read();
         let (papers, tables) = conn.query_row(
             "SELECT
                 (SELECT COUNT(*) FROM extable_papers) AS papers,

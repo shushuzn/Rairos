@@ -1,4 +1,4 @@
-use crate::handlers::helpers::{append_jsonl, read_jsonl, tags_path, write_jsonl};
+use crate::handlers::helpers::{append_jsonl, read_jsonl_async, tags_path, write_jsonl};
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
@@ -46,7 +46,7 @@ impl ToolHandler for TagRemoveHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
         let tag = params["tag"].as_str().ok_or("Missing tag")?;
-        let entries = read_jsonl(&tags_path());
+        let entries = read_jsonl_async(&tags_path()).await;
         let before = entries.len();
         let filtered: Vec<Value> = entries.into_iter().filter(|e| {
             !(e["arxiv_id"].as_str() == Some(arxiv_id) && e["tag"].as_str() == Some(tag))
@@ -67,7 +67,7 @@ impl ToolHandler for TagListHandler {
         ToolInputSchema::object(HashMap::new(), vec![])
     }
     async fn call(&self, _params: Value) -> Result<Value, String> {
-        let entries = read_jsonl(&tags_path());
+        let entries = read_jsonl_async(&tags_path()).await;
         let mut by_tag: HashMap<String, Vec<String>> = HashMap::new();
         for e in &entries {
             if let (Some(tag), Some(id)) = (e["tag"].as_str(), e["arxiv_id"].as_str()) {

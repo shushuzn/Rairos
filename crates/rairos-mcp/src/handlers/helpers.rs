@@ -49,12 +49,28 @@ pub fn read_jsonl(path: &PathBuf) -> Vec<Value> {
         .collect()
 }
 
+/// Async version of read_jsonl for use in async contexts
+pub async fn read_jsonl_async(path: &PathBuf) -> Vec<Value> {
+    let content = match tokio::fs::read_to_string(path).await {
+        Ok(c) => c,
+        Err(_) => return Vec::new(),
+    };
+    content
+        .lines()
+        .filter_map(|line| {
+            let t = line.trim();
+            if t.is_empty() { None } else { serde_json::from_str(t).ok() }
+        })
+        .collect()
+}
+
 pub async fn append_jsonl(path: &PathBuf, value: &Value) -> Result<(), String> {
     if let Some(p) = path.parent() { tokio::fs::create_dir_all(p).await.map_err(|e| e.to_string())?; }
     let line = serde_json::to_string(value).map_err(|e| e.to_string())?;
     let mut file = tokio::fs::OpenOptions::new().create(true).write(true).append(true).open(path)
         .await.map_err(|e| e.to_string())?;
-    file.writeln(line).await.map_err(|e| e.to_string())
+    file.write_all(line.as_bytes()).await.map_err(|e| e.to_string())?;
+    file.write_all(b"\n").await.map_err(|e| e.to_string())
 }
 
 pub async fn write_jsonl(path: &PathBuf, items: &[Value]) -> Result<(), String> {
@@ -62,7 +78,8 @@ pub async fn write_jsonl(path: &PathBuf, items: &[Value]) -> Result<(), String> 
     let mut file = tokio::fs::File::create(path).await.map_err(|e| e.to_string())?;
     for item in items {
         let line = serde_json::to_string(item).map_err(|e| e.to_string())?;
-        file.writeln(line).await.map_err(|e| e.to_string())?;
+        file.write_all(line.as_bytes()).await.map_err(|e| e.to_string())?;
+        file.write_all(b"\n").await.map_err(|e| e.to_string())?;
     }
     Ok(())
 }

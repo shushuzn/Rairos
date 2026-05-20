@@ -7,6 +7,7 @@
 
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::{Duration, Instant};
+use parking_lot::RwLock;
 
 /// Circuit breaker state
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -37,9 +38,9 @@ impl Default for CircuitBreakerConfig {
 /// Circuit breaker for LLM API calls
 pub struct CircuitBreaker {
     config: CircuitBreakerConfig,
-    state: std::sync::RwLock<CircuitState>,
+    state: RwLock<CircuitState>,
     failure_count: AtomicU32,
-    last_failure_time: std::sync::RwLock<Instant>,
+    last_failure_time: RwLock<Instant>,
     half_open_requests: AtomicU32,
 }
 
@@ -53,22 +54,22 @@ impl CircuitBreaker {
     pub fn new(config: CircuitBreakerConfig) -> Self {
         Self {
             config,
-            state: std::sync::RwLock::new(CircuitState::Closed),
+            state: RwLock::new(CircuitState::Closed),
             failure_count: AtomicU32::new(0),
-            last_failure_time: std::sync::RwLock::new(Instant::now()),
+            last_failure_time: RwLock::new(Instant::now()),
             half_open_requests: AtomicU32::new(0),
         }
     }
 
     /// Check if a request is allowed through the circuit breaker
     pub fn is_allowed(&self) -> bool {
-        let state = *self.state.read().expect("state lock poisoned");
+        let state = *self.state.read();
         match state {
             CircuitState::Closed => true,
             CircuitState::Open => {
                 let cooldown = Duration::from_secs(self.config.cooldown_secs);
-                if self.last_failure_time.read().expect("last_failure_time lock poisoned").elapsed() >= cooldown {
-                    *self.state.write().expect("state lock poisoned") = CircuitState::HalfOpen;
+                if self.last_failure_time.read().elapsed() >= cooldown {
+                    *self.state.write() = CircuitState::HalfOpen;
                     self.half_open_requests.store(0, Ordering::Relaxed);
                     true
                 } else {
@@ -84,28 +85,28 @@ impl CircuitBreaker {
 
     /// Record a successful call
     pub fn record_success(&self) {
-        *self.state.write().expect("state lock poisoned") = CircuitState::Closed;
+        *self.state.write() = CircuitState::Closed;
         self.failure_count.store(0, Ordering::Relaxed);
         self.half_open_requests.store(0, Ordering::Relaxed);
     }
 
     /// Record a failed call
     pub fn record_failure(&self) {
-        *self.last_failure_time.write().expect("last_failure_time lock poisoned") = Instant::now();
+        *self.last_failure_time.write() = Instant::now();
         let count = self.failure_count.fetch_add(1, Ordering::Relaxed) + 1;
         if count >= self.config.failure_threshold {
-            *self.state.write().expect("state lock poisoned") = CircuitState::Open;
+            *self.state.write() = CircuitState::Open;
         }
     }
 
     /// Get current state
     pub fn state(&self) -> CircuitState {
-        *self.state.read().expect("state lock poisoned")
+        *self.state.read()
     }
 
     /// Reset to closed state
     pub fn reset(&self) {
-        *self.state.write().expect("state lock poisoned") = CircuitState::Closed;
+        *self.state.write() = CircuitState::Closed;
         self.failure_count.store(0, Ordering::Relaxed);
         self.half_open_requests.store(0, Ordering::Relaxed);
     }
@@ -116,7 +117,7 @@ pub struct RateLimiter {
     capacity: u32,
     tokens: AtomicU32,
     refill_rate: f64,         // tokens per second
-    last_refill: std::sync::RwLock<Instant>,
+    last_refill: RwLock<Instant>,
 }
 
 impl RateLimiter {
@@ -125,7 +126,7 @@ impl RateLimiter {
             capacity: qps.ceil() as u32,
             tokens: AtomicU32::new(qps.ceil() as u32),
             refill_rate: qps,
-            last_refill: std::sync::RwLock::new(Instant::now()),
+            last_refill: RwLock::new(Instant::now()),
         }
     }
 
@@ -145,7 +146,7 @@ impl RateLimiter {
     }
 
     fn refill(&self) {
-        let mut last = self.last_refill.write().expect("last_refill lock poisoned");
+        let mut last = self.last_refill.write();
         let elapsed = last.elapsed().as_secs_f64();
         if elapsed > 0.0 {
             let new_tokens = (elapsed * self.refill_rate) as u32;
