@@ -3,6 +3,7 @@ use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
 use tokio::fs;
+use tracing::error;
 
 pub struct PaperGenerateHandler;
 
@@ -355,7 +356,12 @@ impl ToolHandler for PaperGenerateHandler {
             if let Ok(output) = cmd.output() {
                 if output.status.success() {
                     pdf_path = serde_json::json!(pdf_output.to_string_lossy());
+                } else {
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    error!(%stderr, "PDF generation failed for paper");
                 }
+            } else {
+                error!("Failed to execute PDF generation command");
             }
         }
 

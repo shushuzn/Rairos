@@ -47,8 +47,7 @@ impl ToolHandler for PaperVisualizeTrendsHandler {
 
         let output_dir = data_dir().join("visualizations");
         fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
-        let output_path = output_dir.join(format!("trends_{}.png", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()));
+        let output_path = output_dir.join(format!("trends_{}.png", chrono_now()));
 
         let data_str = serde_json::to_string(&data).map_err(|e| e.to_string())?;
 
@@ -123,8 +122,7 @@ impl ToolHandler for PaperVisualizeRadarHandler {
 
         let output_dir = data_dir().join("visualizations");
         fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
-        let output_path = output_dir.join(format!("radar_{}.png", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()));
+        let output_path = output_dir.join(format!("radar_{}.png", chrono_now()));
 
         let data_str = serde_json::to_string(&data).map_err(|e| e.to_string())?;
 
@@ -222,8 +220,7 @@ impl ToolHandler for PaperGenerateReviewPdfHandler {
         let output_dir = data_dir().join("reviews");
         fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
-        let filename = format!("review_{}.pdf", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+        let filename = format!("review_{}.pdf", chrono_now());
         let pdf_path = if let Some(path) = output_path {
             PathBuf::from(path)
         } else {
@@ -330,9 +327,7 @@ impl ToolHandler for HypothesisReportHandler {
         let output_dir = data_dir().join("hypotheses");
         fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
-        let filename = format!("hypothesis_report_{}.md",
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+        let filename = format!("hypothesis_report_{}.md", chrono_now());
         let md_path = output_dir.join(&filename);
 
         fs::write(&md_path, &markdown_content).await.map_err(|e| e.to_string())?;
@@ -344,9 +339,7 @@ impl ToolHandler for HypothesisReportHandler {
         });
 
         if output_format == "pdf" {
-            let pdf_filename = format!("hypothesis_report_{}.pdf",
-                std::time::SystemTime::now()
-                    .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+            let pdf_filename = format!("hypothesis_report_{}.pdf", chrono_now());
             let pdf_path = output_dir.join(&pdf_filename);
 
             let mut cmd = std::process::Command::new("python3");
@@ -398,10 +391,7 @@ impl ToolHandler for PaperGenerateSchematicHandler {
         let output_dir = data_dir().join("schematics");
         fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
-        let filename = format!("{}_{}.png",
-            diagram_type,
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+        let filename = format!("{}_{}.png", diagram_type, chrono_now());
         let output_path = output_dir.join(&filename);
 
         let mut cmd = std::process::Command::new("python3");

@@ -2,6 +2,7 @@
 //!
 //! Mirrors llm/citation_chain.py
 
+use futures_util::future::join_all;
 use rairos_core::constants::SEMANTIC_API;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
@@ -75,18 +76,29 @@ pub async fn build_chain(root_id: &str, depth: u32) -> Result<CitationChain, Str
 
     for _ in 0..=depth {
         let mut next_level = Vec::new();
-        for pid in &current_level {
-            if visited.contains(pid) { continue; }
-            visited.insert(pid.clone());
 
-            match fetch_paper(pid).await {
+        // Collect paper IDs to fetch (deduplicated)
+        let to_fetch: Vec<&String> = current_level.iter()
+            .filter(|pid| !visited.contains(*pid))
+            .collect();
+
+        // Fetch all papers in parallel for this level
+        let fetch_futures: Vec<_> = to_fetch.iter().map(|pid| {
+            visited.insert((*pid).clone());
+            fetch_paper(pid)
+        }).collect();
+
+        let results = join_all(fetch_futures).await;
+
+        for (pid, result) in to_fetch.iter().zip(results) {
+            match result {
                 Ok(node) => {
                     for ref_id in &node.references {
-                        edges.push((pid.clone(), ref_id.clone(), "cites".to_string()));
+                        edges.push(((*pid).clone(), ref_id.clone(), "cites".to_string()));
                         if !visited.contains(ref_id) { next_level.push(ref_id.clone()); }
                     }
                     for cit_id in &node.citations {
-                        edges.push((cit_id.clone(), pid.clone(), "cites".to_string()));
+                        edges.push((cit_id.clone(), (*pid).clone(), "cites".to_string()));
                         if !visited.contains(cit_id) { next_level.push(cit_id.clone()); }
                     }
                     nodes.push(node);

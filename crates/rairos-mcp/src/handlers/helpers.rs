@@ -84,10 +84,8 @@ pub async fn write_jsonl(path: &PathBuf, items: &[Value]) -> Result<(), String> 
     Ok(())
 }
 
-pub fn chrono_now() -> String {
-    use std::time::SystemTime;
-    let now = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
-    format!("{}", now.as_secs())
+pub fn chrono_now() -> i64 {
+    chrono::Utc::now().timestamp()
 }
 
 pub fn parse_arxiv_response(xml: &str) -> Vec<Value> {
