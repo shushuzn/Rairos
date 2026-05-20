@@ -13,7 +13,7 @@ CLI (rairos-cli) → crates/* (154 crates)
   ├── rairos-research    # Deep research agent, gap detection
   ├── rairos-web         # REST API + HTML frontend
   ├── rairos-kg          # Knowledge graph, PageRank, communities
-  └── ... (144 more crates)
+  └── ... (143 more crates)
 ```
 
 AI Research OS is a **local-first** research tool. No cloud dependency — all data stays in `~/.ai_research_os/`.
