@@ -107,8 +107,8 @@ Paper → P-Note (per paper)
 - [Usage Guide](usage.md) — Full command reference
 - [Architecture](architecture.md) — System design
 - [Configuration](configuration.md) — Environment variables
-- [Contributing](../contributing.md) — How to contribute
-- [Roadmap](../roadmap.md) — Where we're going
+- [Contributing](../CONTRIBUTING.md) — How to contribute
+- [Roadmap](../ROADMAP.md) — Where we're going
 - [GitHub](https://github.com/shushuzn/Rairos)
 
 ## License
