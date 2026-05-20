@@ -5,6 +5,50 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
+use std::sync::LazyLock;
+
+// ─── Static Regex Patterns ─────────────────────────────────────────────────
+
+static RE_GITHUB: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").expect("valid regex"),
+        Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
+        Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").expect("valid regex"),
+    ]
+});
+
+static RE_GITLAB: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").expect("valid regex"),
+    ]
+});
+
+static RE_HF: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    vec![
+        Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
+        Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
+    ]
+});
+
+static RE_CLEAN_MARKDOWN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").expect("valid regex")
+});
+
+static RE_CITATION_REF: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\[(\d+)\]").expect("valid regex")
+});
+
+static RE_PY_VERSION: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"python\s*3?\.\d+").expect("valid regex")
+});
+
+static RE_DISK_SPACE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(\d+)\s*(GB|TB|MB)").expect("valid regex")
+});
+
+static RE_RAM: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(\d+)\s*GB\s+(RAM|memory)").expect("valid regex")
+});
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CodeLink {
@@ -88,47 +132,15 @@ const CONTEXT_KEYWORDS_GITHUB: &[&str] = &[
 
 const CONTEXT_KEYWORDS_GITLAB: &[&str] = &["gitlab.com", "repository"];
 
-pub struct ReplicationChecker {
-    re_github: Vec<Regex>,
-    re_gitlab: Vec<Regex>,
-    re_hf: Vec<Regex>,
-    re_clean_markdown: Regex,
-    re_citation_ref: Regex,
-    re_py_version: Regex,
-    re_disk_space: Regex,
-    re_ram: Regex,
-}
-
-impl Default for ReplicationChecker {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+/// Zero-sized struct that provides namespace for replication checking methods.
+/// All regex patterns are compiled once as static LazyLock.
+pub struct ReplicationChecker;
 
 impl ReplicationChecker {
+    /// Creates a new ReplicationChecker. The instance is stateless since all
+    /// regex patterns are compiled once as static LazyLock.
     pub fn new() -> Self {
-        Self {
-            re_github: vec![
-                Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?")
-                    .unwrap(),
-                Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
-                Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").expect("valid regex"),
-            ],
-            re_gitlab: vec![Regex::new(
-                r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?",
-            )
-            .unwrap()],
-            re_hf: vec![
-                Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)")
-                    .unwrap(),
-                Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
-            ],
-            re_clean_markdown: Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").expect("valid regex"),
-            re_citation_ref: Regex::new(r"\[(\d+)\]").expect("valid regex"),
-            re_py_version: Regex::new(r"python\s*3?\.\d+").expect("valid regex"),
-            re_disk_space: Regex::new(r"(\d+)\s*(GB|TB|MB)").expect("valid regex"),
-            re_ram: Regex::new(r"(\d+)\s*GB\s+(RAM|memory)").expect("valid regex"),
-        }
+        Self
     }
 
     pub fn check_paper(
@@ -204,9 +216,9 @@ impl ReplicationChecker {
         let mut found: Vec<CodeLink> = Vec::new();
         let mut seen: HashSet<String> = HashSet::new();
 
-        let clean = self.re_clean_markdown.replace_all(text, "$2");
+        let clean = RE_CLEAN_MARKDOWN.replace_all(text, "$2");
 
-        for pattern in &self.re_github {
+        for pattern in &*RE_GITHUB {
             for m in pattern.captures_iter(&clean) {
                 let owner = m.get(1).map(|g| g.as_str()).unwrap_or("");
                 let repo_full = m.get(2).map(|g| g.as_str()).unwrap_or("");
@@ -242,7 +254,7 @@ impl ReplicationChecker {
                         break;
                     }
                 }
-                if self.re_citation_ref.is_match(ctx) {
+                if RE_CITATION_REF.is_match(ctx) {
                     confidence *= 0.5;
                 }
 
@@ -258,7 +270,7 @@ impl ReplicationChecker {
             }
         }
 
-        for pattern in &self.re_gitlab {
+        for pattern in &*RE_GITLAB {
             for m in pattern.captures_iter(&clean) {
                 let owner = m.get(1).map(|g| g.as_str()).unwrap_or("");
                 let repo = m.get(2).map(|g| g.as_str()).unwrap_or("");
@@ -307,7 +319,7 @@ impl ReplicationChecker {
             }
         }
 
-        for pattern in &self.re_hf {
+        for pattern in &*RE_HF {
             for m in pattern.captures_iter(&clean) {
                 let url = m.get(0).map(|g| g.as_str()).unwrap_or("").to_string();
                 if seen.contains(&url) {
@@ -383,7 +395,7 @@ impl ReplicationChecker {
             }
         }
 
-        if let Some(m) = self.re_py_version.find(&text_lower) {
+        if let Some(m) = RE_PY_VERSION.find(&text_lower) {
             info.python_version = m.as_str().to_string();
         }
 
@@ -409,7 +421,7 @@ impl ReplicationChecker {
             }
         }
 
-        if let Some(m) = self.re_disk_space.captures(text) {
+        if let Some(m) = RE_DISK_SPACE.captures(text) {
             if let (Some(val_str), Some(unit)) = (m.get(1), m.get(2)) {
                 if let Ok(val) = val_str.as_str().parse::<usize>() {
                     info.disk_space_gb = match unit.as_str().to_uppercase().as_str() {
@@ -422,7 +434,7 @@ impl ReplicationChecker {
             }
         }
 
-        if let Some(m) = self.re_ram.captures(text) {
+        if let Some(m) = RE_RAM.captures(text) {
             if let Some(val_str) = m.get(1) {
                 if let Ok(val) = val_str.as_str().parse::<usize>() {
                     info.ram_gb = val;

@@ -6,6 +6,18 @@
 
 use crate::{LlmClient, Message};
 use regex::Regex;
+use std::sync::LazyLock;
+
+// ─── Static Regex Patterns ─────────────────────────────────────────────────
+
+static RE_GAP_ROW: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)").expect("valid regex")
+});
+
+static RE_THINKING_TAG: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"<think>.*?
+</think>").expect("valid regex")
+});
 
 // ─── Prompt Templates ─────────────────────────────────────────────────────────
 // ─── Gap Types ────────────────────────────────────────────────────────────────
@@ -332,11 +344,7 @@ pub async fn generate_questions_llm(
 /// Parse LLM response into ResearchGap objects.
 /// Format: [GAP_TYPE] description | papers | confidence | severity
 fn parse_gaps(response: &str, _topic: &str) -> Vec<ResearchGap> {
-    let re = Regex::new(r"\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)").expect("valid regex");
-
-    // Strip thinking tags
-    let thinking_re = Regex::new(r"<think>.*?</think>").expect("valid regex");
-    let cleaned = thinking_re.replace_all(response, "");
+    let cleaned = RE_THINKING_TAG.replace_all(response, "");
 
     let mut gaps = Vec::new();
     for line in cleaned.lines() {
@@ -344,7 +352,7 @@ fn parse_gaps(response: &str, _topic: &str) -> Vec<ResearchGap> {
         if line.is_empty() || line.starts_with('#') {
             continue;
         }
-        if let Some(caps) = re.captures(line) {
+        if let Some(caps) = RE_GAP_ROW.captures(line) {
             let gap_type_str = caps.get(1).unwrap().as_str();
             let description = caps.get(2).unwrap().as_str().trim();
             let papers_str = caps.get(3).unwrap().as_str();
