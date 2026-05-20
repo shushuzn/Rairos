@@ -78,11 +78,51 @@ CLI (rairos-cli) → crates/* 全 Rust
 
 所有数据存储在 `~/.ai_research_os/`，完全离线运行。
 
+## 生态
+
+核心 crates：
+
+| Crate | 描述 |
+|-------|------|
+| rairos-core | 数据库、FTS5 搜索、订阅 |
+| rairos-llm | GenePool 进化、LLM 客户端 |
+| rairos-cli | 105 CLI 命令 |
+| rairos-mcp | 69 MCP 工具 (JSON-RPC 2.0) |
+| rairos-kg | 知识图谱、PageRank |
+| rairos-research | DeepResearchAgent、空白检测 |
+
+## 常见问题
+
+### Rairos 和 Zotero/Mendeley 有什么区别？
+
+Rairos 不是 PDF 管理器——它是**自进化研究伙伴**，从你的研究模式中学习并随时间改进。它专注于发现研究空白和生成洞察，而不仅仅是存储论文。
+
+### Rairos 需要联网吗？
+
+Rairos 可以**完全离线**运行，支持本地 LLM (Ollama)。云功能（OpenAI、DashScope）是可选的。
+
+### 最低 Rust 版本要求是什么？
+
+需要 **Rust 1.85+**。Rairos 使用现代 Rust 特性以保证性能和安全性。
+
+### Gene Pool 是如何工作的？
+
+Gene Pool 将成功的研究模式编码为"基因"，随时间进化。当你标记论文有用时，系统会学习什么对你重要，并在未来的搜索中优先考虑类似发现。
+
+### 我可以编程方式使用 Rairos 吗？
+
+可以！Rairos 提供：
+- **CLI**: 通过 `./rairos.sh` 使用 105 个命令
+- **MCP**: 69 个 AI agent 集成工具
+- **REST API**: 内置 web 服务器，带 OpenAPI 文档
+- **SDK**: Python (`pip install rairos`) 和 Node.js (`npm install rairos`)
+
 ## 文档
 
 - [全命令列表](AGENTS.md)
 - [架构文档](docs/architecture.md)
 - [安装指南](docs/installation.md)
+- [使用示例](USAGE_EXAMPLES.md)
 
 ## 许可证
 
