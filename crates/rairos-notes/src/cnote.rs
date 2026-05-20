@@ -186,7 +186,7 @@ Some manual note here
         let tmp_dir = std::env::temp_dir();
         let path = ensure_cnote(&tmp_dir, "TestConcept");
         assert!(path.exists());
-        let content = std::fs::read_to_string(&path).expect("valid regex");
+        let content = std::fs::read_to_string(&path).expect("failed to read temp file");
         assert!(content.contains("# C - TestConcept"));
         assert!(content.contains("## 核心定义"));
         assert!(content.contains("## 产生背景"));
@@ -199,9 +199,9 @@ Some manual note here
     fn test_ensure_cnote_does_not_overwrite() {
         let tmp_dir = std::env::temp_dir();
         let path = tmp_dir.join("C - Existing.md");
-        std::fs::write(&path, "Custom content").expect("valid regex");
+        std::fs::write(&path, "Custom content").expect("failed to write temp file");
         let result = ensure_cnote(&tmp_dir, "Existing");
-        assert_eq!(std::fs::read_to_string(&result).expect("valid regex"), "Custom content");
+        assert_eq!(std::fs::read_to_string(&result).expect("failed to read temp file"), "Custom content");
         std::fs::remove_file(&path).ok();
     }
 }
