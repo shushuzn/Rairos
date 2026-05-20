@@ -160,25 +160,25 @@ const BENCHMARK_NAMES: &[&str] = &[
 
 fn re_percent() -> &'static Regex {
     static RE: std::sync::LazyLock<Regex> =
-        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)\s*%$").unwrap());
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)\s*%$").expect("valid regex"));
     &RE
 }
 
 fn re_range() -> &'static Regex {
     static RE: std::sync::LazyLock<Regex> =
-        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)±").unwrap());
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)±").expect("valid regex"));
     &RE
 }
 
 fn re_fraction() -> &'static Regex {
     static RE: std::sync::LazyLock<Regex> =
-        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)/([\d.]+)$").unwrap());
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)/([\d.]+)$").expect("valid regex"));
     &RE
 }
 
 fn re_suffix() -> &'static Regex {
     static RE: std::sync::LazyLock<Regex> =
-        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)([BKMG])$").unwrap());
+        std::sync::LazyLock::new(|| Regex::new(r"^([\d.]+)([BKMG])$").expect("valid regex"));
     &RE
 }
 

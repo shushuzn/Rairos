@@ -3,6 +3,7 @@ use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
 use std::path::PathBuf;
+use tokio::fs;
 
 pub struct PaperVisualizeTrendsHandler;
 
@@ -45,7 +46,7 @@ impl ToolHandler for PaperVisualizeTrendsHandler {
         });
 
         let output_dir = data_dir().join("visualizations");
-        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
         let output_path = output_dir.join(format!("trends_{}.png", std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()));
 
@@ -121,7 +122,7 @@ impl ToolHandler for PaperVisualizeRadarHandler {
         });
 
         let output_dir = data_dir().join("visualizations");
-        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
         let output_path = output_dir.join(format!("radar_{}.png", std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()));
 
@@ -219,7 +220,7 @@ impl ToolHandler for PaperGenerateReviewPdfHandler {
         let output_path = params.get("output_path").and_then(|v| v.as_str());
 
         let output_dir = data_dir().join("reviews");
-        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
         let filename = format!("review_{}.pdf", std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
@@ -327,14 +328,14 @@ impl ToolHandler for HypothesisReportHandler {
         let markdown_content = build_hypothesis_markdown(topic, hypotheses_json);
 
         let output_dir = data_dir().join("hypotheses");
-        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
         let filename = format!("hypothesis_report_{}.md",
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
         let md_path = output_dir.join(&filename);
 
-        std::fs::write(&md_path, &markdown_content).map_err(|e| e.to_string())?;
+        fs::write(&md_path, &markdown_content).await.map_err(|e| e.to_string())?;
 
         let mut result = serde_json::json!({
             "report_path": md_path.to_string_lossy(),
@@ -395,7 +396,7 @@ impl ToolHandler for PaperGenerateSchematicHandler {
         }
 
         let output_dir = data_dir().join("schematics");
-        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
         let filename = format!("{}_{}.png",
             diagram_type,

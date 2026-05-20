@@ -2,6 +2,7 @@ use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
+use tokio::fs;
 
 fn escape_xml(s: &str) -> String {
     s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
@@ -316,10 +317,10 @@ impl ToolHandler for PaperDocxHandler {
         let docx_data = build_docx(markdown, title)?;
 
         let output_dir = data_dir().join("exports");
-        std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
         let output_path = output_dir.join(format!("{}.docx", filename));
-        std::fs::write(&output_path, &docx_data).map_err(|e| e.to_string())?;
+        fs::write(&output_path, &docx_data).await.map_err(|e| e.to_string())?;
 
         let file_size = docx_data.len();
 

@@ -1137,7 +1137,7 @@ mod tests {
     fn test_db_add_get_node() {
         let (db, dir) = test_db();
         let id = db.add_node("paper", "2401.00001", "Test Paper", serde_json::json!({})).unwrap();
-        let node = db.get_node(&id).unwrap().unwrap();
+        let node = db.get_node(&id).unwrap().expect("node should exist after add_node");
         assert_eq!(node.label, "Test Paper");
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -1146,7 +1146,7 @@ mod tests {
     fn test_db_get_node_by_entity() {
         let (db, dir) = test_db();
         db.add_node("paper", "2401.00001", "Test Paper", serde_json::json!({})).unwrap();
-        let node = db.get_node_by_entity("paper", "2401.00001").unwrap().unwrap();
+        let node = db.get_node_by_entity("paper", "2401.00001").unwrap().expect("paper node should exist");
         assert_eq!(node.label, "Test Paper");
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -1171,7 +1171,7 @@ mod tests {
         // Upsert same entity — should update, not create new
         let id2 = db.upsert_node("paper", "2401.00001", "Updated", props).unwrap();
         assert_eq!(id1, id2, "upsert should return same ID");
-        let node = db.get_node(&id1).unwrap().unwrap();
+        let node = db.get_node(&id1).unwrap().expect("node should exist after upsert");
         assert_eq!(node.label, "Updated", "label should be updated");
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -1329,11 +1329,11 @@ mod tests {
         let _paper_id = db.on_paper_processed("2401.00001", "Test Paper", &authors, &tags, "2024").unwrap();
 
         // Verify paper node exists
-        let paper = db.get_node_by_entity("paper", "2401.00001").unwrap().unwrap();
+        let paper = db.get_node_by_entity("paper", "2401.00001").unwrap().expect("paper node should exist after on_paper_processed");
         assert_eq!(paper.label, "Test Paper");
 
         // Verify tags exist
-        let tag = db.get_node_by_entity("tag", "transformer").unwrap().unwrap();
+        let tag = db.get_node_by_entity("tag", "transformer").unwrap().expect("tag node should exist");
         assert_eq!(tag.label, "transformer");
 
         // Verify edges exist (paper → tag via same_tag)
@@ -1364,7 +1364,7 @@ mod tests {
         db.on_citations_fetched("center", &cited, &[]).unwrap();
 
         // Verify edges
-        let center = db.get_node_by_entity("paper", "center").unwrap().unwrap();
+        let center = db.get_node_by_entity("paper", "center").unwrap().expect("center node should exist");
         let edges = db.get_edges_by_node(&center.id, "out", Some("cite")).unwrap();
         assert_eq!(edges.len(), 2, "center should cite 2 papers");
 
@@ -1407,7 +1407,7 @@ mod tests {
         db.on_paper_processed("paper2", "Paper 2", &[], &[], "2024").unwrap();
         let members = vec!["paper1".to_string(), "paper2".to_string()];
         db.on_mnote_created("mnote_001", &members).unwrap();
-        let mnote = db.get_node_by_entity("m_note", "mnote_001").unwrap().unwrap();
+        let mnote = db.get_node_by_entity("m_note", "mnote_001").unwrap().expect("mnote node should exist");
         assert_eq!(mnote.node_type, "m_note");
         let edges = db.get_edges_by_node(&mnote.id, "out", Some("in_comparison")).unwrap();
         assert_eq!(edges.len(), 2);
@@ -1426,9 +1426,9 @@ mod tests {
         let figs = vec!["fig1".to_string(), "fig2".to_string()];
         let tbls = vec!["tbl1".to_string()];
         db.on_charts_indexed("demo", &figs, &tbls).unwrap();
-        let fig_node = db.get_node_by_entity("figure", "fig1").unwrap().unwrap();
+        let fig_node = db.get_node_by_entity("figure", "fig1").unwrap().expect("fig node should exist");
         assert_eq!(fig_node.node_type, "figure");
-        let tbl_node = db.get_node_by_entity("table", "tbl1").unwrap().unwrap();
+        let tbl_node = db.get_node_by_entity("table", "tbl1").unwrap().expect("tbl node should exist");
         assert_eq!(tbl_node.node_type, "table");
         let _ = std::fs::remove_dir_all(&dir);
     }

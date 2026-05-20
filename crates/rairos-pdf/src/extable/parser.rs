@@ -9,8 +9,8 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 use thiserror::Error;
 
-static RE_TABLE_NUM: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\s*[\d.]+\s*$").unwrap());
-static RE_NUM: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[\d.]+").unwrap());
+static RE_TABLE_NUM: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\s*[\d.]+\s*$").expect("valid regex"));
+static RE_NUM: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[\d.]+").expect("valid regex"));
 
 /// Metric keyword list for column identification.
 const METRIC_KW: &[&str] = &[

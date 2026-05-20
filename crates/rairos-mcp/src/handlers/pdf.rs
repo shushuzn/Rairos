@@ -2,6 +2,7 @@ use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
+use tokio::fs;
 
 pub struct PdfDownloadHandler;
 
@@ -18,7 +19,7 @@ impl ToolHandler for PdfDownloadHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
         let pdf_dir = data_dir().join("pdfs");
-        std::fs::create_dir_all(&pdf_dir).map_err(|e| format!("Failed to create pdfs dir: {}", e))?;
+        fs::create_dir_all(&pdf_dir).await.map_err(|e| format!("Failed to create pdfs dir: {}", e))?;
         let pdf_path = pdf_dir.join(format!("{}.pdf", arxiv_id));
         let url = format!("https://arxiv.org/pdf/{}.pdf", arxiv_id);
 
@@ -28,7 +29,7 @@ impl ToolHandler for PdfDownloadHandler {
                 .map_err(|e| format!("Download failed: {}", e))?;
         }
 
-        let size_bytes = std::fs::metadata(&pdf_path).map(|m| m.len()).unwrap_or(0);
+        let size_bytes = fs::metadata(&pdf_path).await.map(|m| m.len()).unwrap_or(0);
         Ok(serde_json::json!({
             "saved_path": pdf_path.to_string_lossy(),
             "size_bytes": size_bytes,

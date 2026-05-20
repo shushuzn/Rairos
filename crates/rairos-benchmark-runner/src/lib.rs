@@ -20,15 +20,15 @@ use std::time::Instant;
 
 use rairos_diagnostics::{check_ruff, Diagnostic};
 
-static RE_PASSED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+passed").unwrap());
-static RE_FAILED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r",\s*(\d+)\s+failed").unwrap());
-static RE_FAILED2: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+failed").unwrap());
-static RE_SKIPPED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r",\s*(\d+)\s+skipped").unwrap());
-static RE_SKIPPED2: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+skipped").unwrap());
-static RE_ERROR: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+error").unwrap());
-static RE_SKIP_PATTERN: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"pytest\.skip\(").unwrap());
-static RE_FUNC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"def (test_numerical_claim_\d+.*?):").unwrap());
-static RE_WORD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[a-zA-Z]{3,}").unwrap());
+static RE_PASSED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+passed").expect("valid regex"));
+static RE_FAILED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r",\s*(\d+)\s+failed").expect("valid regex"));
+static RE_FAILED2: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+failed").expect("valid regex"));
+static RE_SKIPPED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r",\s*(\d+)\s+skipped").expect("valid regex"));
+static RE_SKIPPED2: LazyLock<Regex> = LazyLock::new(|| Regex::new(r",\s*(\d+)\s+skipped").expect("valid regex"));
+static RE_ERROR: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(\d+)\s+error").expect("valid regex"));
+static RE_SKIP_PATTERN: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"pytest\.skip\(").expect("valid regex"));
+static RE_FUNC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"def (test_numerical_claim_\d+.*?):").expect("valid regex"));
+static RE_WORD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[a-zA-Z]{3,}").expect("valid regex"));
 
 /// Result of a single benchmark run.
 #[derive(Debug, Clone, Serialize, Deserialize)]

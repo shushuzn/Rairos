@@ -23,7 +23,7 @@ impl ToolHandler for TagAddHandler {
         let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
         let tag = params["tag"].as_str().ok_or("Missing tag")?;
         let entry = serde_json::json!({"arxiv_id": arxiv_id, "tag": tag, "created_at": crate::handlers::helpers::chrono_now()});
-        append_jsonl(&tags_path(), &entry)?;
+        append_jsonl(&tags_path(), &entry).await?;
         Ok(serde_json::json!({"status": "added", "arxiv_id": arxiv_id, "tag": tag}))
     }
 }
@@ -52,7 +52,7 @@ impl ToolHandler for TagRemoveHandler {
             !(e["arxiv_id"].as_str() == Some(arxiv_id) && e["tag"].as_str() == Some(tag))
         }).collect();
         let removed = before - filtered.len();
-        write_jsonl(&tags_path(), &filtered)?;
+        write_jsonl(&tags_path(), &filtered).await?;
         Ok(serde_json::json!({"status": "removed", "count": removed}))
     }
 }

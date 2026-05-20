@@ -28,10 +28,10 @@ pub static DEFAULT_RESEARCH_DIRS: LazyLock<Vec<&'static str>> = LazyLock::new(||
     ]
 });
 
-static RE_SPACES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r" {2,}").unwrap());
-static RE_NONWORD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^\w\s\-]").unwrap());
-static RE_DASHES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"-{2,}").unwrap());
-static RE_SAFE_UID: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^\w\.-]+").unwrap());
+static RE_SPACES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r" {2,}").expect("valid regex"));
+static RE_NONWORD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^\w\s\-]").expect("valid regex"));
+static RE_DASHES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"-{2,}").expect("valid regex"));
+static RE_SAFE_UID: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[^\w\.-]+").expect("valid regex"));
 
 // ============================================================================
 // Config File Loading

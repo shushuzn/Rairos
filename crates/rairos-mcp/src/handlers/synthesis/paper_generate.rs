@@ -2,6 +2,7 @@ use crate::handlers::helpers::data_dir;
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use async_trait::async_trait;
 use serde_json::Value;
+use tokio::fs;
 
 pub struct PaperGenerateHandler;
 
@@ -344,7 +345,7 @@ impl ToolHandler for PaperGenerateHandler {
             let filename = format!("paper_{}.pdf", std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
             let pdf_output = output_dir.join(&filename);
-            std::fs::create_dir_all(&output_dir).map_err(|e| e.to_string())?;
+            fs::create_dir_all(&output_dir).await.map_err(|e| e.to_string())?;
 
             let mut cmd = std::process::Command::new("python3");
             cmd.arg("/root/Rairos/scripts/pdf_helper.py")

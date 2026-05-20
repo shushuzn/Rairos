@@ -3,6 +3,7 @@ use serde_json::Value;
 use std::io::BufRead;
 use std::path::PathBuf;
 use std::sync::OnceLock;
+use tokio::io::AsyncWriteExt;
 
 static KG: OnceLock<rairos_kg::KnowledgeGraph> = OnceLock::new();
 
@@ -48,22 +49,20 @@ pub fn read_jsonl(path: &PathBuf) -> Vec<Value> {
         .collect()
 }
 
-pub fn append_jsonl(path: &PathBuf, value: &Value) -> Result<(), String> {
-    if let Some(p) = path.parent() { std::fs::create_dir_all(p).map_err(|e| e.to_string())?; }
+pub async fn append_jsonl(path: &PathBuf, value: &Value) -> Result<(), String> {
+    if let Some(p) = path.parent() { tokio::fs::create_dir_all(p).await.map_err(|e| e.to_string())?; }
     let line = serde_json::to_string(value).map_err(|e| e.to_string())?;
-    let mut file = std::fs::OpenOptions::new().create(true).append(true).open(path)
-        .map_err(|e| e.to_string())?;
-    use std::io::Write;
-    writeln!(file, "{}", line).map_err(|e| e.to_string())
+    let mut file = tokio::fs::OpenOptions::new().create(true).write(true).append(true).open(path)
+        .await.map_err(|e| e.to_string())?;
+    file.writeln(line).await.map_err(|e| e.to_string())
 }
 
-pub fn write_jsonl(path: &PathBuf, items: &[Value]) -> Result<(), String> {
-    if let Some(p) = path.parent() { std::fs::create_dir_all(p).map_err(|e| e.to_string())?; }
-    let mut file = std::fs::File::create(path).map_err(|e| e.to_string())?;
-    use std::io::Write;
+pub async fn write_jsonl(path: &PathBuf, items: &[Value]) -> Result<(), String> {
+    if let Some(p) = path.parent() { tokio::fs::create_dir_all(p).await.map_err(|e| e.to_string())?; }
+    let mut file = tokio::fs::File::create(path).await.map_err(|e| e.to_string())?;
     for item in items {
         let line = serde_json::to_string(item).map_err(|e| e.to_string())?;
-        writeln!(file, "{}", line).map_err(|e| e.to_string())?;
+        file.writeln(line).await.map_err(|e| e.to_string())?;
     }
     Ok(())
 }

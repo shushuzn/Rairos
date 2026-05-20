@@ -2309,9 +2309,9 @@ mod tests {
 // String Utilities
 // ============================================================================
 
-static RE_SPACES: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r" {2,}").unwrap());
-static RE_NONWORD: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"[^\w\s\-]").unwrap());
-static RE_DASHES: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"-{2,}").unwrap());
+static RE_SPACES: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r" {2,}").expect("valid regex"));
+static RE_NONWORD: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"[^\w\s\-]").expect("valid regex"));
+static RE_DASHES: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"-{2,}").expect("valid regex"));
 
 /// Create a slug from a title. Use slugify_default for the standard 80-char limit.
 pub fn slugify(title: &str, max_len: usize) -> String {

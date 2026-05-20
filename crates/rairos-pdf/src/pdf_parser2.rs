@@ -13,8 +13,8 @@ use std::sync::LazyLock;
 
 use crate::{PdfError, Result};
 
-static RE_CLEAN_WHITESPACE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[ \t]+\n").unwrap());
-static RE_COLLAPSE_BLANK_LINES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\n{3,}").unwrap());
+static RE_CLEAN_WHITESPACE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[ \t]+\n").expect("valid regex"));
+static RE_COLLAPSE_BLANK_LINES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\n{3,}").expect("valid regex"));
 
 fn clean_text(text: &str) -> String {
     let text = text.replace('\r', "\n");

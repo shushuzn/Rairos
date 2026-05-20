@@ -11,9 +11,9 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 
 static SECTION_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^##\s*\d+\.?\d*\s*.*$").unwrap());
+    LazyLock::new(|| Regex::new(r"^##\s*\d+\.?\d*\s*.*$").expect("valid regex"));
 static RUBRIC_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r#""([^"]+)":\s*(\d+)"#).unwrap());
+    LazyLock::new(|| Regex::new(r#""([^"]+)":\s*(\d+)"#).expect("valid regex"));
 
 // ─── Section Keys ─────────────────────────────────────────────────────────────
 
