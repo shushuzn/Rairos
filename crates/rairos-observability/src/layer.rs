@@ -117,7 +117,7 @@ pub fn init_logging() -> WorkerGuard {
         );
 
     tracing::subscriber::set_global_default(subscriber)
-        .expect("failed to set tracing subscriber");
+        .expect("failed to set tracing subscriber - another subscriber may already be set");
 
     guard
 }
@@ -131,7 +131,7 @@ pub fn cleanup_old_logs(log_dir: &PathBuf, days: u32) -> std::io::Result<usize> 
 
     let cutoff = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .unwrap_or_default()
         .as_secs() as i64 - (days as i64 * 24 * 60 * 60);
 
     let mut removed = 0;
