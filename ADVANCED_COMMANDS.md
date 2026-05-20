@@ -96,377 +96,377 @@ Ask a question about papers in your library.
 ./rairos.sh ask "Compare scaling patterns" --max-papers 20
 ```
 
-### `rairos trend <topic>`
+### `./rairos.sh trend <topic>`
 Analyze research trends over time.
 
 ```bash
-rairos trend "reinforcement learning" --range 2y
-rairos trend "transformer" --range 6m --format json
+./rairos.sh trend "reinforcement learning" --range 2y
+./rairos.sh trend "transformer" --range 6m --format json
 ```
 
 ---
 
 ## Gap Detection & Gene Pool
 
-### `rairos gap --topic <topic>`
+### `./rairos.sh gap --topic <topic>`
 Detect research gaps for a topic.
 
 ```bash
-rairos gap --topic "long context LLM"
-rairos gap --topic "VLA" --limit 10 --category LLM
+./rairos.sh gap --topic "long context LLM"
+./rairos.sh gap --topic "VLA" --limit 10 --category LLM
 ```
 
-### `rairos gap-list`
+### `./rairos.sh gap-list`
 List detected gaps.
 
 ```bash
-rairos gap-list
-rairos gap-list --limit 50
+./rairos.sh gap-list
+./rairos.sh gap-list --limit 50
 ```
 
-### `rairos gap-show <id>`
+### `./rairos.sh gap-show <id>`
 Show gap details.
 
 ```bash
-rairos gap-show gap_abc123
+./rairos.sh gap-show gap_abc123
 ```
 
-### `rairos gene-add`
+### `./rairos.sh gene-add`
 Add a capsule to the Gene Pool.
 
 ```bash
-rairos gene-add --approach "Use adaptive context length" --gap-type scalability_issue --keywords "context,window,length"
+./rairos.sh gene-add --approach "Use adaptive context length" --gap-type scalability_issue --keywords "context,window,length"
 ```
 
-### `rairos gene-list`
+### `./rairos.sh gene-list`
 List genes/capsules in the pool.
 
 ```bash
-rairos gene-list
-rairos gene-list --status active --gap-type scalability_issue
+./rairos.sh gene-list
+./rairos.sh gene-list --status active --gap-type scalability_issue
 ```
 
-### `rairos gene-evolve`
+### `./rairos.sh gene-evolve`
 Run evolution cycle on Gene Pool.
 
 ```bash
-rairos gene-evolve --max-crossovers 5
+./rairos.sh gene-evolve --max-crossovers 5
 ```
 
-### `rairos gene-feedback`
+### `./rairos.sh gene-feedback`
 Record feedback for a gene.
 
 ```bash
-rairos gene-feedback gene_xyz --positive
-rairos gene-feedback gene_xyz --negative
+./rairos.sh gene-feedback gene_xyz --positive
+./rairos.sh gene-feedback gene_xyz --negative
 ```
 
 ---
 
 ## Knowledge Graph
 
-### `rairos kg-stats`
+### `./rairos.sh kg-stats`
 Knowledge graph statistics.
 
 ```bash
-rairos kg-stats
+./rairos.sh kg-stats
 ```
 
-### `rairos kg-rank`
+### `./rairos.sh kg-rank`
 PageRank-based paper importance ranking.
 
 ```bash
-rairos kg-rank --limit 20
+./rairos.sh kg-rank --limit 20
 ```
 
-### `rairos kg-path <source> <target>`
+### `./rairos.sh kg-path <source> <target>`
 Find shortest path between two papers.
 
 ```bash
-rairos kg-path 2601.00155 2302.00763
+./rairos.sh kg-path 2601.00155 2302.00763
 ```
 
-### `rairos kg-graph <id>`
+### `./rairos.sh kg-graph <id>`
 Show a paper's ego graph (neighbors).
 
 ```bash
-rairos kg-graph 2601.00155 --depth 2
+./rairos.sh kg-graph 2601.00155 --depth 2
 ```
 
-### `rairos kg-search <keyword>`
+### `./rairos.sh kg-search <keyword>`
 Search nodes in the knowledge graph.
 
 ```bash
-rairos kg-search "transformer" --type Paper
-rairos kg-search "attention" --type Tag
+./rairos.sh kg-search "transformer" --type Paper
+./rairos.sh kg-search "attention" --type Tag
 ```
 
 ---
 
 ## Citations
 
-### `rairos citations`
+### `./rairos.sh citations`
 Show citation relationships.
 
 ```bash
-rairos citations --from 2601.00155   # Papers this paper cites
-rairos citations --to 2601.00155     # Papers that cite this paper
+./rairos.sh citations --from 2601.00155   # Papers this paper cites
+./rairos.sh citations --to 2601.00155     # Papers that cite this paper
 ```
 
-### `rairos cite-stats`
+### `./rairos.sh cite-stats`
 Citation statistics.
 
 ```bash
-rairos cite-stats
-rairos cite-stats --paper 2601.00155
-rairos cite-stats --top 10
+./rairos.sh cite-stats
+./rairos.sh cite-stats --paper 2601.00155
+./rairos.sh cite-stats --top 10
 ```
 
-### `rairos cite-import`
+### `./rairos.sh cite-import`
 Import citation links from JSON.
 
 ```bash
-rairos cite-import --file citations.json
-rairos cite-import --extract --paper 2601.00155  # Extract from plain text
+./rairos.sh cite-import --file citations.json
+./rairos.sh cite-import --extract --paper 2601.00155  # Extract from plain text
 ```
 
-### `rairos cite-fetch`
+### `./rairos.sh cite-fetch`
 Fetch citations from OpenAlex API.
 
 ```bash
-rairos cite-fetch 2601.00155
+./rairos.sh cite-fetch 2601.00155
 ```
 
 ---
 
 ## Research Automation
 
-### `rairos agent <topic>`
+### `./rairos.sh agent <topic>`
 Autonomous research agent — searches, reads, analyzes.
 
 ```bash
-rairos agent "scaling laws for RL"
-rairos agent "VLA generalization" --max-papers 20 --max-time 30
+./rairos.sh agent "scaling laws for RL"
+./rairos.sh agent "VLA generalization" --max-papers 20 --max-time 30
 ```
 
-### `rairos hypothesize <topic>`
+### `./rairos.sh hypothesize <topic>`
 Generate research hypotheses from gaps and trends.
 
 ```bash
-rairos hypothesize "adaptive inference" --gap-context "..."
-rairos hypothesize "multi-agent reasoning" --num-hypotheses 5 --json
+./rairos.sh hypothesize "adaptive inference" --gap-context "..."
+./rairos.sh hypothesize "multi-agent reasoning" --num-hypotheses 5 --json
 ```
 
-### `rairos pipeline <topic>`
+### `./rairos.sh pipeline <topic>`
 Full research pipeline: gap analysis → hypothesis → experiment.
 
 ```bash
-rairos pipeline "long context LLM"
-rairos pipeline "multi-modal RL" --skip-experiments
+./rairos.sh pipeline "long context LLM"
+./rairos.sh pipeline "multi-modal RL" --skip-experiments
 ```
 
-### `rairos research`
+### `./rairos.sh research`
 Manage research logs.
 
 ```bash
-rairos research list
-rairos research add "Noticed interesting scaling behavior in sparse models"
+./rairos.sh research list
+./rairos.sh research add "Noticed interesting scaling behavior in sparse models"
 ```
 
-### `rairos digest`
+### `./rairos.sh digest`
 Generate weekly research digest.
 
 ```bash
-rairos digest --weeks 2
+./rairos.sh digest --weeks 2
 ```
 
-### `rairos demo`
+### `./rairos.sh demo`
 Run end-to-end pipeline demo.
 
 ```bash
-rairos demo              # Full demo
-rairos demo --quick      # 30-second demo
+./rairos.sh demo              # Full demo
+./rairos.sh demo --quick      # 30-second demo
 ```
 
 ---
 
 ## Subscriptions & Monitoring
 
-### `rairos daemon`
+### `./rairos.sh daemon`
 Start Rairos as a background service.
 
 ```bash
-rairos daemon
-rairos daemon --port 8080 --foreground
+./rairos.sh daemon
+./rairos.sh daemon --port 8080 --foreground
 ```
 
-### `rairos subscribe`
+### `./rairos.sh subscribe`
 Subscribe to arXiv searches with continuous monitoring.
 
 ```bash
-rairos subscribe "transformer attention" --interval 60 --auto-add
+./rairos.sh subscribe "transformer attention" --interval 60 --auto-add
 ```
 
-### `rairos signal <keyword>`
+### `./rairos.sh signal <keyword>`
 Match event keywords against Gene Pool patterns.
 
 ```bash
-rairos signal "transformer"
-rairos signal "reinforcement learning"
+./rairos.sh signal "transformer"
+./rairos.sh signal "reinforcement learning"
 ```
 
 ---
 
 ## Environment & Diagnostics
 
-### `rairos doctor`
+### `./rairos.sh doctor`
 Diagnose environment and report issues.
 
 ```bash
-rairos doctor
+./rairos.sh doctor
 ```
 
-### `rairos stats`
+### `./rairos.sh stats`
 Database statistics.
 
 ```bash
-rairos stats
-rairos stats --json
+./rairos.sh stats
+./rairos.sh stats --json
 ```
 
-### `rairos status`
+### `./rairos.sh status`
 Real-time database status.
 
 ```bash
-rairos status
+./rairos.sh status
 ```
 
-### `rairos setup`
+### `./rairos.sh setup`
 Run the setup wizard.
 
 ```bash
-rairos setup
-rairos setup --guide     # Quick start guide only
+./rairos.sh setup
+./rairos.sh setup --guide     # Quick start guide only
 ```
 
 ---
 
 ## Deduplication
 
-### `rairos dedup`
+### `./rairos.sh dedup`
 Find duplicate papers by DOI/title.
 
 ```bash
-rairos dedup find                    # Find duplicates
-rairos dedup semantic 2601.00155    # Semantic similarity
-rairos dedup remove ID1,ID2         # Remove duplicates
-rairos dedup stats                   # Show embedding coverage
+./rairos.sh dedup find                    # Find duplicates
+./rairos.sh dedup semantic 2601.00155    # Semantic similarity
+./rairos.sh dedup remove ID1,ID2         # Remove duplicates
+./rairos.sh dedup stats                   # Show embedding coverage
 ```
 
-### `rairos similar <id>`
+### `./rairos.sh similar <id>`
 Find semantically similar papers.
 
 ```bash
-rairos similar 2601.00155
-rairos similar 2601.00155 --limit 10 --threshold 0.8
+./rairos.sh similar 2601.00155
+./rairos.sh similar 2601.00155 --limit 10 --threshold 0.8
 ```
 
-### `rairos merge`
+### `./rairos.sh merge`
 Merge duplicate papers.
 
 ```bash
-rairos merge TARGET_ID DUPLICATE_ID
-rairos merge --auto                  # Auto-merge high-similarity pairs
+./rairos.sh merge TARGET_ID DUPLICATE_ID
+./rairos.sh merge --auto                  # Auto-merge high-similarity pairs
 ```
 
 ---
 
 ## Queue & Data Management
 
-### `rairos queue`
+### `./rairos.sh queue`
 Manage the processing queue.
 
 ```bash
-rairos queue list
-rairos queue add 2601.00155
-rairos queue clear
+./rairos.sh queue list
+./rairos.sh queue add 2601.00155
+./rairos.sh queue clear
 ```
 
-### `rairos cache`
+### `./rairos.sh cache`
 Manage cached data.
 
 ```bash
-rairos cache stats
-rairos cache clear
-rairos cache list
+./rairos.sh cache stats
+./rairos.sh cache clear
+./rairos.sh cache list
 ```
 
-### `rairos parse <id>`
+### `./rairos.sh parse <id>`
 Parse a paper's full text.
 
 ```bash
-rairos parse 2601.00155
+./rairos.sh parse 2601.00155
 ```
 
 ---
 
 ## Web UI & Visualization
 
-### `rairos dashboard`
+### `./rairos.sh dashboard`
 Start the Web UI dashboard.
 
 ```bash
-rairos dashboard
-rairos dashboard --port 3000
+./rairos.sh dashboard
+./rairos.sh dashboard --port 3000
 ```
 
-### `rairos visual`
+### `./rairos.sh visual`
 Generate visualizations.
 
 ```bash
-rairos visual 2601.00155
-rairos visual 2601.00155 --output ./viz.html
+./rairos.sh visual 2601.00155
+./rairos.sh visual 2601.00155 --output ./viz.html
 ```
 
-### `rairos slides`
+### `./rairos.sh slides`
 Generate slides from papers.
 
 ```bash
-rairos slides 2601.00155 --format md --style academic
-rairos slides 2601.00155 2302.00763 --slides 15 --notes
+./rairos.sh slides 2601.00155 --format md --style academic
+./rairos.sh slides 2601.00155 2302.00763 --slides 15 --notes
 ```
 
 ---
 
 ## Research Memory
 
-### `rairos stance-add`
+### `./rairos.sh stance-add`
 Add a research stance.
 
 ```bash
-rairos stance-add --topic "scaling laws" --claim "Inference cost grows O(n²)" --stance supported
+./rairos.sh stance-add --topic "scaling laws" --claim "Inference cost grows O(n²)" --stance supported
 ```
 
-### `rairos stance-list`
+### `./rairos.sh stance-list`
 List stances by topic or tag.
 
 ```bash
-rairos stance-list --topic "scaling laws"
+./rairos.sh stance-list --topic "scaling laws"
 ```
 
-### `rairos narrative`
+### `./rairos.sh narrative`
 Manage research narratives.
 
 ```bash
-rairos narrative list
-rairos narrative track "multi-modal reasoning"
+./rairos.sh narrative list
+./rairos.sh narrative track "multi-modal reasoning"
 ```
 
-### `rairos story <topic>`
+### `./rairos.sh story <topic>`
 Weave research into narrative stories.
 
 ```bash
-rairos story "evolution of transformer architecture"
+./rairos.sh story "evolution of transformer architecture"
 ```
 
 ---
