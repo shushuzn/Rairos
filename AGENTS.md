@@ -30,7 +30,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 | indicatif | 0.18 | Progress bars |
 | tokio | 1.x | Async runtime |
 
-## Key Crates (22 of 149)
+## Key Crates (22 of 154)
 
 | Crate | Purpose |
 |-------|---------|
