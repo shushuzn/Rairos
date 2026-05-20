@@ -36,7 +36,7 @@ All components are independently min-max normalised to [0, 100] before weighting
 
 ### Composite Impact Score
 
-`ImpactScorer` produces a richer per-paper profile, used by `rairos influence`:
+`ImpactScorer` produces a richer per-paper profile, used by `./rairos.sh citation-chain --impact`:
 
 ```
 composite_score = normalized_score × 0.30

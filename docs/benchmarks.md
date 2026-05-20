@@ -3,7 +3,7 @@
 Rairos benchmarks measure three core capabilities: **paper import speed**, **search latency**, and **RAG answer quality**. Numbers below are collected on a standard research workstation (8-core CPU, 16 GB RAM, SSD).
 
 > [!NOTE]
-> These benchmarks are **self-measured** using the built-in `PerformanceProfiler`. Run `rairos benchmark` to reproduce.
+> These benchmarks are **self-measured** using the built-in `PerformanceProfiler`. Run `./rairos.sh benchmark` to reproduce.
 
 ## Paper Import Pipeline
 

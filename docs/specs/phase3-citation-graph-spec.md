@@ -166,6 +166,6 @@ COMPLETED:
 ## Verification
 
 - `pytest tests/test_cli_cite_graph.py -v` — all pass
-- `rairos cite --help` — shows correct usage
+- `./rairos.sh cite --help` — shows correct usage
 - Manual: add a paper, parse its references, run `cite list --from <id>` and `cite list --to <id>`
 - `cite graph <id> --format mermaid` — generates valid Mermaid diagram

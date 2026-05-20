@@ -35,7 +35,7 @@ export OPENAI_BASE_URL=https://api.openai.com/v1
 export ANTHROPIC_API_KEY=your_key
 ```
 
-The `research --model` flag overrides the default. See `rairos research --help` for available models.
+The `research --model` flag overrides the default. See `./rairos.sh research --help` for available models.
 
 ## Webhook Notifications
 
