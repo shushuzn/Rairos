@@ -15,8 +15,8 @@ body:
       description: A clear description of what went wrong
       placeholder: |
         Steps to reproduce:
-        1. Run `cargo run -p rairos-cli -- import 2601.00155`
-        2. Run `cargo run -p rairos-cli -- search "attention"`
+        1. Run `./rairos.sh import 2601.00155`
+        2. Run `./rairos.sh search "attention"`
         3. See error...
 
         Expected behavior: ...

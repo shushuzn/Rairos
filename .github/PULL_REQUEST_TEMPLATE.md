@@ -20,7 +20,7 @@
 - [ ] Tests added/updated if needed
 - [ ] Documentation updated
 - [ ] No new compiler warnings: `cargo build --workspace`
-- [ ] All tests pass: `CARGO_BUILD_JOBS=1 cargo test --workspace`
+- [ ] All tests pass: `unset RUSTC_WRAPPER && cargo test --workspace`
 - [ ] No clippy warnings: `cargo clippy --workspace -- -D warnings`
 - [ ] Branch name follows convention: `type/description`
 

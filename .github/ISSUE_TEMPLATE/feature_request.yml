@@ -25,7 +25,7 @@ body:
       label: Proposed Solution
       description: How should this feature work?
       placeholder: |
-        1. Run `airos summarize --paper 2601.00155`
+        1. Run `./rairos.sh summarize --paper 2601.00155`
         2. System generates 3-paragraph summary + key findings table
         3. Summary is saved alongside P-Note and can be exported to Notion
     validations:
