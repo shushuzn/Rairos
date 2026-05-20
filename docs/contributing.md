@@ -89,7 +89,7 @@ crates/
 ├── rairos-citations/    # Citation graph (OpenAlex)
 ├── rairos-rankers/      # Paper impact scoring
 ├── rairos-kg/           # Knowledge graph (PageRank, communities)
-├── rairos-mcp/          # MCP protocol server (68 tools)
+├── rairos-mcp/          # MCP protocol server (69 tools)
 ├── rairos-memory/       # Research stance tracking, anomalies
 └── ... (154 crates total)
 ```
