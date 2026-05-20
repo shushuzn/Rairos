@@ -1,63 +1,63 @@
 # Advanced Commands Reference
 
-Rairos CLI ships with **104 commands**. This page covers the most useful ones by category.
+Rairos CLI ships with **105 commands**. This page covers the most useful ones by category.
 
-> Full help: `rairos --help` or `rairos <command> --help`
+> Full help: `./rairos.sh --help` or `./rairos.sh <command> --help`
 
 ---
 
 ## Paper Management
 
-### `rairos add <arxiv_id>`
+### `./rairos.sh add <arxiv_id>`
 Add a paper by arXiv ID (auto-fetches metadata).
 
 ```bash
-rairos add 2601.00155
+./rairos.sh add 2601.00155
 ```
 
-### `rairos list`
+### `./rairos.sh list`
 List papers with filters and sorting.
 
 ```bash
-rairos list
-rairos list --tag LLM --limit 20 --sort published
-rairos list --status done --year 2025 --format json
+./rairos.sh list
+./rairos.sh list --tag LLM --limit 20 --sort published
+./rairos.sh list --status done --year 2025 --format json
 ```
 
-### `rairos search <query>`
+### `./rairos.sh search <query>`
 Full-text search with BM25 ranking.
 
 ```bash
-rairos search "scaling law"
-rairos search "transformer" --limit 20 --field title
+./rairos.sh search "scaling law"
+./rairos.sh search "transformer" --limit 20 --field title
 ```
 
-### `rairos show <id>`
+### `./rairos.sh show <id>`
 Show paper details.
 
 ```bash
-rairos show 2601.00155
-rairos show 2601.00155 --format json
+./rairos.sh show 2601.00155
+./rairos.sh show 2601.00155 --format json
 ```
 
-### `rairos delete <ids...>`
+### `./rairos.sh delete <ids...>`
 Delete papers.
 
 ```bash
-rairos delete 2601.00155
-rairos delete 2601.00155 2302.00763 --force
+./rairos.sh delete 2601.00155
+./rairos.sh delete 2601.00155 2302.00763 --force
 ```
 
-### `rairos import`
+### `./rairos.sh import`
 Batch import from arXiv ID, DOI, or JSON file.
 
 ```bash
-rairos import --ids 2601.00155 2302.00763
-rairos import --path papers.json
-rairos import --ids DOI:10.48550/arXiv.2601.00155 --skip-existing
+./rairos.sh import --ids 2601.00155 2302.00763
+./rairos.sh import --path papers.json
+./rairos.sh import --ids DOI:10.48550/arXiv.2601.00155 --skip-existing
 ```
 
-### `rairos export`
+### `./rairos.sh export`
 Export database to JSON or CSV.
 
 ```bash

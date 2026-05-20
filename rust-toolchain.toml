@@ -3,5 +3,5 @@ channel = "stable"
 components = ["clippy", "rustfmt", "rust-src"]
 
 [profile]
-# Memory-constrained builds
-jobs = 1
+# Use all cores for faster builds
+jobs = -1

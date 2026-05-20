@@ -25,9 +25,17 @@
 ## Build & Test
 
 ```bash
-# Rust (always CARGO_BUILD_JOBS=1 to avoid OOM on memory-constrained hosts)
-CARGO_BUILD_JOBS=1 cargo build --workspace
-CARGO_BUILD_JOBS=1 cargo test --workspace
+# Use Makefile (auto-detects optimal settings)
+make build          # Release build with optimizations
+make build-dev      # Debug build (faster)
+make test           # Run tests
+make clippy         # Run linter
+
+# Or use rairos.sh directly
+./rairos.sh --help
+
+# Manual (for CI/memory-constrained environments)
+unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 ```
 
 ## Architecture

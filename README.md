@@ -43,22 +43,31 @@ Feed it a paper → It learns what works → Next search is better
 | rairos-memory | Research stance tracking |
 | rairos-insight-* (5 crates) | Evolution tracking, credibility scoring, storage |
 
-Build: `CARGO_BUILD_JOBS=1 cargo build`
+Build: `make build` (uses parallel jobs + mold linker + ccache)
 
 ## Quick Start (Rust CLI)
 
 ```bash
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
-CARGO_BUILD_JOBS=1 cargo build
-cargo run -p rairos-cli -- --help
+
+# First-time build (10-20 min)
+make build
+
+# Usage (pick one)
+./rairos.sh search "transformer"     # Quick search
+./rairos.sh gap "LLM efficiency"    # Detect research gaps
+./rairos.sh --help                  # All 105 commands
+
+# Or use make
+make run CMD='list --status pending'
 ```
 
 ### With Ollama (local, free)
 
 ```bash
 ollama pull qwen2.5
-cargo run -p rairos-cli -- gap "transformer efficiency"
+./rairos.sh gap "transformer efficiency"
 ```
 
 ## Documentation

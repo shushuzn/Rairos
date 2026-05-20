@@ -8,49 +8,36 @@ description: Rairos project development workflow - Rust build, test, debug, and 
 ## Quick Start
 
 ```bash
-# Build (ALWAYS use CARGO_BUILD_JOBS=1 due to memory limits)
-CARGO_BUILD_JOBS=1 cargo build
-
-# Test
-CARGO_BUILD_JOBS=1 cargo test
-
-# Run CLI
-cargo run -p rairos-cli -- --help
+make build-dev   # Debug build (faster for iteration)
+make test        # Run tests
+./rairos.sh --help  # CLI help
 ```
 
 ## Build Variants
 
 | Command | Use Case |
 |---------|----------|
-| `CARGO_BUILD_JOBS=1 cargo build` | Default dev build |
-| `cargo build --release -p rairos-cli` | Release build |
-| `sccache --start-server && CARGO_BUILD_JOBS=1 cargo build` | With compile cache |
-| `cargo build -p <crate-name>` | Single crate |
+| `make build` | Release build (parallel + mold + ccache) |
+| `make build-dev` | Debug build (faster) |
+| `unset RUSTC_WRAPPER && cargo build -p rairos-cli` | Single crate |
+| `unset RUSTC_WRAPPER && cargo build --release -p rairos-cli` | Release single crate |
 
 ## Testing
 
 ```bash
-# Test specific crate
-CARGO_BUILD_JOBS=1 cargo test -p rairos-codegraph
-
-# Test with output
-CARGO_BUILD_JOBS=1 cargo test -p rairos-cli -- --nocapture
-
-# All tests (slow)
-CARGO_BUILD_JOBS=1 cargo test
+make test                    # All tests
+unset RUSTC_WRAPPER && cargo test -p rairos-codegraph  # Specific crate
+unset RUSTC_WRAPPER && cargo test -p rairos-cli -- --nocapture  # With output
 ```
 
 ## Debugging
 
 ```bash
-# CPU flamegraph (requires: cargo install flamegraph)
-CARGO_BUILD_JOBS=1 cargo flamegraph --bin rairos-cli -- <command>
-
-# Perf stat (requires sudo)
-sudo perf stat -e cycles cargo run -p rairos-cli -- <command>
-
 # Debug logs
-RUST_LOG=debug cargo run -p rairos-cli -- <command>
+RUST_LOG=debug ./rairos.sh <command>
+
+# Or directly:
+unset RUSTC_WRAPPER && RUST_LOG=debug cargo run -p rairos-cli -- <command>
 ```
 
 ## Code Analysis (CodeGraph MCP)

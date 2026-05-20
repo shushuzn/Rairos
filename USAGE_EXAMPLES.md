@@ -11,7 +11,7 @@
 
 ## 🚀 快速开始
 
-> Rairos 已完全迁移为 Rust 项目（154 crates）。以下所有命令通过 `cargo run -p rairos-cli --` 执行，或使用别名 `alias rairos='cargo run -p rairos-cli --'` 简化操作。
+> Rairos 已完全迁移为 Rust 项目（154 crates）。使用 `./rairos.sh` 或 `make run CMD='...'` 简化操作。
 
 ### 1. 搜索论文
 

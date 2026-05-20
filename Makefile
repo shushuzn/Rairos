@@ -1,107 +1,63 @@
-# Rairos Development Makefile
-# Self-Evolving Research OS
+.PHONY: help build build-release build-dev test clippy clean install-completions run
 
-.PHONY: help
-help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
+# Detect if release binary exists
+RELEASE_BIN := target/release/rairos-cli
+DEV_BIN := target/debug/rairos-cli
 
-# ─── Python ───────────────────────────────────────────────────────────────────
+# Default target
+help:
+	@echo "Rairos - Self-Evolving Research OS"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make build          Build release (optimized, 10-20min)"
+	@echo "  make build-dev     Build debug (faster, ~5min)"
+	@echo "  make test           Run tests"
+	@echo "  make clippy         Run linter"
+	@echo "  make run CMD=...    Run CLI (e.g., make run CMD='search \"ML\"')"
+	@echo "  make clean          Clean build artifacts"
+	@echo ""
+	@echo "Direct binary usage:"
+	@echo "  ./rairos.sh search \"transformer\"   # Quick search"
+	@echo "  ./rairos.sh gap \"LLM\"             # Detect gaps"
+	@echo ""
+	@echo "Pre-built binary: $(RELEASE_BIN)"
 
-py-deps: ## Install Python dependencies
-	uv sync --extra dev
+build: $(RELEASE_BIN)
+	@echo "Release binary ready: $(RELEASE_BIN)"
+	-@./rairos.sh --version 2>/dev/null || true
 
-py-lint: ## Run ruff linter
-	uvx ruff check .
+$(RELEASE_BIN):
+	@echo "Building release (this may take 10-20 minutes)..."
+	unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 
-py-fmt: ## Format Python code
-	uvx ruff format .
-	uvx ruff check --fix .
+build-dev:
+	@echo "Building debug (faster)..."
+	unset RUSTC_WRAPPER && cargo build -p rairos-cli
 
-py-typecheck: ## Run mypy type checker
-	uvx mypy core parsers db --ignore-missing-imports
+test:
+	unset RUSTC_WRAPPER && cargo test --workspace
 
-py-test: ## Run Python tests
-	uv run pytest tests/ -q --timeout=30
+clippy:
+	unset RUSTC_WRAPPER && cargo clippy --workspace -- -D warnings
 
-py-test-w: py-test ## Run tests with watch (requires pytest-xdist)
-	uv run pytest tests/ -q --timeout=30 -n auto
+clean:
+	cargo clean
+	rm -f rairos.sh
 
-py-all: py-lint py-typecheck py-test ## Run all Python checks
-
-# ─── Rust ─────────────────────────────────────────────────────────────────────
-
-rust-deps: ## Install Rust dependencies (via cargo)
-	cargo fetch
-
-rust-build: ## Build Rust crates (single-threaded to avoid OOM)
-	CARGO_BUILD_JOBS=1 cargo build
-
-rust-test: ## Run Rust tests
-	CARGO_BUILD_JOBS=1 cargo test
-
-rust-fmt: ## Format Rust code
-	cargo fmt
-
-rust-clippy: ## Run clippy linter
-	CARGO_BUILD_JOBS=1 cargo clippy -- -D warnings
-
-rust-all: rust-fmt rust-clippy rust-test ## Run all Rust checks
-
-completions: ## Generate shell completions
-	@mkdir -p completions
-	cargo run -p rairos-cli -- completions bash > completions/bash
-	cargo run -p rairos-cli -- completions zsh > completions/zsh
-	cargo run -p rairos-cli -- completions fish > completions/fish
-
-# ─── Combined ─────────────────────────────────────────────────────────────────
-
-dev: py-deps ## Setup development environment
-dev-verify: py-all rust-build ## Verify full dev setup
-
-# ─── CI ───────────────────────────────────────────────────────────────────────
-
-ci-python: ## Run CI Python checks (lint + typecheck)
-	uv sync --extra dev
-	uvx ruff check .
-	uvx ruff format --check .
-	uvx mypy core parsers db --ignore-missing-imports
-
-ci-rust: ## Run CI Rust checks
-	cargo fmt --check
-	CARGO_BUILD_JOBS=1 cargo clippy -- -D warnings
-	CARGO_BUILD_JOBS=1 cargo test
-
-# ─── Utilities ───────────────────────────────────────────────────────────────
-
-clean: ## Remove build artifacts
-	rm -rf target/
-	rm -rf .venv/
-	rm -rf __pycache__/
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name "*.pyc" -delete
-
-sccache-start: ## Start sccache server
-	@if command -v sccache >/dev/null 2>&1; then \
-		sccache --start-server 2>/dev/null || echo "sccache server already running"; \
+# Run with arguments: make run CMD='gap "transformer"'
+run:
+	@if [ -f "$(RELEASE_BIN)" ]; then \
+		$(RELEASE_BIN) $(CMD); \
+	elif [ -f "$(DEV_BIN)" ]; then \
+		$(DEV_BIN) $(CMD); \
 	else \
-		echo "sccache not installed"; \
+		echo "No binary found. Run 'make build' first."; \
 	fi
 
-blame: ## Configure git to ignore reformatting commits
-	git config blame.ignoreRevsFile .git-blame-ignore-revs
-
-hooks: ## Install pre-commit hooks
-	@if command -v pre-commit >/dev/null 2>&1; then \
-		pre-commit install && echo "pre-commit hooks installed"; \
-	else \
-		echo "pip install pre-commit first"; \
-	fi
-
-setup: py-deps hooks sccache-start ## Full dev setup
-
-git-commit: ## Stage and commit (usage: make git-commit MSG="your message")
-	@if [ -z "$(MSG)" ]; then \
-		echo "Usage: make git-commit MSG='Your commit message'"; \
-		exit 1; \
-	fi
-	git add -A && git commit -m "$(MSG)"
+install-completions:
+	@echo "Installing shell completions..."
+	@# Bash
+	cp completions/bash ~/.config/opencode/completions/rairos 2>/dev/null || true
+	cp completions/fish ~/.config/fish/completions/rairos.fish 2>/dev/null || true
+	cp completions/zsh ~/.config/zsh/completions/_rairos 2>/dev/null || true
+	@echo "Completions installed. Restart shell or run: source ~/.bashrc"

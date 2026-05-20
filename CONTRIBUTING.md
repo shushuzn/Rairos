@@ -17,18 +17,14 @@ Rairos is a Self-Evolving Research OS built with **100% Rust**:
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
 
-# Run setup script
-bash scripts/setup-dev.sh
+# Build (uses parallel + mold + ccache)
+make build
 
-# Or manually:
-# 1. Install Rust (stable)
-rustup default stable
+# Or for faster dev builds:
+make build-dev
 
-# 2. Build
-CARGO_BUILD_JOBS=1 cargo build
-
-# 3. Test
-CARGO_BUILD_JOBS=1 cargo test
+# Test
+make test
 ```
 
 ## Making Changes
@@ -60,23 +56,30 @@ refactor(core): extract similarity functions
 
 ```bash
 # Always use CARGO_BUILD_JOBS=1 to avoid OOM
-CARGO_BUILD_JOBS=1 cargo build
+make build-dev
 
 # Build specific crate
-CARGO_BUILD_JOBS=1 cargo build -p rairos-cli
+unset RUSTC_WRAPPER && cargo build -p rairos-cli
 ```
 
 ### Testing
 
 ```bash
-# Test all
-CARGO_BUILD_JOBS=1 cargo test
+make test
 
 # Test specific crate
-CARGO_BUILD_JOBS=1 cargo test -p rairos-core
+unset RUSTC_WRAPPER && cargo test -p rairos-core
 
 # Test with output
-CARGO_BUILD_JOBS=1 cargo test -p rairos-cli -- --nocapture
+unset RUSTC_WRAPPER && cargo test -p rairos-cli -- --nocapture
+```
+
+### Memory-Constrained Environments
+
+If you encounter OOM during build, use:
+
+```bash
+unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
 ```
 
 ## Adding New Features

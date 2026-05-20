@@ -1,23 +1,18 @@
-# Rairos cargo aliases
-# Place in .cargo/config.toml or ~/.cargo/config.toml
-# Note: Rairos requires CARGO_BUILD_JOBS=1 for memory-constrained builds
+[build]
+jobs = 4
+incremental = true
 
-[alias]
-# Quick commands
-b = "build"
-t = "test"
-c = "clippy"
-f = "fmt"
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=mold", "-C", "panic=abort"]
 
-# Rairos-specific (requires CARGO_BUILD_JOBS=1 env var)
-r = "build"
-rr = "build --release"
-rt = "test"
-rb = "build -p rairos-cli"
-rci = "build -p rairos-cli --release"
-rtest = "test -p"
-rclip = "clippy -p"
+[profile.dev]
+opt-level = 0
+debug = false
+split-debuginfo = "unpacked"
 
-# Single crate testing
-test-p = "test -p"
-clippy-p = "clippy -p"
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+opt-level = 3

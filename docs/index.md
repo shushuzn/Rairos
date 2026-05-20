@@ -32,19 +32,19 @@ Feed it a paper — get back structured, cross-linked research knowledge:
 ## Quick Start
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build --workspace
+make build
 
 # Import a paper
-rairos import 2601.00155 --tags LLM,Agent
+./rairos.sh import 2601.00155 --tags LLM,Agent
 
 # Search your library
-rairos search "attention mechanism" --tag LLM
+./rairos.sh search "attention mechanism" --tag LLM
 
 # Autonomous research
-rairos research "RLHF alignment" --limit 5
+./rairos.sh research "RLHF alignment" --limit 5
 
 # Chat with your papers
-rairos chat-tui
+./rairos.sh chat-tui
 ```
 
 See [Installation](installation.md) for full setup instructions.

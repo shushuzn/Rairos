@@ -7,18 +7,19 @@ Python CLI fully migrated to Rust. All Python source code removed.
 
 ## Rust Build
 
-Memory-intensive. **Always use**: `CARGO_BUILD_JOBS=1 cargo build`
+Use Makefile for optimized builds:
 
 ```bash
-CARGO_BUILD_JOBS=1 cargo build
-CARGO_BUILD_JOBS=1 cargo test
+make build          # Release (parallel + mold + ccache)
+make build-dev      # Debug (faster)
+make test           # Tests
+make clippy         # Linter
 ```
 
-### sccache (if available)
+### Direct cargo (if Makefile unavailable)
 
 ```bash
-sccache --start-server
-CARGO_BUILD_JOBS=1 cargo build
+unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 ```
 
 ### Key Dependencies

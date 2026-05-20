@@ -25,29 +25,29 @@ Rairos 是一个**自主研究助手**，可以：
 
 ## 快速开始
 
-### 选项 1: Cargo 构建
+### 使用 Makefile（推荐）
 
 ```bash
 git clone https://github.com/shushuzn/Rairos.git
 cd Rairos
-CARGO_BUILD_JOBS=1 cargo build --workspace
-cargo run -p rairos-cli -- --help
+make build                    # 构建（首次 10-20 分钟）
+./rairos.sh --help           # 查看所有命令
 ```
 
-### 选项 2: 从源码（推荐开发用）
+### 初始化和运行
 
 ```bash
-git clone https://github.com/shushuzn/Rairos.git
-cd Rairos
-CARGO_BUILD_JOBS=1 cargo build --workspace
-cargo run -p rairos-cli -- init        # 初始化数据库
-cargo run -p rairos-cli -- list        # 查看论文
+./rairos.sh init             # 初始化数据库
+./rairos.sh list             # 查看论文
+./rairos.sh search "LLM"     # 搜索论文
 ```
 
-### 初始化数据库
+### 开发构建
 
 ```bash
-cargo run -p rairos-cli -- init
+make build-dev    # Debug 构建（更快）
+make test         # 运行测试
+make clippy       # 运行 linter
 ```
 
 ## Rust 技术栈 (154 crates)

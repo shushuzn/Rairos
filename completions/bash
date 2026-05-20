@@ -1,11 +1,47 @@
-# AI Research OS — Bash completions
-_airos() {
-  local cur prev words cword
-  _init_completion || return
-  local commands="search research list import export stats status queue cache dedup dedup-semantic similar citations cite-graph cite-import cite-fetch cite-stats kg merge paper2code evoskill rag visual watch"
-  case "$prev" in
-    airos) COMPREPLY=($(compgen -W "$commands" -- "$cur")) ;;
-  esac
+# Rairos CLI - Bash Completion
+# Source this file or install to /etc/bash_completion.d/
+
+_rairos() {
+    local cur prev words cword
+    _init_completion || return
+
+    local commands="achievements add agent analyze argue ask at-risk badges benchmark bold briefing cache chat chat-tui citation-chain citations cite-fetch cite-graph cite-import cite-stats claim-graph code-evolve code-gene-add code-gene-approve code-gene-auto-review code-gene-batch-review code-gene-clean code-gene-cleanup code-gene-dashboard code-gene-export code-gene-feedback code-gene-implement code-gene-list code-gene-plan code-gene-reject code-gene-rollback code-gene-stats code-gene-sync-from-issue code-gene-sync-to-issue code-gene-sync-to-pr code-gene-workflow code-graph compare completions contradictions credibility crossover crossref daemon dashboard decay dedup delete demo diagnostics digest discover doctor evolution evoskill experiment export friction gap gap-code-link gap-delete gap-list gap-show gap-suggest-code gene-add gene-diversity gene-evolve gene-feedback gene-list gene-show help hypothesize impact import influence ingest init insight intel jin10 journal kg-add-citation kg-add-paper kg-graph kg-path kg-rank kg-rebuild kg-search kg-stats lean list litreview memory-stats merge momentum narrative optimize optimize-pipeline paradigm parse path pipeline postprocess profiler question queue radar rag rate-limit-benchmark rate-limit-check repl replicate report research review rigor roadmap route scout search session setup show signal similar slides stance-add stance-list stance-show stats status story subscribe sysinfo timeline trace trend trends update-status validate version visual workflow-stats workspace"
+
+    local common_flags="--help --version --verbose --quiet"
+
+    case "$prev" in
+        init|doctor|daemon|version|help|completions)
+            return
+            ;;
+        search|gap|radar|timeline|trends)
+            # These commands take a query string
+            return
+            ;;
+        list|stats|status|queue)
+            COMPREPLY=($(compgen -W "--status --limit --offset --format" -- "$cur"))
+            return
+            ;;
+        add)
+            COMPREPLY=($(compgen -W "--arxiv --doi --pdf --url" -- "$cur"))
+            return
+            ;;
+        export|import)
+            COMPREPLY=($(compgen -W "--format json csv --file --status" -- "$cur"))
+            return
+            ;;
+        *)
+            ;;
+    esac
+
+    if [[ "$cword" -eq 1 ]]; then
+        COMPREPLY=($(compgen -W "$commands" -- "$cur"))
+    else
+        COMPREPLY=($(compgen -W "$common_flags" -- "$cur"))
+    fi
 }
-complete -F _airos airos
-complete -F _airos python -m cli
+
+complete -F _rairos rairos
+complete -F _rairos rairos.sh
+complete -F _rairos ./rairos.sh
+complete -F _rairos target/release/rairos-cli
+complete -F _rairos target/debug/rairos-cli
