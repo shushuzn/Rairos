@@ -1,61 +1,33 @@
 # Justfile — developer commands for Rairos
+# NOTE: This file is for legacy Python CLI. Use Makefile for Rust development.
 # Install just: winget install just | cargo install just | scoop install just
 
 default:
     @just --list
 
-# Run full test suite (quiet, skip neuraloperator ns shadowing)
+# Run full test suite (Rust)
 test:
-    python -B -m pytest tests/ -q
+    unset RUSTC_WRAPPER && cargo test --workspace
 
-# Run tests with coverage
-test-cov:
-    python -B -m pytest tests/ --cov=. --cov-report=term-missing:skip-covered
-
-# Run only a specific test file
-test FILE:
-    python -B -m pytest tests/{{FILE}} -v
-
-# Show test count
-test-count:
-    python -B -m pytest tests/ --collect-only -q
-
-# Lint check only
+# Lint (Rust)
 lint:
-    ruff check .
+    unset RUSTC_WRAPPER && cargo clippy --workspace -- -D warnings
 
-# Lint auto-fix
-lint-fix:
-    ruff check --fix .
+# Build release
+build:
+    unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 
-# Format code
-fmt:
-    ruff format .
-
-# Format check (CI gate)
-fmt-check:
-    ruff format --check .
-
-# Type check (mypy on core modules)
-typecheck:
-    python -m mypy core parsers db llm --ignore-missing-imports
-
-# Full CI pipeline (what GitHub Actions runs)
-ci: lint fmt-check typecheck
-    @echo "CI checks passed"
-
-# Full CI + tests
-ci-full: ci test-cov
-    @echo "Full CI + tests passed"
-
-# Install all deps
-install:
-    pip install -e ".[all]"
-
-# Install pre-commit hooks
-hooks:
-    pre-commit install
+# Build debug
+build-dev:
+    unset RUSTC_WRAPPER && cargo build -p rairos-cli
 
 # Run the CLI
 run *ARGS:
-    python -m cli {{ARGS}}
+    ./rairos.sh {{ARGS}}
+
+# Show help
+help:
+    @echo "Use 'make' for most commands:"
+    @echo "  make build, make test, make run CMD='...'"
+    @echo "Or use ./rairos.sh directly"
+    @just --list

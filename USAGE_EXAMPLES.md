@@ -216,11 +216,11 @@ rairos export --format json --status done ./papers_done.json
 ### Q: 构建时内存不足怎么办？
 
 ```bash
-# 单线程构建（推荐）
-CARGO_BUILD_JOBS=1 cargo build --workspace
+# 推荐：使用 Makefile（自动优化）
+make build-dev
 
-# 只构建 CLI（更快）
-cargo build -p rairos-cli
+# 备选：单线程构建
+unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
 ```
 
 ---
