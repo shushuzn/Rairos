@@ -9,3 +9,4 @@ serde_json.workspace = true
 dirs.workspace = true
 parking_lot.workspace = true
 flate2 = "1"
+rustc-hash.workspace = true

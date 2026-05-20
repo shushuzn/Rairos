@@ -8,7 +8,7 @@ use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use std::fs::{self, File};
 use std::io::{Read, Write};
 use std::path::PathBuf;
@@ -59,7 +59,7 @@ type MemoryCacheValue = (f64, serde_json::Value);
 #[derive(Default)]
 struct GlobalCache {
     config: CacheConfig,
-    memory: HashMap<MemoryCacheKey, MemoryCacheValue>,
+    memory: FxHashMap<MemoryCacheKey, MemoryCacheValue>,
 }
 
 fn now_secs() -> f64 {
@@ -250,14 +250,14 @@ pub struct CacheStats {
     pub disk_cache_dir: String,
     pub ttl_seconds: u64,
     pub max_cache_files: usize,
-    pub disk_cache_sizes: HashMap<String, usize>,
+    pub disk_cache_sizes: FxHashMap<String, usize>,
 }
 
 pub fn get_cache_stats() -> CacheStats {
     let cache = GLOBAL_CACHE.read();
     let memory_size = cache.memory.len();
     let config = cache.config.clone();
-    let mut disk_sizes = HashMap::new();
+    let mut disk_sizes = FxHashMap::default();
 
     let root = config.cache_dir();
     if let Ok(entries) = fs::read_dir(&root) {
@@ -319,7 +319,7 @@ pub struct SmartCache {
     compression_threshold_bytes: usize,
     default_ttl: u64,
     compression_level: u32,
-    index: RwLock<HashMap<String, CacheEntry>>,
+    index: RwLock<FxHashMap<String, CacheEntry>>,
     stats: RwLock<SmartCacheCounters>,
 }
 
@@ -340,7 +340,7 @@ impl SmartCache {
             compression_threshold_bytes: (compression_threshold_kb * 1024.0) as usize,
             default_ttl,
             compression_level,
-            index: RwLock::new(HashMap::new()),
+            index: RwLock::new(FxHashMap::default()),
             stats: RwLock::new(SmartCacheCounters::default()),
         }
     }
