@@ -19,23 +19,23 @@ use regex::Regex;
 use rairos_core::Database;
 
 static ARXIV_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)\barXiv:\s*(\d+\.\d+\b)").unwrap()
+    Regex::new(r"(?i)\barXiv:\s*(\d+\.\d+\b)").expect("valid regex")
 });
 
 static DOI_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)\b10\.\d{4,}/[^\s]+").unwrap()
+    Regex::new(r"(?i)\b10\.\d{4,}/[^\s]+").expect("valid regex")
 });
 
 static PMID_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)\bPMID:\s*(\d{6,})\b").unwrap()
+    Regex::new(r"(?i)\bPMID:\s*(\d{6,})\b").expect("valid regex")
 });
 
 static ISBN_REF_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b").unwrap()
+    Regex::new(r"(?i)\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b").expect("valid regex")
 });
 
 static REFS_SECTION_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)").unwrap()
+    Regex::new(r"(?i)(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)").expect("valid regex")
 });
 
 pub fn handle_cite_import(

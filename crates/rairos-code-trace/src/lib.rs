@@ -16,8 +16,8 @@ pub struct ParsedSourceComment {
 
 /// Extract all `# source:` comments from generated code.
 pub fn parse_source_comments(code: &str) -> Vec<ParsedSourceComment> {
-    let source_re = Regex::new(r"#\s*source:\s*((?:@(?:\w+)\[\d+\]\s*(?:,\s*)?)+)").unwrap();
-    let tag_re = Regex::new(r"@(\w+)\[(\d+)\]").unwrap();
+    let source_re = Regex::new(r"#\s*source:\s*((?:@(?:\w+)\[\d+\]\s*(?:,\s*)?)+)").expect("valid regex");
+    let tag_re = Regex::new(r"@(\w+)\[(\d+)\]").expect("valid regex");
 
     let mut results = vec![];
     for (lineno, line) in code.lines().enumerate() {

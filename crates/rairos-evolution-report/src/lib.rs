@@ -355,7 +355,7 @@ impl EvolutionReporter {
             })
             .collect();
 
-        let word_regex = Regex::new(r"[\u4e00-\u9fff]+|[a-zA-Z]{3,}").unwrap();
+        let word_regex = Regex::new(r"[\u4e00-\u9fff]+|[a-zA-Z]{3,}").expect("valid regex");
         let words: Vec<String> = word_regex
             .find_iter(&all_text.to_lowercase())
             .map(|m| m.as_str().to_string())

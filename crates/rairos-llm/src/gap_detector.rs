@@ -332,10 +332,10 @@ pub async fn generate_questions_llm(
 /// Parse LLM response into ResearchGap objects.
 /// Format: [GAP_TYPE] description | papers | confidence | severity
 fn parse_gaps(response: &str, _topic: &str) -> Vec<ResearchGap> {
-    let re = Regex::new(r"\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)").unwrap();
+    let re = Regex::new(r"\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)").expect("valid regex");
 
     // Strip thinking tags
-    let thinking_re = Regex::new(r"<think>.*?</think>").unwrap();
+    let thinking_re = Regex::new(r"<think>.*?</think>").expect("valid regex");
     let cleaned = thinking_re.replace_all(response, "");
 
     let mut gaps = Vec::new();

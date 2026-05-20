@@ -5,10 +5,10 @@ use regex::Regex;
 use std::sync::LazyLock;
 
 static RE_TITLE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)^#\s+(.+)$").unwrap()
+    Regex::new(r"(?m)^#\s+(.+)$").expect("valid regex")
 });
 static RE_SOURCE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\*\*Source:\*\*\s+(\w+):\s+(\S+)").unwrap()
+    Regex::new(r"\*\*Source:\*\*\s+(\w+):\s+(\S+)").expect("valid regex")
 });
 
 pub struct PnoteMetadata {

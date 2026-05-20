@@ -230,7 +230,7 @@ impl TableDetector {
             .filter(|kw| body.contains(*kw))
             .count();
 
-        let numeric_re = Regex::new(r"\d+\.?\d*").unwrap();
+        let numeric_re = Regex::new(r"\d+\.?\d*").expect("valid regex");
         let numeric_cells: usize = table_data[1..]
             .iter()
             .flatten()

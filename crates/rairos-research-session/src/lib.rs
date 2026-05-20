@@ -19,43 +19,43 @@ static INTENT_PATTERNS: LazyLock<Vec<(ResearchIntent, Vec<Regex>)>> = LazyLock::
         (
             ResearchIntent::Reproducing,
             vec![
-                Regex::new(r"复现|实现|copy|paste|跑通|代码|code|reproduce|implement|build").unwrap(),
-                Regex::new(r"怎么实现|如何复现|有代码吗|show me|给我代码").unwrap(),
+                Regex::new(r"复现|实现|copy|paste|跑通|代码|code|reproduce|implement|build").expect("valid regex"),
+                Regex::new(r"怎么实现|如何复现|有代码吗|show me|给我代码").expect("valid regex"),
             ],
         ),
         (
             ResearchIntent::Improving,
             vec![
-                Regex::new(r"改进|优化|提升|更好|improve|better|enhance|boost").unwrap(),
-                Regex::new(r"如何改进|能不能更好|超越|outperform|beat").unwrap(),
+                Regex::new(r"改进|优化|提升|更好|improve|better|enhance|boost").expect("valid regex"),
+                Regex::new(r"如何改进|能不能更好|超越|outperform|beat").expect("valid regex"),
             ],
         ),
         (
             ResearchIntent::Comparing,
             vec![
-                Regex::new(r"比较|对比|差异|哪个更好|vs|versus|compare|differ").unwrap(),
-                Regex::new(r"和.*区别|相比.*如何|哪个更强").unwrap(),
+                Regex::new(r"比较|对比|差异|哪个更好|vs|versus|compare|differ").expect("valid regex"),
+                Regex::new(r"和.*区别|相比.*如何|哪个更强").expect("valid regex"),
             ],
         ),
         (
             ResearchIntent::Learning,
             vec![
-                Regex::new(r"是什么|原理|如何理解|学习|了解|入门|概念|definition|learn|understand|explain").unwrap(),
-                Regex::new(r"什么意思|怎么理解|有什么用|what is|how does").unwrap(),
+                Regex::new(r"是什么|原理|如何理解|学习|了解|入门|概念|definition|learn|understand|explain").expect("valid regex"),
+                Regex::new(r"什么意思|怎么理解|有什么用|what is|how does").expect("valid regex"),
             ],
         ),
         (
             ResearchIntent::Exploring,
             vec![
-                Regex::new(r"有哪些|有什么最新|研究|最近|探索|发现|what are|latest|recent|discover").unwrap(),
-                Regex::new(r"有什么新|还有什么|还有什么方法").unwrap(),
+                Regex::new(r"有哪些|有什么最新|研究|最近|探索|发现|what are|latest|recent|discover").expect("valid regex"),
+                Regex::new(r"有什么新|还有什么|还有什么方法").expect("valid regex"),
             ],
         ),
         (
             ResearchIntent::Citing,
             vec![
-                Regex::new(r"引用|cite|参考文献|写论文|写作|如何引用|citation|bibliography").unwrap(),
-                Regex::new(r"格式|规范|apa|ieee").unwrap(),
+                Regex::new(r"引用|cite|参考文献|写论文|写作|如何引用|citation|bibliography").expect("valid regex"),
+                Regex::new(r"格式|规范|apa|ieee").expect("valid regex"),
             ],
         ),
     ]
@@ -201,7 +201,7 @@ impl ChatResearchSession {
         let ended: Option<chrono::DateTime<chrono::FixedOffset>> = match &self.ended_at {
             Some(e) => DateTime::parse_from_rfc3339(e).ok(),
             None => Utc::now()
-                .with_timezone(&chrono::FixedOffset::east_opt(0).unwrap())
+                .with_timezone(&chrono::FixedOffset::east_opt(0).expect("valid regex"))
                 .into(),
         };
         let started = DateTime::parse_from_rfc3339(&self.started_at).ok();
@@ -275,7 +275,7 @@ fn extract_tags(question: &str, paper_titles: &[String], keywords: &HashSet<&str
     let text = format!("{} {}", question, paper_titles.join(" ")).to_lowercase();
     let mut found = Vec::new();
     for &kw in keywords {
-        let pattern = Regex::new(&format!(r"\b{}\b", regex::escape(kw))).unwrap();
+        let pattern = Regex::new(&format!(r"\b{}\b", regex::escape(kw))).expect("valid regex");
         if pattern.is_match(&text) {
             found.push(kw.to_string());
         }
@@ -357,7 +357,7 @@ fn parse_questions_from_response(response: &str) -> Vec<String> {
 
         // Remove common prefixes
         for prefix in &[r"^\d+[.、]", r"^[-•*\s]+", r"^Q\d*[:：]\s*"] {
-            let re = Regex::new(prefix).unwrap();
+            let re = Regex::new(prefix).expect("valid regex");
             cleaned = re.replace(&cleaned, "").trim().to_string();
         }
         if !cleaned.is_empty() && cleaned.chars().count() <= 30 {
@@ -586,7 +586,7 @@ impl ResearchSessionTracker {
             self.start_session(None);
         }
 
-        let session = self.current_session.as_mut().unwrap();
+        let session = self.current_session.as_mut().expect("valid regex");
         let detector = IntentDetector::new();
         let intent = detector.detect(question);
 
@@ -794,7 +794,7 @@ static SESSION_TRACKER: std::sync::LazyLock<Mutex<Option<ResearchSessionTracker>
 
 /// Get the global session tracker instance.
 pub fn get_session_tracker() -> MutexGuard<'static, Option<ResearchSessionTracker>> {
-    SESSION_TRACKER.lock().unwrap()
+    SESSION_TRACKER.lock().expect("valid regex")
 }
 
 /// Initialize and get the global tracker.
@@ -802,7 +802,7 @@ pub fn init_session_tracker(
     #[allow(dead_code)]
     memory_dir: Option<PathBuf>,
 ) -> &'static Mutex<Option<ResearchSessionTracker>> {
-    let mut guard = SESSION_TRACKER.lock().unwrap();
+    let mut guard = SESSION_TRACKER.lock().expect("valid regex");
     if guard.is_none() {
         *guard = Some(ResearchSessionTracker::new(memory_dir));
     }
@@ -822,7 +822,7 @@ mod tests {
     use super::*;
 
     fn temp_tracker() -> ResearchSessionTracker {
-        let dir = tempfile::tempdir().unwrap();
+        let dir = tempfile::tempdir().expect("valid regex");
         ResearchSessionTracker::new(Some(dir.path().to_path_buf()))
     }
 
@@ -865,7 +865,7 @@ mod tests {
             vec![],
             vec![],
         );
-        let session = tracker.get_current_session().unwrap();
+        let session = tracker.get_current_session().expect("valid regex");
         assert_eq!(session.intent, ResearchIntent::Reproducing);
 
         // Test comparing intent
@@ -877,7 +877,7 @@ mod tests {
             vec![],
             vec![],
         );
-        let session2 = tracker2.get_current_session().unwrap();
+        let session2 = tracker2.get_current_session().expect("valid regex");
         assert_eq!(session2.intent, ResearchIntent::Comparing);
     }
 
@@ -936,7 +936,7 @@ mod tests {
         let q = tracker.add_query("What is X?", "It is...", vec![], vec![]);
 
         tracker.add_follow_up(&q.id, "Can you elaborate?");
-        let session = tracker.get_current_session().unwrap();
+        let session = tracker.get_current_session().expect("valid regex");
         assert_eq!(session.queries[0].follow_ups.len(), 1);
     }
 
@@ -945,7 +945,7 @@ mod tests {
         let mut tracker = temp_tracker();
         tracker.start_session(Some("Test Session"));
         tracker.add_query("Q1?", "A1", vec![], vec![]);
-        let session = tracker.get_current_session().unwrap();
+        let session = tracker.get_current_session().expect("valid regex");
 
         let tree = tracker.render_session_tree(session);
         assert!(tree.contains("Test Session"));
@@ -1038,7 +1038,7 @@ mod tests {
             vec![],
             vec![],
         );
-        let session = tracker.get_current_session().unwrap();
+        let session = tracker.get_current_session().expect("valid regex");
         // Should have extracted at least some AI research keywords as tags
         assert!(!session.tags.is_empty() || session.queries.len() == 1); // tags are extracted
     }

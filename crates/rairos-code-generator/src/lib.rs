@@ -12,19 +12,19 @@ use std::sync::Arc;
 use std::sync::LazyLock;
 
 static RE_THINK: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?s)^去想.*?```python\n").unwrap()
+    Regex::new(r"(?s)^去想.*?```python\n").expect("valid regex")
 });
 
 static RE_REASON: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?s)^<think>.*?```python\n").unwrap()
+    Regex::new(r"(?s)^<think>.*?```python\n").expect("valid regex")
 });
 
 static RE_LEAD_MARKDOWN: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)^\s*```(?:python)?\s*\n").unwrap()
+    Regex::new(r"(?m)^\s*```(?:python)?\s*\n").expect("valid regex")
 });
 
 static RE_TRAIL_MARKDOWN: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)\n\s*```\s*$").unwrap()
+    Regex::new(r"(?m)\n\s*```\s*$").expect("valid regex")
 });
 
 /// Configuration for code generation.
@@ -432,17 +432,17 @@ pub fn save_code(
     output_dir: &std::path::Path,
     module_name: &str,
 ) -> std::path::PathBuf {
-    let re_fence = Regex::new(r"(?m)^\s*```(?:python)?\s*\n").unwrap();
+    let re_fence = Regex::new(r"(?m)^\s*```(?:python)?\s*\n").expect("valid regex");
     let code = re_fence.replace_all(code, "").to_string();
 
-    let re_end_fence = Regex::new(r"(?m)\n\s*```\s*$").unwrap();
+    let re_end_fence = Regex::new(r"(?m)\n\s*```\s*$").expect("valid regex");
     let code = re_end_fence.replace_all(&code, "\n").to_string();
 
     // Strip thinking/reasoning blocks
     let code = strip_thinking_blocks(&code);
 
     // Strip text appended after valid Python entry point
-    let re_main = Regex::new(r#"\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$"#).unwrap();
+    let re_main = Regex::new(r#"\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$"#).expect("valid regex");
     let code = re_main.replace_all(&code, "").to_string();
 
     // Secondary prose stripping

@@ -300,19 +300,19 @@ pub fn compute_pdf_hash(pdf_path: &Path) -> Result<String> {
 #[allow(dead_code)]
 fn make_display_math_patterns() -> Vec<Regex> {
     vec![
-        Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").unwrap(),
-        Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").unwrap(),
+        Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").expect("valid regex"),
         // Use separate patterns for each environment (no backreferences)
-        Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").unwrap(),
-        Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").unwrap(),
-        Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").unwrap(),
-        Regex::new(r"^\s*\\begin\{multline\*?\}[\s\S]+?\\end\{multline\*?\}\s*$").unwrap(),
+        Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").expect("valid regex"),
+        Regex::new(r"^\s*\\begin\{multline\*?\}[\s\S]+?\\end\{multline\*?\}\s*$").expect("valid regex"),
     ]
 }
 
 #[allow(dead_code)]
 fn make_inline_math_pat() -> Regex {
-    Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").unwrap()
+    Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").expect("valid regex")
 }
 
 #[allow(dead_code)]
@@ -368,7 +368,7 @@ pub fn detect_block_type(line: &str) -> BlockType {
     }
 
     // Markdown heading: "# text"
-    if Regex::new(r"^#{1,6}\s+").unwrap().is_match(s) {
+    if Regex::new(r"^#{1,6}\s+").expect("valid regex").is_match(s) {
         return BlockType::Heading;
     }
 
@@ -387,19 +387,19 @@ pub fn detect_block_type(line: &str) -> BlockType {
 
     // Figure / Table caption pattern (case insensitive)
     let caption_pat =
-        Regex::new(r"(?i)^(Figure|Fig\.|Table|Alg\.?|Algorithm|Listing|Plate)\s+\d").unwrap();
+        Regex::new(r"(?i)^(Figure|Fig\.|Table|Alg\.?|Algorithm|Listing|Plate)\s+\d").expect("valid regex");
     if caption_pat.is_match(s) {
         return BlockType::Caption;
     }
 
     // Footnote / reference mark
-    if Regex::new(r"^\[\d+\]$").unwrap().is_match(s) || Regex::new(r"^\^\d+$").unwrap().is_match(s)
+    if Regex::new(r"^\[\d+\]$").expect("valid regex").is_match(s) || Regex::new(r"^\^\d+$").expect("valid regex").is_match(s)
     {
         return BlockType::Footnote;
     }
 
     // List item
-    if Regex::new(r"^[-*+]\s").unwrap().is_match(s) || Regex::new(r"^\d+\.\s").unwrap().is_match(s)
+    if Regex::new(r"^[-*+]\s").expect("valid regex").is_match(s) || Regex::new(r"^\d+\.\s").expect("valid regex").is_match(s)
     {
         return BlockType::ListItem;
     }
@@ -485,7 +485,7 @@ pub fn segment_into_sections(text: &str, max_sections: usize) -> Vec<(String, St
     let mut sections: Vec<(String, Vec<String>)> = Vec::new();
     let mut cur_title = "BODY".to_string();
     let mut cur_buf: Vec<String> = Vec::new();
-    let md_heading_pat = Regex::new(r"^(#{1,6})\s+(.+)$").unwrap();
+    let md_heading_pat = Regex::new(r"^(#{1,6})\s+(.+)$").expect("valid regex");
 
     for line in &lines {
         let stripped = line.trim();
@@ -618,17 +618,17 @@ mod tests {
     // Helpers for math detection — only needed by tests
     fn make_display_math_patterns() -> Vec<Regex> {
         vec![
-            Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").unwrap(),
-            Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").unwrap(),
-            Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").unwrap(),
-            Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").unwrap(),
-            Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").unwrap(),
-            Regex::new(r"^\s*\\begin\{multline\*?\}[\s\S]+?\\end\{multline\*?\}\s*$").unwrap(),
+            Regex::new(r"^\s*\$\$[\s\S]+?\$\$\s*$").expect("valid regex"),
+            Regex::new(r"^\s*\\[\s\S]+?\s*\\]\s*$").expect("valid regex"),
+            Regex::new(r"^\s*\\begin\{align\*?\}[\s\S]+?\\end\{align\*?\}\s*$").expect("valid regex"),
+            Regex::new(r"^\s*\\begin\{gather\*?\}[\s\S]+?\\end\{gather\*?\}\s*$").expect("valid regex"),
+            Regex::new(r"^\s*\\begin\{eqnarray\*?\}[\s\S]+?\\end\{eqnarray\*?\}\s*$").expect("valid regex"),
+            Regex::new(r"^\s*\\begin\{multline\*?\}[\s\S]+?\\end\{multline\*?\}\s*$").expect("valid regex"),
         ]
     }
 
     fn make_inline_math_pat() -> Regex {
-        Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").unwrap()
+        Regex::new(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)").expect("valid regex")
     }
 
     fn is_display_math(line: &str) -> bool {

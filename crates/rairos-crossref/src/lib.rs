@@ -17,15 +17,15 @@ use std::time::Duration;
 use thiserror::Error;
 
 static RE_HTML_TAG: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"<[^>]+>").unwrap()
+    Regex::new(r"<[^>]+>").expect("valid regex")
 });
 
 static RE_ARXIV_URL: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+    Regex::new(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?").expect("valid regex")
 });
 
 static RE_ARXIV_ID: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+    Regex::new(r"(\d{4}\.\d{4,5})(v\d+)?").expect("valid regex")
 });
 
 #[derive(Error, Debug)]

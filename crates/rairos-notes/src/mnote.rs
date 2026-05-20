@@ -7,28 +7,28 @@ use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
 
 static RE_SHORT: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^P\s*-\s*\d{4}\s*-\s*").unwrap()
+    Regex::new(r"^P\s*-\s*\d{4}\s*-\s*").expect("valid regex")
 });
 static RE_VIEW_EVOLUTION_LOG: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^##\s+View Evolution Log\s*$").unwrap()
+    Regex::new(r"^##\s+View Evolution Log\s*$").expect("valid regex")
 });
 static RE_ABC_A: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\-\s*A:\s*.*$").unwrap()
+    Regex::new(r"^\-\s*A:\s*.*$").expect("valid regex")
 });
 static RE_ABC_B: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\-\s*B:\s*.*$").unwrap()
+    Regex::new(r"^\-\s*B:\s*.*$").expect("valid regex")
 });
 static RE_ABC_C: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\-\s*C:\s*.*$").unwrap()
+    Regex::new(r"^\-\s*C:\s*.*$").expect("valid regex")
 });
 static RE_ABC_A_VALUE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)^\-\s*A:\s*(.+)\s*$").unwrap()
+    Regex::new(r"(?m)^\-\s*A:\s*(.+)\s*$").expect("valid regex")
 });
 static RE_ABC_B_VALUE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)^\-\s*B:\s*(.+)\s*$").unwrap()
+    Regex::new(r"(?m)^\-\s*B:\s*(.+)\s*$").expect("valid regex")
 });
 static RE_ABC_C_VALUE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)^\-\s*C:\s*(.+)\s*$").unwrap()
+    Regex::new(r"(?m)^\-\s*C:\s*(.+)\s*$").expect("valid regex")
 });
 
 fn short(stem: &str, n: usize) -> String {

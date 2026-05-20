@@ -15,159 +15,159 @@ static KEYWORD_PATTERNS: LazyLock<Vec<(Regex, &'static str)>> = LazyLock::new(||
         // Core AI concepts
         (
             Regex::new(r"(?i)\bagent(s)?\b|tool\s*use|function\s*calling|autonomous\s*system")
-                .unwrap(),
+                .expect("valid regex"),
             "Agent",
         ),
         (
             Regex::new(
                 r"(?i)\brag\b|retrieval-augmented|retrieval augmented|knowledge\s*retrieval",
             )
-            .unwrap(),
+            .expect("valid regex"),
             "RAG",
         ),
         (
-            Regex::new(r"(?i)\bmoe\b|mixture of experts").unwrap(),
+            Regex::new(r"(?i)\bmoe\b|mixture of experts").expect("valid regex"),
             "MoE",
         ),
         (
-            Regex::new(r"(?i)\brlhf\b|preference optimization|dpo\b|alignment").unwrap(),
+            Regex::new(r"(?i)\brlhf\b|preference optimization|dpo\b|alignment").expect("valid regex"),
             "Alignment",
         ),
         (
-            Regex::new(r"(?i)\bevaluation\b|benchmark|performance\s*metric").unwrap(),
+            Regex::new(r"(?i)\bevaluation\b|benchmark|performance\s*metric").expect("valid regex"),
             "Evaluation",
         ),
         (
-            Regex::new(r"(?i)\bcompiler\b|kernel|cuda|inference|hardware|accelerator").unwrap(),
+            Regex::new(r"(?i)\bcompiler\b|kernel|cuda|inference|hardware|accelerator").expect("valid regex"),
             "Infrastructure",
         ),
         (
-            Regex::new(r"(?i)\bmultimodal\b|vision|audio|text\s*image|cross\s*modal").unwrap(),
+            Regex::new(r"(?i)\bmultimodal\b|vision|audio|text\s*image|cross\s*modal").expect("valid regex"),
             "Multimodal",
         ),
         (
-            Regex::new(r"(?i)\bcompression\b|quantization|distillation|model\s*reduction").unwrap(),
+            Regex::new(r"(?i)\bcompression\b|quantization|distillation|model\s*reduction").expect("valid regex"),
             "Optimization",
         ),
         (
-            Regex::new(r"(?i)\blong context\b|context length|extended\s*context").unwrap(),
+            Regex::new(r"(?i)\blong context\b|context length|extended\s*context").expect("valid regex"),
             "LongContext",
         ),
         (
-            Regex::new(r"(?i)\bsafety\b|jailbreak|red teaming|adversarial\s*attack").unwrap(),
+            Regex::new(r"(?i)\bsafety\b|jailbreak|red teaming|adversarial\s*attack").expect("valid regex"),
             "Safety",
         ),
         // Additional AI research areas
         (
-            Regex::new(r"(?i)\bllm\b|large\s*language\s*model|transformer").unwrap(),
+            Regex::new(r"(?i)\bllm\b|large\s*language\s*model|transformer").expect("valid regex"),
             "LLM",
         ),
         (
-            Regex::new(r"(?i)\bgpt\b|generative\s*pre-trained").unwrap(),
+            Regex::new(r"(?i)\bgpt\b|generative\s*pre-trained").expect("valid regex"),
             "GPT",
         ),
         (
-            Regex::new(r"(?i)\bcnn\b|convolutional\s*neural\s*network").unwrap(),
+            Regex::new(r"(?i)\bcnn\b|convolutional\s*neural\s*network").expect("valid regex"),
             "CNN",
         ),
         (
-            Regex::new(r"(?i)\brnn\b|recurrent\s*neural\s*network").unwrap(),
+            Regex::new(r"(?i)\brnn\b|recurrent\s*neural\s*network").expect("valid regex"),
             "RNN",
         ),
         (
-            Regex::new(r"(?i)\bgans\b|generative\s*adversarial\s*network").unwrap(),
+            Regex::new(r"(?i)\bgans\b|generative\s*adversarial\s*network").expect("valid regex"),
             "GAN",
         ),
         (
-            Regex::new(r"(?i)\bvae\b|variational\s*autoencoder").unwrap(),
+            Regex::new(r"(?i)\bvae\b|variational\s*autoencoder").expect("valid regex"),
             "VAE",
         ),
         (
-            Regex::new(r"(?i)\breinforcement\s*learning|rl\b").unwrap(),
+            Regex::new(r"(?i)\breinforcement\s*learning|rl\b").expect("valid regex"),
             "RL",
         ),
         (
-            Regex::new(r"(?i)\bsupervised\s*learning").unwrap(),
+            Regex::new(r"(?i)\bsupervised\s*learning").expect("valid regex"),
             "SupervisedLearning",
         ),
         (
-            Regex::new(r"(?i)\bunsupervised\s*learning").unwrap(),
+            Regex::new(r"(?i)\bunsupervised\s*learning").expect("valid regex"),
             "UnsupervisedLearning",
         ),
         (
-            Regex::new(r"(?i)\bsemi-supervised\s*learning").unwrap(),
+            Regex::new(r"(?i)\bsemi-supervised\s*learning").expect("valid regex"),
             "SemiSupervisedLearning",
         ),
         (
-            Regex::new(r"(?i)\bself-supervised\s*learning").unwrap(),
+            Regex::new(r"(?i)\bself-supervised\s*learning").expect("valid regex"),
             "SelfSupervisedLearning",
         ),
         (
-            Regex::new(r"(?i)\btransfer\s*learning").unwrap(),
+            Regex::new(r"(?i)\btransfer\s*learning").expect("valid regex"),
             "TransferLearning",
         ),
         (
-            Regex::new(r"(?i)\bfew-shot\s*learning|few\s*shot").unwrap(),
+            Regex::new(r"(?i)\bfew-shot\s*learning|few\s*shot").expect("valid regex"),
             "FewShotLearning",
         ),
         (
-            Regex::new(r"(?i)\bzero-shot\s*learning|zero\s*shot").unwrap(),
+            Regex::new(r"(?i)\bzero-shot\s*learning|zero\s*shot").expect("valid regex"),
             "ZeroShotLearning",
         ),
         (
-            Regex::new(r"(?i)\bprompt\s*engineering").unwrap(),
+            Regex::new(r"(?i)\bprompt\s*engineering").expect("valid regex"),
             "PromptEngineering",
         ),
         (
-            Regex::new(r"(?i)\btokenization\b|token\s*embedding").unwrap(),
+            Regex::new(r"(?i)\btokenization\b|token\s*embedding").expect("valid regex"),
             "Tokenization",
         ),
         (
-            Regex::new(r"(?i)\bembedding\b|vector\s*representation").unwrap(),
+            Regex::new(r"(?i)\bembedding\b|vector\s*representation").expect("valid regex"),
             "Embedding",
         ),
         (
-            Regex::new(r"(?i)\bknowledge\s*graph|kg\b").unwrap(),
+            Regex::new(r"(?i)\bknowledge\s*graph|kg\b").expect("valid regex"),
             "KnowledgeGraph",
         ),
         (
-            Regex::new(r"(?i)\breasoning\b|logical\s*inference").unwrap(),
+            Regex::new(r"(?i)\breasoning\b|logical\s*inference").expect("valid regex"),
             "Reasoning",
         ),
         (
-            Regex::new(r"(?i)\bsummarization\b|summary").unwrap(),
+            Regex::new(r"(?i)\bsummarization\b|summary").expect("valid regex"),
             "Summarization",
         ),
         (
-            Regex::new(r"(?i)\btranslation\b|machine\s*translation").unwrap(),
+            Regex::new(r"(?i)\btranslation\b|machine\s*translation").expect("valid regex"),
             "Translation",
         ),
         (
-            Regex::new(r"(?i)\bquestion\s*answering|qa\b").unwrap(),
+            Regex::new(r"(?i)\bquestion\s*answering|qa\b").expect("valid regex"),
             "QA",
         ),
         (
-            Regex::new(r"(?i)\bdocument\s*understanding").unwrap(),
+            Regex::new(r"(?i)\bdocument\s*understanding").expect("valid regex"),
             "DocumentUnderstanding",
         ),
         (
-            Regex::new(r"(?i)\bcoding\b|code\s*generation").unwrap(),
+            Regex::new(r"(?i)\bcoding\b|code\s*generation").expect("valid regex"),
             "Coding",
         ),
         (
-            Regex::new(r"(?i)\bmedical\s*ai|healthcare\s*ai").unwrap(),
+            Regex::new(r"(?i)\bmedical\s*ai|healthcare\s*ai").expect("valid regex"),
             "MedicalAI",
         ),
         (
-            Regex::new(r"(?i)\bfinance\s*ai|financial\s*ai").unwrap(),
+            Regex::new(r"(?i)\bfinance\s*ai|financial\s*ai").expect("valid regex"),
             "FinanceAI",
         ),
         (
-            Regex::new(r"(?i)\beducation\s*ai|educational\s*ai").unwrap(),
+            Regex::new(r"(?i)\beducation\s*ai|educational\s*ai").expect("valid regex"),
             "EducationAI",
         ),
         (
-            Regex::new(r"(?i)\benvironmental\s*ai|climate\s*ai").unwrap(),
+            Regex::new(r"(?i)\benvironmental\s*ai|climate\s*ai").expect("valid regex"),
             "EnvironmentalAI",
         ),
     ]

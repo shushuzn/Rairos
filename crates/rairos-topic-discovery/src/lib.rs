@@ -170,7 +170,7 @@ fn gap_type_topic_map() -> HashMap<String, Vec<String>> {
 static KEYWORD_REGEX: OnceLock<Regex> = OnceLock::new();
 
 fn keyword_regex() -> &'static Regex {
-    KEYWORD_REGEX.get_or_init(|| Regex::new(r"[a-z][a-z0-9-]*[a-z]").unwrap())
+    KEYWORD_REGEX.get_or_init(|| Regex::new(r"[a-z][a-z0-9-]*[a-z]").expect("valid regex"))
 }
 
 static GENERIC_TERMS: OnceLock<HashSet<&'static str>> = OnceLock::new();

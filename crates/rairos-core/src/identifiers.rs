@@ -3,31 +3,31 @@ use std::sync::LazyLock;
 use regex::Regex;
 
 static DOI_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)^(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+$").unwrap()
+    Regex::new(r"(?i)^(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+$").expect("valid regex")
 });
 
 static DOI_STRIP_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)^(?:https?://)?(?:dx\.)?doi\.org/").unwrap()
+    Regex::new(r"(?i)^(?:https?://)?(?:dx\.)?doi\.org/").expect("valid regex")
 });
 
 static ARXIV_URL_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+    Regex::new(r"(?i)arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})(v\d+)?").expect("valid regex")
 });
 
 static ARXIV_NEW_STYLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$").unwrap()
+    Regex::new(r"^\d{4}\.\d{4,5}(v\d+)?$").expect("valid regex")
 });
 
 static ARXIV_OLD_STYLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^[a-zA-Z\-]+/\d{7}(v\d+)?$").unwrap()
+    Regex::new(r"^[a-zA-Z\-]+/\d{7}(v\d+)?$").expect("valid regex")
 });
 
 static ARXIV_DOI_PREFIX_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)10\.48550/arXiv\.(\d{4}\.\d{4,5})(v\d+)?").unwrap()
+    Regex::new(r"(?i)10\.48550/arXiv\.(\d{4}\.\d{4,5})(v\d+)?").expect("valid regex")
 });
 
 static ARXIV_PREFIX_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)^arxiv:(\d{4}\.\d{4,5})(v\d+)?$").unwrap()
+    Regex::new(r"(?i)^arxiv:(\d{4}\.\d{4,5})(v\d+)?$").expect("valid regex")
 });
 
 pub fn is_probably_doi(s: &str) -> bool {

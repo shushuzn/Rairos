@@ -111,8 +111,8 @@ impl ReplicationChecker {
             re_github: vec![
                 Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?")
                     .unwrap(),
-                Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
-                Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").unwrap(),
+                Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
+                Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").expect("valid regex"),
             ],
             re_gitlab: vec![Regex::new(
                 r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?",
@@ -121,13 +121,13 @@ impl ReplicationChecker {
             re_hf: vec![
                 Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)")
                     .unwrap(),
-                Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
+                Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
             ],
-            re_clean_markdown: Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").unwrap(),
-            re_citation_ref: Regex::new(r"\[(\d+)\]").unwrap(),
-            re_py_version: Regex::new(r"python\s*3?\.\d+").unwrap(),
-            re_disk_space: Regex::new(r"(\d+)\s*(GB|TB|MB)").unwrap(),
-            re_ram: Regex::new(r"(\d+)\s*GB\s+(RAM|memory)").unwrap(),
+            re_clean_markdown: Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").expect("valid regex"),
+            re_citation_ref: Regex::new(r"\[(\d+)\]").expect("valid regex"),
+            re_py_version: Regex::new(r"python\s*3?\.\d+").expect("valid regex"),
+            re_disk_space: Regex::new(r"(\d+)\s*(GB|TB|MB)").expect("valid regex"),
+            re_ram: Regex::new(r"(\d+)\s*GB\s+(RAM|memory)").expect("valid regex"),
         }
     }
 

@@ -10,48 +10,48 @@ use std::sync::LazyLock;
 
 static FACTUAL_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"(?i)\b(who|whom|whose|who\'s)\b").unwrap(),
-        Regex::new(r"(?i)\b(when|what year|what date)\b").unwrap(),
-        Regex::new(r"(?i)\b(which (paper|author|model))\b").unwrap(),
-        Regex::new(r"(?i)\b(who proposed|who introduced|who published|who wrote|who created)\b").unwrap(),
-        Regex::new(r"(?i)\b(where (published|presented|introduced|released))\b").unwrap(),
-        Regex::new(r"(?i)\b(what organization|what institution|what company)\b").unwrap(),
-        Regex::new(r"(是|谁|哪篇|哪个作者|何时)").unwrap(),
+        Regex::new(r"(?i)\b(who|whom|whose|who\'s)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(when|what year|what date)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(which (paper|author|model))\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(who proposed|who introduced|who published|who wrote|who created)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(where (published|presented|introduced|released))\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(what organization|what institution|what company)\b").expect("valid regex"),
+        Regex::new(r"(是|谁|哪篇|哪个作者|何时)").expect("valid regex"),
     ]
 });
 
 static CONCEPTUAL_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"(?i)\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b").unwrap(),
-        Regex::new(r"(原理|机制|概念|解释|是什么|如何|为什么|理解|定义)").unwrap(),
+        Regex::new(r"(?i)\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b").expect("valid regex"),
+        Regex::new(r"(原理|机制|概念|解释|是什么|如何|为什么|理解|定义)").expect("valid regex"),
     ]
 });
 
 static COMPARATIVE_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"(?i)\b(vs|versus|compared to|compared with)\b").unwrap(),
-        Regex::new(r"(?i)\b(difference between|differences between)\b").unwrap(),
-        Regex::new(r"(?i)\b(compare|comparison)\b").unwrap(),
-        Regex::new(r"(?i)\b(which is better|which is worse|which is stronger)\b").unwrap(),
-        Regex::new(r"(?i)\b(pros and cons|pros/cons|strengths? and weaknesses?)\b").unwrap(),
-        Regex::new(r"(和.*比较|比较.*和|对比|区别|差异)").unwrap(),
+        Regex::new(r"(?i)\b(vs|versus|compared to|compared with)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(difference between|differences between)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(compare|comparison)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(which is better|which is worse|which is stronger)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(pros and cons|pros/cons|strengths? and weaknesses?)\b").expect("valid regex"),
+        Regex::new(r"(和.*比较|比较.*和|对比|区别|差异)").expect("valid regex"),
     ]
 });
 
 static TEMPORAL_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"(?i)\b(recent|latest|newest|recently)\b").unwrap(),
-        Regex::new(r"(?i)\b(202[0-9]|20[2-9]\d)\b").unwrap(),
-        Regex::new(r"(?i)\b(published in|released in|presented in|from 20)\b").unwrap(),
-        Regex::new(r"(?i)\b(evolution|development|history|progress)\b").unwrap(),
-        Regex::new(r"(?i)\b(before|after|since|until|past|future)\b").unwrap(),
+        Regex::new(r"(?i)\b(recent|latest|newest|recently)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(202[0-9]|20[2-9]\d)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(published in|released in|presented in|from 20)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(evolution|development|history|progress)\b").expect("valid regex"),
+        Regex::new(r"(?i)\b(before|after|since|until|past|future)\b").expect("valid regex"),
     ]
 });
 
 static CLEAN_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"(?i)(是什么|什么是|请问|帮我|找找|解释|说明|介绍)").unwrap(),
-        Regex::new(r"(?i)(what is|what are|explain|describe|introduce)").unwrap(),
+        Regex::new(r"(?i)(是什么|什么是|请问|帮我|找找|解释|说明|介绍)").expect("valid regex"),
+        Regex::new(r"(?i)(what is|what are|explain|describe|introduce)").expect("valid regex"),
     ]
 });
 
@@ -161,22 +161,22 @@ impl RagChat {
 
         for pattern in FACTUAL_PATTERNS.iter() {
             if pattern.is_match(query) {
-                *scores.get_mut("factual").unwrap() += 1;
+                *scores.get_mut("factual").expect("valid regex") += 1;
             }
         }
         for pattern in CONCEPTUAL_PATTERNS.iter() {
             if pattern.is_match(query) {
-                *scores.get_mut("conceptual").unwrap() += 1;
+                *scores.get_mut("conceptual").expect("valid regex") += 1;
             }
         }
         for pattern in COMPARATIVE_PATTERNS.iter() {
             if pattern.is_match(query) {
-                *scores.get_mut("comparative").unwrap() += 1;
+                *scores.get_mut("comparative").expect("valid regex") += 1;
             }
         }
         for pattern in TEMPORAL_PATTERNS.iter() {
             if pattern.is_match(query) {
-                *scores.get_mut("temporal").unwrap() += 1;
+                *scores.get_mut("temporal").expect("valid regex") += 1;
             }
         }
 
@@ -317,7 +317,7 @@ impl RagChat {
             return text;
         }
 
-        let sentence_ends = Regex::new(r"[。！？.!?]").unwrap();
+        let sentence_ends = Regex::new(r"[。！？.!?]").expect("valid regex");
         let mut result = String::new();
 
         for cap in sentence_ends.split(&text) {
@@ -479,7 +479,7 @@ impl RagChat {
 
         let clean = snippet.replace('\n', " ").replace("  ", " ");
 
-        let sentence_end = Regex::new(r"[.!?]\s").unwrap();
+        let sentence_end = Regex::new(r"[.!?]\s").expect("valid regex");
         if let Some(m) = sentence_end.find(&clean) {
             let quote = clean[..m.end()].trim().to_string();
             return self.clean_quote(&quote);

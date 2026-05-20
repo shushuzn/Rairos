@@ -15,7 +15,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::LazyLock;
 
 static RE_WORD: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\b[a-z][a-z0-9-]{3,}\b").unwrap()
+    Regex::new(r"\b[a-z][a-z0-9-]{3,}\b").expect("valid regex")
 });
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -8,15 +8,15 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 
 static RE_KEY: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r#"^\s*([A-Za-z0-9_\-]+)\s*:\s*(.*)\s*$"#).unwrap()
+    Regex::new(r#"^\s*([A-Za-z0-9_\-]+)\s*:\s*(.*)\s*$"#).expect("valid regex")
 });
 
 static RE_LIST_ITEM: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r#"^\s+-\s+(.*)\s*$"#).unwrap()
+    Regex::new(r#"^\s+-\s+(.*)\s*$"#).expect("valid regex")
 });
 
 static RE_DATE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\d{4}-\d{2}-\d{2}$").unwrap()
+    Regex::new(r"^\d{4}-\d{2}-\d{2}$").expect("valid regex")
 });
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -162,8 +162,8 @@ tags:
 # Test
 "#;
         let fm = Frontmatter::parse(md);
-        assert_eq!(fm.get_str("title").unwrap(), "Test Paper");
-        assert_eq!(fm.get_str("date").unwrap(), "2024-01-15");
+        assert_eq!(fm.get_str("title").expect("valid regex"), "Test Paper");
+        assert_eq!(fm.get_str("date").expect("valid regex"), "2024-01-15");
         let tags = parse_tags_from_frontmatter(&fm);
         assert_eq!(tags, vec!["LLM", "Agent"]);
     }

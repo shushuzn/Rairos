@@ -14,20 +14,20 @@ use std::sync::LazyLock;
 
 static TEST_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"([\d.]+)\s*(?:%%|%)\s*(?:accuracy| Accuracy)").unwrap(),
-        Regex::new(r"([\d.]+)\s*(?:%%|%)\s*(?:reduces?|reduction|improve)").unwrap(),
-        Regex::new(r"([\d.]+)\s*times\s*(?:faster|faster than)").unwrap(),
-        Regex::new(r"(?:sota|state-of-the-art)\s*([\d.]+)").unwrap(),
-        Regex::new(r"accuracy\s*(?:of|:)\s*([\d.]+)").unwrap(),
-        Regex::new(r"(?:up to |≈|~)?([\d.]+)\s*(?:%%|%)\s*(?:on|over)").unwrap(),
+        Regex::new(r"([\d.]+)\s*(?:%%|%)\s*(?:accuracy| Accuracy)").expect("valid regex"),
+        Regex::new(r"([\d.]+)\s*(?:%%|%)\s*(?:reduces?|reduction|improve)").expect("valid regex"),
+        Regex::new(r"([\d.]+)\s*times\s*(?:faster|faster than)").expect("valid regex"),
+        Regex::new(r"(?:sota|state-of-the-art)\s*([\d.]+)").expect("valid regex"),
+        Regex::new(r"accuracy\s*(?:of|:)\s*([\d.]+)").expect("valid regex"),
+        Regex::new(r"(?:up to |≈|~)?([\d.]+)\s*(?:%%|%)\s*(?:on|over)").expect("valid regex"),
     ]
 });
 
 static IO_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"(?i)input\s*[:=]\s*(.+?)\s*[,\n]\s*output\s*[:=]\s*(.+?)(?:\n|$)").unwrap(),
-        Regex::new(r"(?i)given\s+(.+?)\s*,\s*(?:the\s+)?(?:result|output)\s+(?:is|:)\s*(.+?)(?:\n|$)").unwrap(),
-        Regex::new(r"(?i)(?:example|eg\.?)\s*[:.]?\s*['\x22]?(.+?)['\x22]?\s*(?:->|->|gives|produces)\s*['\x22]?(.+?)['\x22]?(?:\n|$)").unwrap(),
+        Regex::new(r"(?i)input\s*[:=]\s*(.+?)\s*[,\n]\s*output\s*[:=]\s*(.+?)(?:\n|$)").expect("valid regex"),
+        Regex::new(r"(?i)given\s+(.+?)\s*,\s*(?:the\s+)?(?:result|output)\s+(?:is|:)\s*(.+?)(?:\n|$)").expect("valid regex"),
+        Regex::new(r"(?i)(?:example|eg\.?)\s*[:.]?\s*['\x22]?(.+?)['\x22]?\s*(?:->|->|gives|produces)\s*['\x22]?(.+?)['\x22]?(?:\n|$)").expect("valid regex"),
     ]
 });
 
@@ -314,7 +314,7 @@ fn extract_dataset_tests(datasets: &[String], code: &str) -> Vec<TestCase> {
 fn extract_equation_tests(equations: &[String]) -> Vec<TestCase> {
     let math_functions = ["log", "exp", "sin", "cos", "tan", "sqrt", "max", "min"];
     let mut tests = Vec::new();
-    let var_regex = regex::Regex::new(r"[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
+    let var_regex = regex::Regex::new(r"[a-zA-Z_][a-zA-Z0-9_]*").expect("valid regex");
 
     for (i, eq) in equations.iter().take(3).enumerate() {
         let variables: Vec<&str> = var_regex

@@ -91,7 +91,7 @@ pub fn compute_algorithm_fingerprint(content: &PaperContent) -> String {
     // Regex for extracting operation keywords from equations
     let eq_ops_re = Regex::new(
         r"(?:softmax|attention|matmul|@|linear|layer.?norm|residual|dropout|encoder|decoder|self.?attention|cross.?attention|multi.?head|positional|embedding|relu|gelu|swiglu|feed.?forward|normalization|convolution|pooling|gru|lstm|rnn|transformer|cross.?entropy| BCE|CE|adam|sgd|rmsprop|weight)"
-    ).unwrap();
+    ).expect("valid regex");
 
     // 1. Equations: extract structural skeleton (op signature only, no vars)
     for eq in &content.equations {
@@ -132,8 +132,8 @@ pub fn compute_algorithm_fingerprint(content: &PaperContent) -> String {
         vec!["convolution", "conv", "convlayer"],
     ];
 
-    let strip_version_re = Regex::new(r"[-_]?[0-9]+$").unwrap();
-    let strip_non_alpha_re = Regex::new(r"[^a-z]+").unwrap();
+    let strip_version_re = Regex::new(r"[-_]?[0-9]+$").expect("valid regex");
+    let strip_non_alpha_re = Regex::new(r"[^a-z]+").expect("valid regex");
 
     for method in &content.methods {
         let mut m = method.to_lowercase();
@@ -242,7 +242,7 @@ fn extract_text_from_xml(xml: &str, tag: &str) -> Option<String> {
 
 fn extract_author_names(xml: &str) -> Vec<String> {
     let mut authors = Vec::new();
-    let name_re = Regex::new(r"<author>.*?<name>([^<]+)</name>.*?</author>").unwrap();
+    let name_re = Regex::new(r"<author>.*?<name>([^<]+)</name>.*?</author>").expect("valid regex");
     for cap in name_re.captures_iter(xml) {
         if let Some(name) = cap.get(1) {
             authors.push(name.as_str().to_string());
@@ -253,7 +253,7 @@ fn extract_author_names(xml: &str) -> Vec<String> {
 
 fn extract_categories(xml: &str) -> Vec<String> {
     let mut cats = Vec::new();
-    let cat_re = Regex::new(r#"<category term="([^"]+)""#).unwrap();
+    let cat_re = Regex::new(r#"<category term="([^"]+)""#).expect("valid regex");
     for cap in cat_re.captures_iter(xml) {
         if let Some(cat) = cap.get(1) {
             cats.push(cat.as_str().to_string());
@@ -340,7 +340,7 @@ fn parse_arxiv_response(xml: &str, arxiv_id: &str) -> PaperContent {
     let categories = extract_categories(xml);
 
     // Extract PDF URL from links
-    let link_re = Regex::new(r#"<link href="([^"]+\.pdf)" type="application/pdf""#).unwrap();
+    let link_re = Regex::new(r#"<link href="([^"]+\.pdf)" type="application/pdf""#).expect("valid regex");
     let pdf_url = link_re
         .captures_iter(xml)
         .next()
@@ -442,7 +442,7 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
     // Algorithm descriptions: look for "algorithm", "method", "approach" sections
     let algo_pattern = Regex::new(
         r"(?:algorithm|method|approach|procedure|technique)s?[:\s]+([A-Z][^.!?\n]{50,500}?(?:\d+\.|\n){1,3})"
-    ).unwrap();
+    ).expect("valid regex");
 
     for cap in algo_pattern.captures_iter(&full_text[..10000.min(full_text.len())]) {
         if let Some(desc) = cap.get(1) {
@@ -463,7 +463,7 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
     }
 
     // Equations: look for display math
-    let eq_pattern = Regex::new(r"\$\$(.+?)\$\$|\$(.+?)\$").unwrap();
+    let eq_pattern = Regex::new(r"\$\$(.+?)\$\$|\$(.+?)\$").expect("valid regex");
     for cap in eq_pattern.captures_iter(&full_text) {
         let eq = cap
             .get(1)
@@ -472,7 +472,7 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
             .unwrap_or("");
         if !eq.is_empty() && eq.len() > 5 {
             let idx = content.equations.len() as u32;
-            let loc = match_to_location(cap.get(0).unwrap().start(), &page_offsets);
+            let loc = match_to_location(cap.get(0).expect("valid regex").start(), &page_offsets);
             content.equations.push(eq[..200.min(eq.len())].to_string());
             content.equation_sources.push(EquationSource {
                 index: idx,
@@ -489,7 +489,7 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
     ];
 
     for pat in &claim_patterns {
-        let re = Regex::new(pat).unwrap();
+        let re = Regex::new(pat).expect("valid regex");
         for cap in re.captures_iter(&text_lower) {
             if let Some(m) = cap.get(0) {
                 let claim = m.as_str().trim();
@@ -519,7 +519,7 @@ fn _enrich_from_pdf(content: &mut PaperContent, pdf_path: &Path) {
     ];
 
     for (pat, name) in &hp_patterns {
-        let re = Regex::new(pat).unwrap();
+        let re = Regex::new(pat).expect("valid regex");
         for cap in re.captures_iter(&text_lower) {
             if let Some(m) = cap.get(0) {
                 let val = m.as_str().split(':').next_back().unwrap_or("").trim();

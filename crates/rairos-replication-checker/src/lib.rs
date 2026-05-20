@@ -15,43 +15,43 @@ use std::sync::LazyLock;
 
 static GITHUB_REGEX: LazyLock<Vec<(Regex, bool)>> = LazyLock::new(|| {
     vec![
-        (Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(), true),
-        (Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(), true),
-        (Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").unwrap(), false),
+        (Regex::new(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").expect("valid regex"), true),
+        (Regex::new(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"), true),
+        (Regex::new(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git").expect("valid regex"), false),
     ]
 });
 
 static GITLAB_REGEX: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").unwrap(),
+        Regex::new(r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?").expect("valid regex"),
     ]
 });
 
 static HF_REGEX: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     vec![
-        Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
-        Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").unwrap(),
+        Regex::new(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
+        Regex::new(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)").expect("valid regex"),
     ]
 });
 
 static MARKDOWN_LINK_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").unwrap()
+    Regex::new(r"\[([^\]]+)\]\((https?://[^\)]+)\)").expect("valid regex")
 });
 
 static CITATION_BRACKET_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\[(\d+)\]").unwrap()
+    Regex::new(r"\[(\d+)\]").expect("valid regex")
 });
 
 static PYTHON_VERSION_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"python\s*3?\.\d+").unwrap()
+    Regex::new(r"python\s*3?\.\d+").expect("valid regex")
 });
 
 static MEMORY_SIZE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(\d+)\s*(GB|TB|MB)").unwrap()
+    Regex::new(r"(\d+)\s*(GB|TB|MB)").expect("valid regex")
 });
 
 static RAM_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(\d+)\s*GB\s+(RAM|memory)").unwrap()
+    Regex::new(r"(\d+)\s*GB\s+(RAM|memory)").expect("valid regex")
 });
 
 // ─── Data Structures ─────────────────────────────────────────────────────────

@@ -7,16 +7,16 @@ use std::path::Path;
 use std::sync::LazyLock;
 
 static RE_LEADING_HASHES: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^#+\s+").unwrap()
+    Regex::new(r"^#+\s+").expect("valid regex")
 });
 static RE_BLANK_LINES: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(\s*\n)*").unwrap()
+    Regex::new(r"(\s*\n)*").expect("valid regex")
 });
 static RE_SECTION_END: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\n##\s+").unwrap()
+    Regex::new(r"\n##\s+").expect("valid regex")
 });
 static RE_WIKILINK_LINE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^-\s*\[\[[^\]]+\]\](?:[^\n]*)?\n?").unwrap()
+    Regex::new(r"^-\s*\[\[[^\]]+\]\](?:[^\n]*)?\n?").expect("valid regex")
 });
 
 pub fn ensure_cnote(concept_dir: &Path, concept: &str) -> std::path::PathBuf {
@@ -40,7 +40,7 @@ pub fn upsert_link_under_heading(md: &str, heading: &str, link_line: &str) -> St
     let clean_heading = RE_LEADING_HASHES.replace(heading, "").trim().to_string();
 
     let pattern = format!(r"(^##\s+{}(?:\s*|\s+.*)$)", regex::escape(&clean_heading));
-    let re_pattern = Regex::new(&pattern).unwrap();
+    let re_pattern = Regex::new(&pattern).expect("valid regex");
 
     let m = re_pattern.find(md);
     if m.is_none() {
@@ -53,7 +53,7 @@ pub fn upsert_link_under_heading(md: &str, heading: &str, link_line: &str) -> St
     }
 
     let m = m.unwrap();
-    let match_line = m.as_str().split('\n').next().unwrap();
+    let match_line = m.as_str().split('\n').next().expect("valid regex");
     let start = m.start() + match_line.len();
     let after = &md[start..];
 
@@ -186,7 +186,7 @@ Some manual note here
         let tmp_dir = std::env::temp_dir();
         let path = ensure_cnote(&tmp_dir, "TestConcept");
         assert!(path.exists());
-        let content = std::fs::read_to_string(&path).unwrap();
+        let content = std::fs::read_to_string(&path).expect("valid regex");
         assert!(content.contains("# C - TestConcept"));
         assert!(content.contains("## 核心定义"));
         assert!(content.contains("## 产生背景"));
@@ -199,9 +199,9 @@ Some manual note here
     fn test_ensure_cnote_does_not_overwrite() {
         let tmp_dir = std::env::temp_dir();
         let path = tmp_dir.join("C - Existing.md");
-        std::fs::write(&path, "Custom content").unwrap();
+        std::fs::write(&path, "Custom content").expect("valid regex");
         let result = ensure_cnote(&tmp_dir, "Existing");
-        assert_eq!(std::fs::read_to_string(&result).unwrap(), "Custom content");
+        assert_eq!(std::fs::read_to_string(&result).expect("valid regex"), "Custom content");
         std::fs::remove_file(&path).ok();
     }
 }

@@ -163,7 +163,7 @@ impl CrossReferencer {
         raw: &str,
         candidates: &[(String, String, String)],
     ) -> Vec<CrossReferenceItem> {
-        let pattern = Regex::new(r"\[?(\S+?)\]?\s*\((\w+)\)").unwrap();
+        let pattern = Regex::new(r"\[?(\S+?)\]?\s*\((\w+)\)").expect("valid regex");
         let mut items = Vec::new();
 
         for cap in pattern.captures_iter(raw) {
