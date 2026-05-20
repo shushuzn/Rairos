@@ -61,39 +61,39 @@ Batch import from arXiv ID, DOI, or JSON file.
 Export database to JSON or CSV.
 
 ```bash
-rairos export data.json
-rairos export data.csv --format csv
-rairos export done_papers.json --status done
+./rairos.sh export data.json
+./rairos.sh export data.csv --format csv
+./rairos.sh export done_papers.json --status done
 ```
 
 ---
 
 ## Research Analysis
 
-### `rairos analyze <id>`
+### `./rairos.sh analyze <id>`
 Extract insights from a paper.
 
 ```bash
-rairos analyze 2601.00155 --kind summary
-rairos analyze 2601.00155 --kind keywords
-rairos analyze 2601.00155 --kind topics
-rairos analyze 2601.00155 --kind quality
+./rairos.sh analyze 2601.00155 --kind summary
+./rairos.sh analyze 2601.00155 --kind keywords
+./rairos.sh analyze 2601.00155 --kind topics
+./rairos.sh analyze 2601.00155 --kind quality
 ```
 
-### `rairos compare <ids...>`
+### `./rairos.sh compare <ids...>`
 Compare multiple papers.
 
 ```bash
-rairos compare 2601.00155,2302.00763 --aspect abstract
-rairos compare 2601.00155,2302.00763 --aspect method,results
+./rairos.sh compare 2601.00155,2302.00763 --aspect abstract
+./rairos.sh compare 2601.00155,2302.00763 --aspect method,results
 ```
 
-### `rairos ask <question>`
+### `./rairos.sh ask <question>`
 Ask a question about papers in your library.
 
 ```bash
-rairos ask "What architectures are used for long-context LLMs?"
-rairos ask "Compare scaling patterns" --max-papers 20
+./rairos.sh ask "What architectures are used for long-context LLMs?"
+./rairos.sh ask "Compare scaling patterns" --max-papers 20
 ```
 
 ### `rairos trend <topic>`
