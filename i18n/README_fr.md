@@ -84,7 +84,7 @@ export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 ./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
-Pour la configuration complète, voir [API_CONFIG.md](API_CONFIG.md).
+Pour la configuration complète, voir [docs/configuration.md](docs/configuration.md).
 
 ## Arbre de recherche
 

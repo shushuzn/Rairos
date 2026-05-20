@@ -84,7 +84,7 @@ export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 ./rairos.sh 2601.00155 --tags LLM --ai
 ```
 
-Полная конфигурация — см. [API_CONFIG.md](API_CONFIG.md).
+Полная конфигурация — см. [docs/configuration.md](docs/configuration.md).
 
 ## Исследовательское дерево
 
