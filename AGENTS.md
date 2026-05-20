@@ -187,7 +187,7 @@ Constants centralized in `rairos-core::constants` for reuse:
 ## Rust Dispatch Architecture
 
 - MCP: `McpServer` (OnceLock cached) dispatches to pure Rust trait handlers — **no Python fallback**
-- CLI: `Commands` enum + `handle_*()` functions in `crates/rairos-cli/src/main.rs`
+- CLI: `Commands` enum + `handle_*()` functions in `crates/rairos-cli/src/handlers/commands.rs`
 - Backward-compatible params: Rust handlers accept both `paper_id` and `arxiv_id`
 
 ## Security

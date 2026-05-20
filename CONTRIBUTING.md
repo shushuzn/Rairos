@@ -86,7 +86,7 @@ unset RUSTC_WRAPPER && CARGO_BUILD_JOBS=1 cargo build
 
 ### New CLI Command
 
-1. Add command variant to `Commands` enum in `crates/rairos-cli/src/main.rs`
+1. Add command variant to `Commands` enum in `crates/rairos-cli/src/handlers/commands.rs`
 2. Create handler in `crates/rairos-cli/src/handlers/<feature>.rs`
 3. Add match arm in command dispatch
 
