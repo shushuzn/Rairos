@@ -244,13 +244,13 @@ pub struct RateLimitLimits {
 
 #[derive(Debug, Clone, Default)]
 pub struct APIRateLimitManager {
-    limiters: Arc<RwLock<HashMap<String, RateLimiter>>>,
+    limiters: Arc<RwLock<FxHashMap<String, RateLimiter>>>,
 }
 
 impl APIRateLimitManager {
     pub fn new() -> Self {
         Self {
-            limiters: Arc::new(RwLock::new(HashMap::new())),
+            limiters: Arc::new(RwLock::new(FxHashMap::default())),
         }
     }
 
@@ -275,7 +275,7 @@ impl APIRateLimitManager {
         }
     }
 
-    pub fn get_all_stats(&self) -> HashMap<String, RateLimiterStats> {
+    pub fn get_all_stats(&self) -> FxHashMap<String, RateLimiterStats> {
         let limiters = self.limiters.read();
         limiters
             .iter()
@@ -284,7 +284,7 @@ impl APIRateLimitManager {
     }
 }
 
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 static RATE_LIMIT_MANAGER: LazyLock<APIRateLimitManager, fn() -> APIRateLimitManager> =
     LazyLock::new(APIRateLimitManager::new);

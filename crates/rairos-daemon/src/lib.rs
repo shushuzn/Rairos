@@ -19,6 +19,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
+use rustc_hash::FxHashMap;
 
 use anyhow::Result;
 use futures_util::StreamExt;
@@ -98,7 +99,7 @@ impl DaemonEvent {
 /// [`EventBus::publish`] is called, all matching callbacks are invoked
 /// with the [`DaemonEvent`] payload.
 pub struct EventBus {
-    subscribers: Arc<Mutex<HashMap<String, Vec<broadcast::Sender<DaemonEvent>>>>>,
+    subscribers: Arc<Mutex<FxHashMap<String, Vec<broadcast::Sender<DaemonEvent>>>>>,
     history: Arc<Mutex<Vec<DaemonEvent>>>,
     max_history: usize,
 }
@@ -113,7 +114,7 @@ impl EventBus {
     /// Create a new EventBus with the given max history size.
     pub fn new(max_history: usize) -> Self {
         Self {
-            subscribers: Arc::new(Mutex::new(HashMap::new())),
+            subscribers: Arc::new(Mutex::new(FxHashMap::default())),
             history: Arc::new(Mutex::new(Vec::new())),
             max_history,
         }
