@@ -12,11 +12,11 @@
 
 ## Project: Rairos (ai-research-os)
 
-**Self-Evolving Research OS (100% Rust, 149 crates, ~73k lines, 105 CLI commands, 68 MCP tools)**
+**Self-Evolving Research OS (100% Rust, 154 crates, ~73k lines, 105 CLI commands, 69 MCP tools)**
 
 - **Rust CLI**: 104 commands via `./rairos.sh <cmd>`
 - **Rust CLI main.rs**: `crates/rairos-cli/src/main.rs` (955 lines, Commands enum + handle_*())
-- **Rust MCP**: 68 pure-Rust tools in `crates/rairos-mcp/src/` — zero Python fallback
+- **Rust MCP**: 69 pure-Rust tools in `crates/rairos-mcp/src/` — zero Python fallback
 - **Python**: Fully migrated to Rust. All Python source removed.
 - **Test**: `make test`
 - **Linter**: `cargo clippy --workspace -- -D warnings`
@@ -41,7 +41,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 ## Architecture
 
 **CLI**: `crates/rairos-cli/src/main.rs` (`Commands` enum at line 80 + `handle_*()` functions).
-**MCP**: `crates/rairos-mcp/src/` (68 pure-Rust `ToolHandler` implementations, no Python fallback).
+**MCP**: `crates/rairos-mcp/src/` (69 pure-Rust `ToolHandler` implementations, no Python fallback).
 
 ## Key Patterns
 
