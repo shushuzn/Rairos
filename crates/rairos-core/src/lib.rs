@@ -655,7 +655,7 @@ impl Database {
         );
         let sql_no_status = format!("{} ORDER BY published DESC LIMIT ?1 OFFSET ?2", sql);
 
-        let mut papers_vec: Vec<Paper> = Vec::new();
+        let mut papers_vec: Vec<Paper> = Vec::with_capacity(limit);
 
         match status {
             Some(s) => {
@@ -857,7 +857,7 @@ impl Database {
                 created_at: row.get(4)?,
             })
         })?;
-        let mut entries = Vec::new();
+        let mut entries = Vec::with_capacity(limit);
         for row in rows {
             entries.push(row?);
         }
@@ -974,7 +974,7 @@ impl Database {
                 created_at: row.get(12)?,
             })
         })?;
-        let mut gaps = Vec::new();
+        let mut gaps = Vec::with_capacity(limit);
         for gap in rows {
             gaps.push(gap?);
         }
@@ -1790,7 +1790,7 @@ impl Database {
             }
             Ok(m)
         })?;
-        let mut result = Vec::new();
+        let mut result = Vec::with_capacity(limit);
         for row in rows {
             result.push(row?);
         }

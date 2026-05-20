@@ -46,6 +46,7 @@ pub fn handle_insight(action: &InsightAction) -> Result<()> {
                 let _ = manager.add_to_collection(cid, &card.card_id);
                 println!("     Added to collection [{}]", cid);
             }
+            manager.flush(); // O(1) save instead of O(n)
         }
 
         InsightAction::List { limit } => {

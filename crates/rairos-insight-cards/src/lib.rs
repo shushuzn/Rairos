@@ -96,6 +96,12 @@ impl InsightManager {
         }
     }
 
+    /// Flush pending changes to disk. Call after batch operations.
+    pub fn flush(&self) {
+        let data = self.load_cards();
+        self.save_cards(&data);
+    }
+
     fn load_collections(&self) -> Vec<HashMap<String, serde_json::Value>> {
         if self.collections_file.exists() {
             if let Ok(text) = std::fs::read_to_string(&self.collections_file) {
@@ -173,7 +179,7 @@ impl InsightManager {
         );
 
         data.push(card_map);
-        self.save_cards(&data);
+        // NOTE: Caller should call save_cards() explicitly after batch operations
         card
     }
 
