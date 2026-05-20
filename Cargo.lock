@@ -3415,6 +3415,7 @@ dependencies = [
  "rand 0.8.6",
  "redis",
  "reqwest",
+ "rustc-hash",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -3548,6 +3549,7 @@ dependencies = [
  "dirs",
  "flate2",
  "parking_lot",
+ "rustc-hash",
  "serde",
  "serde_json",
 ]
@@ -3961,6 +3963,7 @@ dependencies = [
  "rairos-events",
  "rairos-llm",
  "regex",
+ "rustc-hash",
  "serde",
  "serde_json",
  "tempfile",
@@ -4588,6 +4591,7 @@ dependencies = [
  "opentelemetry_sdk",
  "parking_lot",
  "rand 0.8.6",
+ "rustc-hash",
  "serde",
  "serde_json",
  "tracing",
@@ -4857,6 +4861,7 @@ name = "rairos-rate-limiter"
 version = "0.1.0"
 dependencies = [
  "parking_lot",
+ "rustc-hash",
  "serde",
  "serde_json",
 ]
@@ -4945,6 +4950,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
+ "parking_lot",
  "rairos-core",
  "regex",
  "serde",
@@ -5043,6 +5049,7 @@ name = "rairos-scout"
 version = "0.1.0"
 dependencies = [
  "futures",
+ "parking_lot",
  "reqwest",
  "serde",
  "serde-xml-rs",
@@ -5193,6 +5200,7 @@ dependencies = [
 name = "rairos-value-quantifier"
 version = "0.1.0"
 dependencies = [
+ "parking_lot",
  "serde",
  "serde_json",
 ]
