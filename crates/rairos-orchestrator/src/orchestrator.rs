@@ -1,5 +1,5 @@
 use chrono::Utc;
-use rairos_core::{Database, ResearchGap};
+use rairos_core::{Database, Paper, ResearchGap};
 use rairos_crossover::CrossoverEngine;
 use rairos_llm::insight::tracker::EvolutionTracker;
 use rairos_llm::RegretOptimalSelector;
@@ -157,52 +157,60 @@ impl AutonomousOrchestrator {
             return Ok(HashMap::new());
         }
 
-        let db_arc = Arc::clone(&self.db);
+        // Pre-fetch existing papers for all topics to release db lock quickly
+        let existing_papers: Vec<(String, Vec<Paper>)> = {
+            let db_guard = self.db.read().await;
+            let db = db_guard
+                .as_ref()
+                .ok_or_else(|| OrchestratorError::NotInitialized("database".to_string()))?;
+            topics
+                .iter()
+                .map(|(topic, _)| {
+                    let papers = db
+                        .search_papers_smart(topic, 100)
+                        .unwrap_or_default();
+                    (topic.clone(), papers)
+                })
+                .collect()
+        };
 
+        // Fetch all arxiv papers in parallel (async, fast)
+        use futures::future::join_all;
+        let arxiv_futures = topics.iter().map(|(topic, _)| async move {
+            let papers = rairos_parser::search_arxiv_recent(topic, 20).await.unwrap_or_default();
+            (topic.clone(), papers)
+        });
+        let arxiv_results = join_all(arxiv_futures).await;
+        let arxiv_map: std::collections::HashMap<String, Vec<Paper>> =
+            arxiv_results.into_iter().collect();
+
+            // CPU-intensive filtering in spawn_blocking
         use tokio::task;
         let search_results = task::spawn_blocking(move || {
-            let db_guard = db_arc.blocking_read();
-            let db = db_guard.as_ref().unwrap();
             let mut results = HashMap::new();
 
-            let rt = tokio::runtime::Handle::current();
-            let mut handles = Vec::new();
+            // Build owned lookup map to avoid repeated iteration
+            let existing_map: std::collections::HashMap<String, Vec<Paper>> =
+                existing_papers.into_iter().collect();
 
             for (topic, _sub_id) in &topics {
-                let topic_clone = topic.clone();
-                let rt_clone = rt.clone();
-                let handle = std::thread::spawn(move || {
-                    let papers = rt_clone.block_on(async {
-                        rairos_parser::search_arxiv_recent(&topic_clone, 20).await.unwrap_or_default()
-                    });
-                    (topic_clone, papers)
-                });
-                handles.push(handle);
-            }
-
-            for handle in handles {
-                let (topic, papers) = handle.join().unwrap();
+                let papers = arxiv_map.get(topic).cloned().unwrap_or_default();
 
                 if papers.is_empty() {
                     continue;
                 }
 
-                let existing_ids: std::collections::HashSet<_> = {
-                    if let Ok(existing) = db.search_papers_smart(&topic, 100) {
-                        existing.iter()
-                            .filter_map(|p| p.arxiv_id.clone())
-                            .collect()
-                    } else {
-                        std::collections::HashSet::new()
-                    }
-                };
+                let existing = existing_map.get(topic).cloned().unwrap_or_default();
 
-                let similarity_threshold = 0.7;
-                let existing_abstracts: Vec<String> = if let Ok(existing) = db.search_papers_smart(&topic, 50) {
-                    existing.iter().map(|p| p.abstract_text.clone()).collect()
-                } else {
-                    Vec::new()
-                };
+                let existing_ids: std::collections::HashSet<_> = existing
+                    .iter()
+                    .filter_map(|p| p.arxiv_id.clone())
+                    .collect();
+
+                let existing_abstracts: Vec<String> = existing
+                    .iter()
+                    .map(|p| p.abstract_text.clone())
+                    .collect();
 
                 fn keyword_overlap(a: &str, b: &str) -> f64 {
                     let a_words: std::collections::HashSet<_> = a.split_whitespace()
@@ -221,6 +229,7 @@ impl AutonomousOrchestrator {
                     intersection / union
                 }
 
+                let similarity_threshold = 0.7;
                 let new_papers: Vec<PaperInfo> = papers
                     .into_iter()
                     .filter_map(|p| {
@@ -249,7 +258,7 @@ impl AutonomousOrchestrator {
                     .collect();
 
                 if !new_papers.is_empty() {
-                    results.insert(topic, new_papers);
+                    results.insert(topic.clone(), new_papers);
                 }
             }
             results

@@ -4607,6 +4607,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "dirs",
+ "futures",
  "rairos-core",
  "rairos-crossover",
  "rairos-llm",
