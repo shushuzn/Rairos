@@ -21,7 +21,7 @@
 | arXiv watch | None | `gap watch` with Gene Pool matching |
 | Evolution system | None | CapsuleGene lifecycle with consumed闭环 |
 | Web UI | None | FastAPI hand-drawn web UI |
-| CLI | None | 104 commands |
+| CLI | None | 105 commands |
 
 **Zotero wins:** Mature ecosystem, browser connector, large community, mobile apps.
 **AI Research OS wins:** Autonomous gap detection, self-evolving Gene Pool, citation pathfinding.
