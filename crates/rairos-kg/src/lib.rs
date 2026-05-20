@@ -458,7 +458,7 @@ impl KgDatabase {
             Some(rt) => {
                 let mut params_vec: Vec<String> = node_ids.to_vec();
                 if direction != "out" && direction != "in" {
-                    params_vec.push(node_ids.last().unwrap().clone());
+                    params_vec.push(node_ids.last().cloned().unwrap());
                 }
                 params_vec.push(rt.to_string());
                 let params: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
@@ -467,7 +467,7 @@ impl KgDatabase {
             None => {
                 let mut params_vec: Vec<String> = node_ids.to_vec();
                 if direction != "out" && direction != "in" {
-                    params_vec.push(node_ids.last().unwrap().clone());
+                    params_vec.push(node_ids.last().cloned().unwrap());
                 }
                 let params: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
                 stmt.query_map(params.as_slice(), map_fn)?.collect::<Result<Vec<_>, _>>()?

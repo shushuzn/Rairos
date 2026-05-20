@@ -92,7 +92,7 @@ async fn process_topic(
     let session_id = Uuid::new_v4().to_string()[..8].to_string();
     let papers_analyzed = new_papers.len() as i32;
 
-    let mut all_categories: Vec<String> = Vec::new();
+    let mut all_categories: HashSet<String> = HashSet::new();
     let mut papers: Vec<rairos_core::Paper> = Vec::new();
 
     let max_papers_for_analysis = 10;
@@ -131,8 +131,8 @@ async fn process_topic(
                 papers.push(paper);
 
                 for cat in p.categories.split_whitespace() {
-                    if !cat.is_empty() && !all_categories.contains(&cat.to_string()) {
-                        all_categories.push(cat.to_string());
+                    if !cat.is_empty() {
+                        all_categories.insert(cat.to_string());
                     }
                 }
             }
@@ -182,20 +182,47 @@ async fn process_topic(
 
     let novelty_threshold = 0.3;
 
-    let pattern_gaps = detect_pattern_gaps_impl(&papers, &topic);
-    let cross_paper_gaps = detect_cross_paper_gaps_impl(&papers, &topic);
-    let method_gaps = detect_method_limitations_impl(&papers);
-    let eval_gaps = detect_evaluation_gaps_impl(&papers);
-    let resource_gaps = detect_resource_gaps_impl(&papers);
-    let dataset_gaps = detect_dataset_gaps_impl(&papers);
-    let generalization_gaps = detect_generalization_gaps_impl(&papers);
-    let mut gaps: Vec<ResearchGap> = pattern_gaps;
-    gaps.extend(cross_paper_gaps);
-    gaps.extend(method_gaps);
-    gaps.extend(eval_gaps);
-    gaps.extend(resource_gaps);
-    gaps.extend(dataset_gaps);
-    gaps.extend(generalization_gaps);
+    // Parallelize gap detection - all 7 detectors are CPU-bound and independent
+    let topic_owned = topic.clone();
+    let gap_results = futures::future::join_all(vec![
+        {
+            let papers = papers.clone();
+            let topic = topic_owned.clone();
+            tokio::task::spawn_blocking(move || detect_pattern_gaps_impl(&papers, &topic))
+        },
+        {
+            let papers = papers.clone();
+            let topic = topic_owned.clone();
+            tokio::task::spawn_blocking(move || detect_cross_paper_gaps_impl(&papers, &topic))
+        },
+        {
+            let papers = papers.clone();
+            tokio::task::spawn_blocking(move || detect_method_limitations_impl(&papers))
+        },
+        {
+            let papers = papers.clone();
+            tokio::task::spawn_blocking(move || detect_evaluation_gaps_impl(&papers))
+        },
+        {
+            let papers = papers.clone();
+            tokio::task::spawn_blocking(move || detect_resource_gaps_impl(&papers))
+        },
+        {
+            let papers = papers.clone();
+            tokio::task::spawn_blocking(move || detect_dataset_gaps_impl(&papers))
+        },
+        {
+            let papers = papers.clone();
+            tokio::task::spawn_blocking(move || detect_generalization_gaps_impl(&papers))
+        },
+    ]).await;
+    let mut gaps: Vec<ResearchGap> = Vec::new();
+    for result in gap_results {
+        match result {
+            Ok(g) => gaps.extend(g),
+            Err(e) => tracing::warn!("Gap detection task panicked: {}", e),
+        }
+    }
 
     for desc in gap_descriptions {
         let novelty = if existing_papers.is_empty() {
@@ -1042,7 +1069,7 @@ impl AutonomousOrchestrator {
         let session_id = Uuid::new_v4().to_string()[..8].to_string();
         let papers_analyzed = new_papers.len() as i32;
 
-        let mut all_categories: Vec<String> = Vec::new();
+        let mut all_categories: HashSet<String> = HashSet::new();
         let mut papers: Vec<rairos_core::Paper> = Vec::new();
 
         let max_papers_for_analysis = 10;
@@ -1081,8 +1108,8 @@ impl AutonomousOrchestrator {
                     papers.push(paper);
 
                     for cat in p.categories.split_whitespace() {
-                        if !cat.is_empty() && !all_categories.contains(&cat.to_string()) {
-                            all_categories.push(cat.to_string());
+                        if !cat.is_empty() {
+                            all_categories.insert(cat.to_string());
                         }
                     }
                 }
