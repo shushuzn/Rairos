@@ -14,6 +14,20 @@
 ![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
+## 为什么选择 Rairos？
+
+| 功能 | Zotero | Mendeley | **Rairos** |
+|------|--------|----------|-------------|
+| PDF 存储 | ✅ | ✅ | ✅ |
+| 文献管理 | ✅ | ✅ | ✅ |
+| 研究空白检测 | ❌ | ❌ | ✅ |
+| 自进化基因池 | ❌ | ❌ | ✅ |
+| 本地 LLM 支持 | ❌ | ❌ | ✅ |
+| AI Agent MCP 工具 | ❌ | ❌ | ✅ |
+| 105 个 CLI 命令 | ❌ | ❌ | ✅ |
+
+Rairos 是**第一个会随你进化的研究工具**——它学习你发现有价值的内容，自动改进未来搜索。
+
 ## 它能做什么
 
 Rairos 是一个**自主研究助手**，可以：
@@ -53,6 +67,50 @@ make build                    # 构建（首次 10-20 分钟）
 make build-dev    # Debug 构建（更快）
 make test         # 运行测试
 make clippy       # 运行 linter
+```
+
+## 安装
+
+### 从源码构建
+
+```bash
+git clone https://github.com/shushuzn/Rairos.git
+cd Rairos
+make build
+```
+
+### 通过 cargo install 安装
+
+```bash
+# 从 crates.io 安装（发布后可用）
+cargo install rairos
+
+# 或从源码安装
+cargo install --path crates/rairos-cli
+```
+
+### 通过 cargo-binstall 安装（快速，无需编译）
+
+```bash
+# 先安装 cargo-binstall: https://github.com/cargo-bins/cargo-binstall
+cargo binstall rairos-cli
+```
+
+### 预编译二进制文件
+
+从 [最新发布版本](https://github.com/shushuzn/Rairos/releases/latest) 下载：
+
+| 平台 | 下载 |
+|------|------|
+| Linux x86_64 | `rairos-cli-x86_64-unknown-linux-musl.tar.gz` |
+| macOS Apple Silicon | `rairos-cli-aarch64-apple-darwin.tar.gz` |
+| macOS Intel | `rairos-cli-x86_64-apple-darwin.tar.gz` |
+| Windows x86_64 | `rairos-cli-x86_64-pc-windows-msvc.zip` |
+
+```bash
+# 解压并安装
+tar -xzf rairos-cli-*.tar.gz
+sudo mv rairos /usr/local/bin/
 ```
 
 ## Rust 技术栈 (154 crates)

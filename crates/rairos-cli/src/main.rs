@@ -116,6 +116,9 @@ fn status_str(status: &ParseStatus) -> &'static str {
 mod tests;
 
 fn main() -> Result<()> {
+    // Better panic messages for end users
+    human_panic::setup_panic!();
+
     load_env();
     let cli = Cli::parse();
 

@@ -15,6 +15,20 @@
 ![MCP](https://img.shields.io/badge/mcp_tools-69-blue.svg?logo=robot)
 ![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
 
+## Why Rairos?
+
+| Feature | Zotero | Mendeley | **Rairos** |
+|---------|--------|----------|-------------|
+| PDF storage | ✅ | ✅ | ✅ |
+| Reference management | ✅ | ✅ | ✅ |
+| Research gap detection | ❌ | ❌ | ✅ |
+| Self-evolving Gene Pool | ❌ | ❌ | ✅ |
+| Local LLM support | ❌ | ❌ | ✅ |
+| MCP tools for AI agents | ❌ | ❌ | ✅ |
+| 105 CLI commands | ❌ | ❌ | ✅ |
+
+Rairos is the **first research tool that evolves with you** — it learns what you find valuable and improves future searches automatically.
+
 ## What It Does
 
 Rairos is an **autonomous research assistant** that:
@@ -68,6 +82,50 @@ make run CMD='list --status pending'
 ```bash
 ollama pull qwen2.5
 ./rairos.sh gap "transformer efficiency"
+```
+
+## Installation
+
+### From Source
+
+```bash
+git clone https://github.com/shushuzn/Rairos.git
+cd Rairos
+make build
+```
+
+### Via cargo install
+
+```bash
+# Install from crates.io (when published)
+cargo install rairos
+
+# Or install from source
+cargo install --path crates/rairos-cli
+```
+
+### Via cargo-binstall (fast, no compile)
+
+```bash
+# Install cargo-binstall first: https://github.com/cargo-bins/cargo-binstall
+cargo binstall rairos-cli
+```
+
+### Pre-built Binaries
+
+Download from the [latest release](https://github.com/shushuzn/Rairos/releases/latest):
+
+| Platform | Download |
+|----------|----------|
+| Linux x86_64 | `rairos-cli-x86_64-unknown-linux-musl.tar.gz` |
+| macOS Apple Silicon | `rairos-cli-aarch64-apple-darwin.tar.gz` |
+| macOS Intel | `rairos-cli-x86_64-apple-darwin.tar.gz` |
+| Windows x86_64 | `rairos-cli-x86_64-pc-windows-msvc.zip` |
+
+```bash
+# Extract and install
+tar -xzf rairos-cli-*.tar.gz
+sudo mv rairos /usr/local/bin/
 ```
 
 ## Documentation
