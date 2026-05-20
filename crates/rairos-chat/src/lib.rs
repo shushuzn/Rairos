@@ -55,6 +55,18 @@ static CLEAN_PATTERNS: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     ]
 });
 
+static RE_WHITESPACE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\s+").expect("valid regex")
+});
+
+static RE_SENTENCE_END: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"[。！？.!?]").expect("valid regex")
+});
+
+static RE_QUOTE_END: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"[.!?]\s").expect("valid regex")
+});
+
 pub use rairos_core::constants::OLLAMA_BASE_URL;
 pub use rairos_core::constants::OLLAMA_EMBEDDING_MODEL;
 pub use rairos_core::constants::OLLAMA_API_EMBEDDINGS_ENDPOINT;
@@ -310,17 +322,15 @@ impl RagChat {
             return String::new();
         }
 
-        let text =
-            Regex::new(r"\s+").map_or(text.to_string(), |r| r.replace_all(text, " ").to_string());
+        let text = RE_WHITESPACE.replace_all(text, " ").to_string();
 
         if text.len() <= max_chars {
             return text;
         }
 
-        let sentence_ends = Regex::new(r"[。！？.!?]").expect("valid regex");
         let mut result = String::new();
 
-        for cap in sentence_ends.split(&text) {
+        for cap in RE_SENTENCE_END.split(&text) {
             let sentence = cap.trim();
             if result.len() + sentence.len() < max_chars {
                 if !result.is_empty() {
@@ -479,8 +489,7 @@ impl RagChat {
 
         let clean = snippet.replace('\n', " ").replace("  ", " ");
 
-        let sentence_end = Regex::new(r"[.!?]\s").expect("valid regex");
-        if let Some(m) = sentence_end.find(&clean) {
+        if let Some(m) = RE_QUOTE_END.find(&clean) {
             let quote = clean[..m.end()].trim().to_string();
             return self.clean_quote(&quote);
         }

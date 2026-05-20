@@ -13,8 +13,23 @@
 )]
 
 use anyhow::{Context, Result};
+use regex::Regex;
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
 use crate::RagAction;
+
+// Static regex patterns
+static RE_ARXIV_ID: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(\d{4}\.\d{4,5})").expect("valid regex")
+});
+
+static RE_CODE_BLOCK: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"```(?:python|py)?\n(.*?)```").expect("valid regex")
+});
+
+static RE_QUAD_QUOTE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#""""\s*(.*?)\s*""""#).expect("valid regex")
+});
 
 pub fn handle_rag(action: &RagAction) -> Result<()> {
     match action {
@@ -164,10 +179,7 @@ pub fn handle_rag(action: &RagAction) -> Result<()> {
 
 fn clean_arxiv_id(s: &str) -> String {
     // Extract arXiv ID from URL or pattern
-    if let Some(caps) = regex::Regex::new(r"(\d{4}\.\d{4,5})")
-        .ok()
-        .and_then(|re| re.captures(s))
-    {
+    if let Some(caps) = RE_ARXIV_ID.captures(s) {
         caps.get(1).unwrap().as_str().to_string()
     } else {
         s.to_string()
@@ -246,18 +258,14 @@ fn extract_from_code(paper_dir: &Path) -> Vec<(String, String, String)> {
     let readme_path = paper_dir.join("README.md");
     if readme_path.exists() {
         if let Ok(content) = std::fs::read_to_string(&readme_path) {
-            // Match code blocks with Python examples
-            let re = regex::Regex::new(r"```(?:python|py)?\n(.*?)```").ok();
-            if let Some(re) = re {
-                for cap in re.captures_iter(&content) {
-                    let match_text = cap.get(1).map(|m| m.as_str()).unwrap_or("");
-                    if match_text.contains('=') && match_text.contains("print") {
-                        cases.push((
-                            format!("Execute and provide output: ```{}```", match_text.trim()),
-                            "execution successful".to_string(),
-                            "execution".to_string(),
-                        ));
-                    }
+            for cap in RE_CODE_BLOCK.captures_iter(&content) {
+                let match_text = cap.get(1).map(|m| m.as_str()).unwrap_or("");
+                if match_text.contains('=') && match_text.contains("print") {
+                    cases.push((
+                        format!("Execute and provide output: ```{}```", match_text.trim()),
+                        "execution successful".to_string(),
+                        "execution".to_string(),
+                    ));
                 }
             }
         }
@@ -266,23 +274,20 @@ fn extract_from_code(paper_dir: &Path) -> Vec<(String, String, String)> {
     // Check src directory for docstring examples
     let src_dir = paper_dir.join("src");
     if src_dir.exists() {
-        let re = regex::Regex::new(r#""""\s*(.*?)\s*""""#).ok();
         if let Ok(entries) = std::fs::read_dir(&src_dir) {
             for entry in entries.flatten() {
                 let path = entry.path();
                 if path.extension().map(|e| e == "py").unwrap_or(false) {
                     if let Ok(content) = std::fs::read_to_string(&path) {
-                        if let Some(ref re) = re {
-                            for cap in re.captures_iter(&content) {
-                                let match_text = cap.get(1).map(|m| m.as_str()).unwrap_or("");
-                                if match_text.contains("Example") || match_text.contains("例子") {
-                                    let preview: String = match_text.chars().take(100).collect();
-                                    cases.push((
-                                        format!("Implement function per docstring: {}", preview),
-                                        "implementation correct".to_string(),
-                                        "implementation".to_string(),
-                                    ));
-                                }
+                        for cap in RE_QUAD_QUOTE.captures_iter(&content) {
+                            let match_text = cap.get(1).map(|m| m.as_str()).unwrap_or("");
+                            if match_text.contains("Example") || match_text.contains("例子") {
+                                let preview: String = match_text.chars().take(100).collect();
+                                cases.push((
+                                    format!("Implement function per docstring: {}", preview),
+                                    "implementation correct".to_string(),
+                                    "implementation".to_string(),
+                                ));
                             }
                         }
                     }
