@@ -25,14 +25,6 @@
 [Shell Completions](#shell-completions) •
 [Documentation](#documentation) •
 [Troubleshooting](#troubleshooting)
-![Rust](https://img.shields.io/badge/rust-1.85+-orange.svg?logo=rust)
-![Crates](https://img.shields.io/badge/crates-154-blue.svg)
-![Lines](https://img.shields.io/badge/lines-116k%2B-green.svg)
-![MCP](https://img.shields.io/badge/mcp_tools-69-blue.svg?logo=robot)
-![CLI](https://img.shields.io/badge/cli_commands-105-blue.svg?logo=terminal)
-[![Stars](https://img.shields.io/github/stars/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/stargazers)
-[![Forks](https://img.shields.io/github/forks/shushuzn/Rairos?style=social)](https://github.com/shushuzn/Rairos/network/members)
-[![Downloads](https://img.shields.io/github/releases-downloads/shushuzn/Rairos/total?style=social)](https://github.com/shushuzn/Rairos/releases)
 
 ## Why Rairos?
 
