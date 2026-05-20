@@ -15,7 +15,7 @@
 **Self-Evolving Research OS (100% Rust, 154 crates, ~73k lines, 105 CLI commands, 69 MCP tools)**
 
 - **Rust CLI**: 105 commands via `./rairos.sh <cmd>`
-- **Rust CLI main.rs**: `crates/rairos-cli/src/main.rs` (955 lines, Commands enum + handle_*())
+- **Rust CLI main.rs**: `crates/rairos-cli/src/main.rs` (1058 lines, main entry point)
 - **Rust MCP**: 69 pure-Rust tools in `crates/rairos-mcp/src/` — zero Python fallback
 - **Python**: Fully migrated to Rust. All Python source removed.
 - **Test**: `make test`
@@ -40,7 +40,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 
 ## Architecture
 
-**CLI**: `crates/rairos-cli/src/main.rs` (`Commands` enum at line 80 + `handle_*()` functions).
+**CLI**: `crates/rairos-cli/src/handlers/commands.rs` (`Commands` enum at line 285 + `handle_*()` functions).
 **MCP**: `crates/rairos-mcp/src/` (69 pure-Rust `ToolHandler` implementations, no Python fallback).
 
 ## Key Patterns
@@ -48,7 +48,7 @@ unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
 - `papers` table PK is `id` (NOT arxiv_id)
 - `Paper` struct: `id`, `arxiv_id`, `title`, `authors`, `published`, `abstract`, `categories`
 - MCP dispatch: `McpServer` (OnceLock cached) → pure-Rust `ToolHandler` dispatch
-- CLI dispatch: `Commands` enum at line 80 of `crates/rairos-cli/src/main.rs`
+- CLI dispatch: `Commands` enum at line 285 of `crates/rairos-cli/src/handlers/commands.rs`
 
 ## GitHub Push
 
