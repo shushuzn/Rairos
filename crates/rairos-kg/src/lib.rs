@@ -526,7 +526,7 @@ impl KgDatabase {
 
         for d in 1..=depth {
             let edges = self.get_edges_by_nodes_batch(&current_level, "both", relation_type)?;
-            let mut next_level_ids = Vec::new();
+            let mut next_level_ids = Vec::with_capacity(edges.len());
             let mut discovered: HashMap<String, KgEdge> = HashMap::with_capacity(edges.len());
 
             for edge in &edges {
@@ -851,9 +851,11 @@ impl KnowledgeGraph {
             if let Some(neighbors) = self.outgoing.get(&current) {
                 for neighbor in neighbors {
                     if visited.insert(neighbor.as_str()) {
-                        let mut new_path = path.clone();
-                        new_path.push(neighbor.clone());
-                        queue.push_back((neighbor.clone(), new_path));
+                        let neighbor_owned = neighbor.as_str().to_string();
+                        let mut new_path = Vec::with_capacity(path.len() + 1);
+                        new_path.extend_from_slice(&path);
+                        new_path.push(neighbor_owned.clone());
+                        queue.push_back((neighbor_owned, new_path));
                     }
                 }
             }

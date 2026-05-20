@@ -2,7 +2,7 @@
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
-use tokio::sync::RwLock;
+use parking_lot::RwLock;
 use rustc_hash::FxHashMap;
 
 #[derive(Default)]
@@ -27,12 +27,12 @@ impl ApiMetrics {
     pub fn record_request(&self, endpoint: &str, tier: &str) {
         self.requests_total.fetch_add(1, Ordering::Relaxed);
 
-        if let Ok(mut endpoints) = self.requests_by_endpoint.try_write() {
+        if let Some(mut endpoints) = self.requests_by_endpoint.try_write() {
             let counter = endpoints.entry(endpoint.to_string()).or_insert_with(|| AtomicU64::new(0));
             counter.fetch_add(1, Ordering::Relaxed);
         }
 
-        if let Ok(mut tiers) = self.requests_by_tier.try_write() {
+        if let Some(mut tiers) = self.requests_by_tier.try_write() {
             let counter = tiers.entry(tier.to_string()).or_insert_with(|| AtomicU64::new(0));
             counter.fetch_add(1, Ordering::Relaxed);
         }
@@ -43,7 +43,7 @@ impl ApiMetrics {
     }
 
     pub fn record_subscription(&self, tier: &str) {
-        if let Ok(mut tiers) = self.subscriptions_by_tier.try_write() {
+        if let Some(mut tiers) = self.subscriptions_by_tier.try_write() {
             let counter = tiers.entry(tier.to_string()).or_insert_with(|| AtomicU64::new(0));
             counter.fetch_add(1, Ordering::Relaxed);
         }
@@ -78,14 +78,14 @@ impl ApiMetrics {
         output.push_str("# TYPE rairos_api_errors_total counter\n");
         output.push_str(&format!("rairos_api_errors_total {}\n", self.errors_total.load(Ordering::Relaxed)));
 
-        if let Ok(endpoints) = self.requests_by_endpoint.try_read() {
+        if let Some(endpoints) = self.requests_by_endpoint.try_read() {
             output.push_str("# TYPE rairos_api_requests_by_endpoint counter\n");
             for (endpoint, count) in endpoints.iter() {
                 output.push_str(&format!("rairos_api_requests_by_endpoint{{endpoint=\"{}\"}} {}\n", endpoint, count.load(Ordering::Relaxed)));
             }
         }
 
-        if let Ok(tiers) = self.requests_by_tier.try_read() {
+        if let Some(tiers) = self.requests_by_tier.try_read() {
             output.push_str("# TYPE rairos_api_requests_by_tier counter\n");
             for (tier, count) in tiers.iter() {
                 output.push_str(&format!("rairos_api_requests_by_tier{{tier=\"{}\"}} {}\n", tier, count.load(Ordering::Relaxed)));
@@ -93,7 +93,7 @@ impl ApiMetrics {
         }
 
         output.push_str("# TYPE rairos_subscriptions_by_tier gauge\n");
-        if let Ok(tiers) = self.subscriptions_by_tier.try_read() {
+        if let Some(tiers) = self.subscriptions_by_tier.try_read() {
             for (tier, count) in tiers.iter() {
                 output.push_str(&format!("rairos_subscriptions_by_tier{{tier=\"{}\"}} {}\n", tier, count.load(Ordering::Relaxed)));
             }

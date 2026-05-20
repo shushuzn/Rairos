@@ -1382,7 +1382,7 @@ impl Database {
              LIMIT ?"
         )?;
         let rows = stmt.query_map([limit], |row| Ok(Self::row_to_paper(row)))?;
-        let mut papers = Vec::new();
+        let mut papers = Vec::with_capacity(limit as usize);
         for paper in rows {
             papers.push(paper??);
         }
@@ -1475,7 +1475,7 @@ impl Database {
             stmt.query_map(params![limit], map_job_row)?
         };
 
-        let mut results = Vec::new();
+        let mut results = Vec::with_capacity(limit as usize);
         for row in rows {
             results.push(row?);
         }
@@ -1509,7 +1509,7 @@ impl Database {
             "SELECT * FROM paper_code_trace ORDER BY created_at DESC LIMIT ?",
         )?;
         let rows = stmt.query_map([limit], map_paper_code_trace_row)?;
-        let mut traces = Vec::new();
+        let mut traces = Vec::with_capacity(limit as usize);
         for row in rows {
             traces.push(row?);
         }
@@ -1888,7 +1888,7 @@ impl Database {
                 pdf_url: row.get::<_, Option<String>>(8)?.unwrap_or_default(),
             })
         })?;
-        let mut results = Vec::new();
+        let mut results = Vec::with_capacity(limit as usize);
         for row in rows {
             results.push(row?);
         }
