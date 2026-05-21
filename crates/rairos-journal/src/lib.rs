@@ -222,7 +222,10 @@ impl Journal {
         let mut entries: Vec<_> = self
             .load_entries()
             .into_iter()
-            .filter(|e| e.content.to_lowercase().contains(&q_lower))
+            .filter(|e| {
+                let content_lower = e.content.to_lowercase();
+                content_lower.contains(&q_lower)
+            })
             .collect();
         entries.sort_by(|a, b| b.created_at.cmp(&a.created_at));
         entries.truncate(limit);

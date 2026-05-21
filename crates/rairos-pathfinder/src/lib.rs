@@ -161,7 +161,8 @@ impl<'a> ResearchPathPlanner<'a> {
                 if node.node_type != "paper" {
                     continue;
                 }
-                if !node.label.to_lowercase().contains(&topic_lower) {
+                let label_lower = node.label.to_lowercase();
+                if !label_lower.contains(&topic_lower) {
                     continue;
                 }
                 if seen.contains(&node.entity_id) {

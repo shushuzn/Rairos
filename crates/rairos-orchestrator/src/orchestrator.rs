@@ -524,54 +524,65 @@ async fn process_topic(
 }
 
 // Detection helper implementations (extract logic from Orchestrator methods)
-fn detect_pattern_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
-    let limitation_patterns = [
-        ("does not scale", "scalability_gap", "HIGH"),
-        ("not scalable", "scalability_gap", "HIGH"),
-        ("limited to", "scalability_gap", "MEDIUM"),
-        ("computational cost", "scalability_gap", "MEDIUM"),
-        ("quadratic", "scalability_gap", "MEDIUM"),
-        ("attention bottleneck", "scalability_gap", "HIGH"),
-        ("no benchmark", "evaluation_gap", "HIGH"),
-        ("unevaluated", "evaluation_gap", "MEDIUM"),
-        ("not evaluated on", "evaluation_gap", "MEDIUM"),
-        ("missing evaluation", "evaluation_gap", "MEDIUM"),
-        ("metric", "evaluation_gap", "LOW"),
-        ("reproducibility", "reproducibility_gap", "HIGH"),
-        ("future work", "method_limitation", "LOW"),
-        ("limitation", "method_limitation", "MEDIUM"),
-        ("cannot handle", "method_limitation", "MEDIUM"),
-        ("restricted to", "method_limitation", "LOW"),
-        ("only works for", "method_limitation", "MEDIUM"),
-        ("fail to", "method_limitation", "MEDIUM"),
-        ("theoretical gap", "theoretical_gap", "HIGH"),
-        ("not theoretically", "theoretical_gap", "MEDIUM"),
-        ("no proof", "theoretical_gap", "HIGH"),
-        ("lacks theory", "theoretical_gap", "MEDIUM"),
-        ("empirical only", "theoretical_gap", "MEDIUM"),
-        ("unexplored", "unexplored_application", "HIGH"),
-        ("not applied to", "unexplored_application", "MEDIUM"),
-        ("novel application", "unexplored_application", "LOW"),
-        ("memory bottleneck", "memory_gap", "HIGH"),
-        ("context length", "context_gap", "HIGH"),
-        ("long-context", "context_gap", "HIGH"),
-        ("interpretability", "interpretability_gap", "HIGH"),
-        ("internal representation", "interpretability_gap", "MEDIUM"),
-        ("feature extraction", "feature_gap", "MEDIUM"),
-        ("representation learning", "feature_gap", "MEDIUM"),
-    ];
 
+struct LimitationPattern<'a> {
+    pattern: &'a str,
+    pattern_lower: &'a str,
+    gap_type: &'a str,
+    severity: &'a str,
+}
+
+fn limitation_patterns() -> [LimitationPattern<'static>; 33] {
+    [
+        LimitationPattern { pattern: "does not scale", pattern_lower: "does not scale", gap_type: "scalability_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "not scalable", pattern_lower: "not scalable", gap_type: "scalability_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "limited to", pattern_lower: "limited to", gap_type: "scalability_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "computational cost", pattern_lower: "computational cost", gap_type: "scalability_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "quadratic", pattern_lower: "quadratic", gap_type: "scalability_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "attention bottleneck", pattern_lower: "attention bottleneck", gap_type: "scalability_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "no benchmark", pattern_lower: "no benchmark", gap_type: "evaluation_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "unevaluated", pattern_lower: "unevaluated", gap_type: "evaluation_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "not evaluated on", pattern_lower: "not evaluated on", gap_type: "evaluation_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "missing evaluation", pattern_lower: "missing evaluation", gap_type: "evaluation_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "metric", pattern_lower: "metric", gap_type: "evaluation_gap", severity: "LOW" },
+        LimitationPattern { pattern: "reproducibility", pattern_lower: "reproducibility", gap_type: "reproducibility_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "future work", pattern_lower: "future work", gap_type: "method_limitation", severity: "LOW" },
+        LimitationPattern { pattern: "limitation", pattern_lower: "limitation", gap_type: "method_limitation", severity: "MEDIUM" },
+        LimitationPattern { pattern: "cannot handle", pattern_lower: "cannot handle", gap_type: "method_limitation", severity: "MEDIUM" },
+        LimitationPattern { pattern: "restricted to", pattern_lower: "restricted to", gap_type: "method_limitation", severity: "LOW" },
+        LimitationPattern { pattern: "only works for", pattern_lower: "only works for", gap_type: "method_limitation", severity: "MEDIUM" },
+        LimitationPattern { pattern: "fail to", pattern_lower: "fail to", gap_type: "method_limitation", severity: "MEDIUM" },
+        LimitationPattern { pattern: "theoretical gap", pattern_lower: "theoretical gap", gap_type: "theoretical_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "not theoretically", pattern_lower: "not theoretically", gap_type: "theoretical_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "no proof", pattern_lower: "no proof", gap_type: "theoretical_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "lacks theory", pattern_lower: "lacks theory", gap_type: "theoretical_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "empirical only", pattern_lower: "empirical only", gap_type: "theoretical_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "unexplored", pattern_lower: "unexplored", gap_type: "unexplored_application", severity: "HIGH" },
+        LimitationPattern { pattern: "not applied to", pattern_lower: "not applied to", gap_type: "unexplored_application", severity: "MEDIUM" },
+        LimitationPattern { pattern: "novel application", pattern_lower: "novel application", gap_type: "unexplored_application", severity: "LOW" },
+        LimitationPattern { pattern: "memory bottleneck", pattern_lower: "memory bottleneck", gap_type: "memory_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "context length", pattern_lower: "context length", gap_type: "context_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "long-context", pattern_lower: "long-context", gap_type: "context_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "interpretability", pattern_lower: "interpretability", gap_type: "interpretability_gap", severity: "HIGH" },
+        LimitationPattern { pattern: "internal representation", pattern_lower: "internal representation", gap_type: "interpretability_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "feature extraction", pattern_lower: "feature extraction", gap_type: "feature_gap", severity: "MEDIUM" },
+        LimitationPattern { pattern: "representation learning", pattern_lower: "representation learning", gap_type: "feature_gap", severity: "MEDIUM" },
+    ]
+}
+
+fn detect_pattern_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
+    let limitation_patterns = limitation_patterns();
     let mut detected: Vec<ResearchGap> = Vec::new();
     let mut seen_patterns: FxHashSet<String> = FxHashSet::default();
 
     for paper in papers {
         let text_lower = paper.abstract_text.to_lowercase();
-        for (pattern, gap_type, severity) in &limitation_patterns {
-            if text_lower.contains(&pattern.to_lowercase()) {
-                let desc = format!("Gap in '{}': {} (found in {})", topic, pattern, paper.title.chars().take(40).collect::<String>());
-                if !seen_patterns.contains(&pattern.to_string()) {
-                    seen_patterns.insert(pattern.to_string());
-                    detected.push(ResearchGap::new_simple(gap_type, &desc, severity));
+        for lp in &limitation_patterns {
+            if text_lower.contains(lp.pattern_lower) {
+                let desc = format!("Gap in '{}': {} (found in {})", topic, lp.pattern, paper.title.chars().take(40).collect::<String>());
+                if !seen_patterns.contains(lp.pattern) {
+                    seen_patterns.insert(lp.pattern.to_string());
+                    detected.push(ResearchGap::new_simple(lp.gap_type, &desc, lp.severity));
                 }
             }
         }
@@ -1569,54 +1580,18 @@ impl AutonomousOrchestrator {
     }
 
     fn detect_pattern_gaps(&self, papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
-        let limitation_patterns = [
-            ("does not scale", "scalability_gap", "HIGH"),
-            ("not scalable", "scalability_gap", "HIGH"),
-            ("limited to", "scalability_gap", "MEDIUM"),
-            ("computational cost", "scalability_gap", "MEDIUM"),
-            ("quadratic", "scalability_gap", "MEDIUM"),
-            ("attention bottleneck", "scalability_gap", "HIGH"),
-            ("no benchmark", "evaluation_gap", "HIGH"),
-            ("unevaluated", "evaluation_gap", "MEDIUM"),
-            ("not evaluated on", "evaluation_gap", "MEDIUM"),
-            ("missing evaluation", "evaluation_gap", "MEDIUM"),
-            ("metric", "evaluation_gap", "LOW"),
-            ("reproducibility", "reproducibility_gap", "HIGH"),
-            ("future work", "method_limitation", "LOW"),
-            ("limitation", "method_limitation", "MEDIUM"),
-            ("cannot handle", "method_limitation", "MEDIUM"),
-            ("restricted to", "method_limitation", "LOW"),
-            ("only works for", "method_limitation", "MEDIUM"),
-            ("fail to", "method_limitation", "MEDIUM"),
-            ("theoretical gap", "theoretical_gap", "HIGH"),
-            ("not theoretically", "theoretical_gap", "MEDIUM"),
-            ("no proof", "theoretical_gap", "HIGH"),
-            ("lacks theory", "theoretical_gap", "MEDIUM"),
-            ("empirical only", "theoretical_gap", "MEDIUM"),
-            ("unexplored", "unexplored_application", "HIGH"),
-            ("not applied to", "unexplored_application", "MEDIUM"),
-            ("novel application", "unexplored_application", "LOW"),
-            ("memory bottleneck", "memory_gap", "HIGH"),
-            ("context length", "context_gap", "HIGH"),
-            ("long-context", "context_gap", "HIGH"),
-            ("interpretability", "interpretability_gap", "HIGH"),
-            ("internal representation", "interpretability_gap", "MEDIUM"),
-            ("feature extraction", "feature_gap", "MEDIUM"),
-            ("representation learning", "feature_gap", "MEDIUM"),
-        ];
-
+        let limitation_patterns = limitation_patterns();
         let mut detected: Vec<ResearchGap> = Vec::new();
         let mut seen_patterns: FxHashSet<String> = FxHashSet::default();
 
         for paper in papers {
             let text_lower = paper.abstract_text.to_lowercase();
-            for (pattern, gap_type, severity) in &limitation_patterns {
-                if text_lower.contains(&pattern.to_lowercase()) {
-                    let desc = format!("Gap in '{}': {} (found in {})", topic, pattern, paper.title.chars().take(40).collect::<String>());
-                    #[allow(clippy::unnecessary_to_owned)]
-                    if !seen_patterns.contains(&pattern.to_string()) {
-                        seen_patterns.insert(pattern.to_string());
-                        detected.push(ResearchGap::new_simple(gap_type, &desc, severity));
+            for lp in &limitation_patterns {
+                if text_lower.contains(lp.pattern_lower) {
+                    let desc = format!("Gap in '{}': {} (found in {})", topic, lp.pattern, paper.title.chars().take(40).collect::<String>());
+                    if !seen_patterns.contains(lp.pattern) {
+                        seen_patterns.insert(lp.pattern.to_string());
+                        detected.push(ResearchGap::new_simple(lp.gap_type, &desc, lp.severity));
                     }
                 }
             }

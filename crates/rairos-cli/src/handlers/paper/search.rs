@@ -30,22 +30,23 @@ pub fn handle_search(
     let filtered: Vec<&Paper> = if field == "all" {
         papers.iter().collect()
     } else {
+        let query_lower = query.to_lowercase();
         papers
             .iter()
             .filter(|p| match field {
-                "title" => p.title.to_lowercase().contains(&query.to_lowercase()),
+                "title" => p.title.to_lowercase().contains(&query_lower),
                 "abstract" => p
                     .abstract_text
                     .to_lowercase()
-                    .contains(&query.to_lowercase()),
+                    .contains(&query_lower),
                 "authors" => p
                     .authors
                     .iter()
-                    .any(|a| a.to_lowercase().contains(&query.to_lowercase())),
+                    .any(|a| a.to_lowercase().contains(&query_lower)),
                 "categories" => p
                     .categories
                     .iter()
-                    .any(|c| c.to_lowercase().contains(&query.to_lowercase())),
+                    .any(|c| c.to_lowercase().contains(&query_lower)),
                 _ => true,
             })
             .collect()

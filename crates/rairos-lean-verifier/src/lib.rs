@@ -300,8 +300,11 @@ pub fn verify_lean_code(
                     }
                 }
             }
-        } else if line.to_lowercase().contains("error") || line.to_lowercase().contains("failed") {
-            error_lines.push(line.to_string());
+        } else {
+            let line_lower = line.to_lowercase();
+            if line_lower.contains("error") || line_lower.contains("failed") {
+                error_lines.push(line.to_string());
+            }
         }
     }
 

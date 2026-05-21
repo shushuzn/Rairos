@@ -184,7 +184,10 @@ impl ResearchMemory {
         let mut results: Vec<ResearchStance> = self.stances.to_vec();
         if let Some(t) = topic {
             let t_lower = t.to_lowercase();
-            results.retain(|s| s.topic.to_lowercase().contains(&t_lower));
+            results.retain(|s| {
+                let topic_lower = s.topic.to_lowercase();
+                topic_lower.contains(&t_lower)
+            });
         }
         if let Some(st) = stance_type {
             results.retain(|s| s.stance == st);

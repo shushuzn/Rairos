@@ -260,9 +260,10 @@ impl ReplicationChecker {
                 let end = (m.end() + 50).min(clean.len());
                 let ctx = &clean[start..end];
 
+                let ctx_lower = ctx.to_lowercase();
                 let confidence = if CONTEXT_KEYWORDS_GITHUB
                     .iter()
-                    .any(|kw| ctx.to_lowercase().contains(&kw.to_lowercase()))
+                    .any(|kw| ctx_lower.contains(&kw.to_lowercase()))
                 {
                     1.0
                 } else {
@@ -306,9 +307,10 @@ impl ReplicationChecker {
                 let end = (m.end() + 50).min(clean.len());
                 let ctx = &clean[start..end];
 
+                let ctx_lower = ctx.to_lowercase();
                 let confidence = if CONTEXT_KEYWORDS_GITLAB
                     .iter()
-                    .any(|kw| ctx.to_lowercase().contains(&kw.to_lowercase()))
+                    .any(|kw| ctx_lower.contains(&kw.to_lowercase()))
                 {
                     0.8
                 } else {
@@ -344,8 +346,9 @@ impl ReplicationChecker {
                 let end = (m.end() + 50).min(clean.len());
                 let ctx = &clean[start..end];
 
+                let ctx_lower = ctx.to_lowercase();
                 let confidence =
-                    if ctx.to_lowercase().contains("huggingface") || ctx.contains("🤗") {
+                    if ctx_lower.contains("huggingface") || ctx.contains("🤗") {
                         0.9
                     } else {
                         0.6

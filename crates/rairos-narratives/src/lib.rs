@@ -665,14 +665,13 @@ pub fn aggregate_by_topic(topic: &str) -> Result<ResearchThread> {
             if let Ok(questions) =
                 serde_json::from_str::<Vec<serde_json::Value>>(&content)
             {
+                let topic_lower = topic.to_lowercase();
                 let matching: Vec<_> = questions
                     .iter()
                     .filter(|q| {
                         q["topic"]
                             .as_str()
-                            .is_some_and(|t| {
-                                t.to_lowercase().contains(&topic.to_lowercase())
-                            })
+                            .is_some_and(|t| t.to_lowercase().contains(&topic_lower))
                     })
                     .collect();
                 thread.question_ids = matching
@@ -770,10 +769,11 @@ pub fn aggregate_by_topic(topic: &str) -> Result<ResearchThread> {
                         let title = c["title"].as_str().unwrap_or("");
                         let desc = c["description"].as_str().unwrap_or("");
                         let content_txt = c["content"].as_str().unwrap_or("");
+                        let topic_lower = topic.to_lowercase();
                         let haystack =
                             format!("{} {} {}", title, desc, content_txt)
                                 .to_lowercase();
-                        haystack.contains(&topic.to_lowercase())
+                        haystack.contains(&topic_lower)
                     })
                     .collect();
                 thread.insight_card_ids = matching

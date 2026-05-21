@@ -246,10 +246,11 @@ impl ReplicationChecker {
                     .saturating_sub(50);
                 let end = (full_match.map(|x| x.end()).unwrap_or(0) + 50).min(clean.len());
                 let ctx = &clean[start..end];
+                let ctx_lower = ctx.to_lowercase();
 
                 let mut confidence = 0.5;
                 for kw in CONTEXT_KEYWORDS_GITHUB {
-                    if ctx.to_lowercase().contains(&kw.to_lowercase()) {
+                    if ctx_lower.contains(&kw.to_lowercase()) {
                         confidence = 1.0;
                         break;
                     }
@@ -297,10 +298,11 @@ impl ReplicationChecker {
                     .saturating_sub(50);
                 let end = (full_match.map(|x| x.end()).unwrap_or(0) + 50).min(clean.len());
                 let ctx = &clean[start..end];
+                let ctx_lower = ctx.to_lowercase();
 
                 let confidence = if CONTEXT_KEYWORDS_GITLAB
                     .iter()
-                    .any(|kw| ctx.to_lowercase().contains(&kw.to_lowercase()))
+                    .any(|kw| ctx_lower.contains(&kw.to_lowercase()))
                 {
                     0.8
                 } else {
@@ -337,8 +339,9 @@ impl ReplicationChecker {
                     .saturating_sub(50);
                 let end = (full_match.map(|x| x.end()).unwrap_or(0) + 50).min(clean.len());
                 let ctx = &clean[start..end];
+                let ctx_lower = ctx.to_lowercase();
 
-                let confidence = if ctx.to_lowercase().contains("huggingface") || ctx.contains('🤗')
+                let confidence = if ctx_lower.contains("huggingface") || ctx.contains('🤗')
                 {
                     0.9
                 } else {
@@ -389,8 +392,9 @@ impl ReplicationChecker {
             info.package_manager = "cargo".to_string();
         }
 
-        for f in DEPENDENCY_FILES {
-            if text_lower.contains(&f.to_lowercase()) {
+        let dep_files_lower: Vec<String> = DEPENDENCY_FILES.iter().map(|f| (*f).to_lowercase()).collect();
+        for (i, f) in DEPENDENCY_FILES.iter().enumerate() {
+            if text_lower.contains(&dep_files_lower[i]) {
                 info.files.push((*f).to_string());
             }
         }

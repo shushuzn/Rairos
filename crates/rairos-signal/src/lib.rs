@@ -290,6 +290,7 @@ pub fn signal(event_keyword: &str) -> SignalReport {
     let live_items: Vec<String> = raw.iter().take(5).cloned().collect();
 
     // 2. Match against historical Gene Pool
+    let event_keyword_lower = event_keyword.to_lowercase();
     let mut matches: Vec<Match> = Vec::new();
     for c in &capsules {
         let score = c.trigger_match(event_keyword, &c.trigger_gap_type, &c.trigger_keywords);
@@ -297,7 +298,7 @@ pub fn signal(event_keyword: &str) -> SignalReport {
             let kw_overlap = c
                 .trigger_keywords
                 .iter()
-                .filter(|kw| event_keyword.to_lowercase().contains(&kw.to_lowercase()))
+                .filter(|kw| event_keyword_lower.contains(&kw.to_lowercase()))
                 .count() as f64;
             let text_match = kw_overlap * 0.15;
             let total = score + text_match;

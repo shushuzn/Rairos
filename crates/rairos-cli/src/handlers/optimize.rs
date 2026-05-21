@@ -662,9 +662,10 @@ fn search_existing_code(crate_name: &str, gap_topic: &str, gap_keywords: &[Strin
                 let files = String::from_utf8_lossy(&output.stdout);
                 for file in files.lines().take(3) {
                     if let Ok(content) = std::fs::read_to_string(file.trim()) {
+                        let term_lower = term.to_lowercase();
                         let snippet: String = content
                             .lines()
-                            .filter(|l| l.to_lowercase().contains(&term.to_lowercase()))
+                            .filter(|l| l.to_lowercase().contains(&term_lower))
                             .take(5)
                             .map(|l| format!("  {}\n", l.trim()))
                             .collect();
@@ -689,7 +690,8 @@ fn get_existing_gene_context(target_crate: &str, gap_keywords: &[String]) -> Str
                 return false;
             }
             c.trigger_keywords.iter().any(|k| {
-                gap_keywords.iter().any(|gk| gk.to_lowercase().contains(&k.to_lowercase()))
+                let k_lower = k.to_lowercase();
+                gap_keywords.iter().any(|gk| gk.to_lowercase().contains(&k_lower))
             })
         })
         .take(3)
@@ -778,9 +780,10 @@ pub fn handle_gap_code_link(db: &Database, gap_id: Option<String>) -> Result<()>
                 println!("Type: {}", g.gap_type);
                 println!();
 
+                let display_lower = display.to_lowercase();
                 let linked: Vec<_> = code_genes.iter().filter(|c| {
-                    c.trigger_topic.to_lowercase().contains(&display.to_lowercase()) ||
-                    c.trigger_keywords.iter().any(|k| display.to_lowercase().contains(&k.to_lowercase()))
+                    c.trigger_topic.to_lowercase().contains(&display_lower) ||
+                    c.trigger_keywords.iter().any(|k| display_lower.contains(&k.to_lowercase()))
                 }).collect();
 
                 if linked.is_empty() {
@@ -813,8 +816,9 @@ pub fn handle_gap_code_link(db: &Database, gap_id: Option<String>) -> Result<()>
 
             let linked: Vec<_> = code_genes.iter().filter(|c| {
                 let gap_search = if gap.topic.is_empty() { &gap.description } else { &gap.topic };
-                c.trigger_topic.to_lowercase().contains(&gap_search.to_lowercase()) ||
-                c.trigger_keywords.iter().any(|k| gap_search.to_lowercase().contains(&k.to_lowercase()))
+                let gap_search_lower = gap_search.to_lowercase();
+                c.trigger_topic.to_lowercase().contains(&gap_search_lower) ||
+                c.trigger_keywords.iter().any(|k| gap_search_lower.contains(&k.to_lowercase()))
             }).collect();
 
             if !linked.is_empty() {
@@ -844,8 +848,9 @@ pub fn handle_workflow_stats(db: &Database) -> Result<()> {
     let linked_gaps: Vec<_> = gaps.iter().filter(|g| {
         code_genes.iter().any(|c| {
             let gap_search = if g.topic.is_empty() { &g.description } else { &g.topic };
-            c.trigger_topic.to_lowercase().contains(&gap_search.to_lowercase()) ||
-            c.trigger_keywords.iter().any(|k| gap_search.to_lowercase().contains(&k.to_lowercase()))
+            let gap_search_lower = gap_search.to_lowercase();
+            c.trigger_topic.to_lowercase().contains(&gap_search_lower) ||
+            c.trigger_keywords.iter().any(|k| gap_search_lower.contains(&k.to_lowercase()))
         })
     }).collect();
 
@@ -907,9 +912,10 @@ pub fn handle_optimize_pipeline(
 
     println!("Step 1/3: Detecting research gaps...");
     let gaps = db.list_gaps(10, 0)?;
+    let topic_lower = topic.to_lowercase();
     let existing_gaps: Vec<_> = gaps.iter().filter(|g| {
-        g.topic.to_lowercase().contains(&topic.to_lowercase()) ||
-        g.description.to_lowercase().contains(&topic.to_lowercase())
+        g.topic.to_lowercase().contains(&topic_lower) ||
+        g.description.to_lowercase().contains(&topic_lower)
     }).collect();
 
     if !existing_gaps.is_empty() {

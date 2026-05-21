@@ -253,8 +253,9 @@ pub fn handle_kg_search(
                 true
             } else {
                 let kw_lower = kw.to_lowercase();
-                n.label.to_lowercase().contains(&kw_lower)
-                    || n.entity_id.to_lowercase().contains(&kw_lower)
+                let label_lower = n.label.to_lowercase();
+                let entity_id_lower = n.entity_id.to_lowercase();
+                label_lower.contains(&kw_lower) || entity_id_lower.contains(&kw_lower)
             };
             type_match && keyword_match
         })

@@ -67,9 +67,10 @@ impl ToolHandler for ChartQueryHandler {
             })),
             "figure" => {
                 let fig_label = label.ok_or("Missing label for figure action")?;
+                let fig_label_lower = fig_label.to_lowercase();
                 let fig = figures.into_iter().find(|f| {
                     f.get("label").and_then(|v| v.as_str()).is_some_and(|l| {
-                        l.to_lowercase().contains(&fig_label.to_lowercase())
+                        l.to_lowercase().contains(&fig_label_lower)
                     })
                 });
                 match fig {
@@ -92,9 +93,10 @@ impl ToolHandler for ChartQueryHandler {
             }
             "table" => {
                 let tbl_label = label.ok_or("Missing label for table action")?;
+                let tbl_label_lower = tbl_label.to_lowercase();
                 let tbl = tables.into_iter().find(|t| {
                     t.get("label").and_then(|v| v.as_str()).is_some_and(|l| {
-                        l.to_lowercase().contains(&tbl_label.to_lowercase())
+                        l.to_lowercase().contains(&tbl_label_lower)
                     })
                 });
                 match tbl {

@@ -141,6 +141,8 @@ impl ToolHandler for PaperPeerReviewHandler {
             "replicates": checklist.has_replicates,
         });
 
+        let sections_lower = sections.to_lowercase();
+
         if checklist_type == "CONSORT" {
             compliance["consort_checklist"] = serde_json::json!({
                 "title_and_abstract": checklist.has_abstract,
@@ -149,7 +151,7 @@ impl ToolHandler for PaperPeerReviewHandler {
                 "methods_outcomes": checklist.has_results,
                 "methods_sample_size": checklist.has_sample_size_justification,
                 "results_numbers_analyzed": checklist.has_results,
-                "results_harms": sections.to_lowercase().contains("adverse") || sections.to_lowercase().contains("side effect"),
+                "results_harms": sections_lower.contains("adverse") || sections_lower.contains("side effect"),
                 "discussion_limitations": checklist.has_limitations,
                 "discussion_generalizability": checklist.has_discussion,
             });
@@ -159,7 +161,7 @@ impl ToolHandler for PaperPeerReviewHandler {
                 "introduction_background": checklist.has_introduction,
                 "methods_study_design": checklist.has_methods,
                 "methods_setting": checklist.has_methods,
-                "methods_participants": sections.to_lowercase().contains("participant") || sections.to_lowercase().contains("patient"),
+                "methods_participants": sections_lower.contains("participant") || sections_lower.contains("patient"),
                 "methods_variables": checklist.has_methods,
                 "methods_data_sources": checklist.has_methods,
                 "methods_bias": checklist.has_methods,
@@ -170,15 +172,15 @@ impl ToolHandler for PaperPeerReviewHandler {
                 "discussion_key_results": checklist.has_discussion,
                 "discussion_limitations": checklist.has_limitations,
                 "discussion_generalizability": checklist.has_discussion,
-                "discussion_funding": sections.to_lowercase().contains("funding") || sections.to_lowercase().contains("grant"),
+                "discussion_funding": sections_lower.contains("funding") || sections_lower.contains("grant"),
             });
         } else if checklist_type == "PRISMA" {
             compliance["prisma_checklist"] = serde_json::json!({
                 "title": checklist.has_abstract,
                 "abstract": checklist.has_abstract,
                 "introduction_eligibility_criteria": checklist.has_introduction,
-                "introduction_information_sources": sections.to_lowercase().contains("database") || sections.to_lowercase().contains("search"),
-                "introduction_search_strategy": sections.to_lowercase().contains("search"),
+                "introduction_information_sources": sections_lower.contains("database") || sections_lower.contains("search"),
+                "introduction_search_strategy": sections_lower.contains("search"),
                 "methods_study_selection": checklist.has_methods,
                 "methods_data_extraction": checklist.has_methods,
                 "methods_risk_of_bias": checklist.has_methods,
@@ -189,7 +191,7 @@ impl ToolHandler for PaperPeerReviewHandler {
                 "results_results_synthesis": checklist.has_results,
                 "discussion_limitations": checklist.has_limitations,
                 "discussion_conclusions": checklist.has_discussion,
-                "discussion_registration": sections.to_lowercase().contains("registration") || sections.to_lowercase().contains("protocol"),
+                "discussion_registration": sections_lower.contains("registration") || sections_lower.contains("protocol"),
             });
         }
 

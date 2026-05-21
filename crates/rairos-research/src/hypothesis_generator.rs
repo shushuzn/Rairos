@@ -328,12 +328,15 @@ pub fn fetch_gene_pool_context(topic: &str) -> String {
         return String::new();
     }
 
+    let keywords_lower: Vec<String> = keywords.iter().map(|k| k.to_lowercase()).collect();
     let related: Vec<_> = capsules.iter()
         .filter(|c| {
-            keywords.iter().any(|kw| {
-                c.trigger_topic.to_lowercase().contains(&kw.to_lowercase())
-                    || c.action_gap_title.to_lowercase().contains(&kw.to_lowercase())
-                    || c.trigger_keywords.iter().any(|k| k.to_lowercase().contains(&kw.to_lowercase()))
+            let c_topic_lower = c.trigger_topic.to_lowercase();
+            let c_action_lower = c.action_gap_title.to_lowercase();
+            keywords_lower.iter().any(|kw| {
+                c_topic_lower.contains(kw)
+                    || c_action_lower.contains(kw)
+                    || c.trigger_keywords.iter().any(|k| k.to_lowercase().contains(kw))
             })
         })
         .collect();
@@ -386,11 +389,15 @@ pub fn fetch_trend_context(topic: &str) -> String {
 
     // Filter trending tags relevant to the topic
     let keywords = crate::gene_pool::extract_keywords(topic);
+    let keywords_lower: Vec<String> = keywords.iter().map(|k| k.to_lowercase()).collect();
     let relevant: Vec<_> = trending.iter()
         .filter(|(tag, _)| {
-            keywords.is_empty() || keywords.iter().any(|kw| {
-                tag.to_lowercase().contains(&kw.to_lowercase())
-                    || kw.to_lowercase().contains(&tag.to_lowercase())
+            if keywords.is_empty() {
+                return true;
+            }
+            let tag_lower = tag.to_lowercase();
+            keywords_lower.iter().any(|kw| {
+                tag_lower.contains(kw) || kw.contains(&tag_lower)
             })
         })
         .collect();

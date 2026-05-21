@@ -1350,9 +1350,13 @@ impl ClaimGraph {
     }
 
     pub fn find_claims_about(&self, keyword: &str) -> Vec<&ClaimNode> {
+        let keyword_lower = keyword.to_lowercase();
         self.nodes
             .iter()
-            .filter(|n| n.claim.to_lowercase().contains(&keyword.to_lowercase()))
+            .filter(|n| {
+                let claim_lower = n.claim.to_lowercase();
+                claim_lower.contains(&keyword_lower)
+            })
             .collect()
     }
 

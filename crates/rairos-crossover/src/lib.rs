@@ -343,9 +343,11 @@ impl CapsuleGene {
 
         let action_title = self.action_gap_title.trim();
         if !action_title.is_empty() && !topic.is_empty() {
-            if action_title.to_lowercase().contains(&topic.to_lowercase()) {
+            let action_lower = action_title.to_lowercase();
+            let topic_lower = topic.to_lowercase();
+            if action_lower.contains(&topic_lower) {
                 score += 0.5;
-            } else if topic.to_lowercase().contains(&action_title.to_lowercase()) {
+            } else if topic_lower.contains(&action_lower) {
                 score += 0.3;
             }
         }
@@ -469,7 +471,9 @@ pub struct CodeCapsuleGene {
 impl CodeCapsuleGene {
     pub fn trigger_match(&self, topic: &str, keywords: &[String]) -> f64 {
         let mut score = 0.0;
-        if self.trigger_topic.to_lowercase().contains(&topic.to_lowercase()) {
+        let trigger_lower = self.trigger_topic.to_lowercase();
+        let topic_lower = topic.to_lowercase();
+        if trigger_lower.contains(&topic_lower) {
             score += 0.4;
         }
         if !keywords.is_empty() && !self.trigger_keywords.is_empty() {
@@ -480,7 +484,8 @@ impl CodeCapsuleGene {
                 score += 0.3 * (overlap.len() as f64 / keywords.len().max(self.trigger_keywords.len()) as f64);
             }
         }
-        if self.target_crate.to_lowercase().contains(&topic.to_lowercase()) {
+        let target_lower = self.target_crate.to_lowercase();
+        if target_lower.contains(&topic_lower) {
             score += 0.3;
         }
         score.min(1.0)

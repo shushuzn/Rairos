@@ -179,7 +179,8 @@ impl QuestionTracker {
             .values()
             .filter(|q| {
                 let topic_match = topic.is_none_or(|t| {
-                    t.is_empty() || q.topic.to_lowercase().contains(&t.to_lowercase())
+                    let t_lower = t.to_lowercase();
+                    t.is_empty() || q.topic.to_lowercase().contains(&t_lower)
                 });
                 let status_match = status.is_none_or(|s| q.status == *s);
                 let source_match = source.is_none_or(|s| q.source == *s);
@@ -251,9 +252,10 @@ impl QuestionTracker {
         let priority = priority.clamp(1, 10);
 
         for gap in gaps {
+            let gap_lower = gap.to_lowercase();
             let exists = self.questions.values().any(|q| {
-                q.question.to_lowercase().contains(&gap.to_lowercase())
-                    || gap.to_lowercase().contains(&q.question.to_lowercase())
+                let q_lower = q.question.to_lowercase();
+                q_lower.contains(&gap_lower) || gap_lower.contains(&q_lower)
             });
             if !exists {
                 let q = self.add(

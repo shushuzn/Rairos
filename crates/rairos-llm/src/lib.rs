@@ -950,11 +950,15 @@ impl GapDetector {
     pub fn detect_gaps(papers: &[Paper], keywords: &[&str]) -> Vec<String> {
         let mut gaps = Vec::new();
 
+        // Pre-compute lowercase titles and abstracts ONCE
+        let papers_lower: Vec<(String, String)> = papers.iter()
+            .map(|p| (p.title.to_lowercase(), p.abstract_text.to_lowercase()))
+            .collect();
+
         for keyword in keywords {
             let kw_lower = keyword.to_lowercase();
-            let has_keyword = papers.iter().any(|p| {
-                p.title.to_lowercase().contains(&kw_lower)
-                    || p.abstract_text.to_lowercase().contains(&kw_lower)
+            let has_keyword = papers_lower.iter().any(|(title_lower, abstract_lower)| {
+                title_lower.contains(&kw_lower) || abstract_lower.contains(&kw_lower)
             });
 
             if !has_keyword {

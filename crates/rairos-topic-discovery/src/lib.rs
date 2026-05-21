@@ -554,9 +554,10 @@ fn from_paper_keywords(
         }
 
         // Check if existing topics cover this keyword
+        let keyword_lower = keyword.to_lowercase();
         let covered = existing_topics
             .iter()
-            .any(|t| t.to_lowercase().contains(&keyword.to_lowercase()));
+            .any(|t| t.to_lowercase().contains(&keyword_lower));
         if covered {
             continue;
         }

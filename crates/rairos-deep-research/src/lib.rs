@@ -841,7 +841,10 @@ impl DeepResearchAgent {
                 let title_lower = gap.title.to_lowercase();
                 let matched: Vec<String> = snapshots
                     .iter()
-                    .filter(|s| s.abstract_text.to_lowercase().contains(&title_lower))
+                    .filter(|s| {
+                        let abstract_lower = s.abstract_text.to_lowercase();
+                        abstract_lower.contains(&title_lower)
+                    })
                     .take(3)
                     .map(|s| s.arxiv_id.clone())
                     .collect();

@@ -219,7 +219,10 @@ impl<'a> PaperSlidesGenerator<'a> {
         // 3. Method sections (up to 2)
         let method_kws = ["method", "approach", "model", "architecture", "方法", "模型", "架构"];
         let method_sections: Vec<&DetectedSection> = paper.sections.iter()
-            .filter(|s| method_kws.iter().any(|kw| s.heading.to_lowercase().contains(kw)))
+            .filter(|s| {
+                let heading_lower = s.heading.to_lowercase();
+                method_kws.iter().any(|kw| heading_lower.contains(kw))
+            })
             .collect();
         for sec in method_sections.iter().take(2) {
             let method_label = match config.language {
@@ -238,7 +241,10 @@ impl<'a> PaperSlidesGenerator<'a> {
         // 4. Experiment sections (up to 1)
         let exp_kws = ["experiment", "result", "evaluation", "实验", "结果", "评估"];
         let exp_sections: Vec<&DetectedSection> = paper.sections.iter()
-            .filter(|s| exp_kws.iter().any(|kw| s.heading.to_lowercase().contains(kw)))
+            .filter(|s| {
+                let heading_lower = s.heading.to_lowercase();
+                exp_kws.iter().any(|kw| heading_lower.contains(kw))
+            })
             .collect();
         if let Some(sec) = exp_sections.first() {
             slides.push(Slide {
@@ -256,7 +262,10 @@ impl<'a> PaperSlidesGenerator<'a> {
         // 5. Conclusion sections
         let conc_kws = ["conclusion", "讨论", "结论", "总结"];
         let conc_sections: Vec<&DetectedSection> = paper.sections.iter()
-            .filter(|s| conc_kws.iter().any(|kw| s.heading.to_lowercase().contains(kw)))
+            .filter(|s| {
+                let heading_lower = s.heading.to_lowercase();
+                conc_kws.iter().any(|kw| heading_lower.contains(kw))
+            })
             .collect();
         if let Some(sec) = conc_sections.first() {
             slides.push(Slide {
@@ -654,7 +663,10 @@ mod tests {
         let text = "Introduction\nThis paper introduces a new method.\n\nMethod\nWe propose X.\n\nExperiment\nTests confirm.";
         let sections = detect_sections(text);
         assert!(!sections.is_empty());
-        assert!(sections.iter().any(|s| s.heading.to_lowercase().contains("method")));
+        assert!(sections.iter().any(|s| {
+            let heading_lower = s.heading.to_lowercase();
+            heading_lower.contains("method")
+        }));
     }
 
     #[test]
