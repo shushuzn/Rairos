@@ -8,6 +8,7 @@ use rairos_core::Paper;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 use parking_lot::{Mutex, MutexGuard};
+use rustc_hash::FxHashMap;
 use thiserror::Error;
 
 // ============================================================================
@@ -527,7 +528,8 @@ impl KgDatabase {
         for d in 1..=depth {
             let edges = self.get_edges_by_nodes_batch(&current_level, "both", relation_type)?;
             let mut next_level_ids = Vec::with_capacity(edges.len());
-            let mut discovered: HashMap<String, KgEdge> = HashMap::with_capacity(edges.len());
+            let mut discovered: FxHashMap<String, KgEdge> = FxHashMap::default();
+            discovered.reserve(edges.len());
 
             for edge in &edges {
                 let neighbor_id = if current_level.contains(&edge.source) { &edge.target } else { &edge.source };
@@ -893,7 +895,7 @@ impl KnowledgeGraph {
         let db = self.db.as_ref().ok_or_else(|| KgError::Database("No database connected".into()))?;
         let center = db.get_node_by_entity(KgNodeType::Paper.as_str(), paper_id)?
             .ok_or_else(|| KgError::NodeNotFound(paper_id.to_string()))?;
-        let mut sub_nodes: HashMap<String, KgNode> = HashMap::new();
+        let mut sub_nodes: FxHashMap<String, KgNode> = FxHashMap::default();
         let mut sub_edges: Vec<KgEdge> = Vec::new();
         sub_nodes.insert(center.id.clone(), center.clone());
 
@@ -1011,10 +1013,11 @@ pub struct GraphAlgorithms;
 
 impl GraphAlgorithms {
     pub fn rank_papers(graph: &KnowledgeGraph) -> HashMap<String, f32> {
-        let mut scores: HashMap<String, f32> = graph.nodes.keys().map(|id| (id.clone(), 1.0)).collect();
+        let mut scores: FxHashMap<String, f32> = graph.nodes.keys().map(|id| (id.clone(), 1.0)).collect();
         let damping = 0.85;
         for _ in 0..20 {
-            let mut new_scores: HashMap<String, f32> = HashMap::with_capacity(scores.len());
+            let mut new_scores: FxHashMap<String, f32> = FxHashMap::default();
+            new_scores.reserve(scores.len());
             for node_id in scores.keys() {
                 let incoming = graph.incoming.get(node_id);
                 let mut contribution = 0.0;
@@ -1030,7 +1033,7 @@ impl GraphAlgorithms {
             }
             scores = new_scores;
         }
-        scores
+        scores.into_iter().collect()  // Convert FxHashMap -> HashMap
     }
 
     pub fn most_central(graph: &KnowledgeGraph) -> Option<(String, f32)> {
@@ -1038,7 +1041,7 @@ impl GraphAlgorithms {
     }
 
     pub fn detect_communities(graph: &KnowledgeGraph) -> HashMap<String, usize> {
-        let mut communities: HashMap<String, usize> = graph.nodes.keys().enumerate().map(|(i, id)| (id.clone(), i)).collect();
+        let mut communities: FxHashMap<String, usize> = graph.nodes.keys().enumerate().map(|(i, id)| (id.clone(), i)).collect();
         let mut changed = true;
         let mut iterations = 0;
         while changed && iterations < 10 {
@@ -1047,7 +1050,8 @@ impl GraphAlgorithms {
             for node_id in graph.nodes.keys() {
                 let neighbors = graph.outgoing.get(node_id).map(|v| v.as_slice()).unwrap_or(&[]);
                 if neighbors.is_empty() { continue; }
-                let mut label_counts: HashMap<usize, usize> = HashMap::with_capacity(neighbors.len());
+                let mut label_counts: FxHashMap<usize, usize> = FxHashMap::default();
+                label_counts.reserve(neighbors.len());
                 for neighbor_id in neighbors {
                     if let Some(&label) = communities.get(neighbor_id) {
                         *label_counts.entry(label).or_insert(0) += 1;
@@ -1063,7 +1067,7 @@ impl GraphAlgorithms {
                 }
             }
         }
-        communities
+        communities.into_iter().collect()  // Convert FxHashMap -> HashMap
     }
 }
 

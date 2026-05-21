@@ -4360,6 +4360,7 @@ dependencies = [
  "rairos-core",
  "rand 0.8.6",
  "rusqlite",
+ "rustc-hash",
  "serde",
  "serde_json",
  "tempfile",
