@@ -62,6 +62,9 @@ pub mod tools;
 /// Integrations with other Rairos crates
 pub mod integrations;
 
+#[cfg(feature = "api")]
+pub mod api;
+
 pub use agent::{Agent, AgentConfig, AgentOutput, AgentRole};
 pub use crew::{ResearchCrew, CrewConfig, CrewResult};
 pub use pipeline::{Pipeline, PipelineNode, PipelineEdge};

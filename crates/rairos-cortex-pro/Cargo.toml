@@ -42,6 +42,10 @@ rairos-graphrag = { path = "../rairos-graphrag" }
 # Material science tools (for SparksMatter integration)
 rairos-tools = { path = "../rairos-tools", optional = true }
 
+# HTTP API (optional)
+axum = { version = "0.7", optional = true }
+clap = { version = "4", features = ["derive"], optional = true }
+
 [dev-dependencies]
 tokio-test = "0.4"
 criterion = "0.5"
@@ -63,3 +67,4 @@ harness = false
 default = ["llm"]
 llm = ["dep:rairos-llm", "rairos-vector/llm"]
 tools = ["dep:rairos-tools"]
+api = ["axum", "tokio/net", "clap"]
