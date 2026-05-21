@@ -233,40 +233,40 @@ impl Agent for PlannerAgent {
     }
 
     async fn execute(&self, state: &ResearchState) -> Result<AgentOutput, CortexProError> {
-        // Return a structured JSON plan
+        // Return a structured JSON plan with steps that use registered tools
         let plan = r#"{
   "rationale": "This plan tests the hypothesis by systematic exploration of the material space.",
   "steps": [
     {
       "step": 1,
-      "task": "Search Materials Project for relevant existing materials",
-      "tool": "download_structures_from_mp",
-      "inputs": {"formula": "*"},
+      "task": "Search Materials Project for thermoelectric materials in Bi-Sb-Te system",
+      "tool": "materials_project",
+      "inputs": {"formula": "Bi,Sb,Te"},
       "depends_on": []
     },
     {
       "step": 2,
-      "task": "Download crystal structures of promising candidates",
-      "tool": "download_structures_from_mp",
-      "inputs": {"formula": "Bi2Te3"},
+      "task": "Analyze retrieved structures and filter by known thermoelectric performance",
+      "tool": "",
+      "inputs": {},
       "depends_on": [1]
     },
     {
       "step": 3,
-      "task": "Predict formation energy using CGCNN",
-      "tool": "cgcnn_regression",
-      "inputs": {"property": "formation_energy"},
+      "task": "Screen compositions using CGCNN for predicted ZT values",
+      "tool": "cgcnn",
+      "inputs": {"num_structures": 50},
       "depends_on": [2]
     },
     {
       "step": 4,
-      "task": "Analyze results and refine hypothesis",
+      "task": "Select top candidates and generate synthesis protocol",
       "tool": "",
       "inputs": {},
       "depends_on": [3]
     }
   ],
-  "other_tasks": ["DFT validation of top candidates"]
+  "other_tasks": ["DFT calculation of electronic structure", "TEM analysis of grain boundaries"]
 }"#.to_string();
 
         Ok(AgentOutput {
