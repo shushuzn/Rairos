@@ -8,8 +8,8 @@ publish = false
 [workspace]
 
 [dependencies]
-# Cortex crates (only cortexai-core to avoid aws-lc-sys compiler issue)
-cortexai-core = "0.1"
+# Cortex crates
+cortexai-agents = "0.1"
 
 # Async
 async-trait = "0.1"
