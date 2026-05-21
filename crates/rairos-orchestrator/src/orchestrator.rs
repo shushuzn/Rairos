@@ -382,17 +382,28 @@ async fn process_topic(
         })
         .collect();
 
-    for sg in &mut scored {
-        let ucb_scores = {
-            let selector = regret_selector.lock().unwrap();
-            selector.get_ucb_scores()
-        };
-        let ucb_bonus = ucb_scores.get(&sg.gap_type).copied().unwrap_or(0.0);
-        let gradient = -(sg.gene_pool_score - ucb_bonus);
-        let momentum = {
-            let mut am = adaptive_momentum.lock().unwrap();
-            am.nesterov_update(gradient)
-        };
+    // Batch UCB score lookup - single lock acquisition (was: N lock acquisitions per iteration)
+    let ucb_scores = {
+        let selector = regret_selector.lock().unwrap();
+        selector.get_ucb_scores()
+    };
+
+    // Pre-compute gradients for all items
+    let gradients: Vec<f64> = scored.iter()
+        .map(|sg| {
+            let ucb_bonus = ucb_scores.get(&sg.gap_type).copied().unwrap_or(0.0);
+            -(sg.gene_pool_score - ucb_bonus)
+        })
+        .collect();
+
+    // Batch momentum update - single lock acquisition (was: N lock acquisitions per iteration)
+    let momenta: Vec<f64> = {
+        let mut am = adaptive_momentum.lock().unwrap();
+        gradients.iter().map(|&g| am.nesterov_update(g)).collect()
+    };
+
+    // Apply updates without locks
+    for (sg, &momentum) in scored.iter_mut().zip(momenta.iter()) {
         sg.gene_pool_score = (sg.gene_pool_score + momentum * 0.1).clamp(0.0, 1.0);
     }
 
