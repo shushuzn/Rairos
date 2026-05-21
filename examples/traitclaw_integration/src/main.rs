@@ -173,45 +173,60 @@ pub mod rairos_steps {
 }
 
 // ============================================================================
-// TraitClaw Integration Pattern (Conceptual)
+// TraitClaw Integration Pattern (Based on Real API)
 // ============================================================================
 
 /// This module shows how Rairos would integrate with TraitClaw's trait system.
+///
+/// Based on actual traitclaw-core v1.0.0 API research.
 ///
 /// ```ignore
 /// // Pseudo-code showing the integration pattern
 ///
 /// use traitclaw::prelude::*;
+/// use async_trait::async_trait;
 ///
-/// // 1. Define Rairos tools with #[derive(Tool)]
-/// #[derive(Debug, Clone, Tool, Deserialize, JsonSchema)]
-/// struct SearchPapersTool {
+/// // 1. Define tool input/output types
+/// #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+/// struct SearchInput {
 ///     query: String,
+///     #[serde(default = "default_max")]
 ///     max_results: usize,
 /// }
 ///
-/// // 2. Implement Tool trait for each step
+/// // 2. Implement Tool trait (or use #[derive(Tool)] macro)
+/// pub struct SearchPapersTool;
+///
 /// #[async_trait]
 /// impl Tool for SearchPapersTool {
-///     type Output = Vec<Paper>;
+///     type Input = SearchInput;
+///     type Output = Vec<Paper>;  // Must implement Serialize
 ///
-///     async fn execute(&self, _ctx: &ExecutionContext) -> Result<Self::Output> {
-///         Ok(rairos_steps::search_papers(&self.query, self.max_results))
+///     fn name(&self) -> &str { "arxiv_search" }
+///     fn description(&self) -> &str { "Search arXiv papers" }
+///
+///     async fn execute(&self, input: Self::Input) -> Result<Self::Output> {
+///         Ok(rairos_steps::search_papers(&input.query, input.max_results))
 ///     }
 /// }
 ///
 /// // 3. Wrap GenePool as Memory trait
-/// struct GenePoolMemory(Arc<parking_lot::RwLock<GenePool>>);
+/// // Key: Memory uses session_id + key, not just key
+/// struct GenePoolMemory(Arc<RwLock<GenePool>>);
 ///
 /// #[async_trait]
 /// impl Memory for GenePoolMemory {
-///     async fn get_context(&self, _max_tokens: usize) -> Result<String> {
-///         let pool = self.0.read();
-///         Ok(format!("GenePool: {} capsules", pool.capsules.len()))
-///     }
+///     async fn messages(&self, session_id: &str) -> Result<Vec<Message>> { todo!() }
+///     async fn append(&self, session_id: &str, message: Message) -> Result<()> { todo!() }
+///     async fn get_context(&self, session_id: &str, key: &str) -> Result<Option<Value>> { todo!() }
+///     async fn set_context(&self, session_id: &str, key: &str, value: Value) -> Result<()> { todo!() }
+///     async fn recall(&self, query: &str, limit: usize) -> Result<Vec<MemoryEntry>> { todo!() }
+///     async fn store(&self, entry: MemoryEntry) -> Result<()> { todo!() }
+///     // Session lifecycle has default implementations
 /// }
 ///
 /// // 4. Implement AgentStrategy with Rairos ReAct loop
+/// // Tool execution happens via ExecutionStrategy, not direct call
 /// struct RairosResearchStrategy {
 ///     topic: String,
 ///     max_iterations: usize,
@@ -219,23 +234,23 @@ pub mod rairos_steps {
 ///
 /// #[async_trait]
 /// impl AgentStrategy for RairosResearchStrategy {
-///     async fn execute(&self, runtime: &AgentRuntime, input: &str, _session: &str) -> Result<AgentOutput> {
+///     async fn execute(&self, runtime: &AgentRuntime, input: &str, session_id: &str) -> Result<AgentOutput> {
 ///         let mut gene_pool = GenePool::default();
 ///         let mut all_papers = vec![];
 ///         let mut all_gaps = vec![];
 ///
 ///         for iter in 0..self.max_iterations {
-///             // Rairos ReAct loop
 ///             let query = rairos_steps::plan_next_search(
 ///                 &self.topic, iter, &all_gaps, &gene_pool
 ///             );
 ///
-///             let papers = runtime.tools().execute::<SearchPapersTool, _>(SearchPapersTool {
-///                 query: query.clone(),
-///                 max_results: 10,
-///             }).await?;
+///             // Tool execution via ExecutionStrategy::execute_batch()
+///             // Not: runtime.tools().execute() (wrong!)
+///             // But: use runtime.execution_strategy or call tools directly
 ///
+///             let papers = rairos_steps::search_papers(&query, 10);
 ///             all_papers.extend(papers);
+///
 ///             let gaps = rairos_steps::analyze_gaps(&self.topic, &all_papers);
 ///             all_gaps.extend(gaps);
 ///
@@ -248,7 +263,7 @@ pub mod rairos_steps {
 ///         rairos_steps::encode_to_gene_pool(&all_gaps, &mut gene_pool);
 ///         let report = rairos_steps::build_report(&self.topic, &all_gaps, &all_papers);
 ///
-///         Ok(AgentOutput::text(report))
+///         Ok(AgentOutput::text_with_usage(report, RunUsage::default()))
 ///     }
 /// }
 ///
@@ -256,7 +271,9 @@ pub mod rairos_steps {
 /// let agent = Agent::builder()
 ///     .provider(OpenAiCompatProvider::openai("gpt-4o-mini", api_key))
 ///     .system("You are a research assistant...")
+///     .tool(SearchPapersTool)
 ///     .strategy(RairosResearchStrategy { topic, max_iterations: 5 })
+///     .build()?;
 ///     .build()?;
 /// ```
 ///
