@@ -237,8 +237,14 @@ impl KgDatabase {
             std::fs::create_dir_all(p).map_err(|e| KgError::Database(e.to_string()))?;
         }
         
-        let database_url = format!("sqlite://{}", path.display());
-        let pool = SqlitePool::connect(&database_url).await?;
+        use sqlx::sqlite::{SqlitePoolOptions, SqliteConnectOptions};
+        use std::str::FromStr;
+        
+        let options = SqliteConnectOptions::from_str(&format!("sqlite:{}", path.display()))?
+            .create_if_missing(true);
+        let pool = SqlitePoolOptions::new()
+            .connect_with(options)
+            .await?;
         
         let db = KgDatabase { pool, path };
         db.init_tables().await?;
