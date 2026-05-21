@@ -982,9 +982,9 @@ impl AutonomousOrchestrator {
             (topic.clone(), papers)
         });
         let arxiv_results = join_all(arxiv_futures).await;
-        let arxiv_map: std::collections::HashMap<String, Vec<Paper>> =
+        let arxiv_map: FxHashMap<String, Vec<Paper>> =
             arxiv_results.into_iter().fold(
-                std::collections::HashMap::with_capacity(topics.len()),
+                FxHashMap::default(),
                 |mut m, (t, p)| { m.insert(t, p); m },
             );
 
@@ -996,9 +996,9 @@ impl AutonomousOrchestrator {
             results.reserve(topic_count);
 
             // Build owned lookup map to avoid repeated iteration
-            let existing_map: std::collections::HashMap<String, Vec<Paper>> =
+            let existing_map: FxHashMap<String, Vec<Paper>> =
                 existing_papers.into_iter().fold(
-                    std::collections::HashMap::with_capacity(topic_count),
+                    FxHashMap::default(),
                     |mut m, (t, p)| { m.insert(t, p); m },
                 );
 
