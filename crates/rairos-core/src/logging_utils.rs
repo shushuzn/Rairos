@@ -3,8 +3,8 @@
 //! Ported from `core/logging_utils.py`.
 
 use parking_lot::RwLock;
+use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::sync::{Arc, LazyLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -19,13 +19,13 @@ pub struct MetricStats {
 
 #[derive(Debug, Clone, Default)]
 pub struct PerformanceMonitor {
-    metrics: Arc<RwLock<HashMap<String, Vec<f64>>>>,
+    metrics: Arc<RwLock<FxHashMap<String, Vec<f64>>>>,
 }
 
 impl PerformanceMonitor {
     pub fn new() -> Self {
         Self {
-            metrics: Arc::new(RwLock::new(HashMap::new())),
+            metrics: Arc::new(RwLock::new(FxHashMap::default())),
         }
     }
 
@@ -57,7 +57,7 @@ impl PerformanceMonitor {
         })
     }
 
-    pub fn get_all_stats(&self) -> HashMap<String, MetricStats> {
+    pub fn get_all_stats(&self) -> FxHashMap<String, MetricStats> {
         let metrics = self.metrics.read();
         metrics
             .keys()
