@@ -1,25 +1,25 @@
 use rairos_codegraph::{CodeGraph, Node};
 use tempfile::TempDir;
 
-fn create_test_graph() -> (CodeGraph, TempDir) {
+async fn create_test_graph() -> (CodeGraph, TempDir) {
     let dir = TempDir::new().unwrap();
     let db_path = dir.path().join("test.db");
-    let graph = CodeGraph::open(&db_path).unwrap();
+    let graph = CodeGraph::open(&db_path).await.unwrap();
     (graph, dir)
 }
 
-#[test]
-fn test_open_creates_schema() {
-    let (graph, _dir) = create_test_graph();
-    let stats = graph.stats().unwrap();
+#[tokio::test]
+async fn test_open_creates_schema() {
+    let (graph, _dir) = create_test_graph().await;
+    let stats = graph.stats().await.unwrap();
     assert_eq!(stats.nodes, 0);
     assert_eq!(stats.edges, 0);
     assert_eq!(stats.files, 0);
 }
 
-#[test]
-fn test_add_node() {
-    let (graph, _dir) = create_test_graph();
+#[tokio::test]
+async fn test_add_node() {
+    let (graph, _dir) = create_test_graph().await;
     
     let node = Node {
         id: 0,
@@ -33,19 +33,19 @@ fn test_add_node() {
         docstring: Some("Test doc".to_string()),
     };
     
-    let node_id = graph.add_node(&node).unwrap();
+    let node_id = graph.add_node(&node).await.unwrap();
     assert!(node_id > 0);
     
-    let retrieved = graph.get_node(node_id).unwrap();
+    let retrieved = graph.get_node(node_id).await.unwrap();
     assert!(retrieved.is_some());
     let retrieved = retrieved.unwrap();
     assert_eq!(retrieved.name, "test_function");
     assert_eq!(retrieved.kind, "function");
 }
 
-#[test]
-fn test_add_edge() {
-    let (graph, _dir) = create_test_graph();
+#[tokio::test]
+async fn test_add_edge() {
+    let (graph, _dir) = create_test_graph().await;
     
     let node1 = Node {
         id: 0,
@@ -71,16 +71,16 @@ fn test_add_edge() {
         docstring: None,
     };
     
-    let id1 = graph.add_node(&node1).unwrap();
-    let id2 = graph.add_node(&node2).unwrap();
+    let id1 = graph.add_node(&node1).await.unwrap();
+    let id2 = graph.add_node(&node2).await.unwrap();
     
-    let edge_id = graph.add_edge(id1, id2, "calls").unwrap();
+    let edge_id = graph.add_edge(id1, id2, "calls").await.unwrap();
     assert!(edge_id > 0);
 }
 
-#[test]
-fn test_clear() {
-    let (graph, _dir) = create_test_graph();
+#[tokio::test]
+async fn test_clear() {
+    let (graph, _dir) = create_test_graph().await;
     
     let node = Node {
         id: 0,
@@ -94,19 +94,19 @@ fn test_clear() {
         docstring: None,
     };
     
-    graph.add_node(&node).unwrap();
-    let stats_before = graph.stats().unwrap();
+    graph.add_node(&node).await.unwrap();
+    let stats_before = graph.stats().await.unwrap();
     assert_eq!(stats_before.nodes, 1);
     
-    graph.clear().unwrap();
-    let stats_after = graph.stats().unwrap();
+    graph.clear().await.unwrap();
+    let stats_after = graph.stats().await.unwrap();
     assert_eq!(stats_after.nodes, 0);
     assert_eq!(stats_after.edges, 0);
 }
 
-#[test]
-fn test_files() {
-    let (graph, _dir) = create_test_graph();
+#[tokio::test]
+async fn test_files() {
+    let (graph, _dir) = create_test_graph().await;
     
     let node1 = Node {
         id: 0,
@@ -132,25 +132,25 @@ fn test_files() {
         docstring: None,
     };
     
-    graph.add_node(&node1).unwrap();
-    graph.add_node(&node2).unwrap();
+    graph.add_node(&node1).await.unwrap();
+    graph.add_node(&node2).await.unwrap();
     
-    let files = graph.files().unwrap();
+    let files = graph.files().await.unwrap();
     assert_eq!(files.len(), 2);
     assert!(files.contains(&"a.rs".to_string()));
     assert!(files.contains(&"b.rs".to_string()));
 }
 
-#[test]
-fn test_get_nonexistent_node() {
-    let (graph, _dir) = create_test_graph();
-    let result = graph.get_node(9999).unwrap();
+#[tokio::test]
+async fn test_get_nonexistent_node() {
+    let (graph, _dir) = create_test_graph().await;
+    let result = graph.get_node(9999).await.unwrap();
     assert!(result.is_none());
 }
 
-#[test]
-fn test_stats() {
-    let (graph, _dir) = create_test_graph();
+#[tokio::test]
+async fn test_stats() {
+    let (graph, _dir) = create_test_graph().await;
     
     let node = Node {
         id: 0,
@@ -164,20 +164,18 @@ fn test_stats() {
         docstring: None,
     };
     
-    graph.add_node(&node).unwrap();
-    graph.add_node(&node).unwrap();
+    graph.add_node(&node).await.unwrap();
+    graph.add_node(&node).await.unwrap();
     
-    let stats = graph.stats().unwrap();
+    let stats = graph.stats().await.unwrap();
     assert_eq!(stats.nodes, 2);
     assert_eq!(stats.edges, 0);
     assert_eq!(stats.files, 1);
 }
 
-#[test]
-fn test_codegraph_backend_trait() {
-    use rairos_codegraph::{CodeGraphBackend, Node};
-
-    let (graph, _dir) = create_test_graph();
+#[tokio::test]
+async fn test_codegraph_backend_trait() {
+    let (graph, _dir) = create_test_graph().await;
 
     let node = Node {
         id: 0,
@@ -191,13 +189,13 @@ fn test_codegraph_backend_trait() {
         docstring: None,
     };
 
-    let id = graph.add_node(&node).unwrap();
+    let id = graph.add_node(&node).await.unwrap();
     assert!(id > 0);
 
-    let stats = graph.stats().unwrap();
+    let stats = graph.stats().await.unwrap();
     assert_eq!(stats.nodes, 1);
 
-    let retrieved = graph.get_node(id).unwrap();
+    let retrieved = graph.get_node(id).await.unwrap();
     assert!(retrieved.is_some());
     assert_eq!(retrieved.unwrap().name, "backend_test");
 }

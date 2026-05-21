@@ -202,8 +202,8 @@ mod tests {
 
     #[test]
     fn test_constants_exist() {
-        assert_eq!(LLM_BASE_URL, "https://api.openai.com/v1");
-        assert_eq!(LLM_MODEL, "gpt-4o-mini");
+        assert_eq!(LLM_BASE_URL, "https://opencode.ai/zen/go/v1");
+        assert_eq!(LLM_MODEL, "deepseek-v4-flash");
         assert_eq!(OLLAMA_BASE_URL, "http://localhost:11434");
         assert_eq!(OLLAMA_EMBEDDING_MODEL, "nomic-embed-text");
     }

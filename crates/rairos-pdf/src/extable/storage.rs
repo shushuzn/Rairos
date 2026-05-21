@@ -805,11 +805,10 @@ mod tests {
         assert_eq!(stats.papers, 1); // still 1, not 2
     }
 
-    #[test]
-    fn test_close_then_operate() {
-        // This test needs to be synchronous since close() is sync
-        // The actual async operation would fail, but we can't test that easily
-        let db = ExperimentDB::in_memory().unwrap();
+    #[tokio::test]
+    async fn test_close_then_operate() {
+        // This test needs to be async since in_memory() is async
+        let mut db = ExperimentDB::in_memory().await.unwrap();
         db.close();
         // Note: We can't easily test async operations after close without restructuring
     }
