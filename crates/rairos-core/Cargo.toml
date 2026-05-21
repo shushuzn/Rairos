@@ -22,7 +22,7 @@ tracing-subscriber.workspace = true
 anyhow.workspace = true
 regex.workspace = true
 dirs.workspace = true
-tokio = { version = "1", features = ["rt"] }
+tokio = { version = "1", features = ["rt", "rt-multi-thread"] }
 
 # Orphan rescues — re-exported through rairos_core:: module tree
 rairos-retry = { path = "../rairos-retry" }

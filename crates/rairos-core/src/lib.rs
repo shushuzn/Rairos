@@ -12,6 +12,7 @@ use sqlx::sqlite::{SqlitePoolOptions, SqliteConnectOptions};
 use std::collections::HashMap;
 use rustc_hash::FxHashSet;
 use std::path::Path;
+use std::str::FromStr;
 use std::sync::{Arc, LazyLock};
 use thiserror::Error;
 use tokio::runtime::Runtime;
@@ -411,10 +412,12 @@ impl Database {
     }
     
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
-        let rt = Runtime::new()?;
+        let rt = Runtime::new().map_err(CoreError::Io)?;
         let path_str = path.as_ref().to_string_lossy();
+        // Use create_if_missing to create the database file if it doesn't exist
         let options = SqliteConnectOptions::new()
             .filename(&*path_str)
+            .create_if_missing(true)
             .pragma("journal_mode", "WAL")
             .pragma("foreign_keys", "ON");
         
