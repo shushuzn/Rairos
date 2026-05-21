@@ -420,12 +420,19 @@ impl SparksCrew {
     /// Phase 4: Generate research report.
     pub async fn run_reporting(&self) -> Result<ResearchReport, CortexProError> {
         // Use ReportWriter agent to generate sections
+        // Pass hypothesis through the prompt
+        let hypothesis = self.context.hypothesis.as_deref().unwrap_or("N/A");
         let prompt = format!(
             "Generate a research report for hypothesis: {}",
-            self.context.hypothesis.as_deref().unwrap_or("N/A")
+            hypothesis
         );
 
-        let report_text = self.call_agent(AgentRole::ReportWriter, &prompt).await?;
+        let report_text = self.call_agent_with_intermediate(
+            AgentRole::ReportWriter,
+            &prompt,
+            "hypothesis",
+            hypothesis,
+        ).await?;
 
         // Parse or structure the report
         // In a full implementation, this would call the agent multiple times
