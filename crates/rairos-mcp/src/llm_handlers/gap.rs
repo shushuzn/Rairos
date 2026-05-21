@@ -58,12 +58,12 @@ impl ToolHandler for GapSubmitHandler {
 
         let data_dir = gene_pool_data_dir();
         let storage = CapsuleStorage::new(&data_dir)
-            .map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
+            .await.map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
 
         let capsule = storage.encode_capsule(
             topic, gap_type, title, description, success_score,
             "active", "", "", None, None, &data_dir,
-        ).map_err(|e| format!("encode_capsule failed: {}", e))?;
+        ).await.map_err(|e| format!("encode_capsule failed: {}", e))?;
 
         Ok(serde_json::json!({
             "capsule_id": capsule.capsule_id,
@@ -97,10 +97,10 @@ impl ToolHandler for GapEvolveHandler {
 
         let data_dir = gene_pool_data_dir();
         let storage = CapsuleStorage::new(&data_dir)
-            .map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
+            .await.map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
 
         let capsules = storage.load_all_capsules()
-            .map_err(|e| format!("Failed to load capsules: {}", e))?;
+            .await.map_err(|e| format!("Failed to load capsules: {}", e))?;
 
         if capsules.is_empty() {
             return Ok(serde_json::json!({
@@ -119,7 +119,7 @@ impl ToolHandler for GapEvolveHandler {
 
         let evolved = engine.get_capsules().to_vec();
         storage.save_capsules(&evolved)
-            .map_err(|e| format!("Failed to persist evolved gene pool: {}", e))?;
+            .await.map_err(|e| format!("Failed to persist evolved gene pool: {}", e))?;
 
         let audit = result.get("audit").and_then(|v| v.as_object()).cloned().unwrap_or_default();
         let result_data = result.get("result").and_then(|v| v.as_object()).cloned().unwrap_or_default();

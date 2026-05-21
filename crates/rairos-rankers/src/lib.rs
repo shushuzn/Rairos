@@ -17,7 +17,7 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum RankerError {
     #[error("Database error: {0}")]
-    Database(#[from] rusqlite::Error),
+    Database(#[from] sqlx::Error),
     #[error("Paper not found: {0}")]
     PaperNotFound(String),
     #[error("Embedding not found for paper: {0}")]

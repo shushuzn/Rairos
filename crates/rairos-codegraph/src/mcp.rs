@@ -3,6 +3,7 @@
 use crate::graph::CodeGraph;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use tokio::runtime::Handle;
 
 /// MCP Tool definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -199,7 +200,7 @@ impl McpServer {
         let query = args["query"].as_str().unwrap_or("");
         let limit = args["limit"].as_u64().unwrap_or(10) as usize;
         
-        match self.graph.search(query, limit) {
+        match Handle::current().block_on(self.graph.search(query, limit)) {
             Ok(results) => serde_json::json!({
                 "content": [{
                     "type": "text",
@@ -225,7 +226,7 @@ impl McpServer {
         let kw_count = keywords.len().max(1);
         let mut all_results = Vec::new();
         for kw in keywords {
-            if let Ok(mut results) = self.graph.search(kw, max_nodes / kw_count) {
+            if let Ok(mut results) = Handle::current().block_on(self.graph.search(kw, max_nodes / kw_count)) {
                 all_results.append(&mut results);
             }
         }
@@ -242,7 +243,7 @@ impl McpServer {
         let node_id = args["node_id"].as_i64().unwrap_or(0);
         let depth = args["depth"].as_u64().unwrap_or(3) as usize;
         
-        match self.graph.get_callers(node_id, depth) {
+        match Handle::current().block_on(self.graph.get_callers(node_id, depth)) {
             Ok(results) => serde_json::json!({
                 "content": [{
                     "type": "text",
@@ -259,7 +260,7 @@ impl McpServer {
         let node_id = args["node_id"].as_i64().unwrap_or(0);
         let depth = args["depth"].as_u64().unwrap_or(3) as usize;
         
-        match self.graph.get_callees(node_id, depth) {
+        match Handle::current().block_on(self.graph.get_callees(node_id, depth)) {
             Ok(results) => serde_json::json!({
                 "content": [{
                     "type": "text",
@@ -277,8 +278,8 @@ impl McpServer {
         let depth = args["depth"].as_u64().unwrap_or(2) as usize;
         
         // Impact = callers + callees
-        let callers = self.graph.get_callers(node_id, depth).unwrap_or_default();
-        let callees = self.graph.get_callees(node_id, depth).unwrap_or_default();
+        let callers = Handle::current().block_on(self.graph.get_callers(node_id, depth)).unwrap_or_default();
+        let callees = Handle::current().block_on(self.graph.get_callees(node_id, depth)).unwrap_or_default();
         
         serde_json::json!({
             "content": [{
@@ -296,7 +297,7 @@ impl McpServer {
     fn tool_node(&self, args: &serde_json::Value) -> serde_json::Value {
         let node_id = args["node_id"].as_i64().unwrap_or(0);
         
-        match self.graph.get_node(node_id) {
+        match Handle::current().block_on(self.graph.get_node(node_id)) {
             Ok(Some(node)) => serde_json::json!({
                 "content": [{
                     "type": "text",
@@ -315,7 +316,7 @@ impl McpServer {
     fn tool_files(&self, args: &serde_json::Value) -> serde_json::Value {
         let _ = args;
         
-        match self.graph.files() {
+        match Handle::current().block_on(self.graph.files()) {
             Ok(files) => serde_json::json!({
                 "content": [{
                     "type": "text",
@@ -331,7 +332,7 @@ impl McpServer {
     fn tool_status(&self, args: &serde_json::Value) -> serde_json::Value {
         let _ = args;
         
-        match self.graph.stats() {
+        match Handle::current().block_on(self.graph.stats()) {
             Ok(stats) => serde_json::json!({
                 "content": [{
                     "type": "text",

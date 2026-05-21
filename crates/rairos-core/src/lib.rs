@@ -5,13 +5,16 @@
 
 use chrono::{DateTime, Utc};
 use parking_lot::Mutex;
-use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
+use sqlx::{Row, SqlitePool};
+use sqlx::sqlite::SqliteRow;
+use sqlx::sqlite::{SqlitePoolOptions, SqliteConnectOptions};
 use std::collections::HashMap;
 use rustc_hash::FxHashSet;
 use std::path::Path;
 use std::sync::{Arc, LazyLock};
 use thiserror::Error;
+use tokio::runtime::Runtime;
 use uuid::Uuid;
 
 pub mod constants;
@@ -45,7 +48,7 @@ pub mod db_optimize;
 #[derive(Error, Debug)]
 pub enum CoreError {
     #[error("Database error: {0}")]
-    Database(#[from] rusqlite::Error),
+    Database(#[from] sqlx::Error),
     #[error("Paper not found: {0}")]
     NotFound(String),
     #[error("Rate limit exceeded for endpoint: {0}")]
@@ -57,6 +60,44 @@ pub enum CoreError {
 }
 
 pub type Result<T> = std::result::Result<T, CoreError>;
+
+// ============================================================================
+// DbValue - sqlx equivalent of rusqlite::types::Value for query_raw
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub enum DbValue {
+    Null,
+    Integer(i64),
+    Real(f64),
+    Text(String),
+    Blob(Vec<u8>),
+}
+
+impl DbValue {
+    pub fn from_sqlx(row: &SqliteRow, index: usize) -> Option<Self> {
+        // Try each type - sqlx Row doesn't have a unified get method like rusqlite
+        if let Ok(v) = row.try_get::<i64, _>(index) {
+            return Some(DbValue::Integer(v));
+        }
+        if let Ok(v) = row.try_get::<f64, _>(index) {
+            return Some(DbValue::Real(v));
+        }
+        if let Ok(v) = row.try_get::<String, _>(index) {
+            return Some(DbValue::Text(v));
+        }
+        if let Ok(v) = row.try_get::<Vec<u8>, _>(index) {
+            return Some(DbValue::Blob(v));
+        }
+        if let Ok(v) = row.try_get::<Option<String>, _>(index) {
+            return match v {
+                Some(s) => Some(DbValue::Text(s)),
+                None => Some(DbValue::Null),
+            };
+        }
+        None
+    }
+}
 
 // ============================================================================
 // Paper
@@ -356,288 +397,417 @@ pub struct SearchResult {
 
 #[derive(Clone)]
 pub struct Database {
-    conn: Arc<Mutex<Connection>>,
+    pool: Arc<Mutex<SqlitePool>>,
+    rt: Arc<Runtime>,
 }
 
 impl Database {
+    /// Helper async function to create the pool
+    async fn create_pool_async(options: SqliteConnectOptions) -> std::result::Result<SqlitePool, sqlx::Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(options)
+            .await
+    }
+    
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
-        let conn = Connection::open(path)?;
-        conn.execute_batch("PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;")?;
+        let rt = Runtime::new()?;
+        let path_str = path.as_ref().to_string_lossy();
+        let options = SqliteConnectOptions::new()
+            .filename(&*path_str)
+            .pragma("journal_mode", "WAL")
+            .pragma("foreign_keys", "ON");
+        
+        // Create the pool synchronously using the runtime
+        let pool = rt.block_on(Self::create_pool_async(options)).map_err(CoreError::Database)?;
+        
         let db = Self {
-            conn: Arc::new(Mutex::new(conn)),
+            pool: Arc::new(Mutex::new(pool)),
+            rt: Arc::new(rt),
         };
         db.init_schema()?;
         Ok(db)
     }
 
     fn init_schema(&self) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute_batch(
-            r#"
-            CREATE TABLE IF NOT EXISTS papers (
-                id TEXT PRIMARY KEY,
-                arxiv_id TEXT UNIQUE,
-                title TEXT NOT NULL,
-                authors TEXT NOT NULL,
-                published TEXT NOT NULL,
-                abstract_text TEXT NOT NULL,
-                categories TEXT NOT NULL,
-                parse_status TEXT NOT NULL DEFAULT 'pending',
-                cited_by INTEGER NOT NULL DEFAULT 0,
-                references_cnt INTEGER NOT NULL DEFAULT 0,
-                doi TEXT,
-                pdf_url TEXT,
-                pdf_path TEXT,
-                pdf_hash TEXT,
-                plain_text TEXT,
-                table_count INTEGER DEFAULT 0,
-                figure_count INTEGER DEFAULT 0,
-                word_count INTEGER DEFAULT 0,
-                page_count INTEGER DEFAULT 0,
-                reading_status TEXT DEFAULT 'unread',
-                reading_started_at TEXT,
-                reading_completed_at TEXT,
-                embed_vector BLOB,
-                created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-            );
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            // Create tables
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS papers (
+                    id TEXT PRIMARY KEY,
+                    arxiv_id TEXT UNIQUE,
+                    title TEXT NOT NULL,
+                    authors TEXT NOT NULL,
+                    published TEXT NOT NULL,
+                    abstract_text TEXT NOT NULL,
+                    categories TEXT NOT NULL,
+                    parse_status TEXT NOT NULL DEFAULT 'pending',
+                    cited_by INTEGER NOT NULL DEFAULT 0,
+                    references_cnt INTEGER NOT NULL DEFAULT 0,
+                    doi TEXT,
+                    pdf_url TEXT,
+                    pdf_path TEXT,
+                    pdf_hash TEXT,
+                    plain_text TEXT,
+                    table_count INTEGER DEFAULT 0,
+                    figure_count INTEGER DEFAULT 0,
+                    word_count INTEGER DEFAULT 0,
+                    page_count INTEGER DEFAULT 0,
+                    reading_status TEXT DEFAULT 'unread',
+                    reading_started_at TEXT,
+                    reading_completed_at TEXT,
+                    embed_vector BLOB,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
-                title, abstract_text, authors, categories,
-                content='papers',
-                content_rowid='rowid'
-            );
+            sqlx::query(
+                r#"
+                CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
+                    title, abstract_text, authors, categories,
+                    content='papers',
+                    content_rowid='rowid'
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS research_gaps (
-                id TEXT PRIMARY KEY,
-                topic TEXT NOT NULL DEFAULT '',
-                session_id TEXT,
-                gap_type TEXT NOT NULL DEFAULT '',
-                gap_title TEXT NOT NULL DEFAULT '',
-                gap_title_hash TEXT,
-                category TEXT DEFAULT '',
-                description TEXT DEFAULT '',
-                severity TEXT DEFAULT 'medium',
-                novelty_score REAL DEFAULT 0.5,
-                priority TEXT DEFAULT 'medium',
-                paper_ids TEXT NOT NULL,
-                created_at TEXT NOT NULL DEFAULT (datetime('now'))
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS research_gaps (
+                    id TEXT PRIMARY KEY,
+                    topic TEXT NOT NULL DEFAULT '',
+                    session_id TEXT,
+                    gap_type TEXT NOT NULL DEFAULT '',
+                    gap_title TEXT NOT NULL DEFAULT '',
+                    gap_title_hash TEXT,
+                    category TEXT DEFAULT '',
+                    description TEXT DEFAULT '',
+                    severity TEXT DEFAULT 'medium',
+                    novelty_score REAL DEFAULT 0.5,
+                    priority TEXT DEFAULT 'medium',
+                    paper_ids TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS evo_suggestions (
-                id TEXT PRIMARY KEY,
-                gap_id TEXT NOT NULL,
-                direction TEXT NOT NULL,
-                confidence REAL NOT NULL,
-                paper_ids TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'pending',
-                created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                FOREIGN KEY (gap_id) REFERENCES research_gaps(id)
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS evo_suggestions (
+                    id TEXT PRIMARY KEY,
+                    gap_id TEXT NOT NULL,
+                    direction TEXT NOT NULL,
+                    confidence REAL NOT NULL,
+                    paper_ids TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    FOREIGN KEY (gap_id) REFERENCES research_gaps(id)
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS subscriptions (
-                id TEXT PRIMARY KEY,
-                query TEXT NOT NULL,
-                name TEXT,
-                categories TEXT,
-                max_results INTEGER DEFAULT 10,
-                check_interval_minutes INTEGER DEFAULT 60,
-                last_check TEXT,
-                last_results TEXT,
-                enabled INTEGER DEFAULT 1,
-                created_at TEXT NOT NULL DEFAULT (datetime('now'))
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS subscriptions (
+                    id TEXT PRIMARY KEY,
+                    query TEXT NOT NULL,
+                    name TEXT,
+                    categories TEXT,
+                    max_results INTEGER DEFAULT 10,
+                    check_interval_minutes INTEGER DEFAULT 60,
+                    last_check TEXT,
+                    last_results TEXT,
+                    enabled INTEGER DEFAULT 1,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS tags (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL UNIQUE,
-                color TEXT,
-                created_at TEXT NOT NULL DEFAULT (datetime('now'))
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS tags (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL UNIQUE,
+                    color TEXT,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS paper_tags (
-                paper_id TEXT NOT NULL,
-                tag_id TEXT NOT NULL,
-                created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                PRIMARY KEY (paper_id, tag_id),
-                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE,
-                FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS paper_tags (
+                    paper_id TEXT NOT NULL,
+                    tag_id TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    PRIMARY KEY (paper_id, tag_id),
+                    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE,
+                    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS citations (
-                id TEXT PRIMARY KEY,
-                source_id TEXT NOT NULL,
-                target_id TEXT NOT NULL,
-                created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                UNIQUE(source_id, target_id),
-                FOREIGN KEY (source_id) REFERENCES papers(id) ON DELETE CASCADE,
-                FOREIGN KEY (target_id) REFERENCES papers(id) ON DELETE CASCADE
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS citations (
+                    id TEXT PRIMARY KEY,
+                    source_id TEXT NOT NULL,
+                    target_id TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    UNIQUE(source_id, target_id),
+                    FOREIGN KEY (source_id) REFERENCES papers(id) ON DELETE CASCADE,
+                    FOREIGN KEY (target_id) REFERENCES papers(id) ON DELETE CASCADE
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS paper_cache (
-                uid TEXT PRIMARY KEY,
-                data TEXT NOT NULL,
-                cached_at TEXT NOT NULL DEFAULT (datetime('now'))
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS paper_cache (
+                    uid TEXT PRIMARY KEY,
+                    data TEXT NOT NULL,
+                    cached_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS job_queue (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                paper_id TEXT NOT NULL,
-                job_type TEXT NOT NULL DEFAULT 'parse',
-                status TEXT NOT NULL DEFAULT 'queued',
-                priority INTEGER NOT NULL DEFAULT 5,
-                created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                started_at TEXT,
-                completed_at TEXT,
-                error TEXT
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS job_queue (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    paper_id TEXT NOT NULL,
+                    job_type TEXT NOT NULL DEFAULT 'parse',
+                    status TEXT NOT NULL DEFAULT 'queued',
+                    priority INTEGER NOT NULL DEFAULT 5,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    started_at TEXT,
+                    completed_at TEXT,
+                    error TEXT
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS dedup_log (
-                id TEXT PRIMARY KEY,
-                target_id TEXT NOT NULL,
-                duplicate_id TEXT NOT NULL,
-                keep_policy TEXT NOT NULL,
-                created_at TEXT NOT NULL DEFAULT (datetime('now'))
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS dedup_log (
+                    id TEXT PRIMARY KEY,
+                    target_id TEXT NOT NULL,
+                    duplicate_id TEXT NOT NULL,
+                    keep_policy TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS paper_code_trace (
-                id              INTEGER PRIMARY KEY AUTOINCREMENT,
-                paper_id        TEXT NOT NULL,
-                code_path       TEXT NOT NULL,
-                module_name     TEXT NOT NULL,
-                framework       TEXT NOT NULL DEFAULT 'pytorch',
-                total_code_lines INTEGER NOT NULL DEFAULT 0,
-                tagged_lines    INTEGER NOT NULL DEFAULT 0,
-                untagged_ranges TEXT NOT NULL DEFAULT '[]',
-                unreferenced_sources TEXT NOT NULL DEFAULT '[]',
-                paper_section_refs TEXT NOT NULL DEFAULT '[]',
-                gap_ids         TEXT NOT NULL DEFAULT '[]',
-                benchmark_pass_rate REAL DEFAULT 0.0,
-                created_at      TEXT NOT NULL,
-                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS paper_code_trace (
+                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    paper_id        TEXT NOT NULL,
+                    code_path       TEXT NOT NULL,
+                    module_name     TEXT NOT NULL,
+                    framework       TEXT NOT NULL DEFAULT 'pytorch',
+                    total_code_lines INTEGER NOT NULL DEFAULT 0,
+                    tagged_lines    INTEGER NOT NULL DEFAULT 0,
+                    untagged_ranges TEXT NOT NULL DEFAULT '[]',
+                    unreferenced_sources TEXT NOT NULL DEFAULT '[]',
+                    paper_section_refs TEXT NOT NULL DEFAULT '[]',
+                    gap_ids         TEXT NOT NULL DEFAULT '[]',
+                    benchmark_pass_rate REAL DEFAULT 0.0,
+                    created_at      TEXT NOT NULL,
+                    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE INDEX IF NOT EXISTS idx_papers_arxiv ON papers(arxiv_id);
-            CREATE INDEX IF NOT EXISTS idx_papers_status ON papers(parse_status);
-            CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published);
-            CREATE INDEX IF NOT EXISTS idx_papers_reading ON papers(reading_status);
-            CREATE INDEX IF NOT EXISTS idx_gaps_topic ON research_gaps(topic);
-            CREATE INDEX IF NOT EXISTS idx_subscriptions_enabled ON subscriptions(enabled);
+            // Create indexes
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_papers_arxiv ON papers(arxiv_id)")
+                .execute(&pool).await?;
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_papers_status ON papers(parse_status)")
+                .execute(&pool).await?;
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published)")
+                .execute(&pool).await?;
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_papers_reading ON papers(reading_status)")
+                .execute(&pool).await?;
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_gaps_topic ON research_gaps(topic)")
+                .execute(&pool).await?;
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_subscriptions_enabled ON subscriptions(enabled)")
+                .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS parse_history (
-                id             INTEGER PRIMARY KEY AUTOINCREMENT,
-                paper_id       TEXT NOT NULL,
-                attempted_at   TEXT NOT NULL DEFAULT (datetime('now')),
-                duration_sec   REAL,
-                status         TEXT NOT NULL,
-                error          TEXT DEFAULT '',
-                parse_version  INTEGER,
-                pdf_hash       TEXT,
-                file_size      INTEGER,
-                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS parse_history (
+                    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                    paper_id       TEXT NOT NULL,
+                    attempted_at   TEXT NOT NULL DEFAULT (datetime('now')),
+                    duration_sec   REAL,
+                    status         TEXT NOT NULL,
+                    error          TEXT DEFAULT '',
+                    parse_version  INTEGER,
+                    pdf_hash       TEXT,
+                    file_size      INTEGER,
+                    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS experiment_tables (
-                id            INTEGER PRIMARY KEY AUTOINCREMENT,
-                paper_id      TEXT NOT NULL,
-                table_caption TEXT DEFAULT '',
-                page          INTEGER DEFAULT 0,
-                headers       TEXT DEFAULT '[]',
-                rows          TEXT DEFAULT '[]',
-                bbox_x0       REAL DEFAULT 0,
-                bbox_y0       REAL DEFAULT 0,
-                bbox_x1       REAL DEFAULT 0,
-                bbox_y1       REAL DEFAULT 0,
-                created_at    TEXT NOT NULL DEFAULT (datetime('now')),
-                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS experiment_tables (
+                    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                    paper_id      TEXT NOT NULL,
+                    table_caption TEXT DEFAULT '',
+                    page          INTEGER DEFAULT 0,
+                    headers       TEXT DEFAULT '[]',
+                    rows          TEXT DEFAULT '[]',
+                    bbox_x0       REAL DEFAULT 0,
+                    bbox_y0       REAL DEFAULT 0,
+                    bbox_x1       REAL DEFAULT 0,
+                    bbox_y1       REAL DEFAULT 0,
+                    created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+                    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TABLE IF NOT EXISTS arxiv_search_cache (
-                query_hash   TEXT PRIMARY KEY,
-                query        TEXT NOT NULL,
-                results_json TEXT NOT NULL,
-                created_at   TEXT NOT NULL DEFAULT (datetime('now')),
-                hit_count    INTEGER DEFAULT 1
-            );
+            sqlx::query(
+                r#"
+                CREATE TABLE IF NOT EXISTS arxiv_search_cache (
+                    query_hash   TEXT PRIMARY KEY,
+                    query        TEXT NOT NULL,
+                    results_json TEXT NOT NULL,
+                    created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+                    hit_count    INTEGER DEFAULT 1
+                )
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE INDEX IF NOT EXISTS idx_parse_history_paper ON parse_history(paper_id);
-            CREATE INDEX IF NOT EXISTS idx_experiment_tables_paper ON experiment_tables(paper_id);
-            "#,
-        )?;
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_parse_history_paper ON parse_history(paper_id)")
+                .execute(&pool).await?;
+            sqlx::query("CREATE INDEX IF NOT EXISTS idx_experiment_tables_paper ON experiment_tables(paper_id)")
+                .execute(&pool).await?;
 
-        conn.execute_batch(
-            r#"
-            CREATE TRIGGER IF NOT EXISTS papers_ai AFTER INSERT ON papers BEGIN
-                INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
-                VALUES (NEW.rowid, NEW.title, NEW.abstract_text, NEW.authors, NEW.categories);
-            END;
+            // Create triggers
+            sqlx::query(
+                r#"
+                CREATE TRIGGER IF NOT EXISTS papers_ai AFTER INSERT ON papers BEGIN
+                    INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
+                    VALUES (NEW.rowid, NEW.title, NEW.abstract_text, NEW.authors, NEW.categories);
+                END
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TRIGGER IF NOT EXISTS papers_ad AFTER DELETE ON papers BEGIN
-                INSERT INTO papers_fts(papers_fts, rowid, title, abstract_text, authors, categories)
-                VALUES ('delete', OLD.rowid, OLD.title, OLD.abstract_text, OLD.authors, OLD.categories);
-            END;
+            sqlx::query(
+                r#"
+                CREATE TRIGGER IF NOT EXISTS papers_ad AFTER DELETE ON papers BEGIN
+                    INSERT INTO papers_fts(papers_fts, rowid, title, abstract_text, authors, categories)
+                    VALUES ('delete', OLD.rowid, OLD.title, OLD.abstract_text, OLD.authors, OLD.categories);
+                END
+                "#,
+            )
+            .execute(&pool).await?;
 
-            CREATE TRIGGER IF NOT EXISTS papers_au AFTER UPDATE ON papers BEGIN
-                INSERT INTO papers_fts(papers_fts, rowid, title, abstract_text, authors, categories)
-                VALUES ('delete', OLD.rowid, OLD.title, OLD.abstract_text, OLD.authors, OLD.categories);
-                INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
-                VALUES (NEW.rowid, NEW.title, NEW.abstract_text, NEW.authors, NEW.categories);
-            END;
-            "#,
-        )?;
+            sqlx::query(
+                r#"
+                CREATE TRIGGER IF NOT EXISTS papers_au AFTER UPDATE ON papers BEGIN
+                    INSERT INTO papers_fts(papers_fts, rowid, title, abstract_text, authors, categories)
+                    VALUES ('delete', OLD.rowid, OLD.title, OLD.abstract_text, OLD.authors, OLD.categories);
+                    INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
+                    VALUES (NEW.rowid, NEW.title, NEW.abstract_text, NEW.authors, NEW.categories);
+                END
+                "#,
+            )
+            .execute(&pool).await?;
 
-        Ok(())
+            Ok(())
+        })
     }
 
     pub fn insert_paper(&self, paper: &Paper) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            r#"INSERT INTO papers
-               (id, arxiv_id, title, authors, published, abstract_text, categories,
-                parse_status, cited_by, references_cnt, doi, pdf_url)
-               VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)"#,
-            params![
-                paper.id,
-                paper.arxiv_id,
-                &paper.title,
-                serde_json::to_string(&paper.authors)?,
-                paper.published.to_rfc3339(),
-                &paper.abstract_text,
-                serde_json::to_string(&paper.categories)?,
-                paper.parse_status.to_string(),
-                paper.metadata.cited_by as i64,
-                paper.metadata.references as i64,
-                paper.metadata.doi,
-                paper.metadata.pdf_url,
-            ],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper = paper.clone();
+        rt.block_on(async move {
+            sqlx::query(
+                r#"INSERT INTO papers
+                   (id, arxiv_id, title, authors, published, abstract_text, categories,
+                    parse_status, cited_by, references_cnt, doi, pdf_url)
+                   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)"#,
+            )
+            .bind(&paper.id)
+            .bind(&paper.arxiv_id)
+            .bind(&paper.title)
+            .bind(serde_json::to_string(&paper.authors).unwrap())
+            .bind(paper.published.to_rfc3339())
+            .bind(&paper.abstract_text)
+            .bind(serde_json::to_string(&paper.categories).unwrap())
+            .bind(paper.parse_status.to_string())
+            .bind(paper.metadata.cited_by as i64)
+            .bind(paper.metadata.references as i64)
+            .bind(&paper.metadata.doi)
+            .bind(&paper.metadata.pdf_url)
+            .execute(&pool)
+            .await?;
+            Ok(())
+        })
     }
 
     pub fn get_paper(&self, id: &str) -> Result<Paper> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
-                    parse_status, cited_by, references_cnt, doi, pdf_url
-             FROM papers WHERE id = ?1",
-        )?;
-        let paper = stmt.query_row([id], Self::row_to_paper)?;
-        Ok(paper)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            let row = sqlx::query(
+                "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
+                        parse_status, cited_by, references_cnt, doi, pdf_url
+                 FROM papers WHERE id = ?1",
+            )
+            .bind(&id)
+            .fetch_one(&pool)
+            .await?;
+            Self::row_to_paper(&row)
+        })
     }
 
     pub fn get_paper_by_arxiv(&self, arxiv_id: &str) -> Result<Option<Paper>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
-                    parse_status, cited_by, references_cnt, doi, pdf_url
-             FROM papers WHERE arxiv_id = ?1",
-        )?;
-        let result = stmt.query_row([arxiv_id], Self::row_to_paper).map(Some);
-        match result {
-            Ok(p) => Ok(p),
-            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-            Err(e) => Err(e.into()),
-        }
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let arxiv_id = arxiv_id.to_string();
+        rt.block_on(async move {
+            let result = sqlx::query(
+                "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
+                        parse_status, cited_by, references_cnt, doi, pdf_url
+                 FROM papers WHERE arxiv_id = ?1",
+            )
+            .bind(&arxiv_id)
+            .fetch_optional(&pool)
+            .await?;
+            match result {
+                Some(row) => Ok(Some(Self::row_to_paper(&row)?)),
+                None => Ok(None),
+            }
+        })
     }
 
     pub fn list_papers(
@@ -646,75 +816,107 @@ impl Database {
         limit: usize,
         offset: usize,
     ) -> Result<Vec<Paper>> {
-        let conn = self.conn.lock();
-        let sql = "SELECT id, arxiv_id, title, authors, published, abstract_text,
-                   categories, parse_status, cited_by, references_cnt, doi, pdf_url
-                   FROM papers";
-        let sql_with_status = format!(
-            "{} WHERE parse_status = ?1 ORDER BY published DESC LIMIT ?2 OFFSET ?3",
-            sql
-        );
-        let sql_no_status = format!("{} ORDER BY published DESC LIMIT ?1 OFFSET ?2", sql);
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let status_str = status.map(|s| s.to_string());
 
-        let mut papers_vec: Vec<Paper> = Vec::with_capacity(limit);
+        rt.block_on(async move {
+            let sql = "SELECT id, arxiv_id, title, authors, published, abstract_text,
+                       categories, parse_status, cited_by, references_cnt, doi, pdf_url
+                       FROM papers";
+            let sql_with_status = format!(
+                "{} WHERE parse_status = ?1 ORDER BY published DESC LIMIT ?2 OFFSET ?3",
+                sql
+            );
+            let sql_no_status = format!("{} ORDER BY published DESC LIMIT ?1 OFFSET ?2", sql);
 
-        match status {
-            Some(s) => {
-                let mut stmt = conn.prepare(&sql_with_status)?;
-                let rows = stmt
-                    .query_map(params![s.to_string(), limit as i64, offset as i64], |row| {
-                        Ok(Self::row_to_paper(row))
-                    })?;
-                for paper in rows {
-                    papers_vec.push(paper??);
+            let mut papers_vec: Vec<Paper> = Vec::with_capacity(limit);
+
+            match &status_str {
+                Some(s) => {
+                    let rows = sqlx::query(&sql_with_status)
+                        .bind(s)
+                        .bind(limit as i64)
+                        .bind(offset as i64)
+                        .fetch_all(&pool)
+                        .await?;
+                    for row in rows {
+                        papers_vec.push(Self::row_to_paper(&row)?);
+                    }
+                }
+                None => {
+                    let rows = sqlx::query(&sql_no_status)
+                        .bind(limit as i64)
+                        .bind(offset as i64)
+                        .fetch_all(&pool)
+                        .await?;
+                    for row in rows {
+                        papers_vec.push(Self::row_to_paper(&row)?);
+                    }
                 }
             }
-            None => {
-                let mut stmt = conn.prepare(&sql_no_status)?;
-                let rows = stmt.query_map(params![limit as i64, offset as i64], |row| {
-                    Ok(Self::row_to_paper(row))
-                })?;
-                for paper in rows {
-                    papers_vec.push(paper??);
-                }
-            }
-        }
-        Ok(papers_vec)
+            Ok(papers_vec)
+        })
     }
 
     pub fn update_paper_status(&self, id: &str, status: ParseStatus) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            "UPDATE papers SET parse_status = ?1, updated_at = datetime('now') WHERE id = ?2",
-            params![status.to_string(), id],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        let status_str = status.to_string();
+        rt.block_on(async move {
+            sqlx::query("UPDATE papers SET parse_status = ?1, updated_at = datetime('now') WHERE id = ?2")
+                .bind(&status_str)
+                .bind(&id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn delete_paper(&self, id: &str) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute("DELETE FROM papers WHERE id = ?1", [id])?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            sqlx::query("DELETE FROM papers WHERE id = ?1")
+                .bind(&id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     /// Check if a paper exists by ID.
     pub fn paper_exists(&self, id: &str) -> bool {
-        let conn = self.conn.lock();
-        conn.query_row("SELECT 1 FROM papers WHERE id = ?1", params![id], |_| Ok(()))
-            .is_ok()
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            sqlx::query("SELECT 1 FROM papers WHERE id = ?1")
+                .bind(&id)
+                .fetch_optional(&pool)
+                .await
+                .map(|opt| opt.is_some())
+                .unwrap_or(false)
+        })
     }
 
     /// Get plain_text for a paper (needed for citation extraction, etc.).
     pub fn get_paper_plain_text(&self, id: &str) -> Result<Option<String>> {
-        let conn = self.conn.lock();
-        let result = conn
-            .query_row(
-                "SELECT plain_text FROM papers WHERE id = ?1",
-                params![id],
-                |row| row.get::<_, Option<String>>(0),
-            )
-            .map_err(CoreError::Database)?;
-        Ok(result)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            let result = sqlx::query("SELECT plain_text FROM papers WHERE id = ?1")
+                .bind(&id)
+                .fetch_optional(&pool)
+                .await?;
+            match result {
+                Some(row) => Ok(Some(row.try_get(0)?)),
+                None => Ok(None),
+            }
+        })
     }
 
     /// Merge duplicate papers into the primary. Copies non-empty fields from
@@ -722,197 +924,261 @@ impl Database {
     /// citations, queued jobs, then deletes the duplicates.
     /// Returns true if any duplicates were merged.
     pub fn merge_papers(&self, primary_id: &str, duplicate_ids: &[&str]) -> Result<bool> {
-        let mut conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let primary_id = primary_id.to_string();
+        let duplicate_ids: Vec<String> = duplicate_ids.iter().map(|&s| s.to_string()).collect();
 
-        // Check primary exists
-        let primary_exists = conn
-            .query_row("SELECT 1 FROM papers WHERE id = ?1", params![primary_id], |_| Ok(()))
-            .is_ok();
-        if !primary_exists {
-            return Ok(false);
-        }
-
-        // Filter to only duplicates that exist (do checks outside transaction)
-        let valid_dup_ids: Vec<&str> = duplicate_ids
-            .iter()
-            .filter(|&&id| id != primary_id)
-            .filter(|&&id| {
-                conn.query_row("SELECT 1 FROM papers WHERE id = ?1", params![id], |_| Ok(()))
-                    .is_ok()
-            })
-            .copied()
-            .collect();
-
-        if valid_dup_ids.is_empty() {
-            return Ok(false);
-        }
-
-        // Execute all operations under a single transaction
-        let tx = conn.transaction()?;
-        for &dup_id in &valid_dup_ids {
-            // ── Text/string fields: copy if primary is empty and dup is not ──
-            let text_fields = [
-                "title", "authors", "abstract_text", "doi", "pdf_url",
-                "pdf_path", "pdf_hash", "categories", "plain_text",
-            ];
-            for field in &text_fields {
-                let sql = format!(
-                    "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
-                     WHERE id = ?2 AND ({} IS NULL OR {} = '') \
-                     AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
-                     AND (SELECT {} FROM papers WHERE id = ?1) != ''",
-                    field, field, field, field, field, field
-                );
-                tx.execute(&sql, params![dup_id, primary_id])?;
+        rt.block_on(async move {
+            // Check primary exists
+            let primary_exists = sqlx::query("SELECT 1 FROM papers WHERE id = ?1")
+                .bind(&primary_id)
+                .fetch_optional(&pool)
+                .await?
+                .is_some();
+            if !primary_exists {
+                return Ok(false);
             }
 
-            // ── Integer fields: copy if primary is 0 and dup > 0 ──
-            tx.execute(
-                "UPDATE papers SET cited_by = (SELECT cited_by FROM papers WHERE id = ?1) \
-                 WHERE id = ?2 AND cited_by = 0 \
-                 AND (SELECT cited_by FROM papers WHERE id = ?1) > 0",
-                params![dup_id, primary_id],
-            )?;
-            tx.execute(
-                "UPDATE papers SET references_cnt = (SELECT references_cnt FROM papers WHERE id = ?1) \
-                 WHERE id = ?2 AND references_cnt = 0 \
-                 AND (SELECT references_cnt FROM papers WHERE id = ?1) > 0",
-                params![dup_id, primary_id],
-            )?;
-
-            // ── Integer parse fields: copy if primary is 0/NULL and dup > 0 ──
-            for field in &["table_count", "figure_count", "word_count", "page_count"] {
-                let sql = format!(
-                    "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
-                     WHERE id = ?2 AND ({} IS NULL OR {} = 0) \
-                     AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
-                     AND (SELECT {} FROM papers WHERE id = ?1) > 0",
-                    field, field, field, field, field, field
-                );
-                tx.execute(&sql, params![dup_id, primary_id])?;
+            // Filter to only duplicates that exist (check each one)
+            let mut valid_dup_ids: Vec<String> = Vec::new();
+            for dup_id in &duplicate_ids {
+                if dup_id == &primary_id {
+                    continue;
+                }
+                let exists = sqlx::query("SELECT 1 FROM papers WHERE id = ?1")
+                    .bind(dup_id)
+                    .fetch_optional(&pool)
+                    .await
+                    .map(|opt| opt.is_some())
+                    .unwrap_or(false);
+                if exists {
+                    valid_dup_ids.push(dup_id.clone());
+                }
             }
 
-            // ── Parse status: copy if primary is 'pending' and dup is not ──
-            tx.execute(
-                "UPDATE papers SET parse_status = (SELECT parse_status FROM papers WHERE id = ?1) \
-                 WHERE id = ?2 AND parse_status = 'pending' \
-                 AND (SELECT parse_status FROM papers WHERE id = ?1) != 'pending'",
-                params![dup_id, primary_id],
-            )?;
+            if valid_dup_ids.is_empty() {
+                return Ok(false);
+            }
 
-            // ── Transfer tags from duplicate to primary ──
-            tx.execute(
-                "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) \
-                 SELECT ?1, tag_id FROM paper_tags WHERE paper_id = ?2",
-                params![primary_id, dup_id],
-            )?;
+            // Execute all operations under a single transaction
+            let mut tx = pool.begin().await?;
 
-            // ── Transfer queued jobs from duplicate to primary ──
-            tx.execute(
-                "UPDATE job_queue SET paper_id = ?1 WHERE paper_id = ?2 AND status = 'queued'",
-                params![primary_id, dup_id],
-            )?;
+            for dup_id in &valid_dup_ids {
+                // ── Text/string fields: copy if primary is empty and dup is not ──
+                let text_fields = [
+                    "title", "authors", "abstract_text", "doi", "pdf_url",
+                    "pdf_path", "pdf_hash", "categories", "plain_text",
+                ];
+                for field in &text_fields {
+                    let sql = format!(
+                        "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
+                         WHERE id = ?2 AND ({} IS NULL OR {} = '') \
+                         AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
+                         AND (SELECT {} FROM papers WHERE id = ?1) != ''",
+                        field, field, field, field, field, field
+                    );
+                    sqlx::query(&sql)
+                        .bind(dup_id)
+                        .bind(&primary_id)
+                        .execute(&mut *tx)
+                        .await?;
+                }
 
-            // ── Transfer citations (both incoming and outgoing) ──
-            tx.execute(
-                "UPDATE OR IGNORE citations SET target_id = ?1 WHERE target_id = ?2",
-                params![primary_id, dup_id],
-            )?;
-            tx.execute(
-                "UPDATE OR IGNORE citations SET source_id = ?1 WHERE source_id = ?2",
-                params![primary_id, dup_id],
-            )?;
+                // ── Integer fields: copy if primary is 0 and dup > 0 ──
+                sqlx::query(
+                    "UPDATE papers SET cited_by = (SELECT cited_by FROM papers WHERE id = ?1) \
+                     WHERE id = ?2 AND cited_by = 0 \
+                     AND (SELECT cited_by FROM papers WHERE id = ?1) > 0",
+                )
+                .bind(dup_id)
+                .bind(&primary_id)
+                .execute(&mut *tx)
+                .await?;
 
-            // ── Delete duplicate (cascades to paper_tags, citations) ──
-            tx.execute("DELETE FROM papers WHERE id = ?1", [dup_id])?;
-        }
+                sqlx::query(
+                    "UPDATE papers SET references_cnt = (SELECT references_cnt FROM papers WHERE id = ?1) \
+                     WHERE id = ?2 AND references_cnt = 0 \
+                     AND (SELECT references_cnt FROM papers WHERE id = ?1) > 0",
+                )
+                .bind(dup_id)
+                .bind(&primary_id)
+                .execute(&mut *tx)
+                .await?;
 
-        tx.commit()?;
-        Ok(!valid_dup_ids.is_empty())
+                // ── Integer parse fields: copy if primary is 0/NULL and dup > 0 ──
+                for field in &["table_count", "figure_count", "word_count", "page_count"] {
+                    let sql = format!(
+                        "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
+                         WHERE id = ?2 AND ({} IS NULL OR {} = 0) \
+                         AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
+                         AND (SELECT {} FROM papers WHERE id = ?1) > 0",
+                        field, field, field, field, field, field
+                    );
+                    sqlx::query(&sql)
+                        .bind(dup_id)
+                        .bind(&primary_id)
+                        .execute(&mut *tx)
+                        .await?;
+                }
+
+                // ── Parse status: copy if primary is 'pending' and dup is not ──
+                sqlx::query(
+                    "UPDATE papers SET parse_status = (SELECT parse_status FROM papers WHERE id = ?1) \
+                     WHERE id = ?2 AND parse_status = 'pending' \
+                     AND (SELECT parse_status FROM papers WHERE id = ?1) != 'pending'",
+                )
+                .bind(dup_id)
+                .bind(&primary_id)
+                .execute(&mut *tx)
+                .await?;
+
+                // ── Transfer tags from duplicate to primary ──
+                sqlx::query(
+                    "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) \
+                     SELECT ?1, tag_id FROM paper_tags WHERE paper_id = ?2",
+                )
+                .bind(&primary_id)
+                .bind(dup_id)
+                .execute(&mut *tx)
+                .await?;
+
+                // ── Transfer queued jobs from duplicate to primary ──
+                sqlx::query(
+                    "UPDATE job_queue SET paper_id = ?1 WHERE paper_id = ?2 AND status = 'queued'",
+                )
+                .bind(&primary_id)
+                .bind(dup_id)
+                .execute(&mut *tx)
+                .await?;
+
+                // ── Transfer citations (both incoming and outgoing) ──
+                sqlx::query("UPDATE OR IGNORE citations SET target_id = ?1 WHERE target_id = ?2")
+                    .bind(&primary_id)
+                    .bind(dup_id)
+                    .execute(&mut *tx)
+                    .await?;
+
+                sqlx::query("UPDATE OR IGNORE citations SET source_id = ?1 WHERE source_id = ?2")
+                    .bind(&primary_id)
+                    .bind(dup_id)
+                    .execute(&mut *tx)
+                    .await?;
+
+                // ── Delete duplicate (cascades to paper_tags, citations) ──
+                sqlx::query("DELETE FROM papers WHERE id = ?1")
+                    .bind(dup_id)
+                    .execute(&mut *tx)
+                    .await?;
+            }
+
+            tx.commit().await?;
+            Ok(!valid_dup_ids.is_empty())
+        })
     }
 
     /// Log a deduplication event.
     pub fn log_dedup(&self, target_id: &str, duplicate_id: &str, keep_policy: &str) -> Result<()> {
-        let conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
         let id = Uuid::new_v4().to_string();
-        conn.execute(
-            "INSERT INTO dedup_log (id, target_id, duplicate_id, keep_policy) VALUES (?1, ?2, ?3, ?4)",
-            params![&id, target_id, duplicate_id, keep_policy],
-        )?;
-        Ok(())
+        rt.block_on(async move {
+            sqlx::query(
+                "INSERT INTO dedup_log (id, target_id, duplicate_id, keep_policy) VALUES (?1, ?2, ?3, ?4)",
+            )
+            .bind(&id)
+            .bind(target_id)
+            .bind(duplicate_id)
+            .bind(keep_policy)
+            .execute(&pool)
+            .await?;
+            Ok(())
+        })
     }
 
     /// Get deduplication log entries.
     pub fn get_dedup_log(&self, limit: usize) -> Result<Vec<DedupLogEntry>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, target_id, duplicate_id, keep_policy, created_at \
-             FROM dedup_log ORDER BY created_at DESC LIMIT ?1",
-        )?;
-        let rows = stmt.query_map(params![limit as i64], |row| {
-            Ok(DedupLogEntry {
-                id: row.get(0)?,
-                target_id: row.get(1)?,
-                duplicate_id: row.get(2)?,
-                keep_policy: row.get(3)?,
-                created_at: row.get(4)?,
-            })
-        })?;
-        let mut entries = Vec::with_capacity(limit);
-        for row in rows {
-            entries.push(row?);
-        }
-        Ok(entries)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT id, target_id, duplicate_id, keep_policy, created_at \
+                 FROM dedup_log ORDER BY created_at DESC LIMIT ?1",
+            )
+            .bind(limit as i64)
+            .fetch_all(&pool)
+            .await?;
+            let mut entries = Vec::with_capacity(limit);
+            for row in rows {
+                entries.push(DedupLogEntry {
+                    id: row.try_get(0)?,
+                    target_id: row.try_get(1)?,
+                    duplicate_id: row.try_get(2)?,
+                    keep_policy: row.try_get(3)?,
+                    created_at: row.try_get(4)?,
+                });
+            }
+            Ok(entries)
+        })
     }
 
     /// Get embedding vector for a paper (bytes as f32 array).
     pub fn get_embedding(&self, paper_id: &str) -> Result<Option<Vec<f32>>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT embed_vector FROM papers WHERE id = ?1 AND embed_vector IS NOT NULL",
-        )?;
-        let result = stmt.query_row([paper_id], |row| {
-            let blob: Vec<u8> = row.get(0)?;
-            Ok(blob)
-        });
-        match result {
-            Ok(blob) => {
-                let vec: Vec<f32> = blob
-                    .chunks_exact(4)
-                    .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
-                    .collect();
-                Ok(Some(vec))
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
+        rt.block_on(async move {
+            let result = sqlx::query(
+                "SELECT embed_vector FROM papers WHERE id = ?1 AND embed_vector IS NOT NULL",
+            )
+            .bind(&paper_id)
+            .fetch_optional(&pool)
+            .await;
+            match result {
+                Ok(Some(row)) => {
+                    let blob: Vec<u8> = row.try_get(0)?;
+                    let vec: Vec<f32> = blob
+                        .chunks_exact(4)
+                        .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+                        .collect();
+                    Ok(Some(vec))
+                }
+                Ok(None) => Ok(None),
+                Err(sqlx::Error::RowNotFound) => Ok(None),
+                Err(e) => Err(CoreError::Database(e)),
             }
-            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-            Err(e) => Err(CoreError::Database(e)),
-        }
+        })
     }
 
     /// List all paper IDs that have embeddings.
     pub fn list_papers_with_embeddings(&self) -> Result<Vec<String>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare("SELECT id FROM papers WHERE embed_vector IS NOT NULL")?;
-        let rows = stmt.query_map([], |row| row.get(0))?;
-        let mut ids = Vec::new();
-        for row in rows {
-            ids.push(row?);
-        }
-        Ok(ids)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let rows = sqlx::query("SELECT id FROM papers WHERE embed_vector IS NOT NULL")
+                .fetch_all(&pool)
+                .await?;
+            let mut ids = Vec::new();
+            for row in rows {
+                ids.push(row.try_get(0)?);
+            }
+            Ok(ids)
+        })
     }
 
-    fn row_to_paper(row: &rusqlite::Row<'_>) -> rusqlite::Result<Paper> {
-        let authors_str: String = row.get(3)?;
-        let categories_str: String = row.get(6)?;
-        let status_str: String = row.get(7)?;
+    fn row_to_paper(row: &SqliteRow) -> Result<Paper> {
+        let authors_str: String = row.try_get(3)?;
+        let categories_str: String = row.try_get(6)?;
+        let status_str: String = row.try_get(7)?;
         Ok(Paper {
-            id: row.get(0)?,
-            arxiv_id: row.get(1)?,
-            title: row.get(2)?,
+            id: row.try_get(0)?,
+            arxiv_id: row.try_get(1)?,
+            title: row.try_get(2)?,
             authors: serde_json::from_str(&authors_str).unwrap_or_default(),
-            published: DateTime::parse_from_rfc3339(&row.get::<_, String>(4)?)
+            published: DateTime::parse_from_rfc3339(&row.try_get::<String, _>(4)?)
                 .map(|dt| dt.with_timezone(&Utc))
                 .unwrap_or_else(|_| Utc::now()),
-            abstract_text: row.get(5)?,
+            abstract_text: row.try_get(5)?,
             categories: serde_json::from_str(&categories_str).unwrap_or_default(),
             parse_status: match status_str.as_str() {
                 "pending" => ParseStatus::Pending,
@@ -922,164 +1188,203 @@ impl Database {
                 _ => ParseStatus::Pending,
             },
             metadata: PaperMetadata {
-                cited_by: row.get::<_, i64>(8)? as usize,
-                references: row.get::<_, i64>(9)? as usize,
-                doi: row.get(10)?,
-                pdf_url: row.get(11)?,
+                cited_by: row.try_get::<i64, _>(8)? as usize,
+                references: row.try_get::<i64, _>(9)? as usize,
+                doi: row.try_get(10)?,
+                pdf_url: row.try_get(11)?,
             },
         })
     }
 
     pub fn insert_gap(&self, gap: &ResearchGap) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            "INSERT INTO research_gaps (id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
-            params![
-                gap.id,
-                &gap.topic,
-                &gap.session_id,
-                &gap.gap_type,
-                &gap.gap_title,
-                &gap.gap_title_hash,
-                &gap.category,
-                &gap.description,
-                &gap.severity,
-                gap.novelty_score,
-                &gap.priority,
-                serde_json::to_string(&gap.paper_ids)?,
-                &gap.created_at,
-            ],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let gap = gap.clone();
+        rt.block_on(async move {
+            sqlx::query(
+                "INSERT INTO research_gaps (id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
+            )
+            .bind(&gap.id)
+            .bind(&gap.topic)
+            .bind(&gap.session_id)
+            .bind(&gap.gap_type)
+            .bind(&gap.gap_title)
+            .bind(&gap.gap_title_hash)
+            .bind(&gap.category)
+            .bind(&gap.description)
+            .bind(&gap.severity)
+            .bind(gap.novelty_score)
+            .bind(&gap.priority)
+            .bind(serde_json::to_string(&gap.paper_ids)?)
+            .bind(&gap.created_at)
+            .execute(&pool)
+            .await?;
+            Ok(())
+        })
     }
 
     pub fn list_gaps(&self, limit: usize, offset: usize) -> Result<Vec<ResearchGap>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at FROM research_gaps ORDER BY created_at DESC LIMIT ?1 OFFSET ?2",
-        )?;
-        let rows = stmt.query_map(params![limit as i64, offset as i64], |row| {
-            Ok(ResearchGap {
-                id: row.get(0)?,
-                topic: row.get(1)?,
-                session_id: row.get(2)?,
-                gap_type: row.get(3)?,
-                gap_title: row.get(4)?,
-                gap_title_hash: row.get(5)?,
-                category: row.get(6)?,
-                description: row.get(7)?,
-                severity: row.get(8)?,
-                novelty_score: row.get(9)?,
-                priority: row.get(10)?,
-                paper_ids: serde_json::from_str(&row.get::<_, String>(11)?).unwrap_or_default(),
-                created_at: row.get(12)?,
-            })
-        })?;
-        let mut gaps = Vec::with_capacity(limit);
-        for gap in rows {
-            gaps.push(gap?);
-        }
-        Ok(gaps)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at FROM research_gaps ORDER BY created_at DESC LIMIT ?1 OFFSET ?2",
+            )
+            .bind(limit as i64)
+            .bind(offset as i64)
+            .fetch_all(&pool)
+            .await?;
+            let mut gaps = Vec::with_capacity(limit);
+            for row in rows {
+                gaps.push(ResearchGap {
+                    id: row.try_get(0)?,
+                    topic: row.try_get(1)?,
+                    session_id: row.try_get(2)?,
+                    gap_type: row.try_get(3)?,
+                    gap_title: row.try_get(4)?,
+                    gap_title_hash: row.try_get(5)?,
+                    category: row.try_get(6)?,
+                    description: row.try_get(7)?,
+                    severity: row.try_get(8)?,
+                    novelty_score: row.try_get(9)?,
+                    priority: row.try_get(10)?,
+                    paper_ids: serde_json::from_str(&row.try_get::<String, _>(11)?).unwrap_or_default(),
+                    created_at: row.try_get(12)?,
+                });
+            }
+            Ok(gaps)
+        })
     }
 
     pub fn get_gap(&self, id: &str) -> Result<Option<ResearchGap>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at FROM research_gaps WHERE id = ?1",
-        )?;
-        let result = stmt.query_row([id], |row| {
-            Ok(Some(ResearchGap {
-                id: row.get(0)?,
-                topic: row.get(1)?,
-                session_id: row.get(2)?,
-                gap_type: row.get(3)?,
-                gap_title: row.get(4)?,
-                gap_title_hash: row.get(5)?,
-                category: row.get(6)?,
-                description: row.get(7)?,
-                severity: row.get(8)?,
-                novelty_score: row.get(9)?,
-                priority: row.get(10)?,
-                paper_ids: serde_json::from_str(&row.get::<_, String>(11)?).unwrap_or_default(),
-                created_at: row.get(12)?,
-            }))
-        });
-        match result {
-            Ok(g) => Ok(g),
-            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-            Err(e) => Err(e.into()),
-        }
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            let result = sqlx::query(
+                "SELECT id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at FROM research_gaps WHERE id = ?1",
+            )
+            .bind(&id)
+            .fetch_optional(&pool)
+            .await;
+            match result {
+                Ok(Some(row)) => Ok(Some(ResearchGap {
+                    id: row.try_get(0)?,
+                    topic: row.try_get(1)?,
+                    session_id: row.try_get(2)?,
+                    gap_type: row.try_get(3)?,
+                    gap_title: row.try_get(4)?,
+                    gap_title_hash: row.try_get(5)?,
+                    category: row.try_get(6)?,
+                    description: row.try_get(7)?,
+                    severity: row.try_get(8)?,
+                    novelty_score: row.try_get(9)?,
+                    priority: row.try_get(10)?,
+                    paper_ids: serde_json::from_str(&row.try_get::<String, _>(11)?).unwrap_or_default(),
+                    created_at: row.try_get(12)?,
+                })),
+                Ok(None) => Ok(None),
+                Err(sqlx::Error::RowNotFound) => Ok(None),
+                Err(e) => Err(CoreError::Database(e)),
+            }
+        })
     }
 
     pub fn delete_gap(&self, id: &str) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute("DELETE FROM research_gaps WHERE id = ?1", [id])?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            sqlx::query("DELETE FROM research_gaps WHERE id = ?1")
+                .bind(&id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn search_papers(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
-        let conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
         let pattern = format!("%{}%", query);
-        let mut stmt = conn.prepare(
-            "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
-                    parse_status, cited_by, references_cnt, doi, pdf_url
-             FROM papers
-             WHERE title LIKE ?1 OR abstract_text LIKE ?1
-             ORDER BY published DESC LIMIT ?2",
-        )?;
-        let rows = stmt.query_map(params![pattern, limit as i64], |row| {
-            Ok(Self::row_to_paper(row))
-        })?;
-        let mut papers: Vec<Paper> = Vec::with_capacity(limit);
-        for paper in rows {
-            papers.push(paper??);
-        }
-        Ok(papers)
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
+                        parse_status, cited_by, references_cnt, doi, pdf_url
+                 FROM papers
+                 WHERE title LIKE ?1 OR abstract_text LIKE ?1
+                 ORDER BY published DESC LIMIT ?2",
+            )
+            .bind(&pattern)
+            .bind(limit as i64)
+            .fetch_all(&pool)
+            .await?;
+            let mut papers: Vec<Paper> = Vec::with_capacity(limit);
+            for row in rows {
+                papers.push(Self::row_to_paper(&row)?);
+            }
+            Ok(papers)
+        })
     }
 
     pub fn count_papers(&self) -> Result<i64> {
-        let conn = self.conn.lock();
-        let count: i64 = conn.query_row("SELECT COUNT(*) FROM papers", [], |r| r.get(0))?;
-        Ok(count)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let row = sqlx::query("SELECT COUNT(*) FROM papers")
+                .fetch_one(&pool)
+                .await?;
+            let count: i64 = row.try_get(0)?;
+            Ok(count)
+        })
     }
 
     pub fn stats(&self) -> Result<DbStats> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT
-                (SELECT COUNT(*) FROM papers) as total,
-                (SELECT COUNT(*) FROM papers WHERE parse_status = 'pending') as pending,
-                (SELECT COUNT(*) FROM papers WHERE parse_status = 'done') as done,
-                (SELECT COUNT(*) FROM research_gaps) as gaps",
-        )?;
-        let row = stmt.query_row([], |r| {
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let row = sqlx::query(
+                "SELECT
+                    (SELECT COUNT(*) FROM papers) as total,
+                    (SELECT COUNT(*) FROM papers WHERE parse_status = 'pending') as pending,
+                    (SELECT COUNT(*) FROM papers WHERE parse_status = 'done') as done,
+                    (SELECT COUNT(*) FROM research_gaps) as gaps",
+            )
+            .fetch_one(&pool)
+            .await?;
             Ok(DbStats {
-                total: r.get(0)?,
-                pending: r.get(1)?,
-                done: r.get(2)?,
-                gaps: r.get(3)?,
+                total: row.try_get(0)?,
+                pending: row.try_get(1)?,
+                done: row.try_get(2)?,
+                gaps: row.try_get(3)?,
             })
-        })?;
-        Ok(row)
+        })
     }
 
     pub fn search_papers_fts(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            r#"SELECT p.id, p.arxiv_id, p.title, p.authors, p.published, p.abstract_text,
-                      p.categories, p.parse_status, p.cited_by, p.references_cnt, p.doi, p.pdf_url
-               FROM papers p
-               INNER JOIN papers_fts fts ON p.rowid = fts.rowid
-               WHERE papers_fts MATCH ?1
-               ORDER BY rank
-               LIMIT ?2"#,
-        )?;
-        let rows = stmt.query_map(params![query, limit as i64], Self::row_to_paper)?;
-        let mut papers: Vec<Paper> = Vec::with_capacity(limit);
-        for paper in rows {
-            papers.push(paper?);
-        }
-        Ok(papers)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let query = query.to_string();
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                r#"SELECT p.id, p.arxiv_id, p.title, p.authors, p.published, p.abstract_text,
+                          p.categories, p.parse_status, p.cited_by, p.references_cnt, p.doi, p.pdf_url
+                   FROM papers p
+                   INNER JOIN papers_fts fts ON p.rowid = fts.rowid
+                   WHERE papers_fts MATCH ?1
+                   ORDER BY rank
+                   LIMIT ?2"#,
+            )
+            .bind(&query)
+            .bind(limit as i64)
+            .fetch_all(&pool)
+            .await?;
+            let mut papers: Vec<Paper> = Vec::with_capacity(limit);
+            for row in rows {
+                papers.push(Self::row_to_paper(&row)?);
+            }
+            Ok(papers)
+        })
     }
 
     pub fn search_papers_smart(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
@@ -1098,23 +1403,27 @@ impl Database {
             }
         }
 
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
         let pattern = format!("%{}%", query);
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
-                    parse_status, cited_by, references_cnt, doi, pdf_url
-             FROM papers
-             WHERE title LIKE ?1 OR abstract_text LIKE ?1
-             ORDER BY published DESC LIMIT ?2",
-        )?;
-        let rows = stmt.query_map(params![pattern, limit as i64], |row| {
-            Ok(Self::row_to_paper(row))
-        })?;
-        let mut papers: Vec<Paper> = Vec::with_capacity(limit);
-        for paper in rows {
-            papers.push(paper??);
-        }
-        Ok(papers)
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
+                        parse_status, cited_by, references_cnt, doi, pdf_url
+                 FROM papers
+                 WHERE title LIKE ?1 OR abstract_text LIKE ?1
+                 ORDER BY published DESC LIMIT ?2",
+            )
+            .bind(&pattern)
+            .bind(limit as i64)
+            .fetch_all(&pool)
+            .await?;
+            let mut papers: Vec<Paper> = Vec::with_capacity(limit);
+            for row in rows {
+                papers.push(Self::row_to_paper(&row)?);
+            }
+            Ok(papers)
+        })
     }
 
     pub fn update_paper_full_text(
@@ -1126,71 +1435,94 @@ impl Database {
         word_count: i32,
         page_count: i32,
     ) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            "UPDATE papers SET plain_text = ?1, table_count = ?2, figure_count = ?3, word_count = ?4, page_count = ?5, updated_at = datetime('now') WHERE id = ?6",
-            params![plain_text, table_count, figure_count, word_count, page_count, id],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        let plain_text = plain_text.to_string();
+        rt.block_on(async move {
+            sqlx::query(
+                "UPDATE papers SET plain_text = ?1, table_count = ?2, figure_count = ?3, word_count = ?4, page_count = ?5, updated_at = datetime('now') WHERE id = ?6",
+            )
+            .bind(&plain_text)
+            .bind(table_count)
+            .bind(figure_count)
+            .bind(word_count)
+            .bind(page_count)
+            .bind(&id)
+            .execute(&pool)
+            .await?;
+            Ok(())
+        })
     }
 
     pub fn insert_subscription(&self, sub: &Subscription) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            r#"INSERT INTO subscriptions (id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled)
-               VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)"#,
-            params![
-                sub.id,
-                &sub.query,
-                &sub.name,
-                serde_json::to_string(&sub.categories)?,
-                sub.max_results,
-                sub.check_interval_minutes as i32,
-                sub.last_check.as_deref(),
-                sub.last_results.as_deref(),
-                sub.enabled as i32,
-            ],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let sub = sub.clone();
+        rt.block_on(async move {
+            sqlx::query(
+                r#"INSERT INTO subscriptions (id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled)
+                   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)"#,
+            )
+            .bind(&sub.id)
+            .bind(&sub.query)
+            .bind(&sub.name)
+            .bind(serde_json::to_string(&sub.categories)?)
+            .bind(sub.max_results)
+            .bind(sub.check_interval_minutes as i32)
+            .bind(&sub.last_check)
+            .bind(&sub.last_results)
+            .bind(sub.enabled as i32)
+            .execute(&pool)
+            .await?;
+            Ok(())
+        })
     }
 
     pub fn list_subscriptions(&self, enabled_only: bool) -> Result<Vec<Subscription>> {
-        let conn = self.conn.lock();
-        let sql = if enabled_only {
-            "SELECT id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled FROM subscriptions WHERE enabled = 1"
-        } else {
-            "SELECT id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled FROM subscriptions"
-        };
-        let mut stmt = conn.prepare(sql)?;
-        let rows = stmt.query_map([], |row| {
-            let categories_str: Option<String> = row.get(3)?;
-            let last_check: Option<String> = row.get(6)?;
-            let last_results: Option<String> = row.get(7)?;
-            Ok(Subscription {
-                id: row.get(0)?,
-                query: row.get(1)?,
-                name: row.get(2)?,
-                categories: categories_str
-                    .map(|s| serde_json::from_str(&s).unwrap_or_default())
-                    .unwrap_or_default(),
-                max_results: row.get(4)?,
-                check_interval_minutes: row.get::<_, i32>(5)? as u64,
-                last_check,
-                last_results,
-                enabled: row.get::<_, i32>(8)? != 0,
-            })
-        })?;
-        let mut subs = Vec::new();
-        for sub in rows {
-            subs.push(sub?);
-        }
-        Ok(subs)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let sql = if enabled_only {
+                "SELECT id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled FROM subscriptions WHERE enabled = 1"
+            } else {
+                "SELECT id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled FROM subscriptions"
+            };
+            let rows = sqlx::query(sql).fetch_all(&pool).await?;
+            let mut subs = Vec::new();
+            for row in rows {
+                let categories_str: Option<String> = row.try_get(3)?;
+                let last_check: Option<String> = row.try_get(6)?;
+                let last_results: Option<String> = row.try_get(7)?;
+                subs.push(Subscription {
+                    id: row.try_get(0)?,
+                    query: row.try_get(1)?,
+                    name: row.try_get(2)?,
+                    categories: categories_str
+                        .map(|s| serde_json::from_str(&s).unwrap_or_default())
+                        .unwrap_or_default(),
+                    max_results: row.try_get(4)?,
+                    check_interval_minutes: row.try_get::<i32, _>(5)? as u64,
+                    last_check,
+                    last_results,
+                    enabled: row.try_get::<i32, _>(8)? != 0,
+                });
+            }
+            Ok(subs)
+        })
     }
 
     pub fn delete_subscription(&self, id: &str) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute("DELETE FROM subscriptions WHERE id = ?1", [id])?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            sqlx::query("DELETE FROM subscriptions WHERE id = ?1")
+                .bind(&id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn update_subscription_last_check(
@@ -1199,121 +1531,179 @@ impl Database {
         last_check: &str,
         last_results: &str,
     ) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            "UPDATE subscriptions SET last_check = ?1, last_results = ?2 WHERE id = ?3",
-            params![last_check, last_results, id],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        let last_check = last_check.to_string();
+        let last_results = last_results.to_string();
+        rt.block_on(async move {
+            sqlx::query("UPDATE subscriptions SET last_check = ?1, last_results = ?2 WHERE id = ?3")
+                .bind(&last_check)
+                .bind(&last_results)
+                .bind(&id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn insert_tag(&self, tag: &Tag) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            "INSERT INTO tags (id, name, color) VALUES (?1, ?2, ?3)",
-            params![&tag.id, &tag.name, &tag.color],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let tag = tag.clone();
+        rt.block_on(async move {
+            sqlx::query("INSERT INTO tags (id, name, color) VALUES (?1, ?2, ?3)")
+                .bind(&tag.id)
+                .bind(&tag.name)
+                .bind(&tag.color)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn list_tags(&self) -> Result<Vec<Tag>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare("SELECT id, name, color FROM tags ORDER BY name")?;
-        let rows = stmt.query_map([], |row| {
-            Ok(Tag {
-                id: row.get(0)?,
-                name: row.get(1)?,
-                color: row.get(2)?,
-            })
-        })?;
-        let mut tags = Vec::new();
-        for tag in rows {
-            tags.push(tag?);
-        }
-        Ok(tags)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let rows = sqlx::query("SELECT id, name, color FROM tags ORDER BY name")
+                .fetch_all(&pool)
+                .await?;
+            let mut tags = Vec::new();
+            for row in rows {
+                tags.push(Tag {
+                    id: row.try_get(0)?,
+                    name: row.try_get(1)?,
+                    color: row.try_get(2)?,
+                });
+            }
+            Ok(tags)
+        })
     }
 
     pub fn delete_tag(&self, id: &str) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute("DELETE FROM tags WHERE id = ?1", [id])?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let id = id.to_string();
+        rt.block_on(async move {
+            sqlx::query("DELETE FROM tags WHERE id = ?1")
+                .bind(&id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn add_paper_tag(&self, paper_id: &str, tag_id: &str) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?1, ?2)",
-            params![paper_id, tag_id],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
+        let tag_id = tag_id.to_string();
+        rt.block_on(async move {
+            sqlx::query("INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?1, ?2)")
+                .bind(&paper_id)
+                .bind(&tag_id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn remove_paper_tag(&self, paper_id: &str, tag_id: &str) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute(
-            "DELETE FROM paper_tags WHERE paper_id = ?1 AND tag_id = ?2",
-            params![paper_id, tag_id],
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
+        let tag_id = tag_id.to_string();
+        rt.block_on(async move {
+            sqlx::query("DELETE FROM paper_tags WHERE paper_id = ?1 AND tag_id = ?2")
+                .bind(&paper_id)
+                .bind(&tag_id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn get_paper_tags(&self, paper_id: &str) -> Result<Vec<Tag>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT t.id, t.name, t.color FROM tags t INNER JOIN paper_tags pt ON t.id = pt.tag_id WHERE pt.paper_id = ?1"
-        )?;
-        let rows = stmt.query_map([paper_id], |row| {
-            Ok(Tag {
-                id: row.get(0)?,
-                name: row.get(1)?,
-                color: row.get(2)?,
-            })
-        })?;
-        let mut tags = Vec::new();
-        for tag in rows {
-            tags.push(tag?);
-        }
-        Ok(tags)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT t.id, t.name, t.color FROM tags t INNER JOIN paper_tags pt ON t.id = pt.tag_id WHERE pt.paper_id = ?1",
+            )
+            .bind(&paper_id)
+            .fetch_all(&pool)
+            .await?;
+            let mut tags = Vec::new();
+            for row in rows {
+                tags.push(Tag {
+                    id: row.try_get(0)?,
+                    name: row.try_get(1)?,
+                    color: row.try_get(2)?,
+                });
+            }
+            Ok(tags)
+        })
     }
 
     pub fn insert_citation(&self, source_id: &str, target_id: &str) -> Result<()> {
-        let conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
         let id = Uuid::new_v4().to_string();
-        conn.execute(
-            "INSERT OR IGNORE INTO citations (id, source_id, target_id) VALUES (?1, ?2, ?3)",
-            params![&id, source_id, target_id],
-        )?;
-        Ok(())
+        let source_id = source_id.to_string();
+        let target_id = target_id.to_string();
+        rt.block_on(async move {
+            sqlx::query("INSERT OR IGNORE INTO citations (id, source_id, target_id) VALUES (?1, ?2, ?3)")
+                .bind(&id)
+                .bind(&source_id)
+                .bind(&target_id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     pub fn list_all_citations(&self) -> Result<Vec<(String, String)>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare("SELECT source_id, target_id FROM citations")?;
-        let rows = stmt
-            .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?;
-        let mut result = Vec::new();
-        for row in rows {
-            result.push(row?);
-        }
-        Ok(result)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let rows = sqlx::query("SELECT source_id, target_id FROM citations")
+                .fetch_all(&pool)
+                .await?;
+            let mut result = Vec::new();
+            for row in rows {
+                result.push((row.try_get(0)?, row.try_get(1)?));
+            }
+            Ok(result)
+        })
     }
 
     pub fn get_citations(&self, paper_id: &str) -> Result<Citations> {
-        let conn = self.conn.lock();
-        let mut citing_stmt =
-            conn.prepare("SELECT source_id FROM citations WHERE target_id = ?1")?;
-        let citing: Vec<String> = citing_stmt
-            .query_map([paper_id], |row| row.get(0))?
-            .filter_map(|r| r.ok())
-            .collect();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
+        rt.block_on(async move {
+            let citing_rows = sqlx::query("SELECT source_id FROM citations WHERE target_id = ?1")
+                .bind(&paper_id)
+                .fetch_all(&pool)
+                .await?;
+            let citing: Vec<String> = citing_rows
+                .iter()
+                .filter_map(|row| row.try_get(0).ok())
+                .collect();
 
-        let mut refs_stmt = conn.prepare("SELECT target_id FROM citations WHERE source_id = ?1")?;
-        let references: Vec<String> = refs_stmt
-            .query_map([paper_id], |row| row.get(0))?
-            .filter_map(|r| r.ok())
-            .collect();
+            let refs_rows = sqlx::query("SELECT target_id FROM citations WHERE source_id = ?1")
+                .bind(&paper_id)
+                .fetch_all(&pool)
+                .await?;
+            let references: Vec<String> = refs_rows
+                .iter()
+                .filter_map(|row| row.try_get(0).ok())
+                .collect();
 
-        Ok(Citations { citing, references })
+            Ok(Citations { citing, references })
+        })
     }
 
     pub fn find_similar_by_vector(
@@ -1321,73 +1711,91 @@ impl Database {
         embedding: &[f32],
         limit: usize,
     ) -> Result<Vec<(String, f32)>> {
-        let conn = self.conn.lock();
-        let mut stmt =
-            conn.prepare("SELECT id, embed_vector FROM papers WHERE embed_vector IS NOT NULL")?;
-        let rows = stmt.query_map([], |row| {
-            let id: String = row.get(0)?;
-            let blob: Vec<u8> = row.get(1)?;
-            Ok((id, blob))
-        })?;
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let embedding_vec: Vec<f32> = embedding.to_vec();
+        rt.block_on(async move {
+            let rows = sqlx::query("SELECT id, embed_vector FROM papers WHERE embed_vector IS NOT NULL")
+                .fetch_all(&pool)
+                .await?;
 
-        let mut results: Vec<(String, f32)> = Vec::with_capacity(limit);
-        for row in rows {
-            let (id, blob) = row?;
-            if blob.len() != embedding.len() * 4 {
-                continue;
+            let mut results: Vec<(String, f32)> = Vec::with_capacity(limit);
+            for row in rows {
+                let id: String = row.try_get(0)?;
+                let blob: Vec<u8> = row.try_get(1)?;
+                if blob.len() != embedding_vec.len() * 4 {
+                    continue;
+                }
+                let stored: &[f32] =
+                    unsafe { std::slice::from_raw_parts(blob.as_ptr() as *const f32, embedding_vec.len()) };
+                let similarity = cosine_similarity(&embedding_vec, stored);
+                results.push((id, similarity));
             }
-            let stored: &[f32] =
-                unsafe { std::slice::from_raw_parts(blob.as_ptr() as *const f32, embedding.len()) };
-            let similarity = cosine_similarity(embedding, stored);
-            results.push((id, similarity));
-        }
 
-        results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-        results.truncate(limit);
-        Ok(results)
+            results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+            results.truncate(limit);
+            Ok(results)
+        })
     }
 
     pub fn set_paper_embedding(&self, paper_id: &str, embedding: &[f32]) -> Result<()> {
-        let conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
         let blob: Vec<u8> = embedding.iter().flat_map(|f| f.to_le_bytes()).collect();
-        conn.execute(
-            "UPDATE papers SET embed_vector = ?1 WHERE id = ?2",
-            params![blob, paper_id],
-        )?;
-        Ok(())
+        rt.block_on(async move {
+            sqlx::query("UPDATE papers SET embed_vector = ?1 WHERE id = ?2")
+                .bind(&blob)
+                .bind(&paper_id)
+                .execute(&pool)
+                .await?;
+            Ok(())
+        })
     }
 
     /// Get embedding coverage stats: (total_with_text, with_embedding).
     pub fn get_embedding_stats(&self) -> Result<(i64, i64)> {
-        let conn = self.conn.lock();
-        let total: i64 = conn.query_row(
-            "SELECT COUNT(*) FROM papers WHERE title != '' OR abstract_text != ''",
-            [],
-            |row| row.get(0),
-        )?;
-        let with_emb: i64 = conn.query_row(
-            "SELECT COUNT(*) FROM papers WHERE embed_vector IS NOT NULL",
-            [],
-            |row| row.get(0),
-        )?;
-        Ok((total, with_emb))
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let total_row = sqlx::query(
+                "SELECT COUNT(*) FROM papers WHERE title != '' OR abstract_text != ''",
+            )
+            .fetch_one(&pool)
+            .await?;
+            let total: i64 = total_row.try_get(0)?;
+
+            let emb_row = sqlx::query(
+                "SELECT COUNT(*) FROM papers WHERE embed_vector IS NOT NULL",
+            )
+            .fetch_one(&pool)
+            .await?;
+            let with_emb: i64 = emb_row.try_get(0)?;
+
+            Ok((total, with_emb))
+        })
     }
 
     /// Get papers that don't have embeddings yet.
     pub fn get_papers_without_embeddings(&self, limit: i64) -> Result<Vec<Paper>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT id, arxiv_id, title, authors, published, abstract_text,
-                    categories, parse_status, cited_by, references_cnt, doi, pdf_url
-             FROM papers WHERE embed_vector IS NULL AND (title != '' OR abstract_text != '')
-             LIMIT ?"
-        )?;
-        let rows = stmt.query_map([limit], |row| Ok(Self::row_to_paper(row)))?;
-        let mut papers = Vec::with_capacity(limit as usize);
-        for paper in rows {
-            papers.push(paper??);
-        }
-        Ok(papers)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT id, arxiv_id, title, authors, published, abstract_text,
+                        categories, parse_status, cited_by, references_cnt, doi, pdf_url
+                 FROM papers WHERE embed_vector IS NULL AND (title != '' OR abstract_text != '')
+                 LIMIT ?1",
+            )
+            .bind(limit)
+            .fetch_all(&pool)
+            .await?;
+            let mut papers = Vec::with_capacity(limit as usize);
+            for row in rows {
+                papers.push(Self::row_to_paper(&row)?);
+            }
+            Ok(papers)
+        })
     }
 
     /// Find papers similar to the given paper by embedding cosine similarity.
@@ -1416,119 +1824,163 @@ impl Database {
     // ─── Queue Operations ─────────────────────────────────────────────────
 
     pub fn enqueue_job(&self, paper_id: &str, job_type: &str, priority: i64) -> Result<i64> {
-        let conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
+        let job_type = job_type.to_string();
         let now = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string();
-        conn.execute(
-            "INSERT INTO job_queue (paper_id, job_type, status, priority, created_at) VALUES (?1, ?2, 'queued', ?3, ?4)",
-            params![paper_id, job_type, priority, now],
-        )?;
-        Ok(conn.last_insert_rowid())
+        rt.block_on(async move {
+            let result = sqlx::query(
+                "INSERT INTO job_queue (paper_id, job_type, status, priority, created_at) VALUES (?1, ?2, 'queued', ?3, ?4)",
+            )
+            .bind(&paper_id)
+            .bind(&job_type)
+            .bind(priority)
+            .bind(&now)
+            .execute(&pool)
+            .await?;
+            Ok(result.last_insert_rowid())
+        })
     }
 
     pub fn dequeue_job(&self) -> Result<Option<JobQueueEntry>> {
-        let conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
         let now = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string();
-        let row = conn
-            .query_row(
+        rt.block_on(async move {
+            let row = sqlx::query(
                 "SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
                  FROM job_queue WHERE status = 'queued' ORDER BY priority DESC, created_at ASC LIMIT 1",
-                [],
-                |row| {
-                    Ok(JobQueueEntry {
-                        id: row.get(0)?,
-                        paper_id: row.get(1)?,
-                        job_type: row.get(2)?,
-                        status: "running".to_string(),
-                        priority: row.get(4)?,
-                        created_at: row.get(5)?,
-                        started_at: Some(now.clone()),
-                        completed_at: row.get(7)?,
-                        error: row.get(8)?,
-                    })
-                },
             )
-            .ok();
+            .fetch_optional(&pool)
+            .await?;
 
-        if let Some(ref entry) = row {
-            conn.execute(
-                "UPDATE job_queue SET status = 'running', started_at = ?1 WHERE id = ?2",
-                params![now, entry.id],
-            )?;
-        }
-        Ok(row)
+            match row {
+                Some(row) => {
+                    let entry = JobQueueEntry {
+                        id: row.try_get(0)?,
+                        paper_id: row.try_get(1)?,
+                        job_type: row.try_get(2)?,
+                        status: "running".to_string(),
+                        priority: row.try_get(4)?,
+                        created_at: row.try_get(5)?,
+                        started_at: Some(now.clone()),
+                        completed_at: row.try_get(7)?,
+                        error: row.try_get(8)?,
+                    };
+                    let entry_id = entry.id;
+                    sqlx::query("UPDATE job_queue SET status = 'running', started_at = ?1 WHERE id = ?2")
+                        .bind(&now)
+                        .bind(entry_id)
+                        .execute(&pool)
+                        .await?;
+                    Ok(Some(entry))
+                }
+                None => Ok(None),
+            }
+        })
     }
 
     pub fn get_queue_jobs(&self, status: Option<&str>, limit: i64) -> Result<Vec<JobQueueEntry>> {
-        let conn = self.conn.lock();
-        let (sql, has_status_filter) = if status.is_some() {
-            ("SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
-                 FROM job_queue WHERE status = ?1 ORDER BY priority DESC, created_at ASC LIMIT ?2", true)
-        } else {
-            ("SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
-                 FROM job_queue ORDER BY priority DESC, created_at ASC LIMIT ?1", false)
-        };
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let sql = if status.is_some() {
+                "SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
+                     FROM job_queue WHERE status = ?1 ORDER BY priority DESC, created_at ASC LIMIT ?2"
+            } else {
+                "SELECT id, paper_id, job_type, status, priority, created_at, started_at, completed_at, error
+                     FROM job_queue ORDER BY priority DESC, created_at ASC LIMIT ?1"
+            };
 
-        let mut stmt = conn.prepare(sql)?;
+            let rows = if let Some(s) = status {
+                sqlx::query(sql)
+                    .bind(s)
+                    .bind(limit)
+                    .fetch_all(&pool)
+                    .await?
+            } else {
+                sqlx::query(sql)
+                    .bind(limit)
+                    .fetch_all(&pool)
+                    .await?
+            };
 
-        let rows = if has_status_filter {
-            stmt.query_map(params![status.unwrap(), limit], map_job_row)?
-        } else {
-            stmt.query_map(params![limit], map_job_row)?
-        };
-
-        let mut results = Vec::with_capacity(limit as usize);
-        for row in rows {
-            results.push(row?);
-        }
-        Ok(results)
+            let mut results = Vec::with_capacity(limit as usize);
+            for row in rows {
+                results.push(map_job_row(&row)?);
+            }
+            Ok(results)
+        })
     }
 
     pub fn cancel_job(&self, job_id: i64) -> Result<bool> {
-        let conn = self.conn.lock();
-        let rows = conn.execute(
-            "UPDATE job_queue SET status = 'cancelled' WHERE id = ?1 AND status = 'queued'",
-            params![job_id],
-        )?;
-        Ok(rows > 0)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let result = sqlx::query(
+                "UPDATE job_queue SET status = 'cancelled' WHERE id = ?1 AND status = 'queued'",
+            )
+            .bind(job_id)
+            .execute(&pool)
+            .await?;
+            Ok(result.rows_affected() > 0)
+        })
     }
 
     pub fn clear_pending_papers(&self) -> Result<i64> {
-        let conn = self.conn.lock();
-        let count = conn.query_row(
-            "SELECT COUNT(*) FROM papers WHERE parse_status = 'pending'",
-            [],
-            |row| row.get::<_, i64>(0),
-        )?;
-        conn.execute("DELETE FROM papers WHERE parse_status = 'pending'", [])?;
-        Ok(count)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let count_row = sqlx::query("SELECT COUNT(*) FROM papers WHERE parse_status = 'pending'")
+                .fetch_one(&pool)
+                .await?;
+            let count: i64 = count_row.try_get(0)?;
+
+            sqlx::query("DELETE FROM papers WHERE parse_status = 'pending'")
+                .execute(&pool)
+                .await?;
+            Ok(count)
+        })
     }
 
     /// List recent paper-code traces across all papers.
     pub fn list_paper_code_traces(&self, limit: i64) -> Result<Vec<PaperCodeTrace>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT * FROM paper_code_trace ORDER BY created_at DESC LIMIT ?",
-        )?;
-        let rows = stmt.query_map([limit], map_paper_code_trace_row)?;
-        let mut traces = Vec::with_capacity(limit as usize);
-        for row in rows {
-            traces.push(row?);
-        }
-        Ok(traces)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT * FROM paper_code_trace ORDER BY created_at DESC LIMIT ?1",
+            )
+            .bind(limit)
+            .fetch_all(&pool)
+            .await?;
+            let mut traces = Vec::with_capacity(limit as usize);
+            for row in rows {
+                traces.push(map_paper_code_trace_row(&row)?);
+            }
+            Ok(traces)
+        })
     }
 
     /// Get paper-code traces for a specific paper.
     pub fn get_paper_code_trace(&self, paper_id: &str) -> Result<Vec<PaperCodeTrace>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(
-            "SELECT * FROM paper_code_trace WHERE paper_id = ? ORDER BY created_at DESC",
-        )?;
-        let rows = stmt.query_map([paper_id], map_paper_code_trace_row)?;
-        let mut traces = Vec::new();
-        for row in rows {
-            traces.push(row?);
-        }
-        Ok(traces)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_id = paper_id.to_string();
+        rt.block_on(async move {
+            let rows = sqlx::query(
+                "SELECT * FROM paper_code_trace WHERE paper_id = ? ORDER BY created_at DESC",
+            )
+            .bind(&paper_id)
+            .fetch_all(&pool)
+            .await?;
+            let mut traces = Vec::new();
+            for row in rows {
+                traces.push(map_paper_code_trace_row(&row)?);
+            }
+            Ok(traces)
+        })
     }
 
     // ============================================================================
@@ -1558,132 +2010,148 @@ impl Database {
     pub fn query_raw(
         &self,
         sql: &str,
-        params: Vec<rusqlite::types::Value>,
-    ) -> Result<Vec<HashMap<String, rusqlite::types::Value>>> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare(sql)?;
-        let column_count = stmt.column_count();
-        let column_names: Vec<String> = (0..column_count)
-            .map(|i| stmt.column_name(i).unwrap_or("?").to_string())
-            .collect();
-
-        let mut results = Vec::new();
-        let mut rows = stmt.query(rusqlite::params_from_iter(&params))?;
-        while let Some(row) = rows.next()? {
-            let mut map = HashMap::new();
-            for (i, name) in column_names.iter().enumerate() {
-                let value: rusqlite::types::Value = row.get(i)?;
-                map.insert(name.clone(), value);
+        params: Vec<DbValue>,
+    ) -> Result<Vec<HashMap<String, DbValue>>> {
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let mut query = sqlx::query(sql);
+            for param in &params {
+                query = match param {
+                    DbValue::Null => query.bind(Option::<String>::None),
+                    DbValue::Integer(i) => query.bind(i),
+                    DbValue::Real(r) => query.bind(r),
+                    DbValue::Text(s) => query.bind(s),
+                    DbValue::Blob(b) => query.bind(b),
+                };
             }
-            results.push(map);
-        }
-        Ok(results)
+            let rows = query.fetch_all(&pool).await?;
+
+            let mut results = Vec::new();
+            for row in rows {
+                let mut map = HashMap::new();
+                for i in 0.. {
+                    if let Ok(name) = row.try_get::<String, _>(i) {
+                        if let Some(value) = DbValue::from_sqlx(&row, i) {
+                            map.insert(name, value);
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                results.push(map);
+            }
+            Ok(results)
+        })
     }
 
     /// Execute a transaction with explicit BEGIN/COMMIT/ROLLBACK semantics.
-    pub fn transaction<T, F>(&self, f: F) -> Result<T>
+    pub fn transaction<T, F>(&self, mut f: F) -> Result<T>
     where
-        F: FnOnce(&Connection) -> Result<T>,
+        F: FnMut(&mut sqlx::Transaction<'_, sqlx::Sqlite>) -> Result<T>,
     {
-        let conn = self.conn.lock();
-        let tx = conn.unchecked_transaction()?;
-        let result = f(&conn);
-        match result {
-            Ok(v) => {
-                tx.commit()?;
-                Ok(v)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let mut tx = pool.begin().await?;
+            let result = f(&mut tx);
+            match result {
+                Ok(v) => {
+                    tx.commit().await?;
+                    Ok(v)
+                }
+                Err(e) => {
+                    tx.rollback().await?;
+                    Err(e)
+                }
             }
-            Err(e) => {
-                tx.rollback()?;
-                Err(e)
-            }
-        }
+        })
     }
 
     /// Delete all data from all tables (for test isolation).
     /// Unlike rairos-db, we do NOT delete the physical file since rairos-core
     /// uses a persistent connection.
     pub fn clear_all(&self) -> Result<()> {
-        let conn = self.conn.lock();
-        conn.execute_batch(
-            "DELETE FROM paper_tags;
-             DELETE FROM citations;
-             DELETE FROM job_queue;
-             DELETE FROM dedup_log;
-             DELETE FROM paper_code_trace;
-             DELETE FROM evo_suggestions;
-             DELETE FROM research_gaps;
-             DELETE FROM subscriptions;
-             DELETE FROM tags;
-             DELETE FROM paper_cache;
-             DELETE FROM papers_fts;
-             DELETE FROM papers;",
-        )?;
-        Ok(())
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            sqlx::query("DELETE FROM paper_tags").execute(&pool).await?;
+            sqlx::query("DELETE FROM citations").execute(&pool).await?;
+            sqlx::query("DELETE FROM job_queue").execute(&pool).await?;
+            sqlx::query("DELETE FROM dedup_log").execute(&pool).await?;
+            sqlx::query("DELETE FROM paper_code_trace").execute(&pool).await?;
+            sqlx::query("DELETE FROM evo_suggestions").execute(&pool).await?;
+            sqlx::query("DELETE FROM research_gaps").execute(&pool).await?;
+            sqlx::query("DELETE FROM subscriptions").execute(&pool).await?;
+            sqlx::query("DELETE FROM tags").execute(&pool).await?;
+            sqlx::query("DELETE FROM paper_cache").execute(&pool).await?;
+            sqlx::query("DELETE FROM papers_fts").execute(&pool).await?;
+            sqlx::query("DELETE FROM papers").execute(&pool).await?;
+            Ok(())
+        })
     }
 
     /// Insert or update a paper. Returns true if the paper was newly inserted.
     pub fn upsert_paper(&self, paper: &Paper) -> Result<bool> {
-        let conn = self.conn.lock();
-        let exists: bool = conn
-            .query_row("SELECT 1 FROM papers WHERE id = ?1", params![paper.id], |_| {
-                Ok(())
-            })
-            .is_ok();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper = paper.clone();
+        rt.block_on(async move {
+            // Check if exists
+            let exists = sqlx::query("SELECT 1 FROM papers WHERE id = ?1")
+                .bind(&paper.id)
+                .fetch_optional(&pool)
+                .await?
+                .is_some();
 
-        if exists {
-            conn.execute(
-                "UPDATE papers SET
-                 arxiv_id=?1, title=?2, authors=?3, published=?4,
-                 abstract_text=?5, categories=?6, parse_status=?7,
-                 cited_by=?8, references_cnt=?9, doi=?10, pdf_url=?11,
-                 updated_at=datetime('now')
-                 WHERE id=?12",
-                params![
-                    paper.arxiv_id,
-                    &paper.title,
-                    serde_json::to_string(&paper.authors)?,
-                    paper.published.to_rfc3339(),
-                    &paper.abstract_text,
-                    serde_json::to_string(&paper.categories)?,
-                    paper.parse_status.to_string(),
-                    paper.metadata.cited_by as i64,
-                    paper.metadata.references as i64,
-                    paper.metadata.doi,
-                    paper.metadata.pdf_url,
-                    paper.id,
-                ],
-            )?;
-            Ok(false)
-        } else {
-            self.insert_paper_conn(&conn, paper)?;
-            Ok(true)
-        }
-    }
-
-    /// Helper: insert a paper using an already-locked connection.
-    fn insert_paper_conn(&self, conn: &Connection, paper: &Paper) -> Result<()> {
-        conn.execute(
-            r#"INSERT INTO papers
-               (id, arxiv_id, title, authors, published, abstract_text, categories,
-                parse_status, cited_by, references_cnt, doi, pdf_url)
-               VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)"#,
-            params![
-                paper.id,
-                paper.arxiv_id,
-                &paper.title,
-                serde_json::to_string(&paper.authors)?,
-                paper.published.to_rfc3339(),
-                &paper.abstract_text,
-                serde_json::to_string(&paper.categories)?,
-                paper.parse_status.to_string(),
-                paper.metadata.cited_by as i64,
-                paper.metadata.references as i64,
-                paper.metadata.doi,
-                paper.metadata.pdf_url,
-            ],
-        )?;
-        Ok(())
+            if exists {
+                sqlx::query(
+                    "UPDATE papers SET
+                     arxiv_id=?1, title=?2, authors=?3, published=?4,
+                     abstract_text=?5, categories=?6, parse_status=?7,
+                     cited_by=?8, references_cnt=?9, doi=?10, pdf_url=?11,
+                     updated_at=datetime('now')
+                     WHERE id=?12",
+                )
+                .bind(&paper.arxiv_id)
+                .bind(&paper.title)
+                .bind(serde_json::to_string(&paper.authors)?)
+                .bind(paper.published.to_rfc3339())
+                .bind(&paper.abstract_text)
+                .bind(serde_json::to_string(&paper.categories)?)
+                .bind(paper.parse_status.to_string())
+                .bind(paper.metadata.cited_by as i64)
+                .bind(paper.metadata.references as i64)
+                .bind(&paper.metadata.doi)
+                .bind(&paper.metadata.pdf_url)
+                .bind(&paper.id)
+                .execute(&pool)
+                .await?;
+                Ok(false)
+            } else {
+                sqlx::query(
+                    r#"INSERT INTO papers
+                       (id, arxiv_id, title, authors, published, abstract_text, categories,
+                        parse_status, cited_by, references_cnt, doi, pdf_url)
+                       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)"#,
+                )
+                .bind(&paper.id)
+                .bind(&paper.arxiv_id)
+                .bind(&paper.title)
+                .bind(serde_json::to_string(&paper.authors)?)
+                .bind(paper.published.to_rfc3339())
+                .bind(&paper.abstract_text)
+                .bind(serde_json::to_string(&paper.categories)?)
+                .bind(paper.parse_status.to_string())
+                .bind(paper.metadata.cited_by as i64)
+                .bind(paper.metadata.references as i64)
+                .bind(&paper.metadata.doi)
+                .bind(&paper.metadata.pdf_url)
+                .execute(&pool)
+                .await?;
+                Ok(true)
+            }
+        })
     }
 
     /// Bulk upsert papers. Returns (inserted, updated) counts.
@@ -1691,55 +2159,81 @@ impl Database {
         if papers.is_empty() {
             return Ok((0, 0));
         }
-        let conn = self.conn.lock();
-        let paper_ids: Vec<&str> = papers.iter().map(|p| p.id.as_str()).collect();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let paper_ids: Vec<String> = papers.iter().map(|p| p.id.clone()).collect();
         let placeholders: Vec<String> = paper_ids.iter().map(|_| "?".to_string()).collect();
         let sql = format!(
             "SELECT id FROM papers WHERE id IN ({})",
             placeholders.join(",")
         );
-        let mut stmt = conn.prepare(&sql)?;
-        let existing: FxHashSet<String> = stmt
-            .query_map(rusqlite::params_from_iter(&paper_ids), |row| {
-                row.get::<_, String>(0)
-            })?
-            .filter_map(|r| r.ok())
-            .collect();
 
-        let mut inserted: i64 = 0;
-        let mut updated: i64 = 0;
-
-        for paper in papers {
-            if existing.contains(&paper.id) {
-                conn.execute(
-                    "UPDATE papers SET
-                     arxiv_id=?1, title=?2, authors=?3, published=?4,
-                     abstract_text=?5, categories=?6, parse_status=?7,
-                     cited_by=?8, references_cnt=?9, doi=?10, pdf_url=?11,
-                     updated_at=datetime('now')
-                     WHERE id=?12",
-                    params![
-                        paper.arxiv_id,
-                        &paper.title,
-                        serde_json::to_string(&paper.authors)?,
-                        paper.published.to_rfc3339(),
-                        &paper.abstract_text,
-                        serde_json::to_string(&paper.categories)?,
-                        paper.parse_status.to_string(),
-                        paper.metadata.cited_by as i64,
-                        paper.metadata.references as i64,
-                        paper.metadata.doi,
-                        paper.metadata.pdf_url,
-                        paper.id,
-                    ],
-                )?;
-                updated += 1;
-            } else {
-                self.insert_paper_conn(&conn, paper)?;
-                inserted += 1;
+        rt.block_on(async move {
+            // Build query with dynamic placeholders
+            let mut query = sqlx::query(&sql);
+            for id in &paper_ids {
+                query = query.bind(id);
             }
-        }
-        Ok((inserted, updated))
+            let rows = query.fetch_all(&pool).await?;
+            let existing: FxHashSet<String> = rows
+                .iter()
+                .filter_map(|row| row.try_get(0).ok())
+                .collect();
+
+            let mut inserted: i64 = 0;
+            let mut updated: i64 = 0;
+
+            for paper in papers {
+                if existing.contains(&paper.id) {
+                    sqlx::query(
+                        "UPDATE papers SET
+                         arxiv_id=?1, title=?2, authors=?3, published=?4,
+                         abstract_text=?5, categories=?6, parse_status=?7,
+                         cited_by=?8, references_cnt=?9, doi=?10, pdf_url=?11,
+                         updated_at=datetime('now')
+                         WHERE id=?12",
+                    )
+                    .bind(&paper.arxiv_id)
+                    .bind(&paper.title)
+                    .bind(serde_json::to_string(&paper.authors)?)
+                    .bind(paper.published.to_rfc3339())
+                    .bind(&paper.abstract_text)
+                    .bind(serde_json::to_string(&paper.categories)?)
+                    .bind(paper.parse_status.to_string())
+                    .bind(paper.metadata.cited_by as i64)
+                    .bind(paper.metadata.references as i64)
+                    .bind(&paper.metadata.doi)
+                    .bind(&paper.metadata.pdf_url)
+                    .bind(&paper.id)
+                    .execute(&pool)
+                    .await?;
+                    updated += 1;
+                } else {
+                    sqlx::query(
+                        r#"INSERT INTO papers
+                           (id, arxiv_id, title, authors, published, abstract_text, categories,
+                            parse_status, cited_by, references_cnt, doi, pdf_url)
+                           VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)"#,
+                    )
+                    .bind(&paper.id)
+                    .bind(&paper.arxiv_id)
+                    .bind(&paper.title)
+                    .bind(serde_json::to_string(&paper.authors)?)
+                    .bind(paper.published.to_rfc3339())
+                    .bind(&paper.abstract_text)
+                    .bind(serde_json::to_string(&paper.categories)?)
+                    .bind(paper.parse_status.to_string())
+                    .bind(paper.metadata.cited_by as i64)
+                    .bind(paper.metadata.references as i64)
+                    .bind(&paper.metadata.doi)
+                    .bind(&paper.metadata.pdf_url)
+                    .execute(&pool)
+                    .await?;
+                    inserted += 1;
+                }
+            }
+            Ok((inserted, updated))
+        })
     }
 
     /// Export papers as a portable format: Vec<HashMap<field_name, json_value>>.
@@ -1748,66 +2242,73 @@ impl Database {
         limit: usize,
         extra_fields: bool,
     ) -> Result<Vec<HashMap<String, serde_json::Value>>> {
-        let conn = self.conn.lock();
-        let fields: &[&str] = if extra_fields {
-            &[
-                "id", "arxiv_id", "title", "authors", "published", "abstract_text",
-                "categories", "parse_status", "doi", "pdf_url",
-            ]
-        } else {
-            &["id", "title", "authors", "published", "abstract_text", "parse_status"]
-        };
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let fields: &[&str] = if extra_fields {
+                &[
+                    "id", "arxiv_id", "title", "authors", "published", "abstract_text",
+                    "categories", "parse_status", "doi", "pdf_url",
+                ]
+            } else {
+                &["id", "title", "authors", "published", "abstract_text", "parse_status"]
+            };
 
-        let (sql, params_slice) = if limit > 0 {
-            (
+            let sql = if limit > 0 {
                 format!(
                     "SELECT {} FROM papers ORDER BY published DESC LIMIT ?1",
                     fields.join(",")
-                ),
-                vec![limit as i64],
-            )
-        } else {
-            (
-                format!("SELECT {} FROM papers ORDER BY published DESC", fields.join(",")),
-                Vec::new(),
-            )
-        };
+                )
+            } else {
+                format!("SELECT {} FROM papers ORDER BY published DESC", fields.join(","))
+            };
 
-        let mut stmt = conn.prepare(&sql)?;
-        let param_refs: Vec<&dyn rusqlite::ToSql> =
-            params_slice.iter().map(|p| p as &dyn rusqlite::ToSql).collect();
-        let rows = stmt.query_map(param_refs.as_slice(), |row| {
-            let mut m = HashMap::new();
-            for (i, f) in fields.iter().enumerate() {
-                let val: rusqlite::types::Value = row.get(i)?;
-                let json_val = match val {
-                    rusqlite::types::Value::Null => serde_json::Value::Null,
-                    rusqlite::types::Value::Integer(i) => serde_json::json!(i),
-                    rusqlite::types::Value::Real(r) => serde_json::json!(r),
-                    rusqlite::types::Value::Text(s) => serde_json::json!(s),
-                    rusqlite::types::Value::Blob(b) => serde_json::json!(base64_encode(&b)),
-                };
-                m.insert(f.to_string(), json_val);
+            let rows = if limit > 0 {
+                sqlx::query(&sql)
+                    .bind(limit as i64)
+                    .fetch_all(&pool)
+                    .await?
+            } else {
+                sqlx::query(&sql)
+                    .fetch_all(&pool)
+                    .await?
+            };
+
+            let mut result = Vec::with_capacity(limit);
+            for row in rows {
+                let mut m = HashMap::new();
+                for (i, f) in fields.iter().enumerate() {
+                    if let Some(val) = DbValue::from_sqlx(&row, i) {
+                        let json_val = match val {
+                            DbValue::Null => serde_json::Value::Null,
+                            DbValue::Integer(i) => serde_json::json!(i),
+                            DbValue::Real(r) => serde_json::json!(r),
+                            DbValue::Text(s) => serde_json::json!(s),
+                            DbValue::Blob(b) => serde_json::json!(base64_encode(&b)),
+                        };
+                        m.insert(f.to_string(), json_val);
+                    }
+                }
+                result.push(m);
             }
-            Ok(m)
-        })?;
-        let mut result = Vec::with_capacity(limit);
-        for row in rows {
-            result.push(row?);
-        }
-        Ok(result)
+            Ok(result)
+        })
     }
 
     /// Rebuild the FTS5 index from all papers. Returns count of indexed rows.
     pub fn rebuild_fts_index(&self) -> Result<i64> {
-        let conn = self.conn.lock();
-        conn.execute("DELETE FROM papers_fts", [])?;
-        let count = conn.execute(
-            "INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
-             SELECT rowid, title, abstract_text, authors, categories FROM papers",
-            [],
-        )?;
-        Ok(count as i64)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            sqlx::query("DELETE FROM papers_fts").execute(&pool).await?;
+            let result = sqlx::query(
+                "INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
+                 SELECT rowid, title, abstract_text, authors, categories FROM papers",
+            )
+            .execute(&pool)
+            .await?;
+            Ok(result.rows_affected() as i64)
+        })
     }
 
     /// Search papers with limit/offset/category/parse_status filters via LIKE.
@@ -1820,176 +2321,211 @@ impl Database {
         category: Option<&str>,
         parse_status: Option<&str>,
     ) -> Result<(Vec<SearchResult>, i64)> {
-        let conn = self.conn.lock();
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
         let pattern = format!("%{}%", query);
 
-        let mut where_clauses: Vec<String> = Vec::new();
-        let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+        rt.block_on(async move {
+            let mut where_clauses: Vec<String> = Vec::new();
+            let mut params_vec: Vec<DbValue> = Vec::new();
 
-        // FTS match via LIKE (since FTS5 requires specific query syntax, we use LIKE for compatibility)
-        where_clauses.push("(p.title LIKE ? OR p.abstract_text LIKE ?)".to_string());
-        params_vec.push(Box::new(pattern.clone()));
-        params_vec.push(Box::new(pattern));
+            // FTS match via LIKE (since FTS5 requires specific query syntax, we use LIKE for compatibility)
+            where_clauses.push("(p.title LIKE ? OR p.abstract_text LIKE ?)".to_string());
+            params_vec.push(DbValue::Text(pattern.clone()));
+            params_vec.push(DbValue::Text(pattern));
 
-        if let Some(cat) = category {
-            where_clauses.push("p.categories LIKE ?".to_string());
-            params_vec.push(Box::new(format!("%{}%", cat)));
-        }
-        if let Some(ps) = parse_status {
-            where_clauses.push("p.parse_status = ?".to_string());
-            params_vec.push(Box::new(ps.to_string()));
-        }
+            if let Some(cat) = category {
+                where_clauses.push("p.categories LIKE ?".to_string());
+                params_vec.push(DbValue::Text(format!("%{}%", cat)));
+            }
+            if let Some(ps) = parse_status {
+                where_clauses.push("p.parse_status = ?".to_string());
+                params_vec.push(DbValue::Text(ps.to_string()));
+            }
 
-        let where_clause = where_clauses.join(" AND ");
+            let where_clause = where_clauses.join(" AND ");
 
-        // Count
-        let count_sql = format!("SELECT COUNT(*) FROM papers p WHERE {}", where_clause);
-        let params_ref: Vec<&dyn rusqlite::ToSql> =
-            params_vec.iter().map(|p| p.as_ref()).collect();
-        let total: i64 = conn
-            .query_row(&count_sql, params_ref.as_slice(), |row| row.get(0))
-            .unwrap_or(0);
+            // Count query
+            let count_sql = format!("SELECT COUNT(*) FROM papers p WHERE {}", where_clause);
+            let mut count_query = sqlx::query(&count_sql);
+            for param in &params_vec {
+                match param {
+                    DbValue::Null => { count_query = count_query.bind(Option::<String>::None); }
+                    DbValue::Integer(i) => { count_query = count_query.bind(i); }
+                    DbValue::Real(r) => { count_query = count_query.bind(r); }
+                    DbValue::Text(s) => { count_query = count_query.bind(s); }
+                    DbValue::Blob(b) => { count_query = count_query.bind(b); }
+                }
+            }
+            let total: i64 = count_query
+                .fetch_one(&pool)
+                .await
+                .map(|row| row.try_get(0).unwrap_or(0))
+                .unwrap_or(0);
 
-        // Search
-        let search_sql = format!(
-            "SELECT p.id, p.title, p.authors, p.published, p.abstract_text,
-                    p.categories, p.parse_status, p.doi, p.pdf_url
-             FROM papers p
-             WHERE {}
-             ORDER BY p.published DESC
-             LIMIT ? OFFSET ?",
-            where_clause
-        );
-        let mut all_params = params_vec;
-        all_params.push(Box::new(limit));
-        all_params.push(Box::new(offset));
-        let all_params_ref: Vec<&dyn rusqlite::ToSql> =
-            all_params.iter().map(|p| p.as_ref()).collect();
+            // Search query
+            let search_sql = format!(
+                "SELECT p.id, p.title, p.authors, p.published, p.abstract_text,
+                        p.categories, p.parse_status, p.doi, p.pdf_url
+                 FROM papers p
+                 WHERE {}
+                 ORDER BY p.published DESC
+                 LIMIT ? OFFSET ?",
+                where_clause
+            );
+            let mut search_query = sqlx::query(&search_sql);
+            for param in &params_vec {
+                match param {
+                    DbValue::Null => { search_query = search_query.bind(Option::<String>::None); }
+                    DbValue::Integer(i) => { search_query = search_query.bind(i); }
+                    DbValue::Real(r) => { search_query = search_query.bind(r); }
+                    DbValue::Text(s) => { search_query = search_query.bind(s); }
+                    DbValue::Blob(b) => { search_query = search_query.bind(b); }
+                }
+            }
+            search_query = search_query.bind(limit).bind(offset);
 
-        let mut stmt = conn.prepare(&search_sql)?;
-        let rows = stmt.query_map(all_params_ref.as_slice(), |row| {
-            let authors_str: String = row.get(2)?;
-            let authors: Vec<String> = serde_json::from_str(&authors_str).unwrap_or_default();
-            let categories_str: String = row.get(5)?;
-            let primary_cat = serde_json::from_str::<Vec<String>>(&categories_str)
-                .ok()
-                .and_then(|c| c.into_iter().next())
-                .unwrap_or_default();
-            Ok(SearchResult {
-                paper_id: row.get(0)?,
-                title: row.get(1)?,
-                authors,
-                published: row.get::<_, String>(3)?,
-                primary_category: primary_cat,
-                score: 0.0,
-                snippet: String::new(),
-                parse_status: row.get(6)?,
-                source: String::new(),
-                abs_url: String::new(),
-                pdf_url: row.get::<_, Option<String>>(8)?.unwrap_or_default(),
-            })
-        })?;
-        let mut results = Vec::with_capacity(limit as usize);
-        for row in rows {
-            results.push(row?);
-        }
-        Ok((results, total))
+            let rows = search_query.fetch_all(&pool).await?;
+            let mut results = Vec::with_capacity(limit as usize);
+            for row in rows {
+                let authors_str: String = row.try_get(2)?;
+                let authors: Vec<String> = serde_json::from_str(&authors_str).unwrap_or_default();
+                let categories_str: String = row.try_get(5)?;
+                let primary_cat = serde_json::from_str::<Vec<String>>(&categories_str)
+                    .ok()
+                    .and_then(|c| c.into_iter().next())
+                    .unwrap_or_default();
+                results.push(SearchResult {
+                    paper_id: row.try_get(0)?,
+                    title: row.try_get(1)?,
+                    authors,
+                    published: row.try_get::<String, _>(3)?,
+                    primary_category: primary_cat,
+                    score: 0.0,
+                    snippet: String::new(),
+                    parse_status: row.try_get(6)?,
+                    source: String::new(),
+                    abs_url: String::new(),
+                    pdf_url: row.try_get::<Option<String>, _>(8)?.unwrap_or_default(),
+                });
+            }
+            Ok((results, total))
+        })
     }
 
     /// Count papers filtered by parse status.
     pub fn count_papers_with_status(&self, status: ParseStatus) -> Result<i64> {
-        let conn = self.conn.lock();
-        let count = conn.query_row(
-            "SELECT COUNT(*) FROM papers WHERE parse_status = ?1",
-            params![status.to_string()],
-            |row| row.get(0),
-        )?;
-        Ok(count)
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        let status_str = status.to_string();
+        rt.block_on(async move {
+            let row = sqlx::query("SELECT COUNT(*) FROM papers WHERE parse_status = ?1")
+                .bind(&status_str)
+                .fetch_one(&pool)
+                .await?;
+            let count: i64 = row.try_get(0)?;
+            Ok(count)
+        })
     }
 
     /// Get detailed database statistics matching rairos-db's format.
     pub fn get_detailed_stats(&self) -> Result<DetailedStats> {
-        let conn = self.conn.lock();
-        let total_papers: i64 =
-            conn.query_row("SELECT COUNT(*) FROM papers", [], |row| row.get(0))?;
+        let rt = self.rt.clone();
+        let pool = self.pool.lock().clone();
+        rt.block_on(async move {
+            let total_papers_row = sqlx::query("SELECT COUNT(*) FROM papers")
+                .fetch_one(&pool)
+                .await?;
+            let total_papers: i64 = total_papers_row.try_get(0)?;
 
-        let mut by_status = HashMap::new();
-        let mut stmt =
-            conn.prepare("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")?;
-        let rows = stmt.query_map([], |row| {
-            Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
-        })?;
-        for r in rows {
-            let (st, cnt) = r?;
-            by_status.insert(st, cnt);
-        }
+            let status_rows = sqlx::query("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")
+                .fetch_all(&pool)
+                .await?;
+            let mut by_status = HashMap::new();
+            for row in status_rows {
+                let st: String = row.try_get(0)?;
+                let cnt: i64 = row.try_get(1)?;
+                by_status.insert(st, cnt);
+            }
 
-        let queue_queued: i64 = conn
-            .query_row(
-                "SELECT COUNT(*) FROM job_queue WHERE status = 'queued'",
-                [],
-                |row| row.get(0),
-            )
-            .unwrap_or(0);
-        let queue_running: i64 = conn
-            .query_row(
-                "SELECT COUNT(*) FROM job_queue WHERE status = 'running'",
-                [],
-                |row| row.get(0),
-            )
-            .unwrap_or(0);
-        let cache_entries: i64 = conn
-            .query_row("SELECT COUNT(*) FROM paper_cache", [], |row| row.get(0))
-            .unwrap_or(0);
-        let dedup_records: i64 = conn
-            .query_row("SELECT COUNT(*) FROM dedup_log", [], |row| row.get(0))
-            .unwrap_or(0);
+            let queue_queued = match sqlx::query("SELECT COUNT(*) FROM job_queue WHERE status = 'queued'")
+                .fetch_one(&pool)
+                .await
+            {
+                Ok(row) => row.try_get::<i64, _>(0).unwrap_or(0),
+                Err(_) => 0,
+            };
 
-        Ok(DetailedStats {
-            total_papers,
-            by_status,
-            queue_queued,
-            queue_running,
-            cache_entries,
-            dedup_records,
+            let queue_running = match sqlx::query("SELECT COUNT(*) FROM job_queue WHERE status = 'running'")
+                .fetch_one(&pool)
+                .await
+            {
+                Ok(row) => row.try_get::<i64, _>(0).unwrap_or(0),
+                Err(_) => 0,
+            };
+
+            let cache_entries = match sqlx::query("SELECT COUNT(*) FROM paper_cache")
+                .fetch_one(&pool)
+                .await
+            {
+                Ok(row) => row.try_get::<i64, _>(0).unwrap_or(0),
+                Err(_) => 0,
+            };
+
+            let dedup_records = match sqlx::query("SELECT COUNT(*) FROM dedup_log")
+                .fetch_one(&pool)
+                .await
+            {
+                Ok(row) => row.try_get::<i64, _>(0).unwrap_or(0),
+                Err(_) => 0,
+            };
+
+            Ok(DetailedStats {
+                total_papers,
+                by_status,
+                queue_queued,
+                queue_running,
+                cache_entries,
+                dedup_records,
+            })
         })
     }
 }
 
-fn map_paper_code_trace_row(row: &rusqlite::Row) -> rusqlite::Result<PaperCodeTrace> {
-    let untagged: String = row.get("untagged_ranges")?;
-    let unreferenced: String = row.get("unreferenced_sources")?;
-    let refs: String = row.get("paper_section_refs")?;
-    let gap_ids_str: String = row.get("gap_ids")?;
+fn map_paper_code_trace_row(row: &SqliteRow) -> Result<PaperCodeTrace> {
+    let untagged: String = row.try_get("untagged_ranges")?;
+    let unreferenced: String = row.try_get("unreferenced_sources")?;
+    let refs: String = row.try_get("paper_section_refs")?;
+    let gap_ids_str: String = row.try_get("gap_ids")?;
 
     Ok(PaperCodeTrace {
-        id: row.get("id")?,
-        paper_id: row.get("paper_id")?,
-        code_path: row.get("code_path")?,
-        module_name: row.get("module_name")?,
-        framework: row.get("framework")?,
-        total_code_lines: row.get("total_code_lines")?,
-        tagged_lines: row.get("tagged_lines")?,
+        id: row.try_get("id")?,
+        paper_id: row.try_get("paper_id")?,
+        code_path: row.try_get("code_path")?,
+        module_name: row.try_get("module_name")?,
+        framework: row.try_get("framework")?,
+        total_code_lines: row.try_get("total_code_lines")?,
+        tagged_lines: row.try_get("tagged_lines")?,
         untagged_ranges: serde_json::from_str(&untagged).unwrap_or_default(),
         unreferenced_sources: serde_json::from_str(&unreferenced).unwrap_or_default(),
         paper_section_refs: serde_json::from_str(&refs).unwrap_or_default(),
         gap_ids: serde_json::from_str(&gap_ids_str).unwrap_or_default(),
-        benchmark_pass_rate: row.get("benchmark_pass_rate")?,
-        created_at: row.get("created_at")?,
+        benchmark_pass_rate: row.try_get("benchmark_pass_rate")?,
+        created_at: row.try_get("created_at")?,
     })
 }
 
-fn map_job_row(row: &rusqlite::Row) -> rusqlite::Result<JobQueueEntry> {
+fn map_job_row(row: &SqliteRow) -> Result<JobQueueEntry> {
     Ok(JobQueueEntry {
-        id: row.get(0)?,
-        paper_id: row.get(1)?,
-        job_type: row.get(2)?,
-        status: row.get(3)?,
-        priority: row.get(4)?,
-        created_at: row.get(5)?,
-        started_at: row.get(6)?,
-        completed_at: row.get(7)?,
-        error: row.get(8)?,
+        id: row.try_get(0)?,
+        paper_id: row.try_get(1)?,
+        job_type: row.try_get(2)?,
+        status: row.try_get(3)?,
+        priority: row.try_get(4)?,
+        created_at: row.try_get(5)?,
+        started_at: row.try_get(6)?,
+        completed_at: row.try_get(7)?,
+        error: row.try_get(8)?,
     })
 }
 

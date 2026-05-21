@@ -283,7 +283,7 @@ const TEMPLATES: &[(&str, &[HypothesisTemplate])] = &[
 /// Returns empty vec if KG is unavailable (no db, no results).
 pub fn fetch_relevant_papers(topic: &str, limit: usize) -> Vec<String> {
     let db_path = rairos_kg::KnowledgeGraph::db_path();
-    let graph = match rairos_kg::KnowledgeGraph::with_db(db_path) {
+    let graph = match tokio::runtime::Handle::current().block_on(rairos_kg::KnowledgeGraph::with_db(db_path)) {
         Ok(g) => g,
         Err(_) => return Vec::new(),
     };
@@ -297,8 +297,9 @@ pub fn fetch_relevant_papers(topic: &str, limit: usize) -> Vec<String> {
         return Vec::new();
     }
     let mut papers: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let rt = tokio::runtime::Handle::current();
     for kw in &keywords {
-        if let Ok(nodes) = db.query_by_keyword(kw, limit) {
+        if let Ok(nodes) = rt.block_on(db.query_by_keyword(kw, limit)) {
             for node in &nodes {
                 // Only include paper-type nodes
                 if node.node_type == "paper" && !node.label.is_empty() {

@@ -3,8 +3,8 @@
 //! Provides PRAGMA settings, index management, and database statistics
 //! for performance monitoring and optimization.
 
-use rusqlite::{Connection, Result as SqliteResult};
 use serde::{Deserialize, Serialize};
+use sqlx::{Pool, Sqlite, Row};
 
 /// Optimization index definition.
 #[derive(Debug, Clone)]
@@ -98,11 +98,11 @@ pub struct DatabaseStats {
 }
 
 /// Apply PRAGMA settings to the database.
-pub fn apply_pragma_settings(conn: &Connection) -> SqliteResult<Vec<String>> {
+pub async fn apply_pragma_settings(pool: &Pool<Sqlite>) -> Result<Vec<String>, sqlx::Error> {
     let mut applied = Vec::new();
     for setting in PRAGMA_SETTINGS {
         let sql = format!("PRAGMA {} = {}", setting.name, setting.value);
-        if conn.execute(&sql, []).is_ok() {
+        if sqlx::query(&sql).execute(pool).await.is_ok() {
             applied.push(sql);
         }
     }
@@ -110,29 +110,29 @@ pub fn apply_pragma_settings(conn: &Connection) -> SqliteResult<Vec<String>> {
 }
 
 /// Create optimization indexes on the database.
-pub fn create_optimization_indexes(conn: &Connection) -> SqliteResult<Vec<String>> {
+pub async fn create_optimization_indexes(pool: &Pool<Sqlite>) -> Result<Vec<String>, sqlx::Error> {
     let mut applied = Vec::new();
     for idx in OPTIMIZATION_INDEXES {
-        if conn.execute(idx.sql, []).is_ok() {
+        if sqlx::query(idx.sql).execute(pool).await.is_ok() {
             applied.push(idx.name.to_string());
         }
     }
-    conn.execute("PRAGMA optimize", [])?;
+    sqlx::query("PRAGMA optimize").execute(pool).await?;
     Ok(applied)
 }
 
 /// Apply all database optimizations.
-pub fn apply_database_optimizations(conn: &Connection) -> SqliteResult<Vec<String>> {
+pub async fn apply_database_optimizations(pool: &Pool<Sqlite>) -> Result<Vec<String>, sqlx::Error> {
     let mut applied = Vec::new();
 
     // Apply PRAGMA settings
-    applied.extend(apply_pragma_settings(conn)?);
+    applied.extend(apply_pragma_settings(pool).await?);
 
     // Create indexes
-    applied.extend(create_optimization_indexes(conn)?);
+    applied.extend(create_optimization_indexes(pool).await?);
 
     // Run ANALYZE
-    if conn.execute("ANALYZE", []).is_ok() {
+    if sqlx::query("ANALYZE").execute(pool).await.is_ok() {
         applied.push("ANALYZE".to_string());
     }
 
@@ -140,7 +140,7 @@ pub fn apply_database_optimizations(conn: &Connection) -> SqliteResult<Vec<Strin
 }
 
 /// Get database statistics for performance monitoring.
-pub fn get_database_stats(conn: &Connection) -> SqliteResult<DatabaseStats> {
+pub async fn get_database_stats(pool: &Pool<Sqlite>) -> Result<DatabaseStats, sqlx::Error> {
     let mut stats = DatabaseStats {
         papers_count: 0,
         parse_history_count: 0,
@@ -164,7 +164,11 @@ pub fn get_database_stats(conn: &Connection) -> SqliteResult<DatabaseStats> {
 
     for (table, field) in tables {
         let query = format!("SELECT COUNT(*) FROM {table}");
-        if let Ok(count) = conn.query_row(&query, [], |row| row.get::<_, i64>(0)) {
+        if let Ok(count) = sqlx::query(&query)
+            .fetch_one(pool)
+            .await
+            .map(|row| row.get::<i64, _>(0))
+        {
             match field {
                 "papers_count" => stats.papers_count = count,
                 "parse_history_count" => stats.parse_history_count = count,
@@ -178,20 +182,24 @@ pub fn get_database_stats(conn: &Connection) -> SqliteResult<DatabaseStats> {
     }
 
     // Index count
-    if let Ok(count) = conn.query_row(
-        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'index'",
-        [],
-        |row| row.get::<_, i64>(0),
-    ) {
+    if let Ok(count) = sqlx::query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'index'")
+        .fetch_one(pool)
+        .await
+        .map(|row| row.get::<i64, _>(0))
+    {
         stats.index_count = count;
     }
 
     // Database size
-    let page_count: i64 = conn
-        .query_row("PRAGMA page_count", [], |row| row.get(0))
+    let page_count: i64 = sqlx::query("PRAGMA page_count")
+        .fetch_one(pool)
+        .await
+        .map(|row| row.get::<i64, _>(0))
         .unwrap_or(0);
-    let page_size: i64 = conn
-        .query_row("PRAGMA page_size", [], |row| row.get(0))
+    let page_size: i64 = sqlx::query("PRAGMA page_size")
+        .fetch_one(pool)
+        .await
+        .map(|row| row.get::<i64, _>(0))
         .unwrap_or(0);
     stats.database_size_mb = (page_count as f64 * page_size as f64) / (1024.0 * 1024.0);
 
@@ -199,14 +207,15 @@ pub fn get_database_stats(conn: &Connection) -> SqliteResult<DatabaseStats> {
 }
 
 /// Vacuum the database to reclaim space.
-pub fn vacuum_database(conn: &Connection) -> SqliteResult<()> {
-    conn.execute_batch("VACUUM")?;
+pub async fn vacuum_database(pool: &Pool<Sqlite>) -> Result<(), sqlx::Error> {
+    sqlx::query("VACUUM").execute(pool).await?;
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use sqlx::sqlite::{SqlitePoolOptions, SqliteConnectOptions};
 
     #[test]
     fn test_optimization_indexes_defined() {
@@ -220,10 +229,14 @@ mod tests {
         assert_eq!(PRAGMA_SETTINGS[0].name, "cache_size");
     }
 
-    #[test]
-    fn test_get_database_stats() {
-        let conn = Connection::open_in_memory().unwrap();
-        let stats = get_database_stats(&conn).unwrap();
+    #[tokio::test]
+    async fn test_get_database_stats() {
+        let pool = SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect(":memory:")
+            .await
+            .unwrap();
+        let stats = get_database_stats(&pool).await.unwrap();
         assert_eq!(stats.papers_count, 0);
         assert_eq!(stats.database_size_mb, 0.0);
     }

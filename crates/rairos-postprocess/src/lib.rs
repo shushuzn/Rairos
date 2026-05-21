@@ -450,7 +450,8 @@ impl ResearchDeepDivePipeline {
     ) -> Result<Option<serde_json::Value>, PipelineError> {
         let kg_path = self.data_dir.join("kg.db");
         let mut kg = if kg_path.exists() {
-            rairos_kg::KnowledgeGraph::with_db(kg_path)
+            tokio::runtime::Handle::current()
+                .block_on(rairos_kg::KnowledgeGraph::with_db(kg_path))
                 .map_err(|e| PipelineError::Kg(e.to_string()))?
         } else {
             rairos_kg::KnowledgeGraph::new()

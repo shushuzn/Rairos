@@ -33,7 +33,8 @@ use std::collections::HashSet;
 // ============================================================================
 
 pub fn handle_kg_stats(format: &str) -> Result<()> {
-    let graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    let graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await.unwrap_or_else(|_| KnowledgeGraph::new()) });
     let stats = graph.stats();
 
     if format == "json" {
@@ -51,7 +52,8 @@ pub fn handle_kg_stats(format: &str) -> Result<()> {
 }
 
 pub fn handle_kg_rank(limit: usize, format: &str) -> Result<()> {
-    let graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    let graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await.unwrap_or_else(|_| KnowledgeGraph::new()) });
     let ranks = GraphAlgorithms::rank_papers(&graph);
 
     let mut sorted: Vec<_> = ranks.into_iter().collect();
@@ -82,7 +84,8 @@ pub fn handle_kg_rank(limit: usize, format: &str) -> Result<()> {
 }
 
 pub fn handle_kg_path(source: &str, target: &str) -> Result<()> {
-    let graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    let graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await.unwrap_or_else(|_| KnowledgeGraph::new()) });
 
     match graph.find_path(source, target) {
         Some(path) => {
@@ -105,7 +108,8 @@ pub fn handle_kg_add_paper(db: &Database, paper_id: &str) -> Result<()> {
         .or_else(|| db.get_paper_by_arxiv(paper_id).ok().flatten())
         .ok_or_else(|| anyhow::anyhow!("Paper not found: {}", paper_id))?;
 
-    let mut graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    let mut graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await.unwrap_or_else(|_| KnowledgeGraph::new()) });
     graph.add_paper(&paper);
     graph
         .save()
@@ -130,7 +134,8 @@ pub fn handle_kg_add_citation(db: &Database, source: &str, target: &str) -> Resu
         .or_else(|| db.get_paper_by_arxiv(target).ok().flatten())
         .ok_or_else(|| anyhow::anyhow!("Target paper not found: {}", target))?;
 
-    let mut graph = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+    let mut graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await.unwrap_or_else(|_| KnowledgeGraph::new()) });
 
     // Ensure both papers are in the graph
     graph.add_paper(&source_paper);
@@ -146,7 +151,8 @@ pub fn handle_kg_add_citation(db: &Database, source: &str, target: &str) -> Resu
 }
 
 pub fn handle_kg_graph(paper_id: &str, depth: u32, format: &str) -> Result<()> {
-    let graph = KnowledgeGraph::load()?;
+    let graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await })?;
 
     // Find center node by entity_id or node id
     let center = graph
@@ -241,7 +247,8 @@ pub fn handle_kg_search(
     keyword: Option<&str>,
     format: &str,
 ) -> Result<()> {
-    let graph = KnowledgeGraph::load()?;
+    let graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await })?;
 
     let nodes: Vec<&KgNode> = graph
         .nodes()
@@ -303,7 +310,8 @@ pub fn handle_kg_search(
 
 pub fn handle_kg_rebuild(db: &Database, incremental: bool) -> Result<()> {
     // Load the knowledge graph (with DB connection)
-    let graph = KnowledgeGraph::load()?;
+    let graph = tokio::runtime::Handle::current()
+        .block_on(async { KnowledgeGraph::load().await })?;
 
     // Load all papers from the papers database
     let papers = db.list_papers(None, 100_000, 0)?;
@@ -329,7 +337,8 @@ pub fn handle_kg_rebuild(db: &Database, incremental: bool) -> Result<()> {
         .database()
         .ok_or_else(|| anyhow::anyhow!("Knowledge graph has no database connection"))?;
 
-    let stats = db_ref.rebuild_from_papers(&kg_nodes, &all_citations)?;
+    let stats = tokio::runtime::Handle::current()
+        .block_on(async { db_ref.rebuild_from_papers(&kg_nodes, &all_citations).await })?;
 
     println!(
         "Done: {} nodes, {} edges.",
@@ -349,12 +358,14 @@ pub fn try_get_kg() -> Option<rairos_kg::KnowledgeGraph> {
         .join(".ai_research_os")
         .join("kg.db");
     if kg_path.exists() {
-        rairos_kg::KnowledgeGraph::with_db(kg_path).ok()
+        tokio::runtime::Handle::current()
+            .block_on(async { rairos_kg::KnowledgeGraph::with_db(kg_path).await.ok() })
     } else {
         // Try local path
         let local_path = std::path::PathBuf::from("kg.db");
         if local_path.exists() {
-            rairos_kg::KnowledgeGraph::with_db(local_path).ok()
+            tokio::runtime::Handle::current()
+                .block_on(async { rairos_kg::KnowledgeGraph::with_db(local_path).await.ok() })
         } else {
             Some(rairos_kg::KnowledgeGraph::new())
         }

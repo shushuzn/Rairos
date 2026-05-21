@@ -6,7 +6,9 @@ description = "CodeGraph MCP server for Rairos"
 license = "MIT"
 
 [dependencies]
-rusqlite = { version = "0.39", features = ["bundled"] }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
+tokio = { version = "1", features = ["rt"] }
+libsqlite3-sys = { version = "0.28.0", features = ["bundled"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tree-sitter = "0.23"

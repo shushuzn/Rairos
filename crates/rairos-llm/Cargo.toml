@@ -21,7 +21,6 @@ chrono = { workspace = true, features = ["serde"] }
 dirs.workspace = true
 regex.workspace = true
 parking_lot.workspace = true
-rusqlite.workspace = true
 rand.workspace = true
 
 # Insight crates — direct dependencies on implementation crates

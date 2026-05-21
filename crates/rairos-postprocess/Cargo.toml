@@ -14,3 +14,4 @@ chrono = { workspace = true, features = ["serde"] }
 tokio = { workspace = true, features = ["rt", "macros"] }
 thiserror.workspace = true
 tracing.workspace = true
+futures-util.workspace = true

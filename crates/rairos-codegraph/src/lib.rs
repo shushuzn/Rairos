@@ -30,30 +30,30 @@ pub trait CodeGraphBackend: Send + Sync {
 
 impl CodeGraphBackend for CodeGraph {
     fn search(&self, query: &str, limit: usize) -> CodeGraphResult<Vec<SearchResult>> {
-        Ok(CodeGraph::search(self, query, limit)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::search(self, query, limit))?)
     }
     fn get_node(&self, node_id: i64) -> CodeGraphResult<Option<Node>> {
-        Ok(CodeGraph::get_node(self, node_id)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::get_node(self, node_id))?)
     }
     fn get_callers(&self, node_id: i64, depth: usize) -> CodeGraphResult<Vec<CallResult>> {
-        Ok(CodeGraph::get_callers(self, node_id, depth)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::get_callers(self, node_id, depth))?)
     }
     fn get_callees(&self, node_id: i64, depth: usize) -> CodeGraphResult<Vec<CallResult>> {
-        Ok(CodeGraph::get_callees(self, node_id, depth)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::get_callees(self, node_id, depth))?)
     }
     fn files(&self) -> CodeGraphResult<Vec<String>> {
-        Ok(CodeGraph::files(self)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::files(self))?)
     }
     fn stats(&self) -> CodeGraphResult<GraphStats> {
-        Ok(CodeGraph::stats(self)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::stats(self))?)
     }
     fn add_node(&self, node: &Node) -> CodeGraphResult<i64> {
-        Ok(CodeGraph::add_node(self, node)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::add_node(self, node))?)
     }
     fn add_edge(&self, from_node: i64, to_node: i64, edge_type: &str) -> CodeGraphResult<i64> {
-        Ok(CodeGraph::add_edge(self, from_node, to_node, edge_type)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::add_edge(self, from_node, to_node, edge_type))?)
     }
     fn clear(&self) -> CodeGraphResult<()> {
-        Ok(CodeGraph::clear(self)?)
+        Ok(tokio::runtime::Handle::current().block_on(CodeGraph::clear(self))?)
     }
 }

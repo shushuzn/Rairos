@@ -24,20 +24,20 @@ impl ToolHandler for ChartQueryHandler {
         let action = params["action"].as_str().ok_or("Missing action")?;
         let label = params.get("label").and_then(|v| v.as_str());
 
-        let db = kg().database().ok_or("KG database not available")?;
+        let db = kg().await.database().ok_or("KG database not available")?;
 
         let paper_node = db.get_node_by_entity("paper", paper_id)
-            .map_err(|e| format!("KG query error: {}", e))?
+            .await.map_err(|e| format!("KG query error: {}", e))?
             .ok_or_else(|| format!("Paper not found: {}", paper_id))?;
 
         let fig_edges = db.get_edges_by_node(&paper_node.id, "out", Some("has_figure"))
-            .map_err(|e| format!("KG edge query: {}", e))?;
+            .await.map_err(|e| format!("KG edge query: {}", e))?;
         let tbl_edges = db.get_edges_by_node(&paper_node.id, "out", Some("has_table"))
-            .map_err(|e| format!("KG edge query: {}", e))?;
+            .await.map_err(|e| format!("KG edge query: {}", e))?;
 
         let mut figures = Vec::new();
         for edge in &fig_edges {
-            if let Ok(Some(node)) = db.get_node(&edge.target) {
+            if let Ok(Some(node)) = db.get_node(&edge.target).await {
                 let props = &node.properties;
                 figures.push(serde_json::json!({
                     "label": node.label,
@@ -49,7 +49,7 @@ impl ToolHandler for ChartQueryHandler {
 
         let mut tables = Vec::new();
         for edge in &tbl_edges {
-            if let Ok(Some(node)) = db.get_node(&edge.target) {
+            if let Ok(Some(node)) = db.get_node(&edge.target).await {
                 let props = &node.properties;
                 tables.push(serde_json::json!({
                     "label": node.label,
@@ -76,7 +76,7 @@ impl ToolHandler for ChartQueryHandler {
                 match fig {
                     Some(f) => {
                         let fig_node = db.get_node_by_entity("figure", fig_label)
-                            .map_err(|e| format!("KG query: {}", e))?;
+                            .await.map_err(|e| format!("KG query: {}", e))?;
                         let props = fig_node.as_ref().and_then(|n| n.properties.as_object()).cloned().unwrap_or_default();
                         Ok(serde_json::json!({
                             "paper_id": paper_id,
@@ -102,7 +102,7 @@ impl ToolHandler for ChartQueryHandler {
                 match tbl {
                     Some(t) => {
                         let tbl_node = db.get_node_by_entity("table", tbl_label)
-                            .map_err(|e| format!("KG query: {}", e))?;
+                            .await.map_err(|e| format!("KG query: {}", e))?;
                         let props = tbl_node.as_ref().and_then(|n| n.properties.as_object()).cloned().unwrap_or_default();
                         Ok(serde_json::json!({
                             "paper_id": paper_id,

@@ -1,7 +1,7 @@
 use crate::protocol::{ToolHandler, ToolInputSchema, ToolProperty};
 use crate::llm_handlers::helpers::gene_pool_data_dir;
 use async_trait::async_trait;
-use rand::Rng;
+use rand::{Rng, SeedableRng};
 use rairos_gene_pool_watcher::GenePoolWatcher;
 use rairos_llm::insight::crossover::CapsuleGene;
 use rairos_llm::insight::storage::CapsuleStorage;
@@ -51,9 +51,9 @@ impl ToolHandler for GenePoolDecayHandler {
 
         let data_dir = gene_pool_data_dir();
         let storage = CapsuleStorage::new(&data_dir)
-            .map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
+            .await.map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
         let capsules = storage.load_all_capsules()
-            .map_err(|e| format!("Failed to load capsules: {}", e))?;
+            .await.map_err(|e| format!("Failed to load capsules: {}", e))?;
 
         match action {
             "rank" => {
@@ -151,12 +151,12 @@ impl ToolHandler for CrossoverHandler {
 
         let data_dir = gene_pool_data_dir();
         let storage = CapsuleStorage::new(&data_dir)
-            .map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
+            .await.map_err(|e| format!("Failed to open gene pool storage: {}", e))?;
 
         match action {
             "rank_v3" => {
                 let capsules = storage.load_all_capsules()
-                    .map_err(|e| format!("Failed to load capsules: {}", e))?;
+                    .await.map_err(|e| format!("Failed to load capsules: {}", e))?;
                 let v3: Vec<serde_json::Value> = capsules.iter()
                     .filter(|c| c.evolved_generation >= 1 && c.status == "active")
                     .map(|c| {
@@ -175,14 +175,14 @@ impl ToolHandler for CrossoverHandler {
             "mutate" => {
                 let cid = capsule_id.ok_or("capsule_id required for mutate action")?;
                 let all = storage.load_all_capsules()
-                    .map_err(|e| format!("Failed to load capsules: {}", e))?;
+                    .await.map_err(|e| format!("Failed to load capsules: {}", e))?;
                 let pos = all.iter().position(|c| c.capsule_id == cid)
                     .ok_or_else(|| format!("Capsule {} not found", cid))?;
                 let mut capsule = all[pos].clone();
                 let mutated_arch = rairos_llm::insight::crossover::mutate_archetype(capsule.archetype.clone());
                 capsule.archetype = mutated_arch;
                 storage.save_capsules(&[capsule.clone()])
-                    .map_err(|e| format!("Failed to save mutated capsule: {}", e))?;
+                    .await.map_err(|e| format!("Failed to save mutated capsule: {}", e))?;
                 Ok(serde_json::json!({
                     "mutated": {
                         "capsule_id": capsule.capsule_id,
@@ -193,7 +193,7 @@ impl ToolHandler for CrossoverHandler {
             }
             "best" => {
                 let capsules = storage.load_all_capsules()
-                    .map_err(|e| format!("Failed to load capsules: {}", e))?;
+                    .await.map_err(|e| format!("Failed to load capsules: {}", e))?;
                 let mut active: Vec<_> = capsules.iter()
                     .filter(|c| c.status == "active" && c.credibility_badge != "low")
                     .collect();
@@ -215,7 +215,7 @@ impl ToolHandler for CrossoverHandler {
             }
             _ => {
                 let all = storage.load_all_capsules()
-                    .map_err(|e| format!("Failed to load capsules: {}", e))?;
+                    .await.map_err(|e| format!("Failed to load capsules: {}", e))?;
                 let active: Vec<CapsuleGene> = all.into_iter()
                     .filter(|c| c.status == "active")
                     .collect();
@@ -227,7 +227,7 @@ impl ToolHandler for CrossoverHandler {
                     }));
                 }
 
-                let mut rng = rand::thread_rng();
+                let mut rng = rand::rngs::StdRng::from_entropy();
                 let count = offspring_count.min(active.len() / 2);
                 let mut offspring = Vec::new();
                 let mut parents_used = Vec::new();
@@ -276,7 +276,7 @@ impl ToolHandler for CrossoverHandler {
                 }
 
                 storage.save_capsules(&offspring)
-                    .map_err(|e| format!("Failed to save offspring: {}", e))?;
+                    .await.map_err(|e| format!("Failed to save offspring: {}", e))?;
 
                 let offspring_json: Vec<Value> = offspring.iter().map(|c| {
                     serde_json::json!({

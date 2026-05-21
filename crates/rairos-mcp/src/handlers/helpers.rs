@@ -2,17 +2,18 @@ use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL, TAGS_FILE};
 use serde_json::Value;
 use std::io::BufRead;
 use std::path::PathBuf;
-use std::sync::OnceLock;
+use tokio::sync::OnceCell;
 use tokio::io::AsyncWriteExt;
 
-static KG: OnceLock<rairos_kg::KnowledgeGraph> = OnceLock::new();
+static KG: OnceCell<rairos_kg::KnowledgeGraph> = OnceCell::const_new();
 
-pub fn kg() -> &'static rairos_kg::KnowledgeGraph {
-    KG.get_or_init(|| {
+pub async fn kg() -> &'static rairos_kg::KnowledgeGraph {
+    KG.get_or_init(|| async {
         let db_path = rairos_kg::KnowledgeGraph::db_path();
         rairos_kg::KnowledgeGraph::with_db(db_path)
+            .await
             .expect("Failed to initialize knowledge graph")
-    })
+    }).await
 }
 
 pub fn home_dir() -> PathBuf {

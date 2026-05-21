@@ -51,8 +51,8 @@ impl ToolHandler for KgPaperSubgraphHandler {
         let arxiv_id = params["arxiv_id"].as_str().ok_or("Missing arxiv_id")?;
         let depth = params["depth"].as_u64().unwrap_or(1).min(3) as u32;
         let include_notes = params["include_notes"].as_str().map(|s| s != "false").unwrap_or(true);
-        let sub = kg().get_paper_subgraph(arxiv_id, depth, include_notes)
-            .map_err(|e| format!("Subgraph query: {}", e))?;
+        let sub = kg().await.get_paper_subgraph(arxiv_id, depth, include_notes)
+            .await.map_err(|e| format!("Subgraph query: {}", e))?;
         Ok(serde_json::to_value(sub).unwrap_or_default())
     }
 }
@@ -73,8 +73,8 @@ impl ToolHandler for KgTagGraphHandler {
     }
     async fn call(&self, params: Value) -> Result<Value, String> {
         let tag = params["tag"].as_str().ok_or("Missing tag")?;
-        let sub = kg().get_tag_ecosystem(tag)
-            .map_err(|e| format!("Tag ecosystem: {}", e))?;
+        let sub = kg().await.get_tag_ecosystem(tag)
+            .await.map_err(|e| format!("Tag ecosystem: {}", e))?;
         Ok(serde_json::to_value(sub).unwrap_or_default())
     }
 }
@@ -89,9 +89,9 @@ impl ToolHandler for KgFullGraphHandler {
         ToolInputSchema::object(HashMap::new(), vec![])
     }
     async fn call(&self, _params: Value) -> Result<Value, String> {
-        let graph = kg();
+        let graph = kg().await;
         if let Some(db) = graph.database() {
-            db.export_json(None).map_err(|e| format!("KG export: {}", e))
+            db.export_json(None).await.map_err(|e| format!("KG export: {}", e))
         } else {
             Ok(graph.export_json(None))
         }
@@ -116,9 +116,9 @@ impl ToolHandler for KgQueryHandler {
     async fn call(&self, params: Value) -> Result<Value, String> {
         let keyword = params["keyword"].as_str().ok_or("Missing keyword")?;
         let limit = params["limit"].as_u64().unwrap_or(20).min(100) as usize;
-        let db = kg().database().ok_or("No database connected")?;
+        let db = kg().await.database().ok_or("No database connected")?;
         let results = db.query_by_keyword(keyword, limit)
-            .map_err(|e| format!("KG query: {}", e))?;
+            .await.map_err(|e| format!("KG query: {}", e))?;
         Ok(serde_json::json!({"results": results, "total": results.len(), "keyword": keyword}))
     }
 }

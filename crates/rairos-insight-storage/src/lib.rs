@@ -4,12 +4,13 @@
 //!
 //! Ported from `llm/insight/storage.py`.
 
-use parking_lot::Mutex;
 use rairos_insight_credibility::CapsuleGene;
-use rusqlite::{params, Connection, Result as SqliteResult};
+use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions, SqliteRow};
+use sqlx::{Pool, Row, Sqlite};
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 use thiserror::Error;
 
 const GENEPOOL_DB: &str = "gene_pool.db";
@@ -17,7 +18,7 @@ const GENEPOOL_DB: &str = "gene_pool.db";
 #[derive(Error, Debug)]
 pub enum StorageError {
     #[error("SQLite error: {0}")]
-    Sqlite(#[from] rusqlite::Error),
+    Sqlite(#[from] sqlx::Error),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
     #[error("Serialization error: {0}")]
@@ -28,17 +29,25 @@ pub enum StorageError {
 
 pub struct CapsuleStorage {
     db_path: PathBuf,
-    conn: Mutex<Connection>,
+    pool: Pool<Sqlite>,
 }
 
 impl CapsuleStorage {
-    pub fn new(data_dir: &Path) -> Result<Self, StorageError> {
+    pub async fn new(data_dir: &Path) -> Result<Self, StorageError> {
         let db_path = data_dir.join(GENEPOOL_DB);
-        let conn = Connection::open(&db_path)?;
-        conn.execute_batch(
-            "PRAGMA journal_mode=WAL;
-             PRAGMA synchronous=NORMAL;
-             CREATE TABLE IF NOT EXISTS capsules (
+        let options = SqliteConnectOptions::new()
+            .filename(&db_path)
+            .pragma("journal_mode", "WAL")
+            .pragma("synchronous", "NORMAL")
+            .create_if_missing(true);
+        let pool = SqlitePoolOptions::new()
+            .max_connections(1)
+            .acquire_timeout(Duration::from_secs(30))
+            .connect_with(options)
+            .await?;
+
+        sqlx::query(
+            "CREATE TABLE IF NOT EXISTS capsules (
                  capsule_id TEXT PRIMARY KEY,
                  created_at TEXT NOT NULL DEFAULT '',
                  trigger_topic TEXT NOT NULL DEFAULT '',
@@ -58,23 +67,34 @@ impl CapsuleStorage {
                  credibility_badge TEXT NOT NULL DEFAULT 'medium',
                  source_arxiv_category TEXT NOT NULL DEFAULT '',
                  title_embedding BLOB
-             );
-             CREATE INDEX IF NOT EXISTS idx_capsules_status ON capsules(status);
-             CREATE INDEX IF NOT EXISTS idx_capsules_gap_type ON capsules(trigger_gap_type);
-             CREATE INDEX IF NOT EXISTS idx_capsules_topic ON capsules(trigger_topic);
-             CREATE INDEX IF NOT EXISTS idx_capsules_created ON capsules(created_at);",
-        )?;
-        Ok(Self {
-            db_path,
-            conn: Mutex::new(conn),
-        })
+             )",
+        )
+        .execute(&pool)
+        .await?;
+
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_capsules_status ON capsules(status)")
+            .execute(&pool)
+            .await?;
+        sqlx::query(
+            "CREATE INDEX IF NOT EXISTS idx_capsules_gap_type ON capsules(trigger_gap_type)",
+        )
+        .execute(&pool)
+        .await?;
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_capsules_topic ON capsules(trigger_topic)")
+            .execute(&pool)
+            .await?;
+        sqlx::query("CREATE INDEX IF NOT EXISTS idx_capsules_created ON capsules(created_at)")
+            .execute(&pool)
+            .await?;
+
+        Ok(Self { db_path, pool })
     }
 
     fn gene_pool_file(&self, data_dir: &Path) -> PathBuf {
         data_dir.join("gene_pool.jsonl")
     }
 
-    pub fn encode_capsule(
+    pub async fn encode_capsule(
         &self,
         topic: &str,
         gap_type: &str,
@@ -140,7 +160,7 @@ impl CapsuleStorage {
             return Ok(capsule);
         }
 
-        self.insert_capsule(&capsule)?;
+        self.insert_capsule(&capsule).await?;
 
         let jsonl_path = self.gene_pool_file(data_dir);
         if jsonl_path.exists() {
@@ -156,14 +176,14 @@ impl CapsuleStorage {
         Ok(capsule)
     }
 
-    pub fn find_capsule(
+    pub async fn find_capsule(
         &self,
         topic: &str,
         gap_type: &str,
         keywords: &[String],
         min_score: f64,
     ) -> Result<Vec<CapsuleGene>, StorageError> {
-        let capsules = self.load_capsules()?;
+        let capsules = self.load_capsules().await?;
         let mut scored: Vec<(CapsuleGene, f64)> = Vec::new();
 
         for capsule in capsules {
@@ -180,7 +200,7 @@ impl CapsuleStorage {
         Ok(scored.into_iter().map(|(c, _)| c).collect())
     }
 
-    pub fn find_capsule_hybrid(
+    pub async fn find_capsule_hybrid(
         &self,
         topic: &str,
         gap_type: &str,
@@ -190,7 +210,7 @@ impl CapsuleStorage {
         semantic_weight: f64,
         top_k: usize,
     ) -> Result<Vec<CapsuleGene>, StorageError> {
-        let capsules = self.load_capsules()?;
+        let capsules = self.load_capsules().await?;
         let mut scored: Vec<(CapsuleGene, f64)> = Vec::new();
 
         for capsule in capsules {
@@ -212,121 +232,78 @@ impl CapsuleStorage {
         Ok(scored.into_iter().take(top_k).map(|(c, _)| c).collect())
     }
 
-    pub fn archive_capsule(&self, capsule_id: &str) -> Result<bool, StorageError> {
-        let conn = self.conn.lock();
-        let rows = conn.query_row(
+    pub async fn archive_capsule(&self, capsule_id: &str) -> Result<bool, StorageError> {
+        let row = sqlx::query(
             "SELECT action_gap_title, action_gap_type FROM capsules WHERE capsule_id = ?",
-            params![capsule_id],
-            |_row| Ok(()),
-        );
-        match rows {
-            Ok(_) => {}
-            Err(rusqlite::Error::QueryReturnedNoRows) => return Ok(false),
-            Err(e) => return Err(e.into()),
+        )
+        .bind(capsule_id)
+        .fetch_optional(&self.pool)
+        .await?;
+
+        if row.is_none() {
+            return Ok(false);
         }
-        conn.execute(
-            "UPDATE capsules SET status = 'archived' WHERE capsule_id = ?",
-            params![capsule_id],
-        )?;
+
+        sqlx::query("UPDATE capsules SET status = 'archived' WHERE capsule_id = ?")
+            .bind(capsule_id)
+            .execute(&self.pool)
+            .await?;
         Ok(true)
     }
 
-    pub fn get_capsule_by_id(&self, capsule_id: &str) -> Result<Option<CapsuleGene>, StorageError> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare("SELECT * FROM capsules WHERE capsule_id = ?")?;
-        let result = stmt.query_row(params![capsule_id], capsule_from_row);
-        match result {
-            Ok(c) => Ok(Some(c)),
-            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-            Err(e) => Err(e.into()),
+    pub async fn get_capsule_by_id(
+        &self,
+        capsule_id: &str,
+    ) -> Result<Option<CapsuleGene>, StorageError> {
+        let row = sqlx::query("SELECT * FROM capsules WHERE capsule_id = ?")
+            .bind(capsule_id)
+            .fetch_optional(&self.pool)
+            .await?;
+
+        match row {
+            Some(r) => Ok(Some(capsule_from_row(&r)?)),
+            None => Ok(None),
         }
     }
 
-    pub fn get_capsule_by_title(
+    pub async fn get_capsule_by_title(
         &self,
         gap_title: &str,
         topic: &str,
     ) -> Result<Option<CapsuleGene>, StorageError> {
-        let conn = self.conn.lock();
-        let query = if topic.is_empty() {
-            "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND status = 'active'"
+        let row = if topic.is_empty() {
+            sqlx::query(
+                "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND status = 'active'",
+            )
+            .bind(gap_title)
+            .fetch_optional(&self.pool)
+            .await?
         } else {
-            "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND LOWER(trigger_topic) = LOWER(?) AND status = 'active'"
+            sqlx::query(
+                "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND LOWER(trigger_topic) = LOWER(?) AND status = 'active'",
+            )
+            .bind(gap_title)
+            .bind(topic)
+            .fetch_optional(&self.pool)
+            .await?
         };
 
-        let mut stmt = conn.prepare(query)?;
-        let capsule = if topic.is_empty() {
-            stmt.query_row(params![gap_title], capsule_from_row)
-        } else {
-            stmt.query_row(params![gap_title, topic], capsule_from_row)
-        };
-
-        match capsule {
-            Ok(c) => Ok(Some(c)),
-            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-            Err(e) => Err(e.into()),
+        match row {
+            Some(r) => Ok(Some(capsule_from_row(&r)?)),
+            None => Ok(None),
         }
     }
 
-    pub fn update_capsule(&self, capsule: &CapsuleGene) -> Result<(), StorageError> {
-        self.insert_capsule(capsule)
+    pub async fn update_capsule(&self, capsule: &CapsuleGene) -> Result<(), StorageError> {
+        self.insert_capsule(capsule).await
     }
 
-    pub fn get_gene_pool_stats(&self) -> Result<HashMap<String, serde_json::Value>, StorageError> {
-        let conn = self.conn.lock();
-        let total: i32 = conn.query_row("SELECT COUNT(*) FROM capsules", [], |row| row.get(0))?;
-
-        if total == 0 {
-            let mut stats = HashMap::new();
-            stats.insert("total".to_string(), serde_json::json!(0));
-            stats.insert("avg_score".to_string(), serde_json::json!(0.0));
-            stats.insert("by_gap_type".to_string(), serde_json::json!({}));
-            return Ok(stats);
-        }
-
-        let avg: f64 = conn.query_row(
-            "SELECT AVG(outcome_success_score) FROM capsules",
-            [],
-            |row| row.get(0),
-        )?;
-
-        let mut by_type: HashMap<String, i32> = HashMap::new();
-        let mut stmt = conn.prepare(
-            "SELECT action_gap_type, COUNT(*) as cnt FROM capsules GROUP BY action_gap_type",
-        )?;
-        let rows = stmt.query_map([], |row| {
-            Ok((row.get::<_, String>(0)?, row.get::<_, i32>(1)?))
-        })?;
-        for row in rows {
-            let (gt, cnt) = row?;
-            by_type.insert(gt, cnt);
-        }
-
-        let mut stmt = conn.prepare(
-            "SELECT DISTINCT evolved_generation FROM capsules ORDER BY evolved_generation",
-        )?;
-        let generations: Vec<i32> = stmt
-            .query_map([], |row| row.get(0))?
-            .filter_map(|r| r.ok())
-            .collect();
-
-        let mut stats = HashMap::new();
-        stats.insert("total".to_string(), serde_json::json!(total));
-        stats.insert(
-            "avg_score".to_string(),
-            serde_json::json!((avg * 1000.0).round() / 1000.0),
-        );
-        stats.insert("by_gap_type".to_string(), serde_json::json!(by_type));
-        stats.insert("generations".to_string(), serde_json::json!(generations));
-        Ok(stats)
-    }
-
-    pub fn recompute_credibility_all(
+    pub async fn recompute_credibility_all(
         &self,
     ) -> Result<HashMap<String, serde_json::Value>, StorageError> {
         use rairos_insight_credibility::CredibilityScorer;
 
-        let capsules = self.load_capsules()?;
+        let capsules = self.load_capsules().await?;
         let scorer = CredibilityScorer::new(None);
         let scores = scorer.compute_novelty_scores(&capsules);
 
@@ -340,7 +317,7 @@ impl CapsuleStorage {
                 updated_capsule.trendslop = score.trendslop;
                 updated_capsule.trendslop_reason = score.trendslop_reason.clone();
                 updated_capsule.credibility_badge = score.badge.clone();
-                if self.update_capsule(&updated_capsule).is_ok() {
+                if self.update_capsule(&updated_capsule).await.is_ok() {
                     updated += 1;
                 } else {
                     errors += 1;
@@ -356,9 +333,62 @@ impl CapsuleStorage {
         Ok(result)
     }
 
-    fn insert_capsule(&self, capsule: &CapsuleGene) -> Result<(), StorageError> {
-        let conn = self.conn.lock();
-        conn.execute(
+    pub async fn get_gene_pool_stats(
+        &self,
+    ) -> Result<HashMap<String, serde_json::Value>, StorageError> {
+        let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM capsules")
+            .fetch_one(&self.pool)
+            .await?;
+
+        if total == 0 {
+            let mut stats = HashMap::new();
+            stats.insert("total".to_string(), serde_json::json!(0));
+            stats.insert("avg_score".to_string(), serde_json::json!(0.0));
+            stats.insert("by_gap_type".to_string(), serde_json::json!({}));
+            return Ok(stats);
+        }
+
+        let avg: f64 = sqlx::query_scalar("SELECT AVG(outcome_success_score) FROM capsules")
+            .fetch_one(&self.pool)
+            .await?;
+
+        let rows = sqlx::query(
+            "SELECT action_gap_type, COUNT(*) as cnt FROM capsules GROUP BY action_gap_type",
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        let mut by_type: HashMap<String, i64> = HashMap::new();
+        for row in rows {
+            let gt: String = row.get("action_gap_type");
+            let cnt: i64 = row.get("cnt");
+            by_type.insert(gt, cnt);
+        }
+
+        let gen_rows = sqlx::query(
+            "SELECT DISTINCT evolved_generation FROM capsules ORDER BY evolved_generation",
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        let generations: Vec<i32> = gen_rows
+            .iter()
+            .map(|row| row.get("evolved_generation"))
+            .collect();
+
+        let mut stats = HashMap::new();
+        stats.insert("total".to_string(), serde_json::json!(total));
+        stats.insert(
+            "avg_score".to_string(),
+            serde_json::json!((avg * 1000.0).round() / 1000.0),
+        );
+        stats.insert("by_gap_type".to_string(), serde_json::json!(by_type));
+        stats.insert("generations".to_string(), serde_json::json!(generations));
+        Ok(stats)
+    }
+
+    async fn insert_capsule(&self, capsule: &CapsuleGene) -> Result<(), StorageError> {
+        sqlx::query(
             "INSERT OR REPLACE INTO capsules (
                 capsule_id, created_at, trigger_topic, trigger_gap_type,
                 trigger_keywords, action_gap_type, action_gap_title,
@@ -369,49 +399,52 @@ impl CapsuleStorage {
             ) VALUES (
                 ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19
             )",
-            params![
-                capsule.capsule_id,
-                capsule.created_at,
-                capsule.trigger_topic,
-                capsule.trigger_gap_type,
-                serde_json::to_string(&capsule.trigger_keywords)?,
-                capsule.action_gap_type,
-                capsule.action_gap_title,
-                capsule.outcome_success_score,
-                capsule.feedback_count,
-                capsule.evolved_generation,
-                serde_json::to_string(&capsule.archetype)?,
-                capsule.status,
-                capsule.low_score_streak,
-                capsule.credibility_score,
-                capsule.trendslop as i32,
-                capsule.trendslop_reason,
-                capsule.credibility_badge,
-                capsule.source_arxiv_category,
-                None::<Vec<u8>>,
-            ],
-        )?;
+        )
+        .bind(&capsule.capsule_id)
+        .bind(&capsule.created_at)
+        .bind(&capsule.trigger_topic)
+        .bind(&capsule.trigger_gap_type)
+        .bind(serde_json::to_string(&capsule.trigger_keywords)?)
+        .bind(&capsule.action_gap_type)
+        .bind(&capsule.action_gap_title)
+        .bind(capsule.outcome_success_score)
+        .bind(capsule.feedback_count)
+        .bind(capsule.evolved_generation)
+        .bind(serde_json::to_string(&capsule.archetype)?)
+        .bind(&capsule.status)
+        .bind(capsule.low_score_streak)
+        .bind(capsule.credibility_score)
+        .bind(capsule.trendslop as i32)
+        .bind(&capsule.trendslop_reason)
+        .bind(&capsule.credibility_badge)
+        .bind(&capsule.source_arxiv_category)
+        .bind(None::<Vec<u8>>)
+        .execute(&self.pool)
+        .await?;
         Ok(())
     }
 
-    fn load_capsules(&self) -> Result<Vec<CapsuleGene>, StorageError> {
-        let conn = self.conn.lock();
-        let mut stmt = conn.prepare("SELECT * FROM capsules")?;
-        let rows = stmt.query_map([], capsule_from_row)?;
-        let capsules: Vec<CapsuleGene> = rows.filter_map(|r| r.ok()).collect();
+    async fn load_capsules(&self) -> Result<Vec<CapsuleGene>, StorageError> {
+        let rows = sqlx::query("SELECT * FROM capsules")
+            .fetch_all(&self.pool)
+            .await?;
+        let capsules: Vec<CapsuleGene> = rows
+            .iter()
+            .filter_map(|r| capsule_from_row(r).ok())
+            .collect();
         Ok(capsules)
     }
 
     /// Load all capsules (public wrapper).
-    pub fn load_all_capsules(&self) -> Result<Vec<CapsuleGene>, StorageError> {
-        self.load_capsules()
+    pub async fn load_all_capsules(&self) -> Result<Vec<CapsuleGene>, StorageError> {
+        self.load_capsules().await
     }
 
     /// Save (insert or replace) a batch of capsules.
     /// Used after evolution to persist the evolved gene pool.
-    pub fn save_capsules(&self, capsules: &[CapsuleGene]) -> Result<(), StorageError> {
+    pub async fn save_capsules(&self, capsules: &[CapsuleGene]) -> Result<(), StorageError> {
         for c in capsules {
-            self.insert_capsule(c)?;
+            self.insert_capsule(c).await?;
         }
         Ok(())
     }
@@ -419,33 +452,33 @@ impl CapsuleStorage {
     pub fn close(&self) {}
 }
 
-fn capsule_from_row(row: &rusqlite::Row) -> SqliteResult<CapsuleGene> {
-    let archetype_str: String = row.get("archetype")?;
+fn capsule_from_row(row: &SqliteRow) -> Result<CapsuleGene, sqlx::Error> {
+    let archetype_str: String = row.try_get("archetype")?;
     let archetype: HashMap<String, serde_json::Value> =
         serde_json::from_str(&archetype_str).unwrap_or_default();
 
-    let trigger_kw_str: String = row.get("trigger_keywords")?;
+    let trigger_kw_str: String = row.try_get("trigger_keywords")?;
     let trigger_keywords: Vec<String> = serde_json::from_str(&trigger_kw_str).unwrap_or_default();
 
     Ok(CapsuleGene {
-        capsule_id: row.get("capsule_id")?,
-        created_at: row.get("created_at")?,
-        trigger_topic: row.get("trigger_topic")?,
-        trigger_gap_type: row.get("trigger_gap_type")?,
+        capsule_id: row.try_get("capsule_id")?,
+        created_at: row.try_get("created_at")?,
+        trigger_topic: row.try_get("trigger_topic")?,
+        trigger_gap_type: row.try_get("trigger_gap_type")?,
         trigger_keywords,
-        action_gap_type: row.get("action_gap_type")?,
-        action_gap_title: row.get("action_gap_title")?,
-        outcome_success_score: row.get("outcome_success_score")?,
-        feedback_count: row.get("feedback_count")?,
-        evolved_generation: row.get("evolved_generation")?,
+        action_gap_type: row.try_get("action_gap_type")?,
+        action_gap_title: row.try_get("action_gap_title")?,
+        outcome_success_score: row.try_get("outcome_success_score")?,
+        feedback_count: row.try_get("feedback_count")?,
+        evolved_generation: row.try_get("evolved_generation")?,
         archetype,
-        status: row.get("status")?,
-        low_score_streak: row.get("low_score_streak")?,
-        credibility_score: row.get("credibility_score")?,
-        trendslop: row.get::<_, i32>("trendslop")? != 0,
-        trendslop_reason: row.get("trendslop_reason")?,
-        credibility_badge: row.get("credibility_badge")?,
-        source_arxiv_category: row.get("source_arxiv_category")?,
+        status: row.try_get("status")?,
+        low_score_streak: row.try_get("low_score_streak")?,
+        credibility_score: row.try_get("credibility_score")?,
+        trendslop: row.try_get::<i32, _>("trendslop")? != 0,
+        trendslop_reason: row.try_get("trendslop_reason")?,
+        credibility_badge: row.try_get("credibility_badge")?,
+        source_arxiv_category: row.try_get("source_arxiv_category")?,
     })
 }
 
@@ -582,23 +615,22 @@ fn extract_keywords_simple(text: &str) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
 
-    fn create_test_storage() -> (CapsuleStorage, tempfile::TempDir) {
+    async fn create_test_storage() -> (CapsuleStorage, tempfile::TempDir) {
         let temp_dir = tempfile::tempdir().unwrap();
-        let storage = CapsuleStorage::new(temp_dir.path()).unwrap();
+        let storage = CapsuleStorage::new(temp_dir.path()).await.unwrap();
         (storage, temp_dir)
     }
 
-    #[test]
-    fn test_new_storage() {
-        let (storage, _temp_dir) = create_test_storage();
-        assert!(storage.get_gene_pool_stats().is_ok());
+    #[tokio::test]
+    async fn test_new_storage() {
+        let (storage, _temp_dir) = create_test_storage().await;
+        assert!(storage.get_gene_pool_stats().await.is_ok());
     }
 
-    #[test]
-    fn test_encode_capsule() {
-        let (storage, temp_dir) = create_test_storage();
+    #[tokio::test]
+    async fn test_encode_capsule() {
+        let (storage, temp_dir) = create_test_storage().await;
         let capsule = storage
             .encode_capsule(
                 "NLP",
@@ -613,15 +645,16 @@ mod tests {
                 None,
                 temp_dir.path(),
             )
+            .await
             .unwrap();
         assert_eq!(capsule.trigger_topic, "NLP");
         assert_eq!(capsule.action_gap_type, "method_limitation");
         assert!(!capsule.capsule_id.is_empty());
     }
 
-    #[test]
-    fn test_find_capsule() {
-        let (storage, temp_dir) = create_test_storage();
+    #[tokio::test]
+    async fn test_find_capsule() {
+        let (storage, temp_dir) = create_test_storage().await;
         storage
             .encode_capsule(
                 "NLP",
@@ -636,17 +669,19 @@ mod tests {
                 None,
                 temp_dir.path(),
             )
+            .await
             .unwrap();
 
         let found = storage
             .find_capsule("NLP", "method_limitation", &[], 0.0)
+            .await
             .unwrap();
         assert!(!found.is_empty());
     }
 
-    #[test]
-    fn test_archive_capsule() {
-        let (storage, temp_dir) = create_test_storage();
+    #[tokio::test]
+    async fn test_archive_capsule() {
+        let (storage, temp_dir) = create_test_storage().await;
         let capsule = storage
             .encode_capsule(
                 "NLP",
@@ -661,15 +696,16 @@ mod tests {
                 None,
                 temp_dir.path(),
             )
+            .await
             .unwrap();
 
-        let result = storage.archive_capsule(&capsule.capsule_id).unwrap();
+        let result = storage.archive_capsule(&capsule.capsule_id).await.unwrap();
         assert!(result);
     }
 
-    #[test]
-    fn test_get_capsule_by_id() {
-        let (storage, temp_dir) = create_test_storage();
+    #[tokio::test]
+    async fn test_get_capsule_by_id() {
+        let (storage, temp_dir) = create_test_storage().await;
         let capsule = storage
             .encode_capsule(
                 "NLP",
@@ -684,15 +720,19 @@ mod tests {
                 None,
                 temp_dir.path(),
             )
+            .await
             .unwrap();
 
-        let found = storage.get_capsule_by_id(&capsule.capsule_id).unwrap();
+        let found = storage
+            .get_capsule_by_id(&capsule.capsule_id)
+            .await
+            .unwrap();
         assert!(found.is_some());
     }
 
-    #[test]
-    fn test_get_capsule_by_title() {
-        let (storage, temp_dir) = create_test_storage();
+    #[tokio::test]
+    async fn test_get_capsule_by_title() {
+        let (storage, temp_dir) = create_test_storage().await;
         storage
             .encode_capsule(
                 "NLP",
@@ -707,10 +747,12 @@ mod tests {
                 None,
                 temp_dir.path(),
             )
+            .await
             .unwrap();
 
         let found = storage
             .get_capsule_by_title("Unique test title 123", "NLP")
+            .await
             .unwrap();
         assert!(found.is_some());
     }
@@ -736,9 +778,9 @@ mod tests {
         assert!(!keywords.contains(&"over".to_string()));
     }
 
-    #[test]
-    fn test_gene_pool_stats() {
-        let (storage, temp_dir) = create_test_storage();
+    #[tokio::test]
+    async fn test_gene_pool_stats() {
+        let (storage, temp_dir) = create_test_storage().await;
         storage
             .encode_capsule(
                 "NLP",
@@ -753,6 +795,7 @@ mod tests {
                 None,
                 temp_dir.path(),
             )
+            .await
             .unwrap();
         storage
             .encode_capsule(
@@ -768,9 +811,10 @@ mod tests {
                 None,
                 temp_dir.path(),
             )
+            .await
             .unwrap();
 
-        let stats = storage.get_gene_pool_stats().unwrap();
+        let stats = storage.get_gene_pool_stats().await.unwrap();
         assert_eq!(stats["total"], serde_json::json!(2));
     }
 }

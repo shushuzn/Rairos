@@ -7,7 +7,8 @@ edition = "2021"
 tempfile.workspace = true
 
 [dependencies]
-rusqlite.workspace = true
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid"] }
+libsqlite3-sys = { version = "0.28.0", features = ["bundled"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 parking_lot.workspace = true
@@ -21,6 +22,7 @@ tracing-subscriber.workspace = true
 anyhow.workspace = true
 regex.workspace = true
 dirs.workspace = true
+tokio = { version = "1", features = ["rt"] }
 
 # Orphan rescues — re-exported through rairos_core:: module tree
 rairos-retry = { path = "../rairos-retry" }

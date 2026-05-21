@@ -31,6 +31,7 @@ tokio = { workspace = true, features = ["rt", "io-util", "io-std", "sync", "macr
 tracing.workspace = true
 tracing-subscriber.workspace = true
 futures.workspace = true
+futures-util.workspace = true
 async-trait = "0.1"
 chrono = { workspace = true, features = ["serde"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }

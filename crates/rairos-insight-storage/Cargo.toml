@@ -8,7 +8,7 @@ parking_lot.workspace = true
 rairos-insight-credibility = { path = "../rairos-insight-credibility" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-rusqlite.workspace = true
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid"] }
 chrono.workspace = true
 dirs.workspace = true
 thiserror.workspace = true

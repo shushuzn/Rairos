@@ -11,7 +11,9 @@ thiserror.workspace = true
 tracing.workspace = true
 anyhow.workspace = true
 dirs.workspace = true
-rusqlite.workspace = true
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
+libsqlite3-sys = { version = "0.28.0", features = ["bundled"] }
+tokio = { version = "1", features = ["full"] }
 parking_lot.workspace = true
 rustc-hash.workspace = true
 uuid = { workspace = true, features = ["v4"] }

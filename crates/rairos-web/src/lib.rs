@@ -81,7 +81,9 @@ pub struct AppState {
 
 impl AppState {
     pub fn new(db: Database) -> Self {
-        let kg = KnowledgeGraph::load().unwrap_or_else(|_| KnowledgeGraph::new());
+        let kg = tokio::runtime::Handle::current().block_on(async {
+            KnowledgeGraph::load().await.unwrap_or_else(|_| KnowledgeGraph::new())
+        });
         Self {
             db: Arc::new(db),
             gene_pool: Arc::new(RwLock::new(

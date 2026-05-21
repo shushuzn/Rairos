@@ -2,6 +2,7 @@
 
 use crate::graph::{CodeGraph, Node};
 use std::path::Path;
+use tokio::runtime::Handle;
 use walkdir::WalkDir;
 use tree_sitter::Parser;
 use tree_sitter_rust::LANGUAGE;
@@ -21,7 +22,7 @@ impl Indexer {
         let nodes = self.collect_nodes(root)?;
         let mut stats = IndexStats::default();
         
-        graph.clear().ok();
+        Handle::current().block_on(graph.clear()).ok();
         
         for node in nodes {
             match node.kind.as_str() {
@@ -31,7 +32,7 @@ impl Indexer {
                 "impl" => stats.impls += 1,
                 _ => {}
             }
-            graph.add_node(&node).ok();
+            Handle::current().block_on(graph.add_node(&node)).ok();
         }
         
         Ok(stats)
