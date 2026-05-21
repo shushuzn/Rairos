@@ -48,6 +48,7 @@ use crate::agent::{Agent, AgentConfig, AgentOutput, AgentRole};
 use crate::crew::CrewResult;
 use crate::error::CortexProError;
 use crate::pipeline::Pipeline;
+use crate::memory::MemoryBank;
 
 /// Retry configuration for agent calls
 #[derive(Debug, Clone)]
@@ -220,6 +221,8 @@ pub struct SparksCrew {
     max_iterations: u32,
     /// Execution timeout per step
     step_timeout_secs: u64,
+    /// Memory bank for persistent context
+    memory: Option<Arc<MemoryBank>>,
 }
 
 impl SparksCrew {
@@ -232,6 +235,7 @@ impl SparksCrew {
             context: CrewContext::default(),
             max_iterations: 5,
             step_timeout_secs: 300,
+            memory: None,
         }
     }
 
@@ -248,6 +252,17 @@ impl SparksCrew {
         self.tools.push(tool);
         self.context.tools.push(tool_name);
         self
+    }
+
+    /// Add a memory bank for persistent context across agent interactions.
+    pub fn with_memory(mut self, memory: Arc<MemoryBank>) -> Self {
+        self.memory = Some(memory);
+        self
+    }
+
+    /// Get a reference to the memory bank (if set).
+    pub fn memory(&self) -> Option<&MemoryBank> {
+        self.memory.as_deref()
     }
 
     /// Set maximum iterations per phase.

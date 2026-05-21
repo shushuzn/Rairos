@@ -59,6 +59,10 @@ pub mod sparks_agents;
 #[cfg(feature = "tools")]
 pub mod tools;
 
+/// Memory module for persistent context across agent interactions
+#[cfg(feature = "tools")]
+pub mod memory;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -73,3 +77,6 @@ pub use error::CortexProError;
 
 #[cfg(feature = "tools")]
 pub use sparks_crew::{SparksCrew, Plan, PlanStep, ExecutionResult, ResearchReport};
+
+#[cfg(feature = "tools")]
+pub use memory::{MemoryBank, IdeationEntry, IdeationStatus, ExperimentationEntry, MemoryStats, MemoryEntryBuilder, ExperimentationEntryBuilder};
