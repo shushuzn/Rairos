@@ -125,6 +125,38 @@ let crew = crew
 
 - `default`: Basic functionality
 - `tools`: Enables material science tool integrations (Materials Project, CGCNN, MatterGen)
+- `api`: Enables HTTP API server for remote workflow execution
+
+### Retry Logic
+
+The crew implements exponential backoff retry for agent calls:
+
+```rust
+use rairos_cortex_pro::sparks_crew::RetryConfig;
+
+// Configure retry behavior
+let retry_config = RetryConfig::default()
+    .with_max_attempts(5); // 5 attempts instead of default 3
+
+let crew = SparksCrew::new(llm)
+    .with_retry_config(retry_config);
+```
+
+### Streaming Support
+
+Track workflow progress with callbacks:
+
+```rust
+use rairos_cortex_pro::sparks_crew::{PhaseResult, StreamingCallback};
+
+// Define progress callback
+let callback: StreamingCallback = Box::new(|role, status| {
+    println!("{:?}: {}", role, status);
+});
+
+let crew = SparksCrew::new(llm)
+    .with_streaming_callback(callback);
+```
 
 ### Testing
 

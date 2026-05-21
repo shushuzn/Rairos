@@ -40,12 +40,102 @@
 //! ```
 
 use std::sync::Arc;
+use std::time::Duration;
 use async_trait::async_trait;
+use tokio::time::sleep;
 use crate::state::{CrewContext, ResearchState, Phase};
 use crate::agent::{Agent, AgentConfig, AgentOutput, AgentRole};
 use crate::crew::CrewResult;
 use crate::error::CortexProError;
 use crate::pipeline::Pipeline;
+
+/// Retry configuration for agent calls
+#[derive(Debug, Clone)]
+pub struct RetryConfig {
+    /// Maximum number of retry attempts
+    pub max_attempts: u32,
+    /// Base delay in milliseconds
+    pub base_delay_ms: u64,
+    /// Maximum delay in milliseconds
+    pub max_delay_ms: u64,
+}
+
+impl Default for RetryConfig {
+    fn default() -> Self {
+        Self {
+            max_attempts: 3,
+            base_delay_ms: 100,
+            max_delay_ms: 5000,
+        }
+    }
+}
+
+impl RetryConfig {
+    /// Create a new retry config with custom max attempts
+    pub fn with_max_attempts(mut self, max: u32) -> Self {
+        self.max_attempts = max;
+        self
+    }
+
+    /// Calculate delay for a given attempt using exponential backoff
+    fn delay_for_attempt(&self, attempt: u32) -> Duration {
+        let exp_delay = self.base_delay_ms * 2u64.pow(attempt.saturating_sub(1));
+        let delay = exp_delay.min(self.max_delay_ms);
+        // Add jitter (0-25% of delay)
+        let jitter = (delay as f64 * 0.25 * rand_simple()) as u64;
+        Duration::from_millis(delay + jitter)
+    }
+}
+
+/// Simple pseudo-random for jitter (0.0 to 1.0)
+fn rand_simple() -> f64 {
+    use std::time::Instant;
+    let now = Instant::now();
+    let nanos = now.elapsed().as_nanos();
+    (nanos % 1000) as f64 / 1000.0
+}
+
+/// Callback for streaming agent progress updates
+pub type StreamingCallback = Box<dyn Fn(AgentRole, &str) + Send + Sync>;
+
+/// Phase result for tracking progress
+#[derive(Debug, Clone)]
+pub struct PhaseResult {
+    /// Phase name
+    pub phase: String,
+    /// Whether the phase succeeded
+    pub success: bool,
+    /// Output content (if successful)
+    pub output: Option<String>,
+    /// Error message (if failed)
+    pub error: Option<String>,
+    /// Duration in milliseconds
+    pub duration_ms: u64,
+}
+
+impl PhaseResult {
+    /// Create a successful phase result
+    pub fn success(phase: &str, output: String, duration_ms: u64) -> Self {
+        Self {
+            phase: phase.to_string(),
+            success: true,
+            output: Some(output),
+            error: None,
+            duration_ms,
+        }
+    }
+
+    /// Create a failed phase result
+    pub fn failure(phase: &str, error: String, duration_ms: u64) -> Self {
+        Self {
+            phase: phase.to_string(),
+            success: false,
+            output: None,
+            error: Some(error),
+            duration_ms,
+        }
+    }
+}
 
 /// Plan step for research execution.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -240,18 +330,44 @@ impl SparksCrew {
 
     /// Call an agent and get its output.
     async fn call_agent(&self, role: AgentRole, query: &str) -> Result<String, CortexProError> {
+        self.call_agent_with_retry(role, query, &RetryConfig::default()).await
+    }
+
+    /// Call an agent with retry logic and exponential backoff.
+    async fn call_agent_with_retry(
+        &self,
+        role: AgentRole,
+        query: &str,
+        retry_config: &RetryConfig,
+    ) -> Result<String, CortexProError> {
         let agent = self
             .find_agent(role)
             .ok_or_else(|| CortexProError::AgentNotFound(format!("Agent {:?} not found", role)))?;
 
-        let mut state = ResearchState::new(query);
-        let output = agent.execute(&state).await?;
+        let mut last_error = None;
+        for attempt in 1..=retry_config.max_attempts {
+            let state = ResearchState::new(query);
+            match agent.execute(&state).await {
+                Ok(output) => {
+                    if output.errors.is_empty() {
+                        return Ok(output.content);
+                    } else {
+                        last_error = Some(CortexProError::AgentError(output.errors.join("; ")));
+                    }
+                }
+                Err(e) => {
+                    last_error = Some(e);
+                }
+            }
 
-        if output.errors.is_empty() {
-            Ok(output.content)
-        } else {
-            Err(CortexProError::AgentError(output.errors.join("; ")))
+            // Don't sleep after the last attempt
+            if attempt < retry_config.max_attempts {
+                let delay = retry_config.delay_for_attempt(attempt);
+                sleep(delay).await;
+            }
         }
+
+        Err(last_error.unwrap_or_else(|| CortexProError::AgentError("Unknown error".to_string())))
     }
 
     /// Call an agent with additional intermediate data.
@@ -266,15 +382,33 @@ impl SparksCrew {
             .find_agent(role)
             .ok_or_else(|| CortexProError::AgentNotFound(format!("Agent {:?} not found", role)))?;
 
-        let mut state = ResearchState::new(query);
-        state.intermediate.insert(intermediate_key.to_string(), serde_json::json!(intermediate_value));
-        let output = agent.execute(&state).await?;
+        let retry_config = RetryConfig::default();
+        let mut last_error = None;
 
-        if output.errors.is_empty() {
-            Ok(output.content)
-        } else {
-            Err(CortexProError::AgentError(output.errors.join("; ")))
+        for attempt in 1..=retry_config.max_attempts {
+            let mut state = ResearchState::new(query);
+            state.intermediate.insert(intermediate_key.to_string(), serde_json::json!(intermediate_value));
+
+            match agent.execute(&state).await {
+                Ok(output) => {
+                    if output.errors.is_empty() {
+                        return Ok(output.content);
+                    } else {
+                        last_error = Some(CortexProError::AgentError(output.errors.join("; ")));
+                    }
+                }
+                Err(e) => {
+                    last_error = Some(e);
+                }
+            }
+
+            if attempt < retry_config.max_attempts {
+                let delay = retry_config.delay_for_attempt(attempt);
+                sleep(delay).await;
+            }
         }
+
+        Err(last_error.unwrap_or_else(|| CortexProError::AgentError("Unknown error".to_string())))
     }
 
     /// Phase 1: Ideation - generate and approve hypothesis.
