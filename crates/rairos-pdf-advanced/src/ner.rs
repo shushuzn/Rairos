@@ -172,7 +172,7 @@ impl NerPipeline {
         entities.extend(self.extract_software_rule_based(text, &mut seen));
 
         // Sort by position
-        entities.sort_by(|a, b| a.start.cmp(&b.start));
+        entities.sort_by_key(|a| a.start);
 
         entities
     }

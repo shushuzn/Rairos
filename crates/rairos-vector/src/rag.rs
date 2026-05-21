@@ -207,7 +207,7 @@ impl<E: Embedder, V: VectorStore, L: LlmClient> RagPipeline<E, V, L> {
         // Build payloads
         let vectors: Vec<(String, Vec<f32>, Option<serde_json::Value>)> = docs
             .into_iter()
-            .zip(embeddings.into_iter())
+            .zip(embeddings)
             .map(|((id, text, metadata), embedding)| {
                 let payload = match metadata {
                     Some(mut v) => {

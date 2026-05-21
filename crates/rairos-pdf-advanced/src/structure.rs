@@ -21,6 +21,7 @@ pub struct StructuredDocument {
 
 /// Document metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct DocumentMetadata {
     pub title: Option<String>,
     pub authors: Vec<String>,
@@ -33,21 +34,6 @@ pub struct DocumentMetadata {
     pub publisher: Option<String>,
 }
 
-impl Default for DocumentMetadata {
-    fn default() -> Self {
-        Self {
-            title: None,
-            authors: vec![],
-            abstract_text: None,
-            keywords: vec![],
-            doi: None,
-            arxiv_id: None,
-            year: None,
-            journal: None,
-            publisher: None,
-        }
-    }
-}
 
 /// A section of the document
 #[derive(Debug, Clone)]
@@ -127,7 +113,7 @@ impl Paragraph {
     pub fn new(text: impl Into<String>) -> Self {
         let text = text.into();
         let has_equation = text.contains("$$") || text.contains("$E=") || text.contains("\\begin{");
-        let sentence_count = text.split(|c: char| c == '.' || c == '!' || c == '?')
+        let sentence_count = text.split(['.', '!', '?'])
             .filter(|s| !s.trim().is_empty())
             .count();
 
@@ -302,7 +288,7 @@ impl DocumentAnalyzer {
                         heading: current_heading.clone(),
                         level,
                         paragraphs: current_content.drain(..)
-                            .map(|t| Paragraph::new(t))
+                            .map(Paragraph::new)
                             .collect(),
                         subsections: vec![],
                         page_start: None,
@@ -324,7 +310,7 @@ impl DocumentAnalyzer {
                 heading: current_heading,
                 level,
                 paragraphs: current_content.drain(..)
-                    .map(|t| Paragraph::new(t))
+                    .map(Paragraph::new)
                     .collect(),
                 subsections: vec![],
                 page_start: None,
@@ -424,11 +410,7 @@ impl DocumentAnalyzer {
     }
 
     fn extract_figure_caption(line: &str) -> Option<String> {
-        if let Some(dot_pos) = line.find('.') {
-            Some(line[dot_pos + 1..].trim().to_string())
-        } else {
-            None
-        }
+        line.find('.').map(|dot_pos| line[dot_pos + 1..].trim().to_string())
     }
 }
 

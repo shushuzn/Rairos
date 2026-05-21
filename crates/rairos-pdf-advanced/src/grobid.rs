@@ -42,7 +42,7 @@ impl GrobidClient {
             .multipart(form)
             .send()
             .await
-            .map_err(|e| PdfAdvancedError::HttpError(e))?;
+            .map_err(PdfAdvancedError::HttpError)?;
 
         if !response.status().is_success() {
             if response.status().as_u16() == 503 {
@@ -84,7 +84,7 @@ impl GrobidClient {
             .multipart(form)
             .send()
             .await
-            .map_err(|e| PdfAdvancedError::HttpError(e))?;
+            .map_err(PdfAdvancedError::HttpError)?;
 
         if !response.status().is_success() {
             return Err(PdfAdvancedError::GrobidError(format!(
@@ -121,7 +121,7 @@ impl GrobidClient {
             .multipart(form)
             .send()
             .await
-            .map_err(|e| PdfAdvancedError::HttpError(e))?;
+            .map_err(PdfAdvancedError::HttpError)?;
 
         if !response.status().is_success() {
             return Err(PdfAdvancedError::GrobidError(format!(
@@ -147,7 +147,7 @@ impl GrobidClient {
             .get(&url)
             .send()
             .await
-            .map_err(|e| PdfAdvancedError::HttpError(e))?;
+            .map_err(PdfAdvancedError::HttpError)?;
 
         Ok(response.status().is_success())
     }
@@ -274,7 +274,7 @@ impl GrobidClient {
         if let Some(head_start) = div_xml.find("<head") {
             if let Some(head_end) = div_xml[head_start..].find("</head>") {
                 heading = div_xml[head_start + 5..head_start + head_end].to_string();
-                heading = heading.split('>').last().unwrap_or(&heading).to_string();
+                heading = heading.split('>').next_back().unwrap_or(&heading).to_string();
             }
         }
 

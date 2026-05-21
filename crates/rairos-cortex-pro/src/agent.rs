@@ -184,6 +184,12 @@ pub struct GraphRagAdapter {
     // In a full implementation, this would hold the actual GraphRagPipeline
 }
 
+impl Default for GraphRagAdapter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GraphRagAdapter {
     pub fn new() -> Self {
         Self {}

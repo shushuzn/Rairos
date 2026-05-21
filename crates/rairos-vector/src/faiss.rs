@@ -15,8 +15,10 @@ use crate::error::VectorError;
 
 /// FAISS index types
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum FaissIndexType {
     /// Flat index - exact search, good for small datasets
+    #[default]
     Flat,
     /// IVF index - approximate search with inverted file index
     Ivf,
@@ -24,11 +26,6 @@ pub enum FaissIndexType {
     Hnsw,
 }
 
-impl Default for FaissIndexType {
-    fn default() -> Self {
-        FaissIndexType::Flat
-    }
-}
 
 /// FAISS local vector store configuration
 #[derive(Debug, Clone)]

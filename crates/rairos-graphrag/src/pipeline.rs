@@ -148,7 +148,7 @@ impl<E: Embedder, V: VectorStore> GraphRagPipeline<E, V> {
         let sources = self.extract_sources(&expanded_results);
 
         // 8. Generate answer (placeholder - requires LLM integration)
-        let answer = self.generate_answer(&context, &question, &sources).await?;
+        let answer = self.generate_answer(&context, question, &sources).await?;
 
         Ok(GraphRagAnswer {
             answer,

@@ -30,17 +30,14 @@ impl VectorStoreConfig {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[derive(Default)]
 pub enum DistanceMetric {
+    #[default]
     Cosine,
     Euclidean,
     DotProduct,
 }
 
-impl Default for DistanceMetric {
-    fn default() -> Self {
-        DistanceMetric::Cosine
-    }
-}
 
 /// A search result hit with score and optional payload
 #[derive(Debug, Clone, Serialize, Deserialize)]
