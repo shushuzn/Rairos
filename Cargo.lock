@@ -4133,6 +4133,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-cortex-pro"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "rairos-graphrag",
+ "rairos-kg-neo4j",
+ "rairos-llm",
+ "rairos-pdf",
+ "rairos-pdf-advanced",
+ "rairos-vector",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "rairos-credibility"
 version = "0.1.0"
 dependencies = [
@@ -4468,6 +4490,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-graphrag"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "rairos-kg-neo4j",
+ "rairos-vector",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+]
+
+[[package]]
 name = "rairos-impact"
 version = "0.1.0"
 dependencies = [
@@ -4602,6 +4640,23 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "rairos-kg-neo4j"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
  "tracing",
  "uuid",
 ]
@@ -4955,6 +5010,26 @@ dependencies = [
  "serde_json",
  "sha2 0.10.9",
  "sqlx",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "rairos-pdf-advanced"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "base64 0.22.1",
+ "chrono",
+ "rairos-pdf",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
@@ -5462,6 +5537,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-vector"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "rairos-llm",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "rairos-viz"
 version = "0.1.0"
 dependencies = [
@@ -5838,6 +5931,7 @@ dependencies = [
  "js-sys",
  "log",
  "mime",
+ "mime_guess",
  "native-tls",
  "percent-encoding",
  "pin-project-lite",

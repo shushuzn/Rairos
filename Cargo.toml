@@ -153,6 +153,16 @@ members = [
     "crates/rairos-workspace-snapshot",
     # Phase 1/2a restored crates
     "crates/rairos-sysinfo",
+    # Vector/RAG infrastructure
+    "crates/rairos-vector",
+    # Neo4j knowledge graph
+    "crates/rairos-kg-neo4j",
+    # GraphRAG pipeline
+    "crates/rairos-graphrag",
+    # PDF advanced parsing
+    "crates/rairos-pdf-advanced",
+    # Multi-agent orchestration
+    "crates/rairos-cortex-pro",
 ]
 
 [workspace.dependencies]

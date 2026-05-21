@@ -1,0 +1,47 @@
+[package]
+name = "rairos-cortex-pro"
+version = "0.1.0"
+edition = "2021"
+description = "Production multi-agent collaboration with LangGraph-style orchestration"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/rairos/rairos"
+rust-version = "1.80"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Async traits
+async-trait = "0.1"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+
+# UUID generation
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Date/time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Existing Rairos crates
+rairos-llm = { path = "../rairos-llm", optional = true }
+rairos-pdf = { path = "../rairos-pdf" }
+rairos-pdf-advanced = { path = "../rairos-pdf-advanced" }
+rairos-vector = { path = "../rairos-vector" }
+rairos-kg-neo4j = { path = "../rairos-kg-neo4j" }
+rairos-graphrag = { path = "../rairos-graphrag" }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+default = ["llm"]
+llm = ["dep:rairos-llm", "rairos-vector/llm"]

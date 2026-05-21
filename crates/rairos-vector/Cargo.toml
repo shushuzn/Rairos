@@ -1,0 +1,52 @@
+[package]
+name = "rairos-vector"
+version = "0.1.0"
+edition = "2021"
+description = "Vector database and embedding infrastructure for Rairos RAG pipelines"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/rairos/rairos"
+rust-version = "1.80"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros"] }
+
+# HTTP client for external API calls (OpenAI, BGE-M3, Chroma, Milvus)
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Async traits
+async-trait = "0.1"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+
+# Base64 encoding for embeddings
+base64 = "0.22"
+
+# URL parsing
+url = "2"
+
+# FAISS bindings (optional, enabled by feature flag)
+# faiss = { version = "0.1", optional = true }
+
+# LLM client from rairos-llm (optional, enabled by feature flag)
+rairos-llm = { path = "../rairos-llm", optional = true }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+default = ["openai", "chroma"]
+openai = []
+chroma = []
+milvus = []
+faiss = []
+llm = ["dep:rairos-llm"]
