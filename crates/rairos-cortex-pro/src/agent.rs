@@ -22,6 +22,16 @@ pub enum AgentRole {
     ReportWriter,
     /// QA/validation agent - validates results
     QaAgent,
+    /// Hypothesis generation agent (SparksMatter)
+    Hypothesis,
+    /// Hypothesis critique agent (SparksMatter)
+    HypothesisCritic,
+    /// Planning agent (SparksMatter)
+    Planner,
+    /// Plan critique agent (SparksMatter)
+    PlanCritic,
+    /// Execution agent (SparksMatter)
+    Executor,
 }
 
 impl AgentRole {
@@ -33,6 +43,11 @@ impl AgentRole {
             AgentRole::VectorIndexer => "vector_indexer",
             AgentRole::ReportWriter => "report_writer",
             AgentRole::QaAgent => "qa_agent",
+            AgentRole::Hypothesis => "hypothesis",
+            AgentRole::HypothesisCritic => "hypothesis_critic",
+            AgentRole::Planner => "planner",
+            AgentRole::PlanCritic => "plan_critic",
+            AgentRole::Executor => "executor",
         }
     }
 }

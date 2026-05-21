@@ -1,0 +1,17 @@
+[package]
+name = "rairos-tools"
+version = "0.1.0"
+edition = "2021"
+description = "Material science tools for Rairos multi-agent framework"
+
+[dependencies]
+async-trait = "0.1"
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1", features = ["rt-multi-thread", "sync"] }
+thiserror = "1.0"
+tracing = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"

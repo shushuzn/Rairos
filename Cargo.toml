@@ -163,6 +163,8 @@ members = [
     "crates/rairos-pdf-advanced",
     # Multi-agent orchestration
     "crates/rairos-cortex-pro",
+    # Material science tools (for SparksMatter integration)
+    "crates/rairos-tools",
 ]
 
 [workspace.dependencies]

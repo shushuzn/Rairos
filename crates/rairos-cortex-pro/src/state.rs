@@ -298,6 +298,57 @@ pub struct ValidationSummary {
     pub failed: usize,
 }
 
+/// Crew context variables (inspired by SparksMatter's context_variables).
+///
+/// This tracks the state of a multi-agent crew workflow:
+/// - idea_created: Whether a hypothesis has been generated
+/// - idea_approved: Whether the hypothesis has passed review
+/// - plan_created: Whether a research plan has been created
+/// - plan_approved: Whether the plan has been approved
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrewContext {
+    /// Query/task that started this workflow
+    pub query: Option<String>,
+    /// Whether task execution has started
+    pub task_started: bool,
+    /// Whether a hypothesis/idea has been created
+    pub idea_created: bool,
+    /// Whether the hypothesis has been approved by critic
+    pub idea_approved: bool,
+    /// Whether a research plan has been created
+    pub plan_created: bool,
+    /// Whether the plan has been approved
+    pub plan_approved: bool,
+    /// Whether user has approved to proceed
+    pub user_approved: bool,
+    /// The generated hypothesis/idea
+    pub hypothesis: Option<String>,
+    /// The generated research plan
+    pub plan: Option<String>,
+    /// Explanation of the query
+    pub query_explanation: Option<String>,
+    /// List of available tools
+    pub tools: Vec<String>,
+}
+
+impl Default for CrewContext {
+    fn default() -> Self {
+        Self {
+            query: None,
+            task_started: false,
+            idea_created: false,
+            idea_approved: false,
+            plan_created: false,
+            plan_approved: false,
+            user_approved: false,
+            hypothesis: None,
+            plan: None,
+            query_explanation: None,
+            tools: Vec::new(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

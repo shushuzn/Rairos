@@ -25,6 +25,15 @@
 //! └── ReportWriterAgent  → Synthesis and report generation
 //! ```
 //!
+//! ## SparksMatter Integration
+//!
+//! With the `tools` feature enabled, this crate supports SparksMatter-style
+//! multi-agent workflows for materials discovery:
+//!
+//! ```text
+//! Ideation → Planning → Execution (with tools) → Reporting
+//! ```
+//!
 //! ## Example
 //!
 //! ```ignore
@@ -41,8 +50,17 @@ pub mod pipeline;
 pub mod state;
 pub mod error;
 
+#[cfg(feature = "tools")]
+pub mod sparks_crew;
+
+#[cfg(feature = "tools")]
+pub mod tools;
+
 pub use agent::{Agent, AgentConfig, AgentOutput, AgentRole};
 pub use crew::{ResearchCrew, CrewConfig, CrewResult};
 pub use pipeline::{Pipeline, PipelineNode, PipelineEdge};
-pub use state::{ResearchState, Phase, ResearchContext};
+pub use state::{ResearchState, Phase, ResearchContext, CrewContext};
 pub use error::CortexProError;
+
+#[cfg(feature = "tools")]
+pub use sparks_crew::{SparksCrew, Plan, PlanStep, ExecutionResult, ResearchReport};

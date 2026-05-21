@@ -39,9 +39,13 @@ rairos-vector = { path = "../rairos-vector" }
 rairos-kg-neo4j = { path = "../rairos-kg-neo4j" }
 rairos-graphrag = { path = "../rairos-graphrag" }
 
+# Material science tools (for SparksMatter integration)
+rairos-tools = { path = "../rairos-tools", optional = true }
+
 [dev-dependencies]
 tokio-test = "0.4"
 
 [features]
 default = ["llm"]
 llm = ["dep:rairos-llm", "rairos-vector/llm"]
+tools = ["dep:rairos-tools"]

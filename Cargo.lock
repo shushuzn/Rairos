@@ -4144,6 +4144,7 @@ dependencies = [
  "rairos-llm",
  "rairos-pdf",
  "rairos-pdf-advanced",
+ "rairos-tools",
  "rairos-vector",
  "serde",
  "serde_json",
@@ -5456,6 +5457,20 @@ version = "0.1.0"
 dependencies = [
  "regex",
  "serde",
+]
+
+[[package]]
+name = "rairos-tools"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-test",
+ "tracing",
 ]
 
 [[package]]
