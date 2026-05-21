@@ -172,6 +172,51 @@ impl SparksCrew {
         self
     }
 
+    /// Get a reference to the crew context (for testing).
+    pub fn context(&self) -> &CrewContext {
+        &self.context
+    }
+
+    /// Get a mutable reference to the crew context (for testing).
+    pub fn context_mut(&mut self) -> &mut CrewContext {
+        &mut self.context
+    }
+
+    /// Get whether the task has started.
+    pub fn task_started(&self) -> bool {
+        self.context.task_started
+    }
+
+    /// Get whether an idea has been created.
+    pub fn idea_created(&self) -> bool {
+        self.context.idea_created
+    }
+
+    /// Get whether the idea was approved.
+    pub fn idea_approved(&self) -> bool {
+        self.context.idea_approved
+    }
+
+    /// Get whether a plan has been created.
+    pub fn plan_created(&self) -> bool {
+        self.context.plan_created
+    }
+
+    /// Get whether the plan was approved.
+    pub fn plan_approved(&self) -> bool {
+        self.context.plan_approved
+    }
+
+    /// Get the current hypothesis.
+    pub fn hypothesis(&self) -> Option<&str> {
+        self.context.hypothesis.as_deref()
+    }
+
+    /// Get the current plan JSON.
+    pub fn plan_json(&self) -> Option<&str> {
+        self.context.plan.as_deref()
+    }
+
     /// Find an agent by role.
     fn find_agent(&self, role: AgentRole) -> Option<&dyn Agent> {
         for agent in &self.agents {
@@ -209,6 +254,29 @@ impl SparksCrew {
         }
     }
 
+    /// Call an agent with additional intermediate data.
+    async fn call_agent_with_intermediate(
+        &self,
+        role: AgentRole,
+        query: &str,
+        intermediate_key: &str,
+        intermediate_value: &str,
+    ) -> Result<String, CortexProError> {
+        let agent = self
+            .find_agent(role)
+            .ok_or_else(|| CortexProError::AgentNotFound(format!("Agent {:?} not found", role)))?;
+
+        let mut state = ResearchState::new(query);
+        state.intermediate.insert(intermediate_key.to_string(), serde_json::json!(intermediate_value));
+        let output = agent.execute(&state).await?;
+
+        if output.errors.is_empty() {
+            Ok(output.content)
+        } else {
+            Err(CortexProError::AgentError(output.errors.join("; ")))
+        }
+    }
+
     /// Phase 1: Ideation - generate and approve hypothesis.
     pub async fn run_ideation(&mut self, query: &str) -> Result<String, CortexProError> {
         self.context.task_started = true;
@@ -220,7 +288,12 @@ impl SparksCrew {
 
         // Scientist1 → Scientist2: Critic review
         for _ in 0..self.max_iterations {
-            let feedback = self.call_agent(AgentRole::HypothesisCritic, &hypothesis).await?;
+            let feedback = self.call_agent_with_intermediate(
+                AgentRole::HypothesisCritic,
+                &hypothesis,
+                "hypothesis",
+                &hypothesis,
+            ).await?;
 
             // Check if approved (feedback contains "approved" or "yes")
             if feedback.to_lowercase().contains("approved") ||
@@ -261,7 +334,12 @@ impl SparksCrew {
 
         // Planner → Critic: Review plan
         for _ in 0..self.max_iterations {
-            let feedback = self.call_agent(AgentRole::PlanCritic, &plan_json).await?;
+            let feedback = self.call_agent_with_intermediate(
+                AgentRole::PlanCritic,
+                &plan_json,
+                "plan",
+                &plan_json,
+            ).await?;
 
             if feedback.to_lowercase().contains("approved") ||
                feedback.to_lowercase().contains("yes") {

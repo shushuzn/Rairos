@@ -54,7 +54,13 @@ pub mod error;
 pub mod sparks_crew;
 
 #[cfg(feature = "tools")]
+pub mod sparks_agents;
+
+#[cfg(feature = "tools")]
 pub mod tools;
+
+/// Integrations with other Rairos crates
+pub mod integrations;
 
 pub use agent::{Agent, AgentConfig, AgentOutput, AgentRole};
 pub use crew::{ResearchCrew, CrewConfig, CrewResult};

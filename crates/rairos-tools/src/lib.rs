@@ -13,6 +13,7 @@
 //!
 //! - [`mp::MaterialsProjectTool`] - Materials Project structure retrieval
 //! - [`cgcnn::CgcnnRegressor`] - CGCNN property prediction
+//! - [`mattergen::MatterGenGenerator`] - MatterGen crystal generation
 //!
 //! ## Example
 //!
@@ -27,6 +28,7 @@ pub mod error;
 pub mod tool_trait;
 pub mod mp;
 pub mod cgcnn;
+pub mod mattergen;
 
 pub use error::ToolError;
 pub use tool_trait::{MaterialTool, ToolParams, ToolOutput};

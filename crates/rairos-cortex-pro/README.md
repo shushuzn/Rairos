@@ -1,243 +1,168 @@
-# rairos-cortex-pro
+# Rairos Cortex Pro
 
-生产级多 Agent 协作框架，提供 LangGraph 风格的工作流编排。
+Advanced multi-agent research orchestration for materials discovery.
 
-## 功能特性
+## SparksMatter Integration
 
-### Agent 角色
-- **ResearcherAgent** — 论文搜索、提取、索引
-- **GapAnalyzerAgent** — 研究空白检测
-- **CitationGraphAgent** — 引用网络分析
-- **VectorIndexerAgent** — 向量存储和检索
-- **ReportWriterAgent** — 合成与报告生成
-- **QaAgent** — 质量验证
+This crate implements a SparksMatter-style multi-agent workflow for autonomous materials research, featuring:
 
-### Crew 编排
-- 多 Agent 协作
-- 超时控制
-- 迭代限制
-- 结果聚合
+### Architecture
 
-### LangGraph 风格 Pipeline
-- 有向无环图 (DAG)
-- 节点和边定义
-- 拓扑排序执行
-- 循环检测
-- 条件分支
-
-### 状态机
-- 8 个研究阶段：Planning → Searching → Extracting → Analyzing → BuildingGraph → Indexing → Writing → Validating → Complete
-- 共享 ResearchState
-- 阶段转换追踪
-
-## 快速开始
-
-### 安装
-
-```toml
-[dependencies]
-rairos-cortex-pro = { path = "../rairos-cortex-pro" }
+```
+User Query
+    │
+    ▼
+┌─────────────────┐
+│     Manager     │ ◄─── Orchestrates workflow
+└────────┬────────┘
+         │
+    ┌────┴────┬────────────┐
+    ▼          ▼            ▼
+┌───────┐ ┌────────┐ ┌──────────┐
+│Scientist│ │Scientist│ │ Planner  │ ◄─── Hypothesis/Plan agents
+│   1   │ │   2    │ └────┬─────┘
+└───────┘ └────┬───┘      │
+               ▼            ▼
+         ┌──────────┐ ┌───────┐
+         │ Critic   │ │Critic │ ◄─── Review agents
+         └────┬─────┘ └───┬───┘
+              │            │
+               └─────┬────┘
+                     ▼
+               ┌──────────┐
+               │Assistant │ ◄─── Execution agent
+               └────┬─────┘
+                    │
+                    ▼
+             ┌──────────────┐
+             │ MaterialTools │ ◄─── MP, CGCNN, MatterGen
+             └──────────────┘
 ```
 
-### 简单示例
+### Workflow Phases
+
+1. **Ideation**: Generate and critique hypothesis
+   - `HypothesisAgent` → `HypothesisCriticAgent` → (iterate until approved)
+
+2. **Planning**: Create and review research plan
+   - `PlannerAgent` → `PlanCriticAgent` → (iterate until approved)
+
+3. **Execution**: Execute plan using material science tools
+   - `ExecutorAgent` → Tool execution
+
+4. **Reporting**: Generate structured LaTeX report
+   - `ReportWriterAgent`
+
+### Quick Start
 
 ```rust
-use rairos_cortex_pro::{ResearchCrew, CrewConfig};
-
-let crew = ResearchCrew::new(CrewConfig::default());
-
-let result = crew.run("machine learning for materials discovery").await?;
-
-println!("Report: {}", result.report);
-println!("Papers found: {}", result.papers.len());
-println!("Gaps identified: {}", result.gaps.len());
-```
-
-### 自定义 Agent
-
-```rust
-use rairos_cortex_pro::{
-    Agent, AgentConfig, AgentOutput, AgentRole,
-    AgentContext, ResearchState, Phase,
+use rairos_cortex_pro::sparks_crew::SparksCrew;
+use rairos_cortex_pro::sparks_agents::{
+    HypothesisAgent, HypothesisCriticAgent, PlannerAgent,
+    PlanCriticAgent, ExecutorAgent, ReportWriterAgent,
 };
-use async_trait::async_trait;
+use std::sync::Arc;
+use rairos_llm::YourLlmClient;
 
-struct MyAgent;
+// Create crew with LLM and agents
+let crew = SparksCrew::new(Arc::new(your_llm_client))
+    .add_agent(Box::new(HypothesisAgent::new("Scientist1")))
+    .add_agent(Box::new(HypothesisCriticAgent::new("Scientist2")))
+    .add_agent(Box::new(PlannerAgent::new("Planner")))
+    .add_agent(Box::new(PlanCriticAgent::new("PlanReviewer")))
+    .add_agent(Box::new(ExecutorAgent::new("Assistant")))
+    .add_agent(Box::new(ReportWriterAgent::new("ReportWriter")))
+    .with_max_iterations(3);
 
-#[async_trait]
-impl Agent for MyAgent {
-    fn role(&self) -> AgentRole {
-        AgentRole::Researcher
-    }
-
-    fn name(&self) -> &str {
-        "MyAgent"
-    }
-
-    async fn execute(&self, state: &ResearchState, ctx: &AgentContext) -> Result<AgentOutput> {
-        // 执行任务
-        Ok(AgentOutput::success("task completed"))
-    }
-}
-
-let crew = ResearchCrew::builder()
-    .add_agent(MyAgent)
-    .with_max_iterations(5)
-    .with_timeout(Duration::from_secs(300))
-    .build();
+// Run full workflow
+let result = crew.run("Find high-performance thermoelectric materials").await?;
 ```
 
-### Pipeline 工作流
+### Individual Phases
 
 ```rust
-use rairos_cortex_pro::{
-    Pipeline, PipelineNode, PipelineNodeType, PipelineEdge,
-};
+// Phase 1: Ideation
+let hypothesis = crew.run_ideation("Find thermoelectric materials").await?;
 
-let mut pipeline = Pipeline::new("research");
+// Phase 2: Planning
+let plan = crew.run_planning().await?;
 
-pipeline.add_node(PipelineNode::new("start", PipelineNodeType::Start));
-pipeline.add_node(PipelineNode::new("search", PipelineNodeType::Agent("researcher".to_string())));
-pipeline.add_node(PipelineNode::new("analyze", PipelineNodeType::Agent("analyzer".to_string())));
-pipeline.add_node(PipelineNode::new("write", PipelineNodeType::Agent("writer".to_string())));
-pipeline.add_node(PipelineNode::new("end", PipelineNodeType::End).terminal());
+// Phase 3: Execution (requires tools)
+let execution = crew.run_execution(&plan).await?;
 
-pipeline.add_edge(PipelineEdge::new("start", "search"));
-pipeline.add_edge(PipelineEdge::new("search", "analyze"));
-pipeline.add_edge(PipelineEdge::new("analyze", "write"));
-pipeline.add_edge(PipelineEdge::new("write", "end"));
-
-// 验证 DAG
-assert!(pipeline.validate().is_ok());
-
-// 获取执行顺序
-let order = pipeline.execution_order()?;
-assert_eq!(order, vec!["start", "search", "analyze", "write", "end"]);
+// Phase 4: Reporting
+let report = crew.run_reporting().await?;
 ```
 
-### 预设模板
+### Available Agents
+
+| Agent | Role | Description |
+|-------|------|-------------|
+| `HypothesisAgent` | `Hypothesis` | Generates novel research hypotheses |
+| `HypothesisCriticAgent` | `HypothesisCritic` | Reviews and approves/rejects hypotheses |
+| `PlannerAgent` | `Planner` | Creates detailed research plans (JSON output) |
+| `PlanCriticAgent` | `PlanCritic` | Reviews and approves/rejects plans |
+| `ExecutorAgent` | `Executor` | Executes tasks and tool calls |
+| `ReportWriterAgent` | `ReportWriter` | Generates LaTeX research reports |
+
+### Tool Integration
+
+When the `tools` feature is enabled, you can register material science tools:
 
 ```rust
-use rairos_cortex_pro::pipeline::templates;
+use rairos_tools::{MaterialsProjectTool, CgcnnRegressor, MatterGenGenerator};
 
-// 顺序研究流程
-let sequential = templates::sequential_research();
-// 6 个节点：start → search → extract → analyze → write → end
+// Add tools
+let crew = crew
+    .add_tool(Arc::new(MaterialsProjectTool::new("your-api-key")))
+    .add_tool(Arc::new(CgcnnRegressor::new("model-path")))
+    .add_tool(Arc::new(MatterGenGenerator::new()));
 
-// 并行研究流程
-let parallel = templates::parallel_research();
-// 10 个节点，支持并行搜索和分析
+// Tools are automatically used during execution phase
 ```
 
-## 架构
+### Features
 
-```
-                    ResearchCrew
-                        │
-    ┌───────────────────┼───────────────────┐
-    │                   │                   │
-    ▼                   ▼                   ▼
-ResearcherAgent   GapAnalyzerAgent   CitationGraphAgent
-    │                   │                   │
-    │                   │                   │
-    └───────────────────┼───────────────────┘
-                        │
-                        ▼
-               ResearchState
-    ┌───────────────────┼───────────────────┐
-    │                   │                   │
-  papers              gaps              outputs
-    │                   │                   │
-    └───────────────────┼───────────────────┘
-                        │
-                        ▼
-               VectorIndexerAgent
-                        │
-                        ▼
-                 ReportWriterAgent
-                        │
-                        ▼
-                     QaAgent
-                        │
-                        ▼
-                   CrewResult
-```
+- `default`: Basic functionality
+- `tools`: Enables material science tool integrations (Materials Project, CGCNN, MatterGen)
 
-## 核心 API
-
-### Agent Trait
-
-```rust
-#[async_trait]
-pub trait Agent: Send + Sync {
-    fn role(&self) -> AgentRole;
-    fn name(&self) -> &str;
-    async fn execute(&self, state: &ResearchState, ctx: &AgentContext) -> Result<AgentOutput>;
-}
-```
-
-### Phase 状态
-
-```rust
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Phase {
-    Planning,
-    Searching,
-    Extracting,
-    Analyzing,
-    BuildingGraph,
-    Indexing,
-    Writing,
-    Validating,
-    Complete,
-}
-```
-
-### CrewConfig
-
-```rust
-let config = CrewConfig::builder()
-    .name("research-crew")
-    .add_agent(ResearcherAgent)
-    .add_agent(GapAnalyzerAgent)
-    .add_agent(ReportWriterAgent)
-    .with_max_iterations(5)
-    .with_timeout(Duration::from_secs(600))
-    .build();
-```
-
-## 工具集成
-
-Agent 可以访问多种工具：
-
-```rust
-use rairos_cortex_pro::AgentContext;
-
-let ctx = AgentContext {
-    llm: arc_llm,
-    vector_store: Some(arc_vector_store),  // 可选
-    kg_client: Some(arc_kg_client),        // 可选
-    graphrag: Some(arc_graphrag),           // 可选
-};
-
-// 在 Agent 中使用
-let search_results = ctx.vector_store.search(&query, 10, None).await?;
-let kg_results = ctx.kg_client.query_cypher(&cypher).await?;
-```
-
-## 测试
+### Testing
 
 ```bash
+# Run all tests
 cargo test -p rairos-cortex-pro
+
+# Run with tools feature
+cargo test -p rairos-cortex-pro --features tools
+
+# Run integration tests
+cargo test -p rairos-cortex-pro --features tools --test sparks_integration_test
 ```
 
-## 依赖
+### Plan JSON Format
 
-- `async-trait` — 异步 trait
-- `tokio` — 异步运行时
-- `serde` / `serde_json` — 序列化
-- `chrono` — 时间处理
-- `rairos-vector` — 向量存储
-- `rairos-kg-neo4j` — 知识图谱
-- `rairos-graphrag` — GraphRAG
-- `rairos-llm` — LLM 生成
+The `PlannerAgent` outputs research plans in JSON format:
+
+```json
+{
+  "rationale": "Why this approach",
+  "steps": [
+    {
+      "step": 1,
+      "task": "Description of task",
+      "tool": "tool-name or empty",
+      "inputs": {"key": "value"},
+      "depends_on": []
+    }
+  ],
+  "other_tasks": ["Tasks beyond tool capabilities"]
+}
+```
+
+## Related Crates
+
+- `rairos-tools` - Material science tool implementations
+- `rairos-vector` - Vector storage and retrieval
+- `rairos-kg-neo4j` - Knowledge graph with Neo4j
+- `rairos-graphrag` - Graph-based RAG
+- `rairos-pdf-advanced` - PDF processing
