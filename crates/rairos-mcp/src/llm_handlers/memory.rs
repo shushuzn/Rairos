@@ -247,7 +247,8 @@ impl ToolHandler for ExperimentRecordHandler {
                 if v.is_string() { serde_json::from_str(v.as_str()?).ok() } else { Some(v.clone()) }
             });
 
-        match result.to_lowercase().as_str() {
+        let result_lower = result.to_lowercase();
+        match result_lower.as_str() {
             "rejected" | "failed" => {
                 tracker.fail(&exp.id, result);
                 let pool = rairos_research::gene_pool::GenePool::new();
@@ -262,7 +263,7 @@ impl ToolHandler for ExperimentRecordHandler {
                 tracker.complete(&exp.id, Some(results));
 
                 let pool = rairos_research::gene_pool::GenePool::new();
-                let score = match result.to_lowercase().as_str() {
+                let score = match result_lower.as_str() {
                     "validated" => 0.9,
                     "completed" => 0.8,
                     _ => 0.6,
@@ -274,7 +275,7 @@ impl ToolHandler for ExperimentRecordHandler {
         Ok(serde_json::json!({
             "experiment_id": exp.id,
             "hypothesis_id": hypothesis_id,
-            "status": if matches!(result.to_lowercase().as_str(), "rejected" | "failed") { "failed" } else { "completed" },
+            "status": if matches!(result_lower.as_str(), "rejected" | "failed") { "failed" } else { "completed" },
             "message": format!("Experiment recorded: {} -> {}. GenePool capsule updated.", name, result),
         }))
     }
@@ -368,8 +369,9 @@ impl ToolHandler for ReviewSimulateHandler {
         let simulator = rairos_review_simulator::ReviewSimulator::new();
         let review = if persona != "all" {
             let personas = rairos_review_simulator::default_personas();
+            let persona_lower = persona.to_lowercase();
             let selected = personas.into_iter().find(|p| {
-                p.name.to_lowercase().starts_with(&persona.to_lowercase())
+                p.name.to_lowercase().starts_with(&persona_lower)
             }).ok_or_else(|| format!("Unknown persona: {}", persona))?;
             simulator.review(&full_text, Some(&paper.title), Some(&selected), None, None, None).await
                 .map_err(|e| format!("Review error: {}", e))?

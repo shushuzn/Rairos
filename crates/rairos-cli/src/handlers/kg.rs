@@ -250,19 +250,18 @@ pub fn handle_kg_search(
     let graph = tokio::runtime::Handle::current()
         .block_on(async { KnowledgeGraph::load().await })?;
 
+    let kw_lower = keyword.map(|k| k.to_lowercase());
     let nodes: Vec<&KgNode> = graph
         .nodes()
         .values()
         .filter(|n| {
             let type_match = node_type.map(|t| n.node_type == t).unwrap_or(true);
-            let kw = keyword.unwrap_or("");
-            let keyword_match = if kw.is_empty() {
-                true
-            } else {
-                let kw_lower = kw.to_lowercase();
+            let keyword_match = if let Some(ref kw) = kw_lower {
                 let label_lower = n.label.to_lowercase();
                 let entity_id_lower = n.entity_id.to_lowercase();
-                label_lower.contains(&kw_lower) || entity_id_lower.contains(&kw_lower)
+                label_lower.contains(kw) || entity_id_lower.contains(kw)
+            } else {
+                true
             };
             type_match && keyword_match
         })

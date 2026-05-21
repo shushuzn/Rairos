@@ -123,10 +123,12 @@ pub fn handle_list(
     }
 
     if !tags.is_empty() {
+        let tags_lower: std::collections::HashSet<_> =
+            tags.iter().map(|t| t.to_lowercase()).collect();
         papers.retain(|p| {
             let paper_tags: std::collections::HashSet<_> =
                 p.categories.iter().map(|s| s.to_lowercase()).collect();
-            tags.iter().all(|t| paper_tags.contains(&t.to_lowercase()))
+            tags_lower.iter().all(|t| paper_tags.contains(t))
         });
     }
 

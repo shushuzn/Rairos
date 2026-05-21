@@ -1568,7 +1568,7 @@ impl AutonomousOrchestrator {
             .collect();
 
         let mut suggestions: Vec<(String, f64)> = topic_scores.into_iter()
-            .filter(|(topic, _)| !current_set.contains(&topic.to_lowercase()))
+            .filter(|(topic, _)| !current_set.contains(topic))
             .filter(|(_, score)| *score > 0.5)
             .collect();
         suggestions.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Less));

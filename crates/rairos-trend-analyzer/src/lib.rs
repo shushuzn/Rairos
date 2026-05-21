@@ -209,7 +209,8 @@ impl TrendAnalyzer {
 
                 let text = format!("{} {}", paper.title, paper.abstract_text).to_lowercase();
                 for kw in &self.tech_keywords {
-                    if text.contains(&(**kw).to_lowercase()) {
+                    let kw_lower = kw.to_lowercase();
+                    if text.contains(&kw_lower) {
                         *entry.keywords.entry((*kw).to_string()).or_insert(0) += 1;
                     }
                 }
@@ -241,7 +242,8 @@ impl TrendAnalyzer {
             if year_range.0 <= paper.year && paper.year <= year_range.1 {
                 let text = format!("{} {}", paper.title, paper.abstract_text).to_lowercase();
                 for kw in &self.tech_keywords {
-                    if text.contains(&(**kw).to_lowercase()) {
+                    let kw_lower = kw.to_lowercase();
+                    if text.contains(&kw_lower) {
                         keyword_yearly
                             .entry((*kw).to_string())
                             .or_default()

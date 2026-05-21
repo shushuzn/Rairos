@@ -1708,9 +1708,8 @@ impl GenePool {
                     .iter()
                     .map(|s| s.to_lowercase())
                     .collect();
-                keywords
-                    .iter()
-                    .any(|kw| kw_lower.contains(&kw.to_lowercase()))
+                let kw_parts: Vec<String> = keywords.iter().map(|k| k.to_lowercase()).collect();
+                kw_parts.iter().any(|kw| kw_lower.contains(kw))
             })
             .collect()
     }
@@ -2168,9 +2167,8 @@ pub const SMART_FOLLOWUP_BASE: &[&str] = &[
 /// Check if a text contains any AI research keywords.
 pub fn contains_research_keyword(text: &str) -> bool {
     let text_lower = text.to_lowercase();
-    AI_RESEARCH_KEYWORDS
-        .iter()
-        .any(|kw| text_lower.contains(&kw.to_lowercase()))
+    let keywords_lower: Vec<String> = AI_RESEARCH_KEYWORDS.iter().map(|k| k.to_lowercase()).collect();
+    keywords_lower.iter().any(|kw| text_lower.contains(kw))
 }
 
 // ============================================================================

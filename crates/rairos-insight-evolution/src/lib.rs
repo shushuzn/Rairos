@@ -478,21 +478,21 @@ impl EvolutionEngine {
         capsule: &CapsuleGene,
         topic: &str,
     ) -> Option<CapsuleCandidate> {
-        let topic_words: Vec<String> = topic
-            .split_whitespace()
-            .filter(|w| w.len() > 3)
-            .map(|w| w.to_string())
-            .collect();
-
         let existing: std::collections::HashSet<_> = capsule
             .trigger_keywords
             .iter()
             .map(|k| k.to_lowercase())
             .collect();
 
+        let topic_words: Vec<String> = topic
+            .split_whitespace()
+            .filter(|w| w.len() > 3)
+            .map(|w| w.to_lowercase())
+            .collect();
+
         let new_kws: Vec<_> = topic_words
             .iter()
-            .filter(|w| !existing.contains(&w.to_lowercase()))
+            .filter(|w| !existing.contains(*w))
             .cloned()
             .collect();
 
@@ -770,18 +770,19 @@ impl EvolutionEngine {
                 && !c.trigger_keywords.is_empty()
                 && !candidate.trigger_keywords.is_empty()
             {
-                let overlap = c
+                let c_keywords_lower: std::collections::HashSet<_> = c
                     .trigger_keywords
                     .iter()
                     .map(|k| k.to_lowercase())
-                    .collect::<std::collections::HashSet<_>>()
-                    .intersection(
-                        &candidate
-                            .trigger_keywords
-                            .iter()
-                            .map(|k| k.to_lowercase())
-                            .collect::<std::collections::HashSet<_>>(),
-                    )
+                    .collect();
+                let candidate_keywords_lower: std::collections::HashSet<_> = candidate
+                    .trigger_keywords
+                    .iter()
+                    .map(|k| k.to_lowercase())
+                    .collect();
+
+                let overlap = c_keywords_lower
+                    .intersection(&candidate_keywords_lower)
                     .count();
 
                 let union = c

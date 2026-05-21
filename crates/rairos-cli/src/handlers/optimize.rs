@@ -782,8 +782,9 @@ pub fn handle_gap_code_link(db: &Database, gap_id: Option<String>) -> Result<()>
 
                 let display_lower = display.to_lowercase();
                 let linked: Vec<_> = code_genes.iter().filter(|c| {
+                    let kw_lowers: Vec<String> = c.trigger_keywords.iter().map(|k| k.to_lowercase()).collect();
                     c.trigger_topic.to_lowercase().contains(&display_lower) ||
-                    c.trigger_keywords.iter().any(|k| display_lower.contains(&k.to_lowercase()))
+                    kw_lowers.iter().any(|k| display_lower.contains(k))
                 }).collect();
 
                 if linked.is_empty() {
@@ -817,8 +818,9 @@ pub fn handle_gap_code_link(db: &Database, gap_id: Option<String>) -> Result<()>
             let linked: Vec<_> = code_genes.iter().filter(|c| {
                 let gap_search = if gap.topic.is_empty() { &gap.description } else { &gap.topic };
                 let gap_search_lower = gap_search.to_lowercase();
+                let kw_lowers: Vec<String> = c.trigger_keywords.iter().map(|k| k.to_lowercase()).collect();
                 c.trigger_topic.to_lowercase().contains(&gap_search_lower) ||
-                c.trigger_keywords.iter().any(|k| gap_search_lower.contains(&k.to_lowercase()))
+                kw_lowers.iter().any(|k| gap_search_lower.contains(k))
             }).collect();
 
             if !linked.is_empty() {
@@ -849,8 +851,9 @@ pub fn handle_workflow_stats(db: &Database) -> Result<()> {
         code_genes.iter().any(|c| {
             let gap_search = if g.topic.is_empty() { &g.description } else { &g.topic };
             let gap_search_lower = gap_search.to_lowercase();
+            let kw_lowers: Vec<String> = c.trigger_keywords.iter().map(|k| k.to_lowercase()).collect();
             c.trigger_topic.to_lowercase().contains(&gap_search_lower) ||
-            c.trigger_keywords.iter().any(|k| gap_search_lower.contains(&k.to_lowercase()))
+            kw_lowers.iter().any(|k| gap_search_lower.contains(k))
         })
     }).collect();
 
@@ -914,8 +917,9 @@ pub fn handle_optimize_pipeline(
     let gaps = db.list_gaps(10, 0)?;
     let topic_lower = topic.to_lowercase();
     let existing_gaps: Vec<_> = gaps.iter().filter(|g| {
-        g.topic.to_lowercase().contains(&topic_lower) ||
-        g.description.to_lowercase().contains(&topic_lower)
+        let g_topic_lower = g.topic.to_lowercase();
+        let g_desc_lower = g.description.to_lowercase();
+        g_topic_lower.contains(&topic_lower) || g_desc_lower.contains(&topic_lower)
     }).collect();
 
     if !existing_gaps.is_empty() {

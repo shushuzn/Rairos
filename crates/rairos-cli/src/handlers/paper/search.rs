@@ -124,7 +124,8 @@ pub fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()>
         .into_iter()
         .filter(|p| p.id != paper.id)
         .map(|p| {
-            let sim = title_similarity(&target_title, &p.title.to_lowercase());
+            let p_title_lower = p.title.to_lowercase();
+            let sim = title_similarity(&target_title, &p_title_lower);
             (p.id.clone(), sim, p)
         })
         .filter(|(_id, sim, _)| *sim > 0.3 && *sim < 1.0)
@@ -287,12 +288,14 @@ pub fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<(
             }
             if papers.len() > 1 {
                 println!("\nAuthor Overlap:");
+                let lowercase_authors: Vec<Vec<String>> = papers
+                    .iter()
+                    .map(|p| p.authors.iter().map(|a| a.to_lowercase()).collect())
+                    .collect();
                 for i in 0..papers.len() {
                     for j in (i + 1)..papers.len() {
-                        let set_i: HashSet<_> =
-                            papers[i].authors.iter().map(|a| a.to_lowercase()).collect();
-                        let set_j: HashSet<_> =
-                            papers[j].authors.iter().map(|a| a.to_lowercase()).collect();
+                        let set_i: HashSet<_> = lowercase_authors[i].iter().collect();
+                        let set_j: HashSet<_> = lowercase_authors[j].iter().collect();
                         let intersection: HashSet<_> = set_i.intersection(&set_j).collect();
                         let union: HashSet<_> = set_i.union(&set_j).collect();
                         let jaccard = if union.is_empty() {

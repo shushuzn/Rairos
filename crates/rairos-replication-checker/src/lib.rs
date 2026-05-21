@@ -261,9 +261,8 @@ impl ReplicationChecker {
                 let ctx = &clean[start..end];
 
                 let ctx_lower = ctx.to_lowercase();
-                let confidence = if CONTEXT_KEYWORDS_GITHUB
-                    .iter()
-                    .any(|kw| ctx_lower.contains(&kw.to_lowercase()))
+                let kw_github_lowers: Vec<String> = CONTEXT_KEYWORDS_GITHUB.iter().map(|kw| kw.to_lowercase()).collect();
+                let confidence = if kw_github_lowers.iter().any(|kw_lower| ctx_lower.contains(kw_lower))
                 {
                     1.0
                 } else {
@@ -308,9 +307,8 @@ impl ReplicationChecker {
                 let ctx = &clean[start..end];
 
                 let ctx_lower = ctx.to_lowercase();
-                let confidence = if CONTEXT_KEYWORDS_GITLAB
-                    .iter()
-                    .any(|kw| ctx_lower.contains(&kw.to_lowercase()))
+                let kw_gitlab_lowers: Vec<String> = CONTEXT_KEYWORDS_GITLAB.iter().map(|kw| kw.to_lowercase()).collect();
+                let confidence = if kw_gitlab_lowers.iter().any(|kw_lower| ctx_lower.contains(kw_lower))
                 {
                     0.8
                 } else {
