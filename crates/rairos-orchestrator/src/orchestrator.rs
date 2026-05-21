@@ -1345,6 +1345,7 @@ impl AutonomousOrchestrator {
         self.bayesian_optimizer.lock().unwrap().observe(&[threshold], alert_rate);
     }
 
+    #[allow(dead_code)]
     fn send_webhook(&self, alert: &ResearchAlert) {
         if !self.webhook_enabled {
             return;
@@ -1356,6 +1357,7 @@ impl AutonomousOrchestrator {
         );
     }
 
+    #[allow(dead_code)]
     async fn filter_new_gaps(
         &self,
         _topic: &str,
@@ -1394,6 +1396,7 @@ impl AutonomousOrchestrator {
         Ok((filtered, stats))
     }
 
+    #[allow(dead_code)]
     async fn record_gaps(&self, gaps: &[ResearchGap]) -> Result<()> {
         self.init_components().await?;
         let db_guard = self.db.read().await;
