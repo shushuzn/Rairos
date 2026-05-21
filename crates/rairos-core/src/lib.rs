@@ -8,6 +8,7 @@ use parking_lot::Mutex;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use rustc_hash::FxHashSet;
 use std::path::Path;
 use std::sync::{Arc, LazyLock};
 use thiserror::Error;
@@ -1698,7 +1699,7 @@ impl Database {
             placeholders.join(",")
         );
         let mut stmt = conn.prepare(&sql)?;
-        let existing: std::collections::HashSet<String> = stmt
+        let existing: FxHashSet<String> = stmt
             .query_map(rusqlite::params_from_iter(&paper_ids), |row| {
                 row.get::<_, String>(0)
             })?
@@ -2615,8 +2616,8 @@ pub fn jaccard_similarity(a: &[String], b: &[String]) -> f64 {
     if a.is_empty() || b.is_empty() {
         return 0.0;
     }
-    let set_a: std::collections::HashSet<&str> = a.iter().map(|s| s.as_str()).collect();
-    let set_b: std::collections::HashSet<&str> = b.iter().map(|s| s.as_str()).collect();
+    let set_a: FxHashSet<&str> = a.iter().map(|s| s.as_str()).collect();
+    let set_b: FxHashSet<&str> = b.iter().map(|s| s.as_str()).collect();
     let intersection = set_a.intersection(&set_b).count();
     let union = set_a.union(&set_b).count();
     intersection as f64 / union as f64
