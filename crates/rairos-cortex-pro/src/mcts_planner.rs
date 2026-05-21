@@ -1,0 +1,484 @@
+//! ToolTree-style MCTS planning for intelligent tool selection.
+//!
+//! Based on arXiv:2603.12740 - "ToolTree: Monte Carlo Tree Search for Tool Planning"
+//!
+//! ## Architecture
+//!
+//! ```text
+//! Query → MCTS Planner
+//!            │
+//!            ├── Selection (UCB1)
+//!            ├── Expansion (generate tool candidates)
+//!            ├── Simulation (evaluate tool sequences)
+//!            └── Backpropagation (update Q-values)
+//!            │
+//!            ▼
+//!         ToolTree
+//!       /        \
+//!      ▼          ▼
+//!   Tool A      Tool B
+//!   /    \        |
+//!  ▼     ▼        ▼
+//! leaf  leaf   leaf
+//! ```
+
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
+use std::sync::RwLock;
+
+/// Maximum depth for MCTS search
+const MAX_DEPTH: usize = 5;
+
+/// Maximum iterations per query
+const MAX_ITERATIONS: usize = 100;
+
+/// UCB1 exploration constant
+const UCB_CONSTANT: f64 = 1.4142135623730951; // sqrt(2)
+
+/// A tool that can be used in the research pipeline
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Tool {
+    pub name: String,
+    pub description: String,
+    pub category: ToolCategory,
+    pub input_schema: HashMap<String, serde_json::Value>,
+    pub estimated_cost: f32, // 0.0 to 1.0
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+pub enum ToolCategory {
+    Literature,
+    Simulation,
+    Database,
+    Analysis,
+    Visualization,
+    Validation,
+}
+
+/// A node in the MCTS search tree
+#[derive(Debug, Clone)]
+pub struct MctsNode {
+    /// Tool selected at this node (None for root)
+    pub tool: Option<Tool>,
+    /// Children nodes
+    pub children: Vec<MctsNode>,
+    /// Visit count
+    pub visit_count: u32,
+    /// Total Q-value (cumulative reward)
+    pub q_value: f64,
+    /// Parent node index (None for root)
+    pub parent: Option<usize>,
+    /// Depth in tree
+    pub depth: usize,
+    /// Whether this node is fully expanded
+    pub is_expanded: bool,
+}
+
+impl MctsNode {
+    /// Create a new root node
+    pub fn root() -> Self {
+        Self {
+            tool: None,
+            children: Vec::new(),
+            visit_count: 0,
+            q_value: 0.0,
+            parent: None,
+            depth: 0,
+            is_expanded: false,
+        }
+    }
+
+    /// Create a child node
+    pub fn child(parent_idx: usize, tool: Tool, depth: usize) -> Self {
+        Self {
+            tool: Some(tool),
+            children: Vec::new(),
+            visit_count: 0,
+            q_value: 0.0,
+            parent: Some(parent_idx),
+            depth,
+            is_expanded: false,
+        }
+    }
+
+    /// Calculate UCB1 score
+    pub fn ucb1(&self, parent_visits: u32) -> f64 {
+        if self.visit_count == 0 {
+            return f64::MAX;
+        }
+        let exploitation = self.q_value / self.visit_count as f64;
+        let exploration = UCB_CONSTANT * (parent_visits as f64 / self.visit_count as f64).sqrt();
+        exploitation + exploration
+    }
+
+    /// Check if this node is fully expanded (all tools tried)
+    pub fn is_fully_expanded(&self, available_tools: &[Tool]) -> bool {
+        self.children.len() >= available_tools.len()
+    }
+
+    /// Check if this is a leaf node
+    pub fn is_leaf(&self) -> bool {
+        self.children.is_empty()
+    }
+}
+
+/// Tool selection result from MCTS planning
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ToolSelection {
+    pub tool_name: String,
+    pub confidence: f64,
+    pub reasoning: String,
+    pub alternative_tools: Vec<(String, f64)>, // name, confidence
+}
+
+/// Monte Carlo Tree Search planner for tool selection
+pub struct MctsPlanner {
+    /// Available tools
+    tools: RwLock<Vec<Tool>>,
+    /// Search tree
+    tree: RwLock<Vec<MctsNode>>,
+    /// Tool effectiveness history
+    tool_effectiveness: RwLock<HashMap<String, f32>>,
+}
+
+impl Default for MctsPlanner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl MctsPlanner {
+    /// Create a new MCTS planner
+    pub fn new() -> Self {
+        Self {
+            tools: RwLock::new(Vec::new()),
+            tree: RwLock::new(vec![MctsNode::root()]),
+            tool_effectiveness: RwLock::new(HashMap::new()),
+        }
+    }
+
+    /// Register a tool with the planner
+    pub fn register_tool(&self, tool: Tool) {
+        self.tools.write().unwrap().push(tool);
+    }
+
+    /// Register multiple tools
+    pub fn register_tools(&self, tools: Vec<Tool>) {
+        let mut tools_lock = self.tools.write().unwrap();
+        tools_lock.extend(tools);
+    }
+
+    /// Update tool effectiveness based on execution result
+    pub fn update_effectiveness(&self, tool_name: &str, effectiveness: f32) {
+        let mut eff = self.tool_effectiveness.write().unwrap();
+        // EMA-style update
+        let prev = eff.get(tool_name).copied().unwrap_or(0.5);
+        let new = 0.7 * effectiveness + 0.3 * prev;
+        eff.insert(tool_name.to_string(), new);
+    }
+
+    /// Select the best tool using MCTS
+    pub fn select_tools(&self, query: &str, context: &str) -> ToolSelection {
+        let tools = self.tools.read().unwrap().clone();
+        if tools.is_empty() {
+            return ToolSelection {
+                tool_name: String::new(),
+                confidence: 0.0,
+                reasoning: "No tools available".to_string(),
+                alternative_tools: vec![],
+            };
+        }
+
+        // Run MCTS iterations
+        for _ in 0..MAX_ITERATIONS {
+            self.mcts_iteration(&tools, query, context);
+        }
+
+        // Get best tool from root's children
+        let tree = self.tree.read().unwrap();
+        let root = &tree[0];
+        let mut child_scores: Vec<_> = root.children.iter().enumerate().collect();
+        child_scores.sort_by(|a, b| {
+            let score_a = if a.1.visit_count > 0 {
+                a.1.q_value / a.1.visit_count as f64
+            } else {
+                0.0
+            };
+            let score_b = if b.1.visit_count > 0 {
+                b.1.q_value / b.1.visit_count as f64
+            } else {
+                0.0
+            };
+            score_b.partial_cmp(&score_a).unwrap()
+        });
+
+        if child_scores.is_empty() {
+            return ToolSelection {
+                tool_name: tools[0].name.clone(),
+                confidence: 0.5,
+                reasoning: "Fallback to first available tool".to_string(),
+                alternative_tools: vec![],
+            };
+        }
+
+        let best_idx = child_scores[0].0;
+        let best_child = &child_scores[0].1;
+        let best_tool = best_child.tool.as_ref().unwrap();
+
+        // Calculate confidence based on visit count
+        let total_visits: u32 = root.children.iter().map(|c| c.visit_count).sum();
+        let confidence = if total_visits > 0 {
+            best_child.visit_count as f64 / total_visits as f64
+        } else {
+            0.5
+        };
+
+        // Build alternatives
+        let alternative_tools: Vec<_> = child_scores
+            .iter()
+            .skip(1)
+            .take(3)
+            .map(|(_, c)| {
+                let t = c.tool.as_ref().unwrap();
+                let score = if c.visit_count > 0 {
+                    c.q_value / c.visit_count as f64
+                } else {
+                    0.0
+                };
+                (t.name.clone(), score)
+            })
+            .collect();
+
+        // Generate reasoning
+        let effectiveness = self.tool_effectiveness.read().unwrap();
+        let eff_score = effectiveness.get(&best_tool.name).copied().unwrap_or(0.5);
+
+        let reasoning = format!(
+            "Selected {} (category: {:?}) based on {} MCTS iterations. Historical effectiveness: {:.2}",
+            best_tool.name,
+            best_tool.category,
+            total_visits,
+            eff_score
+        );
+
+        ToolSelection {
+            tool_name: best_tool.name.clone(),
+            confidence,
+            reasoning,
+            alternative_tools,
+        }
+    }
+
+    /// Single MCTS iteration: Selection → Expansion → Simulation → Backpropagation
+    fn mcts_iteration(&self, tools: &[Tool], query: &str, context: &str) {
+        // Selection: find best leaf using UCB1
+        let mut node_idx = 0;
+        let tree_len = self.tree.read().unwrap().len();
+        let mut path = vec![node_idx];
+
+        // Selection phase - traverse until we find unexpanded node or leaf
+        loop {
+            let tree = self.tree.read().unwrap();
+            let node = &tree[node_idx];
+
+            // If leaf or not fully expanded, stop
+            if node.is_leaf() || !node.is_fully_expanded(tools) {
+                break;
+            }
+
+            // Find best child by UCB1
+            let visit_count = node.visit_count;
+            let best_child_idx = node
+                .children
+                .iter()
+                .enumerate()
+                .map(|(i, c)| (i, c.ucb1(visit_count)))
+                .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                .map(|(i, _)| node.children[i].tool.as_ref().unwrap().name.clone());
+
+            // For simplicity, just pick the first unexplored
+            if let Some(best) = best_child_idx {
+                if let Some(idx) = node.children.iter().position(|c| {
+                    c.tool.as_ref().map(|t| &t.name == &best).unwrap_or(false)
+                }) {
+                    node_idx = idx;
+                    path.push(node_idx);
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+
+            if tree[node_idx].depth >= MAX_DEPTH {
+                break;
+            }
+        }
+
+        // Expansion: add new child if not at max depth
+        let tree = self.tree.read().unwrap();
+        let node = &tree[node_idx];
+
+        if node.depth < MAX_DEPTH && !node.is_fully_expanded(tools) {
+            // Find unexplored tools
+            let explored_tools: HashSet<_> = node.children.iter()
+                .filter_map(|c| c.tool.as_ref())
+                .map(|t| t.name.clone())
+                .collect();
+
+            let unexplored: Vec<_> = tools
+                .iter()
+                .filter(|t| !explored_tools.contains(&t.name))
+                .collect();
+
+            if !unexplored.is_empty() {
+                // Add one new child
+                let new_tool = unexplored[0].clone();
+
+                let mut tree = self.tree.write().unwrap();
+                let current_depth = tree[node_idx].depth;
+                let new_node = MctsNode::child(node_idx, new_tool.clone(), current_depth + 1);
+                let new_idx = tree.len();
+                tree.push(new_node);
+                tree[node_idx].children.push(MctsNode::child(node_idx, new_tool, current_depth + 1));
+                tree[node_idx].is_expanded = true;
+                path.push(new_idx);
+            }
+        }
+
+        // Simulation: evaluate the selected node (simplified)
+        let reward = self.simulate_reward(query, context, &path);
+
+        // Backpropagation: update Q-values
+        {
+            let mut tree = self.tree.write().unwrap();
+            for idx in &path {
+                tree[*idx].visit_count += 1;
+                tree[*idx].q_value += reward;
+            }
+        }
+    }
+
+    /// Simulate reward for a tool sequence
+    fn simulate_reward(&self, query: &str, context: &str, path: &[usize]) -> f64 {
+        let tree = self.tree.read().unwrap();
+        let effectiveness = self.tool_effectiveness.read().unwrap();
+
+        let mut total_reward = 0.0;
+        let mut prev_category: Option<ToolCategory> = None;
+
+        for &idx in path {
+            let node = &tree[idx];
+            if let Some(ref tool) = node.tool {
+                // Base effectiveness from history
+                let hist_eff = effectiveness.get(&tool.name).copied().unwrap_or(0.5);
+
+                // Category diversity bonus (avoid same category twice)
+                let diversity_bonus = if prev_category.as_ref() == Some(&tool.category) {
+                    -0.1
+                } else {
+                    0.1
+                };
+
+                // Query-tool relevance (simple keyword matching)
+                let query_relevance = if tool.description.to_lowercase().contains(&query.to_lowercase()) {
+                    0.2
+                } else {
+                    0.0
+                };
+
+                let reward = (hist_eff as f64) + diversity_bonus + query_relevance;
+                total_reward += reward;
+                prev_category = Some(tool.category.clone());
+            }
+        }
+
+        total_reward / path.len() as f64
+    }
+
+    /// Get the full search tree for visualization
+    pub fn get_tree(&self) -> Vec<MctsNode> {
+        self.tree.read().unwrap().clone()
+    }
+
+    /// Clear the search tree (but keep tools)
+    pub fn reset(&self) {
+        let mut tree = self.tree.write().unwrap();
+        tree.clear();
+        tree.push(MctsNode::root());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sample_tools() -> Vec<Tool> {
+        vec![
+            Tool {
+                name: "materials_project".to_string(),
+                description: "Query materials database for thermoelectric properties".to_string(),
+                category: ToolCategory::Database,
+                input_schema: HashMap::new(),
+                estimated_cost: 0.2,
+            },
+            Tool {
+                name: "cgcnn_predict".to_string(),
+                description: "Use graph neural network to predict crystal properties".to_string(),
+                category: ToolCategory::Simulation,
+                input_schema: HashMap::new(),
+                estimated_cost: 0.5,
+            },
+            Tool {
+                name: "文献检索".to_string(),
+                description: "Search literature for related work".to_string(),
+                category: ToolCategory::Literature,
+                input_schema: HashMap::new(),
+                estimated_cost: 0.3,
+            },
+        ]
+    }
+
+    #[test]
+    fn test_mcts_planner_creation() {
+        let planner = MctsPlanner::new();
+        assert!(planner.tools.read().unwrap().is_empty());
+    }
+
+    #[test]
+    fn test_register_tools() {
+        let planner = MctsPlanner::new();
+        planner.register_tools(sample_tools());
+        assert_eq!(planner.tools.read().unwrap().len(), 3);
+    }
+
+    #[test]
+    fn test_select_tools() {
+        let planner = MctsPlanner::new();
+        planner.register_tools(sample_tools());
+
+        let selection = planner.select_tools("thermoelectric", "Bi2Te3 doping");
+        assert!(!selection.tool_name.is_empty());
+        assert!(selection.confidence >= 0.0 && selection.confidence <= 1.0);
+    }
+
+    #[test]
+    fn test_update_effectiveness() {
+        let planner = MctsPlanner::new();
+        planner.register_tools(sample_tools());
+
+        planner.update_effectiveness("materials_project", 0.8);
+        let eff = planner.tool_effectiveness.read().unwrap();
+        assert!(*eff.get("materials_project").unwrap() > 0.7);
+    }
+
+    #[test]
+    fn test_reset() {
+        let planner = MctsPlanner::new();
+        planner.register_tools(sample_tools());
+        planner.select_tools("test", "context");
+
+        planner.reset();
+        assert_eq!(planner.tree.read().unwrap().len(), 1); // Only root
+    }
+}

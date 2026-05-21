@@ -22,7 +22,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::fmt::Debug;
 use std::sync::RwLock;
 use chrono::{DateTime, Utc};
@@ -495,5 +495,416 @@ mod tests {
         // Retrieve with no match
         let empty = bank.retrieve_relevant_experiments("battery");
         assert!(empty.is_empty());
+    }
+}
+
+// =============================================================================
+// DeepAgent-style Memory Tiers (arXiv:2510.21618)
+// =============================================================================
+
+/// Memory tier type (inspired by DeepAgent's episodic/working/tool memories)
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum MemoryTier {
+    /// Short-term working memory - current context, active tasks
+    Working,
+    /// Episodic memory - past experiences, completed tasks
+    Episodic,
+    /// Tool memory - tool usage patterns, effectiveness scores
+    Tool,
+    /// Long-term semantic memory - domain knowledge, learned facts
+    Semantic,
+}
+
+/// Entry for tiered memory
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TieredMemoryEntry {
+    /// Unique entry ID
+    pub id: String,
+    /// Memory tier
+    pub tier: MemoryTier,
+    /// Content
+    pub content: String,
+    /// Importance score (0.0 - 1.0)
+    pub importance: f32,
+    /// Last access time
+    pub last_accessed: DateTime<Utc>,
+    /// Access count
+    pub access_count: u32,
+    /// Associated tool (if tool memory)
+    pub tool_name: Option<String>,
+    /// TTL in seconds (0 = no expiry)
+    pub ttl_seconds: u64,
+}
+
+impl TieredMemoryEntry {
+    /// Check if entry has expired
+    pub fn is_expired(&self) -> bool {
+        if self.ttl_seconds == 0 {
+            return false;
+        }
+        let age = Utc::now() - self.last_accessed;
+        age.num_seconds() as u64 > self.ttl_seconds
+    }
+}
+
+/// DeepAgent-style tiered memory system
+///
+/// Based on arXiv:2510.21618 - "DeepAgent: A General Reasoning Agent with Scalable Toolsets"
+/// which proposes autonomous memory folding with:
+/// - Episodic memory: past experiences
+/// - Working memory: current context
+/// - Tool memory: tool usage patterns
+pub struct TieredMemory {
+    /// Working memory (short-term)
+    working: RwLock<VecDeque<TieredMemoryEntry>>,
+    /// Episodic memory (past experiences)
+    episodic: RwLock<VecDeque<TieredMemoryEntry>>,
+    /// Tool memory (tool usage patterns)
+    tool: RwLock<HashMap<String, ToolMemoryEntry>>,
+    /// Semantic memory (domain knowledge)
+    semantic: RwLock<HashMap<String, String>>,
+    /// Maximum entries per tier
+    max_working: usize,
+    max_episodic: usize,
+}
+
+/// Tool-specific memory for tracking effectiveness
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ToolMemoryEntry {
+    /// Tool name
+    pub tool_name: String,
+    /// Total usage count
+    pub usage_count: u32,
+    /// Successful usage count
+    pub success_count: u32,
+    /// Average execution time (ms)
+    pub avg_exec_time_ms: f64,
+    /// Last used timestamp
+    pub last_used: DateTime<Utc>,
+    /// Success rate
+    pub success_rate: f32,
+    /// Average reward from tool use
+    pub avg_reward: f32,
+}
+
+impl ToolMemoryEntry {
+    pub fn new(tool_name: &str) -> Self {
+        Self {
+            tool_name: tool_name.to_string(),
+            usage_count: 0,
+            success_count: 0,
+            avg_exec_time_ms: 0.0,
+            last_used: Utc::now(),
+            success_rate: 0.0,
+            avg_reward: 0.0,
+        }
+    }
+
+    /// Record a tool usage
+    pub fn record_usage(&mut self, success: bool, exec_time_ms: f64, reward: f32) {
+        self.usage_count += 1;
+        if success {
+            self.success_count += 1;
+        }
+        // Update running average
+        self.avg_exec_time_ms = (self.avg_exec_time_ms * (self.usage_count - 1) as f64 + exec_time_ms)
+            / self.usage_count as f64;
+        self.avg_reward = (self.avg_reward * (self.usage_count - 1) as f32 + reward) / self.usage_count as f32;
+        self.success_rate = self.success_count as f32 / self.usage_count as f32;
+        self.last_used = Utc::now();
+    }
+}
+
+impl Default for TieredMemory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl TieredMemory {
+    /// Create a new tiered memory system
+    pub fn new() -> Self {
+        Self {
+            working: RwLock::new(VecDeque::with_capacity(100)),
+            episodic: RwLock::new(VecDeque::with_capacity(500)),
+            tool: RwLock::new(HashMap::new()),
+            semantic: RwLock::new(HashMap::new()),
+            max_working: 50,
+            max_episodic: 200,
+        }
+    }
+
+    /// Add entry to working memory
+    pub fn add_working(&self, content: &str, importance: f32) {
+        let entry = TieredMemoryEntry {
+            id: uuid_simple(),
+            tier: MemoryTier::Working,
+            content: content.to_string(),
+            importance,
+            last_accessed: Utc::now(),
+            access_count: 1,
+            tool_name: None,
+            ttl_seconds: 300, // 5 minutes default
+        };
+
+        let mut working = self.working.write().unwrap();
+        working.push_front(entry);
+        while working.len() > self.max_working {
+            working.pop_back();
+        }
+    }
+
+    /// Add entry to episodic memory
+    pub fn add_episodic(&self, content: &str, importance: f32) {
+        let entry = TieredMemoryEntry {
+            id: uuid_simple(),
+            tier: MemoryTier::Episodic,
+            content: content.to_string(),
+            importance,
+            last_accessed: Utc::now(),
+            access_count: 1,
+            tool_name: None,
+            ttl_seconds: 0, // No expiry
+        };
+
+        let mut episodic = self.episodic.write().unwrap();
+        episodic.push_front(entry);
+        while episodic.len() > self.max_episodic {
+            episodic.pop_back();
+        }
+    }
+
+    /// Record tool usage
+    pub fn record_tool_usage(&self, tool_name: &str, success: bool, exec_time_ms: f64, reward: f32) {
+        let mut tool_mem = self.tool.write().unwrap();
+        let entry = tool_mem.entry(tool_name.to_string()).or_insert_with(|| ToolMemoryEntry::new(tool_name));
+        entry.record_usage(success, exec_time_ms, reward);
+    }
+
+    /// Store semantic knowledge
+    pub fn store_knowledge(&self, key: &str, value: &str) {
+        let mut semantic = self.semantic.write().unwrap();
+        semantic.insert(key.to_string(), value.to_string());
+    }
+
+    /// Retrieve knowledge
+    pub fn retrieve_knowledge(&self, key: &str) -> Option<String> {
+        let semantic = self.semantic.read().unwrap();
+        semantic.get(key).cloned()
+    }
+
+    /// Get working memory entries
+    pub fn get_working(&self) -> Vec<TieredMemoryEntry> {
+        let working = self.working.read().unwrap();
+        working.iter().filter(|e| !e.is_expired()).cloned().collect()
+    }
+
+    /// Get episodic memory (recent experiences)
+    pub fn get_episodic(&self, limit: usize) -> Vec<TieredMemoryEntry> {
+        let episodic = self.episodic.read().unwrap();
+        episodic.iter().take(limit).cloned().collect()
+    }
+
+    /// Get tool memory
+    pub fn get_tool_memory(&self, tool_name: &str) -> Option<ToolMemoryEntry> {
+        let tool_mem = self.tool.read().unwrap();
+        tool_mem.get(tool_name).cloned()
+    }
+
+    /// Get all tool memories sorted by success rate
+    pub fn get_effective_tools(&self, limit: usize) -> Vec<(String, f32)> {
+        let tool_mem = self.tool.read().unwrap();
+        let mut tools: Vec<_> = tool_mem
+            .iter()
+            .map(|(name, entry)| (name.clone(), entry.success_rate))
+            .collect();
+        tools.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+        tools.into_iter().take(limit).collect()
+    }
+
+    /// Consolidate working memory to episodic (memory folding)
+    pub fn consolidate(&self) {
+        let working = {
+            let w = self.working.read().unwrap();
+            w.iter().filter(|e| e.importance > 0.5).cloned().collect::<Vec<_>>()
+        };
+
+        if !working.is_empty() {
+            let mut episodic = self.episodic.write().unwrap();
+            for entry in working {
+                let mut e = entry;
+                e.tier = MemoryTier::Episodic;
+                e.ttl_seconds = 0;
+                episodic.push_front(e);
+            }
+            while episodic.len() > self.max_episodic {
+                episodic.pop_back();
+            }
+        }
+
+        // Clear expired working memory
+        {
+            let mut working = self.working.write().unwrap();
+            working.retain(|e| !e.is_expired());
+        }
+    }
+
+    /// Access a memory entry (updates last_accessed)
+    pub fn access(&self, entry_id: &str) -> Option<TieredMemoryEntry> {
+        // Check working memory
+        {
+            let mut working = self.working.write().unwrap();
+            if let Some(entry) = working.iter_mut().find(|e| e.id == entry_id) {
+                entry.access_count += 1;
+                entry.last_accessed = Utc::now();
+                return Some(entry.clone());
+            }
+        }
+
+        // Check episodic memory
+        {
+            let mut episodic = self.episodic.write().unwrap();
+            if let Some(entry) = episodic.iter_mut().find(|e| e.id == entry_id) {
+                entry.access_count += 1;
+                entry.last_accessed = Utc::now();
+                return Some(entry.clone());
+            }
+        }
+
+        None
+    }
+
+    /// Get memory statistics
+    pub fn tiered_stats(&self) -> TieredMemoryStats {
+        TieredMemoryStats {
+            working_count: self.working.read().unwrap().len(),
+            episodic_count: self.episodic.read().unwrap().len(),
+            tool_count: self.tool.read().unwrap().len(),
+            semantic_count: self.semantic.read().unwrap().len(),
+        }
+    }
+}
+
+/// Statistics for tiered memory
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TieredMemoryStats {
+    pub working_count: usize,
+    pub episodic_count: usize,
+    pub tool_count: usize,
+    pub semantic_count: usize,
+}
+
+/// Simple UUID generator
+fn uuid_simple() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    format!("{:x}-{:x}", now.as_secs(), now.subsec_nanos())
+}
+
+#[cfg(test)]
+mod tiered_memory_tests {
+    use super::*;
+
+    #[test]
+    fn test_add_working_memory() {
+        let mem = TieredMemory::new();
+        mem.add_working("Current task: analyze Bi2Te3", 0.9);
+
+        let working = mem.get_working();
+        assert!(!working.is_empty());
+        assert_eq!(working[0].content, "Current task: analyze Bi2Te3");
+    }
+
+    #[test]
+    fn test_add_episodic_memory() {
+        let mem = TieredMemory::new();
+        mem.add_episodic("Completed DFT calculation for Bi2Se3", 0.8);
+
+        let episodic = mem.get_episodic(10);
+        assert!(!episodic.is_empty());
+    }
+
+    #[test]
+    fn test_record_tool_usage() {
+        let mem = TieredMemory::new();
+        mem.record_tool_usage("materials_project", true, 150.0, 0.9);
+        mem.record_tool_usage("materials_project", true, 200.0, 0.85);
+        mem.record_tool_usage("cgcnn", false, 300.0, 0.3);
+
+        let effective = mem.get_effective_tools(10);
+        assert_eq!(effective[0].0, "materials_project");
+        assert!(effective[0].1 > effective[1].1);
+    }
+
+    #[test]
+    fn test_tool_memory_entry() {
+        let mut entry = ToolMemoryEntry::new("test_tool");
+
+        entry.record_usage(true, 100.0, 0.9);
+        entry.record_usage(true, 200.0, 0.8);
+
+        assert_eq!(entry.usage_count, 2);
+        assert_eq!(entry.success_count, 2);
+        assert!((entry.avg_exec_time_ms - 150.0).abs() < 0.1);
+    }
+
+    #[test]
+    fn test_semantic_memory() {
+        let mem = TieredMemory::new();
+        mem.store_knowledge("thermoelectric_ZT", "Bi2Te3 has ZT ~ 1.1 at 300K");
+
+        let knowledge = mem.retrieve_knowledge("thermoelectric_ZT");
+        assert!(knowledge.is_some());
+        assert!(knowledge.unwrap().contains("Bi2Te3"));
+    }
+
+    #[test]
+    fn test_consolidate() {
+        let mem = TieredMemory::new();
+        mem.add_working("Important finding", 0.8); // High importance
+        mem.add_working("Temp data", 0.2); // Low importance
+
+        mem.consolidate();
+
+        let episodic = mem.get_episodic(100);
+        // High importance entries should be in episodic
+        assert!(episodic.iter().any(|e| e.content == "Important finding"));
+    }
+
+    #[test]
+    fn test_tiered_stats() {
+        let mem = TieredMemory::new();
+        mem.add_working("Working 1", 0.5);
+        mem.add_episodic("Episodic 1", 0.5);
+        mem.record_tool_usage("tool1", true, 100.0, 0.8);
+        mem.store_knowledge("key1", "value1");
+
+        let stats = mem.tiered_stats();
+        assert_eq!(stats.working_count, 1);
+        assert_eq!(stats.episodic_count, 1);
+        assert_eq!(stats.tool_count, 1);
+        assert_eq!(stats.semantic_count, 1);
+    }
+
+    #[test]
+    fn test_memory_tier_enum() {
+        assert_eq!(MemoryTier::Working, MemoryTier::Working);
+        assert_ne!(MemoryTier::Working, MemoryTier::Episodic);
+    }
+
+    #[test]
+    fn test_entry_expiry() {
+        let entry = TieredMemoryEntry {
+            id: "test".to_string(),
+            tier: MemoryTier::Working,
+            content: "Test".to_string(),
+            importance: 0.5,
+            last_accessed: Utc::now(),
+            access_count: 1,
+            tool_name: None,
+            ttl_seconds: 0, // No expiry
+        };
+
+        assert!(!entry.is_expired());
     }
 }

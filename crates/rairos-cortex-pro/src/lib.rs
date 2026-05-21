@@ -67,6 +67,18 @@ pub mod memory;
 #[cfg(feature = "tools")]
 pub mod llm_agents;
 
+/// MCTS planner for tool selection (ToolTree-style)
+#[cfg(feature = "tools")]
+pub mod mcts_planner;
+
+/// SSE streaming for real-time agent progress
+#[cfg(feature = "tools")]
+pub mod streaming_sse;
+
+/// Hierarchical agent delegation (manager → sub-team)
+#[cfg(feature = "tools")]
+pub mod hierarchical;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -87,3 +99,12 @@ pub use memory::{MemoryBank, IdeationEntry, IdeationStatus, ExperimentationEntry
 
 #[cfg(feature = "tools")]
 pub use llm_agents::{LlmHypothesisAgent, LlmHypothesisCriticAgent, LlmPlannerAgent, LlmPlanCriticAgent, LlmReportWriterAgent};
+
+#[cfg(feature = "tools")]
+pub use mcts_planner::{MctsPlanner, Tool, ToolCategory, ToolSelection};
+
+#[cfg(feature = "tools")]
+pub use streaming_sse::{SseBroadcaster, SseEvent, SseTimer};
+
+#[cfg(feature = "tools")]
+pub use hierarchical::{DelegationManager, DelegatedTask, HierarchicalConfig, AgentLevel, SubTeam, TeamStatus, DelegationStats};
