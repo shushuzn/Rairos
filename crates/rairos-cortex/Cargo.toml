@@ -8,7 +8,7 @@ publish = false
 [workspace]
 
 [dependencies]
-# Cortex crates (only cortexai-core to avoid sqlite3 conflict)
+# Cortex crates (only cortexai-core to avoid aws-lc-sys compiler issue)
 cortexai-core = "0.1"
 
 # Async

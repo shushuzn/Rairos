@@ -310,6 +310,7 @@ pub async fn run_migrations(conn: &mut SqliteConnection) -> Result<i32, sqlx::Er
 #[cfg(test)]
 mod tests {
     use super::*;
+    use sqlx::Connection;
 
     #[tokio::test]
     async fn test_get_schema_version_nonexistent() {
