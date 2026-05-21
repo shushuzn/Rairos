@@ -8,8 +8,7 @@ use rairos_rankers::{
     AdaptiveMomentum as RankerAdaptiveMomentum,
     BayesianOptimizer as RankerBayesianOptimizer, OptimalScalingLearner,
 };
-use std::collections::HashSet;
-use rustc_hash::FxHashMap;
+use rustc_hash::{FxHashMap, FxHashSet};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
@@ -26,11 +25,11 @@ use crate::state::{
 /// Compute keyword overlap between two text strings (Jaccard similarity on words > 4 chars).
 #[inline(always)]
 fn keyword_overlap(a: &str, b: &str) -> f64 {
-    let a_words: HashSet<String> = a.split_whitespace()
+    let a_words: FxHashSet<String> = a.split_whitespace()
         .map(|w| w.to_lowercase())
         .filter(|w| w.len() > 4)
         .collect();
-    let b_words: HashSet<String> = b.split_whitespace()
+    let b_words: FxHashSet<String> = b.split_whitespace()
         .map(|w| w.to_lowercase())
         .filter(|w| w.len() > 4)
         .collect();
@@ -93,7 +92,7 @@ async fn process_topic(
     let session_id = Uuid::new_v4().to_string()[..8].to_string();
     let papers_analyzed = new_papers.len() as i32;
 
-    let mut all_categories: HashSet<String> = HashSet::new();
+    let mut all_categories: FxHashSet<String> = FxHashSet::default();
     let mut papers: Vec<rairos_core::Paper> = Vec::new();
 
     let max_papers_for_analysis = 10;
@@ -142,10 +141,10 @@ async fn process_topic(
 
     let keywords: Vec<&str> = all_categories.iter().map(|s| s.as_str()).collect();
 
-    let _extracted_keywords: std::collections::HashSet<String> = {
+    let _extracted_keywords: FxHashSet<String> = {
         let mut term_freq: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
         for paper in &papers {
-            let words: std::collections::HashSet<_> = paper.abstract_text.split_whitespace()
+            let words: FxHashSet<_> = paper.abstract_text.split_whitespace()
                 .map(|w| w.to_lowercase())
                 .filter(|w| w.len() > 5)
                 .filter(|w| !STOP_WORDS.contains(&w.as_str()))
@@ -231,9 +230,9 @@ async fn process_topic(
         } else {
             let max_overlap = existing_papers.iter()
                 .map(|existing| {
-                    let words_new: std::collections::HashSet<_> = desc.split_whitespace()
+                    let words_new: FxHashSet<_> = desc.split_whitespace()
                         .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
-                    let words_exist: std::collections::HashSet<_> = existing.split_whitespace()
+                    let words_exist: FxHashSet<_> = existing.split_whitespace()
                         .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
                     if words_new.is_empty() || words_exist.is_empty() {
                         return 0.0;
@@ -290,7 +289,7 @@ async fn process_topic(
         .list_gaps(200, 0)
         .map_err(|e| OrchestratorError::Database(e.to_string()))?;
 
-    let seen_descriptions: std::collections::HashSet<_> = existing_gaps
+    let seen_descriptions: FxHashSet<_> = existing_gaps
         .iter()
         .map(|g| g.description.clone())
         .collect();
@@ -563,7 +562,7 @@ fn detect_pattern_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<R
     ];
 
     let mut detected: Vec<ResearchGap> = Vec::new();
-    let mut seen_patterns: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut seen_patterns: FxHashSet<String> = FxHashSet::default();
 
     for paper in papers {
         let text_lower = paper.abstract_text.to_lowercase();
@@ -655,7 +654,7 @@ fn detect_method_limitations_impl(papers: &[rairos_core::Paper]) -> Vec<Research
     ];
 
     let mut gaps: Vec<ResearchGap> = Vec::new();
-    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut seen: FxHashSet<String> = FxHashSet::default();
 
     for paper in papers {
         let text_lower = paper.abstract_text.to_lowercase();
@@ -689,7 +688,7 @@ fn detect_evaluation_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap
     ];
 
     let mut gaps: Vec<ResearchGap> = Vec::new();
-    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut seen: FxHashSet<String> = FxHashSet::default();
 
     for paper in papers {
         let text_lower = paper.abstract_text.to_lowercase();
@@ -738,7 +737,7 @@ fn detect_resource_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> 
     ];
 
     let mut gaps: Vec<ResearchGap> = Vec::new();
-    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut seen: FxHashSet<String> = FxHashSet::default();
 
     for paper in papers {
         let text_lower = paper.abstract_text.to_lowercase();
@@ -773,7 +772,7 @@ fn detect_dataset_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
     ];
 
     let mut gaps: Vec<ResearchGap> = Vec::new();
-    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut seen: FxHashSet<String> = FxHashSet::default();
 
     for paper in papers {
         let text_lower = paper.abstract_text.to_lowercase();
@@ -818,7 +817,7 @@ fn detect_generalization_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<Researc
     ];
 
     let mut gaps: Vec<ResearchGap> = Vec::new();
-    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut seen: FxHashSet<String> = FxHashSet::default();
 
     for paper in papers {
         let text_lower = paper.abstract_text.to_lowercase();
@@ -1022,7 +1021,7 @@ impl AutonomousOrchestrator {
 
                 let existing = existing_map.get(topic).cloned().unwrap_or_default();
 
-                let existing_ids: HashSet<_> = existing
+                let existing_ids: FxHashSet<_> = existing
                     .iter()
                     .filter_map(|p| p.arxiv_id.clone())
                     .collect();
@@ -1082,7 +1081,7 @@ impl AutonomousOrchestrator {
         let session_id = Uuid::new_v4().to_string()[..8].to_string();
         let papers_analyzed = new_papers.len() as i32;
 
-        let mut all_categories: HashSet<String> = HashSet::new();
+        let mut all_categories: FxHashSet<String> = FxHashSet::default();
         let mut papers: Vec<rairos_core::Paper> = Vec::new();
 
         let max_papers_for_analysis = 10;
@@ -1131,10 +1130,10 @@ impl AutonomousOrchestrator {
 
         let keywords: Vec<&str> = all_categories.iter().map(|s| s.as_str()).collect();
 
-        let _extracted_keywords: std::collections::HashSet<String> = {
+        let _extracted_keywords: FxHashSet<String> = {
             let mut term_freq: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
             for paper in &papers {
-                let words: std::collections::HashSet<_> = paper.abstract_text.split_whitespace()
+                let words: FxHashSet<_> = paper.abstract_text.split_whitespace()
                     .map(|w| w.to_lowercase())
                     .filter(|w| w.len() > 5)
                     .filter(|w| !STOP_WORDS.contains(&w.as_str()))
@@ -1190,9 +1189,9 @@ impl AutonomousOrchestrator {
             } else {
                 let max_overlap = existing_papers.iter()
                     .map(|existing| {
-                        let words_new: std::collections::HashSet<_> = desc.split_whitespace()
+                        let words_new: FxHashSet<_> = desc.split_whitespace()
                             .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
-                        let words_exist: std::collections::HashSet<_> = existing.split_whitespace()
+                        let words_exist: FxHashSet<_> = existing.split_whitespace()
                             .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
                         if words_new.is_empty() || words_exist.is_empty() {
                             return 0.0;
@@ -1373,7 +1372,7 @@ impl AutonomousOrchestrator {
             .list_gaps(200, 0)
             .map_err(|e| OrchestratorError::Database(e.to_string()))?;
 
-        let seen_descriptions: std::collections::HashSet<_> = existing_gaps
+        let seen_descriptions: FxHashSet<_> = existing_gaps
             .iter()
             .map(|g| g.description.clone())
             .collect();
@@ -1544,7 +1543,7 @@ impl AutonomousOrchestrator {
         let mut topic_scores: std::collections::HashMap<String, f64> = std::collections::HashMap::new();
 
         for alert in &state.alerts {
-            let words: std::collections::HashSet<_> = alert.top_gap_title.split_whitespace()
+            let words: FxHashSet<_> = alert.top_gap_title.split_whitespace()
                 .filter(|w| w.len() > 4)
                 .map(|w| w.to_lowercase())
                 .collect();
@@ -1553,7 +1552,7 @@ impl AutonomousOrchestrator {
             }
         }
 
-        let current_set: std::collections::HashSet<_> = current_topics.iter()
+        let current_set: FxHashSet<_> = current_topics.iter()
             .map(|t| t.to_lowercase())
             .collect();
 
@@ -1607,7 +1606,7 @@ impl AutonomousOrchestrator {
         ];
 
         let mut detected: Vec<ResearchGap> = Vec::new();
-        let mut seen_patterns: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut seen_patterns: FxHashSet<String> = FxHashSet::default();
 
         for paper in papers {
             let text_lower = paper.abstract_text.to_lowercase();
@@ -1700,7 +1699,7 @@ impl AutonomousOrchestrator {
         ];
 
         let mut gaps: Vec<ResearchGap> = Vec::new();
-        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut seen: FxHashSet<String> = FxHashSet::default();
 
         for paper in papers {
             let text_lower = paper.abstract_text.to_lowercase();
@@ -1734,7 +1733,7 @@ impl AutonomousOrchestrator {
         ];
 
         let mut gaps: Vec<ResearchGap> = Vec::new();
-        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut seen: FxHashSet<String> = FxHashSet::default();
 
         for paper in papers {
             let text_lower = paper.abstract_text.to_lowercase();
@@ -1783,7 +1782,7 @@ impl AutonomousOrchestrator {
         ];
 
         let mut gaps: Vec<ResearchGap> = Vec::new();
-        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut seen: FxHashSet<String> = FxHashSet::default();
 
         for paper in papers {
             let text_lower = paper.abstract_text.to_lowercase();
@@ -1818,7 +1817,7 @@ impl AutonomousOrchestrator {
         ];
 
         let mut gaps: Vec<ResearchGap> = Vec::new();
-        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut seen: FxHashSet<String> = FxHashSet::default();
 
         for paper in papers {
             let text_lower = paper.abstract_text.to_lowercase();
@@ -1863,7 +1862,7 @@ impl AutonomousOrchestrator {
         ];
 
         let mut gaps: Vec<ResearchGap> = Vec::new();
-        let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut seen: FxHashSet<String> = FxHashSet::default();
 
         for paper in papers {
             let text_lower = paper.abstract_text.to_lowercase();
