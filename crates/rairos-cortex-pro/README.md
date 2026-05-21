@@ -139,6 +139,26 @@ cargo test -p rairos-cortex-pro --features tools
 cargo test -p rairos-cortex-pro --features tools --test sparks_integration_test
 ```
 
+### Running the Demo
+
+A complete demo is available in `examples/sparks_matter_demo.rs`:
+
+```bash
+# Prerequisites: Run Ollama
+# 1. Install Ollama: https://ollama.ai/
+# 2. Start Ollama: ollama serve
+# 3. Pull a model: ollama pull llama3.2
+
+# Run the demo
+cd /tmp/Rairos
+cargo run --example sparks_matter_demo -p rairos-cortex-pro --features tools,llm
+```
+
+The demo will:
+1. Check Ollama availability
+2. Run the full 4-phase workflow (Ideation → Planning → Execution → Reporting)
+3. Display the generated hypothesis, plan, and research report
+
 ### Plan JSON Format
 
 The `PlannerAgent` outputs research plans in JSON format:
