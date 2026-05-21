@@ -44,6 +44,20 @@ rairos-tools = { path = "../rairos-tools", optional = true }
 
 [dev-dependencies]
 tokio-test = "0.4"
+criterion = "0.5"
+futures = "0.3"
+
+[[bench]]
+name = "agent_bench"
+harness = false
+
+[[bench]]
+name = "crew_bench"
+harness = false
+
+[[bench]]
+name = "tool_bench"
+harness = false
 
 [features]
 default = ["llm"]
