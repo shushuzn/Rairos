@@ -63,6 +63,10 @@ pub mod tools;
 #[cfg(feature = "tools")]
 pub mod memory;
 
+/// LLM-based agents using real LLM calls
+#[cfg(feature = "tools")]
+pub mod llm_agents;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -80,3 +84,6 @@ pub use sparks_crew::{SparksCrew, Plan, PlanStep, ExecutionResult, ResearchRepor
 
 #[cfg(feature = "tools")]
 pub use memory::{MemoryBank, IdeationEntry, IdeationStatus, ExperimentationEntry, MemoryStats, MemoryEntryBuilder, ExperimentationEntryBuilder};
+
+#[cfg(feature = "tools")]
+pub use llm_agents::{LlmHypothesisAgent, LlmHypothesisCriticAgent, LlmPlannerAgent, LlmPlanCriticAgent, LlmReportWriterAgent};
