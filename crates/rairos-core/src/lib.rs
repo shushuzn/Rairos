@@ -2040,13 +2040,15 @@ impl Database {
             let mut results = Vec::new();
             for row in rows {
                 let mut map = HashMap::new();
-                for i in 0.. {
-                    if let Ok(name) = row.try_get::<String, _>(i) {
+                // Use column index to iterate instead of unbounded loop
+                let columns = row.columns();
+                let num_cols = columns.len();
+                for i in 0..num_cols {
+                    // Use try_get with column name by accessing via &str index
+                    if let Ok(name) = row.try_get::<&str, _>(i) {
                         if let Some(value) = DbValue::from_sqlx(&row, i) {
-                            map.insert(name, value);
+                            map.insert(name.to_string(), value);
                         }
-                    } else {
-                        break;
                     }
                 }
                 results.push(map);

@@ -99,6 +99,15 @@ impl TaskDag {
             }
         }
 
+        // Build reverse adjacency list: for each node, which nodes depend on it
+        // This converts O(V*E) lookup to O(V+E)
+        let mut dependents: HashMap<String, Vec<String>> = HashMap::new();
+        for node in self.nodes.values() {
+            for dep in &node.depends_on {
+                dependents.entry(dep.clone()).or_default().push(node.id.clone());
+            }
+        }
+
         let mut queue: VecDeque<String> = in_degree
             .iter()
             .filter(|(_, &count)| count == 0)
@@ -114,12 +123,13 @@ impl TaskDag {
             for _ in 0..level_size {
                 if let Some(node_id) = queue.pop_front() {
                     current_level.push(node_id.clone());
-                    for (id, node) in &self.nodes {
-                        if node.depends_on.contains(&node_id) {
-                            if let Some(deg) = in_degree.get_mut(id) {
+                    // Use reverse adjacency list instead of scanning all nodes
+                    if let Some(deps) = dependents.get(&node_id) {
+                        for dependent_id in deps {
+                            if let Some(deg) = in_degree.get_mut(dependent_id) {
                                 *deg -= 1;
                                 if *deg == 0 {
-                                    queue.push_back(id.clone());
+                                    queue.push_back(dependent_id.clone());
                                 }
                             }
                         }
@@ -248,15 +258,12 @@ where
 
             // Collect results and update DAG
             for (node_id, result) in level_results {
-                node_results.insert(node_id.clone(), result);
-
                 if let Some(node) = dag.get_node_mut(&node_id) {
                     node.is_completed = true;
-                    if let Some(res) = node_results.get(&node_id) {
-                        node.result = res.output.clone();
-                        node.error = res.error.clone();
-                    }
+                    node.result = result.output.clone();
+                    node.error = result.error.clone();
                 }
+                node_results.insert(node_id, result);
             }
         }
 

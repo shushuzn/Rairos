@@ -37,7 +37,7 @@
 //! | 6 | 4000+ | Complex investigation |
 
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::hash::Hash;
 
 /// Deliberation trigger types
@@ -129,8 +129,8 @@ pub struct QueryAnalysis {
 /// Deliberation engine
 pub struct DeliberationEngine {
     config: DeliberationConfig,
-    /// History of deliberation decisions
-    history: Vec<DeliberationRecord>,
+    /// History of deliberation decisions (using VecDeque for O(1) front removal)
+    history: VecDeque<DeliberationRecord>,
     /// Trigger keywords for tool necessity
     tool_triggers: HashSet<String>,
     /// Temporal keywords
@@ -221,7 +221,7 @@ impl DeliberationEngine {
 
         Self {
             config,
-            history: Vec::new(),
+            history: VecDeque::new(),
             tool_triggers,
             temporal_keywords,
             specificity_markers,
@@ -270,23 +270,17 @@ impl DeliberationEngine {
         let query_lower = query.to_lowercase();
         let words: Vec<&str> = query_lower.split_whitespace().collect();
 
-        let temporal_keywords: Vec<String> = words
-            .iter()
-            .filter(|w| {
-                let word_owned = w.to_string();
-                self.temporal_keywords.contains(&word_owned)
-            })
-            .map(|s| (*s).to_string())
-            .collect();
-
-        let specificity_markers: Vec<String> = words
-            .iter()
-            .filter(|w| {
-                let word_owned = w.to_string();
-                self.specificity_markers.contains(&word_owned)
-            })
-            .map(|s| (*s).to_string())
-            .collect();
+        // Single pass: collect both temporal_keywords and specificity_markers
+        let mut temporal_keywords = Vec::new();
+        let mut specificity_markers = Vec::new();
+        for w in &words {
+            if self.temporal_keywords.contains(&w.to_string()) {
+                temporal_keywords.push(w.to_string());
+            }
+            if self.specificity_markers.contains(&w.to_string()) {
+                specificity_markers.push(w.to_string());
+            }
+        }
 
         // Detect real-time needs
         let needs_realtime = !temporal_keywords.is_empty();
@@ -432,7 +426,7 @@ impl DeliberationEngine {
     /// Record deliberation outcome for learning
     pub fn record_outcome(&mut self, query: &str, result: &DeliberationResult, was_correct: bool) {
         let query_hash = self.hash_query(query);
-        self.history.push(DeliberationRecord {
+        self.history.push_back(DeliberationRecord {
             query_hash,
             needs_tools: result.needs_tools,
             confidence: result.confidence,
@@ -441,9 +435,9 @@ impl DeliberationEngine {
             was_correct,
         });
 
-        // Trim history
+        // Trim history (VecDeque pop_front is O(1), vs Vec remove(0) which is O(n))
         if self.history.len() > 1000 {
-            self.history.remove(0);
+            self.history.pop_front();
         }
     }
 

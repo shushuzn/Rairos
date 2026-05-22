@@ -204,12 +204,11 @@ impl WorkerPool {
                         let result = Self::execute_task(t);
                         let execution_time_ms = start.elapsed().as_millis() as u64;
 
-                        if result.output.is_err() {
-                            if let Ok(mut s) = state.lock() {
+                        // Merge lock acquisitions into single lock
+                        if let Ok(mut s) = state.lock() {
+                            if result.output.is_err() {
                                 s.total_failed += 1;
                             }
-                        }
-                        if let Ok(mut s) = state.lock() {
                             s.total_processed += 1;
                         }
 

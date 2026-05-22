@@ -528,18 +528,11 @@ impl EvidenceAuditor {
             .filter(|e| e.relevance >= self.min_relevance)
             .collect();
 
+        // Partition into supporting/contradicting in single pass with cached lowercase
         let decision_lower = decision.to_lowercase();
-        let supporting: Vec<Evidence> = relevant_evidence
-            .iter()
-            .filter(|e| e.content.to_lowercase().contains(&decision_lower))
-            .cloned()
-            .collect();
-
-        let contradicting: Vec<Evidence> = relevant_evidence
-            .iter()
-            .filter(|e| !e.content.to_lowercase().contains(&decision_lower))
-            .cloned()
-            .collect();
+        let (supporting, contradicting): (Vec<Evidence>, Vec<Evidence>) = relevant_evidence
+            .into_iter()
+            .partition(|e| e.content.to_lowercase().contains(&decision_lower));
 
         let justification_score = if supporting.len() >= self.min_evidence_threshold {
             supporting.len() as f32 / (supporting.len() + contradicting.len()).max(1) as f32
