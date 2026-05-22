@@ -985,9 +985,10 @@ impl TieredMemory {
         let episodic = self.episodic.read().unwrap();
 
         // Find episodic entries matching the theme
+        let theme_lower = theme.to_lowercase();
         let matching: Vec<_> = episodic
             .iter()
-            .filter(|e| e.content.to_lowercase().contains(&theme.to_lowercase()))
+            .filter(|e| e.content.to_lowercase().contains(&theme_lower))
             .collect();
 
         if matching.is_empty() {

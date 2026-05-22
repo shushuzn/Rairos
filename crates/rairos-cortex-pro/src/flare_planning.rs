@@ -537,14 +537,19 @@ impl PpaPlanner {
 
     /// Filter actions to avoid pitfalls
     fn filter_safe_actions(&self, _pitfalls: &[Pitfall]) -> Vec<PlannedAction> {
+        // Pre-compute lowercase negative constraints to avoid repeated allocation
+        let nc_lowers: Vec<String> = self.negative_constraints.iter()
+            .map(|nc| nc.to_lowercase())
+            .collect();
+        let a_name_lower = |a: &PlannedAction| a.name.to_lowercase();
+
         // Return actions that don't trigger pitfalls
         self.flare
             .available_actions
             .iter()
             .filter(|a| {
-                !self.negative_constraints.iter().any(|nc| {
-                    a.name.to_lowercase().contains(&nc.to_lowercase())
-                })
+                let a_lower = a_name_lower(a);
+                !nc_lowers.iter().any(|nc| a_lower.contains(nc))
             })
             .cloned()
             .collect()
