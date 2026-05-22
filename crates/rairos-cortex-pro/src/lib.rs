@@ -135,6 +135,14 @@ pub mod graph_of_agents;
 #[cfg(feature = "tools")]
 pub mod picco_prompt;
 
+/// ROMA recursive meta-agent (arXiv:2602.01848)
+#[cfg(feature = "tools")]
+pub mod roma_meta_agent;
+
+/// Agent safety and audit (SafeAgent, ReliabilityBench)
+#[cfg(feature = "tools")]
+pub mod agent_safety;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -206,3 +214,9 @@ pub use graph_of_agents::{CommunicationGraph, GraphConfig, AgentNode, AgentState
 
 #[cfg(feature = "tools")]
 pub use picco_prompt::{PiccoPrompt, Persona, ExpertiseLevel, Instructions, Priority, ContextItem, ContextType, Constraint, ConstraintType, OutputSpec, FormatType, OutputStructure, PreferencePromptOptimizer, PromptCandidate, PreferenceFeedback, OptimizerConfig, OptimizerStats};
+
+#[cfg(feature = "tools")]
+pub use roma_meta_agent::{MetaAgent, RomaTask, TaskStatus, MetaRole, RomaConfig, ExecutionResult, RomaStats, ChainOfMindset, Mindset, Mindsetswitch, TdpSupervisor, SubGoal, ScopedContext, TdpConfig};
+
+#[cfg(feature = "tools")]
+pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
