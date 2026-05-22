@@ -269,16 +269,19 @@ impl DeliberationEngine {
     fn analyze_query(&self, query: &str) -> QueryAnalysis {
         let query_lower = query.to_lowercase();
         let words: Vec<&str> = query_lower.split_whitespace().collect();
+        let word_count = words.len();
 
-        // Single pass: collect both temporal_keywords and specificity_markers
-        let mut temporal_keywords = Vec::new();
-        let mut specificity_markers = Vec::new();
+        // Pre-allocate based on expected hit rate (~10%)
+        let mut temporal_keywords = Vec::with_capacity(word_count / 10);
+        let mut specificity_markers = Vec::with_capacity(word_count / 10);
+
         for w in &words {
-            if self.temporal_keywords.contains(&w.to_string()) {
-                temporal_keywords.push(w.to_string());
+            let w_string = w.to_string();
+            if self.temporal_keywords.contains(&w_string) {
+                temporal_keywords.push(w_string.clone());
             }
-            if self.specificity_markers.contains(&w.to_string()) {
-                specificity_markers.push(w.to_string());
+            if self.specificity_markers.contains(&w_string) {
+                specificity_markers.push(w_string);
             }
         }
 

@@ -209,7 +209,10 @@ impl MctsPlanner {
         // Get best tool from root's children
         let tree = self.tree.read().unwrap();
         let root = &tree[0];
-        let mut child_scores: Vec<_> = root.children.iter().enumerate().collect();
+        let mut child_scores: Vec<_> = Vec::with_capacity(root.children.len());
+        for (idx, child) in root.children.iter().enumerate() {
+            child_scores.push((idx, child));
+        }
         child_scores.sort_by(|a, b| {
             let score_a = if a.1.visit_count > 0 {
                 a.1.q_value / a.1.visit_count as f64
