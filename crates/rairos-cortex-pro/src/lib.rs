@@ -95,6 +95,10 @@ pub mod active_learning;
 #[cfg(feature = "tools")]
 pub mod context_compression;
 
+/// DAG workflow executor for parallel task execution (ROMA, AdaptOrch style)
+#[cfg(feature = "tools")]
+pub mod dag_executor;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -136,3 +140,6 @@ pub use active_learning::{ActiveLearningManager, MaterialCandidate, EvaluationRe
 
 #[cfg(feature = "tools")]
 pub use context_compression::{ContextCompressor, CompressedContext, CompressionRatio, TokenBudget, BudgetEntry};
+
+#[cfg(feature = "tools")]
+pub use dag_executor::{TaskDag, DagNode, DagExecutor, DagExecutionResult, NodeResult, dag_from_plan_steps};
