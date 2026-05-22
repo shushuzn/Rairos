@@ -21,6 +21,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+use std::fmt::Debug;
 use chrono::{DateTime, Utc};
 
 /// Safety verdict
@@ -37,7 +38,7 @@ pub enum SafetyVerdict {
 }
 
 /// Risk level
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum RiskLevel {
     Low,
     Medium,
@@ -78,7 +79,6 @@ pub struct AuditEntry {
 }
 
 /// Safety policy rule
-#[derive(Debug, Clone)]
 pub struct SafetyRule {
     /// Rule name
     pub name: String,
@@ -90,8 +90,33 @@ pub struct SafetyRule {
     pub block_on_violation: bool,
     /// Keywords that trigger this rule
     pub trigger_keywords: Vec<String>,
-    /// Compiled check function (simplified)
-    pub check_fn: Box<dyn Fn(&str) -> bool + Send + Sync>,
+    /// Compiled check function (simplified, wrapped in Rc for cloneability)
+    pub check_fn: std::rc::Rc<dyn Fn(&str) -> bool + Send + Sync>,
+}
+
+impl Debug for SafetyRule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SafetyRule")
+            .field("name", &self.name)
+            .field("description", &self.description)
+            .field("risk_level", &self.risk_level)
+            .field("block_on_violation", &self.block_on_violation)
+            .field("trigger_keywords", &self.trigger_keywords)
+            .finish()
+    }
+}
+
+impl Clone for SafetyRule {
+    fn clone(&self) -> Self {
+        Self {
+            name: self.name.clone(),
+            description: self.description.clone(),
+            risk_level: self.risk_level,
+            block_on_violation: self.block_on_violation,
+            trigger_keywords: self.trigger_keywords.clone(),
+            check_fn: self.check_fn.clone(),
+        }
+    }
 }
 
 /// Agent Safety Guard

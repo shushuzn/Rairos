@@ -199,7 +199,7 @@ pub use experience_replay::{ExperienceReplay, Experience, TrajectoryStep, Experi
 pub use multi_agent_consensus::{MultiAgentConsensus, ConsensusResult, Vote, VotingMechanism, EvidenceAuditor, AuditResult, Evidence, ConsensusAgent};
 
 #[cfg(feature = "tools")]
-pub use self_correction::{SelfCorrector, ReflexionAgent, ExternalValidator, EvaluationResult, Correction, Reflection, CorrectionType, ValidationResult, ValidationIssue, ValidationRule};
+pub use self_correction::{SelfCorrector, ReflexionAgent, ExternalValidator, EvaluationResult as SelfCorrectionEvaluationResult, Correction, Reflection, CorrectionType, ValidationResult, ValidationIssue, ValidationRule};
 
 #[cfg(feature = "tools")]
 pub use transaction_compensation::{TransactionLog, ToolEvent, ToolError, CompensationAction, RollbackResult, VigilLearner, EmotionalEntry, RBTDiagnosis, RollbackType, CompensationType};
@@ -214,13 +214,13 @@ pub use atomic_fact_memory::{AtomicFactMemory, AtomicFact, MemoryEntry, TaskType
 pub use forest_of_thought::{ForestReasoner, ForestConfig, ReasoningTree, ThoughtNode, NodeType, ReasoningResult, Consensus, ForestStats, DiagramOfThoughtReasoner, RoleToken};
 
 #[cfg(feature = "tools")]
-pub use graph_of_agents::{CommunicationGraph, GraphConfig, AgentNode, AgentState, GraphEdge, AgentMessage, MessageType, PoolingStrategy, GraphStats, ConditionalGraphDesigner, EdgeCondition, ConditionType, BeliefCollaborationManager, Belief, AgentRole};
+pub use graph_of_agents::{CommunicationGraph, GraphConfig, AgentNode, AgentState, GraphEdge, AgentMessage, MessageType, PoolingStrategy, GraphStats, ConditionalGraphDesigner, EdgeCondition, ConditionType, BeliefCollaborationManager, Belief, GoAAgentRole};
 
 #[cfg(feature = "tools")]
 pub use picco_prompt::{PiccoPrompt, Persona, ExpertiseLevel, Instructions, Priority, ContextItem, ContextType, Constraint, ConstraintType, OutputSpec, FormatType, OutputStructure, PreferencePromptOptimizer, PromptCandidate, PreferenceFeedback, OptimizerConfig, OptimizerStats};
 
 #[cfg(feature = "tools")]
-pub use roma_meta_agent::{MetaAgent, RomaTask, TaskStatus, MetaRole, RomaConfig, ExecutionResult, RomaStats, ChainOfMindset, Mindset, Mindsetswitch, TdpSupervisor, SubGoal, ScopedContext, TdpConfig};
+pub use roma_meta_agent::{MetaAgent, RomaTask, TaskStatus, MetaRole, RomaConfig, ExecutionResult as RomaExecutionResult, RomaStats, ChainOfMindset, Mindset, Mindsetswitch, TdpSupervisor, SubGoal, ScopedContext, TdpConfig};
 
 #[cfg(feature = "tools")]
 pub use adaptive_orchestration::{AdaptiveOrchestrator, OrchestrationConfig, TopologySelection, Topology, TaskDependency, TaskDag as OrchestrationTaskDag, OrchestrationStats, TopologyRecord, TaskStats, SymphonyCoordinator, SymphonyConfig, CapabilitySignal, SlotRequirement, AgentSelection, CandidateAgent};

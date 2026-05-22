@@ -43,7 +43,7 @@ pub struct AgentNode {
     /// Agent ID
     pub id: String,
     /// Agent role/type
-    pub role: AgentRole,
+    pub role: GoAAgentRole,
     /// Current state
     pub state: AgentState,
     /// Output embedding (for similarity calculation)
@@ -67,7 +67,7 @@ pub struct AgentState {
 
 /// Agent role in graph
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
-pub enum AgentRole {
+pub enum GoAAgentRole {
     /// Proposer - suggests solutions
     Proposer,
     /// Critic - evaluates and critiques
@@ -80,14 +80,14 @@ pub enum AgentRole {
     Router,
 }
 
-impl AgentRole {
+impl GoAAgentRole {
     pub fn as_str(&self) -> &'static str {
         match self {
-            AgentRole::Proposer => "proposer",
-            AgentRole::Critic => "critic",
-            AgentRole::Synthesizer => "synthesizer",
-            AgentRole::Worker => "worker",
-            AgentRole::Router => "router",
+            GoAAgentRole::Proposer => "proposer",
+            GoAAgentRole::Critic => "critic",
+            GoAAgentRole::Synthesizer => "synthesizer",
+            GoAAgentRole::Worker => "worker",
+            GoAAgentRole::Router => "router",
         }
     }
 }
@@ -216,7 +216,7 @@ impl CommunicationGraph {
     }
 
     /// Add an agent node
-    pub fn add_agent(&mut self, id: String, role: AgentRole) -> &mut AgentNode {
+    pub fn add_agent(&mut self, id: String, role: GoAAgentRole) -> &mut AgentNode {
         let node = AgentNode {
             id: id.clone(),
             role,
@@ -275,7 +275,7 @@ impl CommunicationGraph {
     }
 
     /// Get agents by role
-    pub fn agents_by_role(&self, role: AgentRole) -> Vec<&AgentNode> {
+    pub fn agents_by_role(&self, role: GoAAgentRole) -> Vec<&AgentNode> {
         self.nodes
             .values()
             .filter(|n| n.role == role)
@@ -745,9 +745,9 @@ mod tests {
     fn test_graph_creation() {
         let mut graph = CommunicationGraph::default_graph();
 
-        graph.add_agent("a1".to_string(), AgentRole::Proposer);
-        graph.add_agent("a2".to_string(), AgentRole::Critic);
-        graph.add_agent("a3".to_string(), AgentRole::Synthesizer);
+        graph.add_agent("a1".to_string(), GoAAgentRole::Proposer);
+        graph.add_agent("a2".to_string(), GoAAgentRole::Critic);
+        graph.add_agent("a3".to_string(), GoAAgentRole::Synthesizer);
 
         assert_eq!(graph.nodes.len(), 3);
     }
@@ -756,8 +756,8 @@ mod tests {
     fn test_add_edge() {
         let mut graph = CommunicationGraph::default_graph();
 
-        graph.add_agent("a1".to_string(), AgentRole::Proposer);
-        graph.add_agent("a2".to_string(), AgentRole::Critic);
+        graph.add_agent("a1".to_string(), GoAAgentRole::Proposer);
+        graph.add_agent("a2".to_string(), GoAAgentRole::Critic);
 
         let result = graph.add_edge("a1".to_string(), "a2".to_string(), 0.8);
         assert!(result.is_some());
@@ -767,9 +767,9 @@ mod tests {
     fn test_neighbors() {
         let mut graph = CommunicationGraph::default_graph();
 
-        graph.add_agent("a1".to_string(), AgentRole::Proposer);
-        graph.add_agent("a2".to_string(), AgentRole::Critic);
-        graph.add_agent("a3".to_string(), AgentRole::Worker);
+        graph.add_agent("a1".to_string(), GoAAgentRole::Proposer);
+        graph.add_agent("a2".to_string(), GoAAgentRole::Critic);
+        graph.add_agent("a3".to_string(), GoAAgentRole::Worker);
 
         graph.add_edge("a1".to_string(), "a2".to_string(), 0.8).unwrap();
         graph.add_edge("a1".to_string(), "a3".to_string(), 0.6).unwrap();
@@ -782,8 +782,8 @@ mod tests {
     fn test_message_passing() {
         let mut graph = CommunicationGraph::default_graph();
 
-        graph.add_agent("a1".to_string(), AgentRole::Proposer);
-        graph.add_agent("a2".to_string(), AgentRole::Critic);
+        graph.add_agent("a1".to_string(), GoAAgentRole::Proposer);
+        graph.add_agent("a2".to_string(), GoAAgentRole::Critic);
 
         graph.add_edge("a1".to_string(), "a2".to_string(), 0.8).unwrap();
 

@@ -204,6 +204,7 @@ impl MultiAgentConsensus {
 
         let mut choice_counts: HashMap<String, u32> = HashMap::new();
         let mut stopping_round = votes.len();
+        let mut final_max_count = 0usize;
 
         for (i, vote) in votes.iter().enumerate() {
             *choice_counts.entry(vote.choice.clone()).or_insert(0) += 1;
@@ -212,6 +213,7 @@ impl MultiAgentConsensus {
             let max_count = *choice_counts.values().max().unwrap_or(&0);
             if max_count >= threshold {
                 stopping_round = i + 1;
+                final_max_count = max_count;
                 break;
             }
         }
@@ -229,7 +231,7 @@ impl MultiAgentConsensus {
             0.0
         };
 
-        let reached = max_count >= threshold;
+        let reached = final_max_count >= threshold;
 
         ConsensusResult {
             reached,

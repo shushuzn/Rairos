@@ -15,7 +15,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Types of self-correction
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
@@ -218,6 +218,10 @@ impl SelfCorrector {
 
     /// Learn from a reflection
     pub fn learn(&mut self, reflection: Reflection) {
+        // Extract fields before moving
+        let observation = reflection.observation.clone();
+        let deviation = reflection.deviation.clone();
+        
         // Update history
         self.history.push(reflection);
 
@@ -227,11 +231,11 @@ impl SelfCorrector {
         }
 
         // Update patterns
-        if let Some(ref deviation) = reflection.deviation {
-            if deviation.is_empty() {
-                self.success_patterns.push(reflection.observation);
+        if let Some(ref dev) = deviation {
+            if dev.is_empty() {
+                self.success_patterns.push(observation);
             } else {
-                self.failure_patterns.push(reflection.observation);
+                self.failure_patterns.push(observation);
             }
         }
     }
@@ -362,10 +366,12 @@ impl ExternalValidator {
         // Simplified rule checking - in reality would use LLM or more complex logic
         if check.contains("must contain") {
             let required = check.split("must contain").nth(1).unwrap_or("").trim();
-            !output.to_lowercase().contains(required.to_lowercase())
+            let required_lower = required.to_lowercase();
+            !output.to_lowercase().contains(&required_lower)
         } else if check.contains("must not contain") {
             let forbidden = check.split("must not contain").nth(1).unwrap_or("").trim();
-            output.to_lowercase().contains(forbidden.to_lowercase())
+            let forbidden_lower = forbidden.to_lowercase();
+            output.to_lowercase().contains(&forbidden_lower)
         } else {
             false
         }

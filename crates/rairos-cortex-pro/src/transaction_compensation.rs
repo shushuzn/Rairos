@@ -17,6 +17,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fmt::Debug;
 use chrono::{DateTime, Utc};
 
 /// A recorded tool execution event
@@ -124,14 +125,32 @@ pub struct TransactionLog {
 }
 
 /// Compensation handler for a tool
-#[derive(Debug, Clone)]
 pub struct CompensationHandler {
     /// Tool name
     pub tool_name: String,
-    /// Compensation function
-    pub compensate: Box<dyn Fn(&ToolEvent) -> Option<CompensationAction> + Send + Sync>,
+    /// Compensation function (wrapped in Rc for cloneability)
+    pub compensate: std::rc::Rc<dyn Fn(&ToolEvent) -> Option<CompensationAction> + Send + Sync>,
     /// Whether this tool has side effects
     pub has_side_effects: bool,
+}
+
+impl Debug for CompensationHandler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("CompensationHandler")
+            .field("tool_name", &self.tool_name)
+            .field("has_side_effects", &self.has_side_effects)
+            .finish()
+    }
+}
+
+impl Clone for CompensationHandler {
+    fn clone(&self) -> Self {
+        Self {
+            tool_name: self.tool_name.clone(),
+            compensate: self.compensate.clone(),
+            has_side_effects: self.has_side_effects,
+        }
+    }
 }
 
 impl TransactionLog {
@@ -211,30 +230,37 @@ impl TransactionLog {
                 continue;
             }
 
-            if let Some(handler) = self.compensation_handlers.get(&event.tool_name) {
-                if let Some(action) = (handler.compensate)(&event) {
-                    compensations.push(CompensationResult {
-                        event_id: event.id.clone(),
-                        tool_name: event.tool_name.clone(),
-                        action: action.clone(),
-                        success: true,
-                    });
+            let handler = self.compensation_handlers.get(&event.tool_name);
+            
+            match handler {
+                Some(h) => {
+                    if let Some(action) = (h.compensate)(&event) {
+                        compensations.push(CompensationResult {
+                            event_id: event.id.clone(),
+                            tool_name: event.tool_name.clone(),
+                            action: action.clone(),
+                            success: true,
+                        });
 
-                    // Mark as compensated
-                    if let Some(e) = self.events.iter_mut().find(|e| e.id == event.id) {
-                        e.compensated = true;
+                        // Mark as compensated
+                        if let Some(e) = self.events.iter_mut().find(|e| e.id == event.id) {
+                            e.compensated = true;
+                        }
+                    } else {
+                        errors.push(format!(
+                            "No compensation handler for tool: {}",
+                            event.tool_name
+                        ));
                     }
-                } else {
+                }
+                None => {
+                    // No handler registered - check if tool has side effects
+                    // For now just log it as an error
                     errors.push(format!(
-                        "No compensation handler for tool: {}",
+                        "No handler registered for tool: {}",
                         event.tool_name
                     ));
                 }
-            } else if handler.has_side_effects {
-                errors.push(format!(
-                    "Unhandled side effect for tool: {}",
-                    event.tool_name
-                ));
             }
         }
 
@@ -443,9 +469,9 @@ impl VigilLearner {
             total_entries: total,
             positive_ratio: positive as f32 / total as f32,
             avg_intensity,
-            dominant_emotion: if positive as f32 / total as f32 > 0.6 {
+            dominant_emotion: if (positive as f32 / total as f32) > 0.6 {
                 "positive".to_string()
-            } else if positive as f32 / total as f32 < 0.4 {
+            } else if (positive as f32 / total as f32) < 0.4 {
                 "negative".to_string()
             } else {
                 "neutral".to_string()

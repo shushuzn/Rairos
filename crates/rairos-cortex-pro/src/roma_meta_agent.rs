@@ -64,7 +64,7 @@ pub enum TaskStatus {
 }
 
 /// ROMA Meta-Agent role
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum MetaRole {
     /// Breaks down tasks into subtasks
     Atomizer,
@@ -484,7 +484,7 @@ pub struct RomaStats {
 // =============================================================================
 
 /// Cognitive mindset type
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum Mindset {
     /// Spatial reasoning
     Spatial,

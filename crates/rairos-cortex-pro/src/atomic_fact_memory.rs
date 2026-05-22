@@ -92,7 +92,7 @@ impl TaskType {
 }
 
 /// Memory tier
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum MemoryTier {
     /// Immediate working memory
     Working = 0,
