@@ -143,6 +143,10 @@ pub mod roma_meta_agent;
 #[cfg(feature = "tools")]
 pub mod adaptive_orchestration;
 
+/// Deliberation-first orchestration (DOVA arXiv:2603.13327)
+#[cfg(feature = "tools")]
+pub mod deliberation;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
@@ -224,6 +228,9 @@ pub use roma_meta_agent::{MetaAgent, RomaTask, TaskStatus, MetaRole, RomaConfig,
 
 #[cfg(feature = "tools")]
 pub use adaptive_orchestration::{AdaptiveOrchestrator, OrchestrationConfig, TopologySelection, Topology, TaskDependency, TaskDag as OrchestrationTaskDag, OrchestrationStats, TopologyRecord, TaskStats, SymphonyCoordinator, SymphonyConfig, CapabilitySignal, SlotRequirement, AgentSelection, CandidateAgent};
+
+#[cfg(feature = "tools")]
+pub use deliberation::{DeliberationEngine, DeliberationConfig, DeliberationResult, DeliberationTrigger, DeliberationStats, DeliberationRecord, ThinkingTier, QueryAnalysis, HybridReasoning, HybridReasoningConfig, ReasoningPhase, Perspective, BlackboardEntry, Critique, RefinementResult};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
