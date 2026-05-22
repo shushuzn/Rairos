@@ -91,6 +91,10 @@ pub mod a2a_protocol;
 #[cfg(feature = "tools")]
 pub mod active_learning;
 
+/// Context compression for token optimization (ECoRAG, ACC-RAG style)
+#[cfg(feature = "tools")]
+pub mod context_compression;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -129,3 +133,6 @@ pub use a2a_protocol::{A2AProtocol, A2AMessage, A2ATask, AgentCard, AgentCapabil
 
 #[cfg(feature = "tools")]
 pub use active_learning::{ActiveLearningManager, MaterialCandidate, EvaluationResult, AcquisitionFunction, ActiveLearningStats, HypothesisGenerator};
+
+#[cfg(feature = "tools")]
+pub use context_compression::{ContextCompressor, CompressedContext, CompressionRatio, TokenBudget, BudgetEntry};
