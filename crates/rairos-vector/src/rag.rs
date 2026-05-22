@@ -2,11 +2,16 @@
 //!
 //! Combines vector retrieval with LLM generation for question answering.
 
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use async_trait::async_trait;
 use crate::client::{SearchHit, VectorStore};
 use crate::embedding::Embedder;
 use crate::error::VectorError;
+
+// Static cached regex for citation parsing
+static CITATION_PATTERN: LazyLock<regex::Regex> = LazyLock::new(|| {
+    regex::Regex::new(r"\[(\d+)\]").expect("citation regex should always be valid")
+});
 
 /// RAG configuration
 #[derive(Debug, Clone)]
@@ -226,8 +231,6 @@ impl<E: Embedder, V: VectorStore, L: LlmClient> InlineCitationRag<E, V, L> {
         sources: &[RagSource],
     ) -> Vec<CitedClaim> {
         let mut claims = Vec::new();
-        let citation_pattern = regex::Regex::new(r"\[(\d+)\]")
-            .expect("citation regex should always be valid");
 
         // Split by sentences (simple approach)
         let sentences: Vec<&str> = text
@@ -241,7 +244,7 @@ impl<E: Embedder, V: VectorStore, L: LlmClient> InlineCitationRag<E, V, L> {
                 continue;
             }
 
-            let caps = citation_pattern.captures(sentence);
+            let caps = CITATION_PATTERN.captures(sentence);
             let source_id_opt = caps.map(|c| {
                 let idx: usize = c.get(1).unwrap().as_str().parse().unwrap_or(0);
                 if idx > 0 && idx <= sources.len() {
@@ -251,7 +254,7 @@ impl<E: Embedder, V: VectorStore, L: LlmClient> InlineCitationRag<E, V, L> {
                 }
             }).flatten();
 
-            let claim_text = citation_pattern.replace_all(sentence, "").trim().to_string();
+            let claim_text = CITATION_PATTERN.replace_all(sentence, "").trim().to_string();
             let verified = source_id_opt.is_some();
 
             claims.push(CitedClaim {
@@ -270,10 +273,7 @@ impl<E: Embedder, V: VectorStore, L: LlmClient> InlineCitationRag<E, V, L> {
         text: &str,
         source_map: &std::collections::HashMap<String, &RagSource>,
     ) -> String {
-        let citation_pattern = regex::Regex::new(r"\[(\d+)\]")
-            .expect("citation regex should always be valid");
-
-        citation_pattern.replace_all(text, |caps: &regex::Captures| {
+        CITATION_PATTERN.replace_all(text, |caps: &regex::Captures| {
             let idx: usize = caps.get(1).unwrap().as_str().parse().unwrap_or(0);
             if idx > 0 && idx <= source_map.len() {
                 let key = format!("[{}]", idx);
