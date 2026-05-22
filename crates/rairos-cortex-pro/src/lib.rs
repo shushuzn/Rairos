@@ -99,6 +99,10 @@ pub mod context_compression;
 #[cfg(feature = "tools")]
 pub mod dag_executor;
 
+/// Experience replay for self-improving agents (R³, ERL, LEAFE style)
+#[cfg(feature = "tools")]
+pub mod experience_replay;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -143,3 +147,6 @@ pub use context_compression::{ContextCompressor, CompressedContext, CompressionR
 
 #[cfg(feature = "tools")]
 pub use dag_executor::{TaskDag, DagNode, DagExecutor, DagExecutionResult, NodeResult, dag_from_plan_steps};
+
+#[cfg(feature = "tools")]
+pub use experience_replay::{ExperienceReplay, Experience, TrajectoryStep, ExperienceOutcome, SelfReflector, ConsolidationResult};

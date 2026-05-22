@@ -587,6 +587,26 @@ pub struct ToolMemoryEntry {
     pub avg_reward: f32,
 }
 
+/// Reflection entry storing analyzed lessons from experiences
+/// (Based on ERL, R³ papers)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReflectionEntry {
+    /// Reflection ID
+    pub id: String,
+    /// What happened (situation)
+    pub situation: String,
+    /// What was tried
+    pub action: String,
+    /// What was the outcome
+    pub outcome: String,
+    /// Lesson learned
+    pub lesson: String,
+    /// When this was recorded
+    pub timestamp: DateTime<Utc>,
+    /// Confidence in this reflection (0.0 - 1.0)
+    pub confidence: f32,
+}
+
 impl ToolMemoryEntry {
     pub fn new(tool_name: &str) -> Self {
         Self {
@@ -782,6 +802,136 @@ impl TieredMemory {
             tool_count: self.tool.read().unwrap().len(),
             semantic_count: self.semantic.read().unwrap().len(),
         }
+    }
+
+    // =============================================================================
+    // Episodic Reflection (Based on ERL, R³ papers)
+    // =============================================================================
+
+    /// Store a reflection from experience analysis
+    pub fn add_reflection(&self, situation: &str, action: &str, outcome: &str, lesson: &str, confidence: f32) {
+        let reflection = ReflectionEntry {
+            id: uuid_simple(),
+            situation: situation.to_string(),
+            action: action.to_string(),
+            outcome: outcome.to_string(),
+            lesson: lesson.to_string(),
+            timestamp: Utc::now(),
+            confidence,
+        };
+
+        // Store as episodic memory with special format
+        let content = format!(
+            "REFLECTION: [{}] {} → {} | Lesson: {} (conf:{:.2})",
+            situation, action, outcome, lesson, confidence
+        );
+
+        let entry = TieredMemoryEntry {
+            id: reflection.id,
+            tier: MemoryTier::Episodic,
+            content,
+            importance: confidence,
+            last_accessed: Utc::now(),
+            access_count: 1,
+            tool_name: None,
+            ttl_seconds: 0,
+        };
+
+        let mut episodic = self.episodic.write().unwrap();
+        episodic.push_front(entry);
+        while episodic.len() > self.max_episodic {
+            episodic.pop_back();
+        }
+    }
+
+    /// Get reflections relevant to a query
+    pub fn get_reflections(&self, query: &str, limit: usize) -> Vec<String> {
+        let episodic = self.episodic.read().unwrap();
+        let query_lower = query.to_lowercase();
+
+        episodic
+            .iter()
+            .filter(|e| e.content.contains("REFLECTION") || e.content.to_lowercase().contains(&query_lower))
+            .take(limit)
+            .map(|e| e.content.clone())
+            .collect()
+    }
+
+    /// Consolidate episodic memories into actionable reflections
+    /// This distills multiple similar experiences into a single lesson
+    pub fn consolidate_to_reflections(&self, theme: &str) -> Vec<String> {
+        let episodic = self.episodic.read().unwrap();
+
+        // Find episodic entries matching the theme
+        let matching: Vec<_> = episodic
+            .iter()
+            .filter(|e| e.content.to_lowercase().contains(&theme.to_lowercase()))
+            .collect();
+
+        if matching.is_empty() {
+            return vec![];
+        }
+
+        // Extract lessons (simplified - in real impl would use LLM)
+        let mut lessons = Vec::new();
+
+        // Group by outcome patterns
+        let success_count = matching.iter().filter(|e| e.content.contains("Success")).count();
+        let failure_count = matching.iter().filter(|e| e.content.contains("Failure")).count();
+
+        if success_count > failure_count {
+            lessons.push(format!(
+                "For {}: {} successes vs {} failures - prioritize this approach",
+                theme, success_count, failure_count
+            ));
+        } else if failure_count > success_count {
+            lessons.push(format!(
+                "For {}: {} failures vs {} successes - reconsider approach",
+                theme, failure_count, success_count
+            ));
+        }
+
+        // Extract common patterns
+        if matching.len() >= 3 {
+            lessons.push(format!(
+                "Multiple experiences ({}) found for {} - consider as established pattern",
+                matching.len(), theme
+            ));
+        }
+
+        lessons
+    }
+
+    /// Generate a self-improvement suggestion based on memory history
+    pub fn suggest_improvement(&self) -> Option<String> {
+        let stats = self.tiered_stats();
+
+        // Analyze tool effectiveness
+        let effective_tools = self.get_effective_tools(3);
+
+        if effective_tools.is_empty() {
+            return None;
+        }
+
+        // Find tools with low success rate
+        let problematic_tools: Vec<_> = effective_tools
+            .iter()
+            .filter(|(_, rate)| *rate < 0.5)
+            .collect();
+
+        if !problematic_tools.is_empty() {
+            let tools: Vec<_> = problematic_tools.iter().map(|(name, _)| name.as_str()).collect();
+            return Some(format!(
+                "Consider improving or replacing tools with low success rate: {}",
+                tools.join(", ")
+            ));
+        }
+
+        // If most tools are effective, suggest exploration
+        Some(format!(
+            "Tools performing well ({} effective). Consider exploring new tool combinations.",
+            effective_tools.len()
+        ))
     }
 }
 
