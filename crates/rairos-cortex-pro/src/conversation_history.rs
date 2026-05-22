@@ -609,14 +609,15 @@ impl ConversationHistory {
                 if conv.metadata.tags.iter().any(|t| t.to_lowercase().contains(&query_lower)) {
                     return true;
                 }
-                // Check turns content
-                // Optimization: try case-sensitive match first (fast path, no allocation)
+                // Check turns content - try case-sensitive match first (fast path)
                 // Only call to_lowercase() if case-sensitive search fails
                 for turn in &conv.turns {
                     for msg in &turn.messages {
-                        if msg.content.contains(&query_lower)
-                            || msg.content.to_lowercase().contains(&query_lower)
-                        {
+                        if msg.content.contains(&query_lower) {
+                            return true;
+                        }
+                        // Fallback to case-insensitive search
+                        if msg.content.to_lowercase().contains(&query_lower) {
                             return true;
                         }
                     }

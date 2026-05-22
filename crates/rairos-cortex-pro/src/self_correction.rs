@@ -367,14 +367,15 @@ impl ExternalValidator {
     /// Check if a rule is violated
     fn check_rule(&self, output: &str, check: &str) -> bool {
         // Simplified rule checking - in reality would use LLM or more complex logic
+        let output_lower = output.to_lowercase(); // Hoist once for reuse
         if check.contains("must contain") {
             let required = check.split("must contain").nth(1).unwrap_or("").trim();
             let required_lower = required.to_lowercase();
-            !output.to_lowercase().contains(&required_lower)
+            !output_lower.contains(&required_lower)
         } else if check.contains("must not contain") {
             let forbidden = check.split("must not contain").nth(1).unwrap_or("").trim();
             let forbidden_lower = forbidden.to_lowercase();
-            output.to_lowercase().contains(&forbidden_lower)
+            output_lower.contains(&forbidden_lower)
         } else {
             false
         }
