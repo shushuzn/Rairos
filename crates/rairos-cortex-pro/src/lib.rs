@@ -151,6 +151,10 @@ pub mod deliberation;
 #[cfg(feature = "tools")]
 pub mod mia;
 
+/// Worker Pool for parallel task execution
+#[cfg(feature = "tools")]
+pub mod worker_pool;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
@@ -238,6 +242,9 @@ pub use deliberation::{DeliberationEngine, DeliberationConfig, DeliberationResul
 
 #[cfg(feature = "tools")]
 pub use mia::{MemoryIntelligenceAgent, MIAConfig, MIAResult, MIAStats, MemoryManager, CompressedTrajectory, MemoryStats as MIA_MemoryStats, Planner, PlannerConfig, SearchPlan, SearchStep, SearchAction, Executor, ExecutorConfig, ExecutionResult as MIA_ExecutionResult, PlanExecution, MemoryConverter, Reflection as MIA_Reflection, PlanTemplate};
+
+#[cfg(feature = "tools")]
+pub use worker_pool::{WorkerPool, WorkerPoolConfig, WorkerPoolStats, AsyncWorkerPool, Task, TaskPayload as WorkerTaskPayload, TaskResult as WorkerTaskResult, TaskHandle, Priority as TaskPriority, PriorityTaskQueue};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
