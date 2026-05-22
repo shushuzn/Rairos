@@ -75,6 +75,92 @@ pub struct BenchmarkMetrics {
     pub tasks_completed: u32,
     /// Tasks failed
     pub tasks_failed: u32,
+    // =====================================================================
+    // Multi-Agent Metrics (Based on MASEval, MAESTRO, Silo-Bench research)
+    // =====================================================================
+    /// Score variance (lower = more stable)
+    pub score_variance: f32,
+    /// Run-to-run variance (reproducibility measure)
+    pub reproducibility_score: f32,
+    /// Communication efficiency (tokens per successful task)
+    pub communication_efficiency: f64,
+    /// Tool call efficiency (successful calls / total calls)
+    pub tool_call_efficiency: f32,
+    /// Coordination cost (overhead from multi-agent coordination)
+    pub coordination_cost: f32,
+    /// Self-correction rate (how often agents self-correct)
+    pub self_correction_rate: f32,
+}
+
+impl BenchmarkMetrics {
+    /// Calculate metrics from task results with enhanced multi-agent metrics
+    pub fn from_results_with_detailed(results: &[TaskResult], total_tool_calls: u32, successful_tool_calls: u32) -> Self {
+        // Start with basic metrics
+        let mut metrics = Self::from_results(results);
+
+        // Calculate score variance
+        let scores: Vec<f32> = results.iter().map(|r| r.score).collect();
+        let mean = metrics.avg_score;
+        let variance = if scores.len() > 1 {
+            scores.iter().map(|s| (s - mean).powi(2)).sum::<f32>() / scores.len() as f32
+        } else {
+            0.0
+        };
+
+        // Reproducibility score (inverse of variance, normalized to 0-1)
+        let reproducibility_score = (1.0 - variance.min(1.0)).max(0.0);
+
+        // Communication efficiency (tokens per successful task)
+        let successful_count = results.iter().filter(|r| r.success).count() as u64;
+        let communication_efficiency = if successful_count > 0 {
+            metrics.total_tokens as f64 / successful_count as f64
+        } else {
+            0.0
+        };
+
+        // Tool call efficiency
+        let tool_call_efficiency = if total_tool_calls > 0 {
+            successful_tool_calls as f32 / total_tool_calls as f32
+        } else {
+            0.8 // Default if no data
+        };
+
+        // Coordination cost (estimated as overhead from parallel execution)
+        let coordination_cost = if results.len() > 1 {
+            // Estimate based on execution time variance
+            let times: Vec<f64> = results.iter().map(|r| r.execution_time_ms as f64).collect();
+            let time_variance = if times.len() > 1 {
+                let time_mean = times.iter().sum::<f64>() / times.len() as f64;
+                times.iter().map(|t| (t - time_mean).powi(2)).sum::<f64>() / times.len() as f64
+            } else {
+                0.0
+            };
+            (time_variance / 1000000.0).min(1.0) as f32 // Normalize
+        } else {
+            0.0
+        };
+
+        // Self-correction rate (estimated from milestones with "retry" or "correct")
+        let self_correction_rate = if !results.is_empty() {
+            let corrections: usize = results.iter()
+                .flat_map(|r| &r.milestones)
+                .filter(|m| m.name.to_lowercase().contains("correct") || m.name.to_lowercase().contains("retry"))
+                .count();
+            corrections as f32 / results.len() as f32
+        } else {
+            0.0
+        };
+
+        // Update metrics
+        metrics.score_variance = variance;
+        metrics.reproducibility_score = reproducibility_score;
+        metrics.communication_efficiency = communication_efficiency;
+        metrics.tool_call_efficiency = tool_call_efficiency;
+        metrics.coordination_cost = coordination_cost;
+        metrics.self_correction_rate = self_correction_rate;
+
+        metrics
+    }
 }
 
 impl BenchmarkMetrics {
@@ -126,6 +212,13 @@ impl BenchmarkMetrics {
             total_tokens,
             tasks_completed,
             tasks_failed,
+            // Multi-agent metrics - default values (use from_results_with_detailed for actual values)
+            score_variance: 0.0,
+            reproducibility_score: 1.0,
+            communication_efficiency: 0.0,
+            tool_call_efficiency: 0.8,
+            coordination_cost: 0.0,
+            self_correction_rate: 0.0,
         }
     }
 }

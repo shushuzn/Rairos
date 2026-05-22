@@ -183,6 +183,53 @@ pub struct AgentCard {
     pub auth_method: Option<String>,
     /// Provider organization
     pub provider: Option<String>,
+    // =====================================================================
+    // Enhanced fields based on Multi-Agent Protocol research (MPAC, MMP)
+    // =====================================================================
+    /// Supported communication protocols (e.g., "A2A", "MCP", "custom")
+    pub supported_protocols: Vec<String>,
+    /// Preferred communication pattern
+    pub communication_pattern: CommunicationPattern,
+    /// Average response time in milliseconds
+    pub avg_response_time_ms: f64,
+    /// Historical reliability score (0.0 - 1.0)
+    pub reliability_score: f32,
+    /// Maximum concurrent tasks supported
+    pub max_concurrent_tasks: u32,
+    /// Supported tool categories (for tool-using agents)
+    pub supported_tool_categories: Vec<String>,
+    /// Agent role in multi-agent system
+    pub agent_role: AgentRole,
+}
+
+/// Communication patterns for agents
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+pub enum CommunicationPattern {
+    /// Synchronous request-response
+    Synchronous,
+    /// Asynchronous messaging
+    Asynchronous,
+    /// Publish-subscribe
+    PubSub,
+    /// Streaming responses
+    Streaming,
+    /// Hybrid approach
+    Hybrid,
+}
+
+/// Agent roles in multi-agent systems
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+pub enum AgentRole {
+    /// Orchestrator/planner agent
+    Orchestrator,
+    /// Executor/worker agent
+    Executor,
+    /// Critic/reviewer agent
+    Critic,
+    /// Tool specialist agent
+    ToolSpecialist,
+    /// General-purpose agent
+    General,
 }
 
 /// A capability that an agent provides
@@ -226,6 +273,13 @@ impl A2AProtocol {
             endpoint: None,
             auth_method: None,
             provider: None,
+            supported_protocols: vec!["A2A".to_string()],
+            communication_pattern: CommunicationPattern::Synchronous,
+            avg_response_time_ms: 1000.0,
+            reliability_score: 0.9,
+            max_concurrent_tasks: 5,
+            supported_tool_categories: vec![],
+            agent_role: AgentRole::General,
         };
 
         Self {
@@ -364,6 +418,13 @@ mod tests {
             endpoint: None,
             auth_method: None,
             provider: None,
+            supported_protocols: vec!["A2A".to_string()],
+            communication_pattern: CommunicationPattern::Synchronous,
+            avg_response_time_ms: 1000.0,
+            reliability_score: 0.9,
+            max_concurrent_tasks: 5,
+            supported_tool_categories: vec![],
+            agent_role: AgentRole::Executor,
         };
 
         protocol.register_agent(card);
@@ -392,6 +453,13 @@ mod tests {
             endpoint: None,
             auth_method: None,
             provider: None,
+            supported_protocols: vec!["A2A".to_string()],
+            communication_pattern: CommunicationPattern::Synchronous,
+            avg_response_time_ms: 1000.0,
+            reliability_score: 0.9,
+            max_concurrent_tasks: 5,
+            supported_tool_categories: vec![],
+            agent_role: AgentRole::ToolSpecialist,
         };
         protocol.register_agent(card1);
 
@@ -413,6 +481,13 @@ mod tests {
             endpoint: None,
             auth_method: None,
             provider: None,
+            supported_protocols: vec!["A2A".to_string()],
+            communication_pattern: CommunicationPattern::Synchronous,
+            avg_response_time_ms: 1500.0,
+            reliability_score: 0.85,
+            max_concurrent_tasks: 3,
+            supported_tool_categories: vec![],
+            agent_role: AgentRole::Orchestrator,
         };
         protocol.register_agent(card2);
 
