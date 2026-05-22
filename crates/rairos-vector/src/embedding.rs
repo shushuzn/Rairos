@@ -95,6 +95,7 @@ impl OpenAiEmbedder {
         }
 
         #[derive(Deserialize)]
+        #[allow(dead_code)]
         struct Response {
             data: Vec<EmbeddingData>,
             usage: Usage,
@@ -107,6 +108,7 @@ impl OpenAiEmbedder {
         }
 
         #[derive(Deserialize)]
+        #[allow(dead_code)]
         struct Usage {
             prompt_tokens: usize,
             total_tokens: usize,
@@ -211,6 +213,7 @@ impl BgemEmbedder {
         }
 
         #[derive(Deserialize)]
+        #[allow(dead_code)]
         struct Response {
             data: Vec<EmbeddingData>,
             usage: Usage,
@@ -223,6 +226,7 @@ impl BgemEmbedder {
         }
 
         #[derive(Deserialize)]
+        #[allow(dead_code)]
         struct Usage {
             prompt_tokens: usize,
             total_tokens: usize,

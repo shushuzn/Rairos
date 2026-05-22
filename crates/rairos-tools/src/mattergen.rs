@@ -1,12 +1,11 @@
 //! MatterGen crystal generation tool.
 //!
-//! MatterGen is a diffusion-based model for generating crystal structures
+//! MatterGen is a diffusion-based Model for generating crystal structures
 //! with target properties. This tool wraps a model server for property-based
 //! crystal generation.
 
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use crate::error::ToolError;
 use crate::tool_trait::{MaterialTool, ToolParams, ToolOutput};
 
@@ -180,6 +179,7 @@ Output:
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashMap;
 
     #[test]
     fn test_validate_inputs_unconditioned() {

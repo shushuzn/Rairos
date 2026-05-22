@@ -1,8 +1,6 @@
 //! Materials Project API tool.
 
 use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use crate::error::ToolError;
 use crate::tool_trait::{MaterialTool, ToolParams, ToolOutput};
 
@@ -113,6 +111,7 @@ Output:
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashMap;
 
     #[test]
     fn test_validate_inputs() {

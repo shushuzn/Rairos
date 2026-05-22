@@ -7,7 +7,6 @@ use async_trait::async_trait;
 use crate::client::{SearchHit, VectorStore};
 use crate::embedding::Embedder;
 use crate::error::VectorError;
-use regex::Regex;
 
 /// RAG configuration
 #[derive(Debug, Clone)]

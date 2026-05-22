@@ -9,8 +9,11 @@
 //! ```
 
 use std::net::SocketAddr;
+
+#[cfg(feature = "api")]
 use clap::Parser;
 
+#[cfg(feature = "api")]
 #[derive(Parser, Debug)]
 #[command(name = "rairos-api")]
 #[command(about = "SparksMatter Research Workflow API Server")]
@@ -22,11 +25,21 @@ struct Args {
 
 #[tokio::main]
 async fn main() {
-    let args = Args::parse();
+    #[cfg(feature = "api")]
+    {
+        let args = Args::parse();
 
-    println!("╔══════════════════════════════════════════════════════════════╗");
-    println!("║           SparksMatter API Server                       ║");
-    println!("╚══════════════════════════════════════════════════════════════╝");
+        println!("╔══════════════════════════════════════════════════════════════╗");
+        println!("║           SparksMatter API Server                       ║");
+        println!("╚══════════════════════════════════════════════════════════════╝");
 
-    rairos_cortex_pro::api::start_server(args.addr).await;
+        rairos_cortex_pro::api::start_server(args.addr).await;
+    }
+
+    #[cfg(not(feature = "api"))]
+    {
+        eprintln!("Error: This binary requires the 'api' feature to be enabled.");
+        eprintln!("Run with: cargo run --bin rairos-api --features api");
+        std::process::exit(1);
+    }
 }

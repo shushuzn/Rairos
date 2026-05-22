@@ -85,6 +85,7 @@ struct ChromaCountResponse {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct ChromaQueryResponse {
     ids: Vec<Vec<String>>,
     distances: Vec<Vec<f32>>,
@@ -100,6 +101,7 @@ struct ChromaDeleteRequest {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct ChromaGetResponse {
     ids: Vec<String>,
     embeddings: Option<Vec<Vec<f32>>>,
@@ -108,6 +110,7 @@ struct ChromaGetResponse {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct ChromaCreateRequest {
     name: String,
     #[serde(rename = "get_or_create")]
@@ -117,12 +120,14 @@ struct ChromaCreateRequest {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct ChromaResponse {
     #[serde(rename = "success")]
     success: bool,
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct ChromaError {
     #[serde(rename = "error")]
     error: String,
@@ -340,6 +345,7 @@ impl VectorStore for ChromaClient {
 }
 
 // Thread-safe wrapper with collection name management
+#[allow(dead_code)]
 pub struct ChromaVectorStore {
     client: Arc<ChromaClient>,
     collection_name: String,
