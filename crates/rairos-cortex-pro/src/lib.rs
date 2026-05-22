@@ -175,6 +175,10 @@ pub mod agent_registry;
 #[cfg(feature = "tools")]
 pub mod intent_classifier;
 
+/// Conversation History for audit trail and context management
+#[cfg(feature = "tools")]
+pub mod conversation_history;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
