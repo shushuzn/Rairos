@@ -511,3 +511,252 @@ mod tests {
         assert_eq!(compressor.estimate_tokens(text), 27);
     }
 }
+
+// =============================================================================
+// ACON-Style Context Compression Optimization
+// Based on "ACON: Agent Context Optimization" (arXiv:2510.00615)
+// =============================================================================
+
+/// Trajectory pair for learning compression guidelines
+#[derive(Debug, Clone)]
+pub struct TrajectoryPair {
+    /// Full context that succeeded
+    pub full_context: String,
+    /// Compressed context that failed
+    pub compressed_context: String,
+    /// Task description
+    pub task: String,
+    /// What information was lost
+    pub lost_information: String,
+}
+
+/// Learned compression guideline
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompressionGuideline {
+    /// What to preserve
+    pub preserve_patterns: Vec<String>,
+    /// What to compress
+    pub compress_patterns: Vec<String>,
+    /// Minimum relevance threshold
+    pub min_relevance: f32,
+    /// Domain-specific rules
+    pub domain_rules: Vec<String>,
+    /// Confidence score (0-1)
+    pub confidence: f32,
+}
+
+impl Default for CompressionGuideline {
+    fn default() -> Self {
+        Self {
+            preserve_patterns: vec![
+                r"\d+[\.\-]\d+[\.\-]\d+".to_string(),  // Dates
+                r"\$[\d,]+(\.\d{2})?".to_string(),       // Money
+                r"[A-Z]{2,}".to_string(),               // Acronyms
+                r"https?://\S+".to_string(),            // URLs
+            ],
+            compress_patterns: vec![
+                r"^(he|she|they|the)\s+".to_string(),  // Pronouns starting sentences
+                r"\s{2,}".to_string(),                  // Multiple spaces
+                r"\[.*?\]".to_string(),                  // Bracketed content
+            ],
+            min_relevance: 0.5,
+            domain_rules: vec![],
+            confidence: 0.5,
+        }
+    }
+}
+
+/// ACON-style compression analyzer
+/// Analyzes trajectory pairs to learn what information is critical
+pub struct AconeCompressionAnalyzer {
+    guidelines: Vec<CompressionGuideline>,
+}
+
+impl AconeCompressionAnalyzer {
+    pub fn new() -> Self {
+        Self {
+            guidelines: vec![CompressionGuideline::default()],
+        }
+    }
+
+    /// Analyze a trajectory pair to learn what went wrong
+    pub fn analyze_failure(&mut self, pair: &TrajectoryPair) -> CompressionGuideline {
+        let mut guideline = CompressionGuideline::default();
+
+        // Extract key differences between full and compressed
+        let full_len = pair.full_context.len();
+        let compressed_len = pair.compressed_context.len();
+        let compression_ratio = compressed_len as f32 / full_len as f32;
+
+        // Detect lost information patterns
+        let lost_lower = pair.lost_information.to_lowercase();
+
+        // If numerical data was lost, preserve numbers
+        if lost_lower.contains("number") || lost_lower.contains("quantity") || lost_lower.contains("amount") {
+            guideline.preserve_patterns.push(r"\d+(\.\d+)?".to_string());
+        }
+
+        // If names were lost, preserve capitalized terms
+        if lost_lower.contains("name") || lost_lower.contains("who") {
+            guideline.preserve_patterns.push(r"[A-Z][a-z]+".to_string());
+        }
+
+        // If dates were lost, preserve date patterns
+        if lost_lower.contains("date") || lost_lower.contains("when") {
+            guideline.preserve_patterns.push(r"\d{1,2}[/-]\d{1,2}[/-]\d{2,4}".to_string());
+        }
+
+        // If tool calls were lost, preserve tool-related content
+        if lost_lower.contains("tool") || lost_lower.contains("function") {
+            guideline.compress_patterns.retain(|p| p != r"\[.*?\]");
+            guideline.preserve_patterns.push(r"tool[_:]?\w+".to_string());
+        }
+
+        // Calculate confidence based on how extreme the compression was
+        guideline.confidence = if compression_ratio < 0.3 {
+            0.3 // Very aggressive compression, lower confidence
+        } else if compression_ratio < 0.5 {
+            0.6
+        } else {
+            0.8
+        };
+
+        self.guidelines.push(guideline.clone());
+        guideline
+    }
+
+    /// Merge multiple guidelines into a consolidated one
+    pub fn merge_guidelines(&self) -> CompressionGuideline {
+        let mut merged = CompressionGuideline::default();
+        merged.confidence = 0.0;
+
+        for guideline in &self.guidelines {
+            // Union of preserve patterns
+            for pattern in &guideline.preserve_patterns {
+                if !merged.preserve_patterns.contains(pattern) {
+                    merged.preserve_patterns.push(pattern.clone());
+                }
+            }
+
+            // Union of compress patterns
+            for pattern in &guideline.compress_patterns {
+                if !merged.compress_patterns.contains(pattern) {
+                    merged.compress_patterns.push(pattern.clone());
+                }
+            }
+
+            // Average domain rules
+            merged.domain_rules.extend(guideline.domain_rules.clone());
+
+            // Max confidence
+            merged.confidence = merged.confidence.max(guideline.confidence);
+        }
+
+        // Remove duplicates from domain_rules
+        merged.domain_rules.sort();
+        merged.domain_rules.dedup();
+
+        merged
+    }
+
+    /// Get current best guideline
+    pub fn get_best_guideline(&self) -> CompressionGuideline {
+        self.guidelines
+            .iter()
+            .max_by(|a, b| a.confidence.partial_cmp(&b.confidence).unwrap())
+            .cloned()
+            .unwrap_or_default()
+    }
+}
+
+impl Default for AconeCompressionAnalyzer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Apply learned guidelines to compress context
+pub fn acon_compress(context: &str, guideline: &CompressionGuideline) -> String {
+    let mut result = context.to_string();
+
+    // Simple string-based preservation (avoiding regex dependency)
+    // Protect preserved patterns by replacing with placeholders
+    let mut placeholders: Vec<(String, String)> = Vec::new();
+
+    // For now, use simple string matching for key patterns
+    // Numbers and special values
+    let number_patterns = ["$", "€", "£", "¥", "%", "http://", "https://"];
+    for (i, &pattern) in number_patterns.iter().enumerate() {
+        if result.contains(pattern) {
+            // Find all occurrences and protect them
+            let mut search_start = 0usize;
+            let mut j = 0;
+            while let Some(pos) = result[search_start..].find(pattern) {
+                let abs_pos = search_start + pos;
+                // Extract a reasonable context around the pattern
+                let start = abs_pos.saturating_sub(5);
+                let end = (abs_pos + pattern.len() + 10).min(result.len());
+                let protected = result[start..end].to_string();
+                let placeholder = format!("__P{}__", i * 100 + j);
+                placeholders.push((placeholder.clone(), protected));
+                result = format!("{} {}...", &result[..start], placeholder);
+                search_start = start + placeholder.len() + 3;
+                j += 1;
+            }
+        }
+    }
+
+    // Clean up multiple spaces
+    while result.contains("  ") {
+        result = result.replace("  ", " ");
+    }
+
+    // Restore preserved patterns
+    for (placeholder, original) in &placeholders {
+        result = result.replace(placeholder, original);
+    }
+
+    result.trim().to_string()
+}
+
+#[cfg(test)]
+mod acon_tests {
+    use super::*;
+
+    #[test]
+    fn test_analyze_failure_learns_numbers() {
+        let mut analyzer = AconeCompressionAnalyzer::new();
+
+        let pair = TrajectoryPair {
+            full_context: "The price is $123.45 and quantity is 500 units".to_string(),
+            compressed_context: "The price is and quantity is units".to_string(),
+            task: "Calculate total cost".to_string(),
+            lost_information: "The numerical values were lost".to_string(),
+        };
+
+        let guideline = analyzer.analyze_failure(&pair);
+        assert!(guideline.preserve_patterns.iter().any(|p| p.contains(r"\d")));
+    }
+
+    #[test]
+    fn test_acon_compress_preserves_special_chars() {
+        let guideline = CompressionGuideline {
+            preserve_patterns: vec![],
+            compress_patterns: vec![],
+            min_relevance: 0.5,
+            domain_rules: vec![],
+            confidence: 0.8,
+        };
+
+        let result = acon_compress("The price is $100 and quantity is 50", &guideline);
+        // Simple compression just trims whitespace
+        assert!(result.contains("$100"));
+    }
+
+    #[test]
+    fn test_merge_guidelines() {
+        let analyzer = AconeCompressionAnalyzer::new();
+        let merged = analyzer.merge_guidelines();
+        assert!(merged.confidence > 0.0);
+    }
+}

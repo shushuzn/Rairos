@@ -186,6 +186,198 @@ pub struct StepResult {
     pub error: Option<String>,
 }
 
+// =============================================================================
+// Planner-Executor-Verifier Triad Pattern (Based on MACE, arXiv:2604.17225)
+// =============================================================================
+
+/// Verification result from the Verifier agent
+#[derive(Debug, Clone)]
+pub struct VerificationResult {
+    /// Whether the execution result is valid
+    pub is_valid: bool,
+    /// Confidence score (0.0 - 1.0)
+    pub confidence: f32,
+    /// Issues found (if any)
+    pub issues: Vec<String>,
+    /// Suggested corrections (if any)
+    pub corrections: Vec<String>,
+    /// Reasoning for the verification decision
+    pub reasoning: String,
+}
+
+impl Default for VerificationResult {
+    fn default() -> Self {
+        Self {
+            is_valid: true,
+            confidence: 1.0,
+            issues: Vec::new(),
+            corrections: Vec::new(),
+            reasoning: String::new(),
+        }
+    }
+}
+
+/// Verifier agent for validating execution results
+/// Implements the "Reviewer" role in the Planner-Executor-Reviewer triad
+pub struct Verifier {
+    /// Verification strictness (0.0 = lenient, 1.0 = strict)
+    pub strictness: f32,
+    /// Whether to require detailed reasoning
+    pub require_reasoning: bool,
+}
+
+impl Default for Verifier {
+    fn default() -> Self {
+        Self {
+            strictness: 0.5,
+            require_reasoning: true,
+        }
+    }
+}
+
+impl Verifier {
+    /// Create a new verifier with custom strictness
+    pub fn with_strictness(strictness: f32) -> Self {
+        Self {
+            strictness: strictness.clamp(0.0, 1.0),
+            ..Default::default()
+        }
+    }
+
+    /// Verify a plan step execution result
+    pub fn verify_step(&self, step: &PlanStep, result: &StepResult) -> VerificationResult {
+        let mut issues = Vec::new();
+        let mut corrections = Vec::new();
+
+        // Check if step succeeded
+        if !result.success {
+            issues.push(format!("Step {} execution failed: {}", step.step, result.error.clone().unwrap_or_default()));
+            corrections.push(format!("Retry step {} with modified inputs", step.step));
+            return VerificationResult {
+                is_valid: false,
+                confidence: 0.0,
+                issues,
+                corrections,
+                reasoning: "Execution failure detected".to_string(),
+            };
+        }
+
+        // Check output quality
+        let output = match &result.output {
+            Some(o) => o,
+            None => {
+                issues.push(format!("Step {} produced no output", step.step));
+                corrections.push(format!("Ensure step {} generates output", step.step));
+                return VerificationResult {
+                    is_valid: false,
+                    confidence: 0.2,
+                    issues,
+                    corrections,
+                    reasoning: "Missing output".to_string(),
+                };
+            }
+        };
+
+        // Verify output is not empty
+        if let Some(val) = output.as_str() {
+            if val.trim().is_empty() {
+                issues.push(format!("Step {} output is empty", step.step));
+                corrections.push(format!("Add meaningful output to step {}", step.step));
+            } else if val.len() < 10 {
+                issues.push(format!("Step {} output suspiciously short", step.step));
+                corrections.push(format!("Expand output from step {}", step.step));
+            }
+        }
+
+        // Calculate confidence based on issues found
+        let confidence = if issues.is_empty() {
+            1.0
+        } else {
+            (1.0 - self.strictness * issues.len() as f32 * 0.2).max(0.1)
+        };
+
+        let reasoning = if issues.is_empty() {
+            format!("Step {} passed verification", step.step)
+        } else {
+            format!("Step {} has {} issue(s)", step.step, issues.len())
+        };
+
+        VerificationResult {
+            is_valid: issues.is_empty(),
+            confidence,
+            issues,
+            corrections,
+            reasoning,
+        }
+    }
+
+    /// Verify a complete plan execution
+    pub fn verify_plan(&self, plan: &Plan, results: &[StepResult]) -> VerificationResult {
+        if results.len() != plan.steps.len() {
+            return VerificationResult {
+                is_valid: false,
+                confidence: 0.0,
+                issues: vec![format!("Expected {} results, got {}", plan.steps.len(), results.len())],
+                corrections: vec!["Re-run plan execution".to_string()],
+                reasoning: "Result count mismatch".to_string(),
+            };
+        }
+
+        let mut all_issues = Vec::new();
+        let mut all_corrections = Vec::new();
+        let mut total_confidence = 0.0f32;
+
+        for (step, result) in plan.steps.iter().zip(results.iter()) {
+            let step_verification = self.verify_step(step, result);
+            all_issues.extend(step_verification.issues);
+            all_corrections.extend(step_verification.corrections);
+            total_confidence += step_verification.confidence;
+        }
+
+        let avg_confidence = total_confidence / results.len() as f32;
+        let is_valid = all_issues.is_empty();
+        let issues_count = all_issues.len();
+
+        VerificationResult {
+            is_valid,
+            confidence: avg_confidence,
+            issues: all_issues,
+            corrections: all_corrections,
+            reasoning: if is_valid {
+                "All steps verified successfully".to_string()
+            } else {
+                format!("Found {} total issue(s)", issues_count)
+            },
+        }
+    }
+}
+
+/// Planner-Executor-Verifier triad execution result
+#[derive(Debug, Clone)]
+pub struct TriadExecutionResult {
+    /// Plan created by Planner
+    pub plan: Plan,
+    /// Execution results from Executor
+    pub execution_result: ExecutionResult,
+    /// Verification results from Verifier
+    pub verification_result: VerificationResult,
+    /// Whether the full triad succeeded
+    pub success: bool,
+}
+
+impl TriadExecutionResult {
+    /// Create a new triad result
+    pub fn new(plan: Plan, execution_result: ExecutionResult, verification_result: VerificationResult) -> Self {
+        let success = execution_result.success && verification_result.is_valid;
+        Self {
+            plan,
+            execution_result,
+            verification_result,
+            success,
+        }
+    }
+}
+
 /// Research report with structured sections.
 #[derive(Debug, Clone)]
 pub struct ResearchReport {

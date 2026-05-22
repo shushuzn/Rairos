@@ -72,6 +72,12 @@ pub struct MctsNode {
     pub depth: usize,
     /// Whether this node is fully expanded
     pub is_expanded: bool,
+    /// FORESIGHT: Pre-execution predicted score (ToolTree innovation)
+    pub foresight_score: f64,
+    /// HINDSIGHT: Post-execution actual score (ToolTree innovation)
+    pub hindsight_score: f64,
+    /// Whether this node has been executed
+    pub is_executed: bool,
 }
 
 impl MctsNode {
@@ -85,6 +91,9 @@ impl MctsNode {
             parent: None,
             depth: 0,
             is_expanded: false,
+            foresight_score: 0.0,
+            hindsight_score: 0.0,
+            is_executed: false,
         }
     }
 
@@ -98,6 +107,9 @@ impl MctsNode {
             parent: Some(parent_idx),
             depth,
             is_expanded: false,
+            foresight_score: 0.0,
+            hindsight_score: 0.0,
+            is_executed: false,
         }
     }
 
@@ -394,6 +406,95 @@ impl MctsPlanner {
         }
 
         total_reward / path.len() as f64
+    }
+
+    /// Calculate FORESIGHT score (pre-execution prediction) - ToolTree innovation
+    /// This predicts how useful a tool will be before actually using it
+    fn calculate_foresight(&self, tool: &Tool, query: &str, context: &str) -> f64 {
+        let effectiveness = self.tool_effectiveness.read().unwrap();
+
+        // Historical effectiveness
+        let hist_eff = effectiveness.get(&tool.name).copied().unwrap_or(0.5) as f64;
+
+        // Query relevance (forward-looking)
+        let query_lower = query.to_lowercase();
+        let desc_lower = tool.description.to_lowercase();
+        let query_relevance = if desc_lower.contains(&query_lower) || query_lower.contains(&desc_lower[..10.min(desc_lower.len())]) {
+            0.3
+        } else {
+            0.0
+        };
+
+        // Context relevance (how well this tool handles the current context)
+        let context_relevance = if context.len() > 100 {
+            // Larger context = higher chance tool will help
+            0.1
+        } else {
+            0.05
+        };
+
+        // Tool cost efficiency
+        let cost_efficiency = 1.0 - (tool.estimated_cost as f64 * 0.5);
+
+        // Combine into foresight score (predicted reward)
+        0.4 * hist_eff + 0.3 * query_relevance + 0.2 * context_relevance + 0.1 * cost_efficiency
+    }
+
+    /// Update HINDSIGHT score (post-execution evaluation) - ToolTree innovation
+    /// This updates the node with actual observed performance
+    fn update_hindsight(&self, node_idx: usize, actual_reward: f64) {
+        let mut tree = self.tree.write().unwrap();
+        if let Some(node) = tree.get_mut(node_idx) {
+            node.hindsight_score = actual_reward;
+            node.is_executed = true;
+        }
+    }
+
+    /// Calculate combined score using FORESIGHT + HINDSIGHT dual evaluation
+    /// This is the ToolTree innovation: bidirectional pruning
+    fn calculate_dual_score(&self, node_idx: usize) -> f64 {
+        let tree = self.tree.read().unwrap();
+        if let Some(node) = tree.get(node_idx) {
+            if node.is_executed {
+                // Use hindsight (actual observed)
+                0.7 * node.hindsight_score + 0.3 * node.foresight_score
+            } else {
+                // Use foresight (predicted) for unexplored nodes
+                node.foresight_score
+            }
+        } else {
+            0.0
+        }
+    }
+
+    /// Report actual execution result for a tool (used for hindsight learning)
+    pub fn report_execution_result(&self, tool_name: &str, result: &str, success: bool) {
+        // Update tool effectiveness based on actual result
+        let reward = if success {
+            // Parse result quality (simplified)
+            if result.len() > 100 {
+                0.9 // Good detailed result
+            } else if result.len() > 50 {
+                0.7 // Medium result
+            } else {
+                0.5 // Minimal result
+            }
+        } else {
+            0.2 // Failed execution
+        };
+
+        self.update_effectiveness(tool_name, reward as f32);
+
+        // Update nodes that used this tool with hindsight
+        let mut tree = self.tree.write().unwrap();
+        for node in tree.iter_mut() {
+            if let Some(ref tool) = node.tool {
+                if tool.name == tool_name {
+                    node.hindsight_score = reward;
+                    node.is_executed = true;
+                }
+            }
+        }
     }
 
     /// Get the full search tree for visualization
