@@ -206,7 +206,7 @@ pub use sparks_crew::{SparksCrew, Plan, PlanStep, ExecutionResult, ResearchRepor
 pub use memory::{MemoryBank, IdeationEntry, IdeationStatus, ExperimentationEntry, MemoryStats, MemoryEntryBuilder, ExperimentationEntryBuilder};
 
 #[cfg(feature = "tools")]
-pub use evidence_gap::{EvidenceGapTracker, ResearchQuery, EvidenceItem, EvidenceType, RouterAction, QueryStatus, GapInfo, EvidenceSummary, TrackerStats};
+pub use evidence_gap::{EvidenceGapTracker, ResearchQuery, EvidenceItem, EvidenceType, RouterAction, QueryStatus, GapInfo, EvidenceSummary, GapTrackerStats};
 
 #[cfg(feature = "tools")]
 pub use llm_agents::{LlmHypothesisAgent, LlmHypothesisCriticAgent, LlmPlannerAgent, LlmPlanCriticAgent, LlmReportWriterAgent};

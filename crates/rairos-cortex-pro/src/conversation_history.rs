@@ -384,7 +384,7 @@ impl ConversationHistory {
     }
 
     /// Create a conversation with specific ID
-    pub async fn create_with_id(&self, id: ConversationId) -> &Conversation {
+    pub async fn create_with_id(&self, id: ConversationId) -> Conversation {
         let conv = if self.default_max_turns > 0 {
             Conversation::with_max_turns(id.clone(), self.default_max_turns)
         } else {
@@ -393,10 +393,9 @@ impl ConversationHistory {
 
         let mut conversations = self.conversations.write().await;
         conversations.insert(id.clone(), conv);
-        drop(conversations);
 
-        // Return reference by cloning
-        conversations.get(&id).unwrap()
+        // Return clone of the conversation
+        conversations.get(&id).cloned().unwrap()
     }
 
     /// Get a conversation by ID
@@ -468,54 +467,65 @@ impl ConversationHistory {
         session_id: Option<String>,
         tags: Option<Vec<String>>,
     ) -> bool {
-        let mut conversations = self.conversations.write().await;
-        if let Some(conv) = conversations.get_mut(conv_id) {
-            if let Some(t) = title {
-                conv.metadata.title = Some(t);
-            }
-            if let Some(u) = user_id {
-                // Update user index
-                let old_user = conv.metadata.user_id.clone();
-                conv.metadata.user_id = Some(u.clone());
-                drop(conv);
+        // Collect old values for index updates before locking
+        let old_user;
+        let old_tags;
+        let new_user_for_index = user_id.clone();
 
-                if let Some(old) = old_user {
-                    let mut user_index = self.user_index.write().await;
-                    if let Some(ids) = user_index.get_mut(&old) {
-                        ids.remove(conv_id);
-                    }
+        {
+            let mut conversations = self.conversations.write().await;
+            if let Some(conv) = conversations.get_mut(conv_id) {
+                old_user = conv.metadata.user_id.clone();
+                old_tags = std::mem::take(&mut conv.metadata.tags);
+
+                if let Some(t) = title {
+                    conv.metadata.title = Some(t);
                 }
+                if let Some(u) = user_id {
+                    conv.metadata.user_id = Some(u);
+                }
+                if let Some(s) = session_id {
+                    conv.metadata.session_id = Some(s);
+                }
+                if let Some(ref new_tags) = tags {
+                    conv.metadata.tags = new_tags.clone();
+                }
+                conv.metadata.updated_at = current_timestamp();
+            } else {
+                return false;
+            }
+        } // Drop conversations lock here
+
+        // Update user index
+        if let Some(old) = old_user {
+            if let Some(u) = new_user_for_index {
                 let mut user_index = self.user_index.write().await;
+                if let Some(ids) = user_index.get_mut(&old) {
+                    ids.remove(conv_id);
+                }
                 user_index.entry(u).or_default().insert(conv_id.clone());
             }
-            if let Some(s) = session_id {
-                conv.metadata.session_id = Some(s);
-            }
-            if let Some(new_tags) = tags {
-                // Update tag index
-                let old_tags = std::mem::take(&mut conv.metadata.tags);
-                drop(conv);
+        } else if let Some(u) = new_user_for_index {
+            let mut user_index = self.user_index.write().await;
+            user_index.entry(u).or_default().insert(conv_id.clone());
+        }
 
-                let mut tag_index = self.tag_index.write().await;
-                for tag in &old_tags {
-                    if let Some(ids) = tag_index.get_mut(tag) {
-                        ids.remove(conv_id);
-                    }
+        // Update tag index
+        if !old_tags.is_empty() || tags.is_some() {
+            let mut tag_index = self.tag_index.write().await;
+            for tag in &old_tags {
+                if let Some(ids) = tag_index.get_mut(tag) {
+                    ids.remove(conv_id);
                 }
-                for tag in &new_tags {
+            }
+            if let Some(ref new_tags) = tags {
+                for tag in new_tags {
                     tag_index.entry(tag.clone()).or_default().insert(conv_id.clone());
                 }
-                drop(tag_index);
-
-                let conv = conversations.get_mut(conv_id).unwrap();
-                conv.metadata.tags = new_tags;
             }
-
-            conv.metadata.updated_at = current_timestamp();
-            true
-        } else {
-            false
         }
+
+        true
     }
 
     /// List conversations with optional filter

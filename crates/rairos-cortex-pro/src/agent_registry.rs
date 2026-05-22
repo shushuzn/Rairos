@@ -314,18 +314,21 @@ impl AgentRegistry {
     pub async fn find_available(&self, capability: Option<&str>) -> Vec<RegisteredAgent> {
         let agents = self.agents.read().await;
 
-        let filtered: Box<dyn Iterator<Item = (&AgentId, &RegisteredAgent)>> = if let Some(cap) = capability {
+        let filtered: Vec<(&AgentId, &RegisteredAgent)> = if let Some(cap) = capability {
             let cap_index = self.capability_index.read().await;
             if let Some(ids) = cap_index.get(cap) {
-                Box::new(ids.iter().filter_map(|id| agents.get_key_value(id)))
+                // Clone the IDs to avoid lifetime issues with the lock
+                let ids_vec: Vec<AgentId> = ids.iter().cloned().collect();
+                ids_vec.iter().filter_map(|id| agents.get_key_value(id)).collect()
             } else {
                 return Vec::new();
             }
         } else {
-            Box::new(agents.iter())
+            agents.iter().collect()
         };
 
         filtered
+            .into_iter()
             .filter(|(_, agent)| agent.can_accept_task())
             .map(|(_, agent)| agent.clone())
             .collect()
@@ -495,7 +498,7 @@ impl RegisteredAgentBuilder {
     pub fn name(mut self, name: impl Into<String>) -> Self {
         let name = name.into();
         self.metadata = Some(self.metadata.take().map(|m| AgentMetadata {
-            name,
+            name: name.clone(),
             ..m
         }).unwrap_or_else(|| AgentMetadata {
             name,
@@ -512,7 +515,7 @@ impl RegisteredAgentBuilder {
     pub fn description(mut self, desc: impl Into<String>) -> Self {
         let desc = desc.into();
         self.metadata = Some(self.metadata.take().map(|m| AgentMetadata {
-            description: desc,
+            description: desc.clone(),
             ..m
         }).unwrap_or_else(|| AgentMetadata {
             name: "unnamed".to_string(),
@@ -529,7 +532,7 @@ impl RegisteredAgentBuilder {
     pub fn version(mut self, version: impl Into<String>) -> Self {
         let version = version.into();
         self.metadata = Some(self.metadata.take().map(|m| AgentMetadata {
-            version,
+            version: version.clone(),
             ..m
         }).unwrap_or_else(|| AgentMetadata {
             name: "unnamed".to_string(),
