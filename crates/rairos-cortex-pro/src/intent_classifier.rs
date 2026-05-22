@@ -152,7 +152,9 @@ impl PatternMatcher {
     pub fn matches(&self, input: &str) -> bool {
         match self {
             PatternMatcher::Keyword(keyword) => {
-                input.to_lowercase().contains(&keyword.to_lowercase())
+                let input_lower = input.to_lowercase();
+                let keyword_lower = keyword.to_lowercase();
+                input_lower.contains(&keyword_lower)
             }
             PatternMatcher::Regex(pattern) => {
                 match regex::Regex::new(pattern) {
@@ -164,6 +166,22 @@ impl PatternMatcher {
                 // Semantic matching requires embeddings - handled separately
                 false
             }
+        }
+    }
+
+    /// Optimized match that accepts pre-lowercased input to avoid repeated lowercasing
+    pub fn matches_lowercase(&self, input_lower: &str) -> bool {
+        match self {
+            PatternMatcher::Keyword(keyword) => {
+                input_lower.contains(&keyword.to_lowercase())
+            }
+            PatternMatcher::Regex(pattern) => {
+                match regex::Regex::new(pattern) {
+                    Ok(re) => re.is_match(input_lower),
+                    Err(_) => false,
+                }
+            }
+            PatternMatcher::Semantic { .. } => false,
         }
     }
 }
@@ -358,7 +376,11 @@ impl IntentClassifier {
 }
 
 fn evaluate_rule(rule: &ClassificationRule, input: &str, _history: &[String]) -> bool {
-    let pattern_results: Vec<bool> = rule.patterns.iter().map(|p| p.matches(input)).collect();
+    // Pre-lowercase input once for all keyword patterns
+    let input_lower = input.to_lowercase();
+    let pattern_results: Vec<bool> = rule.patterns.iter()
+        .map(|p| p.matches_lowercase(&input_lower))
+        .collect();
 
     if rule.require_all_patterns {
         pattern_results.iter().all(|&r| r)
