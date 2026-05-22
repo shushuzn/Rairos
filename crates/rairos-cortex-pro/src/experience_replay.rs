@@ -176,12 +176,13 @@ impl ExperienceReplay {
 
     /// Get experiences similar to a task (simplified keyword matching)
     pub fn get_similar(&self, task: &str, limit: usize) -> Vec<&Experience> {
-        let keywords: Vec<_> = task.split_whitespace().collect();
+        let task_lower = task.to_lowercase();
+        let keywords: Vec<&str> = task_lower.split_whitespace().collect();
 
         self.experiences
             .iter()
             .filter(|e| {
-                keywords.iter().any(|kw| e.task.to_lowercase().contains(&kw.to_lowercase()))
+                keywords.iter().any(|kw| e.task.to_lowercase().contains(kw))
             })
             .take(limit)
             .collect()
