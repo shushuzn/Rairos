@@ -127,6 +127,14 @@ pub mod atomic_fact_memory;
 #[cfg(feature = "tools")]
 pub mod forest_of_thought;
 
+/// Graph-of-Agents topology (GoA arXiv:2604.17148)
+#[cfg(feature = "tools")]
+pub mod graph_of_agents;
+
+/// PICCO prompt framework (arXiv:2604.14197)
+#[cfg(feature = "tools")]
+pub mod picco_prompt;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -192,3 +200,9 @@ pub use atomic_fact_memory::{AtomicFactMemory, AtomicFact, MemoryEntry, TaskType
 
 #[cfg(feature = "tools")]
 pub use forest_of_thought::{ForestReasoner, ForestConfig, ReasoningTree, ThoughtNode, NodeType, ReasoningResult, Consensus, ForestStats, DiagramOfThoughtReasoner, RoleToken};
+
+#[cfg(feature = "tools")]
+pub use graph_of_agents::{CommunicationGraph, GraphConfig, AgentNode, AgentState, GraphEdge, AgentMessage, MessageType, PoolingStrategy, GraphStats, ConditionalGraphDesigner, EdgeCondition, ConditionType, BeliefCollaborationManager, Belief, AgentRole};
+
+#[cfg(feature = "tools")]
+pub use picco_prompt::{PiccoPrompt, Persona, ExpertiseLevel, Instructions, Priority, ContextItem, ContextType, Constraint, ConstraintType, OutputSpec, FormatType, OutputStructure, PreferencePromptOptimizer, PromptCandidate, PreferenceFeedback, OptimizerConfig, OptimizerStats};
