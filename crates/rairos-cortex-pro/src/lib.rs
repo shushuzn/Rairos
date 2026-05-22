@@ -171,6 +171,10 @@ pub mod event_emitter;
 #[cfg(feature = "tools")]
 pub mod agent_registry;
 
+/// Intent Classifier for request routing and intent classification
+#[cfg(feature = "tools")]
+pub mod intent_classifier;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
