@@ -352,12 +352,15 @@ impl ExternalValidator {
             }
         }
 
+        // Calculate score before moving vectors
+        let score = self.calculate_score(&errors, &warnings, &infos);
+        
         ValidationResult {
             valid: errors.is_empty(),
             errors,
             warnings,
             infos,
-            score: self.calculate_score(&errors, &warnings, &infos),
+            score,
         }
     }
 

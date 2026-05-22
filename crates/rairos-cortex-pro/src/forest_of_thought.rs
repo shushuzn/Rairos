@@ -258,7 +258,7 @@ impl ForestReasoner {
 
             self.trees.push(ReasoningTree {
                 id: tree_id,
-                root_id,
+                root_id: root_id.clone(),
                 nodes,
                 total_score: 1.0,
                 depth: 0,
@@ -284,7 +284,9 @@ impl ForestReasoner {
                 .collect();
 
             for parent_id in active_ids {
-                let children = self.expand_node(tree, &parent_id);
+                let branching_factor = self.config.branching_factor;
+                let max_depth = self.config.max_depth as u32;
+                let children = Self::expand_node(tree, &parent_id, branching_factor, max_depth);
 
                 if let Some(parent) = tree.nodes.get_mut(&parent_id) {
                     parent.children = children.iter().map(|c| c.id.clone()).collect();
@@ -294,7 +296,7 @@ impl ForestReasoner {
     }
 
     /// Expand a single node
-    fn expand_node(&self, tree: &mut ReasoningTree, parent_id: &str) -> Vec<ThoughtNode> {
+    fn expand_node(tree: &mut ReasoningTree, parent_id: &str, branching_factor: usize, max_depth: u32) -> Vec<ThoughtNode> {
         let parent = tree.nodes.get(parent_id).cloned();
         if parent.is_none() {
             return Vec::new();
@@ -304,7 +306,7 @@ impl ForestReasoner {
         let mut children = Vec::new();
 
         // Generate child thoughts based on node type
-        for i in 0..self.config.branching_factor {
+        for i in 0..branching_factor {
             let child_id = uuid_simple();
             let child_type = match parent.node_type {
                 NodeType::Propose => {
@@ -319,7 +321,7 @@ impl ForestReasoner {
 
             children.push(ThoughtNode {
                 id: child_id,
-                content: child_content,
+                content: child_content.clone(),
                 parent_id: Some(parent_id.to_string()),
                 children: Vec::new(),
                 node_type: child_type,
@@ -339,7 +341,7 @@ impl ForestReasoner {
         tree.depth = tree.depth.max(parent.depth + 1);
 
         // Mark complete if max depth
-        if parent.depth + 1 >= self.config.max_depth as u32 {
+        if parent.depth + 1 >= max_depth {
             tree.complete = true;
         }
 
