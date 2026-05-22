@@ -34,6 +34,9 @@ base64 = "0.22"
 # URL parsing
 url = "2"
 
+# Regex for citation parsing
+regex = "1"
+
 # FAISS bindings (optional, enabled by feature flag)
 # faiss = { version = "0.1", optional = true }
 

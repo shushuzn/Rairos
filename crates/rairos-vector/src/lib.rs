@@ -40,4 +40,5 @@ pub mod error;
 pub use embedding::{Embedder, BgemEmbedder, OpenAiEmbedder, EmbeddingModel};
 pub use client::{VectorStore, SearchHit, VectorStoreConfig};
 pub use rag::RagPipeline;
+pub use rag::{InlineCitationRag, InlineCitationConfig, CitationAnswer, CitedSegment, CitedClaim};
 pub use error::VectorError;

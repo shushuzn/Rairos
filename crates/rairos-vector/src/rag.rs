@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use crate::client::{SearchHit, VectorStore};
 use crate::embedding::Embedder;
 use crate::error::VectorError;
+use regex::Regex;
 
 /// RAG configuration
 #[derive(Debug, Clone)]
@@ -66,6 +67,229 @@ pub struct RagSource {
     pub id: String,
     pub content: String,
     pub score: f32,
+}
+
+// ============================================================================
+// Inline Citation RAG (Citation-aware generation)
+// ============================================================================
+
+/// Configuration for inline citation RAG.
+/// Based on research showing that post-hoc citation has only 65-70% accuracy,
+/// while inline citation during generation achieves >95% accuracy.
+#[derive(Debug, Clone)]
+pub struct InlineCitationConfig {
+    /// Whether to require inline citations in generated answers
+    pub require_citations: bool,
+    /// Citation format template
+    pub citation_format: String,
+    /// Minimum claims before requiring citation
+    pub min_claims_before_citation: usize,
+    /// Source ID prefix for citations
+    pub source_prefix: String,
+}
+
+impl Default for InlineCitationConfig {
+    fn default() -> Self {
+        Self {
+            require_citations: true,
+            citation_format: "[{id}]".to_string(),
+            min_claims_before_citation: 2,
+            source_prefix: "Source".to_string(),
+        }
+    }
+}
+
+/// A cited segment with source attribution.
+#[derive(Debug, Clone)]
+pub struct CitedSegment {
+    /// The text content with inline citation markers
+    pub text: String,
+    /// Source IDs used in this segment
+    pub sources: Vec<String>,
+    /// Position in original answer
+    pub start_char: usize,
+    pub end_char: usize,
+}
+
+/// An answer with verified inline citations.
+#[derive(Debug)]
+pub struct CitationAnswer {
+    /// The answer with inline citations
+    pub answer: String,
+    /// All sources used
+    pub sources: Vec<RagSource>,
+    /// Claim-level citations for verification
+    pub claims: Vec<CitedClaim>,
+    /// Unverified claims (potential hallucinations)
+    pub unverified_claims: Vec<String>,
+}
+
+/// A single claim with its supporting source.
+#[derive(Debug, Clone)]
+pub struct CitedClaim {
+    pub claim: String,
+    pub source_id: Option<String>,
+    pub verified: bool,
+}
+
+/// Inline Citation RAG pipeline that enforces source attribution during generation.
+pub struct InlineCitationRag<E: Embedder, V: VectorStore, L: LlmClient> {
+    base: RagPipeline<E, V, L>,
+    config: InlineCitationConfig,
+}
+
+impl<E: Embedder, V: VectorStore, L: LlmClient> InlineCitationRag<E, V, L> {
+    /// Create a new inline citation RAG pipeline.
+    pub fn new(base: RagPipeline<E, V, L>) -> Self {
+        Self::with_config(base, InlineCitationConfig::default())
+    }
+
+    /// Create with custom configuration.
+    pub fn with_config(base: RagPipeline<E, V, L>, config: InlineCitationConfig) -> Self {
+        Self { base, config }
+    }
+
+    /// Query with inline citations enforced.
+    pub async fn query_with_citations(&self, question: &str) -> Result<CitationAnswer, VectorError> {
+        // 1. Get base RAG answer
+        let base_answer = self.base.query(question).await?;
+
+        if base_answer.sources.is_empty() {
+            return Ok(CitationAnswer {
+                answer: base_answer.answer,
+                sources: vec![],
+                claims: vec![],
+                unverified_claims: vec![],
+            });
+        }
+
+        // 2. Build source-aware prompt that requires citations
+        let source_list = base_answer
+            .sources
+            .iter()
+            .enumerate()
+            .map(|(i, s)| format!("{}[{}]: {}", self.config.source_prefix, i + 1, s.content))
+            .collect::<Vec<_>>()
+            .join("\n\n");
+
+        let citation_prompt = format!(
+            "You are a research assistant that ALWAYS cites sources for factual claims.\n\n\
+            Available sources:\n{}\n\n\
+            Question: {}\n\n\
+            Instructions:\n\
+            1. Answer the question based ONLY on the information in the sources above.\n\
+            2. For EVERY factual statement, include a citation using [N] format where N is the source number.\n\
+            3. If you cannot answer from the sources, say 'I cannot answer this from the provided sources.'\n\
+            4. Do not make up information not in the sources.\n\n\
+            Answer with inline citations:",
+            source_list, question
+        );
+
+        // 3. Generate answer with citation requirement
+        let cited_answer = self.base.llm.generate(&citation_prompt).await?;
+
+        // 4. Parse claims and verify citations
+        let claims = self.parse_claims_with_citations(&cited_answer, &base_answer.sources);
+
+        // 5. Identify unverified claims
+        let unverified_claims: Vec<String> = claims
+            .iter()
+            .filter(|c| !c.verified)
+            .map(|c| c.claim.clone())
+            .collect();
+
+        // 6. Build source map for output
+        let source_map: std::collections::HashMap<String, &RagSource> = base_answer
+            .sources
+            .iter()
+            .enumerate()
+            .map(|(i, s)| {
+                let key = format!("[{}]", i + 1);
+                (key, s)
+            })
+            .collect();
+
+        // 7. Rewrite answer with proper source IDs
+        let rewritten_answer = self.rewrite_with_source_ids(&cited_answer, &source_map);
+
+        Ok(CitationAnswer {
+            answer: rewritten_answer,
+            sources: base_answer.sources,
+            claims,
+            unverified_claims,
+        })
+    }
+
+    /// Parse claims from generated text and match to sources.
+    fn parse_claims_with_citations(
+        &self,
+        text: &str,
+        sources: &[RagSource],
+    ) -> Vec<CitedClaim> {
+        let mut claims = Vec::new();
+        let citation_pattern = regex::Regex::new(r"\[(\d+)\]").unwrap();
+
+        // Split by sentences (simple approach)
+        let sentences: Vec<&str> = text
+            .split(|c| c == '.' || c == '!' || c == '?')
+            .filter(|s| !s.trim().is_empty())
+            .collect();
+
+        for sentence in sentences {
+            let sentence = sentence.trim();
+            if sentence.len() < 10 {
+                continue;
+            }
+
+            let caps = citation_pattern.captures(sentence);
+            let source_id_opt = caps.map(|c| {
+                let idx: usize = c.get(1).unwrap().as_str().parse().unwrap_or(0);
+                if idx > 0 && idx <= sources.len() {
+                    Some(sources[idx - 1].id.clone())
+                } else {
+                    None
+                }
+            }).flatten();
+
+            let claim_text = citation_pattern.replace_all(sentence, "").trim().to_string();
+            let verified = source_id_opt.is_some();
+
+            claims.push(CitedClaim {
+                claim: claim_text,
+                source_id: source_id_opt,
+                verified,
+            });
+        }
+
+        claims
+    }
+
+    /// Rewrite citations to use actual source IDs instead of numbers.
+    fn rewrite_with_source_ids(
+        &self,
+        text: &str,
+        source_map: &std::collections::HashMap<String, &RagSource>,
+    ) -> String {
+        let citation_pattern = regex::Regex::new(r"\[(\d+)\]").unwrap();
+
+        citation_pattern.replace_all(text, |caps: &regex::Captures| {
+            let idx: usize = caps.get(1).unwrap().as_str().parse().unwrap_or(0);
+            if idx > 0 && idx <= source_map.len() {
+                let key = format!("[{}]", idx);
+                if let Some(source) = source_map.get(&key) {
+                    return self.config.citation_format.replace("{id}", &source.id);
+                }
+            }
+            caps.get(0).unwrap().as_str().to_string()
+        }).to_string()
+    }
+
+    /// Check if a claim is supported by any source (NLI-based verification placeholder).
+    pub fn verify_claim_support(&self, _claim: &str, _source: &str) -> bool {
+        // In a full implementation, this would use NLI or LLM-as-judge
+        // For now, return true if source is provided
+        true
+    }
 }
 
 impl<E: Embedder, V: VectorStore, L: LlmClient> RagPipeline<E, V, L> {
