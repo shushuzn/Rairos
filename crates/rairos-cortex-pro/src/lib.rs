@@ -103,6 +103,14 @@ pub mod dag_executor;
 #[cfg(feature = "tools")]
 pub mod experience_replay;
 
+/// Multi-agent consensus for agent agreement (EMS, AgentAuditor style)
+#[cfg(feature = "tools")]
+pub mod multi_agent_consensus;
+
+/// Self-correction and reflection (CRITIC, Self-Refiner, Reflexion style)
+#[cfg(feature = "tools")]
+pub mod self_correction;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -150,3 +158,9 @@ pub use dag_executor::{TaskDag, DagNode, DagExecutor, DagExecutionResult, NodeRe
 
 #[cfg(feature = "tools")]
 pub use experience_replay::{ExperienceReplay, Experience, TrajectoryStep, ExperienceOutcome, SelfReflector, ConsolidationResult};
+
+#[cfg(feature = "tools")]
+pub use multi_agent_consensus::{MultiAgentConsensus, ConsensusResult, Vote, VotingMechanism, EvidenceAuditor, AuditResult, Evidence, ConsensusAgent};
+
+#[cfg(feature = "tools")]
+pub use self_correction::{SelfCorrector, ReflexionAgent, ExternalValidator, EvaluationResult, Correction, Reflection, CorrectionType, ValidationResult, ValidationIssue, ValidationRule};
