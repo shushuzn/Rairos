@@ -1,2 +1,2 @@
 # Python dependencies for Rairos API Gateway sync tools
-psycopg2-binary>=2.9.0
+psycopg2-binary>=2.9.12
