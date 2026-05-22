@@ -154,15 +154,20 @@ where
 }
 
 /// Simple pseudo-random 0.0-1.0 (no external deps).
+/// Uses thread-local storage to ensure thread safety.
 fn rand_simple() -> f64 {
-    static mut SEED: u64 = 0;
-    unsafe {
-        if SEED == 0 {
-            SEED = std::time::Instant::now().elapsed().as_nanos() as u64;
-        }
-        SEED = SEED.wrapping_mul(6364136223846793005).wrapping_add(1);
-        (SEED >> 33) as f64 / (u32::MAX >> 1) as f64
+    thread_local! {
+        static SEED: std::cell::Cell<u64> = std::cell::Cell::new(0);
     }
+    SEED.with(|seed| {
+        let mut s = seed.get();
+        if s == 0 {
+            s = std::time::Instant::now().elapsed().as_nanos() as u64;
+        }
+        s = s.wrapping_mul(6364136223846793005).wrapping_add(1);
+        seed.set(s);
+        (s >> 33) as f64 / (u32::MAX >> 1) as f64
+    })
 }
 
 // ─── Circuit Breaker ──────────────────────────────────────────────────────────

@@ -1728,8 +1728,16 @@ impl Database {
                 if blob.len() != embedding_vec.len() * 4 {
                     continue;
                 }
-                let stored: &[f32] =
-                    unsafe { std::slice::from_raw_parts(blob.as_ptr() as *const f32, embedding_vec.len()) };
+                // SAFETY: blob.len() == embedding_vec.len() * 4 ensures we have exactly
+                // the right number of f32 bytes. SQLite stores these bytes directly,
+                // and the pointer alignment is valid for f32 read on our target platforms.
+                // This pattern (byte vec to typed slice) is a common database interop practice.
+                let stored: &[f32] = unsafe {
+                    std::slice::from_raw_parts(
+                        blob.as_ptr() as *const f32,
+                        embedding_vec.len()
+                    )
+                };
                 let similarity = cosine_similarity(&embedding_vec, stored);
                 results.push((id, similarity));
             }
