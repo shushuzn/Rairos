@@ -229,9 +229,11 @@ impl CommunicationGraph {
             messages_sent: 0,
             messages_received: 0,
         };
-        self.nodes.insert(id.clone(), node);
+        
+        // Use entry API to get mutable reference directly
+        let entry = self.nodes.entry(id.clone()).or_insert(node);
         self.adjacency.entry(id).or_default();
-        self.nodes.get_mut(&id).unwrap()
+        entry
     }
 
     /// Add an edge between agents
@@ -240,25 +242,25 @@ impl CommunicationGraph {
             return None;
         }
 
+        // Update adjacency first (before getting mutable edge reference)
+        self.adjacency.entry(from.clone()).or_default().push(to.clone());
+
+        if !self.config.directed {
+            self.adjacency.entry(to.clone()).or_default().push(from.clone());
+        }
+
         let edge = GraphEdge {
-            from: from.clone(),
-            to: to.clone(),
+            from,
+            to,
             weight,
             message_types: vec![],
             active: true,
         };
 
         self.edges.push(edge);
-        let edge_ref = self.edges.last_mut().unwrap();
-
-        // Update adjacency
-        self.adjacency.entry(from).or_default().push(to);
-
-        if !self.config.directed {
-            self.adjacency.entry(to).or_default().push(from);
-        }
-
-        Some(edge_ref)
+        
+        // Return reference to the edge we just added
+        self.edges.last_mut()
     }
 
     /// Get neighbors of an agent
@@ -284,17 +286,16 @@ impl CommunicationGraph {
 
     /// Sample relevant agents for a given agent (node sampling from GoA)
     pub fn sample_agents(&self, agent_id: &str, query_embedding: &[f32]) -> Vec<String> {
-        let agent = match self.nodes.get(agent_id) {
-            Some(a) => a,
-            None => return Vec::new(),
-        };
+        // First check if agent exists
+        if !self.nodes.contains_key(agent_id) {
+            return Vec::new();
+        }
 
         // Calculate similarity with all other agents
         let mut similarities: Vec<(String, f32)> = self.nodes
-            .keys()
-            .filter(|id| *id != agent_id)
-            .map(|id| {
-                let other = &self.nodes[id];
+            .iter()
+            .filter(|(id, _)| *id != agent_id)
+            .map(|(id, other)| {
                 let sim = cosine_similarity(query_embedding, &other.embedding);
                 (id.clone(), sim)
             })
@@ -634,18 +635,33 @@ impl BeliefCollaborationManager {
 
     /// Resolve conflicts between agents
     pub fn resolve_conflict(&mut self, agent1: &str, agent2: &str) -> String {
-        let b1 = self.beliefs.get(agent1);
-        let b2 = self.beliefs.get(agent2);
+        // First, extract the beliefs we need (avoiding nested borrows)
+        let (b1_belief, b1_confidence, b2_belief, b2_confidence) = {
+            let b1 = self.beliefs.get(agent1);
+            let b2 = self.beliefs.get(agent2);
+            
+            (
+                b1.map(|b| b.belief.clone()),
+                b1.map(|b| b.confidence),
+                b2.map(|b| b.belief.clone()),
+                b2.map(|b| b.confidence),
+            )
+        };
 
-        match (b1, b2) {
-            (Some(b1), Some(b2)) => {
+        match (b1_confidence, b2_confidence) {
+            (Some(c1), Some(c2)) => {
                 // Higher confidence belief wins
-                if b1.confidence > b2.confidence {
-                    self.record_collaboration(agent1, agent2, &b1.belief, true);
-                    b1.belief.clone()
+                let (winner_belief, loser_belief) = if c1 > c2 {
+                    (&b1_belief, &b2_belief)
                 } else {
-                    self.record_collaboration(agent1, agent2, &b2.belief, true);
-                    b2.belief.clone()
+                    (&b2_belief, &b1_belief)
+                };
+                
+                if let Some(winner) = winner_belief {
+                    self.record_collaboration(agent1, agent2, winner, true);
+                    winner.clone()
+                } else {
+                    String::new()
                 }
             }
             (Some(b), None) | (None, Some(b)) => {

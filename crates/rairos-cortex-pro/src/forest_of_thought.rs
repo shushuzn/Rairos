@@ -523,12 +523,12 @@ fn calculate_thought_score(content: &str, node_type: NodeType) -> f32 {
 /// Extract answer from thought content
 fn extract_answer(content: &str) -> String {
     // Simple extraction - would use more sophisticated method in practice
-    let sentences: Vec<_> = content.split(&['.', '!', '?'][..])
+    let sentences: Vec<&str> = content.split(&['.', '!', '?'][..])
         .map(|s| s.trim())
         .filter(|s| !s.is_empty())
         .collect();
 
-    sentences.last().cloned().unwrap_or_else(|| content.to_string())
+    sentences.last().map(|s| s.to_string()).unwrap_or_else(|| content.to_string())
 }
 
 fn uuid_simple() -> String {
