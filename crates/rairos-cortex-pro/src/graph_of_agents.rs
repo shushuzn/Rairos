@@ -636,36 +636,42 @@ impl BeliefCollaborationManager {
     /// Resolve conflicts between agents
     pub fn resolve_conflict(&mut self, agent1: &str, agent2: &str) -> String {
         // First, extract the beliefs we need (avoiding nested borrows)
-        let (b1_belief, b1_confidence, b2_belief, b2_confidence) = {
+        let b1_belief: Option<String>;
+        let b1_confidence: Option<f32>;
+        let b2_belief: Option<String>;
+        let b2_confidence: Option<f32>;
+        
+        {
             let b1 = self.beliefs.get(agent1);
             let b2 = self.beliefs.get(agent2);
             
-            (
-                b1.map(|b| b.belief.clone()),
-                b1.map(|b| b.confidence),
-                b2.map(|b| b.belief.clone()),
-                b2.map(|b| b.confidence),
-            )
-        };
+            b1_belief = b1.map(|b| b.belief.clone());
+            b1_confidence = b1.map(|b| b.confidence);
+            b2_belief = b2.map(|b| b.belief.clone());
+            b2_confidence = b2.map(|b| b.confidence);
+        }
 
         match (b1_confidence, b2_confidence) {
             (Some(c1), Some(c2)) => {
                 // Higher confidence belief wins
-                let (winner_belief, loser_belief) = if c1 > c2 {
-                    (&b1_belief, &b2_belief)
+                let winner_belief = if c1 > c2 {
+                    b1_belief.clone()
                 } else {
-                    (&b2_belief, &b1_belief)
+                    b2_belief.clone()
                 };
                 
                 if let Some(winner) = winner_belief {
-                    self.record_collaboration(agent1, agent2, winner, true);
-                    winner.clone()
+                    self.record_collaboration(agent1, agent2, &winner, true);
+                    winner
                 } else {
                     String::new()
                 }
             }
-            (Some(b), None) | (None, Some(b)) => {
-                b.belief.clone()
+            (Some(_), None) => {
+                b1_belief.unwrap_or_default()
+            }
+            (None, Some(_)) => {
+                b2_belief.unwrap_or_default()
             }
             (None, None) => String::new(),
         }

@@ -555,7 +555,7 @@ pub struct PpaPlanningResult {
     /// Base planning result
     pub base_result: PlanningResult,
     /// Detected pitfalls
-    pub detected_pitfalls: Vec<&'static Pitfall>,
+    pub detected_pitfalls: Vec<Pitfall>,
     /// Warnings for user
     pub warnings: Vec<String>,
     /// Safe actions to consider
