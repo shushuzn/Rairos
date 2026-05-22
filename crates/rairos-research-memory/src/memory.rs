@@ -9,6 +9,7 @@ use std::path::PathBuf;
 use chrono::Utc;
 
 use crate::alert::AnomalyAlert;
+use crate::belief_network::{Belief, BeliefState, Reflection, ReflectionType};
 use crate::memory_stats::MemoryStats;
 use crate::stance::{AnomalySeverity, ResearchStance, StanceType};
 
@@ -27,6 +28,10 @@ fn get_stance_path() -> PathBuf {
 
 fn get_anomaly_path() -> PathBuf {
     get_memory_path().join("anomalies.json")
+}
+
+fn get_beliefs_path() -> PathBuf {
+    get_memory_path().join("beliefs.json")
 }
 
 // ─── Raw JSON load/save ───────────────────────────────────────────────────────
@@ -77,6 +82,28 @@ fn save_anomalies_raw(
     fs::write(path, text)
 }
 
+fn load_beliefs_raw() -> Vec<serde_json::Map<String, serde_json::Value>> {
+    let path = get_beliefs_path();
+    if path.exists() {
+        if let Ok(text) = fs::read_to_string(&path) {
+            if let Ok(parsed) = serde_json::from_str(&text) {
+                return parsed;
+            }
+        }
+    }
+    Vec::new()
+}
+
+fn save_beliefs_raw(beliefs: &[serde_json::Map<String, serde_json::Value>]) -> std::io::Result<()> {
+    let path = get_beliefs_path();
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    let text = serde_json::to_string_pretty(beliefs)
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+    fs::write(path, text)
+}
+
 // ─── ResearchMemory ───────────────────────────────────────────────────────────
 
 /// Personal research stance log with anomaly detection.
@@ -84,6 +111,10 @@ fn save_anomalies_raw(
 pub struct ResearchMemory {
     stances: Vec<ResearchStance>,
     anomalies: Vec<AnomalyAlert>,
+    /// Belief network for structured belief tracking
+    beliefs: Vec<Belief>,
+    /// Reflection records for belief evolution
+    reflections: Vec<Reflection>,
 }
 
 impl Default for ResearchMemory {
@@ -103,7 +134,12 @@ impl ResearchMemory {
             .into_iter()
             .filter_map(anomaly_from_dict)
             .collect();
-        Self { stances, anomalies }
+        let beliefs = load_beliefs_raw()
+            .into_iter()
+            .filter_map(belief_from_dict)
+            .collect();
+        let reflections = Vec::new(); // TODO: load reflections if persisted
+        Self { stances, anomalies, beliefs, reflections }
     }
 
     /// Create a fresh in-memory ResearchMemory without loading any persisted data.
@@ -113,21 +149,66 @@ impl ResearchMemory {
         Self {
             stances: Vec::new(),
             anomalies: Vec::new(),
+            beliefs: Vec::new(),
+            reflections: Vec::new(),
         }
     }
 
-    /// Persist stances and anomalies to disk.
+    /// Persist stances, anomalies, and beliefs to disk.
     fn persist(&self) {
         let stances: Vec<_> = self.stances.iter().map(stance_to_dict).collect();
         let _ = save_stances_raw(&stances);
         let anomalies: Vec<_> = self.anomalies.iter().map(anomaly_to_dict).collect();
         let _ = save_anomalies_raw(&anomalies);
+        let beliefs: Vec<_> = self.beliefs.iter().map(belief_to_dict).collect();
+        let _ = save_beliefs_raw(&beliefs);
     }
 
     // ── Stance CRUD ────────────────────────────────────────────────────────
 
-    /// Record a new research stance.
+    /// Record a new research stance, creating a linked Belief.
     pub fn add_stance(
+        &mut self,
+        topic: &str,
+        claim: &str,
+        stance: StanceType,
+        evidence_refs: Vec<String>,
+        reasoning: &str,
+        confidence: f64,
+        tags: Vec<String>,
+        notes: &str,
+    ) -> &ResearchStance {
+        // Create linked belief first
+        let belief = Belief::new(
+            topic,
+            claim,
+            reasoning,
+            confidence,
+            evidence_refs.clone(),
+            tags.clone(),
+        );
+        let belief_id = belief.belief_id.clone();
+        self.beliefs.push(belief);
+
+        // Create stance linked to belief
+        let s = ResearchStance::new_with_belief(
+            topic,
+            claim,
+            stance,
+            evidence_refs,
+            reasoning,
+            confidence,
+            tags,
+            notes,
+            &belief_id,
+        );
+        self.stances.push(s);
+        self.persist();
+        self.stances.last().unwrap()
+    }
+
+    /// Record a new research stance WITHOUT creating a belief (for legacy data).
+    pub fn add_stance_no_belief(
         &mut self,
         topic: &str,
         claim: &str,
@@ -233,6 +314,27 @@ impl ResearchMemory {
                     .any(|x| x.paper_arxiv_id == a.paper_arxiv_id && x.stance_id == a.stance_id);
                 if !exists {
                     self.anomalies.push(a.clone());
+
+                    // Update linked belief if this is High/Medium severity
+                        if a.severity == AnomalySeverity::High || a.severity == AnomalySeverity::Medium {
+                            if let Some(belief_id) = &stance.belief_id {
+                                if let Some(belief) = self.beliefs.iter_mut().find(|b| &b.belief_id == belief_id) {
+                                    let paper_id = paper.get("arxiv_id").cloned().unwrap_or_default();
+                                    belief.question(&paper_id, &a.description);
+
+                                    // Create reflection record
+                                    let reflection = Reflection::new(
+                                        &belief.belief_id,
+                                        ReflectionType::Questioning,
+                                        &format!("Belief questioned due to anomaly: {}", a.description),
+                                        Some(BeliefState::Confirmed),
+                                        Some(BeliefState::Questioned),
+                                        vec![paper_id],
+                                    );
+                                    self.reflections.push(reflection);
+                                }
+                            }
+                        }
                 }
                 detected.push(a);
             }
@@ -347,6 +449,63 @@ impl ResearchMemory {
         self.persist();
     }
 
+    // ── Belief access ─────────────────────────────────────────────────────
+
+    /// Get all beliefs.
+    pub fn get_beliefs(&self) -> Vec<&Belief> {
+        self.beliefs.iter().collect()
+    }
+
+    /// Get a specific belief by ID.
+    pub fn get_belief(&self, belief_id: &str) -> Option<&Belief> {
+        self.beliefs.iter().find(|b| &b.belief_id == belief_id)
+    }
+
+    /// Get beliefs filtered by topic.
+    pub fn get_beliefs_by_topic(&self, topic: &str) -> Vec<&Belief> {
+        let topic_lower = topic.to_lowercase();
+        self.beliefs
+            .iter()
+            .filter(|b| b.topic.to_lowercase().contains(&topic_lower))
+            .collect()
+    }
+
+    /// Get beliefs filtered by state.
+    pub fn get_beliefs_by_state(&self, state: BeliefState) -> Vec<&Belief> {
+        self.beliefs.iter().filter(|b| b.state == state).collect()
+    }
+
+    /// Get belief linked to a stance.
+    pub fn get_belief_by_stance(&self, stance_id: &str) -> Option<&Belief> {
+        let stance = self.stances.iter().find(|s| &s.stance_id == stance_id)?;
+        let belief_id = stance.belief_id.as_ref()?;
+        self.beliefs.iter().find(|b| &b.belief_id == belief_id)
+    }
+
+    /// Get all reflections for a belief.
+    pub fn get_reflections(&self, belief_id: &str) -> Vec<&Reflection> {
+        self.reflections
+            .iter()
+            .filter(|r| &r.belief_id == belief_id)
+            .collect()
+    }
+
+    /// Get belief statistics.
+    pub fn get_belief_stats(&self) -> BeliefStats {
+        let total = self.beliefs.len();
+        let confirmed = self.beliefs.iter().filter(|b| b.state == BeliefState::Confirmed).count();
+        let questioned = self.beliefs.iter().filter(|b| b.state == BeliefState::Questioned).count();
+        let revised = self.beliefs.iter().filter(|b| b.state == BeliefState::Revised).count();
+        let retracted = self.beliefs.iter().filter(|b| b.state == BeliefState::Retracted).count();
+        BeliefStats {
+            total,
+            confirmed,
+            questioned,
+            revised,
+            retracted,
+        }
+    }
+
     // ── Summary ────────────────────────────────────────────────────────────
 
     /// Get memory summary statistics.
@@ -370,6 +529,18 @@ impl ResearchMemory {
     }
 }
 
+// ─── Belief Statistics ────────────────────────────────────────────────────────
+
+/// Statistics about the belief network.
+#[derive(Debug, Clone)]
+pub struct BeliefStats {
+    pub total: usize,
+    pub confirmed: usize,
+    pub questioned: usize,
+    pub revised: usize,
+    pub retracted: usize,
+}
+
 // ─── Dict conversion ──────────────────────────────────────────────────────────
 
 fn stance_to_dict(s: &ResearchStance) -> serde_json::Map<String, serde_json::Value> {
@@ -378,6 +549,12 @@ fn stance_to_dict(s: &ResearchStance) -> serde_json::Map<String, serde_json::Val
         "stance_id".to_string(),
         serde_json::Value::String(s.stance_id.clone()),
     );
+    if let Some(ref bid) = s.belief_id {
+        m.insert(
+            "belief_id".to_string(),
+            serde_json::Value::String(bid.clone()),
+        );
+    }
     m.insert(
         "topic".to_string(),
         serde_json::Value::String(s.topic.clone()),
@@ -446,8 +623,10 @@ fn stance_from_dict(d: serde_json::Map<String, serde_json::Value>) -> Option<Res
         "qualified" => StanceType::Qualified,
         _ => StanceType::Supported,
     };
+    let belief_id = d.get("belief_id").and_then(|v| v.as_str()).map(String::from);
     Some(ResearchStance {
         stance_id: d.get("stance_id")?.as_str()?.to_string(),
+        belief_id,
         topic: d.get("topic")?.as_str()?.to_string(),
         claim: d.get("claim")?.as_str()?.to_string(),
         stance,
@@ -540,6 +719,51 @@ fn anomaly_from_dict(d: serde_json::Map<String, serde_json::Value>) -> Option<An
         severity,
         description: d.get("description")?.as_str()?.to_string(),
         created_at: d.get("created_at")?.as_f64().unwrap_or(0.0),
+    })
+}
+
+fn belief_to_dict(b: &Belief) -> serde_json::Map<String, serde_json::Value> {
+    let mut m = serde_json::Map::new();
+    m.insert("belief_id".to_string(), serde_json::Value::String(b.belief_id.clone()));
+    m.insert("topic".to_string(), serde_json::Value::String(b.topic.clone()));
+    m.insert("statement".to_string(), serde_json::Value::String(b.statement.clone()));
+    m.insert("state".to_string(), serde_json::Value::String(b.state.to_string()));
+    m.insert("confidence".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.confidence).unwrap_or(serde_json::Number::from(0))));
+    m.insert("supporting_evidence".to_string(), serde_json::Value::Array(b.supporting_evidence.iter().map(|s| serde_json::Value::String(s.clone())).collect()));
+    m.insert("contradicting_evidence".to_string(), serde_json::Value::Array(b.contradicting_evidence.iter().map(|s| serde_json::Value::String(s.clone())).collect()));
+    m.insert("reasoning".to_string(), serde_json::Value::String(b.reasoning.clone()));
+    m.insert("created_at".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.created_at).unwrap_or(serde_json::Number::from(0))));
+    m.insert("updated_at".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.updated_at).unwrap_or(serde_json::Number::from(0))));
+    m.insert("state_changed_at".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.state_changed_at).unwrap_or(serde_json::Number::from(0))));
+    m.insert("revision_count".to_string(), serde_json::Value::Number(serde_json::Number::from(b.revision_count)));
+    m.insert("tags".to_string(), serde_json::Value::Array(b.tags.iter().map(|t| serde_json::Value::String(t.clone())).collect()));
+    m
+}
+
+fn belief_from_dict(d: serde_json::Map<String, serde_json::Value>) -> Option<Belief> {
+    use crate::belief_network::BeliefState;
+    let state_str = d.get("state")?.as_str()?;
+    let state = match state_str {
+        "confirmed" => BeliefState::Confirmed,
+        "questioned" => BeliefState::Questioned,
+        "revised" => BeliefState::Revised,
+        "retracted" => BeliefState::Retracted,
+        _ => BeliefState::Confirmed,
+    };
+    Some(Belief {
+        belief_id: d.get("belief_id")?.as_str()?.to_string(),
+        topic: d.get("topic")?.as_str()?.to_string(),
+        statement: d.get("statement")?.as_str()?.to_string(),
+        state,
+        confidence: d.get("confidence")?.as_f64().unwrap_or(0.5),
+        supporting_evidence: d.get("supporting_evidence")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+        contradicting_evidence: d.get("contradicting_evidence")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+        reasoning: d.get("reasoning")?.as_str()?.to_string(),
+        created_at: d.get("created_at")?.as_f64().unwrap_or(0.0),
+        updated_at: d.get("updated_at")?.as_f64().unwrap_or(0.0),
+        state_changed_at: d.get("state_changed_at")?.as_f64().unwrap_or(0.0),
+        revision_count: d.get("revision_count")?.as_u64().unwrap_or(0) as u32,
+        tags: d.get("tags")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
     })
 }
 

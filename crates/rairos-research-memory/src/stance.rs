@@ -54,6 +54,8 @@ impl std::fmt::Display for AnomalySeverity {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResearchStance {
     pub stance_id: String,
+    /// Linked belief ID in BeliefNetwork (if any)
+    pub belief_id: Option<String>,
     pub topic: String,
     pub claim: String,
     pub stance: StanceType,
@@ -81,6 +83,36 @@ impl ResearchStance {
         let now = Utc::now().timestamp() as f64 + Utc::now().timestamp_subsec_nanos() as f64 * 1e-9;
         Self {
             stance_id: Uuid::new_v4().to_string()[..8].to_string(),
+            belief_id: None,
+            topic: topic.to_string(),
+            claim: claim.to_string(),
+            stance,
+            evidence_refs,
+            reasoning: reasoning.to_string(),
+            confidence: confidence.clamp(0.0, 1.0),
+            created_at: now,
+            updated_at: now,
+            tags,
+            notes: notes.to_string(),
+        }
+    }
+
+    /// Create a new stance linked to a belief.
+    pub fn new_with_belief(
+        topic: &str,
+        claim: &str,
+        stance: StanceType,
+        evidence_refs: Vec<String>,
+        reasoning: &str,
+        confidence: f64,
+        tags: Vec<String>,
+        notes: &str,
+        belief_id: &str,
+    ) -> Self {
+        let now = Utc::now().timestamp() as f64 + Utc::now().timestamp_subsec_nanos() as f64 * 1e-9;
+        Self {
+            stance_id: Uuid::new_v4().to_string()[..8].to_string(),
+            belief_id: Some(belief_id.to_string()),
             topic: topic.to_string(),
             claim: claim.to_string(),
             stance,
@@ -122,6 +154,13 @@ impl ResearchStance {
         if let Some(v) = tags {
             self.tags = v;
         }
+        self.updated_at =
+            Utc::now().timestamp() as f64 + Utc::now().timestamp_subsec_nanos() as f64 * 1e-9;
+    }
+
+    /// Link this stance to a belief.
+    pub fn link_belief(&mut self, belief_id: &str) {
+        self.belief_id = Some(belief_id.to_string());
         self.updated_at =
             Utc::now().timestamp() as f64 + Utc::now().timestamp_subsec_nanos() as f64 * 1e-9;
     }

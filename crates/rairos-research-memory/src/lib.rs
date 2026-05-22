@@ -13,7 +13,7 @@
 //! - [`alert`] - Anomaly alerts for contradictions
 
 pub use crate::alert::AnomalyAlert;
-pub use crate::memory::ResearchMemory;
+pub use crate::memory::{BeliefStats, ResearchMemory};
 pub use crate::memory_stats::MemoryStats;
 pub use crate::stance::{AnomalySeverity, ResearchStance, StanceType};
 
