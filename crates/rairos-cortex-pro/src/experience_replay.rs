@@ -182,7 +182,8 @@ impl ExperienceReplay {
         self.experiences
             .iter()
             .filter(|e| {
-                keywords.iter().any(|kw| e.task.to_lowercase().contains(kw))
+                let task_lower = e.task.to_lowercase(); // Hoist out of inner loop
+                keywords.iter().any(|kw| task_lower.contains(kw))
             })
             .take(limit)
             .collect()
