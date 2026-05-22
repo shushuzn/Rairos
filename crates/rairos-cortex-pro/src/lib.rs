@@ -155,6 +155,10 @@ pub mod mia;
 #[cfg(feature = "tools")]
 pub mod worker_pool;
 
+/// Task Tracker for multi-agent workflow state management
+#[cfg(feature = "tools")]
+pub mod task_tracker;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
@@ -245,6 +249,9 @@ pub use mia::{MemoryIntelligenceAgent, MIAConfig, MIAResult, MIAStats, MemoryMan
 
 #[cfg(feature = "tools")]
 pub use worker_pool::{WorkerPool, WorkerPoolConfig, WorkerPoolStats, AsyncWorkerPool, Task, TaskPayload as WorkerTaskPayload, TaskResult as WorkerTaskResult, TaskHandle, Priority as TaskPriority, PriorityTaskQueue};
+
+#[cfg(feature = "tools")]
+pub use task_tracker::{TaskTracker, TaskTrackerHandle, TaskState, TrackPriority, TrackedTask, TrackerStats, TrackerEvent, TrackerEventType};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
