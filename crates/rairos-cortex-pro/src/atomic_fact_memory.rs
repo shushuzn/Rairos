@@ -497,11 +497,12 @@ impl AtomicFactMemory {
             }
 
             // Check for key patterns
+            let sentence_lower = sentence.to_lowercase();
             let contains_action = [
                 "search", "find", "create", "update", "delete", "analyze", "plan",
             ]
             .iter()
-            .any(|kw| sentence.to_lowercase().contains(kw));
+            .any(|kw| sentence_lower.contains(kw));
 
             let contains_result = [
                 "found",
@@ -512,7 +513,7 @@ impl AtomicFactMemory {
                 "error",
             ]
             .iter()
-            .any(|kw| sentence.to_lowercase().contains(kw));
+            .any(|kw| sentence_lower.contains(kw));
 
             if contains_action || contains_result {
                 facts.push(AtomicFact {

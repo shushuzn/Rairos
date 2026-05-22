@@ -47,9 +47,9 @@ impl Capsule {
             0.1
         };
 
-        let kw_match = keywords
-            .iter()
-            .filter(|kw| event_lower.contains(&kw.to_lowercase()))
+        let keyword_lowers: Vec<String> = keywords.iter().map(|kw| kw.to_lowercase()).collect();
+        let kw_match = keyword_lowers.iter()
+            .filter(|kw_lower| event_lower.contains(&**kw_lower))
             .count() as f64
             / (keywords.len().max(1) as f64)
             * 0.5;

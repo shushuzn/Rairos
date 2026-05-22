@@ -187,15 +187,16 @@ impl Agent for HypothesisCriticAgent {
             .unwrap_or("");
 
         // Check for required sections
-        let has_rationale = hypothesis.to_lowercase().contains("rationale") ||
-                           hypothesis.to_lowercase().contains("scientific") ||
-                           hypothesis.to_lowercase().contains("because");
-        let has_impact = hypothesis.to_lowercase().contains("impact") ||
-                        hypothesis.to_lowercase().contains("enable") ||
-                        hypothesis.to_lowercase().contains("application");
-        let has_validation = hypothesis.to_lowercase().contains("validation") ||
-                            hypothesis.to_lowercase().contains("test") ||
-                            hypothesis.to_lowercase().contains("validate");
+        let hypothesis_lower = hypothesis.to_lowercase();
+        let has_rationale = hypothesis_lower.contains("rationale") ||
+                           hypothesis_lower.contains("scientific") ||
+                           hypothesis_lower.contains("because");
+        let has_impact = hypothesis_lower.contains("impact") ||
+                        hypothesis_lower.contains("enable") ||
+                        hypothesis_lower.contains("application");
+        let has_validation = hypothesis_lower.contains("validation") ||
+                            hypothesis_lower.contains("test") ||
+                            hypothesis_lower.contains("validate");
         let is_substantial = hypothesis.len() > 200;
 
         let score = [has_rationale, has_impact, has_validation, is_substantial]
