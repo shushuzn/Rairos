@@ -534,7 +534,7 @@ impl PpaPlanner {
     }
 
     /// Filter actions to avoid pitfalls
-    fn filter_safe_actions(&self, _pitfalls: &[&Pitfall]) -> Vec<PlannedAction> {
+    fn filter_safe_actions(&self, _pitfalls: &[Pitfall]) -> Vec<PlannedAction> {
         // Return actions that don't trigger pitfalls
         self.flare
             .available_actions

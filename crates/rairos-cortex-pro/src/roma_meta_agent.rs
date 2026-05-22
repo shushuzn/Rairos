@@ -763,8 +763,9 @@ impl TdpSupervisor {
         // Create goal entries
         let mut parent_id = Some(root_id.clone());
         for subgoal in &subgoals {
+            let goal_id = uuid_simple();
             let goal = SubGoal {
-                id: uuid_simple(),
+                id: goal_id.clone(),
                 description: subgoal.clone(),
                 parent_id: parent_id.clone(),
                 status: TaskStatus::Pending,
@@ -772,8 +773,8 @@ impl TdpSupervisor {
                 replan_count: 0,
             };
 
-            self.goals.insert(goal.id.clone(), goal);
-            parent_id = goal.id.clone();
+            self.goals.insert(goal_id.clone(), goal);
+            parent_id = Some(goal_id);
         }
 
         root_id
