@@ -363,16 +363,14 @@ impl TaskTracker {
     /// Get pending tasks that can be executed (dependencies satisfied)
     pub async fn get_runnable_tasks(&self) -> Vec<TrackedTask> {
         let tasks = self.tasks.read().await;
+        
+        // Build state map and filter in single lock acquisition
         let task_states: HashMap<String, TaskState> = tasks
             .iter()
             .map(|(id, t)| (id.clone(), t.state))
             .collect();
-        drop(tasks);
-
-        let mut runnable: Vec<TrackedTask> = self
-            .tasks
-            .read()
-            .await
+        
+        let mut runnable: Vec<TrackedTask> = tasks
             .values()
             .filter(|t| {
                 t.state == TaskState::Pending
@@ -380,6 +378,9 @@ impl TaskTracker {
             })
             .cloned()
             .collect();
+        
+        drop(task_states);
+        drop(tasks);
 
         // Sort by priority
         runnable.sort_by(|a, b| b.priority.cmp(&a.priority));

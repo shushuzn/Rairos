@@ -313,10 +313,9 @@ impl MemoryBank {
             .unwrap()
             .iter()
             .filter(|e| {
-                let strategy_lower = e.strategy.to_lowercase(); // Hoist out of learnings loop
-                let approach_lower = e.approach.to_lowercase();
-                strategy_lower.contains(&query_lower)
-                    || approach_lower.contains(&query_lower)
+                // Check cheaper conditions first to avoid expensive learnings iteration
+                e.strategy.to_lowercase().contains(&query_lower)
+                    || e.approach.to_lowercase().contains(&query_lower)
                     || e.learnings.iter().any(|l| l.to_lowercase().contains(&query_lower))
             })
             .take(3)

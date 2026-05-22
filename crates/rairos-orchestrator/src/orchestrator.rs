@@ -124,7 +124,7 @@ async fn process_topic(
         }
     }
 
-    let session_id = Uuid::new_v4().to_string()[..8].to_string();
+    let session_id = Uuid::new_v4().to_string()[..8].into();
     let papers_analyzed = new_papers.len() as i32;
 
     let mut all_categories: FxHashSet<String> = FxHashSet::default();
@@ -348,7 +348,7 @@ async fn process_topic(
         .map(|g| g.description.clone())
         .collect();
 
-    let mut filtered = Vec::new();
+    let mut filtered = Vec::with_capacity(gaps.len());
     let mut suppressed = 0i32;
     for gap in gaps.iter().cloned() {
         if seen_descriptions.contains(&gap.description) {
@@ -479,7 +479,7 @@ async fn process_topic(
             .clamp(0.1, 0.9);
 
         let scored_len = scored.len();
-        let mut alerts = Vec::new();
+        let mut alerts = Vec::with_capacity(scored_len);
         for sg in scored {
             let sev_rank = severity_rank(&sg.severity);
             if sev_rank > min_sev {
@@ -490,7 +490,7 @@ async fn process_topic(
             }
 
             let alert = ResearchAlert::new(
-                Uuid::new_v4().to_string()[..8].to_string(),
+                Uuid::new_v4().to_string()[..8].into(),
                 session_id.to_string(),
                 topic.to_string(),
                 trigger.arxiv_id.clone(),
@@ -1163,7 +1163,7 @@ impl AutonomousOrchestrator {
     ) -> Result<DeepResearchResult> {
         self.init_components().await?;
 
-        let session_id = Uuid::new_v4().to_string()[..8].to_string();
+        let session_id = Uuid::new_v4().to_string()[..8].into();
         let papers_analyzed = new_papers.len() as i32;
 
         let mut all_categories: FxHashSet<String> = FxHashSet::default();
@@ -1406,7 +1406,7 @@ impl AutonomousOrchestrator {
             .clamp(0.1, 0.9);
 
         let scored_len = scored_gaps.len();
-        let mut alerts = Vec::new();
+        let mut alerts = Vec::with_capacity(scored_len);
         for sg in scored_gaps {
             let sev_rank = severity_rank(&sg.severity);
             if sev_rank > min_sev {
@@ -1417,7 +1417,7 @@ impl AutonomousOrchestrator {
             }
 
             let alert = ResearchAlert::new(
-                Uuid::new_v4().to_string()[..8].to_string(),
+                Uuid::new_v4().to_string()[..8].into(),
                 session_id.to_string(),
                 topic.to_string(),
                 trigger_paper.arxiv_id.clone(),
@@ -1472,7 +1472,7 @@ impl AutonomousOrchestrator {
             .map(|g| g.description.clone())
             .collect();
 
-        let mut filtered = Vec::new();
+        let mut filtered = Vec::with_capacity(gaps.len());
         let mut suppressed = 0i32;
         for gap in gaps {
             if seen_descriptions.contains(&gap.description) {
