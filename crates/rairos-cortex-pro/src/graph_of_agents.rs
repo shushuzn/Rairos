@@ -406,16 +406,21 @@ impl CommunicationGraph {
 
     /// Check for convergence
     pub fn check_convergence(&self) -> bool {
-        let beliefs: Vec<_> = self.nodes.values().map(|n| &n.state.belief).collect();
+        let beliefs: Vec<String> = self.nodes.values().map(|n| n.state.belief.clone()).collect();
         if beliefs.len() < 2 {
             return true;
         }
 
         // Check if all beliefs are similar (simplified)
-        let first = beliefs[0];
-        let diversity = beliefs.iter().filter(|b| *b != first).count();
+        let first_ref = &beliefs[0];
+        let mut same_count = 0usize;
+        for b in &beliefs {
+            if b == first_ref {
+                same_count += 1;
+            }
+        }
 
-        let diversity_ratio = diversity as f32 / beliefs.len() as f32;
+        let diversity_ratio = 1.0 - (same_count as f32 / beliefs.len() as f32);
         diversity_ratio < (1.0 - self.config.convergence_threshold)
     }
 

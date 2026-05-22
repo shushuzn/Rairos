@@ -103,7 +103,10 @@ impl ReasoningTree {
 
     /// Get children of a node
     pub fn children_of(&self, node_id: &str) -> Vec<&ThoughtNode> {
-        let node = self.nodes.get(node_id)?;
+        let node = match self.nodes.get(node_id) {
+            Some(n) => n,
+            None => return Vec::new(),
+        };
         node.children.iter().filter_map(|id| self.nodes.get(id)).collect()
     }
 
@@ -492,7 +495,7 @@ fn generate_child_thought(parent_content: &str, node_type: NodeType, branch: usi
 
 /// Calculate thought score based on type and content
 fn calculate_thought_score(content: &str, node_type: NodeType) -> f32 {
-    let mut score = 0.5;
+    let mut score: f32 = 0.5;
 
     // Bonus for certain keywords
     let content_lower = content.to_lowercase();
