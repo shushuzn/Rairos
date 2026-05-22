@@ -2,6 +2,9 @@
 
 use thiserror::Error;
 
+/// Common result type for rairos-cortex-pro operations
+pub type Result<T> = std::result::Result<T, CortexProError>;
+
 #[derive(Error, Debug)]
 pub enum CortexProError {
     #[error("Agent execution failed: {0}")]
@@ -30,4 +33,11 @@ pub enum CortexProError {
 
     #[error("Context limit exceeded: {0}")]
     ContextLimitExceeded(String),
+
+    /// Wrapper for underlying errors with source chaining
+    #[error("External error: {source}")]
+    External {
+        #[from]
+        source: Box<dyn std::error::Error + Send + Sync>,
+    },
 }

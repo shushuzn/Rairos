@@ -193,7 +193,7 @@ pub use agent::{Agent, AgentConfig, AgentOutput, AgentRole};
 pub use crew::{ResearchCrew, CrewConfig, CrewResult};
 pub use pipeline::{Pipeline, PipelineNode, PipelineEdge};
 pub use state::{ResearchState, Phase, ResearchContext, CrewContext};
-pub use error::CortexProError;
+pub use error::{CortexProError, Result};
 
 #[cfg(feature = "tools")]
 pub use sparks_crew::{SparksCrew, Plan, PlanStep, ExecutionResult, ResearchReport};
