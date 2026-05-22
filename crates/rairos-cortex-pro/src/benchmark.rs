@@ -144,7 +144,10 @@ impl BenchmarkMetrics {
         let self_correction_rate = if !results.is_empty() {
             let corrections: usize = results.iter()
                 .flat_map(|r| &r.milestones)
-                .filter(|m| m.name.to_lowercase().contains("correct") || m.name.to_lowercase().contains("retry"))
+                .filter(|m| {
+                    let name_lower = m.name.to_lowercase();
+                    name_lower.contains("correct") || name_lower.contains("retry")
+                })
                 .count();
             corrections as f32 / results.len() as f32
         } else {
