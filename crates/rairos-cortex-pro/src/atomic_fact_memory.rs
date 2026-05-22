@@ -8,6 +8,7 @@
 //! ## Architecture
 //!
 //! ```text
+//! use crate::utils::uuid_simple;
 //! Interaction → Atomic Fact Extraction → Memory Storage
 //!                                           │
 //!                         ┌─────────────────┼─────────────────┐
@@ -25,6 +26,7 @@
 //!                   └──────────────┘               └──────────────┘
 //! ```
 
+use crate::utils::uuid_simple;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use std::collections::HashMap;
@@ -563,15 +565,6 @@ impl AtomicReasoner {
             reasoning: "No specific route matched".to_string(),
         }
     }
-}
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
 }
 
 #[cfg(test)]

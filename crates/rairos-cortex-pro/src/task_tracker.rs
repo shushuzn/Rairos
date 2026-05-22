@@ -23,6 +23,8 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
+use crate::utils::current_timestamp;
+
 /// Task execution state
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum TaskState {
@@ -778,14 +780,6 @@ impl From<TaskTracker> for TaskTrackerHandle {
 // =============================================================================
 // Utilities
 // =============================================================================
-
-fn current_timestamp() -> u64 {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-}
 
 #[cfg(test)]
 mod tests {

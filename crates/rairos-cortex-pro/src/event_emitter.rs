@@ -10,6 +10,8 @@ use std::collections::{HashMap, VecDeque};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
+use crate::utils::current_timestamp;
+
 /// Event type identifier
 pub type EventType = &'static str;
 
@@ -368,15 +370,6 @@ pub fn global_emitter() -> &'static EventEmitter {
 // Utilities
 // =============================================================================
 
-fn current_timestamp() -> u64 {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-}
-
-// =============================================================================
 // Tests
 // =============================================================================
 

@@ -35,6 +35,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
+use crate::utils::uuid_simple;
+
 /// Maximum trajectory length to store
 const MAX_TRAJECTORY_LEN: usize = 100;
 
@@ -793,15 +795,6 @@ pub struct MIAStats {
 // =============================================================================
 // Utilities
 // =============================================================================
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
-}
 
 #[cfg(test)]
 mod tests {

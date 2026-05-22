@@ -37,6 +37,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// A thought node in a reasoning tree
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ThoughtNode {
@@ -531,15 +533,6 @@ fn extract_answer(content: &str) -> String {
         .collect();
 
     sentences.last().map(|s| s.to_string()).unwrap_or_else(|| content.to_string())
-}
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
 }
 
 // =============================================================================

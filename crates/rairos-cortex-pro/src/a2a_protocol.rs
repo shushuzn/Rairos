@@ -26,6 +26,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// A2A message types
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum A2AMessageType {
@@ -358,13 +360,6 @@ impl A2AProtocol {
     pub fn pending_task_count(&self) -> usize {
         self.pending_tasks.len()
     }
-}
-
-/// Simple UUID generator
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    format!("{:x}-{:x}", now.as_secs(), now.subsec_nanos())
 }
 
 #[cfg(test)]

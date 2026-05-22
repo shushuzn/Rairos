@@ -21,6 +21,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 
+use crate::utils::uuid_simple;
+
 /// Orchestration topology types
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum Topology {
@@ -659,15 +661,6 @@ pub struct AgentSelection {
     pub agent_id: Option<String>,
     pub confidence: f32,
     pub reasoning: String,
-}
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
 }
 
 #[cfg(test)]

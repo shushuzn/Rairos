@@ -20,6 +20,8 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// A recorded tool execution event
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ToolEvent {
@@ -520,15 +522,6 @@ pub struct EmotionalSummary {
 // =============================================================================
 // Simple UUID generator
 // =============================================================================
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
-}
 
 #[cfg(test)]
 mod tests {

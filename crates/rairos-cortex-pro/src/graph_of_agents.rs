@@ -37,6 +37,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// An agent node in the communication graph
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AgentNode {
@@ -753,15 +755,6 @@ fn string_similarity(a: &str, b: &str) -> f32 {
     }
 
     intersection / union
-}
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
 }
 
 #[cfg(test)]

@@ -33,6 +33,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// A planning state
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlanningState {
@@ -575,15 +577,6 @@ mod fastrand {
             .as_nanos();
         ((nanos as usize) % range.len()) + range.start
     }
-}
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
 }
 
 #[cfg(test)]

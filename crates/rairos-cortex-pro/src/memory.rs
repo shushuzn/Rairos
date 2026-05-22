@@ -27,6 +27,8 @@ use std::fmt::Debug;
 use std::sync::RwLock;
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// Maximum entries in each memory store
 const MAX_IDEATION_ENTRIES: usize = 1000;
 const MAX_EXPERIMENTATION_ENTRIES: usize = 500;
@@ -942,13 +944,6 @@ pub struct TieredMemoryStats {
     pub episodic_count: usize,
     pub tool_count: usize,
     pub semantic_count: usize,
-}
-
-/// Simple UUID generator
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    format!("{:x}-{:x}", now.as_secs(), now.subsec_nanos())
 }
 
 #[cfg(test)]

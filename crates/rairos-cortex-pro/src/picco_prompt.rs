@@ -24,6 +24,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use crate::utils::uuid_simple;
+
 /// PICCO Prompt structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PiccoPrompt {
@@ -684,15 +686,6 @@ mod fastrand {
             .as_nanos();
         ((nanos as usize) % range.len()) + range.start
     }
-}
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
 }
 
 #[cfg(test)]

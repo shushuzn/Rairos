@@ -29,6 +29,8 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
+use crate::utils::current_timestamp;
+
 /// Unique conversation identifier
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ConversationId(pub String);
@@ -765,15 +767,6 @@ impl Default for ConversationHistoryBuilder {
 // Utilities
 // =============================================================================
 
-fn current_timestamp() -> u64 {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-}
-
-// =============================================================================
 // Tests
 // =============================================================================
 

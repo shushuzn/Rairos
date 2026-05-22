@@ -26,6 +26,8 @@ use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::{mpsc, watch, Mutex};
 
+use crate::utils::current_timestamp;
+
 /// Task priority levels
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Priority {
@@ -529,14 +531,6 @@ impl AsyncWorkerPool {
 // =============================================================================
 // Utilities
 // =============================================================================
-
-fn current_timestamp() -> u64 {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-}
 
 #[cfg(test)]
 mod tests {

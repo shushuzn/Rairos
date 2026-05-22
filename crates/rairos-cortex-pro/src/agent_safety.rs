@@ -24,6 +24,8 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// Safety verdict
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SafetyVerdict {
@@ -714,15 +716,6 @@ impl Default for ReliabilityTracker {
     fn default() -> Self {
         Self::new()
     }
-}
-
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_nanos();
-    format!("{:x}", nanos)
 }
 
 #[cfg(test)]

@@ -28,6 +28,8 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
+use crate::utils::current_timestamp;
+
 /// Agent identifier
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct AgentId(pub String);
@@ -625,15 +627,6 @@ pub fn global_registry() -> &'static AgentRegistry {
 // Utilities
 // =============================================================================
 
-fn current_timestamp() -> u64 {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-}
-
-// =============================================================================
 // Tests
 // =============================================================================
 

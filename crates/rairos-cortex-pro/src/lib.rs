@@ -281,3 +281,7 @@ pub use event_emitter::{EventEmitter, Event, EventType, EventHandler, EventData,
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
+
+/// Common utilities module
+pub mod utils;
+pub use utils::{uuid_simple, current_timestamp, current_timestamp_ms, generate_id, format_timestamp};

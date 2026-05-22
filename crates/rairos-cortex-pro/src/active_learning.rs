@@ -26,6 +26,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
+use crate::utils::uuid_simple;
+
 /// A candidate material for evaluation
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MaterialCandidate {
@@ -428,13 +430,6 @@ impl Default for HypothesisGenerator {
     fn default() -> Self {
         Self::new()
     }
-}
-
-/// Simple UUID generator
-fn uuid_simple() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    format!("{:x}-{:x}", now.as_secs(), now.subsec_nanos())
 }
 
 #[cfg(test)]
