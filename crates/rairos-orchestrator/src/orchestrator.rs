@@ -1275,14 +1275,18 @@ impl AutonomousOrchestrator {
         gaps.extend(generalization_gaps);
 
         for desc in gap_descriptions {
+            // Pre-compute words_new once per desc (instead of per existing_paper)
+            let words_new: FxHashSet<String> = desc.split_whitespace()
+                .map(|w| w.to_lowercase())
+                .filter(|w| w.len() > 4)
+                .collect();
+
             let novelty = if existing_papers.is_empty() {
                 1.0
             } else {
                 let max_overlap = existing_papers.iter()
                     .map(|existing| {
-                        let words_new: FxHashSet<_> = desc.split_whitespace()
-                            .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
-                        let words_exist: FxHashSet<_> = existing.split_whitespace()
+                        let words_exist: FxHashSet<String> = existing.split_whitespace()
                             .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
                         if words_new.is_empty() || words_exist.is_empty() {
                             return 0.0;
