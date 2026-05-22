@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use chrono::Utc;
 
 use crate::alert::AnomalyAlert;
-use crate::belief_network::{Belief, BeliefState, Reflection, ReflectionType};
+use crate::belief_network::{Belief, BeliefState, Evidence, Reflection, ReflectionType};
 use crate::memory_stats::MemoryStats;
 use crate::stance::{AnomalySeverity, ResearchStance, StanceType};
 
@@ -178,13 +178,17 @@ impl ResearchMemory {
         tags: Vec<String>,
         notes: &str,
     ) -> &ResearchStance {
-        // Create linked belief first
+        // Create linked belief first - convert evidence IDs to Evidence objects
+        let evidence: Vec<Evidence> = evidence_refs
+            .iter()
+            .map(|id| Evidence::paper(id, 0)) // Default citation count 0 for stance evidence
+            .collect();
         let belief = Belief::new(
             topic,
             claim,
             reasoning,
             confidence,
-            evidence_refs.clone(),
+            evidence,
             tags.clone(),
         );
         let belief_id = belief.belief_id.clone();
@@ -729,7 +733,19 @@ fn belief_to_dict(b: &Belief) -> serde_json::Map<String, serde_json::Value> {
     m.insert("statement".to_string(), serde_json::Value::String(b.statement.clone()));
     m.insert("state".to_string(), serde_json::Value::String(b.state.to_string()));
     m.insert("confidence".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.confidence).unwrap_or(serde_json::Number::from(0))));
-    m.insert("supporting_evidence".to_string(), serde_json::Value::Array(b.supporting_evidence.iter().map(|s| serde_json::Value::String(s.clone())).collect()));
+    // Serialize supporting_evidence as array of Evidence objects
+    let evidence_json: Vec<serde_json::Value> = b.supporting_evidence.iter().map(|e| {
+        serde_json::json!({
+            "evidence_id": e.evidence_id,
+            "source": e.source,
+            "recorded_at": e.recorded_at,
+            "reliability": e.reliability,
+            "validated": e.validated,
+            "citation_count": e.citation_count,
+            "notes": e.notes,
+        })
+    }).collect();
+    m.insert("supporting_evidence".to_string(), serde_json::Value::Array(evidence_json));
     m.insert("contradicting_evidence".to_string(), serde_json::Value::Array(b.contradicting_evidence.iter().map(|s| serde_json::Value::String(s.clone())).collect()));
     m.insert("reasoning".to_string(), serde_json::Value::String(b.reasoning.clone()));
     m.insert("created_at".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.created_at).unwrap_or(serde_json::Number::from(0))));
@@ -737,11 +753,14 @@ fn belief_to_dict(b: &Belief) -> serde_json::Map<String, serde_json::Value> {
     m.insert("state_changed_at".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.state_changed_at).unwrap_or(serde_json::Number::from(0))));
     m.insert("revision_count".to_string(), serde_json::Value::Number(serde_json::Number::from(b.revision_count)));
     m.insert("tags".to_string(), serde_json::Value::Array(b.tags.iter().map(|t| serde_json::Value::String(t.clone())).collect()));
+    m.insert("depends_on".to_string(), serde_json::Value::Array(b.depends_on.iter().map(|s| serde_json::Value::String(s.clone())).collect()));
+    m.insert("fragility".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.fragility).unwrap_or(serde_json::Number::from(0))));
+    m.insert("last_decay_at".to_string(), serde_json::Value::Number(serde_json::Number::from_f64(b.last_decay_at).unwrap_or(serde_json::Number::from(0))));
     m
 }
 
 fn belief_from_dict(d: serde_json::Map<String, serde_json::Value>) -> Option<Belief> {
-    use crate::belief_network::BeliefState;
+    use crate::belief_network::{BeliefState, Evidence, EvidenceSource};
     let state_str = d.get("state")?.as_str()?;
     let state = match state_str {
         "confirmed" => BeliefState::Confirmed,
@@ -750,13 +769,54 @@ fn belief_from_dict(d: serde_json::Map<String, serde_json::Value>) -> Option<Bel
         "retracted" => BeliefState::Retracted,
         _ => BeliefState::Confirmed,
     };
+
+    // Parse supporting_evidence - handle both old format (string IDs) and new format (Evidence objects)
+    let supporting_evidence: Vec<Evidence> = if let Some(arr) = d.get("supporting_evidence")?.as_array() {
+        arr.iter().filter_map(|v| {
+            if let Some(obj) = v.as_object() {
+                // New format: Evidence object
+                let source_str = obj.get("source")?.as_str()?;
+                let source = match source_str {
+                    "paper" => EvidenceSource::Paper,
+                    "preprint" => EvidenceSource::Preprint,
+                    "web" => EvidenceSource::Web,
+                    "user" => EvidenceSource::User,
+                    "experiment" => EvidenceSource::Experiment,
+                    "reasoning" => EvidenceSource::Reasoning,
+                    _ => EvidenceSource::Other,
+                };
+                Some(Evidence {
+                    evidence_id: obj.get("evidence_id")?.as_str()?.to_string(),
+                    source,
+                    recorded_at: obj.get("recorded_at")?.as_f64().unwrap_or(0.0),
+                    reliability: obj.get("reliability")?.as_f64().unwrap_or(0.5),
+                    validated: obj.get("validated")?.as_bool().unwrap_or(false),
+                    citation_count: obj.get("citation_count")?.as_u64().unwrap_or(0) as u32,
+                    notes: obj.get("notes")?.as_str().unwrap_or("").to_string(),
+                })
+            } else if let Some(id) = v.as_str() {
+                // Old format: just evidence ID string
+                Some(Evidence::paper(id, 0))
+            } else {
+                None
+            }
+        }).collect()
+    } else {
+        Vec::new()
+    };
+
+    let depends_on: Vec<String> = d.get("depends_on")
+        .and_then(|v| v.as_array())
+        .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .unwrap_or_default();
+
     Some(Belief {
         belief_id: d.get("belief_id")?.as_str()?.to_string(),
         topic: d.get("topic")?.as_str()?.to_string(),
         statement: d.get("statement")?.as_str()?.to_string(),
         state,
         confidence: d.get("confidence")?.as_f64().unwrap_or(0.5),
-        supporting_evidence: d.get("supporting_evidence")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+        supporting_evidence,
         contradicting_evidence: d.get("contradicting_evidence")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
         reasoning: d.get("reasoning")?.as_str()?.to_string(),
         created_at: d.get("created_at")?.as_f64().unwrap_or(0.0),
@@ -764,6 +824,9 @@ fn belief_from_dict(d: serde_json::Map<String, serde_json::Value>) -> Option<Bel
         state_changed_at: d.get("state_changed_at")?.as_f64().unwrap_or(0.0),
         revision_count: d.get("revision_count")?.as_u64().unwrap_or(0) as u32,
         tags: d.get("tags")?.as_array()?.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+        depends_on,
+        fragility: d.get("fragility")?.as_f64().unwrap_or(0.0),
+        last_decay_at: d.get("last_decay_at")?.as_f64().unwrap_or(0.0),
     })
 }
 

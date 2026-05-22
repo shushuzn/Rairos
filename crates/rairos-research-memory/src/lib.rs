@@ -19,7 +19,8 @@ pub use crate::stance::{AnomalySeverity, ResearchStance, StanceType};
 
 // Belief network exports
 pub use belief_network::{
-    Belief, BeliefState, EntitySummary, EntityType, Reflection, ReflectionType,
+    Belief, BeliefState, ConfidenceComponents, EntitySummary, EntityType, Evidence,
+    EvidenceSource, Reflection, ReflectionType,
 };
 
 mod alert;
