@@ -34,6 +34,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
+use smallvec::SmallVec;
 use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 
@@ -48,8 +49,8 @@ pub struct ThoughtNode {
     pub content: String,
     /// Parent node ID
     pub parent_id: Option<String>,
-    /// Children node IDs
-    pub children: Vec<String>,
+    /// Children node IDs (SmallVec for typical small fan-out)
+    pub children: SmallVec<[String; 4]>,
     /// Node type
     pub node_type: NodeType,
     /// Score (quality/vote)

@@ -26,6 +26,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
+use smallvec::SmallVec;
 use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 
@@ -38,16 +39,16 @@ pub struct RomaTask {
     pub id: String,
     /// Task description
     pub description: String,
-    /// Dependencies (task IDs that must complete first)
-    pub dependencies: Vec<String>,
+    /// Dependencies (task IDs that must complete first) - SmallVec for typical small dependency count
+    pub dependencies: SmallVec<[String; 4]>,
     /// Status
     pub status: TaskStatus,
     /// Result if completed
     pub result: Option<String>,
     /// Depth in the task tree
     pub depth: u32,
-    /// Children task IDs (for subtasks)
-    pub children: Vec<String>,
+    /// Children task IDs (for subtasks) - SmallVec for typical small fan-out
+    pub children: SmallVec<[String; 4]>,
 }
 
 /// Task status
