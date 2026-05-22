@@ -155,6 +155,10 @@ pub mod mia;
 #[cfg(feature = "tools")]
 pub mod worker_pool;
 
+/// Tool Registry for centralized tool management
+#[cfg(feature = "tools")]
+pub mod tool_registry;
+
 /// Task Tracker for multi-agent workflow state management
 #[cfg(feature = "tools")]
 pub mod task_tracker;
@@ -252,6 +256,9 @@ pub use worker_pool::{WorkerPool, WorkerPoolConfig, WorkerPoolStats, AsyncWorker
 
 #[cfg(feature = "tools")]
 pub use task_tracker::{TaskTracker, TaskTrackerHandle, TaskState, TrackPriority, TrackedTask, TrackerStats, TrackerEvent, TrackerEventType};
+
+#[cfg(feature = "tools")]
+pub use tool_registry::{ToolRegistry, ToolRegistryBuilder, ToolBuilder, ToolSchema, ToolParameter, ToolExecResult, ToolContext, RegisteredTool, ToolRegistryError, JsonValue};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
