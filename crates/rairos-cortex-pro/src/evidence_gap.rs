@@ -224,8 +224,9 @@ impl EvidenceSource {
             return self.reliability_weight();
         }
 
-        // Exponential decay: reliability(t) = reliability_0 * e^(-ln(2) * t / half_life)
-        let decay = (-0.69314718 * age_days / half_life).exp();
+        // Exponential decay: reliability(t) = reliability_0 * 2^(-t / half_life)
+        // Equivalent to exp(-ln(2) * t / half_life) but clearer
+        let decay = 2_f64.powf(-age_days / half_life);
         let base = self.reliability_weight();
 
         // Minimum reliability is 20% of original
@@ -314,18 +315,20 @@ impl ResearchQuery {
             return;
         }
 
+        // Hoist Utc::now() out of loop to avoid repeated syscalls
+        let now = Utc::now();
+
         // Start with skeptical prior
         let mut beta = BetaDistribution::skeptical();
 
         for evidence in &mut self.evidence {
-            // Get cached effective weight (quality * relevance * source_reliability with decay)
-            // This is pre-computed and only refreshed if >1 hour old
-            let effective_weight = evidence.get_effective_weight();
-            // Fresh source reliability (0.85 for paper, etc.) - used for (1 - reliability) calc
-            let source_reliability = evidence.source.effective_reliability(0.0);
-            // weight = quality * relevance (base weight before source reliability)
-            let weight = (evidence.quality as f64) * (evidence.relevance as f64);
-            let beta_update = weight - effective_weight;
+            // Get cached effective weight: quality * relevance * source_reliability (with decay)
+            // Cache is refreshed only if >1 hour old (bug fixed: now checks cache_updated_at)
+            let effective_weight = evidence.get_effective_weight(now);
+            // base_weight = quality * relevance (without source reliability)
+            let base_weight = (evidence.quality as f64) * (evidence.relevance as f64);
+            // beta_update = base_weight * (1 - reliability) = base_weight - effective_weight
+            let beta_update = base_weight - effective_weight;
 
             // Update Beta distribution based on evidence type
             match evidence.evidence_type {
@@ -345,47 +348,6 @@ impl ResearchQuery {
         self.beta_distribution = beta;
         self.confidence = beta.mean() as f32;
         self.confidence_uncertainty = beta.std() as f32;
-    }
-
-    /// Apply time-based decay to all evidence.
-    ///
-    /// Based on ACT-R decay formula from MuninnDB.
-    fn apply_evidence_decay(&self, beta: &mut BetaDistribution) {
-        let now = Utc::now();
-        let mut total_decay_strength = 0.0;
-        let mut decayed_alpha = 0.0;
-        let mut decayed_beta = 0.0;
-
-        for evidence in &self.evidence {
-            let age_days = (now - evidence.collected_at).num_seconds() as f64 / 86400.0;
-            if let Some(half_life) = evidence.source.half_life_days() {
-                if half_life > 0.0 {
-                    let decay = (-0.69314718 * age_days / half_life).exp();
-                    let strength = decay.min(1.0).max(0.1);
-                    let weight = (evidence.quality as f64) * (evidence.relevance as f64);
-
-                    match evidence.evidence_type {
-                        EvidenceType::Direct | EvidenceType::Supporting => {
-                            decayed_alpha += strength * weight;
-                        }
-                        EvidenceType::Contradicting => {
-                            decayed_beta += strength * weight;
-                        }
-                        EvidenceType::Contextual => {
-                            decayed_alpha += strength * weight * 0.5;
-                            decayed_beta += strength * weight * 0.5;
-                        }
-                    }
-                    total_decay_strength += weight;
-                }
-            }
-        }
-
-        if total_decay_strength > 0.0 {
-            // Blend decayed evidence into beta
-            beta.alpha += decayed_alpha * 0.1;
-            beta.beta += decayed_beta * 0.1;
-        }
     }
 
     /// Check if query is ready to answer.
@@ -476,12 +438,12 @@ impl EvidenceItem {
 
     /// Recalculate and update the cached effective weight.
     /// Call this periodically to apply time-based decay.
-    fn refresh_cache(&mut self) {
-        let now = Utc::now();
-        let age_seconds = (now - self.collected_at).num_seconds() as f64;
-        // Only refresh if more than 1 hour has passed
-        if age_seconds > 3600.0 {
-            let age_days = age_seconds / 86400.0;
+    /// Takes `now` parameter to avoid repeated Utc::now() calls in loops.
+    fn refresh_cache(&mut self, now: DateTime<Utc>) {
+        let age_since_cache = (now - self.cache_updated_at).num_seconds() as f64;
+        // Only refresh if more than 1 hour has passed since last refresh
+        if age_since_cache > 3600.0 {
+            let age_days = (now - self.collected_at).num_seconds() as f64 / 86400.0;
             let source_reliability = self.source.effective_reliability(age_days);
             self.cached_effective_weight = (self.quality as f64) * (self.relevance as f64) * source_reliability;
             self.cache_updated_at = now;
@@ -489,8 +451,9 @@ impl EvidenceItem {
     }
 
     /// Get the cached effective weight, refreshing if needed.
-    fn get_effective_weight(&mut self) -> f64 {
-        self.refresh_cache();
+    /// Takes `now` parameter to avoid repeated Utc::now() calls in loops.
+    fn get_effective_weight(&mut self, now: DateTime<Utc>) -> f64 {
+        self.refresh_cache(now);
         self.cached_effective_weight
     }
 
@@ -692,13 +655,15 @@ impl EvidenceGapTracker {
         evidence: EvidenceItem,
     ) -> Option<&ResearchQuery> {
         let query = self.queries.iter_mut().find(|q| q.id == query_id)?;
-        query.add_evidence(evidence.clone());
+        // Extract id before moving evidence (avoids double clone)
+        let evidence_id = evidence.id.clone();
+        query.add_evidence(evidence); // Move, not clone
 
         // Record collection event
         self.collection_history.push(CollectionEvent {
             query_id: query_id.to_string(),
             action: CollectionAction::AddEvidence,
-            evidence_id: Some(evidence.id),
+            evidence_id: Some(evidence_id),
             timestamp: Utc::now(),
         });
 
@@ -777,16 +742,16 @@ impl EvidenceGapTracker {
     }
 
     /// Get the next recommended action across all queries.
+    /// Prioritizes by lowest confidence (most needs attention).
     pub fn get_next_global_action(&self) -> Option<(String, RouterAction)> {
-        // Prioritize by confidence (lowest first)
-        let mut sorted: Vec<_> = self.queries.iter()
+        // Find query with lowest confidence using O(n) min instead of O(n log n) sort
+        self.queries
+            .iter()
             .filter(|q| !matches!(q.status, QueryStatus::Answered | QueryStatus::Abandoned))
-            .collect();
-        sorted.sort_by(|a, b| a.confidence.partial_cmp(&b.confidence).unwrap());
-
-        sorted.first().and_then(|q| {
-            self.decide_action(&q.id).map(|action| (q.id.clone(), action))
-        })
+            .min_by(|a, b| a.confidence.partial_cmp(&b.confidence).unwrap_or(std::cmp::Ordering::Equal))
+            .and_then(|q| {
+                self.decide_action(&q.id).map(|action| (q.id.clone(), action))
+            })
     }
 
     /// Mark a query as answered.
@@ -1383,9 +1348,10 @@ mod integration_tests {
         let mut fresh_evidence = EvidenceItem::from_paper("e1", "p1", "Fresh Paper", "Content", EvidenceType::Direct)
             .with_relevance(0.9)
             .with_quality(0.9);
-        // Manually set collected_at to now
+        // Manually set collected_at to now (and cache_updated_at to match)
         fresh_evidence = EvidenceItem {
             collected_at: Utc::now(),
+            cache_updated_at: Utc::now(), // Must also update cache timestamp
             ..fresh_evidence
         };
         tracker.add_evidence(&query_id, fresh_evidence);
@@ -1400,8 +1366,10 @@ mod integration_tests {
             .with_relevance(0.9)
             .with_quality(0.9);
         // Simulate evidence that is 100 days old
+        // Must also set cache_updated_at to 100 days ago so refresh triggers decay calculation
         old_evidence = EvidenceItem {
             collected_at: Utc::now() - Duration::days(100),
+            cache_updated_at: Utc::now() - Duration::days(100), // Force cache refresh
             ..old_evidence
         };
         tracker.add_evidence(&query2_id, old_evidence);
