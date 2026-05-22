@@ -420,14 +420,17 @@ impl MetaAgent {
         // Determine dependencies based on keywords
         let mut dependencies = Vec::new();
 
-        for task in tasks {
+        // Pre-compute lowercase task names to avoid repeated allocation
+        let task_lowers: Vec<String> = tasks.iter().map(|t| t.to_lowercase()).collect();
+
+        for (task_idx, task) in tasks.iter().enumerate() {
             let mut deps = Vec::new();
-            let task_lower = task.to_lowercase();
+            let task_lower = &task_lowers[task_idx];
 
             // "after X" implies dependency on X
-            for (i, other) in tasks.iter().enumerate() {
-                if task_lower.contains(&format!("after {}", other.to_lowercase())) {
-                    deps.push(i);
+            for (other_idx, other_lower) in task_lowers.iter().enumerate() {
+                if other_idx != task_idx && task_lower.contains(&format!("after {}", other_lower)) {
+                    deps.push(other_idx);
                 }
             }
 
