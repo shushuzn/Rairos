@@ -613,7 +613,7 @@ impl PreferencePromptOptimizer {
     pub fn top_n(&self, n: usize) -> Vec<&PromptCandidate> {
         let mut sorted = self.population.clone();
         sorted.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap());
-        sorted.into_iter().take(n).collect()
+        sorted.iter().take(n).collect()
     }
 
     /// Get statistics

@@ -179,7 +179,7 @@ impl TransactionLog {
             tool_name.to_string(),
             CompensationHandler {
                 tool_name: tool_name.to_string(),
-                compensate: Box::new(handler),
+                compensate: std::rc::Rc::new(handler),
                 has_side_effects,
             },
         );
@@ -275,7 +275,7 @@ impl TransactionLog {
     /// Rollback to a specific event
     pub fn rollback_to(&mut self, event_id: &str) -> RollbackResult {
         let mut compensations = Vec::new();
-        let mut errors = Vec::new();
+        let errors = Vec::new();
 
         // Find event index
         let event_idx = self.events.iter().position(|e| e.id == event_id);

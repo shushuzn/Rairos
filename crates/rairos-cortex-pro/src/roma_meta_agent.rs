@@ -292,15 +292,28 @@ impl MetaAgent {
 
         // Execute subtasks
         self.role = MetaRole::Executor;
-        let mut subtask_ids = Vec::new();
-        let mut subtask_results = Vec::new();
+        
+        // First, create all task IDs
+        let new_task_ids: Vec<String> = (0..subtask_descriptions.len())
+            .map(|_| uuid_simple())
+            .collect();
 
+        // Now create tasks with dependencies mapped from indices to task IDs
+        let mut subtask_results = Vec::new();
+        
         for (i, desc) in subtask_descriptions.iter().enumerate() {
-            let subtask_id = uuid_simple();
+            let subtask_id = new_task_ids[i].clone();
+            
+            // Convert dependency indices to task IDs
+            let dep_ids: Vec<String> = plan.dependencies
+                .get(i)
+                .map(|deps| deps.iter().filter_map(|&idx| new_task_ids.get(idx).cloned()).collect())
+                .unwrap_or_default();
+            
             let subtask = RomaTask {
                 id: subtask_id.clone(),
                 description: desc.clone(),
-                dependencies: plan.dependencies.get(i).cloned().unwrap_or_default(),
+                dependencies: dep_ids,
                 status: TaskStatus::Pending,
                 result: None,
                 depth: task_depth + 1,
@@ -308,7 +321,6 @@ impl MetaAgent {
             };
 
             self.tasks.insert(subtask_id.clone(), subtask);
-            subtask_ids.push(subtask_id.clone());
 
             // Execute subtask (potentially recursively)
             match self.execute_task(&subtask_id) {
@@ -319,7 +331,7 @@ impl MetaAgent {
 
         // Update parent task with children
         if let Some(parent) = self.tasks.get_mut(task_id) {
-            parent.children = subtask_ids.clone();
+            parent.children = new_task_ids.clone();
         }
 
         // Aggregator role: combine results

@@ -496,25 +496,28 @@ impl PpaPlanner {
     /// Plan with pitfall avoidance
     pub fn plan_with_pitfall_avoidance(&mut self, state: &str) -> PpaPlanningResult {
         // Detect potential pitfalls
-        let detected_pitfalls = self.detect_pitfalls(state);
+        let detected_pitfalls_refs = self.detect_pitfalls(state);
+        
+        // Clone the pitfalls to avoid borrow issues
+        let detected_pitfalls: Vec<Pitfall> = detected_pitfalls_refs.iter().map(|p| (*p).clone()).collect();
 
-        // Generate warnings (do this before mutable borrow)
+        // Generate warnings
         let warnings: Vec<_> = detected_pitfalls
             .iter()
             .map(|p| format!("Pitfall detected: {} - {}", p.description, p.suggestion))
             .collect();
 
-        // Clone pitfalls for filter_safe_actions before mutable borrow
-        let pitfalls_clone: Vec<_> = detected_pitfalls.iter().copied().collect();
+        // Get safe actions before mutable borrow
+        let safe_actions = self.filter_safe_actions(&detected_pitfalls);
 
-        // Plan with modified state (avoiding pitfalls)
+        // Plan with modified state (avoiding pitfalls) - needs mutable borrow
         let base_result = self.flare.plan(state);
 
         PpaPlanningResult {
             base_result,
             detected_pitfalls,
             warnings,
-            safe_actions: self.filter_safe_actions(&pitfalls_clone),
+            safe_actions,
         }
     }
 

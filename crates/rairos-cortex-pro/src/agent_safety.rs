@@ -187,7 +187,7 @@ impl AgentSafetyGuard {
                 risk_level: RiskLevel::Critical,
                 block_on_violation: true,
                 trigger_keywords: vec!["rm -rf".to_string(), "format".to_string(), "delete everything".to_string()],
-                check_fn: Box::new(|action| {
+                check_fn: std::rc::Rc::new(|action: &str| {
                     let lower = action.to_lowercase();
                     lower.contains("rm -rf") || lower.contains("format disk") || lower.contains("delete everything")
                 }),
@@ -198,7 +198,7 @@ impl AgentSafetyGuard {
                 risk_level: RiskLevel::Medium,
                 block_on_violation: false,
                 trigger_keywords: vec!["http".to_string(), "tcp".to_string(), "connect to".to_string()],
-                check_fn: Box::new(|action| {
+                check_fn: std::rc::Rc::new(|action: &str| {
                     let lower = action.to_lowercase();
                     lower.contains("http://") || lower.contains("https://") || lower.contains("tcp://")
                 }),
@@ -209,7 +209,7 @@ impl AgentSafetyGuard {
                 risk_level: RiskLevel::High,
                 block_on_violation: true,
                 trigger_keywords: vec!["send to".to_string(), "upload".to_string(), "exfiltrate".to_string()],
-                check_fn: Box::new(|action| {
+                check_fn: std::rc::Rc::new(|action: &str| {
                     let lower = action.to_lowercase();
                     lower.contains("send to external") || lower.contains("upload to") || lower.contains("exfiltrate")
                 }),
@@ -270,6 +270,8 @@ impl AgentSafetyGuard {
 
     /// Audit an action
     pub fn audit(&mut self, agent_id: &str, action: &str, result: &SafetyCheckResult) {
+        let blocked = result.verdict == SafetyVerdict::Blocked;
+        
         let entry = AuditEntry {
             id: uuid_simple(),
             agent_id: agent_id.to_string(),
@@ -278,13 +280,13 @@ impl AgentSafetyGuard {
             risk_level: result.risk_level,
             timestamp: Utc::now(),
             details: Some(result.recommendation.clone()),
-            blocked: result.verdict == SafetyVerdict::Blocked,
+            blocked,
         };
 
         self.audit_log.push(entry);
 
         // Auto-block if threshold exceeded
-        if self.config.auto_block && entry.blocked {
+        if self.config.auto_block && blocked {
             let recent_blocks = self.audit_log
                 .iter()
                 .filter(|e| e.agent_id == agent_id && e.blocked)
@@ -694,8 +696,8 @@ impl ReliabilityTracker {
             return 0.5;
         }
 
-        let recent_success_rate = recent.iter().filter(|&&r| r).count() as f32 / recent.len() as f32;
-        let old_success_rate = old.iter().filter(|&&r| r).count() as f32 / old.len() as f32;
+        let recent_success_rate = recent.iter().filter(|&&r| *r).count() as f32 / recent.len() as f32;
+        let old_success_rate = old.iter().filter(|&&r| *r).count() as f32 / old.len() as f32;
 
         // Graceful if recent is not much worse than old
         if recent_success_rate >= old_success_rate * 0.8 {
