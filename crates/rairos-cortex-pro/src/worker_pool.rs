@@ -221,7 +221,7 @@ impl WorkerPool {
             }
         });
 
-        println!("Worker {} shutting down", worker_id);
+                tracing::info!("Worker {} shutting down", worker_id);
     }
 
     /// Execute a single task
@@ -463,7 +463,7 @@ impl AsyncWorkerPool {
                         None => break,
                     }
                 }
-                println!("Async worker {} shutting down", worker_id);
+                tracing::info!("Async worker {} shutting down", worker_id);
             });
         }
 

@@ -34,7 +34,6 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use chrono::{DateTime, Utc};
 
 /// Query type for RAG system
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -275,14 +274,17 @@ pub struct EnhancedRagService {
     enabled: bool,
     /// Knowledge graph
     kg: Option<KnowledgeGraph>,
-    /// Embedding model name
+    /// Embedding model name (reserved for future embedding configuration)
+    #[allow(dead_code)]
     embedding_model: String,
-    /// Vector dimension
+    /// Vector dimension (reserved for future embedding configuration)
+    #[allow(dead_code)]
     vector_dim: usize,
 }
 
 impl EnhancedRagService {
     /// Create a new enhanced RAG service
+    #[allow(dead_code)]
     pub fn new() -> Self {
         Self {
             enabled: true,

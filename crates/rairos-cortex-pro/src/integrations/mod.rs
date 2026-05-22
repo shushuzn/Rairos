@@ -6,8 +6,6 @@
 //! - `rairos-graphrag` - RAG question answering
 //! - `rairos-pdf-advanced` - PDF parsing and literature mining
 
-use std::sync::Arc;
-
 /// Configuration for integrations with other Rairos crates.
 #[derive(Debug, Clone)]
 pub struct IntegrationConfig {

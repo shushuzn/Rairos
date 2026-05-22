@@ -12,7 +12,6 @@ use sqlx::sqlite::{SqlitePoolOptions, SqliteConnectOptions};
 use std::collections::HashMap;
 use rustc_hash::FxHashSet;
 use std::path::Path;
-use std::str::FromStr;
 use std::sync::{Arc, LazyLock};
 use thiserror::Error;
 use tokio::runtime::Runtime;

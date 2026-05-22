@@ -219,12 +219,12 @@ pub async fn start_server(addr: SocketAddr) {
     let router = create_router(state);
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    println!("🚀 API server running on http://{}", addr);
-    println!("📋 Endpoints:");
-    println!("   POST /api/research    - Start research task");
-    println!("   GET  /api/research/{{id}}    - Get task status");
-    println!("   GET  /api/research/{{id}}/report - Get report");
-    println!("   GET  /api/health              - Health check");
+    tracing::info!("🚀 API server running on http://{}", addr);
+    tracing::info!("📋 Endpoints:");
+    tracing::info!("   POST /api/research    - Start research task");
+    tracing::info!("   GET  /api/research/{{id}}    - Get task status");
+    tracing::info!("   GET  /api/research/{{id}}/report - Get report");
+    tracing::info!("   GET  /api/health              - Health check");
 
     axum::serve(listener, router).await.unwrap();
 }

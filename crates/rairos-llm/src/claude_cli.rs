@@ -69,8 +69,8 @@ impl ClaudeCLIClient {
                 .take(200)
                 .collect::<String>();
             if !stdout_preview.is_empty() {
-                eprintln!(
-                    "Warning: Claude CLI exit code {:?} (hook error?), using stdout: {}",
+                tracing::warn!(
+                    "Claude CLI exit code {:?} (hook error?), using stdout: {}",
                     output.status.code(),
                     &stderr.trim().chars().take(120).collect::<String>()
                 );
