@@ -25,10 +25,12 @@
 //!    └─────────┘     └─────────┘     └─────────┘
 //! ```
 
+use lru::LruCache;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use tokio::sync::RwLock;
+use std::num::NonZeroUsize;
 
 /// Intent type identifiers
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -140,8 +142,8 @@ pub struct ClassificationRule {
 /// Pattern types for matching
 #[derive(Debug, Clone)]
 pub enum PatternMatcher {
-    /// Simple keyword (case-insensitive)
-    Keyword(String),
+    /// Simple keyword (case-insensitive) - stores (original, lowercase) pair
+    Keyword(String, String),
     /// Regular expression pattern
     Regex(String),
     /// Semantic similarity threshold (requires embeddings)
@@ -151,10 +153,9 @@ pub enum PatternMatcher {
 impl PatternMatcher {
     pub fn matches(&self, input: &str) -> bool {
         match self {
-            PatternMatcher::Keyword(keyword) => {
+            PatternMatcher::Keyword(_, keyword_lower) => {
                 let input_lower = input.to_lowercase();
-                let keyword_lower = keyword.to_lowercase();
-                input_lower.contains(&keyword_lower)
+                input_lower.contains(keyword_lower)
             }
             PatternMatcher::Regex(pattern) => {
                 match regex::Regex::new(pattern) {
@@ -172,13 +173,41 @@ impl PatternMatcher {
     /// Optimized match that accepts pre-lowercased input to avoid repeated lowercasing
     pub fn matches_lowercase(&self, input_lower: &str) -> bool {
         match self {
-            PatternMatcher::Keyword(keyword) => {
-                input_lower.contains(&keyword.to_lowercase())
+            PatternMatcher::Keyword(_, keyword_lower) => {
+                input_lower.contains(keyword_lower)
             }
             PatternMatcher::Regex(pattern) => {
                 match regex::Regex::new(pattern) {
                     Ok(re) => re.is_match(input_lower),
                     Err(_) => false,
+                }
+            }
+            PatternMatcher::Semantic { .. } => false,
+        }
+    }
+
+    /// Optimized match with regex compilation cache
+    pub fn matches_lowercase_with_cache(
+        &self,
+        input_lower: &str,
+        regex_cache: &Mutex<&mut LruCache<String, regex::Regex>>,
+    ) -> bool {
+        match self {
+            PatternMatcher::Keyword(_, keyword_lower) => {
+                input_lower.contains(keyword_lower)
+            }
+            PatternMatcher::Regex(pattern) => {
+                let mut cache = regex_cache.lock().unwrap();
+                if let Some(cached_regex) = cache.get(pattern) {
+                    cached_regex.is_match(input_lower)
+                } else {
+                    match regex::Regex::new(pattern) {
+                        Ok(re) => {
+                            cache.put(pattern.clone(), re.clone());
+                            re.is_match(input_lower)
+                        }
+                        Err(_) => false,
+                    }
                 }
             }
             PatternMatcher::Semantic { .. } => false,
@@ -215,6 +244,8 @@ pub struct IntentClassifier {
     intents: Arc<RwLock<HashMap<IntentId, IntentDefinition>>>,
     /// Keywords index for fast lookup
     keywords_index: Arc<RwLock<HashMap<String, Vec<IntentId>>>>,
+    /// Regex compilation cache for performance
+    regex_cache: Arc<LruCache<String, regex::Regex>>,
 }
 
 impl Default for IntentClassifier {
@@ -230,6 +261,8 @@ impl IntentClassifier {
             rules: Arc::new(RwLock::new(Vec::new())),
             intents: Arc::new(RwLock::new(HashMap::new())),
             keywords_index: Arc::new(RwLock::new(HashMap::new())),
+            // Cache up to 1024 compiled regex patterns
+            regex_cache: Arc::new(LruCache::new(NonZeroUsize::new(1024).unwrap())),
         }
     }
 
@@ -251,10 +284,10 @@ impl IntentClassifier {
     pub async fn add_rule(&self, rule: ClassificationRule) {
         // Update keywords index
         for pattern in &rule.patterns {
-            if let PatternMatcher::Keyword(keyword) = pattern {
+            if let PatternMatcher::Keyword(_, keyword_lower) = pattern {
                 let mut index = self.keywords_index.write().await;
                 index
-                    .entry(keyword.to_lowercase())
+                    .entry(keyword_lower.clone())
                     .or_default()
                     .push(rule.intent_id.clone());
             }
@@ -286,12 +319,13 @@ impl IntentClassifier {
     pub async fn classify(&self, request: &ClassificationRequest) -> ClassificationResult {
         let input_lower = request.input.to_lowercase();
         let rules = self.rules.read().await;
+        let mut regex_cache = self.regex_cache.lock().unwrap();
 
         let mut best_match: Option<ClassificationResult> = None;
         let mut best_score: f32 = 0.0;
 
         for rule in rules.iter() {
-            let matches = self::evaluate_rule(rule, &input_lower, &request.history);
+            let matches = self::evaluate_rule(rule, &input_lower, &request.history, &Mutex::new(&mut regex_cache));
 
             if matches {
                 let score = 0.5 + rule.confidence_boost; // Base score + boost
@@ -375,11 +409,16 @@ impl IntentClassifier {
     }
 }
 
-fn evaluate_rule(rule: &ClassificationRule, input: &str, _history: &[String]) -> bool {
+fn evaluate_rule(
+    rule: &ClassificationRule,
+    input: &str,
+    _history: &[String],
+    regex_cache: &Mutex<&mut LruCache<String, regex::Regex>>,
+) -> bool {
     // Pre-lowercase input once for all keyword patterns
     let input_lower = input.to_lowercase();
     let pattern_results: Vec<bool> = rule.patterns.iter()
-        .map(|p| p.matches_lowercase(&input_lower))
+        .map(|p| p.matches_lowercase_with_cache(&input_lower, regex_cache))
         .collect();
 
     if rule.require_all_patterns {
@@ -451,7 +490,7 @@ impl IntentClassifierBuilder {
     ) -> Self {
         let patterns: Vec<PatternMatcher> = keywords
             .into_iter()
-            .map(PatternMatcher::Keyword)
+            .map(|k| PatternMatcher::Keyword(k.clone(), k.to_lowercase()))
             .collect();
 
         self.rules.push(ClassificationRule {

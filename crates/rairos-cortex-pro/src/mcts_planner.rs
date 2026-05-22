@@ -22,6 +22,7 @@
 //! leaf  leaf   leaf
 //! ```
 
+use smallvec::SmallVec;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::sync::RwLock;
@@ -60,8 +61,8 @@ pub enum ToolCategory {
 pub struct MctsNode {
     /// Tool selected at this node (None for root)
     pub tool: Option<Tool>,
-    /// Children nodes
-    pub children: Vec<MctsNode>,
+    /// Children nodes (SmallVec for stack allocation of small children lists)
+    pub children: SmallVec<[MctsNode; 4]>,
     /// Visit count
     pub visit_count: u32,
     /// Total Q-value (cumulative reward)
@@ -85,7 +86,7 @@ impl MctsNode {
     pub fn root() -> Self {
         Self {
             tool: None,
-            children: Vec::new(),
+            children: SmallVec::new(),
             visit_count: 0,
             q_value: 0.0,
             parent: None,
@@ -101,7 +102,7 @@ impl MctsNode {
     pub fn child(parent_idx: usize, tool: Tool, depth: usize) -> Self {
         Self {
             tool: Some(tool),
-            children: Vec::new(),
+            children: SmallVec::new(),
             visit_count: 0,
             q_value: 0.0,
             parent: Some(parent_idx),

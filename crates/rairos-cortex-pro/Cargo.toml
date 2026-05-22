@@ -34,6 +34,10 @@ uuid = { version = "1", features = ["v4", "serde"] }
 # Date/time
 chrono = { version = "0.4", features = ["serde"] }
 
+# Performance optimizations
+smallvec = "1"           # Stack-allocated small vectors
+lru = "0.10"            # LRU cache for regex and keyword caching
+
 # Existing Rairos crates
 rairos-llm = { path = "../rairos-llm", optional = true }
 rairos-pdf = { path = "../rairos-pdf" }
