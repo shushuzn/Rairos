@@ -29,7 +29,7 @@
 use crate::utils::uuid_simple;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 /// An atomic fact extracted from interaction
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -162,6 +162,8 @@ pub struct AtomicFactMemory {
     task_stats: HashMap<TaskType, TaskStats>,
     /// Fact index for fast lookup
     fact_index: HashMap<String, Vec<(String, MemoryTier)>>, // fact_id -> (entry_id, tier)
+    /// Keyword inverted index for fast retrieval: keyword -> (fact_id, tier, utility_score)
+    keyword_index: HashMap<String, Vec<(String, MemoryTier, f32)>>,
 }
 
 /// Task statistics
@@ -196,6 +198,7 @@ impl AtomicFactMemory {
             max_entries,
             task_stats: HashMap::new(),
             fact_index: HashMap::new(),
+            keyword_index: HashMap::new(),
         }
     }
 
@@ -232,6 +235,14 @@ impl AtomicFactMemory {
                     .entry(fact.content.clone())
                     .or_default()
                     .push((entry.id.clone(), tier));
+
+                // Index keywords for fast retrieval
+                for kw in Self::extract_keywords(&fact.content) {
+                    self.keyword_index
+                        .entry(kw)
+                        .or_default()
+                        .push((fact.id.clone(), tier, fact.utility_score));
+                }
             }
         }
 
@@ -288,8 +299,89 @@ impl AtomicFactMemory {
         }
     }
 
-    /// Retrieve relevant facts for a query
+    /// Retrieve relevant facts for a query using keyword index
     pub fn retrieve(
+        &self,
+        query: &str,
+        task_type: Option<TaskType>,
+        limit: usize,
+    ) -> Vec<&AtomicFact> {
+        let query_lower = query.to_lowercase();
+        let query_keywords = Self::extract_keywords(query);
+
+        // Use keyword index to find candidates
+        let mut candidates: HashSet<String> = HashSet::new(); // (fact_id, tier)
+        let mut candidate_scores: HashMap<String, f32> = HashMap::new();
+
+        for kw in &query_keywords {
+            if let Some(facts) = self.keyword_index.get(kw) {
+                for (fact_id, tier, utility_score) in facts {
+                    // Precompute candidate score from utility (avoid full relevance calc for candidates)
+                    let key = format!("{}:{:?}", fact_id, tier);
+                    if candidates.insert(key.clone()) {
+                        candidate_scores.insert(key, utility_score);
+                    }
+                }
+            }
+        }
+
+        // If no candidates from keyword index, fall back to full scan (rare case)
+        if candidates.is_empty() {
+            return self.retrieve_full_scan(query, task_type, limit);
+        }
+
+        // Look up candidates and calculate full relevance
+        let mut scored_facts: Vec<(&AtomicFact, f32)> = Vec::new();
+
+        for key in candidates {
+            let parts: Vec<&str> = key.splitn(2, ':').collect();
+            if parts.len() != 2 {
+                continue;
+            }
+            let fact_id = parts[0];
+            let tier_str = parts[1];
+
+            // Parse tier
+            let tier = match tier_str {
+                "Working" => MemoryTier::Working,
+                "Episodic" => MemoryTier::Episodic,
+                "Semantic" => MemoryTier::Semantic,
+                "Archive" => MemoryTier::Archive,
+                _ => continue,
+            };
+
+            // Find the fact in the tier
+            if let Some(storage) = self.tiers.get(&tier) {
+                if let Some(entry) = storage.iter().find(|e| e.id == fact_id || e.facts.iter().any(|f| f.id == fact_id)) {
+                    // Try to find the fact directly in the entry
+                    if let Some(fact) = entry.facts.iter().find(|f| f.id == fact_id) {
+                        // Skip if task type doesn't match
+                        if let Some(tt) = task_type {
+                            if fact.task_type != tt {
+                                continue;
+                            }
+                        }
+                        let score = self.calculate_relevance(fact, &query_lower, &tier);
+                        if score > 0.0 {
+                            scored_facts.push((fact, score));
+                        }
+                    }
+                }
+            }
+        }
+
+        // Sort by score descending
+        scored_facts.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+
+        scored_facts
+            .into_iter()
+            .take(limit)
+            .map(|(f, _)| f)
+            .collect()
+    }
+
+    /// Fallback full scan when keyword index has no results
+    fn retrieve_full_scan(
         &self,
         query: &str,
         task_type: Option<TaskType>,
@@ -298,10 +390,8 @@ impl AtomicFactMemory {
         let query_lower = query.to_lowercase();
         let mut scored_facts: Vec<(&AtomicFact, f32)> = Vec::new();
 
-        // Search all tiers
         for (tier, storage) in &self.tiers {
             for entry in storage.iter() {
-                // Skip if task type doesn't match
                 if let Some(tt) = task_type {
                     if !entry.facts.iter().any(|f| f.task_type == tt) {
                         continue;
@@ -317,13 +407,21 @@ impl AtomicFactMemory {
             }
         }
 
-        // Sort by score descending
         scored_facts.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
-
         scored_facts
             .into_iter()
             .take(limit)
             .map(|(f, _)| f)
+            .collect()
+    }
+
+    /// Extract keywords from content for indexing
+    fn extract_keywords(content: &str) -> Vec<String> {
+        content
+            .to_lowercase()
+            .split_whitespace()
+            .filter(|w| w.len() > 3)
+            .map(|w| w.to_string())
             .collect()
     }
 
