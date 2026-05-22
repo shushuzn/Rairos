@@ -167,6 +167,10 @@ pub mod task_tracker;
 #[cfg(feature = "tools")]
 pub mod event_emitter;
 
+/// Agent Registry for centralized agent discovery and lifecycle management
+#[cfg(feature = "tools")]
+pub mod agent_registry;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
