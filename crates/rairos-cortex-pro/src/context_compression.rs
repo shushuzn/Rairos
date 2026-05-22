@@ -451,7 +451,8 @@ mod tests {
     #[test]
     fn test_compress() {
         let compressor = ContextCompressor::new();
-        let text = "This is a test document about thermoelectric materials. Bi2Te3 is a good thermoelectric. The ZT value is around 1.1. Materials science involves studying material properties.";
+        // Long enough text to actually compress (over 200 tokens)
+        let text = "Thermoelectric materials are compounds that can convert heat to electricity directly. The efficiency of thermoelectric conversion is measured by the dimensionless figure of merit ZT. Higher ZT values indicate better performance. Bismuth telluride (Bi2Te3) is one of the most widely used thermoelectric materials at room temperature. The thermoelectric effect was discovered by Thomas Johann Seebeck in 1821. Thermoelectric generators can be used for waste heat recovery. The peltier effect is the reverse of the Seebeck effect and is used for cooling. Thermoelectric coolers have no moving parts and are environmentally friendly. Recent research has focused on half-Heusler compounds and skutterudites for high-temperature applications. The power factor S2σ is used to evaluate thermoelectric material performance. Nanostructuring has emerged as a promising approach to improve thermoelectric properties. Phonon glass electron crystal concept guides material design. Lead telluride alloys have been extensively studied for mid-temperature applications. Flexible thermoelectric generators enable wearable electronics. The thermoelectric market is growing for Internet of Things devices.";
 
         let result = compressor.compress(text, &["thermoelectric", "Bi2Te3"]);
         assert!(result.compressed_tokens < result.original_tokens);
@@ -461,7 +462,8 @@ mod tests {
     #[test]
     fn test_compress_with_summary() {
         let compressor = ContextCompressor::new();
-        let text = "This is a test document about thermoelectric materials. Bi2Te3 is a good thermoelectric. The ZT value is around 1.1. Materials science involves studying material properties. Quantum mechanics describes electron behavior.";
+        // Long text to ensure compression actually reduces size
+        let text = "Thermoelectric materials represent a fascinating class of compounds that enable direct conversion between heat and electricity through the Seebeck and Peltier effects. The efficiency of thermoelectric conversion is quantified by the dimensionless figure of merit ZT, which depends on the Seebeck coefficient S, electrical conductivity σ, thermal conductivity κ, and absolute temperature T. High ZT values require a favorable combination of high Seebeck coefficient, high electrical conductivity, and low thermal conductivity. Bismuth telluride alloys have historically been the benchmark thermoelectric materials for room temperature applications, achieving ZT values around 1. However, the relatively low ZT has limited widespread commercial adoption except in niche applications like thermoelectric cooling and waste heat recovery. Recent advances in nanostructuring, band engineering, and the discovery of new material classes such as half-Heusler compounds and super-lattice structures have pushed ZT values above 2 in some cases. The thermoelectric market is expanding with applications in Internet of Things devices, wearable electronics, and automotive exhaust heat recovery systems.";
 
         let result = compressor.compress_with_summary(text, &["thermoelectric"]);
         assert!(result.ratio < 1.0);
@@ -506,9 +508,9 @@ mod tests {
     #[test]
     fn test_estimate_tokens() {
         let compressor = ContextCompressor::new();
-        // 100 characters ≈ 25 tokens
+        // 70 characters / 4 ≈ 17 tokens
         let text = "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j";
-        assert_eq!(compressor.estimate_tokens(text), 27);
+        assert_eq!(compressor.estimate_tokens(text), 17);
     }
 }
 

@@ -91,11 +91,11 @@ impl TaskDag {
             .map(|id| (id.clone(), 0))
             .collect();
 
+        // Correct in-degree: number of prerequisites (incoming edges) for each node
+        // in_degree[x] = number of nodes that x depends on
         for node in self.nodes.values() {
-            for dep in &node.depends_on {
-                if let Some(count) = in_degree.get_mut(dep) {
-                    *count += 1;
-                }
+            if let Some(count) = in_degree.get_mut(&node.id) {
+                *count = node.depends_on.len();
             }
         }
 

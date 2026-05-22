@@ -718,6 +718,13 @@ mod tests {
                 parallelism_width: 3,
                 critical_path_depth: 1,
             },
+            TaskDependency {
+                task_id: "c".to_string(),
+                depends_on: vec![],
+                complexity: 0.3,
+                parallelism_width: 3,
+                critical_path_depth: 1,
+            },
         ];
 
         let dag = TaskDag::from_dependencies(&deps);

@@ -63,7 +63,7 @@ pub enum AgentStatus {
 
 impl AgentStatus {
     pub fn is_available(&self) -> bool {
-        matches!(self, AgentStatus::Idle | AgentStatus::Busy)
+        matches!(self, AgentStatus::Idle)
     }
 }
 

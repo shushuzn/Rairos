@@ -521,6 +521,7 @@ mod tests {
         let executor = |q: &str| {
             let query = q.to_string();
             async move {
+                tokio::time::sleep(std::time::Duration::from_millis(5)).await;
                 Ok(format!("Response to: {}", query))
             }
         };
