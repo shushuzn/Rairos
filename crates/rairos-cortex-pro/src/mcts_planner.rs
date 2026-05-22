@@ -192,8 +192,8 @@ impl MctsPlanner {
 
     /// Select the best tool using MCTS
     pub fn select_tools(&self, query: &str, context: &str) -> ToolSelection {
-        let tools = self.tools.read().unwrap().clone();
-        if tools.is_empty() {
+        let tools_guard = self.tools.read().unwrap();
+        if tools_guard.is_empty() {
             return ToolSelection {
                 tool_name: String::new(),
                 confidence: 0.0,
@@ -202,9 +202,9 @@ impl MctsPlanner {
             };
         }
 
-        // Run MCTS iterations
+        // Run MCTS iterations - iterate directly over the guard, no clone needed
         for _ in 0..MAX_ITERATIONS {
-            self.mcts_iteration(&tools, query, context);
+            self.mcts_iteration(&tools_guard, query, context);
         }
 
         // Get best tool from root's children

@@ -490,7 +490,10 @@ impl IntentClassifierBuilder {
     ) -> Self {
         let patterns: Vec<PatternMatcher> = keywords
             .into_iter()
-            .map(|k| PatternMatcher::Keyword(k.clone(), k.to_lowercase()))
+            .map(|k| {
+                let k_lower = k.to_lowercase();
+                PatternMatcher::Keyword(k, k_lower)  // k moved, no clone needed
+            })
             .collect();
 
         self.rules.push(ClassificationRule {
