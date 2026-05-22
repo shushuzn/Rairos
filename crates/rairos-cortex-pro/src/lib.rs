@@ -163,6 +163,10 @@ pub mod tool_registry;
 #[cfg(feature = "tools")]
 pub mod task_tracker;
 
+/// Event Emitter for framework observability
+#[cfg(feature = "tools")]
+pub mod event_emitter;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
@@ -259,6 +263,9 @@ pub use task_tracker::{TaskTracker, TaskTrackerHandle, TaskState, TrackPriority,
 
 #[cfg(feature = "tools")]
 pub use tool_registry::{ToolRegistry, ToolRegistryBuilder, ToolBuilder, ToolSchema, ToolParameter, ToolExecResult, ToolContext, RegisteredTool, ToolRegistryError, JsonValue};
+
+#[cfg(feature = "tools")]
+pub use event_emitter::{EventEmitter, Event, EventType, EventHandler, EventData, EmitterStats, HandlerId, global_emitter, event_types};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
