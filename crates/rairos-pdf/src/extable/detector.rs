@@ -197,7 +197,7 @@ impl TableDetector {
         // Sort each row by x coordinate and flatten
         let mut table = Vec::new();
         for row_key in rows_data.keys().cloned().collect::<Vec<_>>() {
-            let mut cells = rows_data.get(&row_key).unwrap().clone();
+            let mut cells = rows_data.remove(&row_key).unwrap();
             cells.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(Ordering::Equal));
             let row: Vec<String> = cells.into_iter().map(|c| c.1).collect();
             table.push(row);
