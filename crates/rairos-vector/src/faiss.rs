@@ -54,6 +54,7 @@ impl Default for FaissStoreConfig {
 /// This provides a pure-Rust alternative to FAISS bindings for development
 /// and testing. For production, consider using the `faiss` crate or
 /// calling Python FAISS via subprocess.
+#[allow(dead_code)]
 pub struct FaissStore {
     vectors: RwLock<HashMap<String, Vec<f32>>>,
     payloads: RwLock<HashMap<String, serde_json::Value>>,

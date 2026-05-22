@@ -227,7 +227,8 @@ impl<E: Embedder, V: VectorStore, L: LlmClient> InlineCitationRag<E, V, L> {
         sources: &[RagSource],
     ) -> Vec<CitedClaim> {
         let mut claims = Vec::new();
-        let citation_pattern = regex::Regex::new(r"\[(\d+)\]").unwrap();
+        let citation_pattern = regex::Regex::new(r"\[(\d+)\]")
+            .expect("citation regex should always be valid");
 
         // Split by sentences (simple approach)
         let sentences: Vec<&str> = text
@@ -270,7 +271,8 @@ impl<E: Embedder, V: VectorStore, L: LlmClient> InlineCitationRag<E, V, L> {
         text: &str,
         source_map: &std::collections::HashMap<String, &RagSource>,
     ) -> String {
-        let citation_pattern = regex::Regex::new(r"\[(\d+)\]").unwrap();
+        let citation_pattern = regex::Regex::new(r"\[(\d+)\]")
+            .expect("citation regex should always be valid");
 
         citation_pattern.replace_all(text, |caps: &regex::Captures| {
             let idx: usize = caps.get(1).unwrap().as_str().parse().unwrap_or(0);

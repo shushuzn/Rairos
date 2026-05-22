@@ -84,6 +84,7 @@ enum MilvusResponse<T> {
 }
 
 #[derive(Serialize)]
+#[allow(dead_code)]
 struct CollectionReq {
     collection_name: String,
 }
