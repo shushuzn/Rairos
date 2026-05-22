@@ -182,13 +182,18 @@ impl ContextCompressor {
 
     /// Score chunks by relevance (simplified keyword matching)
     fn score_chunks(&self, chunks: &[String], keywords: &[&str]) -> Vec<ScoredChunk> {
+        // Pre-compute lowercase keywords to avoid repeated allocation
+        let keywords_lower: Vec<String> = keywords.iter()
+            .map(|kw| kw.to_lowercase())
+            .collect();
+
         chunks
             .iter()
             .map(|chunk| {
                 let chunk_lower = chunk.to_lowercase();
-                let keyword_matches = keywords
+                let keyword_matches = keywords_lower
                     .iter()
-                    .filter(|kw| chunk_lower.contains(&kw.to_lowercase()))
+                    .filter(|kw| chunk_lower.contains(kw))
                     .count();
 
                 let relevance = if keywords.is_empty() {
@@ -300,14 +305,19 @@ impl ContextCompressor {
     fn generate_summary(&self, text: &str, keywords: &[&str]) -> String {
         let sentences: Vec<&str> = text.split('.').filter(|s| !s.trim().is_empty()).collect();
 
+        // Pre-compute lowercase keywords
+        let keywords_lower: Vec<String> = keywords.iter()
+            .map(|kw| kw.to_lowercase())
+            .collect();
+
         // Score sentences by keyword presence
         let mut scored: Vec<(&str, f32)> = sentences
             .iter()
             .map(|s| {
                 let s_lower = s.to_lowercase();
-                let kw_score = keywords
+                let kw_score = keywords_lower
                     .iter()
-                    .filter(|kw| s_lower.contains(&kw.to_lowercase()))
+                    .filter(|kw| s_lower.contains(kw))
                     .count() as f32
                     / keywords.len().max(1) as f32;
                 (*s, kw_score)
