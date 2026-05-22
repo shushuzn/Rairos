@@ -539,23 +539,28 @@ async fn process_topic(
         }
     }
 
-    for alert in &alerts {
-        {
-            let mut selector = regret_selector.lock().unwrap();
+    // Batch process all alerts with single lock acquisitions
+    {
+        let mut selector = regret_selector.lock().unwrap();
+        for alert in &alerts {
             selector.record_outcome(&alert.top_gap_type, alert.gene_pool_score);
         }
+    }
 
-        if webhook_enabled {
+    if webhook_enabled {
+        for alert in &alerts {
             tracing::debug!(
                 "[Orchestrator] Would send webhook for alert: {} (topic={})",
                 alert.alert_id,
                 alert.topic
             );
         }
+    }
 
-        {
-            let mut tracker_guard = tracker.write().await;
-            if let Some(t) = tracker_guard.as_mut() {
+    {
+        let mut tracker_guard = tracker.write().await;
+        if let Some(t) = tracker_guard.as_mut() {
+            for alert in &alerts {
                 let _ = t.record_gap_accept(
                     &alert.topic,
                     &alert.top_gap_type,
@@ -1259,6 +1264,16 @@ impl AutonomousOrchestrator {
         // Pre-compute lowercase abstracts to avoid repeated to_lowercase() calls
         let cache = PaperCache::new(&papers);
 
+        // Pre-compute word sets for existing papers to avoid O(n²) complexity
+        let existing_word_sets: Vec<FxHashSet<String>> = existing_papers.iter()
+            .map(|existing| {
+                existing.split_whitespace()
+                    .map(|w| w.to_lowercase())
+                    .filter(|w| w.len() > 4)
+                    .collect()
+            })
+            .collect();
+
         let pattern_gaps = self.detect_pattern_gaps(&papers, &cache, topic);
         let cross_paper_gaps = self.detect_cross_paper_gaps(&papers, &cache, topic);
         let method_gaps = self.detect_method_limitations(&papers, &cache);
@@ -1284,14 +1299,12 @@ impl AutonomousOrchestrator {
             let novelty = if existing_papers.is_empty() {
                 1.0
             } else {
-                let max_overlap = existing_papers.iter()
-                    .map(|existing| {
-                        let words_exist: FxHashSet<String> = existing.split_whitespace()
-                            .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
+                let max_overlap = existing_word_sets.iter()
+                    .map(|words_exist| {
                         if words_new.is_empty() || words_exist.is_empty() {
                             return 0.0;
                         }
-                        let intersection = words_new.intersection(&words_exist).count() as f64;
+                        let intersection = words_new.intersection(words_exist).count() as f64;
                         intersection / words_new.len() as f64
                     })
                     .fold(0.0f64, |a, b| a.max(b));
