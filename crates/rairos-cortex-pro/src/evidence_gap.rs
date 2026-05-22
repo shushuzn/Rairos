@@ -1210,3 +1210,236 @@ mod tests {
         assert!(beta1.mean() >= 0.0 && beta1.mean() <= 1.0);
     }
 }
+
+// =============================================================================
+// Integration Tests - evidence_gap with other modules
+// =============================================================================
+
+#[cfg(test)]
+mod integration_tests {
+    use super::*;
+
+    /// Test: Multi-tracker coordination
+    /// Simulates a multi-agent system where each agent has its own evidence tracker
+    /// but they can share information about shared research questions.
+    #[test]
+    fn test_multi_tracker_coordination() {
+        // Create two trackers for two agents working on related queries
+        let mut tracker_a = EvidenceGapTracker::new();
+        let mut tracker_b = EvidenceGapTracker::new();
+
+        // Agent A investigates "ZT of Bi2Te3"
+        tracker_a.create_query("What is the ZT of Bi2Te3 at room temperature?");
+        let qa_id = tracker_a.queries[0].id.clone();
+
+        // Agent B investigates related query "thermoelectric efficiency of Bi2Te3"
+        tracker_b.create_query("What is the thermoelectric efficiency of Bi2Te3?");
+        let qb_id = tracker_b.queries[0].id.clone();
+
+        // Agent A finds strong evidence
+        tracker_a.add_evidence(&qa_id, EvidenceItem::from_paper("e1", "p1", "Paper 1", "Bi2Te3 ZT ≈ 1.1", EvidenceType::Direct)
+            .with_relevance(0.95)
+            .with_quality(0.9));
+
+        // Agent B finds supporting evidence
+        tracker_b.add_evidence(&qb_id, EvidenceItem::from_paper("e2", "p2", "Paper 2", "Bi2Te3 efficiency is high", EvidenceType::Supporting)
+            .with_relevance(0.85)
+            .with_quality(0.85));
+
+        // Both should have positive confidence
+        let conf_a = tracker_a.get_query(&qa_id).unwrap().confidence;
+        let conf_b = tracker_b.get_query(&qb_id).unwrap().confidence;
+        assert!(conf_a > 0.0);
+        assert!(conf_b > 0.0);
+
+        // Simulate information sharing: Agent B adopts Agent A's evidence
+        // by migrating evidence from tracker A to tracker B
+        if let Some(evidence) = tracker_a.get_query(&qa_id).and_then(|q| q.evidence.first().cloned()) {
+            tracker_b.add_evidence(&qb_id, evidence);
+        }
+
+        // After sharing, tracker B should have accumulated more evidence
+        let conf_b_after = tracker_b.get_query(&qb_id).unwrap().confidence;
+        assert!(conf_b_after >= conf_b);
+    }
+
+    /// Test: Evidence lifecycle with memory integration
+    /// Simulates evidence being stored in memory and retrieved for later use.
+    #[test]
+    fn test_evidence_lifecycle_with_memory() {
+        let mut tracker = EvidenceGapTracker::new();
+        tracker.create_query("What causes superconductivity at high temperature?");
+        let query_id = tracker.queries[0].id.clone();
+
+        // Phase 1: Initial evidence collection
+        tracker.add_evidence(&query_id, EvidenceItem::from_paper("e1", "p1", "Paper 1", "Copper oxide layers", EvidenceType::Direct)
+            .with_relevance(0.9)
+            .with_quality(0.8));
+
+        let initial_confidence = tracker.get_query(&query_id).unwrap().confidence;
+        assert!(initial_confidence > 0.0);
+
+        // Phase 2: Store evidence snapshot (simulate memory persistence)
+        let evidence_snapshot: Vec<_> = tracker.get_query(&query_id)
+            .map(|q| q.evidence.clone())
+            .unwrap_or_default();
+
+        // Phase 3: New evidence collected later (simulate memory retrieval and building on prior work)
+        tracker.add_evidence(&query_id, EvidenceItem::from_reasoning("e2", "Theorem 1", "Electron-phonon coupling", EvidenceType::Supporting)
+            .with_relevance(0.95)
+            .with_quality(0.95));
+
+        let updated_confidence = tracker.get_query(&query_id).unwrap().confidence;
+        assert!(updated_confidence > initial_confidence);
+
+        // Phase 4: Simulate restoring from memory - create new tracker with historical evidence
+        let mut memory_tracker = EvidenceGapTracker::new();
+        memory_tracker.create_query("What causes superconductivity at high temperature?");
+        let mem_query_id = memory_tracker.queries[0].id.clone();
+
+        // Restore from snapshot
+        for evidence in evidence_snapshot {
+            memory_tracker.add_evidence(&mem_query_id, evidence);
+        }
+
+        // Confidence should be similar to initial
+        let restored_confidence = memory_tracker.get_query(&mem_query_id).unwrap().confidence;
+        assert!((restored_confidence - initial_confidence).abs() < 0.001);
+    }
+
+    /// Test: Deliberation workflow simulation
+    /// Simulates a deliberation-first workflow where confidence evolves through reasoning iterations.
+    #[test]
+    fn test_deliberation_workflow() {
+        let mut tracker = EvidenceGapTracker::new();
+        tracker.create_query("Should we pursue half-Heusler compounds for thermoelectric application?");
+        let query_id = tracker.queries[0].id.clone();
+
+        // Initial state: no evidence
+        let initial = tracker.get_query(&query_id).unwrap();
+        assert_eq!(initial.confidence, 0.0);
+
+        // Round 1: Quick deliberation - initial hypothesis (weak contextual evidence)
+        tracker.add_evidence(&query_id, EvidenceItem::from_reasoning("e1", "Logic", "Half-Heuslers have favorable electronic properties", EvidenceType::Contextual)
+            .with_relevance(0.5)
+            .with_quality(0.4));
+
+        let round1_conf = tracker.get_query(&query_id).unwrap().confidence;
+        assert!(round1_conf > 0.0);
+
+        // Router decides: With weak evidence, should be Investigate or Retrieve
+        let action1 = tracker.decide_action(&query_id).unwrap();
+        assert!(action1 == RouterAction::Investigate || action1 == RouterAction::Retrieve);
+
+        // Round 2: Gather evidence from web search
+        tracker.add_evidence(&query_id, EvidenceItem::from_web("e2", "arxiv.org", "Paper on Half-Heuslers", "ZT values reported around 1.0", EvidenceType::Direct)
+            .with_relevance(0.9)
+            .with_quality(0.8));
+
+        let round2_conf = tracker.get_query(&query_id).unwrap().confidence;
+        assert!(round2_conf > round1_conf);
+
+        // Round 3: Add peer-reviewed supporting evidence
+        tracker.add_evidence(&query_id, EvidenceItem::from_paper("e3", "p3", "Nature Materials", "Comprehensive study of Half-Heusler ZT", EvidenceType::Supporting)
+            .with_relevance(0.95)
+            .with_quality(0.9));
+
+        let round3_conf = tracker.get_query(&query_id).unwrap().confidence;
+        assert!(round3_conf > round2_conf);
+
+        // Router decides: With 3 evidence items and medium-high confidence, should be Reflect
+        let action3 = tracker.decide_action(&query_id).unwrap();
+        assert_eq!(action3, RouterAction::Reflect);
+
+        // Round 4: Add more supporting evidence to tip over to Answer threshold
+        tracker.add_evidence(&query_id, EvidenceItem::from_paper("e4", "p4", "Science", "Validation of Half-Heusler performance", EvidenceType::Supporting)
+            .with_relevance(0.9)
+            .with_quality(0.9));
+        tracker.add_evidence(&query_id, EvidenceItem::from_paper("e5", "p5", "Advanced Materials", "Review of thermoelectric materials", EvidenceType::Supporting)
+            .with_relevance(0.85)
+            .with_quality(0.85));
+
+        let final_conf = tracker.get_query(&query_id).unwrap().confidence;
+
+        // Router decides: Answer (high confidence)
+        let final_action = tracker.decide_action(&query_id).unwrap();
+        assert_eq!(final_action, RouterAction::Answer);
+
+        // Final confidence should be high
+        assert!(final_conf > 0.6);
+    }
+
+    /// Test: Evidence decay over time simulation
+    /// Tests that old evidence has less impact on confidence as time passes.
+    #[test]
+    fn test_evidence_decay_over_time() {
+        use chrono::Duration;
+
+        let mut tracker = EvidenceGapTracker::new();
+        tracker.create_query("Test decay?");
+        let query_id = tracker.queries[0].id.clone();
+
+        // Add fresh evidence (0 days old)
+        let mut fresh_evidence = EvidenceItem::from_paper("e1", "p1", "Fresh Paper", "Content", EvidenceType::Direct)
+            .with_relevance(0.9)
+            .with_quality(0.9);
+        // Manually set collected_at to now
+        fresh_evidence = EvidenceItem {
+            collected_at: Utc::now(),
+            ..fresh_evidence
+        };
+        tracker.add_evidence(&query_id, fresh_evidence);
+
+        let confidence_with_fresh = tracker.get_query(&query_id).unwrap().confidence;
+
+        // Create another query and add old evidence (simulated)
+        tracker.create_query("Test old evidence?");
+        let query2_id = tracker.queries[1].id.clone();
+
+        let mut old_evidence = EvidenceItem::from_paper("e2", "p2", "Old Paper", "Content", EvidenceType::Direct)
+            .with_relevance(0.9)
+            .with_quality(0.9);
+        // Simulate evidence that is 100 days old
+        old_evidence = EvidenceItem {
+            collected_at: Utc::now() - Duration::days(100),
+            ..old_evidence
+        };
+        tracker.add_evidence(&query2_id, old_evidence);
+
+        let confidence_with_old = tracker.get_query(&query2_id).unwrap().confidence;
+
+        // Fresh evidence should give higher confidence than old evidence
+        // (Old evidence has decayed reliability)
+        assert!(confidence_with_fresh > confidence_with_old);
+    }
+
+    /// Test: Contradicting evidence reduces confidence
+    #[test]
+    fn test_contradicting_evidence_integration() {
+        let mut tracker = EvidenceGapTracker::new();
+        tracker.create_query("Is X a good thermoelectric?");
+        let query_id = tracker.queries[0].id.clone();
+
+        // Add supporting evidence
+        tracker.add_evidence(&query_id, EvidenceItem::from_paper("e1", "p1", "Paper 1", "X has high ZT", EvidenceType::Supporting)
+            .with_relevance(0.9)
+            .with_quality(0.9));
+
+        let with_support = tracker.get_query(&query_id).unwrap().confidence;
+        assert!(with_support > 0.5);
+
+        // Add contradicting evidence
+        tracker.add_evidence(&query_id, EvidenceItem::from_paper("e2", "p2", "Paper 2", "X degrades quickly", EvidenceType::Contradicting)
+            .with_relevance(0.8)
+            .with_quality(0.85));
+
+        let with_contradiction = tracker.get_query(&query_id).unwrap().confidence;
+
+        // Confidence should decrease with contradicting evidence
+        assert!(with_contradiction < with_support);
+
+        // Router should not suggest Answer after contradicting evidence
+        let action = tracker.decide_action(&query_id).unwrap();
+        assert!(action != RouterAction::Answer, "Should not answer with contradicting evidence");
+    }
+}
