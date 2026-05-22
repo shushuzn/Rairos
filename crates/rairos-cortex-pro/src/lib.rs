@@ -147,6 +147,10 @@ pub mod adaptive_orchestration;
 #[cfg(feature = "tools")]
 pub mod deliberation;
 
+/// Memory Intelligence Agent (MIA arXiv:2604.04503)
+#[cfg(feature = "tools")]
+pub mod mia;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
@@ -231,6 +235,9 @@ pub use adaptive_orchestration::{AdaptiveOrchestrator, OrchestrationConfig, Topo
 
 #[cfg(feature = "tools")]
 pub use deliberation::{DeliberationEngine, DeliberationConfig, DeliberationResult, DeliberationTrigger, DeliberationStats, DeliberationRecord, ThinkingTier, QueryAnalysis, HybridReasoning, HybridReasoningConfig, ReasoningPhase, Perspective, BlackboardEntry, Critique, RefinementResult};
+
+#[cfg(feature = "tools")]
+pub use mia::{MemoryIntelligenceAgent, MIAConfig, MIAResult, MIAStats, MemoryManager, CompressedTrajectory, MemoryStats as MIA_MemoryStats, Planner, PlannerConfig, SearchPlan, SearchStep, SearchAction, Executor, ExecutorConfig, ExecutionResult as MIA_ExecutionResult, PlanExecution, MemoryConverter, Reflection as MIA_Reflection, PlanTemplate};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
