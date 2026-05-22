@@ -445,7 +445,7 @@ mod tests {
 
     #[test]
     fn test_add_candidates() {
-        let mut manager = ActiveLearningManager::new("ZT", AcquisitionFunction::UCB);
+        let mut manager = ActiveLearningManager::new("ZT", AcquisitionFunction::UpperConfidenceBound);
 
         manager.add_candidates(vec![
             MaterialCandidate {
@@ -493,7 +493,7 @@ mod tests {
 
     #[test]
     fn test_update_and_convergence() {
-        let mut manager = ActiveLearningManager::new("ZT", AcquisitionFunction::EI)
+        let mut manager = ActiveLearningManager::new("ZT", AcquisitionFunction::ExpectedImprovement)
             .with_config(ActiveLearningConfig {
                 batch_size: 1,
                 exploration_weight: 0.5,

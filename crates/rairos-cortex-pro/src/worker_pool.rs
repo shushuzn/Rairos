@@ -576,7 +576,7 @@ mod tests {
             shutdown_timeout_ms: 1000,
         };
 
-        let pool = AsyncWorkerPool::new(config);
+        let mut pool = AsyncWorkerPool::new(config);
 
         let task = Task::new(
             "test-1".to_string(),

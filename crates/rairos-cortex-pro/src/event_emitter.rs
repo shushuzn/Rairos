@@ -510,8 +510,9 @@ mod tests {
 
         let emitter_clone = emitter.clone();
         emitter_clone.on("global_test", move |_| {
+            let value = received_clone.clone();
             Box::pin(async move {
-                *received_clone.write().await = true;
+                *value.write().await = true;
             })
         }).await;
 

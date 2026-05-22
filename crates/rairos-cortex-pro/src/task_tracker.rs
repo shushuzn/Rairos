@@ -841,7 +841,7 @@ mod tests {
             .create_task_with(
                 "task-2".to_string(),
                 "Dependent task".to_string(),
-                TaskPriority::High,
+                TrackPriority::High,
                 vec!["task-1".to_string()],
                 None,
             )
@@ -877,7 +877,7 @@ mod tests {
             .create_task_with(
                 "child-1".to_string(),
                 "Child 1".to_string(),
-                TaskPriority::Normal,
+                TrackPriority::Normal,
                 vec![],
                 Some("parent".to_string()),
             )
@@ -887,7 +887,7 @@ mod tests {
             .create_task_with(
                 "child-2".to_string(),
                 "Child 2".to_string(),
-                TaskPriority::Normal,
+                TrackPriority::Normal,
                 vec![],
                 Some("parent".to_string()),
             )

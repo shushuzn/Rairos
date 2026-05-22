@@ -518,8 +518,11 @@ mod tests {
     #[tokio::test]
     async fn test_run_benchmark() {
         let tasks = gaia_benchmark_tasks();
-        let executor = |q: &str| async move {
-            Ok(format!("Response to: {}", q))
+        let executor = |q: &str| {
+            let query = q.to_string();
+            async move {
+                Ok(format!("Response to: {}", query))
+            }
         };
 
         let report = run_benchmark(&tasks, executor).await;
