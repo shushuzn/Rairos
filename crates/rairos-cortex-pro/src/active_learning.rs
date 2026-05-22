@@ -503,6 +503,7 @@ mod tests {
                 human_in_loop: false,
             });
 
+        // First candidate sets the best value
         manager.add_candidates(vec![
             MaterialCandidate {
                 id: "c1".to_string(),
@@ -515,10 +516,29 @@ mod tests {
             },
         ]);
 
-        // Simulate iterations without improvement
-        for _ in 0..3 {
+        manager.update(EvaluationResult {
+            candidate_id: "c1".to_string(),
+            property_value: 0.9,
+            measurement_error: None,
+            success: true,
+            notes: None,
+        });
+
+        // Subsequent candidates don't improve, causing stagnation
+        for i in 1..=3 {
+            manager.add_candidates(vec![
+                MaterialCandidate {
+                    id: format!("c{}", i + 1),
+                    formula: "Bi2Te3".to_string(),
+                    elements: vec!["Bi".to_string(), "Te".to_string()],
+                    fractions: vec![0.4, 0.6],
+                    predicted_value: Some(1.0),
+                    uncertainty: Some(0.2),
+                    acquisition_value: None,
+                },
+            ]);
             manager.update(EvaluationResult {
-                candidate_id: "c1".to_string(),
+                candidate_id: format!("c{}", i + 1),
                 property_value: 0.9,
                 measurement_error: None,
                 success: true,

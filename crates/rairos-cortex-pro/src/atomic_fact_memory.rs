@@ -604,7 +604,28 @@ mod tests {
 
     #[test]
     fn test_atomic_reasoner_routing() {
-        let memory = AtomicFactMemory::new();
+        let mut memory = AtomicFactMemory::new();
+        // Pre-populate memory with relevant facts so retrieval check passes
+        memory.store(MemoryEntry {
+            id: "e1".to_string(),
+            facts: vec![
+                AtomicFact {
+                    id: "f1".to_string(),
+                    content: "Artificial intelligence papers".to_string(),
+                    task_type: TaskType::Search,
+                    utility_score: 0.7,
+                    source_id: "s1".to_string(),
+                    timestamp: Utc::now(),
+                    success_signal: None,
+                },
+            ],
+            trajectory: "AI papers search".to_string(),
+            outcome: Outcome::Success,
+            tier: MemoryTier::Semantic,
+            access_count: 1,
+            last_accessed: Utc::now(),
+            created_at: Utc::now(),
+        });
         let reasoner = AtomicReasoner::new(memory);
 
         let route = reasoner.route("Find papers about AI");
