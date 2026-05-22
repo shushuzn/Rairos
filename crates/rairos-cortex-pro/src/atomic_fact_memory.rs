@@ -366,39 +366,49 @@ impl AtomicFactMemory {
     pub fn consolidate(&mut self) -> ConsolidationReport {
         let mut report = ConsolidationReport::default();
 
-        // Move important episodic facts to semantic
-        if let Some(episodic) = self.tiers.get_mut(&MemoryTier::Episodic) {
-            let to_promote: Vec<_> = episodic
+        // First, collect entries to promote (avoiding nested borrows)
+        let to_promote: Vec<MemoryEntry> = if let Some(episodic) = self.tiers.get(&MemoryTier::Episodic) {
+            episodic
                 .iter()
                 .filter(|e| e.outcome.is_success() && e.facts.iter().any(|f| f.utility_score > 0.7))
                 .cloned()
+                .collect()
+        } else {
+            Vec::new()
+        };
+
+        // Move important episodic facts to semantic
+        if !to_promote.is_empty() {
+            let semantic_entries: Vec<MemoryEntry> = to_promote
+                .iter()
+                .map(|entry| {
+                    report.promoted += 1;
+                    MemoryEntry {
+                        id: uuid_simple(),
+                        facts: entry.facts.clone(),
+                        trajectory: format!("Consolidated from {}", entry.id),
+                        outcome: entry.outcome.clone(),
+                        tier: MemoryTier::Semantic,
+                        access_count: 0,
+                        last_accessed: Utc::now(),
+                        created_at: Utc::now(),
+                    }
+                })
                 .collect();
 
-            for entry in to_promote {
-                report.promoted += 1;
-
-                // Create semantic entry
-                let semantic_entry = MemoryEntry {
-                    id: uuid_simple(),
-                    facts: entry.facts.clone(),
-                    trajectory: format!("Consolidated from {}", entry.id),
-                    outcome: entry.outcome,
-                    tier: MemoryTier::Semantic,
-                    access_count: 0,
-                    last_accessed: Utc::now(),
-                    created_at: Utc::now(),
-                };
-
-                self.tiers.entry(MemoryTier::Semantic).or_default().push(semantic_entry);
+            // Get mutable reference and update
+            if let Some(episodic) = self.tiers.get_mut(&MemoryTier::Episodic) {
+                // Remove promoted from episodic
+                episodic.retain(|e| {
+                    !e.outcome.is_success() || !e.facts.iter().any(|f| f.utility_score > 0.7)
+                });
             }
 
-            // Remove promoted from episodic
-            episodic.retain(|e| {
-                !e.outcome.is_success() || !e.facts.iter().any(|f| f.utility_score > 0.7)
-            });
+            // Push semantic entries
+            self.tiers.entry(MemoryTier::Semantic).or_default().extend(semantic_entries);
         }
 
-        report.success
+        report
     }
 
     /// Get memory statistics

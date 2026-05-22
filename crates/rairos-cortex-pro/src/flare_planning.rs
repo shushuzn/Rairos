@@ -390,8 +390,9 @@ impl FlarePlanner {
             }
 
             let action = &trajectory.actions[0];
+            let state_key = trajectory.states.get(1).map(|s| s.description.as_str()).unwrap_or("");
             let value = state_values
-                .get(&trajectory.states.get(1).map(|s| s.description.as_str()).unwrap_or(""))
+                .get(state_key)
                 .copied()
                 .unwrap_or(0.0);
 
@@ -497,11 +498,14 @@ impl PpaPlanner {
         // Detect potential pitfalls
         let detected_pitfalls = self.detect_pitfalls(state);
 
-        // Generate warnings
+        // Generate warnings (do this before mutable borrow)
         let warnings: Vec<_> = detected_pitfalls
             .iter()
             .map(|p| format!("Pitfall detected: {} - {}", p.description, p.suggestion))
             .collect();
+
+        // Clone pitfalls for filter_safe_actions before mutable borrow
+        let pitfalls_clone: Vec<_> = detected_pitfalls.iter().copied().collect();
 
         // Plan with modified state (avoiding pitfalls)
         let base_result = self.flare.plan(state);
@@ -510,7 +514,7 @@ impl PpaPlanner {
             base_result,
             detected_pitfalls,
             warnings,
-            safe_actions: self.filter_safe_actions(&detected_pitfalls),
+            safe_actions: self.filter_safe_actions(&pitfalls_clone),
         }
     }
 

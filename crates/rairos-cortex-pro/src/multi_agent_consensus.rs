@@ -155,7 +155,7 @@ impl MultiAgentConsensus {
     }
 
     /// Majority voting
-    fn majority_vote(&self, mut votes: Vec<Vote>) -> ConsensusResult {
+    fn majority_vote(&self, votes: Vec<Vote>) -> ConsensusResult {
         let mut choice_counts: HashMap<String, (u32, f32)> = HashMap::new();
 
         for vote in &votes {
@@ -202,7 +202,7 @@ impl MultiAgentConsensus {
         let total = votes.len() as f32;
         let threshold = (total / 2.0).ceil() as usize;
 
-        let mut choice_counts: HashMap<String, u32> = HashMap::new();
+        let mut choice_counts: HashMap<String, usize> = HashMap::new();
         let mut stopping_round = votes.len();
         let mut final_max_count = 0usize;
 
@@ -523,20 +523,21 @@ impl EvidenceAuditor {
     /// Audit a decision based on provided evidence
     pub fn audit(&self, decision: &str, evidence: Vec<Evidence>) -> AuditResult {
         // Filter by relevance
-        let relevant_evidence: Vec<_> = evidence
+        let relevant_evidence: Vec<Evidence> = evidence
             .into_iter()
             .filter(|e| e.relevance >= self.min_relevance)
             .collect();
 
-        let supporting = relevant_evidence
+        let decision_lower = decision.to_lowercase();
+        let supporting: Vec<Evidence> = relevant_evidence
             .iter()
-            .filter(|e| e.content.to_lowercase().contains(&decision.to_lowercase()))
+            .filter(|e| e.content.to_lowercase().contains(&decision_lower))
             .cloned()
             .collect();
 
-        let contradicting = relevant_evidence
+        let contradicting: Vec<Evidence> = relevant_evidence
             .iter()
-            .filter(|e| !e.content.to_lowercase().contains(&decision.to_lowercase()))
+            .filter(|e| !e.content.to_lowercase().contains(&decision_lower))
             .cloned()
             .collect();
 

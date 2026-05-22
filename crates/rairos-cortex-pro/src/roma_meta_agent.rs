@@ -208,33 +208,56 @@ impl MetaAgent {
 
     /// Execute a specific task
     fn execute_task(&mut self, task_id: &str) -> Result<String, String> {
-        let task = match self.tasks.get_mut(task_id) {
-            Some(t) => t,
-            None => return Err(format!("Task {} not found", task_id)),
+        // First, extract what we need from the task without holding the borrow
+        let (task_status, task_result, task_desc, task_depth) = {
+            let task = match self.tasks.get(task_id) {
+                Some(t) => t,
+                None => return Err(format!("Task {} not found", task_id)),
+            };
+            
+            if task.status == TaskStatus::Completed {
+                return task.result.clone().ok_or_else(|| "No result".to_string());
+            }
+            
+            (task.status.clone(), task.result.clone(), task.description.clone(), task.depth)
         };
 
-        if task.status == TaskStatus::Completed {
-            return task.result.clone().ok_or_else(|| "No result".to_string());
+        // Update status to InProgress
+        if let Some(task) = self.tasks.get_mut(task_id) {
+            task.status = TaskStatus::InProgress;
         }
 
-        task.status = TaskStatus::InProgress;
-
         // Check if this task needs decomposition
-        let needs_decomposition = self.should_decompose(task);
+        let needs_decomposition = {
+            let task = match self.tasks.get(task_id) {
+                Some(t) => t,
+                None => return Err(format!("Task {} not found", task_id)),
+            };
+            self.should_decompose(task)
+        };
 
-        let result = if needs_decomposition && task.depth < self.config.max_depth as u32 {
+        let result = if needs_decomposition && task_depth < self.config.max_depth as u32 {
             self.decompose_and_execute(task_id)
         } else {
             self.execute_atomically(task_id)
         };
 
         // Update task status
-        if let Ok(ref r) = result {
-            task.status = TaskStatus::Completed;
-            task.result = Some(r.clone());
-            self.results.insert(task_id.to_string(), r.clone());
-        } else {
-            task.status = TaskStatus::Failed;
+        if let Some(task) = self.tasks.get_mut(task_id) {
+            if result.is_ok() {
+                task.status = TaskStatus::Completed;
+                if let Ok(ref r) = result {
+                    task.result = Some(r.clone());
+                }
+            } else {
+                task.status = TaskStatus::Failed;
+            }
+        }
+
+        if result.is_ok() {
+            if let Ok(ref r) = result {
+                self.results.insert(task_id.to_string(), r.clone());
+            }
         }
 
         result

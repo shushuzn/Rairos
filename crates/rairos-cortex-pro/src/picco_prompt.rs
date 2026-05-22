@@ -549,7 +549,8 @@ impl PreferencePromptOptimizer {
                 self.crossover(&elites)
             } else {
                 // Mutation
-                self.mutate(elites.first().map(|e| &e.content).unwrap_or(&""))
+                let base_content = elites.first().map(|e| e.content.as_str()).unwrap_or("");
+                self.mutate(base_content)
             };
 
             new_candidates.push(PromptCandidate {
