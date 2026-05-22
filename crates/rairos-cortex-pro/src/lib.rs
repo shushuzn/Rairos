@@ -111,6 +111,22 @@ pub mod multi_agent_consensus;
 #[cfg(feature = "tools")]
 pub mod self_correction;
 
+/// Transaction compensation for robust error recovery (RAC style)
+#[cfg(feature = "tools")]
+pub mod transaction_compensation;
+
+/// FLARE-inspired lookahead planning
+#[cfg(feature = "tools")]
+pub mod flare_planning;
+
+/// Atomic fact memory augmentation
+#[cfg(feature = "tools")]
+pub mod atomic_fact_memory;
+
+/// Forest-of-Thought reasoning
+#[cfg(feature = "tools")]
+pub mod forest_of_thought;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -164,3 +180,15 @@ pub use multi_agent_consensus::{MultiAgentConsensus, ConsensusResult, Vote, Voti
 
 #[cfg(feature = "tools")]
 pub use self_correction::{SelfCorrector, ReflexionAgent, ExternalValidator, EvaluationResult, Correction, Reflection, CorrectionType, ValidationResult, ValidationIssue, ValidationRule};
+
+#[cfg(feature = "tools")]
+pub use transaction_compensation::{TransactionLog, ToolEvent, ToolError, CompensationAction, RollbackResult, VigilLearner, EmotionalEntry, RBTDiagnosis, RollbackType, CompensationType};
+
+#[cfg(feature = "tools")]
+pub use flare_planning::{FlarePlanner, FlareConfig, PlanningState, PlannedAction, Trajectory, ValueEstimator, HeuristicValueEstimator, PlanningResult, PpaPlanner, Pitfall, PpaPlanningResult};
+
+#[cfg(feature = "tools")]
+pub use atomic_fact_memory::{AtomicFactMemory, AtomicFact, MemoryEntry, TaskType, MemoryTier, Outcome, AtomicReasoner, CognitiveRoute, RouteType, ConsolidationReport, MemorySystemStats};
+
+#[cfg(feature = "tools")]
+pub use forest_of_thought::{ForestReasoner, ForestConfig, ReasoningTree, ThoughtNode, NodeType, ReasoningResult, Consensus, ForestStats, DiagramOfThoughtReasoner, RoleToken};
