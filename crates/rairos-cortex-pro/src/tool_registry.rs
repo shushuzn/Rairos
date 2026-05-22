@@ -183,15 +183,12 @@ impl ToolRegistry {
         }
 
         {
-            let tools = self.tools.read().await;
-            if tools.contains_key(&name) {
+            let mut tools = self.tools.write().await;
+            if let std::collections::hash_map::Entry::Vacant(e) = tools.entry(name) {
+                e.insert(tool);
+            } else {
                 return Err(ToolRegistryError::AlreadyExists(name));
             }
-        }
-
-        {
-            let mut tools = self.tools.write().await;
-            tools.insert(name, tool);
         }
 
         {

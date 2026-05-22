@@ -391,11 +391,10 @@ impl ConversationHistory {
             Conversation::new(id.clone())
         };
 
+        // Use entry API to insert and get reference in single lock acquisition
         let mut conversations = self.conversations.write().await;
-        conversations.insert(id.clone(), conv);
-
-        // Return clone of the conversation
-        conversations.get(&id).cloned().unwrap()
+        conversations.entry(id).insert(conv.clone());
+        conv
     }
 
     /// Get a conversation by ID

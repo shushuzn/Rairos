@@ -176,18 +176,14 @@ impl AgentRegistry {
         let capabilities = agent.capabilities.clone();
         let tags = agent.metadata.tags.clone();
 
-        // Check for duplicate
-        {
-            let agents = self.agents.read().await;
-            if agents.contains_key(&id) {
-                return Err(RegistryError::AlreadyExists(id.to_string()));
-            }
-        }
-
-        // Insert agent
+        // Insert agent (check for duplicate via entry API)
         {
             let mut agents = self.agents.write().await;
-            agents.insert(id.clone(), agent);
+            if let std::collections::hash_map::Entry::Vacant(e) = agents.entry(id) {
+                e.insert(agent);
+            } else {
+                return Err(RegistryError::AlreadyExists(id.to_string()));
+            }
         }
 
         // Update capability index
