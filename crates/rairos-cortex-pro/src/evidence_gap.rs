@@ -412,6 +412,12 @@ pub struct EvidenceItem {
     cached_effective_weight: f64,
     /// Timestamp when cache was last updated
     cache_updated_at: DateTime<Utc>,
+    /// Number of times this evidence has been accessed/retrieved (Hebbian reinforcement)
+    access_count: u32,
+    /// Timestamp when this evidence was last accessed
+    last_accessed_at: Option<DateTime<Utc>>,
+    /// IDs of evidence co-activated with this evidence (Hebbian association)
+    co_activated_with: Vec<String>,
 }
 
 /// Type of evidence collected.
@@ -457,6 +463,40 @@ impl EvidenceItem {
         self.cached_effective_weight
     }
 
+    /// Record that this evidence was accessed/retrieved.
+    /// Implements spaced repetition: each access extends the effective half-life.
+    /// Based on Ebbinghaus forgetting curve research.
+    pub fn record_access(&mut self, co_accessed_ids: &[String]) {
+        self.access_count += 1;
+        self.last_accessed_at = Some(Utc::now());
+
+        // Hebbian co-activation: if other evidence was accessed at the same time,
+        // strengthen the association (neurons that fire together wire together)
+        for other_id in co_accessed_ids {
+            if !self.co_activated_with.contains(other_id) && *other_id != self.id {
+                self.co_activated_with.push(other_id.clone());
+            }
+        }
+    }
+
+    /// Get the retrieval reinforcement factor.
+    /// Based on Ebbinghaus: each retrieval extends memory strength.
+    /// Formula: strength = 1 + log(access_count) * boost_factor
+    pub fn retrieval_boost_factor(&self) -> f64 {
+        if self.access_count == 0 {
+            1.0
+        } else {
+            // Logarithmic boost - diminishing returns but never zero
+            // max boost capped at 2x for frequent access
+            (1.0 + 0.3 * (self.access_count as f64).ln()).min(2.0)
+        }
+    }
+
+    /// Get evidence IDs that are Hebbian-associated with this evidence.
+    pub fn get_co_activated_ids(&self) -> &[String] {
+        &self.co_activated_with
+    }
+
     /// Create a new evidence item.
     pub fn new(
         id: &str,
@@ -477,6 +517,9 @@ impl EvidenceItem {
             source: EvidenceSource::Paper, // Default to paper
             cached_effective_weight: 0.0,
             cache_updated_at: Utc::now(),
+            access_count: 0,
+            last_accessed_at: None,
+            co_activated_with: Vec::new(),
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -497,6 +540,9 @@ impl EvidenceItem {
             source: EvidenceSource::Paper,
             cached_effective_weight: 0.0,
             cache_updated_at: Utc::now(),
+            access_count: 0,
+            last_accessed_at: None,
+            co_activated_with: Vec::new(),
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -517,6 +563,9 @@ impl EvidenceItem {
             source: EvidenceSource::Web,
             cached_effective_weight: 0.0,
             cache_updated_at: Utc::now(),
+            access_count: 0,
+            last_accessed_at: None,
+            co_activated_with: Vec::new(),
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -537,6 +586,9 @@ impl EvidenceItem {
             source: EvidenceSource::Reasoning,
             cached_effective_weight: 0.0,
             cache_updated_at: Utc::now(),
+            access_count: 0,
+            last_accessed_at: None,
+            co_activated_with: Vec::new(),
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -812,6 +864,86 @@ impl EvidenceGapTracker {
             collection_events: self.collection_history.len(),
         }
     }
+
+    /// Find potential contradictions in evidence.
+    /// Contradictions are same factual claim from sources with opposing evidence types.
+    /// Based on BMB (Belief Maintenance Benchmark) patterns.
+    pub fn find_contradictions(&self, query_id: &str) -> Option<Vec<Contradiction>> {
+        let query = self.get_query(query_id)?;
+        let mut contradictions = Vec::new();
+
+        // Group evidence by content similarity (simple keyword overlap)
+        for (i, e1) in query.evidence.iter().enumerate() {
+            for e2 in query.evidence.iter().skip(i + 1) {
+                // Check if evidence types are opposing
+                let are_contradicting = matches!(
+                    (&e1.evidence_type, &e2.evidence_type),
+                    (EvidenceType::Supporting, EvidenceType::Contradicting)
+                        | (EvidenceType::Contradicting, EvidenceType::Supporting)
+                );
+
+                if are_contradicting && Self::content_similarity(&e1.content, &e2.content) > 0.7 {
+                    contradictions.push(Contradiction {
+                        evidence_1: e1.id.clone(),
+                        evidence_2: e2.id.clone(),
+                        similarity: Self::content_similarity(&e1.content, &e2.content),
+                    });
+                }
+            }
+        }
+
+        Some(contradictions)
+    }
+
+    /// Simple content similarity based on keyword overlap.
+    fn content_similarity(content1: &str, content2: &str) -> f32 {
+        let words1: std::collections::HashSet<String> = content1
+            .to_lowercase()
+            .split_whitespace()
+            .map(|s| s.to_string())
+            .collect();
+        let words2: std::collections::HashSet<String> = content2
+            .to_lowercase()
+            .split_whitespace()
+            .map(|s| s.to_string())
+            .collect();
+
+        let intersection = words1.intersection(&words2).count();
+        let union = words1.union(&words2).count();
+
+        if union == 0 {
+            0.0
+        } else {
+            intersection as f32 / union as f32
+        }
+    }
+
+    /// Record co-access of multiple evidence items (Hebbian reinforcement).
+    /// Call this when multiple pieces of evidence are retrieved together.
+    pub fn record_co_access(&mut self, query_id: &str, evidence_ids: &[String]) {
+        let now = Utc::now();
+
+        for evidence_id in evidence_ids {
+            if let Some(query) = self.get_query_mut(query_id) {
+                if let Some(evidence) = query.evidence.iter_mut().find(|e| &e.id == evidence_id) {
+                    // Record access with co-accessed evidence (excluding self)
+                    let co_accessed: Vec<String> = evidence_ids
+                        .iter()
+                        .filter(|id| *id != evidence_id)
+                        .cloned()
+                        .collect();
+                    evidence.record_access(&co_accessed);
+                }
+            }
+        }
+    }
+
+    /// Get associated evidence IDs based on Hebbian co-activation.
+    pub fn get_associated_evidence(&self, query_id: &str, evidence_id: &str) -> Option<Vec<String>> {
+        let query = self.get_query(query_id)?;
+        let evidence = query.evidence.iter().find(|e| &e.id == evidence_id)?;
+        Some(evidence.get_co_activated_ids().to_vec())
+    }
 }
 
 /// Information about a gap in evidence.
@@ -842,6 +974,18 @@ pub struct GapTrackerStats {
     pub status_counts: std::collections::HashMap<String, usize>,
     pub total_evidence_collected: usize,
     pub collection_events: usize,
+}
+
+/// Represents a potential contradiction between two evidence items.
+/// Based on BMB (Belief Maintenance Benchmark) patterns.
+#[derive(Debug, Clone)]
+pub struct Contradiction {
+    /// ID of first evidence
+    pub evidence_1: String,
+    /// ID of second evidence
+    pub evidence_2: String,
+    /// Content similarity score (0.0 - 1.0)
+    pub similarity: f32,
 }
 
 /// Event in the evidence collection history.
