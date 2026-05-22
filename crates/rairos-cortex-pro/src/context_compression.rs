@@ -265,7 +265,7 @@ impl ContextCompressor {
             idx_a.cmp(&idx_b)
         });
 
-        let content = selected.iter().map(|c| c.content.clone()).collect::<Vec<_>>().join(" ");
+        let content = selected.iter().map(|c| c.content.as_str()).collect::<Vec<_>>().join(" ");
         let compressed_tokens = self.estimate_tokens(&content);
         let ratio = if original_tokens > 0 {
             compressed_tokens as f32 / original_tokens as f32
