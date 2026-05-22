@@ -375,6 +375,9 @@ impl MctsPlanner {
         let tree = self.tree.read().unwrap();
         let effectiveness = self.tool_effectiveness.read().unwrap();
 
+        // Hoist to_lowercase outside loop - query is constant per call
+        let query_lower = query.to_lowercase();
+
         let mut total_reward = 0.0;
         let mut prev_category: Option<ToolCategory> = None;
 
@@ -391,8 +394,9 @@ impl MctsPlanner {
                     0.1
                 };
 
-                // Query-tool relevance (simple keyword matching)
-                let query_relevance = if tool.description.to_lowercase().contains(&query.to_lowercase()) {
+                // Query-tool relevance (simple keyword matching) - desc lowercase also hoisted
+                let desc_lower = tool.description.to_lowercase();
+                let query_relevance = if desc_lower.contains(&query_lower) {
                     0.2
                 } else {
                     0.0
