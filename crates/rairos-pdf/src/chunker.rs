@@ -147,7 +147,7 @@ impl TextChunker {
         section_index: usize,
     ) -> Vec<TextChunk> {
         let mut chunks = Vec::new();
-        let text_len = text.len();
+        let _text_len = text.len();
 
         if self.config.respect_sentence_boundary {
             self.chunk_by_sentences(text, section_title, offset, section_index, &mut chunks);
@@ -172,7 +172,7 @@ impl TextChunker {
         let mut current_start = 0;
         let mut chunk_index = section_index * 1000; // Space for multiple sections
 
-        for (i, sentence) in sentences.iter().enumerate() {
+        for (_i, sentence) in sentences.iter().enumerate() {
             let sentence_len = sentence.len();
 
             // Check if adding this sentence would exceed target size

@@ -539,7 +539,7 @@ impl CitationChain {
 
     /// Get papers that a given paper cites.
     pub fn get_references(&self, paper_uid: &str) -> Vec<&Paper> {
-        let Some(&idx) = self.paper_index.get(paper_uid) else {
+        let Some(&_idx) = self.paper_index.get(paper_uid) else {
             return Vec::new();
         };
         self.edges
@@ -552,7 +552,7 @@ impl CitationChain {
 
     /// Get papers that cite a given paper.
     pub fn get_cited_by(&self, paper_uid: &str) -> Vec<&Paper> {
-        let Some(&idx) = self.paper_index.get(paper_uid) else {
+        let Some(&_idx) = self.paper_index.get(paper_uid) else {
             return Vec::new();
         };
         self.edges
