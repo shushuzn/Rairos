@@ -16,7 +16,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::fmt::Debug;
 use chrono::{DateTime, Utc};
 
@@ -117,7 +117,7 @@ pub enum RollbackType {
 /// Transaction log for tracking tool executions
 pub struct TransactionLog {
     /// Events in the transaction
-    events: Vec<ToolEvent>,
+    events: VecDeque<ToolEvent>,
     /// Compensation handlers by tool name
     compensation_handlers: HashMap<String, CompensationHandler>,
     /// Maximum events to keep
@@ -159,7 +159,7 @@ impl TransactionLog {
     /// Create a new transaction log
     pub fn new(transaction_id: &str) -> Self {
         Self {
-            events: Vec::new(),
+            events: VecDeque::new(),
             compensation_handlers: HashMap::new(),
             max_events: 1000,
             transaction_id: transaction_id.to_string(),
@@ -217,7 +217,7 @@ impl TransactionLog {
     fn add_event(&mut self, event: ToolEvent) {
         self.events.push(event);
         if self.events.len() > self.max_events {
-            self.events.remove(0);
+            self.events.pop_front();
         }
     }
 

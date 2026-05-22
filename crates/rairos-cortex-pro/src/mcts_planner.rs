@@ -285,7 +285,6 @@ impl MctsPlanner {
     fn mcts_iteration(&self, tools: &[Tool], query: &str, context: &str) {
         // Selection: find best leaf using UCB1
         let mut node_idx = 0;
-        let tree_len = self.tree.read().unwrap().len();
         let mut path = vec![node_idx];
 
         // Selection phase - traverse until we find unexpanded node or leaf
@@ -328,12 +327,12 @@ impl MctsPlanner {
         }
 
         // Expansion: add new child if not at max depth
-        let tree = self.tree.read().unwrap();
-        let node = &tree[node_idx];
+        // Consolidate: acquire write lock once for both check and expansion
+        let mut tree = self.tree.write().unwrap();
 
-        if node.depth < MAX_DEPTH && !node.is_fully_expanded(tools) {
+        if tree[node_idx].depth < MAX_DEPTH && !tree[node_idx].is_fully_expanded(tools) {
             // Find unexplored tools
-            let explored_tools: HashSet<_> = node.children.iter()
+            let explored_tools: HashSet<_> = tree[node_idx].children.iter()
                 .filter_map(|c| c.tool.as_ref())
                 .map(|t| t.name.clone())
                 .collect();
@@ -347,7 +346,6 @@ impl MctsPlanner {
                 // Add one new child
                 let new_tool = unexplored[0].clone();
 
-                let mut tree = self.tree.write().unwrap();
                 let current_depth = tree[node_idx].depth;
                 let new_node = MctsNode::child(node_idx, new_tool.clone(), current_depth + 1);
                 let new_idx = tree.len();
@@ -357,6 +355,7 @@ impl MctsPlanner {
                 path.push(new_idx);
             }
         }
+        drop(tree);
 
         // Simulation: evaluate the selected node (simplified)
         let reward = self.simulate_reward(query, context, &path);

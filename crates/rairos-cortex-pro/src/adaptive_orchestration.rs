@@ -19,7 +19,7 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::utils::uuid_simple;
 
@@ -197,7 +197,7 @@ impl Default for OrchestrationConfig {
 pub struct AdaptiveOrchestrator {
     config: OrchestrationConfig,
     /// History of task topologies
-    history: Vec<TopologyRecord>,
+    history: VecDeque<TopologyRecord>,
     /// Current task statistics
     task_stats: HashMap<String, TaskStats>,
 }
@@ -225,7 +225,7 @@ impl AdaptiveOrchestrator {
     pub fn new(config: OrchestrationConfig) -> Self {
         Self {
             config,
-            history: Vec::new(),
+            history: VecDeque::new(),
             task_stats: HashMap::new(),
         }
     }
@@ -370,7 +370,7 @@ impl AdaptiveOrchestrator {
 
         // Trim history
         if self.history.len() > 1000 {
-            self.history.remove(0);
+            self.history.pop_front();
         }
     }
 

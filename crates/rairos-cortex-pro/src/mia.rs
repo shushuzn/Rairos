@@ -32,7 +32,7 @@
 //! 5. **Reflection & Judgment**: Boosting reasoning and self-evolution
 
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::hash::Hash;
 
 use crate::utils::uuid_simple;
@@ -67,9 +67,9 @@ pub struct CompressedTrajectory {
 /// Memory Manager - non-parametric memory system
 pub struct MemoryManager {
     /// Compressed trajectories
-    trajectories: Vec<CompressedTrajectory>,
+    trajectories: VecDeque<CompressedTrajectory>,
     /// Index by query pattern
-    pattern_index: HashMap<String, Vec<usize>>,
+    pattern_index: HashMap<String, VecDeque<usize>>,
     /// Maximum trajectories to store
     max_trajectories: usize,
     /// Total token cost
@@ -80,7 +80,7 @@ impl MemoryManager {
     /// Create new memory manager
     pub fn new(max_trajectories: usize) -> Self {
         Self {
-            trajectories: Vec::new(),
+            trajectories: VecDeque::new(),
             pattern_index: HashMap::new(),
             max_trajectories,
             total_token_cost: 0,
@@ -164,12 +164,12 @@ impl MemoryManager {
             // Remove from pattern index
             let pattern = &oldest.query_pattern;
             if let Some(indices) = self.pattern_index.get_mut(pattern) {
-                indices.remove(0);
+                indices.pop_front();
                 if indices.is_empty() {
                     self.pattern_index.remove(pattern);
                 }
             }
-            self.trajectories.remove(0);
+            self.trajectories.pop_front();
         }
     }
 

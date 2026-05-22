@@ -15,7 +15,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 /// Types of self-correction
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
@@ -80,7 +80,7 @@ pub struct EvaluationResult {
 /// Self-correction engine
 pub struct SelfCorrector {
     /// Correction history
-    history: Vec<Reflection>,
+    history: VecDeque<Reflection>,
     /// Success patterns
     success_patterns: Vec<String>,
     /// Failure patterns
@@ -93,7 +93,7 @@ impl SelfCorrector {
     /// Create a new self-corrector
     pub fn new() -> Self {
         Self {
-            history: Vec::new(),
+            history: VecDeque::new(),
             success_patterns: Vec::new(),
             failure_patterns: Vec::new(),
             max_history: 1000,
@@ -227,7 +227,7 @@ impl SelfCorrector {
 
         // Trim history if needed
         if self.history.len() > self.max_history {
-            self.history.remove(0);
+            self.history.pop_front();
         }
 
         // Update patterns
@@ -425,7 +425,7 @@ pub struct ReflexionAgent {
     /// Self-corrector
     corrector: SelfCorrector,
     /// Reflection history for this agent
-    reflection_history: Vec<String>,
+    reflection_history: VecDeque<String>,
     /// Max reflections to keep
     max_reflections: usize,
 }
@@ -436,7 +436,7 @@ impl ReflexionAgent {
         Self {
             agent_id: agent_id.to_string(),
             corrector: SelfCorrector::new(),
-            reflection_history: Vec::new(),
+            reflection_history: VecDeque::new(),
             max_reflections: 100,
         }
     }
@@ -462,7 +462,7 @@ impl ReflexionAgent {
 
         self.reflection_history.push(reflection_text.clone());
         if self.reflection_history.len() > self.max_reflections {
-            self.reflection_history.remove(0);
+            self.reflection_history.pop_front();
         }
 
         (output, result)

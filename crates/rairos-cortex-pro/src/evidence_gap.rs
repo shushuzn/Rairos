@@ -22,7 +22,7 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 // ============================================================================
 // Beta Distribution for Bayesian Confidence
@@ -684,7 +684,7 @@ impl std::fmt::Display for RouterAction {
 #[derive(Debug, Clone)]
 pub struct EvidenceGapTracker {
     /// All research queries being tracked
-    queries: Vec<ResearchQuery>,
+    queries: VecDeque<ResearchQuery>,
     /// Maximum queries to track
     max_queries: usize,
     /// Evidence collection history
@@ -703,7 +703,7 @@ impl EvidenceGapTracker {
     /// Create a new evidence gap tracker.
     pub fn new() -> Self {
         Self {
-            queries: Vec::new(),
+            queries: VecDeque::new(),
             max_queries: 100,
             collection_history: Vec::new(),
             next_query_id: 1,
@@ -720,7 +720,7 @@ impl EvidenceGapTracker {
 
         // Trim if over max
         if self.queries.len() > self.max_queries {
-            self.queries.remove(0);
+            self.queries.pop_front();
         }
 
         self.queries.last().unwrap()

@@ -51,19 +51,28 @@ const MAX_PERSIST_INTERVAL_SECS: i64 = 60;
 /// Compute keyword overlap between two text strings (Jaccard similarity on words > 4 chars).
 #[inline(always)]
 fn keyword_overlap(a: &str, b: &str) -> f64 {
-    let a_words: FxHashSet<String> = a.split_whitespace()
+    let a_words = compute_word_set(a);
+    let b_words = compute_word_set(b);
+    jaccard_similarity(&a_words, &b_words)
+}
+
+/// Compute word set from text (lowercase, filter words > 4 chars).
+#[inline(always)]
+fn compute_word_set(text: &str) -> FxHashSet<String> {
+    text.split_whitespace()
         .map(|w| w.to_lowercase())
         .filter(|w| w.len() > 4)
-        .collect();
-    let b_words: FxHashSet<String> = b.split_whitespace()
-        .map(|w| w.to_lowercase())
-        .filter(|w| w.len() > 4)
-        .collect();
-    if a_words.is_empty() || b_words.is_empty() {
+        .collect()
+}
+
+/// Compute Jaccard similarity between two word sets.
+#[inline(always)]
+fn jaccard_similarity(a: &FxHashSet<String>, b: &FxHashSet<String>) -> f64 {
+    if a.is_empty() || b.is_empty() {
         return 0.0;
     }
-    let intersection = a_words.intersection(&b_words).count() as f64;
-    let union = a_words.union(&b_words).count() as f64;
+    let intersection = a.intersection(b).count() as f64;
+    let union = a.union(b).count() as f64;
     intersection / union
 }
 
@@ -268,12 +277,17 @@ async fn process_topic(
         let novelty = if existing_papers.is_empty() {
             1.0
         } else {
+            let desc_lower = desc.to_lowercase();
+            let words_new: FxHashSet<String> = desc_lower.split_whitespace()
+                .filter(|w| w.len() > 4)
+                .map(|w| w.to_string())
+                .collect();
             let max_overlap = existing_papers.iter()
                 .map(|existing| {
-                    let words_new: FxHashSet<_> = desc.split_whitespace()
-                        .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
-                    let words_exist: FxHashSet<_> = existing.split_whitespace()
-                        .map(|w| w.to_lowercase()).filter(|w| w.len() > 4).collect();
+                    let words_exist: FxHashSet<String> = existing.split_whitespace()
+                        .map(|w| w.to_lowercase()).filter(|w| w.len() > 4)
+                        .map(|w| w.to_string())
+                        .collect();
                     if words_new.is_empty() || words_exist.is_empty() {
                         return 0.0;
                     }
@@ -1096,9 +1110,9 @@ impl AutonomousOrchestrator {
                     .filter_map(|p| p.arxiv_id.clone())
                     .collect();
 
-                let existing_abstracts: Vec<String> = existing
+                let existing_word_sets: Vec<FxHashSet<String>> = existing
                     .iter()
-                    .map(|p| p.abstract_text.clone())
+                    .map(|p| compute_word_set(&p.abstract_text))
                     .collect();
 
                 let similarity_threshold = 0.7;
@@ -1110,8 +1124,9 @@ impl AutonomousOrchestrator {
                             return None;
                         }
 
-                        let is_too_similar = existing_abstracts.iter().any(|existing_abs| {
-                            keyword_overlap(&p.abstract_text, existing_abs) > similarity_threshold
+                        let new_words = compute_word_set(&p.abstract_text);
+                        let is_too_similar = existing_word_sets.iter().any(|existing_words| {
+                            jaccard_similarity(&new_words, existing_words) > similarity_threshold
                         });
                         if is_too_similar {
                             return None;
@@ -1202,11 +1217,14 @@ impl AutonomousOrchestrator {
 
         let _extracted_keywords: FxHashSet<String> = {
             let mut term_freq: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
-            for paper in &papers {
-                let words: FxHashSet<_> = paper.abstract_text.split_whitespace()
-                    .map(|w| w.to_lowercase())
+            let lowercase_abstracts: Vec<String> = papers.iter()
+                .map(|p| p.abstract_text.to_lowercase())
+                .collect();
+            for lowercase_abstract in &lowercase_abstracts {
+                let words: FxHashSet<String> = lowercase_abstract.split_whitespace()
                     .filter(|w| w.len() > 5)
-                    .filter(|w| !STOP_WORDS.contains(&w.as_str()))
+                    .filter(|w| !STOP_WORDS.contains(w))
+                    .map(|w| w.to_string())
                     .collect();
                 for word in words {
                     *term_freq.entry(word).or_insert(0) += 1;
@@ -1615,10 +1633,13 @@ impl AutonomousOrchestrator {
         let state = self.load_state_cached();
         let mut topic_scores: std::collections::HashMap<String, f64> = std::collections::HashMap::new();
 
-        for alert in &state.alerts {
-            let words: FxHashSet<_> = alert.top_gap_title.split_whitespace()
+        let lowercase_titles: Vec<String> = state.alerts.iter()
+            .map(|alert| alert.top_gap_title.to_lowercase())
+            .collect();
+        for (idx, alert) in state.alerts.iter().enumerate() {
+            let words: FxHashSet<String> = lowercase_titles[idx].split_whitespace()
                 .filter(|w| w.len() > 4)
-                .map(|w| w.to_lowercase())
+                .map(|w| w.to_string())
                 .collect();
             for word in words {
                 *topic_scores.entry(word).or_insert(0.0) += alert.gene_pool_score;

@@ -21,7 +21,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use chrono::{DateTime, Utc};
 
 /// A vote from an agent
@@ -418,7 +418,7 @@ impl MultiAgentConsensus {
     /// Synthesize multiple positions into a unified position
     fn synthesize_positions(&self, positions: &HashMap<String, Vec<String>>) -> Option<String> {
         // Find common elements across positions
-        let mut all_elements: Vec<String> = positions.keys().cloned().collect();
+        let mut all_elements: VecDeque<String> = positions.keys().cloned().collect();
 
         if all_elements.is_empty() {
             return None;
@@ -426,7 +426,7 @@ impl MultiAgentConsensus {
 
         // Simple synthesis: find the most common elements
         if all_elements.len() == 1 {
-            return Some(all_elements.remove(0));
+            return Some(all_elements.pop_front().unwrap());
         }
 
         // Find overlap - positions that appear in multiple groups

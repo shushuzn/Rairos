@@ -205,7 +205,7 @@ pub struct Conversation {
     /// Conversation metadata
     pub metadata: ConversationMetadata,
     /// Conversation turns (in order)
-    pub turns: Vec<Turn>,
+    pub turns: VecDeque<Turn>,
     /// Maximum turns to retain (0 = unlimited)
     pub max_turns: u32,
 }
@@ -215,7 +215,7 @@ impl Conversation {
     pub fn new(id: ConversationId) -> Self {
         Self {
             metadata: ConversationMetadata::new(id),
-            turns: Vec::new(),
+            turns: VecDeque::new(),
             max_turns: 0, // Unlimited by default
         }
     }
@@ -224,7 +224,7 @@ impl Conversation {
     pub fn with_max_turns(id: ConversationId, max_turns: u32) -> Self {
         Self {
             metadata: ConversationMetadata::new(id),
-            turns: Vec::new(),
+            turns: VecDeque::new(),
             max_turns,
         }
     }
@@ -237,7 +237,7 @@ impl Conversation {
 
         // Trim if exceeds max_turns
         if self.max_turns > 0 && self.turns.len() > self.max_turns as usize {
-            self.turns.remove(0);
+            self.turns.pop_front();
         }
     }
 

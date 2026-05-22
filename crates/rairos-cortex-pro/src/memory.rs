@@ -39,7 +39,7 @@ const MAX_EXPERIMENTATION_ENTRIES: usize = 500;
 /// Used to prevent unbounded memory growth in HashMaps
 struct BoundedCache<K, V> {
     map: HashMap<K, V>,
-    order: Vec<K>, // Most recent at end (LRU: end = most recently used)
+    order: VecDeque<K>, // Most recent at end (LRU: end = most recently used)
     capacity: usize,
 }
 
@@ -47,7 +47,7 @@ impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
     fn new(capacity: usize) -> Self {
         Self {
             map: HashMap::new(),
-            order: Vec::new(),
+            order: VecDeque::new(),
             capacity,
         }
     }
@@ -68,7 +68,7 @@ impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
         if self.map.len() >= self.capacity {
             if let Some(oldest) = self.order.first() {
                 self.map.remove(oldest);
-                self.order.remove(0);
+                self.order.pop_front();
             }
         }
 

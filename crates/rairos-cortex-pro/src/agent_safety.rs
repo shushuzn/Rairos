@@ -20,7 +20,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt::Debug;
 use chrono::{DateTime, Utc};
 
@@ -126,7 +126,7 @@ pub struct AgentSafetyGuard {
     /// Safety rules
     rules: Vec<SafetyRule>,
     /// Audit log
-    audit_log: Vec<AuditEntry>,
+    audit_log: VecDeque<AuditEntry>,
     /// Blocked agents
     blocked_agents: HashSet<String>,
     /// Configuration
@@ -164,7 +164,7 @@ impl AgentSafetyGuard {
 
         Self {
             rules: default_rules,
-            audit_log: Vec::new(),
+            audit_log: VecDeque::new(),
             blocked_agents: HashSet::new(),
             config: SafetyConfig::default(),
         }
@@ -174,7 +174,7 @@ impl AgentSafetyGuard {
     pub fn with_config(config: SafetyConfig) -> Self {
         Self {
             rules: Self::default_rules(),
-            audit_log: Vec::new(),
+            audit_log: VecDeque::new(),
             blocked_agents: HashSet::new(),
             config,
         }
@@ -301,7 +301,7 @@ impl AgentSafetyGuard {
 
         // Trim log if needed
         if self.audit_log.len() > self.config.max_audit_entries {
-            self.audit_log.remove(0);
+            self.audit_log.pop_front();
         }
     }
 
@@ -591,7 +591,7 @@ pub struct ReliabilityTracker {
     /// Recovery times
     recovery_times: Vec<u64>,
     /// Recent results
-    recent_results: Vec<bool>,
+    recent_results: VecDeque<bool>,
     /// Max recent results to track
     max_recent: usize,
 }
@@ -604,7 +604,7 @@ impl ReliabilityTracker {
             failures: 0,
             total_time_ms: 0,
             recovery_times: Vec::new(),
-            recent_results: Vec::new(),
+            recent_results: VecDeque::new(),
             max_recent: 100,
         }
     }
@@ -616,7 +616,7 @@ impl ReliabilityTracker {
         self.recent_results.push(true);
 
         if self.recent_results.len() > self.max_recent {
-            self.recent_results.remove(0);
+            self.recent_results.pop_front();
         }
     }
 
@@ -632,7 +632,7 @@ impl ReliabilityTracker {
         self.recent_results.push(false);
 
         if self.recent_results.len() > self.max_recent {
-            self.recent_results.remove(0);
+            self.recent_results.pop_front();
         }
     }
 
