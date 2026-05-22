@@ -139,6 +139,10 @@ pub mod picco_prompt;
 #[cfg(feature = "tools")]
 pub mod roma_meta_agent;
 
+/// Adaptive orchestration for dynamic multi-agent topology (AdaptOrch, Symphony-Coord, BIGMAS)
+#[cfg(feature = "tools")]
+pub mod adaptive_orchestration;
+
 /// Agent safety and audit (SafeAgent, ReliabilityBench)
 #[cfg(feature = "tools")]
 pub mod agent_safety;
@@ -217,6 +221,9 @@ pub use picco_prompt::{PiccoPrompt, Persona, ExpertiseLevel, Instructions, Prior
 
 #[cfg(feature = "tools")]
 pub use roma_meta_agent::{MetaAgent, RomaTask, TaskStatus, MetaRole, RomaConfig, ExecutionResult, RomaStats, ChainOfMindset, Mindset, Mindsetswitch, TdpSupervisor, SubGoal, ScopedContext, TdpConfig};
+
+#[cfg(feature = "tools")]
+pub use adaptive_orchestration::{AdaptiveOrchestrator, OrchestrationConfig, TopologySelection, Topology, TaskDependency, TaskDag as OrchestrationTaskDag, OrchestrationStats, TopologyRecord, TaskStats, SymphonyCoordinator, SymphonyConfig, CapabilitySignal, SlotRequirement, AgentSelection, CandidateAgent};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};
