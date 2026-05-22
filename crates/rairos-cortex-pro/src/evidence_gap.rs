@@ -107,6 +107,14 @@ impl BetaDistribution {
         self.alpha += weight * (1.0 - reliability);
     }
 
+    /// Update with pre-computed alpha and beta contributions.
+    /// alpha_update = effective_weight (weight * reliability)
+    /// beta_update = weight * (1.0 - reliability) = weight - effective_weight
+    pub fn update_with_alpha_beta(&mut self, alpha_update: f64, beta_update: f64) {
+        self.alpha += alpha_update;
+        self.beta += beta_update;
+    }
+
     /// Apply time-based decay (evidence becomes less reliable over time).
     ///
     /// Based on ACT-R decay formula from MuninnDB:
@@ -308,36 +316,30 @@ impl ResearchQuery {
 
         // Start with skeptical prior
         let mut beta = BetaDistribution::skeptical();
-        let now = Utc::now();
 
-        for evidence in &self.evidence {
-            // Calculate effective reliability with time decay
-            let age_days = (now - evidence.collected_at).num_seconds() as f64 / 86400.0;
-            let source_reliability = evidence.source.effective_reliability(age_days);
-
-            // Weight by quality and relevance (modulates evidence strength)
+        for evidence in &mut self.evidence {
+            // Get cached effective weight (quality * relevance * source_reliability with decay)
+            // This is pre-computed and only refreshed if >1 hour old
+            let effective_weight = evidence.get_effective_weight();
+            // Fresh source reliability (0.85 for paper, etc.) - used for (1 - reliability) calc
+            let source_reliability = evidence.source.effective_reliability(0.0);
+            // weight = quality * relevance (base weight before source reliability)
             let weight = (evidence.quality as f64) * (evidence.relevance as f64);
+            let beta_update = weight - effective_weight;
 
             // Update Beta distribution based on evidence type
-            // weight modulates the count, source_reliability is the confirmation probability
             match evidence.evidence_type {
                 EvidenceType::Direct | EvidenceType::Supporting => {
-                    // Confirming evidence increases alpha
-                    beta.update_with_confirming(weight, source_reliability);
+                    beta.update_with_alpha_beta(effective_weight, beta_update);
                 }
                 EvidenceType::Contradicting => {
-                    // Contradicting evidence increases beta
-                    beta.update_with_contradicting(weight, source_reliability);
+                    beta.update_with_alpha_beta(beta_update, effective_weight);
                 }
                 EvidenceType::Contextual => {
-                    // Contextual evidence has partial effect
-                    beta.update_with_confirming(weight * 0.5, source_reliability);
+                    beta.update_with_alpha_beta(effective_weight * 0.5, beta_update * 0.5);
                 }
             }
         }
-
-        // Note: Evidence decay is already accounted for in effective_reliability()
-        // called above, so no additional decay application needed.
 
         // Update stored values
         self.beta_distribution = beta;
@@ -443,6 +445,11 @@ pub struct EvidenceItem {
     pub evidence_type: EvidenceType,
     /// Source type for reliability tracking (default: Paper)
     pub source: EvidenceSource,
+    /// Cached effective weight: quality * relevance * source_reliability
+    /// Computed at creation for fresh evidence; recalculated on decay threshold
+    cached_effective_weight: f64,
+    /// Timestamp when cache was last updated
+    cache_updated_at: DateTime<Utc>,
 }
 
 /// Type of evidence collected.
@@ -459,6 +466,34 @@ pub enum EvidenceType {
 }
 
 impl EvidenceItem {
+    /// Compute the effective weight for Bayesian update.
+    /// This is quality * relevance * source_reliability (fresh, no decay).
+    fn compute_effective_weight(&self) -> f64 {
+        let base_weight = (self.quality as f64) * (self.relevance as f64);
+        let source_reliability = self.source.effective_reliability(0.0); // Fresh evidence = no decay
+        base_weight * source_reliability
+    }
+
+    /// Recalculate and update the cached effective weight.
+    /// Call this periodically to apply time-based decay.
+    fn refresh_cache(&mut self) {
+        let now = Utc::now();
+        let age_seconds = (now - self.collected_at).num_seconds() as f64;
+        // Only refresh if more than 1 hour has passed
+        if age_seconds > 3600.0 {
+            let age_days = age_seconds / 86400.0;
+            let source_reliability = self.source.effective_reliability(age_days);
+            self.cached_effective_weight = (self.quality as f64) * (self.relevance as f64) * source_reliability;
+            self.cache_updated_at = now;
+        }
+    }
+
+    /// Get the cached effective weight, refreshing if needed.
+    fn get_effective_weight(&mut self) -> f64 {
+        self.refresh_cache();
+        self.cached_effective_weight
+    }
+
     /// Create a new evidence item.
     pub fn new(
         id: &str,
@@ -467,7 +502,7 @@ impl EvidenceItem {
         content: &str,
         evidence_type: EvidenceType,
     ) -> Self {
-        Self {
+        let mut item = Self {
             id: id.to_string(),
             source_id: source_id.to_string(),
             source_name: source_name.to_string(),
@@ -477,12 +512,17 @@ impl EvidenceItem {
             collected_at: Utc::now(),
             evidence_type,
             source: EvidenceSource::Paper, // Default to paper
-        }
+            cached_effective_weight: 0.0,
+            cache_updated_at: Utc::now(),
+        };
+        item.cached_effective_weight = item.compute_effective_weight();
+        item.cache_updated_at = item.collected_at;
+        item
     }
 
     /// Create evidence from a paper source.
     pub fn from_paper(id: &str, paper_id: &str, title: &str, content: &str, evidence_type: EvidenceType) -> Self {
-        Self {
+        let mut item = Self {
             id: id.to_string(),
             source_id: paper_id.to_string(),
             source_name: title.to_string(),
@@ -492,12 +532,17 @@ impl EvidenceItem {
             collected_at: Utc::now(),
             evidence_type,
             source: EvidenceSource::Paper,
-        }
+            cached_effective_weight: 0.0,
+            cache_updated_at: Utc::now(),
+        };
+        item.cached_effective_weight = item.compute_effective_weight();
+        item.cache_updated_at = item.collected_at;
+        item
     }
 
     /// Create evidence from web source.
     pub fn from_web(id: &str, url: &str, title: &str, content: &str, evidence_type: EvidenceType) -> Self {
-        Self {
+        let mut item = Self {
             id: id.to_string(),
             source_id: url.to_string(),
             source_name: title.to_string(),
@@ -507,12 +552,17 @@ impl EvidenceItem {
             collected_at: Utc::now(),
             evidence_type,
             source: EvidenceSource::Web,
-        }
+            cached_effective_weight: 0.0,
+            cache_updated_at: Utc::now(),
+        };
+        item.cached_effective_weight = item.compute_effective_weight();
+        item.cache_updated_at = item.collected_at;
+        item
     }
 
     /// Create evidence from reasoning/theory.
     pub fn from_reasoning(id: &str, theorem: &str, content: &str, evidence_type: EvidenceType) -> Self {
-        Self {
+        let mut item = Self {
             id: id.to_string(),
             source_id: theorem.to_string(),
             source_name: theorem.to_string(),
@@ -522,18 +572,27 @@ impl EvidenceItem {
             collected_at: Utc::now(),
             evidence_type,
             source: EvidenceSource::Reasoning,
-        }
+            cached_effective_weight: 0.0,
+            cache_updated_at: Utc::now(),
+        };
+        item.cached_effective_weight = item.compute_effective_weight();
+        item.cache_updated_at = item.collected_at;
+        item
     }
 
     /// Set relevance score.
     pub fn with_relevance(mut self, relevance: f32) -> Self {
         self.relevance = relevance.clamp(0.0, 1.0);
+        self.cached_effective_weight = self.compute_effective_weight();
+        self.cache_updated_at = Utc::now();
         self
     }
 
     /// Set quality score.
     pub fn with_quality(mut self, quality: f32) -> Self {
         self.quality = quality.clamp(0.0, 1.0);
+        self.cached_effective_weight = self.compute_effective_weight();
+        self.cache_updated_at = Utc::now();
         self
     }
 
