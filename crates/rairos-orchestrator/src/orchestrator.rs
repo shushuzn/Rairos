@@ -1,4 +1,4 @@
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use futures::future::join_all;
 use rairos_core::{Database, Paper, ResearchGap};
 use rairos_crossover::CrossoverEngine;
@@ -19,8 +19,34 @@ use crate::error::{OrchestratorError, Result};
 use crate::persistence::{load_state, save_state};
 use crate::state::{
     DeepResearchResult, FilterStats, GenePoolStats, OrchestratorConfig,
-    PaperInfo, ResearchAlert, ScoredGap,
+    OrchestratorState, PaperInfo, ResearchAlert, ScoredGap,
 };
+
+/// Cache for precomputed lowercase abstracts to avoid repeated to_lowercase() calls.
+/// Each paper's abstract is lowercased once and cached here.
+#[derive(Clone)]
+struct PaperCache {
+    /// Precomputed lowercase abstracts, indexed to match paper indices
+    lowercase_abstracts: Vec<String>,
+}
+
+impl PaperCache {
+    fn new(papers: &[rairos_core::Paper]) -> Self {
+        let lowercase_abstracts = papers
+            .iter()
+            .map(|p| p.abstract_text.to_lowercase())
+            .collect();
+        Self { lowercase_abstracts }
+    }
+
+    #[inline(always)]
+    fn get_lowercase(&self, idx: usize) -> &str {
+        &self.lowercase_abstracts[idx]
+    }
+}
+
+/// Maximum interval in seconds before cache is considered stale and reloaded from disk.
+const MAX_PERSIST_INTERVAL_SECS: i64 = 60;
 
 /// Compute keyword overlap between two text strings (Jaccard similarity on words > 4 chars).
 #[inline(always)]
@@ -180,40 +206,54 @@ async fn process_topic(
         }
     };
 
+    // Pre-compute lowercase abstracts to avoid repeated to_lowercase() calls
+    let cache = PaperCache::new(&papers);
+
+    // Wrap papers and cache in Arc for cheap cloning in parallel gap detection
+    let papers = Arc::new(papers);
+    let cache = Arc::new(cache);
+
     let novelty_threshold = 0.3;
 
     // Parallelize gap detection - all 7 detectors are CPU-bound and independent
     let topic_owned = topic.clone();
     let gap_results = futures::future::join_all(vec![
         {
-            let papers = papers.clone();
+            let papers = Arc::clone(&papers);
+            let cache = Arc::clone(&cache);
             let topic = topic_owned.clone();
-            tokio::task::spawn_blocking(move || detect_pattern_gaps_impl(&papers, &topic))
+            tokio::task::spawn_blocking(move || detect_pattern_gaps_impl(&*papers, &*cache, &topic))
         },
         {
-            let papers = papers.clone();
+            let papers = Arc::clone(&papers);
+            let cache = Arc::clone(&cache);
             let topic = topic_owned.clone();
-            tokio::task::spawn_blocking(move || detect_cross_paper_gaps_impl(&papers, &topic))
+            tokio::task::spawn_blocking(move || detect_cross_paper_gaps_impl(&*papers, &*cache, &topic))
         },
         {
-            let papers = papers.clone();
-            tokio::task::spawn_blocking(move || detect_method_limitations_impl(&papers))
+            let papers = Arc::clone(&papers);
+            let cache = Arc::clone(&cache);
+            tokio::task::spawn_blocking(move || detect_method_limitations_impl(&*papers, &*cache))
         },
         {
-            let papers = papers.clone();
-            tokio::task::spawn_blocking(move || detect_evaluation_gaps_impl(&papers))
+            let papers = Arc::clone(&papers);
+            let cache = Arc::clone(&cache);
+            tokio::task::spawn_blocking(move || detect_evaluation_gaps_impl(&*papers, &*cache))
         },
         {
-            let papers = papers.clone();
-            tokio::task::spawn_blocking(move || detect_resource_gaps_impl(&papers))
+            let papers = Arc::clone(&papers);
+            let cache = Arc::clone(&cache);
+            tokio::task::spawn_blocking(move || detect_resource_gaps_impl(&*papers, &*cache))
         },
         {
-            let papers = papers.clone();
-            tokio::task::spawn_blocking(move || detect_dataset_gaps_impl(&papers))
+            let papers = Arc::clone(&papers);
+            let cache = Arc::clone(&cache);
+            tokio::task::spawn_blocking(move || detect_dataset_gaps_impl(&*papers, &*cache))
         },
         {
-            let papers = papers.clone();
-            tokio::task::spawn_blocking(move || detect_generalization_gaps_impl(&papers))
+            let papers = Arc::clone(&papers);
+            let cache = Arc::clone(&cache);
+            tokio::task::spawn_blocking(move || detect_generalization_gaps_impl(&*papers, &*cache))
         },
     ]).await;
     let mut gaps: Vec<ResearchGap> = Vec::new();
@@ -296,7 +336,7 @@ async fn process_topic(
 
     let mut filtered = Vec::new();
     let mut suppressed = 0i32;
-    for gap in gaps.clone() {
+    for gap in gaps.iter().cloned() {
         if seen_descriptions.contains(&gap.description) {
             suppressed += 1;
         } else {
@@ -380,12 +420,6 @@ async fn process_topic(
             }
         })
         .collect();
-
-    // Batch UCB score lookup - single lock acquisition (was: N lock acquisitions per iteration)
-    let ucb_scores = {
-        let selector = regret_selector.lock().unwrap();
-        selector.get_ucb_scores()
-    };
 
     // Pre-compute gradients for all items
     let gradients: Vec<f64> = scored.iter()
@@ -471,16 +505,20 @@ async fn process_topic(
         let dataset_tokens = new_papers.iter()
             .map(|p| p.abstract_text.len() as f64)
             .sum::<f64>();
-        let opt_lr = {
+        // Batch scaling_learner operations: predict_optimal and observe share data (lr -> opt_lr -> observe)
+        let (opt_lr, opt_bs, loss) = {
             let (lr, _) = {
                 let sl = scaling_learner.lock().unwrap();
                 sl.predict_optimal(1.0, dataset_tokens / model_scale)
             };
-            let am = adaptive_momentum.lock().unwrap();
-            am.adaptive_lr(0.1 * lr, 1.0)
+            let opt_lr = {
+                let am = adaptive_momentum.lock().unwrap();
+                am.adaptive_lr(0.1 * lr, 1.0)
+            };
+            let opt_bs = opt_lr * 100.0;
+            let loss = 1.0 - alert_rate;
+            (opt_lr, opt_bs, loss)
         };
-        let opt_bs = opt_lr * 100.0;
-        let loss = 1.0 - alert_rate;
         {
             let mut sl = scaling_learner.lock().unwrap();
             sl.observe(opt_lr, opt_bs, loss);
@@ -570,13 +608,13 @@ fn limitation_patterns() -> [LimitationPattern<'static>; 33] {
     ]
 }
 
-fn detect_pattern_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
+fn detect_pattern_gaps_impl(papers: &[rairos_core::Paper], cache: &PaperCache, topic: &str) -> Vec<ResearchGap> {
     let limitation_patterns = limitation_patterns();
     let mut detected: Vec<ResearchGap> = Vec::new();
     let mut seen_patterns: FxHashSet<String> = FxHashSet::default();
 
-    for paper in papers {
-        let text_lower = paper.abstract_text.to_lowercase();
+    for (idx, paper) in papers.iter().enumerate() {
+        let text_lower = cache.get_lowercase(idx);
         for lp in &limitation_patterns {
             if text_lower.contains(lp.pattern_lower) {
                 let desc = format!("Gap in '{}': {} (found in {})", topic, lp.pattern, paper.title.chars().take(40).collect::<String>());
@@ -591,7 +629,7 @@ fn detect_pattern_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<R
     detected
 }
 
-fn extract_key_phrases_impl(papers: &[rairos_core::Paper]) -> std::collections::HashMap<String, Vec<String>> {
+fn extract_key_phrases_impl(papers: &[rairos_core::Paper], cache: &PaperCache) -> std::collections::HashMap<String, Vec<String>> {
     let mut phrase_papers: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
     let significant_bigrams = [
         "sparse autoencoder", "attention mechanism", "variational autoencoder",
@@ -601,8 +639,8 @@ fn extract_key_phrases_impl(papers: &[rairos_core::Paper]) -> std::collections::
         "representation learning", "self-supervised learning", "contrastive learning",
     ];
 
-    for paper in papers {
-        let text_lower = paper.abstract_text.to_lowercase();
+    for (idx, paper) in papers.iter().enumerate() {
+        let text_lower = cache.get_lowercase(idx);
         for bigram in significant_bigrams {
             if text_lower.contains(bigram) {
                 phrase_papers
@@ -616,8 +654,8 @@ fn extract_key_phrases_impl(papers: &[rairos_core::Paper]) -> std::collections::
     phrase_papers
 }
 
-fn detect_cross_paper_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
-    let phrase_map = extract_key_phrases_impl(papers);
+fn detect_cross_paper_gaps_impl(papers: &[rairos_core::Paper], cache: &PaperCache, topic: &str) -> Vec<ResearchGap> {
+    let phrase_map = extract_key_phrases_impl(papers, cache);
     let mut gaps: Vec<ResearchGap> = Vec::new();
 
     for (phrase, titles) in phrase_map {
@@ -645,7 +683,7 @@ fn detect_cross_paper_gaps_impl(papers: &[rairos_core::Paper], topic: &str) -> V
     gaps
 }
 
-fn detect_method_limitations_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+fn detect_method_limitations_impl(papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
     let limitation_phrases = [
         ("limited by", "scalability_gap", "HIGH", 2),
         ("struggle with", "method_limitation", "MEDIUM", 2),
@@ -667,8 +705,8 @@ fn detect_method_limitations_impl(papers: &[rairos_core::Paper]) -> Vec<Research
     let mut gaps: Vec<ResearchGap> = Vec::new();
     let mut seen: FxHashSet<String> = FxHashSet::default();
 
-    for paper in papers {
-        let text_lower = paper.abstract_text.to_lowercase();
+    for (idx, paper) in papers.iter().enumerate() {
+        let text_lower = cache.get_lowercase(idx);
         for (phrase, gap_type, severity, _min_words) in &limitation_phrases {
             if text_lower.contains(phrase) {
                 let title_short = paper.title.chars().take(30).collect::<String>();
@@ -688,7 +726,7 @@ fn detect_method_limitations_impl(papers: &[rairos_core::Paper]) -> Vec<Research
     gaps
 }
 
-fn detect_evaluation_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+fn detect_evaluation_gaps_impl(papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
     let eval_patterns = [
         ("no baseline", "evaluation_gap", "HIGH"),
         ("without comparison", "evaluation_gap", "HIGH"),
@@ -701,8 +739,8 @@ fn detect_evaluation_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap
     let mut gaps: Vec<ResearchGap> = Vec::new();
     let mut seen: FxHashSet<String> = FxHashSet::default();
 
-    for paper in papers {
-        let text_lower = paper.abstract_text.to_lowercase();
+    for (idx, paper) in papers.iter().enumerate() {
+        let text_lower = cache.get_lowercase(idx);
         let mut has_comparison = false;
         let mut baseline_mentioned = false;
 
@@ -733,7 +771,7 @@ fn detect_evaluation_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap
     gaps
 }
 
-fn detect_resource_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+fn detect_resource_gaps_impl(papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
     let resource_phrases = [
         ("requires large", "resource_gap", "HIGH"),
         ("computationally expensive", "resource_gap", "HIGH"),
@@ -750,8 +788,8 @@ fn detect_resource_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> 
     let mut gaps: Vec<ResearchGap> = Vec::new();
     let mut seen: FxHashSet<String> = FxHashSet::default();
 
-    for paper in papers {
-        let text_lower = paper.abstract_text.to_lowercase();
+    for (idx, paper) in papers.iter().enumerate() {
+        let text_lower = cache.get_lowercase(idx);
         for (phrase, gap_type, severity) in &resource_phrases {
             if text_lower.contains(phrase) {
                 let title_short = paper.title.chars().take(30).collect::<String>();
@@ -771,7 +809,7 @@ fn detect_resource_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> 
     gaps
 }
 
-fn detect_dataset_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+fn detect_dataset_gaps_impl(papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
     let dataset_patterns = [
         ("no dataset", "dataset_gap", "HIGH"),
         ("synthetic data", "dataset_gap", "MEDIUM"),
@@ -785,8 +823,8 @@ fn detect_dataset_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
     let mut gaps: Vec<ResearchGap> = Vec::new();
     let mut seen: FxHashSet<String> = FxHashSet::default();
 
-    for paper in papers {
-        let text_lower = paper.abstract_text.to_lowercase();
+    for (idx, paper) in papers.iter().enumerate() {
+        let text_lower = cache.get_lowercase(idx);
         let mut mentions_data = false;
         let mut has_real = false;
 
@@ -815,7 +853,7 @@ fn detect_dataset_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
     gaps
 }
 
-fn detect_generalization_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+fn detect_generalization_gaps_impl(papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
     let generalization_phrases = [
         ("generalize", "generalization_gap", "HIGH"),
         ("out-of-distribution", "generalization_gap", "HIGH"),
@@ -830,8 +868,8 @@ fn detect_generalization_gaps_impl(papers: &[rairos_core::Paper]) -> Vec<Researc
     let mut gaps: Vec<ResearchGap> = Vec::new();
     let mut seen: FxHashSet<String> = FxHashSet::default();
 
-    for paper in papers {
-        let text_lower = paper.abstract_text.to_lowercase();
+    for (idx, paper) in papers.iter().enumerate() {
+        let text_lower = cache.get_lowercase(idx);
         for (phrase, gap_type, severity) in &generalization_phrases {
             if text_lower.contains(phrase) {
                 let title_short = paper.title.chars().take(30).collect::<String>();
@@ -863,6 +901,8 @@ pub struct AutonomousOrchestrator {
     crossover_engine: Arc<StdMutex<CrossoverEngine>>,
     scaling_learner: Arc<StdMutex<OptimalScalingLearner>>,
     adaptive_momentum: Arc<StdMutex<RankerAdaptiveMomentum>>,
+    cached_state: Option<OrchestratorState>,
+    last_persist: DateTime<Utc>,
 }
 
 impl Default for AutonomousOrchestrator {
@@ -888,7 +928,22 @@ impl AutonomousOrchestrator {
             crossover_engine: Arc::new(StdMutex::new(CrossoverEngine::new(1.0, 0.1))),
             scaling_learner: Arc::new(StdMutex::new(OptimalScalingLearner::new(1.0, 1e-4))),
             adaptive_momentum: Arc::new(StdMutex::new(RankerAdaptiveMomentum::new(0.9))),
+            cached_state: None,
+            last_persist: Utc::now(),
         }
+    }
+
+    /// Load state from cache if valid, otherwise reload from disk.
+    /// Cache is considered stale if more than MAX_PERSIST_INTERVAL_SECS have passed since last persist.
+    fn load_state_cached(&mut self) -> OrchestratorState {
+        let now = Utc::now();
+        if self.cached_state.is_none()
+            || (now - self.last_persist).num_seconds() > MAX_PERSIST_INTERVAL_SECS
+        {
+            self.cached_state = Some(load_state());
+            self.last_persist = now;
+        }
+        self.cached_state.clone().unwrap()
     }
 
     pub fn record_gap_outcome(&mut self, gap_type: &str, score: f64) {
@@ -904,8 +959,12 @@ impl AutonomousOrchestrator {
     }
 
     pub fn get_adaptive_lr(&self, base_lr: f64, dataset_tokens: f64) -> f64 {
-        let (lr, _) = self.scaling_learner.lock().unwrap().predict_optimal(1.0, dataset_tokens);
-        self.adaptive_momentum.lock().unwrap().adaptive_lr(base_lr * lr, 1.0)
+        let lr = {
+            let guard = self.scaling_learner.lock().unwrap();
+            guard.predict_optimal(1.0, dataset_tokens).0
+        };
+        let scaled_lr = base_lr * lr;
+        self.adaptive_momentum.lock().unwrap().adaptive_lr(scaled_lr, 1.0)
     }
 
     pub fn observe_scaling(&mut self, lr: f64, batch_size: f64, loss: f64) {
@@ -1179,13 +1238,16 @@ impl AutonomousOrchestrator {
 
         let novelty_threshold = 0.3;
 
-        let pattern_gaps = self.detect_pattern_gaps(&papers, topic);
-        let cross_paper_gaps = self.detect_cross_paper_gaps(&papers, topic);
-        let method_gaps = self.detect_method_limitations(&papers);
-        let eval_gaps = self.detect_evaluation_gaps(&papers);
-        let resource_gaps = self.detect_resource_gaps(&papers);
-        let dataset_gaps = self.detect_dataset_gaps(&papers);
-        let generalization_gaps = self.detect_generalization_gaps(&papers);
+        // Pre-compute lowercase abstracts to avoid repeated to_lowercase() calls
+        let cache = PaperCache::new(&papers);
+
+        let pattern_gaps = self.detect_pattern_gaps(&papers, &cache, topic);
+        let cross_paper_gaps = self.detect_cross_paper_gaps(&papers, &cache, topic);
+        let method_gaps = self.detect_method_limitations(&papers, &cache);
+        let eval_gaps = self.detect_evaluation_gaps(&papers, &cache);
+        let resource_gaps = self.detect_resource_gaps(&papers, &cache);
+        let dataset_gaps = self.detect_dataset_gaps(&papers, &cache);
+        let generalization_gaps = self.detect_generalization_gaps(&papers, &cache);
         let mut gaps: Vec<ResearchGap> = pattern_gaps;
         gaps.extend(cross_paper_gaps);
         gaps.extend(method_gaps);
@@ -1411,8 +1473,8 @@ impl AutonomousOrchestrator {
         self.init_components().await?;
         let db_guard = self.db.read().await;
         if let Some(db) = db_guard.as_ref() {
-            for gap in gaps {
-                let _ = db.insert_gap(gap);
+            for gap in gaps.iter().cloned() {
+                let _ = db.insert_gap(&gap);
             }
         }
         Ok(())
@@ -1461,7 +1523,7 @@ impl AutonomousOrchestrator {
             }
         }
 
-        let mut state = load_state();
+        let mut state = self.load_state_cached();
         for alert in &all_alerts {
             state.alerts.insert(0, alert.clone());
         }
@@ -1508,8 +1570,8 @@ impl AutonomousOrchestrator {
         Ok(all_alerts)
     }
 
-    pub fn suggest_adaptive_interval(&self) -> i32 {
-        let state = load_state();
+    pub fn suggest_adaptive_interval(&mut self) -> i32 {
+        let state = self.load_state_cached();
         let base_interval = self.config.interval_minutes;
 
         if state.alerts.is_empty() {
@@ -1549,8 +1611,8 @@ impl AutonomousOrchestrator {
         adjusted.clamp(5, 240)
     }
 
-    pub fn suggest_new_topics(&self, current_topics: &[String]) -> Vec<String> {
-        let state = load_state();
+    pub fn suggest_new_topics(&mut self, current_topics: &[String]) -> Vec<String> {
+        let state = self.load_state_cached();
         let mut topic_scores: std::collections::HashMap<String, f64> = std::collections::HashMap::new();
 
         for alert in &state.alerts {
@@ -1579,13 +1641,13 @@ impl AutonomousOrchestrator {
             .collect()
     }
 
-    fn detect_pattern_gaps(&self, papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
+    fn detect_pattern_gaps(&self, papers: &[rairos_core::Paper], cache: &PaperCache, topic: &str) -> Vec<ResearchGap> {
         let limitation_patterns = limitation_patterns();
         let mut detected: Vec<ResearchGap> = Vec::new();
         let mut seen_patterns: FxHashSet<String> = FxHashSet::default();
 
-        for paper in papers {
-            let text_lower = paper.abstract_text.to_lowercase();
+        for (idx, paper) in papers.iter().enumerate() {
+            let text_lower = cache.get_lowercase(idx);
             for lp in &limitation_patterns {
                 if text_lower.contains(lp.pattern_lower) {
                     let desc = format!("Gap in '{}': {} (found in {})", topic, lp.pattern, paper.title.chars().take(40).collect::<String>());
@@ -1600,7 +1662,7 @@ impl AutonomousOrchestrator {
         detected
     }
 
-    fn extract_key_phrases(&self, papers: &[rairos_core::Paper]) -> std::collections::HashMap<String, Vec<String>> {
+    fn extract_key_phrases(&self, papers: &[rairos_core::Paper], cache: &PaperCache) -> std::collections::HashMap<String, Vec<String>> {
         let mut phrase_papers: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
         let significant_bigrams = [
             "sparse autoencoder", "attention mechanism", "variational autoencoder",
@@ -1610,8 +1672,8 @@ impl AutonomousOrchestrator {
             "representation learning", "self-supervised learning", "contrastive learning",
         ];
 
-        for paper in papers {
-            let text_lower = paper.abstract_text.to_lowercase();
+        for (idx, paper) in papers.iter().enumerate() {
+            let text_lower = cache.get_lowercase(idx);
             for bigram in significant_bigrams {
                 if text_lower.contains(bigram) {
                     phrase_papers
@@ -1625,8 +1687,8 @@ impl AutonomousOrchestrator {
         phrase_papers
     }
 
-    fn detect_cross_paper_gaps(&self, papers: &[rairos_core::Paper], topic: &str) -> Vec<ResearchGap> {
-        let phrase_map = self.extract_key_phrases(papers);
+    fn detect_cross_paper_gaps(&self, papers: &[rairos_core::Paper], cache: &PaperCache, topic: &str) -> Vec<ResearchGap> {
+        let phrase_map = self.extract_key_phrases(papers, cache);
         let mut gaps: Vec<ResearchGap> = Vec::new();
 
         for (phrase, titles) in phrase_map {
@@ -1654,7 +1716,7 @@ impl AutonomousOrchestrator {
         gaps
     }
 
-    fn detect_method_limitations(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    fn detect_method_limitations(&self, papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
         let limitation_phrases = [
             ("limited by", "scalability_gap", "HIGH", 2),
             ("struggle with", "method_limitation", "MEDIUM", 2),
@@ -1676,8 +1738,8 @@ impl AutonomousOrchestrator {
         let mut gaps: Vec<ResearchGap> = Vec::new();
         let mut seen: FxHashSet<String> = FxHashSet::default();
 
-        for paper in papers {
-            let text_lower = paper.abstract_text.to_lowercase();
+        for (idx, paper) in papers.iter().enumerate() {
+            let text_lower = cache.get_lowercase(idx);
             for (phrase, gap_type, severity, _min_words) in &limitation_phrases {
                 if text_lower.contains(phrase) {
                     let title_short = paper.title.chars().take(30).collect::<String>();
@@ -1697,7 +1759,7 @@ impl AutonomousOrchestrator {
         gaps
     }
 
-    fn detect_evaluation_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    fn detect_evaluation_gaps(&self, papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
         let eval_patterns = [
             ("no baseline", "evaluation_gap", "HIGH"),
             ("without comparison", "evaluation_gap", "HIGH"),
@@ -1710,8 +1772,8 @@ impl AutonomousOrchestrator {
         let mut gaps: Vec<ResearchGap> = Vec::new();
         let mut seen: FxHashSet<String> = FxHashSet::default();
 
-        for paper in papers {
-            let text_lower = paper.abstract_text.to_lowercase();
+        for (idx, paper) in papers.iter().enumerate() {
+            let text_lower = cache.get_lowercase(idx);
             let mut has_comparison = false;
             let mut baseline_mentioned = false;
 
@@ -1742,7 +1804,7 @@ impl AutonomousOrchestrator {
         gaps
     }
 
-    fn detect_resource_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    fn detect_resource_gaps(&self, papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
         let resource_phrases = [
             ("requires large", "resource_gap", "HIGH"),
             ("computationally expensive", "resource_gap", "HIGH"),
@@ -1759,8 +1821,8 @@ impl AutonomousOrchestrator {
         let mut gaps: Vec<ResearchGap> = Vec::new();
         let mut seen: FxHashSet<String> = FxHashSet::default();
 
-        for paper in papers {
-            let text_lower = paper.abstract_text.to_lowercase();
+        for (idx, paper) in papers.iter().enumerate() {
+            let text_lower = cache.get_lowercase(idx);
             for (phrase, gap_type, severity) in &resource_phrases {
                 if text_lower.contains(phrase) {
                     let title_short = paper.title.chars().take(30).collect::<String>();
@@ -1780,7 +1842,7 @@ impl AutonomousOrchestrator {
         gaps
     }
 
-    fn detect_dataset_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    fn detect_dataset_gaps(&self, papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
         let dataset_patterns = [
             ("no dataset", "dataset_gap", "HIGH"),
             ("synthetic data", "dataset_gap", "MEDIUM"),
@@ -1794,8 +1856,8 @@ impl AutonomousOrchestrator {
         let mut gaps: Vec<ResearchGap> = Vec::new();
         let mut seen: FxHashSet<String> = FxHashSet::default();
 
-        for paper in papers {
-            let text_lower = paper.abstract_text.to_lowercase();
+        for (idx, paper) in papers.iter().enumerate() {
+            let text_lower = cache.get_lowercase(idx);
             let mut mentions_data = false;
             let mut has_real = false;
 
@@ -1824,7 +1886,7 @@ impl AutonomousOrchestrator {
         gaps
     }
 
-    fn detect_generalization_gaps(&self, papers: &[rairos_core::Paper]) -> Vec<ResearchGap> {
+    fn detect_generalization_gaps(&self, papers: &[rairos_core::Paper], cache: &PaperCache) -> Vec<ResearchGap> {
         let generalization_phrases = [
             ("generalize", "generalization_gap", "HIGH"),
             ("out-of-distribution", "generalization_gap", "HIGH"),
@@ -1839,8 +1901,8 @@ impl AutonomousOrchestrator {
         let mut gaps: Vec<ResearchGap> = Vec::new();
         let mut seen: FxHashSet<String> = FxHashSet::default();
 
-        for paper in papers {
-            let text_lower = paper.abstract_text.to_lowercase();
+        for (idx, paper) in papers.iter().enumerate() {
+            let text_lower = cache.get_lowercase(idx);
             for (phrase, gap_type, severity) in &generalization_phrases {
                 if text_lower.contains(phrase) {
                     let title_short = paper.title.chars().take(30).collect::<String>();
@@ -1860,7 +1922,7 @@ impl AutonomousOrchestrator {
         gaps
     }
 
-    pub async fn start_watch(&self, interval_minutes: i32) -> Result<()> {
+    pub async fn start_watch(&mut self, interval_minutes: i32) -> Result<()> {
         {
             let handle = self.watch_handle.read().await;
             if handle.is_some() {
@@ -1877,7 +1939,7 @@ impl AutonomousOrchestrator {
 
         let config = self.config.clone();
 
-        let mut state = load_state();
+        let mut state = self.load_state_cached();
         state.running = true;
         state.interval_minutes = interval_minutes;
         let _ = save_state(&state);
@@ -1917,7 +1979,7 @@ impl AutonomousOrchestrator {
         Ok(())
     }
 
-    pub async fn stop_watch(&self) -> Result<()> {
+    pub async fn stop_watch(&mut self) -> Result<()> {
         {
             let mut stop = self.stop_tx.write().await;
             if let Some(tx) = stop.take() {
@@ -1925,7 +1987,7 @@ impl AutonomousOrchestrator {
             }
         }
 
-        let mut state = load_state();
+        let mut state = self.load_state_cached();
         state.running = false;
         let _ = save_state(&state);
 
@@ -1933,8 +1995,8 @@ impl AutonomousOrchestrator {
         Ok(())
     }
 
-    pub fn get_recent_alerts(&self, limit: usize) -> Vec<ResearchAlert> {
-        let state = load_state();
+    pub fn get_recent_alerts(&mut self, limit: usize) -> Vec<ResearchAlert> {
+        let state = self.load_state_cached();
         state.alerts.iter().take(limit).cloned().collect()
     }
 
@@ -2014,8 +2076,8 @@ impl AutonomousOrchestrator {
         "machine learning".to_string()
     }
 
-    pub async fn get_status(&self) -> Result<FxHashMap<String, serde_json::Value>> {
-        let state = load_state();
+    pub async fn get_status(&mut self) -> Result<FxHashMap<String, serde_json::Value>> {
+        let state = self.load_state_cached();
         let pool_stats = self.gene_pool_stats().await;
 
         let mut status = FxHashMap::default();

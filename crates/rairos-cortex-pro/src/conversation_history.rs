@@ -610,9 +610,13 @@ impl ConversationHistory {
                     return true;
                 }
                 // Check turns content
+                // Optimization: try case-sensitive match first (fast path, no allocation)
+                // Only call to_lowercase() if case-sensitive search fails
                 for turn in &conv.turns {
                     for msg in &turn.messages {
-                        if msg.content.to_lowercase().contains(&query_lower) {
+                        if msg.content.contains(&query_lower)
+                            || msg.content.to_lowercase().contains(&query_lower)
+                        {
                             return true;
                         }
                     }

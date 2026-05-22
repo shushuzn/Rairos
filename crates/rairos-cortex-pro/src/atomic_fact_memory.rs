@@ -27,9 +27,9 @@
 //! ```
 
 use crate::utils::uuid_simple;
-use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
-use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, VecDeque};
 
 /// An atomic fact extracted from interaction
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -154,8 +154,8 @@ impl Outcome {
 
 /// Atomic Fact Memory System
 pub struct AtomicFactMemory {
-    /// Memory entries by tier
-    tiers: HashMap<MemoryTier, Vec<MemoryEntry>>,
+    /// Memory entries by tier (except Archive which uses bounded storage)
+    tiers: HashMap<MemoryTier, TierStorage>,
     /// Maximum entries per tier
     max_entries: HashMap<MemoryTier, usize>,
     /// Task type statistics
@@ -180,10 +180,19 @@ impl AtomicFactMemory {
         max_entries.insert(MemoryTier::Working, 10);
         max_entries.insert(MemoryTier::Episodic, 100);
         max_entries.insert(MemoryTier::Semantic, 500);
-        max_entries.insert(MemoryTier::Archive, usize::MAX);
+        max_entries.insert(MemoryTier::Archive, 10000); // Bounded to prevent memory leak
+
+        let mut tiers = HashMap::new();
+        tiers.insert(MemoryTier::Working, TierStorage::Unbounded(Vec::new()));
+        tiers.insert(MemoryTier::Episodic, TierStorage::Unbounded(Vec::new()));
+        tiers.insert(MemoryTier::Semantic, TierStorage::Unbounded(Vec::new()));
+        tiers.insert(
+            MemoryTier::Archive,
+            TierStorage::Bounded(BoundedArchive::new(10000)),
+        );
 
         Self {
-            tiers: HashMap::new(),
+            tiers,
             max_entries,
             task_stats: HashMap::new(),
             fact_index: HashMap::new(),
@@ -195,14 +204,35 @@ impl AtomicFactMemory {
         let tier = entry.tier;
 
         // Add to tier
-        self.tiers.entry(tier).or_default().push(entry.clone());
+        match self.tiers.get_mut(&tier) {
+            Some(TierStorage::Unbounded(v)) => v.push(entry.clone()),
+            Some(TierStorage::Bounded(b)) => {
+                b.push(entry.clone(), &mut self.fact_index, tier);
+            }
+            None => {
+                // Should not happen, but handle gracefully
+                let ts = if tier == MemoryTier::Archive {
+                    TierStorage::Bounded(BoundedArchive::new(
+                        *self.max_entries.get(&tier).unwrap_or(&10000),
+                    ))
+                } else {
+                    TierStorage::Unbounded(Vec::new())
+                };
+                self.tiers.insert(tier, ts);
+                if let Some(TierStorage::Bounded(b)) = self.tiers.get_mut(&tier) {
+                    b.push(entry.clone(), &mut self.fact_index, tier);
+                }
+            }
+        }
 
-        // Index facts
-        for fact in &entry.facts {
-            self.fact_index
-                .entry(fact.content.clone())
-                .or_default()
-                .push((entry.id.clone(), tier));
+        // Index facts for unbounded tiers (bounded already indexes in push)
+        if let Some(TierStorage::Unbounded(_)) = self.tiers.get(&tier) {
+            for fact in &entry.facts {
+                self.fact_index
+                    .entry(fact.content.clone())
+                    .or_default()
+                    .push((entry.id.clone(), tier));
+            }
         }
 
         // Update statistics
@@ -214,7 +244,15 @@ impl AtomicFactMemory {
 
     /// Update task statistics
     fn update_stats(&mut self, entry: &MemoryEntry) {
-        let stats = self.task_stats.entry(entry.facts.first().map(|f| f.task_type).unwrap_or(TaskType::General))
+        let stats = self
+            .task_stats
+            .entry(
+                entry
+                    .facts
+                    .first()
+                    .map(|f| f.task_type)
+                    .unwrap_or(TaskType::General),
+            )
             .or_insert_with(TaskStats::default);
 
         stats.total += 1;
@@ -225,29 +263,44 @@ impl AtomicFactMemory {
         }
 
         let total_utility: f32 = entry.facts.iter().map(|f| f.utility_score).sum();
-        stats.avg_utility = (stats.avg_utility * (stats.total - 1) as f32 + total_utility) / stats.total as f32;
+        stats.avg_utility =
+            (stats.avg_utility * (stats.total - 1) as f32 + total_utility) / stats.total as f32;
     }
 
     /// Prune tier if over capacity
     fn prune_tier(&mut self, tier: MemoryTier) {
-        if let Some(entries) = self.tiers.get_mut(&tier) {
-            let max = *self.max_entries.get(&tier).unwrap_or(&usize::MAX);
-            if entries.len() > max {
-                // Sort by last accessed and remove oldest
-                entries.sort_by(|a, b| b.last_accessed.cmp(&a.last_accessed));
-                entries.truncate(max);
+        if let Some(storage) = self.tiers.get_mut(&tier) {
+            let max = *self.max_entries.get(&tier).unwrap_or(&10000);
+            match storage {
+                TierStorage::Unbounded(entries) => {
+                    if entries.len() > max {
+                        // Sort by last accessed and remove oldest
+                        entries.sort_by(|a, b| b.last_accessed.cmp(&a.last_accessed));
+                        entries.truncate(max);
+                    }
+                }
+                TierStorage::Bounded(b) => {
+                    // Bounded already handles eviction in push()
+                    // Just ensure consistency
+                    b.evict_if_needed(&mut self.fact_index);
+                }
             }
         }
     }
 
     /// Retrieve relevant facts for a query
-    pub fn retrieve(&self, query: &str, task_type: Option<TaskType>, limit: usize) -> Vec<&AtomicFact> {
+    pub fn retrieve(
+        &self,
+        query: &str,
+        task_type: Option<TaskType>,
+        limit: usize,
+    ) -> Vec<&AtomicFact> {
         let query_lower = query.to_lowercase();
         let mut scored_facts: Vec<(&AtomicFact, f32)> = Vec::new();
 
         // Search all tiers
-        for (tier, entries) in &self.tiers {
-            for entry in entries {
+        for (tier, storage) in &self.tiers {
+            for entry in storage.iter() {
                 // Skip if task type doesn't match
                 if let Some(tt) = task_type {
                     if !entry.facts.iter().any(|f| f.task_type == tt) {
@@ -267,7 +320,11 @@ impl AtomicFactMemory {
         // Sort by score descending
         scored_facts.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
 
-        scored_facts.into_iter().take(limit).map(|(f, _)| f).collect()
+        scored_facts
+            .into_iter()
+            .take(limit)
+            .map(|(f, _)| f)
+            .collect()
     }
 
     /// Calculate relevance score
@@ -321,11 +378,17 @@ impl AtomicFactMemory {
     }
 
     /// Extract atomic facts from a trajectory
-    pub fn extract_facts(&self, trajectory: &str, outcome: Outcome, task_type: TaskType) -> Vec<AtomicFact> {
+    pub fn extract_facts(
+        &self,
+        trajectory: &str,
+        outcome: Outcome,
+        task_type: TaskType,
+    ) -> Vec<AtomicFact> {
         let mut facts = Vec::new();
 
         // Simple keyword-based extraction (in practice would use LLM)
-        let sentences: Vec<_> = trajectory.split(&['.', '!', '?'][..])
+        let sentences: Vec<_> = trajectory
+            .split(&['.', '!', '?'][..])
             .map(|s| s.trim())
             .filter(|s| !s.is_empty())
             .collect();
@@ -336,13 +399,22 @@ impl AtomicFactMemory {
             }
 
             // Check for key patterns
-            let contains_action = ["search", "find", "create", "update", "delete", "analyze", "plan"]
-                .iter()
-                .any(|kw| sentence.to_lowercase().contains(kw));
+            let contains_action = [
+                "search", "find", "create", "update", "delete", "analyze", "plan",
+            ]
+            .iter()
+            .any(|kw| sentence.to_lowercase().contains(kw));
 
-            let contains_result = ["found", "created", "success", "failed", "completed", "error"]
-                .iter()
-                .any(|kw| sentence.to_lowercase().contains(kw));
+            let contains_result = [
+                "found",
+                "created",
+                "success",
+                "failed",
+                "completed",
+                "error",
+            ]
+            .iter()
+            .any(|kw| sentence.to_lowercase().contains(kw));
 
             if contains_action || contains_result {
                 facts.push(AtomicFact {
@@ -369,7 +441,9 @@ impl AtomicFactMemory {
         let mut report = ConsolidationReport::default();
 
         // First, collect entries to promote (avoiding nested borrows)
-        let to_promote: Vec<MemoryEntry> = if let Some(episodic) = self.tiers.get(&MemoryTier::Episodic) {
+        let to_promote: Vec<MemoryEntry> = if let Some(TierStorage::Unbounded(episodic)) =
+            self.tiers.get(&MemoryTier::Episodic)
+        {
             episodic
                 .iter()
                 .filter(|e| e.outcome.is_success() && e.facts.iter().any(|f| f.utility_score > 0.7))
@@ -399,7 +473,9 @@ impl AtomicFactMemory {
                 .collect();
 
             // Get mutable reference and update
-            if let Some(episodic) = self.tiers.get_mut(&MemoryTier::Episodic) {
+            if let Some(TierStorage::Unbounded(episodic)) =
+                self.tiers.get_mut(&MemoryTier::Episodic)
+            {
                 // Remove promoted from episodic
                 episodic.retain(|e| {
                     !e.outcome.is_success() || !e.facts.iter().any(|f| f.utility_score > 0.7)
@@ -407,7 +483,11 @@ impl AtomicFactMemory {
             }
 
             // Push semantic entries
-            self.tiers.entry(MemoryTier::Semantic).or_default().extend(semantic_entries);
+            if let Some(TierStorage::Unbounded(semantic)) =
+                self.tiers.get_mut(&MemoryTier::Semantic)
+            {
+                semantic.extend(semantic_entries);
+            }
         }
 
         report
@@ -416,8 +496,8 @@ impl AtomicFactMemory {
     /// Get memory statistics
     pub fn stats(&self) -> MemorySystemStats {
         let mut tier_counts = HashMap::new();
-        for (tier, entries) in &self.tiers {
-            tier_counts.insert(*tier, entries.len());
+        for (tier, storage) in &self.tiers {
+            tier_counts.insert(*tier, storage.len());
         }
 
         MemorySystemStats {
@@ -449,6 +529,117 @@ pub struct MemorySystemStats {
     pub tier_counts: HashMap<MemoryTier, usize>,
     pub task_stats: HashMap<TaskType, TaskStats>,
     pub total_facts: usize,
+}
+
+/// Storage for a memory tier - either unbounded or bounded with LRU eviction
+enum TierStorage {
+    Unbounded(Vec<MemoryEntry>),
+    Bounded(BoundedArchive),
+}
+
+/// Bounded archive storage with LRU eviction
+struct BoundedArchive {
+    /// Entry IDs in LRU order (oldest first for eviction)
+    entry_ids: VecDeque<String>,
+    /// Actual entries keyed by ID
+    entries: HashMap<String, MemoryEntry>,
+    /// Maximum capacity
+    capacity: usize,
+}
+
+impl BoundedArchive {
+    fn new(capacity: usize) -> Self {
+        Self {
+            entry_ids: VecDeque::new(),
+            entries: HashMap::new(),
+            capacity,
+        }
+    }
+
+    fn push(
+        &mut self,
+        entry: MemoryEntry,
+        fact_index: &mut HashMap<String, Vec<(String, MemoryTier)>>,
+        tier: MemoryTier,
+    ) {
+        let entry_id = entry.id.clone();
+
+        // Index facts before adding
+        for fact in &entry.facts {
+            fact_index
+                .entry(fact.content.clone())
+                .or_default()
+                .push((entry_id.clone(), tier));
+        }
+
+        // Add to storage
+        self.entry_ids.push_back(entry_id.clone());
+        self.entries.insert(entry_id, entry);
+
+        // Evict if over capacity
+        self.evict_if_needed(fact_index);
+    }
+
+    fn evict_if_needed(&mut self, fact_index: &mut HashMap<String, Vec<(String, MemoryTier)>>) {
+        while self.entry_ids.len() > self.capacity {
+            if let Some(evicted_id) = self.entry_ids.pop_front() {
+                self.evict(&evicted_id, fact_index);
+            }
+        }
+    }
+
+    fn evict(
+        &mut self,
+        entry_id: &str,
+        fact_index: &mut HashMap<String, Vec<(String, MemoryTier)>>,
+    ) {
+        if let Some(entry) = self.entries.remove(entry_id) {
+            // Remove from fact index
+            for fact in &entry.facts {
+                if let Some(list) = fact_index.get_mut(&fact.content) {
+                    list.retain(|(eid, _)| eid != entry_id);
+                    if list.is_empty() {
+                        fact_index.remove(&fact.content);
+                    }
+                }
+            }
+        }
+    }
+
+    fn contains(&self, entry_id: &str) -> bool {
+        self.entry_ids.contains(entry_id)
+    }
+
+    fn len(&self) -> usize {
+        self.entries.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+}
+
+impl TierStorage {
+    fn iter(&self) -> impl Iterator<Item = &MemoryEntry> {
+        match self {
+            TierStorage::Unbounded(v) => v.iter(),
+            TierStorage::Bounded(b) => b.entries.values(),
+        }
+    }
+
+    fn iter_mut(&mut self) -> impl Iterator<Item = &mut MemoryEntry> {
+        match self {
+            TierStorage::Unbounded(v) => v.iter_mut(),
+            TierStorage::Bounded(b) => b.entries.values_mut(),
+        }
+    }
+
+    fn len(&self) -> usize {
+        match self {
+            TierStorage::Unbounded(v) => v.len(),
+            TierStorage::Bounded(b) => b.len(),
+        }
+    }
 }
 
 // =============================================================================
@@ -548,7 +739,8 @@ impl AtomicReasoner {
         // Check memory for similar queries
         let relevant = self.memory.retrieve(query, None, 3);
         if !relevant.is_empty() {
-            let avg_utility: f32 = relevant.iter().map(|f| f.utility_score).sum::<f32>() / relevant.len() as f32;
+            let avg_utility: f32 =
+                relevant.iter().map(|f| f.utility_score).sum::<f32>() / relevant.len() as f32;
             if avg_utility > 0.6 {
                 return CognitiveRoute {
                     route_type: RouteType::Retrieve,
@@ -577,17 +769,15 @@ mod tests {
 
         let entry = MemoryEntry {
             id: "test1".to_string(),
-            facts: vec![
-                AtomicFact {
-                    id: "f1".to_string(),
-                    content: "Search for papers on machine learning".to_string(),
-                    task_type: TaskType::Search,
-                    utility_score: 0.8,
-                    source_id: "test".to_string(),
-                    timestamp: Utc::now(),
-                    success_signal: Some(true),
-                },
-            ],
+            facts: vec![AtomicFact {
+                id: "f1".to_string(),
+                content: "Search for papers on machine learning".to_string(),
+                task_type: TaskType::Search,
+                utility_score: 0.8,
+                source_id: "test".to_string(),
+                timestamp: Utc::now(),
+                success_signal: Some(true),
+            }],
             trajectory: "User asked about ML papers".to_string(),
             outcome: Outcome::Success,
             tier: MemoryTier::Episodic,
@@ -608,17 +798,15 @@ mod tests {
         // Pre-populate memory with relevant facts so retrieval check passes
         memory.store(MemoryEntry {
             id: "e1".to_string(),
-            facts: vec![
-                AtomicFact {
-                    id: "f1".to_string(),
-                    content: "Artificial intelligence papers".to_string(),
-                    task_type: TaskType::Search,
-                    utility_score: 0.7,
-                    source_id: "s1".to_string(),
-                    timestamp: Utc::now(),
-                    success_signal: None,
-                },
-            ],
+            facts: vec![AtomicFact {
+                id: "f1".to_string(),
+                content: "Artificial intelligence papers".to_string(),
+                task_type: TaskType::Search,
+                utility_score: 0.7,
+                source_id: "s1".to_string(),
+                timestamp: Utc::now(),
+                success_signal: None,
+            }],
             trajectory: "AI papers search".to_string(),
             outcome: Outcome::Success,
             tier: MemoryTier::Semantic,

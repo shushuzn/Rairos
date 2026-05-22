@@ -7,6 +7,15 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
+/// Number of shards for lock sharding — must be power of 2
+const NUM_SHARDS: usize = 16;
+
+/// Shard index calculation — distributes tool names across shards
+#[inline]
+fn shard_index(name: &str) -> usize {
+    name.bytes().fold(0u8, |acc, b| acc.wrapping_add(b)) as usize & (NUM_SHARDS - 1)
+}
+
 /// Tool input schema
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ToolInputSchema {
@@ -153,7 +162,8 @@ pub trait ToolHandler: Send + Sync {
 // =============================================================================
 
 pub struct McpServer {
-    tools: Arc<RwLock<HashMap<String, Box<dyn ToolHandler>>>>,
+    /// Sharded tool handlers — each shard has its own lock to reduce contention
+    tools: Arc<Vec<RwLock<HashMap<String, Box<dyn ToolHandler>>>>>,
 }
 
 impl Default for McpServer {
@@ -165,26 +175,30 @@ impl Default for McpServer {
 impl McpServer {
     pub fn new() -> Self {
         Self {
-            tools: Arc::new(RwLock::new(HashMap::new())),
+            tools: Arc::new((0..NUM_SHARDS).map(|_| RwLock::new(HashMap::new())).collect()),
         }
     }
 
     pub async fn register<H: ToolHandler + 'static>(&self, handler: H) {
         let name = handler.name().to_string();
-        let mut tools = self.tools.write().await;
-        tools.insert(name, Box::new(handler));
+        let idx = shard_index(&name);
+        let mut shard = self.tools[idx].write().await;
+        shard.insert(name, Box::new(handler));
     }
 
     pub async fn list_tools(&self) -> Vec<Tool> {
-        let tools = self.tools.read().await;
+        let mut tools = Vec::new();
+        for shard in self.tools.iter() {
+            let guard = shard.read().await;
+            for h in guard.values() {
+                tools.push(Tool {
+                    name: h.name().to_string(),
+                    description: h.description().to_string(),
+                    input_schema: h.input_schema(),
+                });
+            }
+        }
         tools
-            .values()
-            .map(|h| Tool {
-                name: h.name().to_string(),
-                description: h.description().to_string(),
-                input_schema: h.input_schema(),
-            })
-            .collect()
     }
 
     pub async fn handle_request(&self, raw: &[u8]) -> Vec<u8> {
@@ -281,8 +295,9 @@ impl McpServer {
 
         let arguments = params.get("arguments").cloned().unwrap_or(Value::Null);
 
-        let tools = self.tools.read().await;
-        match tools.get(name) {
+        let idx = shard_index(name);
+        let shard = self.tools[idx].read().await;
+        match shard.get(name) {
             Some(handler) => match handler.call(arguments).await {
                 Ok(result) => vec![JsonRpcResponse::Success(JsonRpcSuccess {
                     jsonrpc: "2.0".into(),

@@ -325,21 +325,26 @@ impl ResearchQuery {
             // Get cached effective weight: quality * relevance * source_reliability (with decay)
             // Cache is refreshed only if >1 hour old (bug fixed: now checks cache_updated_at)
             let effective_weight = evidence.get_effective_weight(now);
+            // Apply Ebbinghaus retrieval reinforcement: each retrieval extends memory strength
+            // This implements the spacing effect - repeated access strengthens long-term memory
+            let retrieval_boost = evidence.retrieval_boost_factor();
+            let final_weight = effective_weight * retrieval_boost;
+
             // base_weight = quality * relevance (without source reliability)
             let base_weight = (evidence.quality as f64) * (evidence.relevance as f64);
-            // beta_update = base_weight * (1 - reliability) = base_weight - effective_weight
-            let beta_update = base_weight - effective_weight;
+            // beta_update = base_weight - final_weight
+            let beta_update = base_weight - final_weight;
 
             // Update Beta distribution based on evidence type
             match evidence.evidence_type {
                 EvidenceType::Direct | EvidenceType::Supporting => {
-                    beta.update_with_alpha_beta(effective_weight, beta_update);
+                    beta.update_with_alpha_beta(final_weight, beta_update);
                 }
                 EvidenceType::Contradicting => {
-                    beta.update_with_alpha_beta(beta_update, effective_weight);
+                    beta.update_with_alpha_beta(beta_update, final_weight);
                 }
                 EvidenceType::Contextual => {
-                    beta.update_with_alpha_beta(effective_weight * 0.5, beta_update * 0.5);
+                    beta.update_with_alpha_beta(final_weight * 0.5, beta_update * 0.5);
                 }
             }
         }
@@ -418,6 +423,9 @@ pub struct EvidenceItem {
     last_accessed_at: Option<DateTime<Utc>>,
     /// IDs of evidence co-activated with this evidence (Hebbian association)
     co_activated_with: Vec<String>,
+    /// Cached tokenized content for O(1) similarity computation
+    /// Avoids O(n²) * O(w) re-tokenization in find_contradictions
+    cached_content_tokens: Option<std::collections::HashSet<String>>,
 }
 
 /// Type of evidence collected.
@@ -492,6 +500,20 @@ impl EvidenceItem {
         }
     }
 
+    /// Get cached content tokens for O(1) similarity computation.
+    /// Computes and caches on first call to avoid repeated tokenization.
+    pub fn get_content_tokens(&mut self) -> &std::collections::HashSet<String> {
+        if self.cached_content_tokens.is_none() {
+            let tokens: std::collections::HashSet<String> = self.content
+                .to_lowercase()
+                .split_whitespace()
+                .map(|s| s.to_string())
+                .collect();
+            self.cached_content_tokens = Some(tokens);
+        }
+        self.cached_content_tokens.as_ref().unwrap()
+    }
+
     /// Get evidence IDs that are Hebbian-associated with this evidence.
     pub fn get_co_activated_ids(&self) -> &[String] {
         &self.co_activated_with
@@ -520,6 +542,7 @@ impl EvidenceItem {
             access_count: 0,
             last_accessed_at: None,
             co_activated_with: Vec::new(),
+            cached_content_tokens: None,
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -543,6 +566,7 @@ impl EvidenceItem {
             access_count: 0,
             last_accessed_at: None,
             co_activated_with: Vec::new(),
+            cached_content_tokens: None,
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -566,6 +590,7 @@ impl EvidenceItem {
             access_count: 0,
             last_accessed_at: None,
             co_activated_with: Vec::new(),
+            cached_content_tokens: None,
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -589,6 +614,7 @@ impl EvidenceItem {
             access_count: 0,
             last_accessed_at: None,
             co_activated_with: Vec::new(),
+            cached_content_tokens: None,
         };
         item.cached_effective_weight = item.compute_effective_weight();
         item.cache_updated_at = item.collected_at;
@@ -868,13 +894,25 @@ impl EvidenceGapTracker {
     /// Find potential contradictions in evidence.
     /// Contradictions are same factual claim from sources with opposing evidence types.
     /// Based on BMB (Belief Maintenance Benchmark) patterns.
-    pub fn find_contradictions(&self, query_id: &str) -> Option<Vec<Contradiction>> {
-        let query = self.get_query(query_id)?;
+    /// OPTIMIZATION: Pre-compute content tokens once (O(n)) instead of O(n²) repeated tokenization.
+    pub fn find_contradictions(&mut self, query_id: &str) -> Option<Vec<Contradiction>> {
+        let query = self.get_query_mut(query_id)?;
         let mut contradictions = Vec::new();
 
-        // Group evidence by content similarity (simple keyword overlap)
-        for (i, e1) in query.evidence.iter().enumerate() {
-            for e2 in query.evidence.iter().skip(i + 1) {
+        // First pass: Pre-compute tokens for all evidence (O(n))
+        // This mutably borrows each evidence item to cache its tokens
+        let n = query.evidence.len();
+        for i in 0..n {
+            query.evidence[i].get_content_tokens();
+        }
+
+        // Second pass: Compare pairs using cached tokens (O(n²) comparisons, O(1) per comparison)
+        // Now we can immutably borrow since tokens are already cached
+        for i in 0..n {
+            for j in (i + 1)..n {
+                let e1 = &query.evidence[i];
+                let e2 = &query.evidence[j];
+
                 // Check if evidence types are opposing
                 let are_contradicting = matches!(
                     (&e1.evidence_type, &e2.evidence_type),
@@ -882,12 +920,19 @@ impl EvidenceGapTracker {
                         | (EvidenceType::Contradicting, EvidenceType::Supporting)
                 );
 
-                if are_contradicting && Self::content_similarity(&e1.content, &e2.content) > 0.7 {
-                    contradictions.push(Contradiction {
-                        evidence_1: e1.id.clone(),
-                        evidence_2: e2.id.clone(),
-                        similarity: Self::content_similarity(&e1.content, &e2.content),
-                    });
+                if are_contradicting {
+                    // Use cached tokens directly from evidence items
+                    let similarity = Self::content_similarity_from_tokens(
+                        e1.cached_content_tokens.as_ref().unwrap(),
+                        e2.cached_content_tokens.as_ref().unwrap()
+                    );
+                    if similarity > 0.7 {
+                        contradictions.push(Contradiction {
+                            evidence_1: e1.id.clone(),
+                            evidence_2: e2.id.clone(),
+                            similarity,
+                        });
+                    }
                 }
             }
         }
@@ -908,8 +953,13 @@ impl EvidenceGapTracker {
             .map(|s| s.to_string())
             .collect();
 
-        let intersection = words1.intersection(&words2).count();
-        let union = words1.union(&words2).count();
+        Self::content_similarity_from_tokens(&words1, &words2)
+    }
+
+    /// Content similarity from pre-computed token sets (O(1) per call).
+    fn content_similarity_from_tokens(words1: &std::collections::HashSet<String>, words2: &std::collections::HashSet<String>) -> f32 {
+        let intersection = words1.intersection(words2).count();
+        let union = words1.union(words2).count();
 
         if union == 0 {
             0.0

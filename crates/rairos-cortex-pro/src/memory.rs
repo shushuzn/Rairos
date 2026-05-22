@@ -23,6 +23,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, VecDeque};
+use std::hash::Hash;
+use std::borrow::{Borrow, Cow};
 use std::fmt::Debug;
 use std::sync::RwLock;
 use chrono::{DateTime, Utc};
@@ -32,6 +34,105 @@ use crate::utils::uuid_simple;
 /// Maximum entries in each memory store
 const MAX_IDEATION_ENTRIES: usize = 1000;
 const MAX_EXPERIMENTATION_ENTRIES: usize = 500;
+
+/// Bounded cache with simple LRU eviction (FIFO - oldest entry removed first)
+/// Used to prevent unbounded memory growth in HashMaps
+struct BoundedCache<K, V> {
+    map: HashMap<K, V>,
+    order: Vec<K>, // Most recent at end (LRU: end = most recently used)
+    capacity: usize,
+}
+
+impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
+    fn new(capacity: usize) -> Self {
+        Self {
+            map: HashMap::new(),
+            order: Vec::new(),
+            capacity,
+        }
+    }
+
+    fn insert(&mut self, k: K, v: V) {
+        // If key exists, update and move to end (most recent)
+        if self.map.contains_key(&k) {
+            self.map.insert(k.clone(), v);
+            // Remove old position and push to end
+            if let Some(pos) = self.order.iter().position(|x| x == &k) {
+                self.order.remove(pos);
+            }
+            self.order.push(k);
+            return;
+        }
+
+        // Evict oldest if at capacity
+        if self.map.len() >= self.capacity {
+            if let Some(oldest) = self.order.first() {
+                self.map.remove(oldest);
+                self.order.remove(0);
+            }
+        }
+
+        self.map.insert(k.clone(), v);
+        self.order.push(k);
+    }
+
+    fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq,
+    {
+        self.map.get(k)
+    }
+
+    fn get_mut<Q: ?Sized>(&mut self, k: &Q) -> Option<&mut V>
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq,
+    {
+        self.map.get_mut(k)
+    }
+
+    fn remove<Q: ?Sized>(&mut self, k: &Q) -> Option<V>
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq,
+    {
+        if let Some(v) = self.map.remove(k) {
+            if let Some(pos) = self.order.iter().position(|x| x.borrow() == k) {
+                self.order.remove(pos);
+            }
+            return Some(v);
+        }
+        None
+    }
+
+    fn len(&self) -> usize {
+        self.map.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+
+    fn contains_key(&self, k: &K) -> bool {
+        self.map.contains_key(k)
+    }
+
+    fn clear(&mut self) {
+        self.map.clear();
+        self.order.clear();
+    }
+
+    fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+        self.map.iter()
+    }
+}
+
+impl<K: Eq + Hash + Clone, V> Default for BoundedCache<K, V> {
+    fn default() -> Self {
+        Self::new(1000)
+    }
+}
 
 /// A single ideation memory entry
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -134,14 +235,28 @@ impl MemoryBank {
         experimentation.push_front(entry);
     }
 
-    /// Get all ideation entries
-    pub fn get_ideation(&self) -> Vec<IdeationEntry> {
-        self.ideation.read().unwrap().iter().cloned().collect()
+    /// Get all ideation entries (zero-copy read via Cow)
+    pub fn get_ideation(&self) -> Cow<'_, [IdeationEntry]> {
+        let deque = self.ideation.read().unwrap();
+        let (front, back) = deque.as_slices();
+        if back.is_empty() {
+            Cow::Borrowed(front)
+        } else {
+            // VecDeque is wrapped - need to clone to get contiguous memory
+            Cow::Owned(deque.iter().cloned().collect())
+        }
     }
 
-    /// Get all experimentation entries
-    pub fn get_experimentation(&self) -> Vec<ExperimentationEntry> {
-        self.experimentation.read().unwrap().iter().cloned().collect()
+    /// Get all experimentation entries (zero-copy read via Cow)
+    pub fn get_experimentation(&self) -> Cow<'_, [ExperimentationEntry]> {
+        let deque = self.experimentation.read().unwrap();
+        let (front, back) = deque.as_slices();
+        if back.is_empty() {
+            Cow::Borrowed(front)
+        } else {
+            // VecDeque is wrapped - need to clone to get contiguous memory
+            Cow::Owned(deque.iter().cloned().collect())
+        }
     }
 
     /// Get active ideation directions (for hypothesis generation)
@@ -562,9 +677,9 @@ pub struct TieredMemory {
     /// Episodic memory (past experiences)
     episodic: RwLock<VecDeque<TieredMemoryEntry>>,
     /// Tool memory (tool usage patterns)
-    tool: RwLock<HashMap<String, ToolMemoryEntry>>,
+    tool: RwLock<BoundedCache<String, ToolMemoryEntry>>,
     /// Semantic memory (domain knowledge)
-    semantic: RwLock<HashMap<String, String>>,
+    semantic: RwLock<BoundedCache<String, String>>,
     /// Maximum entries per tier
     max_working: usize,
     max_episodic: usize,
@@ -649,8 +764,8 @@ impl TieredMemory {
         Self {
             working: RwLock::new(VecDeque::with_capacity(100)),
             episodic: RwLock::new(VecDeque::with_capacity(500)),
-            tool: RwLock::new(HashMap::new()),
-            semantic: RwLock::new(HashMap::new()),
+            tool: RwLock::new(BoundedCache::new(1000)), // Tool registry: 1000 entries max
+            semantic: RwLock::new(BoundedCache::new(10000)), // Semantic memory: 10000 entries max
             max_working: 50,
             max_episodic: 200,
         }
@@ -699,8 +814,13 @@ impl TieredMemory {
     /// Record tool usage
     pub fn record_tool_usage(&self, tool_name: &str, success: bool, exec_time_ms: f64, reward: f32) {
         let mut tool_mem = self.tool.write().unwrap();
-        let entry = tool_mem.entry(tool_name.to_string()).or_insert_with(|| ToolMemoryEntry::new(tool_name));
-        entry.record_usage(success, exec_time_ms, reward);
+        if let Some(entry) = tool_mem.get_mut(&tool_name.to_string()) {
+            entry.record_usage(success, exec_time_ms, reward);
+        } else {
+            let mut new_entry = ToolMemoryEntry::new(tool_name);
+            new_entry.record_usage(success, exec_time_ms, reward);
+            tool_mem.insert(tool_name.to_string(), new_entry);
+        }
     }
 
     /// Store semantic knowledge

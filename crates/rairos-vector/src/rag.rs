@@ -466,7 +466,87 @@ mod tests {
     use crate::embedding::Embedder;
     use crate::EmbeddingModel;
     use std::collections::HashMap;
+    use std::hash::Hash;
     use std::sync::RwLock;
+
+    /// Bounded cache with simple LRU eviction (FIFO - oldest entry removed first)
+    /// Used to prevent unbounded memory growth in HashMaps
+    struct BoundedCache<K, V> {
+        map: HashMap<K, V>,
+        order: Vec<K>, // Most recent at end (LRU: end = most recently used)
+        capacity: usize,
+    }
+
+    impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
+        fn new(capacity: usize) -> Self {
+            Self {
+                map: HashMap::new(),
+                order: Vec::new(),
+                capacity,
+            }
+        }
+
+        fn insert(&mut self, k: K, v: V) {
+            // If key exists, update and move to end (most recent)
+            if let Some(old_val) = self.map.get(&k).copied() {
+                self.map.insert(k.clone(), v);
+                // Remove old position and push to end
+                if let Some(pos) = self.order.iter().position(|x| x == &k) {
+                    self.order.remove(pos);
+                }
+                self.order.push(k);
+                return;
+            }
+
+            // Evict oldest if at capacity
+            if self.map.len() >= self.capacity {
+                if let Some(oldest) = self.order.first() {
+                    self.map.remove(oldest);
+                    self.order.remove(0);
+                }
+            }
+
+            self.map.insert(k.clone(), v);
+            self.order.push(k);
+        }
+
+        fn get(&self, k: &K) -> Option<&V> {
+            self.map.get(k)
+        }
+
+        fn remove(&mut self, k: &K) -> Option<V> {
+            if let Some(v) = self.map.remove(k) {
+                if let Some(pos) = self.order.iter().position(|x| x == k) {
+                    self.order.remove(pos);
+                }
+                return Some(v);
+            }
+            None
+        }
+
+        fn len(&self) -> usize {
+            self.map.len()
+        }
+
+        fn is_empty(&self) -> bool {
+            self.map.is_empty()
+        }
+
+        fn contains_key(&self, k: &K) -> bool {
+            self.map.contains_key(k)
+        }
+
+        fn clear(&mut self) {
+            self.map.clear();
+            self.order.clear();
+        }
+    }
+
+    impl<K: Eq + Hash + Clone, V> Default for BoundedCache<K, V> {
+        fn default() -> Self {
+            Self::new(1000)
+        }
+    }
 
     /// Mock LLM client for testing
     struct MockLlmClient {
@@ -528,21 +608,21 @@ mod tests {
 
     /// Mock vector store for testing
     struct MockVectorStore {
-        vectors: RwLock<HashMap<String, (Vec<f32>, Option<serde_json::Value>)>>,
+        vectors: RwLock<BoundedCache<String, (Vec<f32>, Option<serde_json::Value>)>>,
         dimensions: RwLock<usize>,
     }
 
     impl MockVectorStore {
         fn new() -> Self {
             Self {
-                vectors: RwLock::new(HashMap::new()),
+                vectors: RwLock::new(BoundedCache::new(10000)), // Vector storage: 10000 entries max
                 dimensions: RwLock::new(4), // Default dimensions for tests
             }
         }
 
         fn with_dimensions(dimensions: usize) -> Self {
             Self {
-                vectors: RwLock::new(HashMap::new()),
+                vectors: RwLock::new(BoundedCache::new(10000)),
                 dimensions: RwLock::new(dimensions),
             }
         }

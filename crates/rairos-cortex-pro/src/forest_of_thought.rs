@@ -282,7 +282,7 @@ impl ForestReasoner {
             let active_ids: Vec<_> = tree.nodes
                 .values()
                 .filter(|n| n.active && n.depth < self.config.max_depth as u32)
-                .map(|n| n.id.clone())
+                .map(|n| n.id.as_str())
                 .collect();
 
             for parent_id in active_ids {
@@ -501,15 +501,22 @@ fn generate_child_thought(parent_content: &str, node_type: NodeType, branch: usi
 fn calculate_thought_score(content: &str, node_type: NodeType) -> f32 {
     let mut score: f32 = 0.5;
 
-    // Bonus for certain keywords
-    let content_lower = content.to_lowercase();
-    if content_lower.contains("however") || content_lower.contains("but") {
+    // Bonus for certain keywords - use case-insensitive check without allocation
+    // by checking both cases for first char and then using contains
+    let has转折 = content.contains("however") || content.contains("However")
+        || content.contains("but") || content.contains("But");
+    let has结论 = content.contains("therefore") || content.contains("Therefore")
+        || content.contains("conclude") || content.contains("Conclude");
+    let has原因 = content.contains("because") || content.contains("Because")
+        || content.contains("since") || content.contains("Since");
+
+    if has转折 {
         score += 0.1;
     }
-    if content_lower.contains("therefore") || content_lower.contains("conclude") {
+    if has结论 {
         score += 0.15;
     }
-    if content_lower.contains("because") || content_lower.contains("since") {
+    if has原因 {
         score += 0.1;
     }
 

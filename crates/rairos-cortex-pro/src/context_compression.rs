@@ -253,10 +253,15 @@ impl ContextCompressor {
             }
         }
 
-        // Sort back to original order
+        // Sort back to original order - use pre-computed index map for O(1) lookups
+        let index_map: std::collections::HashMap<&str, usize> = chunks
+            .iter()
+            .enumerate()
+            .map(|(i, c)| (c.as_str(), i))
+            .collect();
         selected.sort_by(|a, b| {
-            let idx_a = chunks.iter().position(|c| c == &a.content).unwrap_or(0);
-            let idx_b = chunks.iter().position(|c| c == &b.content).unwrap_or(0);
+            let idx_a = index_map.get(a.content.as_str()).copied().unwrap_or(0);
+            let idx_b = index_map.get(b.content.as_str()).copied().unwrap_or(0);
             idx_a.cmp(&idx_b)
         });
 

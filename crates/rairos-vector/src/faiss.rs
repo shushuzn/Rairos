@@ -9,9 +9,106 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::hash::Hash;
 use std::sync::RwLock;
+use std::borrow::Borrow;
 use crate::client::{DistanceMetric, SearchHit, VectorStore, VectorStoreConfig};
 use crate::error::VectorError;
+
+/// Bounded cache with simple LRU eviction (FIFO - oldest entry removed first)
+/// Used to prevent unbounded memory growth in HashMaps
+struct BoundedCache<K, V> {
+    map: HashMap<K, V>,
+    order: Vec<K>, // Most recent at end (LRU: end = most recently used)
+    capacity: usize,
+}
+
+impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
+    fn new(capacity: usize) -> Self {
+        Self {
+            map: HashMap::new(),
+            order: Vec::new(),
+            capacity,
+        }
+    }
+
+    fn insert(&mut self, k: K, v: V) {
+        // If key exists, update and move to end (most recent)
+        if self.map.contains_key(&k) {
+            self.map.insert(k.clone(), v);
+            // Remove old position and push to end
+            if let Some(pos) = self.order.iter().position(|x| x == &k) {
+                self.order.remove(pos);
+            }
+            self.order.push(k);
+            return;
+        }
+
+        // Evict oldest if at capacity
+        if self.map.len() >= self.capacity {
+            if let Some(oldest) = self.order.first() {
+                self.map.remove(oldest);
+                self.order.remove(0);
+            }
+        }
+
+        self.map.insert(k.clone(), v);
+        self.order.push(k);
+    }
+
+    fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq,
+    {
+        self.map.get(k)
+    }
+
+    fn remove<Q: ?Sized>(&mut self, k: &Q) -> Option<V>
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq,
+    {
+        if let Some(v) = self.map.remove(k) {
+            if let Some(pos) = self.order.iter().position(|x| x.borrow() == k) {
+                self.order.remove(pos);
+            }
+            return Some(v);
+        }
+        None
+    }
+
+    fn len(&self) -> usize {
+        self.map.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+
+    fn contains_key<Q: ?Sized>(&self, k: &Q) -> bool
+    where
+        K: Borrow<Q>,
+        Q: Hash + Eq,
+    {
+        self.map.contains_key(k)
+    }
+
+    fn clear(&mut self) {
+        self.map.clear();
+        self.order.clear();
+    }
+
+    fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+        self.map.iter()
+    }
+}
+
+impl<K: Eq + Hash + Clone, V> Default for BoundedCache<K, V> {
+    fn default() -> Self {
+        Self::new(1000)
+    }
+}
 
 /// FAISS index types
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -56,8 +153,8 @@ impl Default for FaissStoreConfig {
 /// calling Python FAISS via subprocess.
 #[allow(dead_code)]
 pub struct FaissStore {
-    vectors: RwLock<HashMap<String, Vec<f32>>>,
-    payloads: RwLock<HashMap<String, serde_json::Value>>,
+    vectors: RwLock<BoundedCache<String, Vec<f32>>>,
+    payloads: RwLock<BoundedCache<String, serde_json::Value>>,
     dimensions: RwLock<usize>,
     distance_metric: RwLock<DistanceMetric>,
     config: FaissStoreConfig,
@@ -66,8 +163,8 @@ pub struct FaissStore {
 impl FaissStore {
     pub fn new() -> Self {
         Self {
-            vectors: RwLock::new(HashMap::new()),
-            payloads: RwLock::new(HashMap::new()),
+            vectors: RwLock::new(BoundedCache::new(10000)), // Vector storage: 10000 entries max
+            payloads: RwLock::new(BoundedCache::new(10000)), // Payload storage: 10000 entries max
             dimensions: RwLock::new(0),
             distance_metric: RwLock::new(DistanceMetric::Cosine),
             config: FaissStoreConfig::default(),
@@ -76,8 +173,8 @@ impl FaissStore {
 
     pub fn with_config(config: FaissStoreConfig) -> Self {
         Self {
-            vectors: RwLock::new(HashMap::new()),
-            payloads: RwLock::new(HashMap::new()),
+            vectors: RwLock::new(BoundedCache::new(10000)),
+            payloads: RwLock::new(BoundedCache::new(10000)),
             dimensions: RwLock::new(0),
             distance_metric: RwLock::new(DistanceMetric::Cosine),
             config,
