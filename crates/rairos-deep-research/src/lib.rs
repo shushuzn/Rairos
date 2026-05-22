@@ -10,7 +10,7 @@
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use parking_lot::RwLock;
 use thiserror::Error;
@@ -155,6 +155,12 @@ pub struct Paper {
     pub primary_category: Option<String>,
     #[serde(default)]
     pub categories: Option<String>,
+    /// References cited by this paper
+    #[serde(default)]
+    pub references: Vec<String>,
+    /// Citing papers (populated during citation chain analysis)
+    #[serde(default)]
+    pub cited_by: Vec<String>,
 }
 
 // ============================================================================
@@ -473,6 +479,482 @@ impl GapType {
 }
 
 // ============================================================================
+// Citation Chain Analyzer
+// ============================================================================
+
+/// A citation relationship between two papers.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CitationEdge {
+    pub from: String,  // citing paper
+    pub to: String,    // cited paper
+    pub context: String, // surrounding text mentioning the citation
+}
+
+/// A citation chain for traversing paper relationships.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CitationChain {
+    /// All papers in the chain
+    pub papers: Vec<Paper>,
+    /// Citation edges (from -> to)
+    pub edges: Vec<CitationEdge>,
+    /// Paper UID -> index in papers vector
+    paper_index: std::collections::HashMap<String, usize>,
+}
+
+impl CitationChain {
+    /// Create a new empty citation chain.
+    pub fn new() -> Self {
+        Self {
+            papers: Vec::new(),
+            edges: Vec::new(),
+            paper_index: std::collections::HashMap::new(),
+        }
+    }
+
+    /// Add a paper to the chain.
+    pub fn add_paper(&mut self, paper: Paper) {
+        let uid = paper.uid.clone();
+        if !self.paper_index.contains_key(&uid) {
+            let idx = self.papers.len();
+            self.paper_index.insert(uid.clone(), idx);
+            self.papers.push(paper);
+        }
+    }
+
+    /// Add a citation edge.
+    pub fn add_citation(&mut self, from: &str, to: &str, context: &str) {
+        // Ensure both papers exist in the chain
+        if !self.paper_index.contains_key(from) {
+            return;
+        }
+        if !self.paper_index.contains_key(to) {
+            return;
+        }
+        self.edges.push(CitationEdge {
+            from: from.to_string(),
+            to: to.to_string(),
+            context: context.to_string(),
+        });
+    }
+
+    /// Get papers that a given paper cites.
+    pub fn get_references(&self, paper_uid: &str) -> Vec<&Paper> {
+        let Some(&idx) = self.paper_index.get(paper_uid) else {
+            return Vec::new();
+        };
+        self.edges
+            .iter()
+            .filter(|e| e.from == paper_uid)
+            .filter_map(|e| self.paper_index.get(&e.to))
+            .filter_map(|&idx| self.papers.get(idx))
+            .collect()
+    }
+
+    /// Get papers that cite a given paper.
+    pub fn get_cited_by(&self, paper_uid: &str) -> Vec<&Paper> {
+        let Some(&idx) = self.paper_index.get(paper_uid) else {
+            return Vec::new();
+        };
+        self.edges
+            .iter()
+            .filter(|e| e.to == paper_uid)
+            .filter_map(|e| self.paper_index.get(&e.from))
+            .filter_map(|&idx| self.papers.get(idx))
+            .collect()
+    }
+
+    /// Find the shortest path between two papers via citations.
+    pub fn find_path(&self, from: &str, to: &str) -> Option<Vec<String>> {
+        use std::collections::{HashSet, VecDeque};
+
+        if !self.paper_index.contains_key(from) || !self.paper_index.contains_key(to) {
+            return None;
+        }
+
+        let mut queue: VecDeque<(String, Vec<String>)> = VecDeque::new();
+        let mut visited: HashSet<String> = HashSet::new();
+
+        queue.push_back((from.to_string(), vec![from.to_string()]));
+        visited.insert(from.to_string());
+
+        while let Some((current, path)) = queue.pop_front() {
+            if current == to {
+                return Some(path);
+            }
+
+            for cited in self.get_references(&current) {
+                let uid = &cited.uid;
+                if !visited.contains(uid) {
+                    visited.insert(uid.clone());
+                    let mut new_path = path.clone();
+                    new_path.push(uid.clone());
+                    queue.push_back((uid.clone(), new_path));
+                }
+            }
+        }
+
+        None
+    }
+
+    /// Get citation depth (how many papers deep does this paper influence).
+    pub fn citation_depth(&self, paper_uid: &str) -> usize {
+        use std::collections::{HashSet, VecDeque};
+
+        let mut visited: HashSet<String> = HashSet::new();
+        let mut queue: VecDeque<(String, usize)> = VecDeque::new();
+
+        queue.push_back((paper_uid.to_string(), 0));
+        visited.insert(paper_uid.to_string());
+
+        let mut max_depth = 0;
+
+        while let Some((current, depth)) = queue.pop_front() {
+            max_depth = max_depth.max(depth);
+            for cited in self.get_references(&current) {
+                if !visited.contains(&cited.uid) {
+                    visited.insert(cited.uid.clone());
+                    queue.push_back((cited.uid.clone(), depth + 1));
+                }
+            }
+        }
+
+        max_depth
+    }
+}
+
+impl Default for CitationChain {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+// ============================================================================
+// Memory Context for Agents
+// ============================================================================
+
+/// A memory entry in the agent's context.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MemoryEntry {
+    pub id: String,
+    pub content: String,
+    pub memory_type: MemoryType,
+    pub timestamp: f64,
+    pub importance: f64,
+    pub tags: Vec<String>,
+    /// References to paper UIDs related to this memory
+    #[serde(default)]
+    pub related_papers: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+pub enum MemoryType {
+    /// Fact learned from a paper
+    Fact,
+    /// Gap identified during research
+    Gap,
+    /// Research finding or conclusion
+    Finding,
+    /// Question to explore further
+    Question,
+    /// User preference or instruction
+    Preference,
+    /// Error or failure encountered
+    Error,
+}
+
+impl MemoryEntry {
+    pub fn new(content: &str, memory_type: MemoryType) -> Self {
+        Self {
+            id: uuid_v4(),
+            content: content.to_string(),
+            memory_type,
+            timestamp: chrono::Utc::now().timestamp_millis() as f64 / 1000.0,
+            importance: 0.5,
+            tags: Vec::new(),
+            related_papers: Vec::new(),
+        }
+    }
+
+    /// Create a fact memory.
+    pub fn fact(content: &str) -> Self {
+        Self::new(content, MemoryType::Fact)
+    }
+
+    /// Create a gap memory.
+    pub fn gap(content: &str) -> Self {
+        Self::new(content, MemoryType::Gap)
+    }
+
+    /// Create a finding memory.
+    pub fn finding(content: &str) -> Self {
+        Self::new(content, MemoryType::Finding)
+    }
+
+    /// Create a question memory.
+    pub fn question(content: &str) -> Self {
+        Self::new(content, MemoryType::Question)
+    }
+
+    /// Set importance score (0.0 to 1.0).
+    pub fn with_importance(mut self, importance: f64) -> Self {
+        self.importance = importance.clamp(0.0, 1.0);
+        self
+    }
+
+    /// Add tags to this memory.
+    pub fn with_tags(mut self, tags: &[&str]) -> Self {
+        self.tags = tags.iter().map(|s| s.to_string()).collect();
+        self
+    }
+
+    /// Add related paper.
+    pub fn with_paper(mut self, paper_uid: &str) -> Self {
+        self.related_papers.push(paper_uid.to_string());
+        self
+    }
+}
+
+/// Simple UUID generator (minimal implementation).
+fn uuid_v4() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default();
+    format!(
+        "{:08x}-{:04x}-4{:03x}-{:04x}-{:012x}",
+        now.as_secs() as u32,
+        (now.subsec_nanos() >> 16) as u16,
+        rand_u16() & 0x0fff,
+        (rand_u16() & 0x3fff) | 0x8000,
+        now.as_nanos()
+    )
+}
+
+fn rand_u16() -> u16 {
+    use std::collections::hash_map::RandomState;
+    use std::hash::{BuildHasher, Hasher};
+    RandomState::new().build_hasher().finish() as u16
+}
+
+/// Memory context for the research agent.
+///
+/// Provides semantic memory storage and retrieval, allowing the agent
+/// to remember facts, gaps, and findings across research sessions.
+pub struct MemoryContext {
+    /// All memory entries
+    entries: Vec<MemoryEntry>,
+    /// Index for fast lookup by type
+    type_index: std::collections::HashMap<MemoryType, Vec<usize>>,
+    /// Tag inverted index
+    tag_index: std::collections::HashMap<String, Vec<usize>>,
+}
+
+impl MemoryContext {
+    /// Create a new empty memory context.
+    pub fn new() -> Self {
+        Self {
+            entries: Vec::new(),
+            type_index: std::collections::HashMap::new(),
+            tag_index: std::collections::HashMap::new(),
+        }
+    }
+
+    /// Add a memory entry.
+    pub fn add(&mut self, entry: MemoryEntry) {
+        let idx = self.entries.len();
+        self.entries.push(entry.clone());
+
+        // Index by type
+        self.type_index
+            .entry(entry.memory_type.clone())
+            .or_default()
+            .push(idx);
+
+        // Index by tags
+        for tag in &entry.tags {
+            self.tag_index.entry(tag.clone()).or_default().push(idx);
+        }
+    }
+
+    /// Add a fact memory.
+    pub fn add_fact(&mut self, content: &str) {
+        self.add(MemoryEntry::fact(content));
+    }
+
+    /// Add a gap memory.
+    pub fn add_gap(&mut self, content: &str) {
+        self.add(MemoryEntry::gap(content));
+    }
+
+    /// Add a finding memory.
+    pub fn add_finding(&mut self, content: &str) {
+        self.add(MemoryEntry::finding(content));
+    }
+
+    /// Add a question memory.
+    pub fn add_question(&mut self, content: &str) {
+        self.add(MemoryEntry::question(content));
+    }
+
+    /// Get all memories of a specific type.
+    pub fn get_by_type(&self, memory_type: &MemoryType) -> Vec<&MemoryEntry> {
+        self.type_index
+            .get(memory_type)
+            .map(|indices| indices.iter().filter_map(|&i| self.entries.get(i)).collect())
+            .unwrap_or_default()
+    }
+
+    /// Get all facts.
+    pub fn facts(&self) -> Vec<&MemoryEntry> {
+        self.get_by_type(&MemoryType::Fact)
+    }
+
+    /// Get all gaps.
+    pub fn gaps(&self) -> Vec<&MemoryEntry> {
+        self.get_by_type(&MemoryType::Gap)
+    }
+
+    /// Get all findings.
+    pub fn findings(&self) -> Vec<&MemoryEntry> {
+        self.get_by_type(&MemoryType::Finding)
+    }
+
+    /// Get all questions.
+    pub fn questions(&self) -> Vec<&MemoryEntry> {
+        self.get_by_type(&MemoryType::Question)
+    }
+
+    /// Get memories by tag.
+    pub fn get_by_tag(&self, tag: &str) -> Vec<&MemoryEntry> {
+        self.tag_index
+            .get(tag)
+            .map(|indices| indices.iter().filter_map(|&i| self.entries.get(i)).collect())
+            .unwrap_or_default()
+    }
+
+    /// Get memories related to a paper.
+    pub fn get_by_paper(&self, paper_uid: &str) -> Vec<&MemoryEntry> {
+        self.entries
+            .iter()
+            .filter(|e| e.related_papers.contains(&paper_uid.to_string()))
+            .collect()
+    }
+
+    /// Semantic search over memories using keyword matching.
+    ///
+    /// Returns memories whose content contains any of the query keywords,
+    /// sorted by importance and recency.
+    pub fn search(&self, query: &str, limit: usize) -> Vec<&MemoryEntry> {
+        let keywords: HashSet<String> = query
+            .to_lowercase()
+            .split_whitespace()
+            .filter(|w| w.len() > 2)
+            .map(|s| s.to_string())
+            .collect();
+
+        if keywords.is_empty() {
+            return Vec::new();
+        }
+
+        let mut scored: Vec<(&MemoryEntry, f64)> = self
+            .entries
+            .iter()
+            .filter_map(|entry| {
+                let content_lower = entry.content.to_lowercase();
+                let match_count: usize = keywords
+                    .iter()
+                    .filter(|kw| content_lower.contains(*kw))
+                    .count();
+
+                if match_count > 0 {
+                    // Score = keyword matches * importance + recency bonus
+                    let recency = (entry.timestamp - oldest_timestamp(&self.entries))
+                        .max(1.0)
+                        .log(1.0 + entry.timestamp)
+                        .min(1.0);
+                    let score = (match_count as f64) * entry.importance + recency * 0.1;
+                    Some((entry, score))
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+
+        scored.into_iter().take(limit).map(|(e, _)| e).collect()
+    }
+
+    /// Get recent memories, sorted by timestamp descending.
+    pub fn recent(&self, limit: usize) -> Vec<&MemoryEntry> {
+        let mut sorted = self.entries.iter().collect::<Vec<_>>();
+        sorted.sort_by(|a, b| b.timestamp.partial_cmp(&a.timestamp).unwrap_or(std::cmp::Ordering::Equal));
+        sorted.into_iter().take(limit).collect()
+    }
+
+    /// Get most important memories.
+    pub fn important(&self, limit: usize) -> Vec<&MemoryEntry> {
+        let mut sorted = self.entries.iter().collect::<Vec<_>>();
+        sorted.sort_by(|a, b| b.importance.partial_cmp(&a.importance).unwrap_or(std::cmp::Ordering::Equal));
+        sorted.into_iter().take(limit).collect()
+    }
+
+    /// Get memory count.
+    pub fn len(&self) -> usize {
+        self.entries.len()
+    }
+
+    /// Check if empty.
+    pub fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+
+    /// Merge another memory context into this one (avoiding duplicates by id).
+    pub fn merge(&mut self, other: &MemoryContext) {
+        let existing_ids: HashSet<String> = self.entries.iter().map(|e| e.id.clone()).collect();
+        for entry in &other.entries {
+            if !existing_ids.contains(&entry.id) {
+                self.add(entry.clone());
+            }
+        }
+    }
+
+    /// Clear all memories.
+    pub fn clear(&mut self) {
+        self.entries.clear();
+        self.type_index.clear();
+        self.tag_index.clear();
+    }
+
+    /// Export memories as JSON string.
+    pub fn export(&self) -> String {
+        serde_json::to_string_pretty(&self.entries).unwrap_or_default()
+    }
+
+    /// Import memories from JSON string.
+    pub fn import(&mut self, json: &str) -> Result<(), serde_json::Error> {
+        let entries: Vec<MemoryEntry> = serde_json::from_str(json)?;
+        for entry in entries {
+            self.add(entry);
+        }
+        Ok(())
+    }
+}
+
+impl Default for MemoryContext {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+fn oldest_timestamp(entries: &[MemoryEntry]) -> f64 {
+    entries
+        .iter()
+        .map(|e| e.timestamp)
+        .fold(f64::MAX, |a, b| a.min(b))
+}
+
+// ============================================================================
 // MCP Tool Types
 // ============================================================================
 
@@ -576,6 +1058,8 @@ pub struct DeepResearchAgent {
     stop_requested: AtomicBool,
     checkpoint_counter: AtomicUsize,
     last_checkpoint_time: RwLock<f64>,
+    citation_chain: RwLock<CitationChain>,
+    memory: RwLock<MemoryContext>,
 }
 
 impl DeepResearchAgent {
@@ -591,6 +1075,8 @@ impl DeepResearchAgent {
             stop_requested: AtomicBool::new(false),
             checkpoint_counter: AtomicUsize::new(0),
             last_checkpoint_time: RwLock::new(0.0),
+            citation_chain: RwLock::new(CitationChain::new()),
+            memory: RwLock::new(MemoryContext::new()),
         }
     }
 
@@ -934,6 +1420,263 @@ impl DeepResearchAgent {
     }
 
     // -------------------------------------------------------------------------
+    // Citation Chain
+    // -------------------------------------------------------------------------
+
+    /// Build citation chain from collected papers.
+    ///
+    /// This extracts citation relationships based on shared references
+    /// and builds a traversable citation graph.
+    #[allow(dead_code)]
+    pub fn build_citation_chain(&self) {
+        let Some(ref session) = self.session else {
+            return;
+        };
+
+        let mut chain = CitationChain::new();
+
+        // Add all papers to the chain
+        for snapshot in &session.papers {
+            let paper = Paper {
+                uid: snapshot.arxiv_id.clone(),
+                title: snapshot.title.clone(),
+                abstract_text: snapshot.abstract_text.clone(),
+                authors: Vec::new(),
+                source: "arxiv".to_string(),
+                pdf_url: snapshot.url.clone(),
+                published: String::new(),
+                updated: String::new(),
+                abs_url: format!("https://arxiv.org/abs/{}", snapshot.arxiv_id),
+                primary_category: None,
+                categories: None,
+                references: Vec::new(),
+                cited_by: Vec::new(),
+            };
+            chain.add_paper(paper);
+        }
+
+        // Build edges based on abstract similarity (papers in same niche cite each other)
+        for i in 0..session.papers.len() {
+            for j in 0..session.papers.len() {
+                if i != j {
+                    let paper_i = &session.papers[i];
+                    let paper_j = &session.papers[j];
+
+                    // Check if paper_i's title keywords appear in paper_j's abstract
+                    // (indicating paper_i likely cites paper_j)
+                    let title_words: HashSet<String> = paper_i
+                        .title
+                        .to_lowercase()
+                        .split_whitespace()
+                        .map(|s| s.to_string())
+                        .collect();
+
+                    let abstract_lower = paper_j.abstract_text.to_lowercase();
+                    let overlap: Vec<&String> = title_words
+                        .iter()
+                        .filter(|w| w.len() > 4 && abstract_lower.contains(*w))
+                        .collect();
+
+                    if overlap.len() >= 2 {
+                        chain.add_citation(
+                            &paper_i.arxiv_id,
+                            &paper_j.arxiv_id,
+                            &format!("Shared topic: {}", overlap.iter().map(|s| s.as_str()).collect::<Vec<_>>().join(", ")),
+                        );
+                    }
+                }
+            }
+        }
+
+        *self.citation_chain.write() = chain;
+    }
+
+    /// Get papers related to a given paper through citation chain.
+    #[allow(dead_code)]
+    pub fn get_related_papers(&self, paper_uid: &str, depth: usize) -> Vec<String> {
+        let chain = self.citation_chain.read();
+        let mut related = Vec::new();
+
+        // Get direct references
+        for paper in chain.get_references(paper_uid) {
+            related.push(paper.uid.clone());
+        }
+
+        // Get direct citations
+        for paper in chain.get_cited_by(paper_uid) {
+            related.push(paper.uid.clone());
+        }
+
+        if depth > 1 {
+            // Get transitive references
+            let mut visited: HashSet<String> = related.iter().cloned().collect();
+            let mut queue: VecDeque<String> = related.iter().cloned().collect();
+
+            let mut current_depth = 1;
+            while current_depth < depth && !queue.is_empty() {
+                let level_size = queue.len();
+                for _ in 0..level_size {
+                    if let Some(uid) = queue.pop_front() {
+                        for paper in chain.get_references(&uid) {
+                            if !visited.contains(&paper.uid) {
+                                visited.insert(paper.uid.clone());
+                                related.push(paper.uid.clone());
+                                queue.push_back(paper.uid.clone());
+                            }
+                        }
+                    }
+                }
+                current_depth += 1;
+            }
+        }
+
+        related
+    }
+
+    /// Get the citation path between two papers if it exists.
+    #[allow(dead_code)]
+    pub fn get_citation_path(&self, from: &str, to: &str) -> Option<Vec<String>> {
+        self.citation_chain.read().find_path(from, to)
+    }
+
+    /// Get papers sorted by citation influence (most cited first).
+    #[allow(dead_code)]
+    pub fn get_influential_papers(&self) -> Vec<(String, usize)> {
+        let chain = self.citation_chain.read();
+        let mut influence: Vec<(String, usize)> = chain
+            .papers
+            .iter()
+            .map(|p| {
+                let depth = chain.citation_depth(&p.uid);
+                (p.uid.clone(), depth)
+            })
+            .collect();
+        influence.sort_by_key(|(_, d)| std::cmp::Reverse(*d));
+        influence
+    }
+
+    // -------------------------------------------------------------------------
+    // Memory Context Methods
+    // -------------------------------------------------------------------------
+
+    /// Add a fact to memory.
+    #[allow(dead_code)]
+    pub fn remember_fact(&self, content: &str, paper_uid: Option<&str>) {
+        let mut entry = MemoryEntry::fact(content);
+        if let Some(uid) = paper_uid {
+            entry = entry.with_paper(uid);
+        }
+        self.memory.write().add(entry);
+    }
+
+    /// Add a finding to memory.
+    #[allow(dead_code)]
+    pub fn remember_finding(&self, content: &str, paper_uid: Option<&str>) {
+        let mut entry = MemoryEntry::finding(content);
+        if let Some(uid) = paper_uid {
+            entry = entry.with_paper(uid);
+        }
+        self.memory.write().add(entry);
+    }
+
+    /// Add a gap to memory.
+    #[allow(dead_code)]
+    pub fn remember_gap(&self, content: &str, paper_uid: Option<&str>) {
+        let mut entry = MemoryEntry::gap(content);
+        if let Some(uid) = paper_uid {
+            entry = entry.with_paper(uid);
+        }
+        self.memory.write().add(entry);
+    }
+
+    /// Add a question to memory.
+    #[allow(dead_code)]
+    pub fn remember_question(&self, content: &str) {
+        self.memory.write().add(MemoryEntry::question(content));
+    }
+
+    /// Search memory for relevant entries.
+    #[allow(dead_code)]
+    pub fn recall(&self, query: &str, limit: usize) -> Vec<String> {
+        self.memory
+            .read()
+            .search(query, limit)
+            .iter()
+            .map(|e| e.content.clone())
+            .collect()
+    }
+
+    /// Get all facts from memory.
+    #[allow(dead_code)]
+    pub fn get_facts(&self) -> Vec<String> {
+        self.memory.read().facts().iter().map(|e| e.content.clone()).collect()
+    }
+
+    /// Get all findings from memory.
+    #[allow(dead_code)]
+    pub fn get_findings(&self) -> Vec<String> {
+        self.memory.read().findings().iter().map(|e| e.content.clone()).collect()
+    }
+
+    /// Get all gaps from memory.
+    #[allow(dead_code)]
+    pub fn get_memory_gaps(&self) -> Vec<String> {
+        self.memory.read().gaps().iter().map(|e| e.content.clone()).collect()
+    }
+
+    /// Get recent memories.
+    #[allow(dead_code)]
+    pub fn get_recent_memories(&self, limit: usize) -> Vec<String> {
+        self.memory.read().recent(limit).iter().map(|e| e.content.clone()).collect()
+    }
+
+    /// Get memories related to a specific paper.
+    #[allow(dead_code)]
+    pub fn get_memories_for_paper(&self, paper_uid: &str) -> Vec<String> {
+        self.memory
+            .read()
+            .get_by_paper(paper_uid)
+            .iter()
+            .map(|e| e.content.clone())
+            .collect()
+    }
+
+    /// Store key findings from papers into memory.
+    #[allow(dead_code)]
+    pub fn store_paper_findings(&self) {
+        let Some(ref session) = self.session else {
+            return;
+        };
+
+        let mut memory = self.memory.write();
+
+        for paper in &session.papers {
+            // Store title and abstract as a finding
+            memory.add_finding(&format!(
+                "Paper {}: {} - {}",
+                paper.arxiv_id, paper.title, paper.abstract_text
+            ));
+        }
+
+        // Store gaps as memory entries
+        for gap in &session.gaps {
+            memory.add_gap(&format!("[{}] {}: {}", gap.gap_type, gap.title, gap.description));
+        }
+    }
+
+    /// Export memory context.
+    #[allow(dead_code)]
+    pub fn export_memory(&self) -> String {
+        self.memory.read().export()
+    }
+
+    /// Import memory context.
+    #[allow(dead_code)]
+    pub fn import_memory(&self, json: &str) -> Result<(), serde_json::Error> {
+        self.memory.write().import(json)
+    }
+
+    // -------------------------------------------------------------------------
     // Checkpointing
     // -------------------------------------------------------------------------
 
@@ -1099,6 +1842,9 @@ impl DeepResearchAgent {
 
         // Encode accepted gaps into Gene Pool
         self.encode_accepted_gaps();
+
+        // Build citation chain for paper relationships
+        self.build_citation_chain();
 
         // Finalize session
         let duration = chrono::Utc::now().timestamp_millis() as f64 / 1000.0 - start_time;
@@ -1270,6 +2016,8 @@ fn parse_arxiv_atom(xml: &str, max_results: usize, _query: &str) -> Vec<Paper> {
             abs_url,
             primary_category,
             categories: Some(categories.join(",")),
+            references: Vec::new(),
+            cited_by: Vec::new(),
         });
     }
 

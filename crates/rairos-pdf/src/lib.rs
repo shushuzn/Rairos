@@ -5,6 +5,7 @@
 //! Provides: PDF download with resume, text extraction, structured content parsing
 //! (LaTeX blocks, tables, figures).
 
+pub mod chunker;
 pub mod extable;
 pub mod paper_parser;
 pub mod pdf_parser2;
