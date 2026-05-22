@@ -315,29 +315,29 @@ impl ResearchQuery {
             let age_days = (now - evidence.collected_at).num_seconds() as f64 / 86400.0;
             let source_reliability = evidence.source.effective_reliability(age_days);
 
-            // Weight by quality and relevance
+            // Weight by quality and relevance (modulates evidence strength)
             let weight = (evidence.quality as f64) * (evidence.relevance as f64);
-            let reliability = source_reliability * weight;
 
             // Update Beta distribution based on evidence type
+            // weight modulates the count, source_reliability is the confirmation probability
             match evidence.evidence_type {
                 EvidenceType::Direct | EvidenceType::Supporting => {
                     // Confirming evidence increases alpha
-                    beta.update_with_confirming(weight, reliability);
+                    beta.update_with_confirming(weight, source_reliability);
                 }
                 EvidenceType::Contradicting => {
                     // Contradicting evidence increases beta
-                    beta.update_with_contradicting(weight, reliability);
+                    beta.update_with_contradicting(weight, source_reliability);
                 }
                 EvidenceType::Contextual => {
                     // Contextual evidence has partial effect
-                    beta.update_with_confirming(weight * 0.5, reliability * 0.5);
+                    beta.update_with_confirming(weight * 0.5, source_reliability);
                 }
             }
         }
 
-        // Apply decay to old evidence (MuninnDB style)
-        self.apply_evidence_decay(&mut beta);
+        // Note: Evidence decay is already accounted for in effective_reliability()
+        // called above, so no additional decay application needed.
 
         // Update stored values
         self.beta_distribution = beta;
@@ -702,7 +702,7 @@ impl EvidenceGapTracker {
             return Some(RouterAction::Retrieve);
         }
 
-        if query.confidence >= 0.8 {
+        if query.confidence >= 0.7 {
             return Some(RouterAction::Answer);
         }
 
