@@ -717,9 +717,13 @@ impl TopicDiscoverer {
         let mut seen_topics: HashMap<String, TopicSuggestion> = HashMap::new();
         for s in all_suggestions {
             let key = s.topic.to_lowercase();
-            let entry = seen_topics.entry(key).or_insert(s.clone());
-            if s.confidence > entry.confidence {
-                *entry = s;
+            match seen_topics.entry(key) {
+                std::collections::hash_map::Entry::Vacant(e) => { e.insert(s); }
+                std::collections::hash_map::Entry::Occupied(mut e) => {
+                    if s.confidence > e.get().confidence {
+                        e.insert(s);
+                    }
+                }
             }
         }
 
