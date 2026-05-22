@@ -1,5 +1,6 @@
 //! LangGraph-style pipeline orchestration.
 
+use smallvec::SmallVec;
 use std::collections::{HashMap, VecDeque};
 use serde::{Deserialize, Serialize};
 use crate::error::CortexProError;
@@ -11,8 +12,8 @@ pub struct PipelineNode {
     pub id: String,
     /// Node type (agent role or conditional)
     pub node_type: PipelineNodeType,
-    /// Next nodes (for sequential) or conditional branches
-    pub next: Vec<String>,
+    /// Next nodes (for sequential) or conditional branches (SmallVec for small fan-out)
+    pub next: SmallVec<[String; 2]>,
     /// Whether this is a terminal node
     pub is_terminal: bool,
 }
@@ -22,7 +23,7 @@ impl PipelineNode {
         Self {
             id: id.into(),
             node_type,
-            next: vec![],
+            next: SmallVec::new(),
             is_terminal: false,
         }
     }
@@ -92,8 +93,8 @@ pub struct Pipeline {
     edges: Vec<PipelineEdge>,
     /// Entry node ID
     pub entry: String,
-    /// Terminal node IDs
-    pub terminals: Vec<String>,
+    /// Terminal node IDs (SmallVec for typical 1-2 terminals)
+    pub terminals: SmallVec<[String; 2]>,
 }
 
 impl Pipeline {
@@ -104,7 +105,7 @@ impl Pipeline {
             nodes: HashMap::new(),
             edges: vec![],
             entry: String::new(),
-            terminals: vec![],
+            terminals: SmallVec::new(),
         }
     }
 
