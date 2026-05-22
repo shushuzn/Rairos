@@ -79,6 +79,18 @@ pub mod streaming_sse;
 #[cfg(feature = "tools")]
 pub mod hierarchical;
 
+/// Benchmark module for agent evaluation (GAIA, AgentBench style)
+#[cfg(feature = "tools")]
+pub mod benchmark;
+
+/// A2A protocol for agent-to-agent communication
+#[cfg(feature = "tools")]
+pub mod a2a_protocol;
+
+/// Active Learning for materials discovery (LEAP-style)
+#[cfg(feature = "tools")]
+pub mod active_learning;
+
 /// Integrations with other Rairos crates
 pub mod integrations;
 
@@ -108,3 +120,12 @@ pub use streaming_sse::{SseBroadcaster, SseEvent, SseTimer};
 
 #[cfg(feature = "tools")]
 pub use hierarchical::{DelegationManager, DelegatedTask, HierarchicalConfig, AgentLevel, SubTeam, TeamStatus, DelegationStats};
+
+#[cfg(feature = "tools")]
+pub use benchmark::{BenchmarkMetrics, BenchmarkReport, BenchmarkTask, TaskResult, MilestoneResult, gaia_benchmark_tasks, collaboration_tasks, run_benchmark};
+
+#[cfg(feature = "tools")]
+pub use a2a_protocol::{A2AProtocol, A2AMessage, A2ATask, AgentCard, AgentCapability, A2AMessageType};
+
+#[cfg(feature = "tools")]
+pub use active_learning::{ActiveLearningManager, MaterialCandidate, EvaluationResult, AcquisitionFunction, ActiveLearningStats, HypothesisGenerator};
