@@ -690,9 +690,10 @@ impl EvolutionEngine {
 
                     let mut winner_kws: Vec<String> = winner.trigger_keywords.clone();
                     for kw in loser.trigger_keywords.iter() {
+                        let kw_lower = kw.to_lowercase(); // Hoist out of inner loop
                         if !winner_kws
                             .iter()
-                            .any(|w| w.to_lowercase() == kw.to_lowercase())
+                            .any(|w| w.to_lowercase() == kw_lower)
                         {
                             winner_kws.push(kw.clone());
                         }
