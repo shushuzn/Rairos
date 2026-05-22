@@ -182,14 +182,18 @@ fn re_suffix() -> &'static Regex {
     &RE
 }
 
+fn re_numeric() -> &'static Regex {
+    static RE: std::sync::LazyLock<Regex> =
+        std::sync::LazyLock::new(|| Regex::new(r"\d+\.?\d*").expect("valid regex"));
+    &RE
+}
+
 fn contains_numeric(cell: &str) -> bool {
     let cell = cell.trim();
     if cell.is_empty() {
         return false;
     }
-    regex::Regex::new(r"\d+\.?\d*")
-        .map(|re| re.is_match(cell))
-        .unwrap_or(false)
+    re_numeric().is_match(cell)
 }
 
 fn parse_numeric(value: &str) -> Option<f64> {

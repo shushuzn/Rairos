@@ -637,8 +637,8 @@ impl SparksCrew {
             ).await?;
 
             // Check if approved (feedback contains "approved" or "yes")
-            if feedback.to_lowercase().contains("approved") ||
-               feedback.to_lowercase().contains("yes") {
+            let feedback_lower = feedback.to_lowercase();
+            if feedback_lower.contains("approved") || feedback_lower.contains("yes") {
                 self.context.idea_approved = true;
                 self.context.idea_created = true;
                 return Ok(hypothesis);
@@ -682,8 +682,8 @@ impl SparksCrew {
                 &plan_json,
             ).await?;
 
-            if feedback.to_lowercase().contains("approved") ||
-               feedback.to_lowercase().contains("yes") {
+            let feedback_lower = feedback.to_lowercase();
+            if feedback_lower.contains("approved") || feedback_lower.contains("yes") {
                 self.context.plan_approved = true;
                 self.context.plan_created = true;
                 self.context.plan = Some(plan_json);
