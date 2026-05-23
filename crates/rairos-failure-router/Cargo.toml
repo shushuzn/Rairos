@@ -1,12 +1,12 @@
 [package]
-name = "rairos-skill-discovery"
+name = "rairos-failure-router"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
 parking_lot.workspace = true
-serde = { workspace = true }
-serde_json = { workspace = true }
 
 [dev-dependencies]
 tempfile.workspace = true

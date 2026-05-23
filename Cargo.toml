@@ -27,6 +27,7 @@ members = [
     "crates/rairos-evolution",
     "crates/rairos-evolution-report",
     "crates/rairos-experiment-tracker",
+    "crates/rairos-failure-router",
     "crates/rairos-friction",
     "crates/rairos-gene-pool-io",
     "crates/rairos-gene-pool-watcher",

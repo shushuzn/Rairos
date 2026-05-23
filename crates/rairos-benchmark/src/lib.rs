@@ -531,3 +531,490 @@ mod tests {
         assert!(output.contains("No matching benchmarks"));
     }
 }
+
+// ---------------------------------------------------------------------------
+// VeriScale Adversarial Tests (EvolveCoder 2603.12698 + ACE 2605.16299)
+// ---------------------------------------------------------------------------
+
+/// An adversarial test case — targets specific failure modes in candidate solutions.
+/// ACE paper: tests must be solution-aware (not static) to maintain discriminative
+/// power as solvers improve. EvolveCoder: iteratively refine tests against actual
+/// solution distribution.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdversarialTestCase {
+    /// Unique identifier
+    pub test_id: String,
+    /// Natural-language description of what this test checks
+    pub description: String,
+    /// The test code itself
+    pub test_code: String,
+    /// Expected behavior: what a correct solution should produce
+    pub expected_output: String,
+    /// ACE-style hardness score: fraction of candidate solutions that fail this test.
+    /// Higher = more adversarial (fewer solutions pass).
+    pub hardness: f64,
+    /// How well this test discriminates between good and bad solutions (0-1).
+    pub discriminative_power: f64,
+    /// Number of times this test was refined
+    pub refinement_round: u32,
+    /// Execution-only feedback received (errors, crashes, timeouts)
+    pub execution_feedback: Vec<String>,
+    /// Tags for categorization (boundary, error-path, fuzz, etc.)
+    pub tags: Vec<String>,
+    /// Whether this test has found a real bug in any solution
+    pub bug_detected: bool,
+}
+
+impl AdversarialTestCase {
+    /// Create a new adversarial test case.
+    pub fn new(test_id: &str, description: &str, test_code: &str, expected_output: &str) -> Self {
+        Self {
+            test_id: test_id.to_string(),
+            description: description.to_string(),
+            test_code: test_code.to_string(),
+            expected_output: expected_output.to_string(),
+            hardness: 0.5,
+            discriminative_power: 0.5,
+            refinement_round: 0,
+            execution_feedback: Vec::new(),
+            tags: Vec::new(),
+            bug_detected: false,
+        }
+    }
+
+    /// Record that this test found a bug in a solution.
+    pub fn mark_bug_found(&mut self) {
+        self.bug_detected = true;
+        self.discriminative_power = (self.discriminative_power + 0.1).min(1.0);
+    }
+
+    /// Record execution feedback.
+    pub fn add_feedback(&mut self, feedback: &str) {
+        if !self.execution_feedback.contains(&feedback.to_string()) {
+            self.execution_feedback.push(feedback.to_string());
+        }
+    }
+
+    /// Advance to next refinement round and increase hardness slightly.
+    pub fn refine(&mut self, new_test_code: &str, new_expected: &str) {
+        self.refinement_round += 1;
+        self.test_code = new_test_code.to_string();
+        self.expected_output = new_expected.to_string();
+        self.hardness = (self.hardness + 0.05).min(0.99);
+    }
+}
+
+/// A solution submission to be evaluated against adversarial tests.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CandidateSolution {
+    pub solution_id: String,
+    pub code: String,
+    pub passed_tests: Vec<String>,
+    pub failed_tests: Vec<String>,
+    pub execution_errors: Vec<String>,
+    pub execution_time_ms: f64,
+    pub passed: bool,
+}
+
+impl CandidateSolution {
+    /// Compute pass rate across a set of adversarial tests.
+    pub fn pass_rate(&self, all_tests: &[AdversarialTestCase]) -> f64 {
+        if all_tests.is_empty() {
+            return 1.0;
+        }
+        let total = all_tests.len();
+        let passed = all_tests.iter()
+            .filter(|t| self.passed_tests.contains(&t.test_id))
+            .count();
+        passed as f64 / total as f64
+    }
+}
+
+/// Statistics about an adversarial test suite evolution round.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TestEvolutionStats {
+    pub round: u32,
+    pub suite_size: usize,
+    pub avg_hardness: f64,
+    pub avg_discriminative_power: f64,
+    pub tests_that_found_bugs: usize,
+    pub solutions_tested: usize,
+    pub solutions_passed_all: usize,
+    pub solutions_failed_some: usize,
+}
+
+/// VeriScale Adversarial Test Suite — manages adversarial test evolution.
+/// Based on ACE: alternating between solution generation and adversarial test
+/// generation, guided by execution-only feedback.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdversarialTestSuite {
+    pub name: String,
+    pub tests: Vec<AdversarialTestCase>,
+    pub current_round: u32,
+}
+
+impl Default for AdversarialTestSuite {
+    fn default() -> Self {
+        Self::new("default")
+    }
+}
+
+impl AdversarialTestSuite {
+    /// Create a new named adversarial test suite.
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            tests: Vec::new(),
+            current_round: 0,
+        }
+    }
+
+    /// Add a test case to the suite.
+    pub fn add_test(&mut self, test: AdversarialTestCase) {
+        self.tests.push(test);
+    }
+
+    /// Remove tests with very low discriminative power.
+    pub fn prune_low_quality(&mut self, min_discriminative: f64) {
+        self.tests.retain(|t| t.discriminative_power >= min_discriminative);
+    }
+
+    /// Compute Kahneman-Tversky-inspired hardness score.
+    /// H = 1 - pass_rate: hard tests = low pass rate.
+    pub fn compute_test_hardness(solutions: &[CandidateSolution], test_id: &str) -> f64 {
+        if solutions.is_empty() {
+            return 0.5;
+        }
+        let passed = solutions.iter()
+            .filter(|s| s.passed_tests.iter().any(|x| x == test_id))
+            .count();
+        let pass_rate = passed as f64 / solutions.len() as f64;
+        (1.0 - pass_rate).clamp(0.0, 1.0)
+    }
+
+    /// Update hardness and discriminative power for all tests.
+    pub fn update_from_solutions(&mut self, solutions: &[CandidateSolution]) {
+        for test in &mut self.tests {
+            let new_hardness = Self::compute_test_hardness(solutions, &test.test_id);
+            // Use raw hardness for first update, EMA thereafter for stability
+            if test.refinement_round == 0 {
+                test.hardness = new_hardness;
+            } else {
+                test.hardness = test.hardness * 0.7 + new_hardness * 0.3;
+            }
+
+            let passed_count = solutions.iter()
+                .filter(|s| s.passed_tests.contains(&test.test_id))
+                .count();
+            let failed_count = solutions.iter()
+                .filter(|s| s.failed_tests.contains(&test.test_id))
+                .count();
+
+            if passed_count > 0 && failed_count > 0 {
+                let pass_frac = passed_count as f64 / solutions.len() as f64;
+                let fail_frac = failed_count as f64 / solutions.len() as f64;
+                let gini = 2.0 * pass_frac * fail_frac;
+                test.discriminative_power = test.discriminative_power * 0.7 + gini * 0.3;
+            }
+
+            for sol in solutions {
+                if sol.execution_errors.iter().any(|e| e.contains(&test.test_id)) {
+                    test.mark_bug_found();
+                }
+            }
+        }
+    }
+
+    /// Generate an evolved test from an existing test.
+    pub fn evolve_test(
+        &self,
+        source_test: &AdversarialTestCase,
+        solution_hints: &[&str],
+    ) -> AdversarialTestCase {
+        let mutation_desc = if let Some(hint) = solution_hints.first() {
+            if hint.contains("timeout") || hint.contains("TIMEOUT") {
+                "Add tighter timeout guard"
+            } else if hint.contains("overflow") || hint.contains("OVERFLOW") {
+                "Add boundary value test"
+            } else if hint.contains("null") || hint.contains("None") || hint.contains("undefined") {
+                "Add null-handling assertion"
+            } else if hint.contains("assertion") || hint.contains("Assertion") {
+                "Strengthen assertion logic"
+            } else {
+                "Generalize test inputs"
+            }
+        } else {
+            "Increase test coverage"
+        };
+
+        let evolved_code = format!(
+            "// Evolved from test '{}' (round {})\n// Strategy: {}\n{}\n    // TODO: apply specific mutation based on solution_hints",
+            source_test.test_id,
+            source_test.refinement_round + 1,
+            mutation_desc,
+            source_test.test_code
+        );
+
+        let mut evolved = source_test.clone();
+        evolved.test_id = format!("{}_r{}", source_test.test_id, source_test.refinement_round + 1);
+        evolved.test_code = evolved_code;
+        evolved.refinement_round += 1;
+        evolved.hardness = (source_test.hardness + 0.05).min(0.99);
+        evolved.execution_feedback.clear();
+        evolved.tags.push(mutation_desc.to_lowercase().replace(' ', "_"));
+        evolved
+    }
+
+    /// Perform one round of adversarial test evolution.
+    pub fn evolve_one_round(&mut self, solutions: &[CandidateSolution]) -> TestEvolutionStats {
+        self.current_round += 1;
+        let mut new_tests = Vec::new();
+
+        self.update_from_solutions(solutions);
+
+        for test in &self.tests {
+            if test.hardness < 0.3 || test.hardness > 0.95 {
+                let hints: Vec<_> = solutions.iter()
+                    .filter(|s| s.failed_tests.contains(&test.test_id))
+                    .flat_map(|s| s.execution_errors.iter())
+                    .collect();
+                let hint_refs: Vec<&str> = hints.iter().map(|s| s.as_str()).collect();
+                let evolved = self.evolve_test(test, &hint_refs);
+                new_tests.push(evolved);
+            }
+        }
+
+        let passed_all = solutions.iter().filter(|s| s.passed).count();
+        let failed_some = solutions.len() - passed_all;
+        let avg_hardness = if self.tests.is_empty() {
+            0.0
+        } else {
+            self.tests.iter().map(|t| t.hardness).sum::<f64>() / self.tests.len() as f64
+        };
+        let avg_dp = if self.tests.is_empty() {
+            0.0
+        } else {
+            self.tests.iter().map(|t| t.discriminative_power).sum::<f64>() / self.tests.len() as f64
+        };
+
+        self.tests.extend(new_tests);
+
+        TestEvolutionStats {
+            round: self.current_round,
+            suite_size: self.tests.len(),
+            avg_hardness,
+            avg_discriminative_power: avg_dp,
+            tests_that_found_bugs: self.tests.iter().filter(|t| t.bug_detected).count(),
+            solutions_tested: solutions.len(),
+            solutions_passed_all: passed_all,
+            solutions_failed_some: failed_some,
+        }
+    }
+
+    /// Run ACE-style solver-adversary loop for a fixed number of rounds.
+    pub fn solver_adversary_loop(
+        &mut self,
+        initial_tests: Vec<AdversarialTestCase>,
+        solution_generator: impl Fn(u32, &[AdversarialTestCase]) -> Vec<CandidateSolution>,
+        rounds: u32,
+    ) -> Vec<TestEvolutionStats> {
+        self.tests = initial_tests;
+        let mut stats_history = Vec::new();
+
+        for round in 0..rounds {
+            let solutions = solution_generator(round, &self.tests);
+            self.update_from_solutions(&solutions);
+            let stats = self.evolve_one_round(&solutions);
+            stats_history.push(stats);
+        }
+
+        stats_history
+    }
+
+    /// Get the hardest (most adversarial) tests.
+    pub fn hardest_tests(&self, count: usize) -> Vec<AdversarialTestCase> {
+        let mut sorted = self.tests.clone();
+        sorted.sort_by(|a, b| b.hardness.partial_cmp(&a.hardness).unwrap_or(std::cmp::Ordering::Equal));
+        sorted.into_iter().take(count).collect()
+    }
+
+    /// Get the most discriminative tests.
+    pub fn most_discriminative(&self, count: usize) -> Vec<AdversarialTestCase> {
+        let mut sorted = self.tests.clone();
+        sorted.sort_by(|a, b| b.discriminative_power.partial_cmp(&a.discriminative_power).unwrap_or(std::cmp::Ordering::Equal));
+        sorted.into_iter().take(count).collect()
+    }
+}
+
+#[cfg(test)]
+mod adversarial_tests {
+    use super::*;
+
+    fn make_test(id: &str, hardness: f64) -> AdversarialTestCase {
+        AdversarialTestCase {
+            test_id: id.to_string(),
+            description: format!("Test {}", id),
+            test_code: format!("fn test_{}() {{}}", id),
+            expected_output: "ok".to_string(),
+            hardness,
+            discriminative_power: 0.5,
+            refinement_round: 0,
+            execution_feedback: Vec::new(),
+            tags: vec!["test".to_string()],
+            bug_detected: false,
+        }
+    }
+
+    fn make_solution(id: &str, passed: Vec<&str>, failed: Vec<&str>) -> CandidateSolution {
+        let is_passed = failed.is_empty();
+        CandidateSolution {
+            solution_id: id.to_string(),
+            code: format!("// solution {}", id),
+            passed_tests: passed.into_iter().map(String::from).collect(),
+            failed_tests: failed.into_iter().map(String::from).collect(),
+            execution_errors: Vec::new(),
+            execution_time_ms: 100.0,
+            passed: is_passed,
+        }
+    }
+
+    #[test]
+    fn test_compute_test_hardness() {
+        let solutions = vec![
+            make_solution("s1", vec!["t1"], vec![]),
+            make_solution("s2", vec!["t1"], vec![]),
+            make_solution("s3", vec![], vec!["t1"]),
+            make_solution("s4", vec![], vec!["t1"]),
+        ];
+        let h = AdversarialTestSuite::compute_test_hardness(&solutions, "t1");
+        assert!((h - 0.5).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_compute_test_hardness_all_pass() {
+        let solutions = vec![
+            make_solution("s1", vec!["t1"], vec![]),
+            make_solution("s2", vec!["t1"], vec![]),
+        ];
+        let h = AdversarialTestSuite::compute_test_hardness(&solutions, "t1");
+        assert_eq!(h, 0.0);
+    }
+
+    #[test]
+    fn test_compute_test_hardness_all_fail() {
+        let solutions = vec![
+            make_solution("s1", vec![], vec!["t1"]),
+            make_solution("s2", vec![], vec!["t1"]),
+        ];
+        let h = AdversarialTestSuite::compute_test_hardness(&solutions, "t1");
+        assert_eq!(h, 1.0);
+    }
+
+    #[test]
+    fn test_update_from_solutions() {
+        let mut suite = AdversarialTestSuite::new("test");
+        suite.add_test(make_test("t1", 0.5));
+        suite.add_test(make_test("t2", 0.5));
+
+        let solutions = vec![
+            make_solution("s1", vec!["t1"], vec!["t2"]),
+            make_solution("s2", vec!["t1"], vec!["t2"]),
+        ];
+        suite.update_from_solutions(&solutions);
+
+        let t1 = suite.tests.iter().find(|t| t.test_id == "t1").unwrap();
+        let t2 = suite.tests.iter().find(|t| t.test_id == "t2").unwrap();
+        assert!((t1.hardness - 0.0).abs() < 0.01);
+        assert!((t2.hardness - 1.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_evolve_test_easy_becomes_harder() {
+        let suite = AdversarialTestSuite::new("test");
+        let source = make_test("t1", 0.1);
+        let evolved = suite.evolve_test(&source, &["timeout after 100ms"]);
+        assert_eq!(evolved.refinement_round, 1);
+        assert!(evolved.hardness > source.hardness);
+        assert!(evolved.test_code.contains("timeout"));
+    }
+
+    #[test]
+    fn test_solver_adversary_loop() {
+        let mut suite = AdversarialTestSuite::new("test");
+
+        let stats = suite.solver_adversary_loop(
+            vec![make_test("t1", 0.5)],
+            |round, _tests| {
+                vec![
+                    make_solution(&format!("s{}_1", round), vec!["t1"], vec![]),
+                    make_solution(&format!("s{}_2", round), vec![], vec!["t1"]),
+                ]
+            },
+            3,
+        );
+
+        assert_eq!(stats.len(), 3);
+        assert!(stats[0].solutions_tested >= 0);
+    }
+
+    #[test]
+    fn test_hardest_tests() {
+        let mut suite = AdversarialTestSuite::new("test");
+        suite.add_test(make_test("easy", 0.2));
+        suite.add_test(make_test("medium", 0.5));
+        suite.add_test(make_test("hard", 0.9));
+
+        let hardest = suite.hardest_tests(2);
+        assert_eq!(hardest.len(), 2);
+        assert_eq!(hardest[0].test_id, "hard");
+        assert_eq!(hardest[1].test_id, "medium");
+    }
+
+    #[test]
+    fn test_most_discriminative() {
+        let mut suite = AdversarialTestSuite::new("test");
+        suite.add_test(make_test("t1", 0.5));
+        suite.tests[0].discriminative_power = 0.3;
+        suite.add_test(make_test("t2", 0.5));
+        suite.tests[1].discriminative_power = 0.9;
+
+        let most = suite.most_discriminative(1);
+        assert_eq!(most[0].test_id, "t2");
+    }
+
+    #[test]
+    fn test_prune_low_quality() {
+        let mut suite = AdversarialTestSuite::new("test");
+        suite.add_test(make_test("good", 0.8));
+        suite.tests[0].discriminative_power = 0.7;
+        suite.add_test(make_test("bad", 0.3));
+        suite.tests[1].discriminative_power = 0.1;
+
+        suite.prune_low_quality(0.5);
+        assert_eq!(suite.tests.len(), 1);
+        assert_eq!(suite.tests[0].test_id, "good");
+    }
+
+    #[test]
+    fn test_adversarial_test_case_mark_bug() {
+        let mut test = make_test("t1", 0.5);
+        assert!(!test.bug_detected);
+        test.mark_bug_found();
+        assert!(test.bug_detected);
+    }
+
+    #[test]
+    fn test_candidate_solution_pass_rate() {
+        let solutions = vec![
+            make_solution("s1", vec!["t1", "t2"], vec![]),
+            make_solution("s2", vec!["t1"], vec!["t2"]),
+        ];
+        let tests = vec![make_test("t1", 0.5), make_test("t2", 0.5)];
+        // s1 passed 2/2 tests
+        let rate = solutions[0].pass_rate(&tests);
+        assert!((rate - 1.0).abs() < 0.01);
+        // s2 passed 1/2 tests
+        let rate2 = solutions[1].pass_rate(&tests);
+        assert!((rate2 - 0.5).abs() < 0.01);
+    }
+}

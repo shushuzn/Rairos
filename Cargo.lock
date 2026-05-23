@@ -4573,6 +4573,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rairos-failure-router"
+version = "0.1.0"
+dependencies = [
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "rairos-friction"
 version = "0.1.0"
 dependencies = [
@@ -5601,6 +5611,8 @@ name = "rairos-skill-discovery"
 version = "0.1.0"
 dependencies = [
  "parking_lot",
+ "serde",
+ "serde_json",
  "tempfile",
 ]
 
