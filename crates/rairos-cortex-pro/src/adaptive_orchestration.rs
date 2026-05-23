@@ -360,7 +360,7 @@ impl AdaptiveOrchestrator {
 
         // Record history
         let success_rate = stats.successes as f32 / stats.total_executions as f32;
-        self.history.push(TopologyRecord {
+        self.history.push_back(TopologyRecord {
             task_type: task_type.to_string(),
             topology,
             success_rate,

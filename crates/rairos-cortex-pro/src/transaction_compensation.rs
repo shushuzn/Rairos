@@ -215,7 +215,7 @@ impl TransactionLog {
 
     /// Add event to log
     fn add_event(&mut self, event: ToolEvent) {
-        self.events.push(event);
+        self.events.push_back(event);
         if self.events.len() > self.max_events {
             self.events.pop_front();
         }
@@ -227,7 +227,7 @@ impl TransactionLog {
         let mut errors = Vec::new();
 
         // Process in reverse order
-        while let Some(event) = self.events.pop() {
+        while let Some(event) = self.events.pop_back() {
             if event.compensated {
                 continue;
             }
@@ -283,8 +283,9 @@ impl TransactionLog {
         let event_idx = self.events.iter().position(|e| e.id == event_id);
 
         if let Some(idx) = event_idx {
-            // Rollback events after this one
-            for event in self.events[idx + 1..].iter().rev() {
+            // Rollback events after this one (collect to Vec for slice operations)
+            let events: Vec<&ToolEvent> = self.events.iter().skip(idx + 1).collect();
+            for event in events.iter().rev() {
                 if event.compensated {
                     continue;
                 }

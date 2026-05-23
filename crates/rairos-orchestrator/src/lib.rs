@@ -4,6 +4,7 @@ pub mod error;
 pub mod persistence;
 pub mod state;
 pub mod orchestrator;
+pub mod cortex_bridge;
 
 pub use error::{OrchestratorError, Result};
 pub use orchestrator::AutonomousOrchestrator;
@@ -12,3 +13,4 @@ pub use state::{
     PaperInfo, ResearchAlert, ScoredGap,
 };
 pub use persistence::{get_state_path, load_state, save_state};
+pub use cortex_bridge::{CortexBridge, CortexBridgeConfig};

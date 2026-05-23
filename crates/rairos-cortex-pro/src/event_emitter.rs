@@ -351,6 +351,13 @@ pub mod event_types {
     pub const SYSTEM_START: EventType = "system:start";
     pub const SYSTEM_SHUTDOWN: EventType = "system:shutdown";
     pub const SYSTEM_ERROR: EventType = "system:error";
+
+    // Orchestrator events (cross-module integration)
+    pub const ORCHESTRATOR_CYCLE_START: EventType = "orchestrator:cycle_start";
+    pub const ORCHESTRATOR_CYCLE_COMPLETE: EventType = "orchestrator:cycle_complete";
+    pub const ORCHESTRATOR_ALERT_GENERATED: EventType = "orchestrator:alert_generated";
+    pub const ORCHESTRATOR_TOPIC_PROCESSED: EventType = "orchestrator:topic_processed";
+    pub const ORCHESTRATOR_EVOLUTION_CYCLE: EventType = "orchestrator:evolution_cycle";
 }
 
 // =============================================================================

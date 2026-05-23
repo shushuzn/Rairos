@@ -194,7 +194,7 @@ pub mod integrations;
 pub mod api;
 
 pub use agent::{Agent, AgentConfig, AgentOutput, AgentRole};
-pub use crew::{ResearchCrew, CrewConfig, CrewResult};
+pub use crew::{ResearchCrew, CrewConfig, CrewResult, CrewBuilder};
 pub use pipeline::{Pipeline, PipelineNode, PipelineEdge};
 pub use state::{ResearchState, Phase, ResearchContext, CrewContext};
 pub use error::{CortexProError, Result};

@@ -245,7 +245,7 @@ pub struct IntentClassifier {
     /// Keywords index for fast lookup
     keywords_index: Arc<RwLock<HashMap<String, Vec<IntentId>>>>,
     /// Regex compilation cache for performance
-    regex_cache: Arc<LruCache<String, regex::Regex>>,
+    regex_cache: Arc<parking_lot::Mutex<LruCache<String, regex::Regex>>>,
 }
 
 impl Default for IntentClassifier {
@@ -262,7 +262,7 @@ impl IntentClassifier {
             intents: Arc::new(RwLock::new(HashMap::new())),
             keywords_index: Arc::new(RwLock::new(HashMap::new())),
             // Cache up to 1024 compiled regex patterns
-            regex_cache: Arc::new(LruCache::new(NonZeroUsize::new(1024).unwrap())),
+            regex_cache: Arc::new(parking_lot::Mutex::new(LruCache::new(NonZeroUsize::new(1024).unwrap()))),
         }
     }
 
@@ -319,7 +319,7 @@ impl IntentClassifier {
     pub async fn classify(&self, request: &ClassificationRequest) -> ClassificationResult {
         let input_lower = request.input.to_lowercase();
         let rules = self.rules.read().await;
-        let mut regex_cache = self.regex_cache.lock().unwrap();
+        let mut regex_cache = self.regex_cache.lock();
 
         let mut best_match: Option<ClassificationResult> = None;
         let mut best_score: f32 = 0.0;

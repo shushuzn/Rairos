@@ -716,14 +716,14 @@ impl EvidenceGapTracker {
         self.next_query_id += 1;
 
         let query = ResearchQuery::new(&id, question);
-        self.queries.push(query);
+        self.queries.push_back(query);
 
         // Trim if over max
         if self.queries.len() > self.max_queries {
             self.queries.pop_front();
         }
 
-        self.queries.last().unwrap()
+        self.queries.back().unwrap()
     }
 
     /// Add evidence to a query.

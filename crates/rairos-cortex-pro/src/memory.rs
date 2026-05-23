@@ -61,7 +61,7 @@ impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
                 if let Some(pos) = self.order.iter().position(|x| x == e.key()) {
                     self.order.remove(pos);
                 }
-                self.order.push(e.key().clone());
+                self.order.push_back(e.key().clone());
                 return;
             }
             std::collections::hash_map::Entry::Vacant(e) => {
@@ -73,7 +73,7 @@ impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
                     }
                 }
                 e.insert(v);
-                self.order.push(e.key().clone());
+                self.order.push_back(e.key().clone());
             }
         }
     }

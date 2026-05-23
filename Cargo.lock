@@ -5091,6 +5091,7 @@ dependencies = [
  "dirs",
  "futures",
  "rairos-core",
+ "rairos-cortex-pro",
  "rairos-crossover",
  "rairos-llm",
  "rairos-observability",

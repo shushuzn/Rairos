@@ -285,8 +285,7 @@ impl AgentSafetyGuard {
             blocked,
         };
 
-        self.audit_log.push(entry);
-
+        self.audit_log.push_back(entry);
         // Auto-block if threshold exceeded
         if self.config.auto_block && blocked {
             let recent_blocks = self.audit_log
@@ -309,7 +308,7 @@ impl AgentSafetyGuard {
     pub fn block_agent(&mut self, agent_id: &str, reason: &str) {
         self.blocked_agents.insert(agent_id.to_string());
 
-        self.audit_log.push(AuditEntry {
+        self.audit_log.push_back(AuditEntry {
             id: uuid_simple(),
             agent_id: agent_id.to_string(),
             action: format!("Block agent: {}", reason),
@@ -613,7 +612,7 @@ impl ReliabilityTracker {
     pub fn record_success(&mut self, execution_time_ms: u64) {
         self.successes += 1;
         self.total_time_ms += execution_time_ms;
-        self.recent_results.push(true);
+        self.recent_results.push_back(true);
 
         if self.recent_results.len() > self.max_recent {
             self.recent_results.pop_front();
@@ -629,7 +628,7 @@ impl ReliabilityTracker {
             self.recovery_times.push(rt);
         }
 
-        self.recent_results.push(false);
+        self.recent_results.push_back(false);
 
         if self.recent_results.len() > self.max_recent {
             self.recent_results.pop_front();
@@ -676,9 +675,11 @@ impl ReliabilityTracker {
             return 1.0;
         }
 
-        let changes: usize = self.recent_results
+        // VecDeque doesn't support .windows(), collect to Vec first
+        let results: Vec<&bool> = self.recent_results.iter().collect();
+        let changes: usize = results
             .windows(2)
-            .filter(|w| w[0] != w[1])
+            .filter(|w| *w[0] != *w[1])
             .count();
 
         1.0 - (changes as f32 / (self.recent_results.len() - 1) as f32)

@@ -223,7 +223,7 @@ impl SelfCorrector {
         let deviation = reflection.deviation.clone();
         
         // Update history
-        self.history.push(reflection);
+        self.history.push_back(reflection);
 
         // Trim history if needed
         if self.history.len() > self.max_history {
@@ -461,7 +461,7 @@ impl ReflexionAgent {
             if result.success { "success" } else { "needs correction" }
         );
 
-        self.reflection_history.push(reflection_text.clone());
+        self.reflection_history.push_back(reflection_text.clone());
         if self.reflection_history.len() > self.max_reflections {
             self.reflection_history.pop_front();
         }
@@ -482,7 +482,7 @@ impl ReflexionAgent {
 
     /// Learn from external feedback
     pub fn learn_from_feedback(&mut self, feedback: &str) {
-        self.reflection_history.push(format!("External feedback: {}", feedback));
+        self.reflection_history.push_back(format!("External feedback: {}", feedback));
     }
 }
 

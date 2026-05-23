@@ -92,12 +92,12 @@ impl MemoryManager {
         // Update pattern index
         let pattern = &trajectory.query_pattern;
         if let Some(indices) = self.pattern_index.get_mut(pattern) {
-            indices.push(self.trajectories.len());
+            indices.push_back(self.trajectories.len());
         } else {
-            self.pattern_index.insert(pattern.clone(), vec![self.trajectories.len()]);
+            self.pattern_index.insert(pattern.clone(), VecDeque::from(vec![self.trajectories.len()]));
         }
 
-        self.trajectories.push(trajectory);
+        self.trajectories.push_back(trajectory);
 
         // Evict if over capacity
         if self.trajectories.len() > self.max_trajectories {
@@ -160,7 +160,7 @@ impl MemoryManager {
 
     /// Evict oldest trajectory
     fn evict_oldest(&mut self) {
-        if let Some(oldest) = self.trajectories.first() {
+        if let Some(oldest) = self.trajectories.front() {
             // Remove from pattern index
             let pattern = &oldest.query_pattern;
             if let Some(indices) = self.pattern_index.get_mut(pattern) {

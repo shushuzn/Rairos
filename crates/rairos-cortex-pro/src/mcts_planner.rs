@@ -64,8 +64,8 @@ pub enum ToolCategory {
 pub struct MctsNode {
     /// Tool selected at this node (None for root)
     pub tool: Option<Tool>,
-    /// Children nodes (SmallVec for stack allocation of small children lists)
-    pub children: SmallVec<[MctsNode; 4]>,
+    /// Children nodes (Box avoids infinite recursion in SmallVec inline storage)
+    pub children: SmallVec<[Box<MctsNode>; 4]>,
     /// Visit count
     pub visit_count: u32,
     /// Total Q-value (cumulative reward)
@@ -217,8 +217,7 @@ impl MctsPlanner {
 
         if root.children.is_empty() {
             return ToolSelection {
-                tool_name: tools[0].name.clone(),
-                confidence: 0.5,
+                tool_name: tools_guard[0].name.clone(),                confidence: 0.5,
                 reasoning: "Fallback to first available tool".to_string(),
                 alternative_tools: vec![],
             };
@@ -374,7 +373,7 @@ let tree = self.tree.read();
                 let new_node = MctsNode::child(node_idx, new_tool.clone(), current_depth + 1);
                 let new_idx = tree.len();
                 tree.push(new_node);
-                tree[node_idx].children.push(MctsNode::child(node_idx, new_tool, current_depth + 1));
+                tree[node_idx].children.push(Box::new(MctsNode::child(node_idx, new_tool, current_depth + 1)));
                 tree[node_idx].is_expanded = true;
                 path.push(new_idx);
             }

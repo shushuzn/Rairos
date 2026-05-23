@@ -10,6 +10,7 @@ rairos-llm = { path = "../rairos-llm" }
 rairos-parser = { path = "../rairos-parser" }
 rairos-rankers = { path = "../rairos-rankers" }
 rairos-observability = { path = "../rairos-observability" }
+rairos-cortex-pro = { path = "../rairos-cortex-pro", default-features = false, features = ["llm"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 thiserror.workspace = true

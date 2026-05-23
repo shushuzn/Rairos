@@ -233,7 +233,7 @@ impl Conversation {
     pub fn add_turn(&mut self, turn: Turn) {
         self.metadata.turn_count += 1;
         self.metadata.updated_at = current_timestamp();
-        self.turns.push(turn);
+        self.turns.push_back(turn);
 
         // Trim if exceeds max_turns
         if self.max_turns > 0 && self.turns.len() > self.max_turns as usize {
@@ -393,7 +393,7 @@ impl ConversationHistory {
 
         // Use entry API to insert and get reference in single lock acquisition
         let mut conversations = self.conversations.write().await;
-        conversations.entry(id).insert(conv.clone());
+        conversations.insert(id, conv.clone());
         conv
     }
 
