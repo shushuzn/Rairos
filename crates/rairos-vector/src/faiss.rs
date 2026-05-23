@@ -26,8 +26,8 @@ struct BoundedCache<K, V> {
 impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
     fn new(capacity: usize) -> Self {
         Self {
-            map: HashMap::new(),
-            order: Vec::new(),
+            map: HashMap::with_capacity(capacity),
+            order: Vec::with_capacity(capacity),
             capacity,
         }
     }
@@ -266,9 +266,35 @@ impl VectorStore for FaissStore {
         &self,
         vectors: Vec<(String, Vec<f32>, Option<serde_json::Value>)>,
     ) -> Result<(), VectorError> {
-        for (id, embedding, payload) in vectors {
-            self.upsert_one(&id, &embedding, payload).await?;
+        if vectors.is_empty() {
+            return Ok(());
         }
+
+        // Batch processing: single lock acquisition for all operations
+        let mut vectors_guard = self.vectors.write().unwrap();
+        let mut payloads_guard = self.payloads.write().unwrap();
+
+        // Check/update dimensions with write lock held
+        let dims = *self.dimensions.read().unwrap();
+        let first_dim = vectors.first().map(|(_, v, _)| v.len()).unwrap_or(0);
+
+        if dims == 0 {
+            *self.dimensions.write().unwrap() = first_dim;
+        } else if first_dim != dims {
+            return Err(VectorError::DimensionMismatch { expected: dims, got: first_dim });
+        }
+
+        // Insert all vectors and payloads under single lock scope
+        for (id, embedding, payload) in vectors {
+            if embedding.len() != dims {
+                return Err(VectorError::DimensionMismatch { expected: dims, got: embedding.len() });
+            }
+            vectors_guard.insert(id.clone(), embedding);
+            if let Some(p) = payload {
+                payloads_guard.insert(id, p);
+            }
+        }
+
         Ok(())
     }
 
@@ -296,8 +322,11 @@ impl VectorStore for FaissStore {
     }
 
     async fn delete(&self, id: &str) -> Result<(), VectorError> {
-        self.vectors.write().unwrap().remove(id);
-        self.payloads.write().unwrap().remove(id);
+        // Single scope for both write operations - shorter critical section
+        let mut vectors = self.vectors.write().unwrap();
+        let mut payloads = self.payloads.write().unwrap();
+        vectors.remove(id);
+        payloads.remove(id);
         Ok(())
     }
 
@@ -326,9 +355,13 @@ impl VectorStore for FaissStore {
     }
 
     async fn drop_collection(&self) -> Result<(), VectorError> {
-        self.vectors.write().unwrap().clear();
-        self.payloads.write().unwrap().clear();
-        *self.dimensions.write().unwrap() = 0;
+        // Single scope for all three write operations - reduces lock overhead
+        let mut vectors = self.vectors.write().unwrap();
+        let mut payloads = self.payloads.write().unwrap();
+        let mut dimensions = self.dimensions.write().unwrap();
+        vectors.clear();
+        payloads.clear();
+        *dimensions = 0;
         Ok(())
     }
 }

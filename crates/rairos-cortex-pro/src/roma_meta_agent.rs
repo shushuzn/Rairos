@@ -384,7 +384,6 @@ impl MetaAgent {
     fn atomize(&self, task: &str) -> Vec<String> {
         // Simple keyword-based decomposition
         let separators = [" and ", " then ", " also ", " plus "];
-        let sep_lowers: Vec<String> = separators.iter().map(|s| s.to_lowercase()).collect();
 
         let mut subtasks = vec![task.to_string()];
         let mut new_subtasks = Vec::new();
@@ -392,7 +391,9 @@ impl MetaAgent {
         for sep in &separators {
             let sep_lower = sep.to_lowercase();
             for subtask in subtasks.drain(..) {
-                if subtask.to_lowercase().contains(sep_lower.trim()) {
+                // Compute lowercase once per subtask instead of repeated in contains()
+                let subtask_lower = subtask.to_lowercase();
+                if subtask_lower.contains(sep_lower.trim()) {
                     let parts: Vec<_> = subtask.split(sep).collect();
                     for part in parts {
                         let trimmed = part.trim();

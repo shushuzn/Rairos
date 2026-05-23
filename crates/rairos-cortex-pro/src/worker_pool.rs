@@ -447,12 +447,10 @@ impl AsyncWorkerPool {
                             let result = Self::execute_task_sync(t);
                             let execution_time_ms = start.elapsed().as_millis() as u64;
 
-                            if result.output.is_err() {
-                                if let Ok(mut s) = state.lock() {
+                            if let Ok(mut s) = state.lock() {
+                                if result.output.is_err() {
                                     s.total_failed += 1;
                                 }
-                            }
-                            if let Ok(mut s) = state.lock() {
                                 s.total_processed += 1;
                             }
 

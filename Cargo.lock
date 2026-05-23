@@ -4308,6 +4308,7 @@ dependencies = [
  "criterion",
  "futures",
  "lru 0.10.1",
+ "parking_lot",
  "rairos-graphrag",
  "rairos-kg-neo4j",
  "rairos-llm",

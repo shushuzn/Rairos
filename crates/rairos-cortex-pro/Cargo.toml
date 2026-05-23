@@ -37,6 +37,7 @@ chrono = { version = "0.4", features = ["serde"] }
 # Performance optimizations
 smallvec = "1"           # Stack-allocated small vectors
 lru = "0.10"            # LRU cache for regex and keyword caching
+parking_lot.workspace = true  # Fast synchronization primitives
 
 # Existing Rairos crates
 rairos-llm = { path = "../rairos-llm", optional = true }

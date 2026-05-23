@@ -128,7 +128,7 @@ async fn process_topic(
     let papers_analyzed = new_papers.len() as i32;
 
     let mut all_categories: FxHashSet<String> = FxHashSet::default();
-    let mut papers: Vec<rairos_core::Paper> = Vec::new();
+    let mut papers: Vec<rairos_core::Paper> = Vec::with_capacity(10);
 
     let max_papers_for_analysis = 10;
     let selected_papers: Vec<PaperInfo> = if new_papers.len() > max_papers_for_analysis {
@@ -1172,7 +1172,7 @@ impl AutonomousOrchestrator {
         let papers_analyzed = new_papers.len() as i32;
 
         let mut all_categories: FxHashSet<String> = FxHashSet::default();
-        let mut papers: Vec<rairos_core::Paper> = Vec::new();
+        let mut papers: Vec<rairos_core::Paper> = Vec::with_capacity(10);
 
         let max_papers_for_analysis = 10;
         let selected_papers: Vec<PaperInfo> = if new_papers.len() > max_papers_for_analysis {

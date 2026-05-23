@@ -26,7 +26,7 @@
 //! ```
 
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
 use std::time::{Duration, Instant};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
@@ -127,8 +127,8 @@ impl SseEvent {
 pub struct SseBroadcaster {
     /// Channel sender for broadcasting
     sender: broadcast::Sender<SseEvent>,
-    /// Connected clients count
-    client_count: Arc<RwLock<usize>>,
+    /// Connected clients count (atomic for lock-free counter)
+    client_count: Arc<AtomicUsize>,
 }
 
 impl SseBroadcaster {
@@ -137,17 +137,15 @@ impl SseBroadcaster {
         let (sender, _) = broadcast::channel(1000);
         Self {
             sender,
-            client_count: Arc::new(RwLock::new(0)),
+            client_count: Arc::new(AtomicUsize::new(0)),
         }
     }
 
     /// Subscribe to events (returns a stream)
     pub fn subscribe(&self) -> SseEventStream {
         let receiver = self.sender.subscribe();
-        {
-            let mut count = self.client_count.write().unwrap();
-            *count += 1;
-        }
+        // Lock-free atomic increment - no mutex needed for simple counter
+        self.client_count.fetch_add(1, Ordering::SeqCst);
         SseEventStream { receiver }
     }
 
@@ -158,13 +156,14 @@ impl SseBroadcaster {
 
     /// Get number of connected clients
     pub fn client_count(&self) -> usize {
-        *self.client_count.read().unwrap()
+        // Lock-free atomic load
+        self.client_count.load(Ordering::SeqCst)
     }
 
     /// Client disconnected - call when a subscriber ends
     pub fn on_disconnect(&self) {
-        let mut count = self.client_count.write().unwrap();
-        *count = count.saturating_sub(1);
+        // Lock-free atomic decrement with saturation to prevent underflow
+        self.client_count.fetch_sub(1, Ordering::SeqCst);
     }
 
     /// Send agent started event

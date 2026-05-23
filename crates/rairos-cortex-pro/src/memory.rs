@@ -46,7 +46,7 @@ struct BoundedCache<K, V> {
 impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
     fn new(capacity: usize) -> Self {
         Self {
-            map: HashMap::new(),
+            map: HashMap::with_capacity(capacity),
             order: VecDeque::new(),
             capacity,
         }
@@ -54,26 +54,28 @@ impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
 
     fn insert(&mut self, k: K, v: V) {
         // If key exists, update and move to end (most recent)
-        if self.map.contains_key(&k) {
-            self.map.insert(k.clone(), v);
-            // Remove old position and push to end
-            if let Some(pos) = self.order.iter().position(|x| x == &k) {
-                self.order.remove(pos);
+        match self.map.entry(k) {
+            std::collections::hash_map::Entry::Occupied(e) => {
+                e.insert(v);
+                // Remove old position and push to end
+                if let Some(pos) = self.order.iter().position(|x| x == e.key()) {
+                    self.order.remove(pos);
+                }
+                self.order.push(e.key().clone());
+                return;
             }
-            self.order.push(k);
-            return;
-        }
-
-        // Evict oldest if at capacity
-        if self.map.len() >= self.capacity {
-            if let Some(oldest) = self.order.first() {
-                self.map.remove(oldest);
-                self.order.pop_front();
+            std::collections::hash_map::Entry::Vacant(e) => {
+                // Evict oldest if at capacity
+                if self.map.len() >= self.capacity {
+                    if let Some(oldest) = self.order.front() {
+                        self.map.remove(oldest);
+                        self.order.pop_front();
+                    }
+                }
+                e.insert(v);
+                self.order.push(e.key().clone());
             }
         }
-
-        self.map.insert(k.clone(), v);
-        self.order.push(k);
     }
 
     fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
@@ -174,6 +176,39 @@ pub struct ExperimentationEntry {
     pub timestamp: DateTime<Utc>,
     /// Key learnings
     pub learnings: Vec<String>,
+    /// Cached lowercase strategy for fast case-insensitive search
+    #[serde(skip)]
+    strategy_lower: Option<String>,
+    /// Cached lowercase approach for fast case-insensitive search
+    #[serde(skip)]
+    approach_lower: Option<String>,
+}
+
+impl ExperimentationEntry {
+    /// Check if this entry contains the query (case-insensitive)
+    /// Uses cached lowercase strings when available
+    fn contains_query(&self, query_lower: &str) -> bool {
+        // Use cached lowercase strategy if available
+        if let Some(ref strategy_lower) = self.strategy_lower {
+            if strategy_lower.contains(query_lower) {
+                return true;
+            }
+        } else if self.strategy.to_lowercase().contains(query_lower) {
+            return true;
+        }
+
+        // Use cached lowercase approach if available
+        if let Some(ref approach_lower) = self.approach_lower {
+            if approach_lower.contains(query_lower) {
+                return true;
+            }
+        } else if self.approach.to_lowercase().contains(query_lower) {
+            return true;
+        }
+
+        // Check learnings (still need to compute on the fly for now)
+        self.learnings.iter().any(|l| l.to_lowercase().contains(query_lower))
+    }
 }
 
 /// Memory bank holding both ideation and experimentation memories
@@ -312,12 +347,7 @@ impl MemoryBank {
             .read()
             .unwrap()
             .iter()
-            .filter(|e| {
-                // Check cheaper conditions first to avoid expensive learnings iteration
-                e.strategy.to_lowercase().contains(&query_lower)
-                    || e.approach.to_lowercase().contains(&query_lower)
-                    || e.learnings.iter().any(|l| l.to_lowercase().contains(&query_lower))
-            })
+            .filter(|e| e.contains_query(&query_lower))
             .take(3)
             .cloned()
             .collect()
@@ -342,39 +372,39 @@ impl MemoryBank {
 
     /// Get memory statistics
     pub fn stats(&self) -> MemoryStats {
+        // Single lock acquisition for ideation - compute all counts in one pass
+        let ideation = self.ideation.read().unwrap();
+        let ideation_count = ideation.len();
+        let mut ideation_active = 0;
+        let mut ideation_validated = 0;
+        let mut ideation_failed = 0;
+        for e in ideation.iter() {
+            match e.status {
+                IdeationStatus::Active => ideation_active += 1,
+                IdeationStatus::Validated => ideation_validated += 1,
+                IdeationStatus::Failed => ideation_failed += 1,
+            }
+        }
+        drop(ideation);
+
+        // Single lock acquisition for experimentation
+        let experimentation = self.experimentation.read().unwrap();
+        let experimentation_count = experimentation.len();
+        let avg_experiment_effectiveness = if experimentation.is_empty() {
+            0.0
+        } else {
+            let sum: f32 = experimentation.iter().map(|e| e.effectiveness).sum();
+            sum / experimentation.len() as f32
+        };
+        drop(experimentation);
+
         MemoryStats {
-            ideation_count: self.ideation.read().unwrap().len(),
-            experimentation_count: self.experimentation.read().unwrap().len(),
-            ideation_active: self
-                .ideation
-                .read()
-                .unwrap()
-                .iter()
-                .filter(|e| e.status == IdeationStatus::Active)
-                .count(),
-            ideation_validated: self
-                .ideation
-                .read()
-                .unwrap()
-                .iter()
-                .filter(|e| e.status == IdeationStatus::Validated)
-                .count(),
-            ideation_failed: self
-                .ideation
-                .read()
-                .unwrap()
-                .iter()
-                .filter(|e| e.status == IdeationStatus::Failed)
-                .count(),
-            avg_experiment_effectiveness: {
-                let experimentation = self.experimentation.read().unwrap();
-                if experimentation.is_empty() {
-                    0.0
-                } else {
-                    let sum: f32 = experimentation.iter().map(|e| e.effectiveness).sum();
-                    sum / experimentation.len() as f32
-                }
-            },
+            ideation_count,
+            experimentation_count,
+            ideation_active,
+            ideation_validated,
+            ideation_failed,
+            avg_experiment_effectiveness,
         }
     }
 }
@@ -491,9 +521,13 @@ impl ExperimentationEntryBuilder {
     }
 
     pub fn build(self) -> ExperimentationEntry {
+        let strategy = self.strategy.unwrap_or_default();
+        let approach = self.approach.unwrap_or_default();
         ExperimentationEntry {
-            strategy: self.strategy.unwrap_or_default(),
-            approach: self.approach.unwrap_or_default(),
+            strategy_lower: Some(strategy.to_lowercase()),
+            approach_lower: Some(approach.to_lowercase()),
+            strategy,
+            approach,
             code_reference: self.code_reference,
             effectiveness: self.effectiveness,
             timestamp: Utc::now(),

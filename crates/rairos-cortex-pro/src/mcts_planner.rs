@@ -25,7 +25,7 @@
 use smallvec::SmallVec;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use std::sync::RwLock;
+use parking_lot::RwLock;
 
 /// Maximum depth for MCTS search
 const MAX_DEPTH: usize = 5;
@@ -44,6 +44,9 @@ pub struct Tool {
     pub category: ToolCategory,
     pub input_schema: HashMap<String, serde_json::Value>,
     pub estimated_cost: f32, // 0.0 to 1.0
+    /// Cached lowercase description for fast case-insensitive matching
+    #[serde(skip)]
+    pub description_lower: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -172,18 +175,18 @@ impl MctsPlanner {
 
     /// Register a tool with the planner
     pub fn register_tool(&self, tool: Tool) {
-        self.tools.write().unwrap().push(tool);
+        self.tools.write().push(tool);
     }
 
     /// Register multiple tools
     pub fn register_tools(&self, tools: Vec<Tool>) {
-        let mut tools_lock = self.tools.write().unwrap();
+        let mut tools_lock = self.tools.write();
         tools_lock.extend(tools);
     }
 
     /// Update tool effectiveness based on execution result
     pub fn update_effectiveness(&self, tool_name: &str, effectiveness: f32) {
-        let mut eff = self.tool_effectiveness.write().unwrap();
+        let mut eff = self.tool_effectiveness.write();
         // EMA-style update
         let prev = eff.get(tool_name).copied().unwrap_or(0.5);
         let new = 0.7 * effectiveness + 0.3 * prev;
@@ -192,7 +195,7 @@ impl MctsPlanner {
 
     /// Select the best tool using MCTS
     pub fn select_tools(&self, query: &str, context: &str) -> ToolSelection {
-        let tools_guard = self.tools.read().unwrap();
+        let tools_guard = self.tools.read();
         if tools_guard.is_empty() {
             return ToolSelection {
                 tool_name: String::new(),
@@ -208,7 +211,7 @@ impl MctsPlanner {
         }
 
         // Get best tool from root's children
-        let tree = self.tree.read().unwrap();
+        let tree = self.tree.read();
         let root = &tree[0];
         let mut child_scores: Vec<_> = Vec::with_capacity(root.children.len());
         for (idx, child) in root.children.iter().enumerate() {
@@ -266,7 +269,7 @@ impl MctsPlanner {
             .collect();
 
         // Generate reasoning
-        let effectiveness = self.tool_effectiveness.read().unwrap();
+        let effectiveness = self.tool_effectiveness.read();
         let eff_score = effectiveness.get(&best_tool.name).copied().unwrap_or(0.5);
 
         let reasoning = format!(
@@ -293,7 +296,7 @@ impl MctsPlanner {
 
         // Selection phase - traverse until we find unexpanded node or leaf
         loop {
-            let tree = self.tree.read().unwrap();
+let tree = self.tree.read();
             let node = &tree[node_idx];
 
             // If leaf or not fully expanded, stop
@@ -330,10 +333,14 @@ impl MctsPlanner {
             }
         }
 
-        // Expansion: add new child if not at max depth
-        // Consolidate: acquire write lock once for both check and expansion
-        let mut tree = self.tree.write().unwrap();
+        // Simulation: evaluate the selected node BEFORE writing (needs consistent tree state)
+        let reward = self.simulate_reward(query, context, &path);
 
+        // Expansion + Backpropagation: single write lock for both phases
+        // Consolidate: reduced from 2 write locks to 1
+        let mut tree = self.tree.write();
+
+        // Expansion: add new child if not at max depth
         if tree[node_idx].depth < MAX_DEPTH && !tree[node_idx].is_fully_expanded(tools) {
             // Find unexplored tools
             let explored_tools: HashSet<_> = tree[node_idx].children.iter()
@@ -359,25 +366,18 @@ impl MctsPlanner {
                 path.push(new_idx);
             }
         }
-        drop(tree);
 
-        // Simulation: evaluate the selected node (simplified)
-        let reward = self.simulate_reward(query, context, &path);
-
-        // Backpropagation: update Q-values
-        {
-            let mut tree = self.tree.write().unwrap();
-            for idx in &path {
-                tree[*idx].visit_count += 1;
-                tree[*idx].q_value += reward;
-            }
+        // Backpropagation: update Q-values (same write lock, no lock acquisition needed)
+        for idx in &path {
+            tree[*idx].visit_count += 1;
+            tree[*idx].q_value += reward;
         }
     }
 
     /// Simulate reward for a tool sequence
     fn simulate_reward(&self, query: &str, context: &str, path: &[usize]) -> f64 {
-        let tree = self.tree.read().unwrap();
-        let effectiveness = self.tool_effectiveness.read().unwrap();
+        let tree = self.tree.read();
+        let effectiveness = self.tool_effectiveness.read();
 
         // Hoist to_lowercase outside loop - query is constant per call
         let query_lower = query.to_lowercase();
@@ -398,8 +398,16 @@ impl MctsPlanner {
                     0.1
                 };
 
-                // Query-tool relevance (simple keyword matching) - desc lowercase also hoisted
-                let desc_lower = tool.description.to_lowercase();
+                // Query-tool relevance (simple keyword matching) - use cached lowercase if available
+                let desc_lower_owned;
+                let desc_lower: &str = match &tool.description_lower {
+                    Some(dl) => dl,
+                    None => {
+                        // Fallback: compute on the fly (should be rare after warmup)
+                        desc_lower_owned = tool.description.to_lowercase();
+                        &desc_lower_owned
+                    }
+                };
                 let query_relevance = if desc_lower.contains(&query_lower) {
                     0.2
                 } else {
@@ -418,14 +426,21 @@ impl MctsPlanner {
     /// Calculate FORESIGHT score (pre-execution prediction) - ToolTree innovation
     /// This predicts how useful a tool will be before actually using it
     fn calculate_foresight(&self, tool: &Tool, query: &str, context: &str) -> f64 {
-        let effectiveness = self.tool_effectiveness.read().unwrap();
+        let effectiveness = self.tool_effectiveness.read();
 
         // Historical effectiveness
         let hist_eff = effectiveness.get(&tool.name).copied().unwrap_or(0.5) as f64;
 
-        // Query relevance (forward-looking)
+        // Query relevance (forward-looking) - use cached lowercase if available
         let query_lower = query.to_lowercase();
-        let desc_lower = tool.description.to_lowercase();
+        let desc_lower_owned;
+        let desc_lower: &str = match &tool.description_lower {
+            Some(dl) => dl,
+            None => {
+                desc_lower_owned = tool.description.to_lowercase();
+                &desc_lower_owned
+            }
+        };
         let query_relevance = if desc_lower.contains(&query_lower) || query_lower.contains(&desc_lower[..10.min(desc_lower.len())]) {
             0.3
         } else {
@@ -450,7 +465,7 @@ impl MctsPlanner {
     /// Update HINDSIGHT score (post-execution evaluation) - ToolTree innovation
     /// This updates the node with actual observed performance
     fn update_hindsight(&self, node_idx: usize, actual_reward: f64) {
-        let mut tree = self.tree.write().unwrap();
+        let mut tree = self.tree.write();
         if let Some(node) = tree.get_mut(node_idx) {
             node.hindsight_score = actual_reward;
             node.is_executed = true;
@@ -460,7 +475,7 @@ impl MctsPlanner {
     /// Calculate combined score using FORESIGHT + HINDSIGHT dual evaluation
     /// This is the ToolTree innovation: bidirectional pruning
     fn calculate_dual_score(&self, node_idx: usize) -> f64 {
-        let tree = self.tree.read().unwrap();
+        let tree = self.tree.read();
         if let Some(node) = tree.get(node_idx) {
             if node.is_executed {
                 // Use hindsight (actual observed)
@@ -493,7 +508,7 @@ impl MctsPlanner {
         self.update_effectiveness(tool_name, reward as f32);
 
         // Update nodes that used this tool with hindsight
-        let mut tree = self.tree.write().unwrap();
+        let mut tree = self.tree.write();
         for node in tree.iter_mut() {
             if let Some(ref tool) = node.tool {
                 if tool.name == tool_name {
@@ -506,12 +521,12 @@ impl MctsPlanner {
 
     /// Get the full search tree for visualization
     pub fn get_tree(&self) -> Vec<MctsNode> {
-        self.tree.read().unwrap().clone()
+        self.tree.read().clone()
     }
 
     /// Clear the search tree (but keep tools)
     pub fn reset(&self) {
-        let mut tree = self.tree.write().unwrap();
+        let mut tree = self.tree.write();
         tree.clear();
         tree.push(MctsNode::root());
     }
@@ -550,14 +565,14 @@ mod tests {
     #[test]
     fn test_mcts_planner_creation() {
         let planner = MctsPlanner::new();
-        assert!(planner.tools.read().unwrap().is_empty());
+        assert!(planner.tools.read().is_empty());
     }
 
     #[test]
     fn test_register_tools() {
         let planner = MctsPlanner::new();
         planner.register_tools(sample_tools());
-        assert_eq!(planner.tools.read().unwrap().len(), 3);
+        assert_eq!(planner.tools.read().len(), 3);
     }
 
     #[test]
@@ -576,7 +591,7 @@ mod tests {
         planner.register_tools(sample_tools());
 
         planner.update_effectiveness("materials_project", 0.8);
-        let eff = planner.tool_effectiveness.read().unwrap();
+        let eff = planner.tool_effectiveness.read();
         assert!(*eff.get("materials_project").unwrap() > 0.7);
     }
 
@@ -587,6 +602,6 @@ mod tests {
         planner.select_tools("test", "context");
 
         planner.reset();
-        assert_eq!(planner.tree.read().unwrap().len(), 1); // Only root
+        assert_eq!(planner.tree.read().len(), 1); // Only root
     }
 }
