@@ -13,6 +13,7 @@ tracing-subscriber.workspace = true
 dirs.workspace = true
 tracing-appender.workspace = true
 parking_lot.workspace = true
+dashmap.workspace = true
 rustc-hash.workspace = true
 
 [features]

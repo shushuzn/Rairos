@@ -6,11 +6,12 @@
 //! Ported from `core/observability.py`.
 
 use chrono::Utc;
-use rand::Rng;
-use serde::{Deserialize, Serialize};
-use rustc_hash::FxHashMap;
-use std::sync::{Arc, LazyLock};
+use dashmap::DashMap;
 use parking_lot::RwLock;
+use rand::Rng;
+use rustc_hash::FxHashMap;
+use serde::{Deserialize, Serialize};
+use std::sync::{Arc, LazyLock};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 fn now_iso() -> String {
@@ -252,68 +253,66 @@ pub fn get_recent_events(n: usize) -> Vec<Event> {
 
 #[derive(Debug, Clone, Default)]
 pub struct MetricsCollector {
-    counters: Arc<RwLock<FxHashMap<String, f64>>>,
-    gauges: Arc<RwLock<FxHashMap<String, f64>>>,
+    counters: Arc<DashMap<String, f64>>,
+    gauges: Arc<DashMap<String, f64>>,
     #[allow(dead_code)]
     hist_maxlen: usize,
-    histograms: Arc<RwLock<FxHashMap<String, Vec<f64>>>>,
+    histograms: Arc<DashMap<String, Vec<f64>>>,
 }
 
 impl MetricsCollector {
     pub fn new() -> Self {
         Self {
-            counters: Arc::new(RwLock::new(FxHashMap::default())),
-            gauges: Arc::new(RwLock::new(FxHashMap::default())),
-            histograms: Arc::new(RwLock::new(FxHashMap::default())),
+            counters: Arc::new(DashMap::new()),
+            gauges: Arc::new(DashMap::new()),
+            histograms: Arc::new(DashMap::new()),
             hist_maxlen: 1000,
         }
     }
 
     pub fn inc(&self, subsystem: &str, name: &str, value: f64) {
         let key = format!("{}.{}", subsystem, name);
-        let mut counters = self.counters.write();
-        *counters.entry(key).or_insert(0.0) += value;
+        // DashMap: entry() returns a RefMut which can be used similarly
+        let mut counters = self.counters.entry(key).or_insert(0.0);
+        *counters += value;
     }
 
     pub fn counter(&self, subsystem: &str, name: &str) -> f64 {
         let key = format!("{}.{}", subsystem, name);
-        self.counters
-            .read()
-            .get(&key)
-            .copied()
-            .unwrap_or(0.0)
+        // DashMap get() returns Option<Ref>, use * to deref or copy
+        self.counters.get(&key).map(|v| *v).unwrap_or(0.0)
     }
 
     pub fn set(&self, subsystem: &str, name: &str, value: f64) {
         let key = format!("{}.{}", subsystem, name);
-        self.gauges.write().insert(key, value);
+        self.gauges.insert(key, value);
     }
 
     pub fn gauge(&self, subsystem: &str, name: &str) -> Option<f64> {
         let key = format!("{}.{}", subsystem, name);
-        self.gauges.read().get(&key).copied()
+        self.gauges.get(&key).map(|v| *v)
     }
 
     pub fn observe(&self, subsystem: &str, name: &str, value: f64) {
         let key = format!("{}.{}", subsystem, name);
-        let mut histograms = self.histograms.write();
-        let hist = histograms.entry(key).or_default();
-        hist.push(value);
-        if hist.len() > 1000 {
-            hist.remove(0);
+        // For histogram, we need to handle Vec<f64>
+        let mut histogram = self.histograms.entry(key).or_insert_with(Vec::new);
+        histogram.push(value);
+        if histogram.len() > self.hist_maxlen {
+            histogram.remove(0);
         }
     }
 
     pub fn histogram_stats(&self, subsystem: &str, name: &str) -> FxHashMap<String, f64> {
         let key = format!("{}.{}", subsystem, name);
-        let histograms = self.histograms.read();
-        let values: Vec<f64> = histograms.get(&key).cloned().unwrap_or_default();
+        // DashMap get() returns Option<Ref>, dereference to get Vec
+        let values: Vec<f64> = self.histograms.get(&key).map(|v| v.clone()).unwrap_or_default();
 
         if values.is_empty() {
             return FxHashMap::default();
         }
 
-let mut sorted = values;
+        let mut sorted = values;
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         let n = sorted.len();
 
@@ -339,25 +338,30 @@ let mut sorted = values;
         let ts = now_secs_f64();
         let mut lines = Vec::new();
 
-        let counters = self.counters.read();
-        for (key, value) in counters.iter() {
+        // DashMap: iterate directly without .read()
+        // RefMulti has .key() and .value() methods
+        for pair in self.counters.iter() {
+            let key = pair.key();
+            let value = *pair.value();
             lines.push(format!("# TYPE {} counter", key));
             lines.push(format!("{} {} {}", key, value, (ts * 1000.0) as i64));
         }
 
-        let gauges = self.gauges.read();
-        for (key, value) in gauges.iter() {
+        for pair in self.gauges.iter() {
+            let key = pair.key();
+            let value = *pair.value();
             lines.push(format!("# TYPE {} gauge", key));
             lines.push(format!("{} {} {}", key, value, (ts * 1000.0) as i64));
         }
 
-        let histograms = self.histograms.read();
-        for (key, values) in histograms.iter() {
+        for pair in self.histograms.iter() {
+            let key = pair.key();
+            let values = pair.value();
             if values.is_empty() {
                 continue;
             }
             lines.push(format!("# TYPE {} histogram", key));
-            let mut sorted = values.to_vec();
+            let mut sorted = values.clone();
             sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
             let n = sorted.len();
             for boundary in [0.5, 0.95, 0.99] {
@@ -385,27 +389,34 @@ let mut sorted = values;
     pub fn summary(&self) -> FxHashMap<String, serde_json::Value> {
         let mut result = FxHashMap::default();
 
-        let counters = self.counters.read();
+        // Collect counters - DashMap provides iter() that yields RefMulti
+        let counters_val: FxHashMap<String, f64> = self.counters
+            .iter()
+            .map(|pair| (pair.key().clone(), *pair.value()))
+            .collect();
         result.insert(
             "counters".to_string(),
-            serde_json::to_value(&*counters).unwrap_or(serde_json::Value::Null),
+            serde_json::to_value(counters_val).unwrap_or(serde_json::Value::Null),
         );
 
-        let gauges = self.gauges.read();
+        let gauges_val: FxHashMap<String, f64> = self.gauges
+            .iter()
+            .map(|pair| (pair.key().clone(), *pair.value()))
+            .collect();
         result.insert(
             "gauges".to_string(),
-            serde_json::to_value(&*gauges).unwrap_or(serde_json::Value::Null),
+            serde_json::to_value(gauges_val).unwrap_or(serde_json::Value::Null),
         );
 
-        let histograms = self.histograms.read();
-        let hist_summary: FxHashMap<String, FxHashMap<String, f64>> = histograms
-            .keys()
-            .map(|k| {
+        let hist_summary: FxHashMap<String, FxHashMap<String, f64>> = self.histograms
+            .iter()
+            .map(|pair| {
+                let k = pair.key().clone();
                 let stats = Self::new().histogram_stats(
                     k.split('.').next().unwrap_or(""),
                     k.split('.').nth(1).unwrap_or(""),
                 );
-                (k.clone(), stats)
+                (k, stats)
             })
             .collect();
         result.insert(
