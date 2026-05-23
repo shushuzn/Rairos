@@ -211,27 +211,11 @@ impl MctsPlanner {
         }
 
         // Get best tool from root's children
+        // O(n) single-pass max finding instead of O(n log n) sort
         let tree = self.tree.read();
         let root = &tree[0];
-        let mut child_scores: Vec<_> = Vec::with_capacity(root.children.len());
-        for (idx, child) in root.children.iter().enumerate() {
-            child_scores.push((idx, child));
-        }
-        child_scores.sort_by(|a, b| {
-            let score_a = if a.1.visit_count > 0 {
-                a.1.q_value / a.1.visit_count as f64
-            } else {
-                0.0
-            };
-            let score_b = if b.1.visit_count > 0 {
-                b.1.q_value / b.1.visit_count as f64
-            } else {
-                0.0
-            };
-            score_b.partial_cmp(&score_a).unwrap()
-        });
 
-        if child_scores.is_empty() {
+        if root.children.is_empty() {
             return ToolSelection {
                 tool_name: tools[0].name.clone(),
                 confidence: 0.5,
@@ -240,8 +224,30 @@ impl MctsPlanner {
             };
         }
 
-        let best_idx = child_scores[0].0;
-        let best_child = &child_scores[0].1;
+        // Single-pass O(n) max finding - find best and collect alternatives
+        let mut best_idx = 0;
+        let mut best_score = 0.0f64;
+        let mut alternatives: Vec<(usize, &MctsNode)> = Vec::with_capacity(root.children.len().min(4));
+
+        for (idx, child) in root.children.iter().enumerate() {
+            let score = if child.visit_count > 0 {
+                child.q_value / child.visit_count as f64
+            } else {
+                0.0
+            };
+            if score > best_score {
+                // Current best becomes second best (for alternatives)
+                if best_idx != idx {
+                    alternatives.push((best_idx, &root.children[best_idx]));
+                }
+                best_score = score;
+                best_idx = idx;
+            } else if alternatives.len() < 3 {
+                alternatives.push((idx, child));
+            }
+        }
+
+        let best_child = &root.children[best_idx];
         let best_tool = best_child.tool.as_ref().unwrap();
 
         // Calculate confidence based on visit count
@@ -252,11 +258,9 @@ impl MctsPlanner {
             0.5
         };
 
-        // Build alternatives
-        let alternative_tools: Vec<_> = child_scores
+        // Build alternative_tools from collected alternatives
+        let alternative_tools: Vec<_> = alternatives
             .iter()
-            .skip(1)
-            .take(3)
             .map(|(_, c)| {
                 let t = c.tool.as_ref().unwrap();
                 let score = if c.visit_count > 0 {
