@@ -49,7 +49,7 @@ pub struct Tool {
     pub description_lower: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum ToolCategory {
     Literature,
     Simulation,
@@ -224,10 +224,11 @@ impl MctsPlanner {
             };
         }
 
-        // Single-pass O(n) max finding - find best and collect alternatives
+        // Single-pass O(n) max finding - find best and collect top alternatives
         let mut best_idx = 0;
         let mut best_score = 0.0f64;
-        let mut alternatives: Vec<(usize, &MctsNode)> = Vec::with_capacity(root.children.len().min(4));
+        // Store (score, idx, child) for sorting alternatives later
+        let mut alternatives: Vec<(f64, usize, &MctsNode)> = Vec::with_capacity(root.children.len().min(4));
 
         for (idx, child) in root.children.iter().enumerate() {
             let score = if child.visit_count > 0 {
@@ -236,16 +237,24 @@ impl MctsPlanner {
                 0.0
             };
             if score > best_score {
-                // Current best becomes second best (for alternatives)
+                // Current best becomes alternative if not the same
                 if best_idx != idx {
-                    alternatives.push((best_idx, &root.children[best_idx]));
+                    alternatives.push((best_score, best_idx, &root.children[best_idx]));
+                    // Keep only top 3 alternatives
+                    if alternatives.len() > 3 {
+                        alternatives.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
+                        alternatives.truncate(3);
+                    }
                 }
                 best_score = score;
                 best_idx = idx;
             } else if alternatives.len() < 3 {
-                alternatives.push((idx, child));
+                alternatives.push((score, idx, child));
             }
         }
+
+        // Sort alternatives by score descending
+        alternatives.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
 
         let best_child = &root.children[best_idx];
         let best_tool = best_child.tool.as_ref().unwrap();
@@ -261,7 +270,7 @@ impl MctsPlanner {
         // Build alternative_tools from collected alternatives
         let alternative_tools: Vec<_> = alternatives
             .iter()
-            .map(|(_, c)| {
+            .map(|(_, _, c)| {
                 let t = c.tool.as_ref().unwrap();
                 let score = if c.visit_count > 0 {
                     c.q_value / c.visit_count as f64
@@ -420,7 +429,7 @@ let tree = self.tree.read();
 
                 let reward = (hist_eff as f64) + diversity_bonus + query_relevance;
                 total_reward += reward;
-                prev_category = Some(tool.category.clone());
+                prev_category = Some(tool.category);
             }
         }
 
