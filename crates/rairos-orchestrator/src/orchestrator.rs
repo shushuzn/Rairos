@@ -4,6 +4,7 @@ use rairos_core::{Database, Paper, ResearchGap};
 use rairos_crossover::CrossoverEngine;
 use rairos_llm::insight::tracker::EvolutionTracker;
 use rairos_llm::RegretOptimalSelector;
+use rairos_observability::get_metrics;
 use rairos_rankers::{
     AdaptiveMomentum as RankerAdaptiveMomentum,
     BayesianOptimizer as RankerBayesianOptimizer, OptimalScalingLearner,
@@ -1516,12 +1517,17 @@ impl AutonomousOrchestrator {
     }
 
     pub async fn run_cycle(&mut self) -> Result<Vec<ResearchAlert>> {
+        let metrics = get_metrics();
+        metrics.inc("orchestrator", "cycle_start", 1.0);
+
         self.init_components().await?;
         let mut all_alerts: Vec<ResearchAlert> = Vec::new();
 
         tracing::info!("[Orchestrator] Starting cycle...");
 
         let sub_results = self.check_subscriptions().await?;
+        let num_topics = sub_results.len();
+        metrics.inc("orchestrator", "topics_checked", num_topics as f64);
 
         // Spawn parallel tasks for each topic
         let handles: Vec<_> = sub_results
@@ -1585,6 +1591,10 @@ impl AutonomousOrchestrator {
         }
 
         tracing::info!("[Orchestrator] Cycle complete: {} alerts", all_alerts.len());
+
+        // Record metrics
+        metrics.inc("orchestrator", "alerts_generated", all_alerts.len() as f64);
+        metrics.inc("orchestrator", "cycle_complete", 1.0);
 
         if self.config.run_evolution_in_cycle && !all_alerts.is_empty() {
             tracing::info!("[Orchestrator] Running evolution cycle...");

@@ -9,6 +9,7 @@ rairos-crossover = { path = "../rairos-crossover" }
 rairos-llm = { path = "../rairos-llm" }
 rairos-parser = { path = "../rairos-parser" }
 rairos-rankers = { path = "../rairos-rankers" }
+rairos-observability = { path = "../rairos-observability" }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 thiserror.workspace = true
