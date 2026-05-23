@@ -184,10 +184,11 @@ impl ToolRegistry {
 
         {
             let mut tools = self.tools.write().await;
+            let name_clone = name.clone();
             if let std::collections::hash_map::Entry::Vacant(e) = tools.entry(name) {
                 e.insert(tool);
             } else {
-                return Err(ToolRegistryError::AlreadyExists(name));
+                return Err(ToolRegistryError::AlreadyExists(name_clone));
             }
         }
 

@@ -248,7 +248,7 @@ impl ForestReasoner {
                 id: root_id.clone(),
                 content: query.to_string(),
                 parent_id: None,
-                children: Vec::new(),
+                children: Vec::new().into(),
                 node_type: NodeType::Propose,
                 score: 1.0,
                 depth: 0,
@@ -279,19 +279,19 @@ impl ForestReasoner {
                 continue;
             }
 
-            // Expand active nodes
-            let active_ids: Vec<_> = tree.nodes
+            // Collect owned IDs to avoid borrow conflicts
+            let active_ids: Vec<String> = tree.nodes
                 .values()
                 .filter(|n| n.active && n.depth < self.config.max_depth as u32)
-                .map(|n| n.id.as_str())
+                .map(|n| n.id.clone())
                 .collect();
 
-            for parent_id in active_ids {
+            for parent_id in &active_ids {
                 let branching_factor = self.config.branching_factor;
                 let max_depth = self.config.max_depth as u32;
-                let children = Self::expand_node(tree, &parent_id, branching_factor, max_depth);
+                let children = Self::expand_node(tree, parent_id, branching_factor, max_depth);
 
-                if let Some(parent) = tree.nodes.get_mut(&parent_id) {
+                if let Some(parent) = tree.nodes.get_mut(parent_id.as_str()) {
                     parent.children = children.iter().map(|c| c.id.clone()).collect();
                 }
             }
@@ -326,7 +326,7 @@ impl ForestReasoner {
                 id: child_id,
                 content: child_content.clone(),
                 parent_id: Some(parent_id.to_string()),
-                children: Vec::new(),
+                children: Vec::new().into(),
                 node_type: child_type,
                 score: calculate_thought_score(&child_content, child_type),
                 depth: parent.depth + 1,
@@ -583,7 +583,7 @@ impl DiagramOfThoughtReasoner {
             id: id.clone(),
             content: content.to_string(),
             parent_id: parent_id.map(String::from),
-            children: Vec::new(),
+            children: Vec::new().into(),
             node_type: match role {
                 RoleToken::Proposer => NodeType::Propose,
                 RoleToken::Critic => NodeType::Critic,

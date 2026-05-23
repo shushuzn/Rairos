@@ -241,8 +241,8 @@ impl SelfCorrector {
     }
 
     /// Get correction history
-    pub fn get_history(&self) -> &[Reflection] {
-        &self.history
+    pub fn get_history(&self) -> Vec<Reflection> {
+        self.history.iter().cloned().collect()
     }
 
     /// Get learned patterns

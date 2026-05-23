@@ -10,7 +10,7 @@ rairos-llm = { path = "../rairos-llm" }
 rairos-parser = { path = "../rairos-parser" }
 rairos-rankers = { path = "../rairos-rankers" }
 rairos-observability = { path = "../rairos-observability" }
-rairos-cortex-pro = { path = "../rairos-cortex-pro" }
+rairos-cortex-pro = { path = "../rairos-cortex-pro", optional = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 thiserror.workspace = true
@@ -23,6 +23,10 @@ regex.workspace = true
 dirs.workspace = true
 futures.workspace = true
 rustc-hash.workspace = true
+
+[features]
+default = ["cortex-integration"]
+cortex-integration = ["dep:rairos-cortex-pro"]
 
 [dev-dependencies]
 tempfile.workspace = true

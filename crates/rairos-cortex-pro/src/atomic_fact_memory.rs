@@ -319,7 +319,7 @@ impl AtomicFactMemory {
                     // Precompute candidate score from utility (avoid full relevance calc for candidates)
                     let key = format!("{}:{:?}", fact_id, tier);
                     if candidates.insert(key.clone()) {
-                        candidate_scores.insert(key, utility_score);
+                        candidate_scores.insert(key, *utility_score);
                     }
                 }
             }
@@ -706,7 +706,7 @@ impl BoundedArchive {
     }
 
     fn contains(&self, entry_id: &str) -> bool {
-        self.entry_ids.contains(entry_id)
+        self.entry_ids.contains(&entry_id.to_string())
     }
 
     fn len(&self) -> usize {
@@ -719,17 +719,17 @@ impl BoundedArchive {
 }
 
 impl TierStorage {
-    fn iter(&self) -> impl Iterator<Item = &MemoryEntry> {
+    fn iter(&self) -> Box<dyn Iterator<Item = &MemoryEntry> + '_> {
         match self {
-            TierStorage::Unbounded(v) => v.iter(),
-            TierStorage::Bounded(b) => b.entries.values(),
+            TierStorage::Unbounded(v) => Box::new(v.iter()),
+            TierStorage::Bounded(b) => Box::new(b.entries.values()),
         }
     }
 
-    fn iter_mut(&mut self) -> impl Iterator<Item = &mut MemoryEntry> {
+    fn iter_mut(&mut self) -> Box<dyn Iterator<Item = &mut MemoryEntry> + '_> {
         match self {
-            TierStorage::Unbounded(v) => v.iter_mut(),
-            TierStorage::Bounded(b) => b.entries.values_mut(),
+            TierStorage::Unbounded(v) => Box::new(v.iter_mut()),
+            TierStorage::Bounded(b) => Box::new(b.entries.values_mut()),
         }
     }
 

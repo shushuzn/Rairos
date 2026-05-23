@@ -320,8 +320,8 @@ impl TransactionLog {
     }
 
     /// Get all events
-    pub fn events(&self) -> &[ToolEvent] {
-        &self.events
+    pub fn events(&self) -> Vec<ToolEvent> {
+        self.events.iter().cloned().collect()
     }
 
     /// Clear the log

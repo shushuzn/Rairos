@@ -331,8 +331,8 @@ impl AgentSafetyGuard {
     }
 
     /// Get audit log
-    pub fn get_audit_log(&self) -> &[AuditEntry] {
-        &self.audit_log
+    pub fn get_audit_log(&self) -> Vec<AuditEntry> {
+        self.audit_log.iter().cloned().collect()
     }
 
     /// Get statistics

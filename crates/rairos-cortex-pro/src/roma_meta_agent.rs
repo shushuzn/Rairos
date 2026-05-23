@@ -187,11 +187,11 @@ impl MetaAgent {
         let root_task = RomaTask {
             id: task_id.clone(),
             description: task.to_string(),
-            dependencies: vec![],
+            dependencies: vec![].into(),
             status: TaskStatus::Pending,
             result: None,
             depth: 0,
-            children: vec![],
+            children: vec![].into(),
         };
 
         self.tasks.insert(task_id.clone(), root_task);
@@ -316,11 +316,11 @@ impl MetaAgent {
             let subtask = RomaTask {
                 id: subtask_id.clone(),
                 description: desc.clone(),
-                dependencies: dep_ids,
+                dependencies: dep_ids.into(),
                 status: TaskStatus::Pending,
                 result: None,
                 depth: task_depth + 1,
-                children: vec![],
+                children: vec![].into(),
             };
 
             self.tasks.insert(subtask_id.clone(), subtask);
@@ -334,7 +334,7 @@ impl MetaAgent {
 
         // Update parent task with children
         if let Some(parent) = self.tasks.get_mut(task_id) {
-            parent.children = new_task_ids.clone();
+            parent.children = new_task_ids.clone().into();
         }
 
         // Aggregator role: combine results

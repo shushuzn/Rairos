@@ -242,9 +242,9 @@ impl Conversation {
     }
 
     /// Get recent turns
-    pub fn recent_turns(&self, count: usize) -> &[Turn] {
+    pub fn recent_turns(&self, count: usize) -> Vec<Turn> {
         let start = self.turns.len().saturating_sub(count);
-        &self.turns[start..]
+        self.turns.iter().skip(start).cloned().collect()
     }
 
     /// Get total message count

@@ -179,7 +179,8 @@ impl AgentRegistry {
         // Insert agent (check for duplicate via entry API)
         {
             let mut agents = self.agents.write().await;
-            if let std::collections::hash_map::Entry::Vacant(e) = agents.entry(id) {
+            let id_clone = id.clone();
+            if let std::collections::hash_map::Entry::Vacant(e) = agents.entry(id_clone) {
                 e.insert(agent);
             } else {
                 return Err(RegistryError::AlreadyExists(id.to_string()));

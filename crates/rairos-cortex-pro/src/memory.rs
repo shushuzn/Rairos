@@ -53,27 +53,29 @@ impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
     }
 
     fn insert(&mut self, k: K, v: V) {
-        // If key exists, update and move to end (most recent)
+        // Check capacity first (avoids borrowing conflicts with entry)
+        if !self.map.contains_key(&k) && self.map.len() >= self.capacity {
+            if let Some(oldest) = self.order.front() {
+                self.map.remove(oldest);
+                self.order.pop_front();
+            }
+        }
+
+        // Insert/update and track order
         match self.map.entry(k) {
-            std::collections::hash_map::Entry::Occupied(e) => {
+            std::collections::hash_map::Entry::Occupied(mut e) => {
+                let k2 = e.key().clone();
                 e.insert(v);
-                // Remove old position and push to end
-                if let Some(pos) = self.order.iter().position(|x| x == e.key()) {
+                // Move to end (most recent)
+                if let Some(pos) = self.order.iter().position(|x| *x == k2) {
                     self.order.remove(pos);
                 }
-                self.order.push_back(e.key().clone());
-                return;
+                self.order.push_back(k2);
             }
             std::collections::hash_map::Entry::Vacant(e) => {
-                // Evict oldest if at capacity
-                if self.map.len() >= self.capacity {
-                    if let Some(oldest) = self.order.front() {
-                        self.map.remove(oldest);
-                        self.order.pop_front();
-                    }
-                }
+                let k2 = e.key().clone();
                 e.insert(v);
-                self.order.push_back(e.key().clone());
+                self.order.push_back(k2);
             }
         }
     }
@@ -270,28 +272,16 @@ impl MemoryBank {
         experimentation.push_front(entry);
     }
 
-    /// Get all ideation entries (zero-copy read via Cow)
-    pub fn get_ideation(&self) -> Cow<'_, [IdeationEntry]> {
-        let deque = self.ideation.read().unwrap();
-        let (front, back) = deque.as_slices();
-        if back.is_empty() {
-            Cow::Borrowed(front)
-        } else {
-            // VecDeque is wrapped - need to clone to get contiguous memory
-            Cow::Owned(deque.iter().cloned().collect())
-        }
+    /// Get all ideation entries
+    pub fn get_ideation(&self) -> Vec<IdeationEntry> {
+        let guard = self.ideation.read().unwrap();
+        guard.iter().cloned().collect()
     }
 
-    /// Get all experimentation entries (zero-copy read via Cow)
-    pub fn get_experimentation(&self) -> Cow<'_, [ExperimentationEntry]> {
-        let deque = self.experimentation.read().unwrap();
-        let (front, back) = deque.as_slices();
-        if back.is_empty() {
-            Cow::Borrowed(front)
-        } else {
-            // VecDeque is wrapped - need to clone to get contiguous memory
-            Cow::Owned(deque.iter().cloned().collect())
-        }
+    /// Get all experimentation entries
+    pub fn get_experimentation(&self) -> Vec<ExperimentationEntry> {
+        let guard = self.experimentation.read().unwrap();
+        guard.iter().cloned().collect()
     }
 
     /// Get active ideation directions (for hypothesis generation)

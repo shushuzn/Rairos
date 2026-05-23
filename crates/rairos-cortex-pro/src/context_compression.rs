@@ -193,7 +193,7 @@ impl ContextCompressor {
                 let chunk_lower = chunk.to_lowercase();
                 let keyword_matches = keywords_lower
                     .iter()
-                    .filter(|kw| chunk_lower.contains(kw))
+                    .filter(|kw| chunk_lower.contains(&**kw))
                     .count();
 
                 let relevance = if keywords.is_empty() {
@@ -317,7 +317,7 @@ impl ContextCompressor {
                 let s_lower = s.to_lowercase();
                 let kw_score = keywords_lower
                     .iter()
-                    .filter(|kw| s_lower.contains(kw))
+                    .filter(|kw| s_lower.contains(&**kw))
                     .count() as f32
                     / keywords.len().max(1) as f32;
                 (*s, kw_score)
