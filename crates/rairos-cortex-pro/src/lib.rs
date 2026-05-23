@@ -72,12 +72,13 @@ pub mod evidence_gap;
 pub mod llm_agents;
 
 /// MCTS planner for tool selection (ToolTree-style)
-#[cfg(feature = "tools")]
 pub mod mcts_planner;
 
 /// SSE streaming for real-time agent progress
-#[cfg(feature = "tools")]
 pub mod streaming_sse;
+
+/// Event Emitter for framework observability
+pub mod event_emitter;
 
 /// Hierarchical agent delegation (manager → sub-team)
 #[cfg(feature = "tools")]
@@ -167,9 +168,6 @@ pub mod tool_registry;
 #[cfg(feature = "tools")]
 pub mod task_tracker;
 
-/// Event Emitter for framework observability
-#[cfg(feature = "tools")]
-pub mod event_emitter;
 
 /// Agent Registry for centralized agent discovery and lifecycle management
 #[cfg(feature = "tools")]
@@ -211,14 +209,12 @@ pub use evidence_gap::{EvidenceGapTracker, ResearchQuery, EvidenceItem, Evidence
 #[cfg(feature = "tools")]
 pub use llm_agents::{LlmHypothesisAgent, LlmHypothesisCriticAgent, LlmPlannerAgent, LlmPlanCriticAgent, LlmReportWriterAgent};
 
-#[cfg(feature = "tools")]
+
 pub use mcts_planner::{MctsPlanner, Tool, ToolCategory, ToolSelection};
 
-#[cfg(feature = "tools")]
 pub use streaming_sse::{SseBroadcaster, SseEvent, SseTimer};
 
-#[cfg(feature = "tools")]
-pub use hierarchical::{DelegationManager, DelegatedTask, HierarchicalConfig, AgentLevel, SubTeam, TeamStatus, DelegationStats};
+pub use event_emitter::{EventEmitter, Event, EventType, EventHandler, EventData, EmitterStats, HandlerId, global_emitter, event_types};
 
 #[cfg(feature = "tools")]
 pub use benchmark::{BenchmarkMetrics, BenchmarkReport, BenchmarkTask, TaskResult, MilestoneResult, gaia_benchmark_tasks, collaboration_tasks, run_benchmark};
@@ -282,9 +278,6 @@ pub use task_tracker::{TaskTracker, TaskTrackerHandle, TaskState, TrackPriority,
 
 #[cfg(feature = "tools")]
 pub use tool_registry::{ToolRegistry, ToolRegistryBuilder, ToolBuilder, ToolSchema, ToolParameter, ToolExecResult, ToolContext, RegisteredTool, ToolRegistryError, JsonValue};
-
-#[cfg(feature = "tools")]
-pub use event_emitter::{EventEmitter, Event, EventType, EventHandler, EventData, EmitterStats, HandlerId, global_emitter, event_types};
 
 #[cfg(feature = "tools")]
 pub use agent_safety::{AgentSafetyGuard, SafetyConfig, SafetyVerdict, RiskLevel, AuditEntry, SafetyRule, SafetyCheckResult, SafetyStats, ValueDriftDetector, ValuePrinciple, ValueCategory, DriftRecord, DriftSummary, ReliabilityTracker, ReliabilityMetrics};

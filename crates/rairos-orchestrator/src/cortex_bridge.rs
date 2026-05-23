@@ -2,19 +2,20 @@
 //!
 //! This module provides integration for:
 //! - Delegating deep research tasks to cortex-pro's crew
+//! - Using MCTS planner for intelligent tool selection
+//! - Emitting events for cross-module coordination
 //! - Sharing observability metrics between modules
-//! - Event-driven coordination via shared state
-//!
-//! Design: Facade pattern — orchestrator calls cortex bridge, bridge manages
-//! cortex-pro internals and reports results back.
 
 use rairos_cortex_pro::{
-    Agent, AgentConfig, AgentOutput, AgentRole, CrewBuilder,
-    CrewResult, CortexProError, ResearchState,
+    Agent, AgentConfig, AgentOutput, AgentRole, CrewBuilder, CrewResult,
+    CortexProError, ResearchState, MctsPlanner, Tool, ToolCategory,
+    EventEmitter, Event, event_types,
 };
 use rairos_core::ResearchGap;
 use rairos_observability::get_metrics;
 use async_trait::async_trait;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use tracing;
 
 /// Configuration for the cortex bridge
@@ -22,12 +23,15 @@ use tracing;
 pub struct CortexBridgeConfig {
     /// Max iterations in research conversation
     pub max_iterations: usize,
+    /// Whether to enable MCTS-based tool planning
+    pub enable_mcts: bool,
 }
 
 impl Default for CortexBridgeConfig {
     fn default() -> Self {
         Self {
             max_iterations: 10,
+            enable_mcts: true,
         }
     }
 }
@@ -62,6 +66,7 @@ impl Agent for BridgeAgent {
 /// Bridge orchestrator ↔ cortex-pro for multi-agent research
 pub struct CortexBridge {
     config: CortexBridgeConfig,
+    mcts_planner: Option<MctsPlanner>,
 }
 
 impl CortexBridge {
@@ -69,23 +74,109 @@ impl CortexBridge {
     pub fn new(config: CortexBridgeConfig) -> Self {
         let metrics = get_metrics();
         metrics.inc("cortex_bridge", "bridge_created", 1.0);
-        Self { config }
+
+        let mcts_planner = if config.enable_mcts {
+            Some(Self::init_mcts_planner())
+        } else {
+            None
+        };
+
+        Self {
+            config,
+            mcts_planner,
+        }
+    }
+
+    /// Initialize the MCTS planner with default tools
+    fn init_mcts_planner() -> MctsPlanner {
+        let planner = MctsPlanner::new();
+
+        // Register default research tools
+        planner.register_tool(Tool {
+            name: "literature_search".to_string(),
+            description: "Search academic literature for relevant papers".to_string(),
+            category: ToolCategory::Literature,
+            input_schema: std::collections::HashMap::new(),
+            estimated_cost: 0.3,
+            description_lower: Some("search academic literature for relevant papers".to_string()),
+        });
+        planner.register_tool(Tool {
+            name: "data_analysis".to_string(),
+            description: "Analyze research data and identify patterns".to_string(),
+            category: ToolCategory::Analysis,
+            input_schema: std::collections::HashMap::new(),
+            estimated_cost: 0.5,
+            description_lower: Some("analyze research data and identify patterns".to_string()),
+        });
+        planner.register_tool(Tool {
+            name: "gap_analysis".to_string(),
+            description: "Identify research gaps and opportunities".to_string(),
+            category: ToolCategory::Analysis,
+            input_schema: std::collections::HashMap::new(),
+            estimated_cost: 0.4,
+            description_lower: Some("identify research gaps and opportunities".to_string()),
+        });
+        planner.register_tool(Tool {
+            name: "report_generation".to_string(),
+            description: "Generate comprehensive research reports".to_string(),
+            category: ToolCategory::Visualization,
+            input_schema: std::collections::HashMap::new(),
+            estimated_cost: 0.6,
+            description_lower: Some("generate comprehensive research reports".to_string()),
+        });
+
+        get_metrics().inc("cortex_bridge", "mcts_tools_registered", 4.0);
+        planner
     }
 
     /// Initialize the research crew
     pub async fn init(&self) -> Result<(), String> {
         get_metrics().inc("cortex_bridge", "bridge_ready", 1.0);
+
+        // Emit initialization event
+        EventEmitter::default().emit(Event::new(
+            event_types::ORCHESTRATOR_CYCLE_START,
+            serde_json::json!({"action": "init", "mcts": self.config.enable_mcts}),
+        )).await;
+
         Ok(())
+    }
+
+    /// Select the best tool using MCTS planner
+    pub fn select_tool(&self, query: &str, context: &str) -> Option<String> {
+        let planner = self.mcts_planner.as_ref()?;
+        let selection = planner.select_tools(query, context);
+
+        let metrics = get_metrics();
+        if !selection.tool_name.is_empty() {
+            metrics.inc("cortex_bridge", "tool_selected", 1.0);
+            Some(selection.tool_name)
+        } else {
+            metrics.inc("cortex_bridge", "tool_selection_empty", 1.0);
+            None
+        }
     }
 
     /// Build and run a research crew for the given topic
     pub async fn run_deep_research(
         &self,
-        _topic: &str,
-        _context: &str,
+        topic: &str,
+        context: &str,
     ) -> Result<(CrewResult, Vec<ResearchGap>), String> {
         let metrics = get_metrics();
         metrics.inc("cortex_bridge", "research_started", 1.0);
+
+        // Emit research start event
+        EventEmitter::default().emit(Event::new(
+            event_types::ORCHESTRATOR_CYCLE_START,
+            serde_json::json!({"topic": topic, "context_len": context.len()}),
+        )).await;
+
+        // Use MCTS to select optimal research approach
+        if let Some(selected_tool) = self.select_tool(topic, context) {
+            tracing::info!("[CortexBridge] MCTS selected tool: {}", selected_tool);
+            metrics.inc("cortex_bridge", "mcts_selection", 1.0);
+        }
 
         let crew = CrewBuilder::new("orchestrator-crew")
             .with_max_iterations(self.config.max_iterations)
@@ -105,12 +196,29 @@ impl CortexBridge {
             })
             .build();
 
-        let result = crew.run(_topic).await.map_err(|e| {
+        let result = crew.run(topic).await.map_err(|e| {
             metrics.inc("cortex_bridge", "research_failed", 1.0);
+
+            // Emit failure event
+            let error_msg = format!("{}", e);
+            let emitter = EventEmitter::default();
+            tokio::spawn(async move {
+                emitter.emit(Event::new(
+                    event_types::ORCHESTRATOR_CYCLE_COMPLETE,
+                    serde_json::json!({"status": "failed", "error": error_msg}),
+                )).await;
+            });
+
             format!("Research failed: {}", e)
         })?;
 
         let gaps = Self::extract_gaps(&result);
+
+        // Emit completion event
+        EventEmitter::default().emit(Event::new(
+            event_types::ORCHESTRATOR_CYCLE_COMPLETE,
+            serde_json::json!({"topic": topic, "gaps_found": gaps.len(), "success": result.success}),
+        )).await;
 
         metrics.inc("cortex_bridge", "research_completed", 1.0);
         metrics.inc("cortex_bridge", "gaps_found", gaps.len() as f64);
@@ -126,7 +234,7 @@ impl CortexBridge {
             let desc_trimmed = if gap_info.description.len() > 100 {
                 &gap_info.description[..100]
             } else {
-                &gap_info.description
+                &gap_info.description.as_str()
             };
             gaps.push(ResearchGap::new(
                 desc_trimmed,
@@ -142,11 +250,15 @@ impl CortexBridge {
         if gaps.is_empty() {
             if let Some(ref report) = result.state.report {
                 if !report.is_empty() {
-                    let report_trimmed = if report.len() > 200 { &report[..200] } else { report.as_str() };
+                    let report_trimmed: &str = if report.len() > 200 {
+                        &report[..200]
+                    } else {
+                        report
+                    };
                     gaps.push(ResearchGap::new(
                         report_trimmed,
                         "analysis",
-                        "Research gap identified",
+                        "Research gap identified from report",
                         "deep_research",
                         "Gap identified during multi-agent research",
                         "MEDIUM",
@@ -163,6 +275,12 @@ impl CortexBridge {
     pub async fn shutdown(&self) {
         let metrics = get_metrics();
         metrics.inc("cortex_bridge", "shutdown", 1.0);
+
+        EventEmitter::default().emit(Event::new(
+            event_types::SYSTEM_SHUTDOWN,
+            serde_json::json!({"component": "cortex_bridge"}),
+        )).await;
+
         tracing::info!("[CortexBridge] Shut down");
     }
 }
@@ -175,11 +293,22 @@ mod tests {
     fn test_bridge_config_default() {
         let config = CortexBridgeConfig::default();
         assert_eq!(config.max_iterations, 10);
+        assert!(config.enable_mcts);
     }
 
     #[test]
     fn test_bridge_creation() {
         let bridge = CortexBridge::new(CortexBridgeConfig::default());
         assert!(bridge.config.max_iterations > 0);
+    }
+
+    #[test]
+    fn test_mcts_planner_registration() {
+        let planner = CortexBridge::init_mcts_planner();
+        // After registration, MCTS should have tools
+
+        // Verify by checking tool selection works
+        let selection = planner.select_tools("test query", "context");
+        assert!(!selection.tool_name.is_empty());
     }
 }
