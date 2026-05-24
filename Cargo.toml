@@ -233,6 +233,5 @@ panic = "abort"
 # Further optimize dependencies in release (already opt-level 3 by default)
 [profile.release.package."*"]
 opt-level = 3
-lto = "thin"
 
 

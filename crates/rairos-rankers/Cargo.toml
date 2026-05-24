@@ -8,7 +8,7 @@ rairos-core = { path = "../rairos-core" }
 rairos-llm = { path = "../rairos-llm" }
 ndarray = "0.17"
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
-libsqlite3-sys = { version = "0.28.0", features = ["bundled"] }
+libsqlite3-sys = { version = "0.30", features = ["bundled"] }
 thiserror.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true

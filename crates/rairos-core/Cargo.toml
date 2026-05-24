@@ -8,7 +8,7 @@ tempfile.workspace = true
 
 [dependencies]
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid"] }
-libsqlite3-sys = { version = "0.28.0", features = ["bundled"] }
+libsqlite3-sys = { version = "0.30", features = ["bundled"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 parking_lot.workspace = true

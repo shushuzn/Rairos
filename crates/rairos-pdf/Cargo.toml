@@ -18,7 +18,7 @@ sha2.workspace = true
 hex.workspace = true
 lopdf = "0.34"
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
-libsqlite3-sys = { version = "0.28.0", features = ["bundled"] }
+libsqlite3-sys = { version = "0.30", features = ["bundled"] }
 uuid = { workspace = true, features = ["v4"] }
 chrono = { workspace = true, features = ["serde"] }
 
