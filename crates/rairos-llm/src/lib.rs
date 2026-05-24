@@ -505,18 +505,20 @@ fn streamerr(
 ) -> impl tokio_stream::Stream<Item = Result<StreamChunk, LlmError>> + Send + 'static {
     use futures_util::StreamExt;
 
-    let stream = stream.map(|result| {
+    stream.flat_map(|result| {
         let bytes = match result {
             Ok(b) => b,
-            Err(e) => return vec![Err(LlmError::Http(e))],
+            Err(e) => return futures_util::stream::iter(vec![Err(LlmError::Http(e))]),
         };
-        let text = String::from_utf8_lossy(&bytes).to_string();
-        text.lines()
+        let text = match String::from_utf8(bytes.to_vec()) {
+            Ok(s) => s,
+            Err(_) => String::from_utf8_lossy(&bytes).into_owned(),
+        };
+        let chunks: Vec<_> = text.lines()
             .filter_map(|line| parse_sse_event(line).map(Ok))
-            .collect::<Vec<_>>()
-    });
-
-    stream.flat_map(futures_util::stream::iter)
+            .collect();
+        futures_util::stream::iter(chunks)
+    })
 }
 
 pub struct OpenAiClient {
@@ -1692,6 +1694,7 @@ impl GenePool {
     }
 
     pub fn search(&self, keywords: &[&str], gap_type: Option<&str>) -> Vec<&Capsule> {
+        let kw_parts: Vec<String> = keywords.iter().map(|k| k.to_lowercase()).collect();
         self.capsules
             .iter()
             .filter(|c| {
@@ -1703,13 +1706,9 @@ impl GenePool {
                         return false;
                     }
                 }
-                let kw_lower: std::collections::HashSet<String> = c
-                    .trigger_keywords
-                    .iter()
-                    .map(|s| s.to_lowercase())
-                    .collect();
-                let kw_parts: Vec<String> = keywords.iter().map(|k| k.to_lowercase()).collect();
-                kw_parts.iter().any(|kw| kw_lower.contains(kw))
+                c.trigger_keywords.iter().any(|kw| {
+                    kw_parts.iter().any(|part| kw.eq_ignore_ascii_case(part))
+                })
             })
             .collect()
     }
@@ -2167,8 +2166,7 @@ pub const SMART_FOLLOWUP_BASE: &[&str] = &[
 /// Check if a text contains any AI research keywords.
 pub fn contains_research_keyword(text: &str) -> bool {
     let text_lower = text.to_lowercase();
-    let keywords_lower: Vec<String> = AI_RESEARCH_KEYWORDS.iter().map(|k| k.to_lowercase()).collect();
-    keywords_lower.iter().any(|kw| text_lower.contains(kw))
+    AI_RESEARCH_KEYWORDS.iter().any(|kw| text_lower.contains(kw))
 }
 
 // ============================================================================

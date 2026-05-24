@@ -945,22 +945,26 @@ impl Database {
                 return Ok(false);
             }
 
-            // Filter to only duplicates that exist (check each one)
-            let mut valid_dup_ids: Vec<String> = Vec::new();
-            for dup_id in &duplicate_ids {
-                if dup_id == &primary_id {
-                    continue;
+            // Batch existence check: single query for all duplicates
+            let mut existing = std::collections::HashSet::new();
+            for chunk in duplicate_ids.chunks(999) {
+                let placeholders: Vec<String> = chunk.iter().enumerate()
+                    .map(|(i, _)| format!("?{}", i + 1)).collect();
+                let sql = format!("SELECT id FROM papers WHERE id IN ({})", placeholders.join(","));
+                let mut q = sqlx::query(&sql);
+                for id in chunk {
+                    q = q.bind(id);
                 }
-                let exists = sqlx::query("SELECT 1 FROM papers WHERE id = ?1")
-                    .bind(dup_id)
-                    .fetch_optional(&pool)
-                    .await
-                    .map(|opt| opt.is_some())
-                    .unwrap_or(false);
-                if exists {
-                    valid_dup_ids.push(dup_id.clone());
+                let rows = q.fetch_all(&pool).await?;
+                for row in rows {
+                    let id: String = row.try_get(0)?;
+                    existing.insert(id);
                 }
             }
+
+            let valid_dup_ids: Vec<String> = duplicate_ids.into_iter()
+                .filter(|id| id != &primary_id && existing.contains(id))
+                .collect();
 
             if valid_dup_ids.is_empty() {
                 return Ok(false);
@@ -1153,12 +1157,13 @@ impl Database {
         let authors_str: String = row.try_get(3)?;
         let categories_str: String = row.try_get(6)?;
         let status_str: String = row.try_get(7)?;
+        let published_str: String = row.try_get(4)?;
         Ok(Paper {
             id: row.try_get(0)?,
             arxiv_id: row.try_get(1)?,
             title: row.try_get(2)?,
             authors: serde_json::from_str(&authors_str).unwrap_or_default(),
-            published: DateTime::parse_from_rfc3339(&row.try_get::<String, _>(4)?)
+            published: DateTime::parse_from_rfc3339(&published_str)
                 .map(|dt| dt.with_timezone(&Utc))
                 .unwrap_or_else(|_| Utc::now()),
             abstract_text: row.try_get(5)?,
