@@ -120,7 +120,7 @@ console = "0.15"
 tokio = { workspace = true, features = ["rt"] }
 reqwest = { version = "0.12", features = ["json", "rustls-tls", "blocking"], default-features = false }
 ratatui = "0.30"
-crossterm = "0.28"
+crossterm = "0.29"
 rayon = "1"
 human-panic = "2"
 

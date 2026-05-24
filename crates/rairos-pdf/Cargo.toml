@@ -16,7 +16,7 @@ tokio = { workspace = true, features = ["rt"] }
 futures.workspace = true
 sha2.workspace = true
 hex.workspace = true
-lopdf = "0.34"
+lopdf = "0.40"
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
 libsqlite3-sys = { version = "0.30", features = ["bundled"] }
 uuid = { workspace = true, features = ["v4"] }
