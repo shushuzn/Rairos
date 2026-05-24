@@ -56,7 +56,6 @@ members = [
     "crates/rairos-postprocess",
     "crates/rairos-parallel-research",
     "crates/rairos-parser",
-    "crates/rairos-parsers",
     "crates/rairos-pathfinder",
     "crates/rairos-pdf",
     "crates/rairos-questions",
@@ -152,7 +151,6 @@ members = [
     # GraphRAG pipeline
     "crates/rairos-graphrag",
     # PDF advanced parsing
-    "crates/rairos-pdf-advanced",
     # Multi-agent orchestration
     "crates/rairos-cortex-pro",
     # Material science tools (for SparksMatter integration)

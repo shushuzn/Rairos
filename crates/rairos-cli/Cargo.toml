@@ -53,7 +53,6 @@ rairos-citation-pathfinder-web = { path = "../rairos-citation-pathfinder-web" }
 rairos-skill-discovery = { path = "../rairos-skill-discovery" }
 rairos-testextractor = { path = "../rairos-testextractor" }
 rairos-watch-papers = { path = "../rairos-watch-papers" }
-rairos-parsers = { path = "../rairos-parsers" }
 rairos-crossref = { path = "../rairos-crossref" }
 rairos-daemon = { path = "../rairos-daemon" }
 rairos-setup = { path = "../rairos-setup" }

@@ -42,7 +42,6 @@ parking_lot.workspace = true  # Fast synchronization primitives
 # Existing Rairos crates
 rairos-llm = { path = "../rairos-llm", optional = true }
 rairos-pdf = { path = "../rairos-pdf" }
-rairos-pdf-advanced = { path = "../rairos-pdf-advanced" }
 rairos-vector = { path = "../rairos-vector" }
 rairos-kg-neo4j = { path = "../rairos-kg-neo4j" }
 rairos-graphrag = { path = "../rairos-graphrag" }
