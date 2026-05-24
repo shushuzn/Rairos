@@ -1,44 +1,73 @@
-.PHONY: help build build-release build-dev test clippy clean install-completions run
+CARGO := cargo
+NPROCS := $(shell nproc 2>/dev/null || echo 1)
+MAKEFLAGS += --jobs=$(NPROCS)
+
+.PHONY: help build build-release build-dev test clippy clean run install-completions check-audit
 
 # Detect if release binary exists
 RELEASE_BIN := target/release/rairos-cli
 DEV_BIN := target/debug/rairos-cli
+
+# Auto-detect optimal linker: mold > lld > default
+LINKER := $(shell command -v mold 2>/dev/null && echo "-C link-arg=-fuse-ld=mold" || (command -v ld.lld 2>/dev/null && echo "-C link-arg=-fuse-ld=lld" || echo ""))
+# Auto-detect sccache
+SCCACHE := $(shell command -v sccache 2>/dev/null && echo "sccache" || echo "")
+ifneq ($(SCCACHE),)
+	CARGO := RUSTC_WRAPPER=sccache cargo
+endif
+
+# Common RUSTFLAGS for release: parallel codegen, native CPU tuning
+RELEASE_RUSTFLAGS := $(LINKER) -C target-cpu=native
 
 # Default target
 help:
 	@echo "Rairos - Self-Evolving Research OS"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make build          Build release (optimized, 10-20min)"
-	@echo "  make build-dev     Build debug (faster, ~5min)"
-	@echo "  make test           Run tests"
+	@echo "  make build          Build release (optimized, ~5-10min with sccache)"
+	@echo "  make build-dev      Build debug (faster)"
+	@echo "  make test           Run tests (parallel)"
 	@echo "  make clippy         Run linter"
 	@echo "  make run CMD=...    Run CLI (e.g., make run CMD='search \"ML\"')"
+	@echo "  make check-audit    Security audit"
 	@echo "  make clean          Clean build artifacts"
+	@echo ""
+	@echo "Accelerators detected:"
+ifneq ($(SCCACHE),)
+	@echo "  ✓ sccache (build cache)"
+endif
+ifneq ($(LINKER),)
+	@echo "  ✓ mold/lld (fast linker)"
+endif
+	@echo "  ✓ $(NPROCS)-core parallel build"
 	@echo ""
 	@echo "Direct binary usage:"
 	@echo "  ./rairos.sh search \"transformer\"   # Quick search"
 	@echo "  ./rairos.sh gap \"LLM\"             # Detect gaps"
 	@echo ""
-	@echo "Pre-built binary: $(RELEASE_BIN)"
 
 build: $(RELEASE_BIN)
 	@echo "Release binary ready: $(RELEASE_BIN)"
 	-@./rairos.sh --version 2>/dev/null || true
 
 $(RELEASE_BIN):
-	@echo "Building release (this may take 10-20 minutes)..."
-	unset RUSTC_WRAPPER && cargo build --release -p rairos-cli
+	@echo "Building release ($(shell date +%T))..."
+	RUSTFLAGS="$(RELEASE_RUSTFLAGS)" $(CARGO) build --release -p rairos-cli
+	@echo "Done ($(shell date +%T))"
 
 build-dev:
-	@echo "Building debug (faster)..."
-	unset RUSTC_WRAPPER && cargo build -p rairos-cli
+	@echo "Building debug ($(shell date +%T))..."
+	$(CARGO) build -p rairos-cli
+	@echo "Done ($(shell date +%T))"
 
 test:
-	unset RUSTC_WRAPPER && cargo test --workspace
+	$(CARGO) test --workspace -- --nocapture
 
 clippy:
-	unset RUSTC_WRAPPER && cargo clippy --workspace -- -D warnings
+	$(CARGO) clippy --workspace -- -D warnings
+
+check-audit:
+	$(CARGO) audit
 
 clean:
 	cargo clean
@@ -56,7 +85,6 @@ run:
 
 install-completions:
 	@echo "Installing shell completions..."
-	@# Bash
 	cp completions/bash ~/.config/opencode/completions/rairos 2>/dev/null || true
 	cp completions/fish ~/.config/fish/completions/rairos.fish 2>/dev/null || true
 	cp completions/zsh ~/.config/zsh/completions/_rairos 2>/dev/null || true

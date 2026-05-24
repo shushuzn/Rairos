@@ -66,7 +66,7 @@ pub fn handle_code_gene_list(
             let topic_short = if gene.trigger_topic.len() > 18 {
                 format!("{}...", &gene.trigger_topic[..18])
             } else {
-                gene.trigger_topic.clone()
+                gene.trigger_topic.to_string()
             };
             println!(
                 "{:<36} {:<20} {:<15} {}",
@@ -843,9 +843,9 @@ pub fn handle_workflow_stats(db: &Database) -> Result<()> {
     let code_genes = get_top_code_candidates(100);
 
     let research_gap_types: HashSet<String> = gaps.iter().map(|g| {
-        if g.gap_type.is_empty() { g.category.clone() } else { g.gap_type.clone() }
+        if g.gap_type.is_empty() { g.category.to_string() } else { g.gap_type.to_string() }
     }).collect();
-    let code_gap_types: HashSet<String> = code_genes.iter().map(|g| g.gap_type.clone()).collect();
+    let code_gap_types: HashSet<String> = code_genes.iter().map(|g| g.gap_type.to_string()).collect();
 
     let linked_gaps: Vec<_> = gaps.iter().filter(|g| {
         code_genes.iter().any(|c| {

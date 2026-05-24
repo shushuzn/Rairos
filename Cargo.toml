@@ -218,4 +218,21 @@ opt-level = 0
 opt-level = 2
 debug = false
 
+# Release profile: maximize runtime performance
+# - ThinLTO for good perf / reasonable link time
+# - codegen-units=1 enables full inlining across the crate
+# - Strip symbols to reduce binary size
+# - panic=abort eliminates landing pads in the generated code
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
+
+# Further optimize dependencies in release (already opt-level 3 by default)
+[profile.release.package."*"]
+opt-level = 3
+lto = "thin"
+
 
