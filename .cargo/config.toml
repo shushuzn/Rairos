@@ -14,6 +14,8 @@ timeout = 60
 linker = "clang"
 rustflags = [
     "-C", "link-arg=-fuse-ld=mold",
+    "-C", "llvm-args=--enable-merge-functions",
+    "-C", "llvm-args=--enable-load-pre",
 ]
 
 # Dev: fast compilation with parallel codegen units
