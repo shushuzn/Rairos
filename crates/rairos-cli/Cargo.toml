@@ -81,7 +81,6 @@ hex.workspace = true
 uuid = { workspace = true, features = ["v4"] }
 sysinfo.workspace = true
 clap = { workspace = true, features = ["derive"] }
-clap_complete = "4.5"
 anyhow.workspace = true
 tracing.workspace = true
 chrono = { workspace = true, features = ["serde"] }

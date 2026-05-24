@@ -52,8 +52,7 @@ pub mod discover;
 pub mod scout;
 
 use anyhow::{Context, Result};
-use clap::{CommandFactory, Parser};
-use clap_complete::{generate, shells};
+use clap::Parser;
 use rairos_core::{Database, ParseStatus};
 use std::path::PathBuf;
 
@@ -1006,16 +1005,8 @@ fn main() -> Result<()> {
             handle_sysinfo()?;
         }
 
-        Commands::Completions { shell } => {
-            let mut cmd = Cli::command();
-            let name = cmd.get_name().to_string();
-            let mut stdout = std::io::stdout();
-            match shell.as_str() {
-                "bash" => generate(shells::Bash, &mut cmd, name, &mut stdout),
-                "zsh" => generate(shells::Zsh, &mut cmd, name, &mut stdout),
-                "fish" => generate(shells::Fish, &mut cmd, name, &mut stdout),
-                _ => anyhow::bail!("Unsupported shell: {}. Use: bash, zsh, fish", shell),
-            }
+        Commands::Completions { .. } => {
+            eprintln!("Completions not built-in. Install from: completions/ directory");
         }
     }
 
