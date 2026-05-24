@@ -76,6 +76,7 @@ pub enum DbValue {
 }
 
 impl DbValue {
+    #[deprecated(note = "unused, will be removed")]
     pub fn from_sqlx(row: &SqliteRow, index: usize) -> Option<Self> {
         // Try each type - sqlx Row doesn't have a unified get method like rusqlite
         if let Ok(v) = row.try_get::<i64, _>(index) {
@@ -1085,6 +1086,7 @@ impl Database {
     }
 
     /// Get deduplication log entries.
+    #[deprecated(note = "unused, will be removed")]
     pub fn get_dedup_log(&self, limit: usize) -> Result<Vec<DedupLogEntry>> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1316,6 +1318,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn count_papers(&self) -> Result<i64> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1350,6 +1353,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn search_papers_fts(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1415,6 +1419,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn update_paper_full_text(
         &self,
         id: &str,
@@ -1444,6 +1449,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn insert_subscription(&self, sub: &Subscription) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1501,6 +1507,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn delete_subscription(&self, id: &str) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1514,6 +1521,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn update_subscription_last_check(
         &self,
         id: &str,
@@ -1536,6 +1544,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn insert_tag(&self, tag: &Tag) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1570,6 +1579,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn delete_tag(&self, id: &str) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1598,6 +1608,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn remove_paper_tag(&self, paper_id: &str, tag_id: &str) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1613,6 +1624,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn get_paper_tags(&self, paper_id: &str) -> Result<Vec<Tag>> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1695,6 +1707,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn find_similar_by_vector(
         &self,
         embedding: &[f32],
@@ -1735,6 +1748,7 @@ impl Database {
         })
     }
 
+    #[deprecated(note = "unused, will be removed")]
     pub fn set_paper_embedding(&self, paper_id: &str, embedding: &[f32]) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1774,6 +1788,7 @@ impl Database {
     }
 
     /// Get papers that don't have embeddings yet.
+    #[deprecated(note = "unused, will be removed")]
     pub fn get_papers_without_embeddings(&self, limit: i64) -> Result<Vec<Paper>> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1985,6 +2000,7 @@ impl Database {
     // ============================================================================
 
     /// Open database from RAIROS_DB env var, falling back to ~/.rairos/rairos.db
+    #[deprecated(note = "unused, will be removed")]
     pub fn open_default() -> Result<Self> {
         let db_path = std::env::var("RAIROS_DB")
             .or_else(|_| std::env::var("AIROS_DB"))
@@ -1999,11 +2015,13 @@ impl Database {
     }
 
     /// Open an in-memory database (useful for testing).
+    #[deprecated(note = "unused, will be removed")]
     pub fn open_in_memory() -> Result<Self> {
         Self::open(":memory:")
     }
 
     /// Execute a raw SQL query with values and return results as maps.
+    #[deprecated(note = "unused, will be removed")]
     pub fn query_raw(
         &self,
         sql: &str,
@@ -2070,6 +2088,7 @@ impl Database {
     /// Delete all data from all tables (for test isolation).
     /// Unlike rairos-db, we do NOT delete the physical file since rairos-core
     /// uses a persistent connection.
+    #[deprecated(note = "unused, will be removed")]
     pub fn clear_all(&self) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -2154,6 +2173,7 @@ impl Database {
     }
 
     /// Bulk upsert papers. Returns (inserted, updated) counts.
+    #[deprecated(note = "unused, will be removed")]
     pub fn upsert_papers_bulk(&self, papers: &[Paper]) -> Result<(i64, i64)> {
         if papers.is_empty() {
             return Ok((0, 0));

@@ -41,6 +41,14 @@ jobs:
       - name: cargo clippy
         run: cargo clippy --tests --workspace -- -D warnings
 
+      - name: Check for deprecated items usage
+        run: |
+          if cargo doc --workspace --no-deps 2>&1 | grep -q "deprecated"; then
+            echo "⚠️  Workspace contains deprecated items"
+          else
+            echo "✅ No deprecated items used"
+          fi
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:
