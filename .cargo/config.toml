@@ -1,20 +1,42 @@
 [build]
-jobs = 4
+jobs = 2
 incremental = true
+rustc-wrapper = "sccache"
+
+[net]
+retry = 3
+git-fetch-with-cli = true
+
+[http]
+timeout = 60
+low-speed-limit = 10
+low-speed-timeout = 30
 
 [target.x86_64-unknown-linux-gnu]
 linker = "clang"
-rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+rustflags = [
+    "-C", "link-arg=-fuse-ld=mold",
+    "-Z", "threads=2",
+]
 
+# Dev: fast compilation with parallel codegen units
 [profile.dev]
 opt-level = 0
 debug = false
 split-debuginfo = "unpacked"
 panic = "unwind"
+codegen-units = 256
 
+# Dependencies in dev: moderate optimization without debug
+[profile.dev.package."*"]
+opt-level = 2
+debug = false
+codegen-units = 256
+
+# Release: maximize runtime performance
 [profile.release]
+opt-level = 3
 lto = "fat"
 codegen-units = 1
 panic = "abort"
-opt-level = 3
-strip = true
+strip = "symbols"

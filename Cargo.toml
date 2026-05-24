@@ -208,30 +208,5 @@ bb8-postgres = "0.8"
 tower = { version = "0.4", features = ["timeout"] }
 tower-http = { version = "0.5", features = ["cors", "trace"] }
 
-# Optimize dependencies in dev builds for ~orders-of-magnitude faster runtime
-# while keeping workspace crates at opt-level 0 for fast compilation + full debug info
-# Pattern from: typst, bitwarden/server, oxc-project/oxc
-[profile.dev]
-opt-level = 0
-
-[profile.dev.package."*"]
-opt-level = 2
-debug = false
-
-# Release profile: maximize runtime performance
-# - ThinLTO for good perf / reasonable link time
-# - codegen-units=1 enables full inlining across the crate
-# - Strip symbols to reduce binary size
-# - panic=abort eliminates landing pads in the generated code
-[profile.release]
-opt-level = 3
-lto = "thin"
-codegen-units = 1
-strip = "symbols"
-panic = "abort"
-
-# Further optimize dependencies in release (already opt-level 3 by default)
-[profile.release.package."*"]
-opt-level = 3
 
 
