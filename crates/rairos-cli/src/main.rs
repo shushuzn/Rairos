@@ -40,6 +40,7 @@ pub mod workspace_snapshot;
 pub mod gap_analyzer;
 pub mod value_quantifier;
 pub mod batch_optimizer;
+pub mod profiler;
 pub mod gap_detector;
 pub mod policy_impact_tracer;
 pub mod discover;

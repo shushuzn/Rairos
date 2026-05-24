@@ -72,32 +72,14 @@ rairos-paradigm = { path = "../rairos-paradigm" }
 rairos-cross-referencer = { path = "../rairos-cross-referencer" }
 rairos-scoring-momentum = { path = "../rairos-scoring-momentum" }
 rairos-gene-pool-decay = { path = "../rairos-gene-pool-decay" }
-rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
 rairos-credibility = { path = "../rairos-credibility" }
 rairos-claimgraph = { path = "../rairos-claimgraph" }
 rairos-codegraph = { path = "../rairos-codegraph" }
-rairos-bold-vault = { path = "../rairos-bold-vault" }
-rairos-batch-optimizer = { path = "../rairos-batch-optimizer" }
-rairos-climate-ai-monitor = { path = "../rairos-climate-ai-monitor" }
 rairos-compare = { path = "../rairos-compare" }
-rairos-discover = { path = "../rairos-discover" }
-rairos-ecosystem = { path = "../rairos-ecosystem" }
-rairos-friction-tracker = { path = "../rairos-friction-tracker" }
-rairos-gap-analyzer = { path = "../rairos-gap-analyzer" }
-rairos-gap-detector = { path = "../rairos-gap-detector" }
-rairos-generate = { path = "../rairos-generate" }
-rairos-journal = { path = "../rairos-journal" }
-rairos-labor-displacement-tracker = { path = "../rairos-labor-displacement-tracker" }
-rairos-lsp-diagnostics = { path = "../rairos-lsp-diagnostics" }
-rairos-policy-impact-tracer = { path = "../rairos-policy-impact-tracer" }
-rairos-profiler = { path = "../rairos-profiler" }
-rairos-resource-monitor = { path = "../rairos-resource-monitor" }
 rairos-scout = { path = "../rairos-scout" }
 rairos-signal = { path = "../rairos-signal" }
 rairos-story = { path = "../rairos-story" }
 rairos-validator = { path = "../rairos-validator" }
-rairos-value-quantifier = { path = "../rairos-value-quantifier" }
-rairos-workspace-snapshot = { path = "../rairos-workspace-snapshot" }
 serde = { workspace = true, features = ["derive"] }
 sha2.workspace = true
 hex.workspace = true
@@ -121,6 +103,7 @@ ratatui = "0.30"
 crossterm = "0.29"
 rayon = "1"
 human-panic = "2"
+parking_lot = { workspace = true }
 
 [dev-dependencies]
 tempfile.workspace = true

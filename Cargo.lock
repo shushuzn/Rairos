@@ -3718,22 +3718,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-at-risk-scanner"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "rairos-batch-optimizer"
-version = "0.1.0"
-dependencies = [
- "rayon",
-]
-
-[[package]]
 name = "rairos-benchmark"
 version = "0.1.0"
 dependencies = [
@@ -3757,16 +3741,6 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "uuid",
-]
-
-[[package]]
-name = "rairos-bold-vault"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "rairos-core",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -3839,14 +3813,12 @@ dependencies = [
  "human-panic",
  "indicatif",
  "mimalloc",
+ "parking_lot",
  "rairos-achievements",
  "rairos-argument-builder",
  "rairos-arxiv-alert-channels",
- "rairos-at-risk-scanner",
- "rairos-batch-optimizer",
  "rairos-benchmark",
  "rairos-benchmark-runner",
- "rairos-bold-vault",
  "rairos-briefing-generator",
  "rairos-channels",
  "rairos-citation-chain",
@@ -3855,7 +3827,6 @@ dependencies = [
  "rairos-claimgraph",
  "rairos-cli-registry",
  "rairos-cli-shared",
- "rairos-climate-ai-monitor",
  "rairos-code-indexer",
  "rairos-code-trace",
  "rairos-codegraph",
@@ -3867,27 +3838,18 @@ dependencies = [
  "rairos-crossref",
  "rairos-daemon",
  "rairos-dashboard",
- "rairos-discover",
- "rairos-ecosystem",
  "rairos-evolution",
  "rairos-evolution-report",
  "rairos-experiment-tracker",
  "rairos-friction",
- "rairos-friction-tracker",
  "rairos-game-mode",
- "rairos-gap-analyzer",
- "rairos-gap-detector",
  "rairos-gene-pool-decay",
- "rairos-generate",
  "rairos-impact",
  "rairos-intelligence",
- "rairos-journal",
  "rairos-kg",
- "rairos-labor-displacement-tracker",
  "rairos-lean-verifier",
  "rairos-litreview-analyzer",
  "rairos-llm",
- "rairos-lsp-diagnostics",
  "rairos-mcp-jin10",
  "rairos-memory",
  "rairos-narratives",
@@ -3895,16 +3857,13 @@ dependencies = [
  "rairos-parser",
  "rairos-pathfinder",
  "rairos-pdf",
- "rairos-policy-impact-tracer",
  "rairos-postprocess",
- "rairos-profiler",
  "rairos-questions",
  "rairos-replication",
  "rairos-replication-checker",
  "rairos-research",
  "rairos-research-log",
  "rairos-research-session",
- "rairos-resource-monitor",
  "rairos-review-generator",
  "rairos-review-queue",
  "rairos-rigor",
@@ -3923,13 +3882,11 @@ dependencies = [
  "rairos-trend-analyzer",
  "rairos-updaters",
  "rairos-validator",
- "rairos-value-quantifier",
  "rairos-vault",
  "rairos-viz",
  "rairos-watch-papers",
  "rairos-web",
  "rairos-weekly-digest",
- "rairos-workspace-snapshot",
  "ratatui",
  "rayon",
  "regex",
@@ -3970,15 +3927,6 @@ name = "rairos-climate"
 version = "0.1.0"
 dependencies = [
  "dirs",
- "rairos-core",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "rairos-climate-ai-monitor"
-version = "0.1.0"
-dependencies = [
  "rairos-core",
  "serde",
  "serde_json",
@@ -4203,23 +4151,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-discover"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "rairos-ecosystem"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
-]
-
-[[package]]
 name = "rairos-events"
 version = "0.1.0"
 dependencies = [
@@ -4290,17 +4221,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-friction-tracker"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "serde",
- "serde_json",
- "uuid",
-]
-
-[[package]]
 name = "rairos-game-mode"
 version = "0.1.0"
 dependencies = [
@@ -4309,30 +4229,6 @@ dependencies = [
  "rairos-core",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "rairos-gap-analyzer"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
-]
-
-[[package]]
-name = "rairos-gap-detector"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
 ]
 
 [[package]]
@@ -4374,14 +4270,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-generate"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-impact"
 version = "0.1.0"
 dependencies = [
@@ -4397,18 +4285,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
-]
-
-[[package]]
-name = "rairos-journal"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "serde",
- "serde_json",
- "tempfile",
- "uuid",
 ]
 
 [[package]]
@@ -4448,17 +4324,6 @@ dependencies = [
  "tokio-test",
  "tracing",
  "uuid",
-]
-
-[[package]]
-name = "rairos-labor-displacement-tracker"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "rairos-core",
- "serde",
- "serde_json",
- "tempfile",
 ]
 
 [[package]]
@@ -4521,14 +4386,6 @@ dependencies = [
  "tokio-test",
  "tracing",
  "uuid",
-]
-
-[[package]]
-name = "rairos-lsp-diagnostics"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -4752,15 +4609,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-policy-impact-tracer"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tempfile",
-]
-
-[[package]]
 name = "rairos-postprocess"
 version = "0.1.0"
 dependencies = [
@@ -4775,15 +4623,6 @@ dependencies = [
  "thiserror 2.0.18",
  "tokio",
  "tracing",
-]
-
-[[package]]
-name = "rairos-profiler"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -4917,18 +4756,6 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "uuid",
-]
-
-[[package]]
-name = "rairos-resource-monitor"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "parking_lot",
- "serde",
- "serde_json",
- "sysinfo 0.34.2",
- "tempfile",
 ]
 
 [[package]]
@@ -5153,15 +4980,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-value-quantifier"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-vault"
 version = "0.1.0"
 dependencies = [
@@ -5244,17 +5062,6 @@ dependencies = [
 [[package]]
 name = "rairos-weekly-digest"
 version = "0.1.0"
-
-[[package]]
-name = "rairos-workspace-snapshot"
-version = "0.1.0"
-dependencies = [
- "hex",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "tempfile",
-]
 
 [[package]]
 name = "rand"

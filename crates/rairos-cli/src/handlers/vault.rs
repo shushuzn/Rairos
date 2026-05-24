@@ -3,7 +3,7 @@
 use anyhow::Result;
 
 pub fn handle_bold_list() -> Result<()> {
-    use rairos_bold_vault::get_bold_capsules;
+    use crate::bold_vault::get_bold_capsules;
 
     let capsules = get_bold_capsules();
     println!("🔥 Bold Capsules (High-Risk/High-Reward)");
@@ -21,7 +21,7 @@ pub fn handle_bold_list() -> Result<()> {
 }
 
 pub fn handle_atrisk_list(threshold: u32) -> Result<()> {
-    use rairos_at_risk_scanner::get_at_risk_capsules;
+    use crate::at_risk_scanner::get_at_risk_capsules;
 
     let capsules = get_at_risk_capsules(threshold);
     println!("⚠️  At-Risk Capsules (threshold: {})", threshold);
@@ -39,7 +39,7 @@ pub fn handle_atrisk_list(threshold: u32) -> Result<()> {
 }
 
 pub fn handle_atrisk_keep(capsule_id: &str) -> Result<()> {
-    use rairos_at_risk_scanner::keep_active;
+    use crate::at_risk_scanner::keep_active;
 
     let kept = keep_active(capsule_id);
     println!("⚠️  Keep Active: {}", capsule_id);
