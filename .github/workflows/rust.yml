@@ -24,6 +24,7 @@ env:
   CARGO_BUILD_JOBS: 4
   RUSTC_WRAPPER: sccache
   SCCACHE_CACHE_SIZE: 10G
+  SCCACHE_IDLE_TIMEOUT: 0
   AWS_LC_SYS_NOASM: '1'
 
 jobs:
@@ -34,6 +35,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
       - name: cargo clippy
         run: cargo clippy --tests --workspace -- -D warnings
 
@@ -57,42 +61,42 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
 
-      - name: Cache cargo registry
-        uses: actions/cache@v5
+      - uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.rust }}-cargo-
+          cache-on-failure: true
+          shared-key: rairos-${{ matrix.rust }}
 
-      - name: Install sccache + mold (unix)
+      - name: Install sccache (pre-built binary)
         if: runner.os != 'Windows'
         run: |
+          curl -sL "https://github.com/mozilla/sccache/releases/download/v0.15.0/sccache-v0.15.0-x86_64-unknown-linux-musl.tar.gz" | tar xz -C /tmp
+          cp /tmp/sccache-v0.15.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache
+          chmod +x /usr/local/bin/sccache
           if command -v mold 2>/dev/null; then
             echo "mold already installed"
           elif command -v apt-get 2>/dev/null; then
             sudo apt-get install -y mold clang
           fi
-          cargo install sccache --locked
           echo "RUSTFLAGS=-C link-arg=-fuse-ld=mold" >> $GITHUB_ENV
 
       - name: Start sccache
         if: runner.os != 'Windows'
         run: sccache --start-server
 
-      - name: Cache sccache
+      - name: Cache sccache artifacts
         if: runner.os != 'Windows'
         uses: actions/cache@v5
         with:
           path: ~/.cache/sccache
-          key: ${{ runner.os }}-${{ matrix.rust }}-sccache-${{ hashFiles('**/Cargo.lock') }}
+          key: sccache-${{ runner.os }}-${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            sccache-${{ runner.os }}-${{ matrix.rust }}-
+            sccache-${{ runner.os }}-
 
-      - name: Build (binary only)
+      - name: Build (release)
         run: cargo build --release -p rairos-cli
 
-      - name: Test (binary only)
+      - name: Test
         run: cargo test -p rairos-cli
 
       - name: Security audit
@@ -103,6 +107,10 @@ jobs:
         if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
         run: cargo deny check licenses
 
-      - name: Show sccache stats
+      - name: Show cache stats
         if: runner.os != 'Windows'
-        run: sccache --show-stats
+        run: |
+          echo "=== sccache ==="
+          sccache --show-stats
+          echo "=== cargo cache ==="
+          du -sh ~/.cargo/registry/cache/ 2>/dev/null || echo "no cache"
