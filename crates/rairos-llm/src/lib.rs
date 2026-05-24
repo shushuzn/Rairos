@@ -24,6 +24,15 @@ pub mod reasoning;
 pub mod retry;
 pub mod insight;
 
+// Re-export key insight types so consumers can use rairos_llm::CredibilityScorer
+pub use insight::cards::InsightManager;
+pub use insight::credibility::CredibilityScorer;
+pub use insight::crossover::CapsuleGene;
+pub use insight::evolution::EvolutionEngine;
+pub use insight::storage::CapsuleStorage;
+pub use insight::tracker::EvolutionTracker;
+pub use insight::types::{ExplorationAction, UserPreferenceProfile};
+
 use rairos_core::constants::{CAPSULES_JSON, GENE_POOL_JSONL, LLM_BASE_URL};
 use rairos_core::Paper;
 use serde::{Deserialize, Serialize};

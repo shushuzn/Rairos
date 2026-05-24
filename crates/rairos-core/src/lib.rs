@@ -42,6 +42,13 @@ pub mod db_migrate;
 pub mod db_optimize;
 pub mod crossover;
 
+// Re-export key types from merged utility modules
+pub use retry::{RetryConfig, retry_with_backoff, CircuitOpen};
+pub use cache::{CacheConfig, get_cached, set_cached};
+pub use auth::{AuthError, User, is_auth_enabled, verify_login};
+pub use rate_limiter::APIRateLimitManager;
+pub use crossover::{CodeCapsuleGene, CapsuleGene};
+
 // ============================================================================
 // Error Types
 // ============================================================================
