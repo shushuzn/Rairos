@@ -4,6 +4,7 @@
 
 pub use crate::{
     Database,
+    DatabaseProvider,
     Paper,
     PaperMetadata,
     ParseStatus,

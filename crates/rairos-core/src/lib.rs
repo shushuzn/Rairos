@@ -397,6 +397,44 @@ pub struct SearchResult {
 // Database
 // ============================================================================
 
+// ============================================================================
+// DatabaseProvider Trait — interface for paper database operations
+// ============================================================================
+
+/// Trait defining the paper database operations contract.
+/// Enables mock databases for testing and clear module boundaries.
+pub trait DatabaseProvider {
+    fn insert_paper(&self, paper: &Paper) -> Result<()>;
+    fn get_paper(&self, id: &str) -> Result<Paper>;
+    fn get_paper_by_arxiv(&self, arxiv_id: &str) -> Result<Option<Paper>>;
+    fn list_papers(&self, status: Option<ParseStatus>, limit: usize, offset: usize) -> Result<Vec<Paper>>;
+    fn delete_paper(&self, id: &str) -> Result<()>;
+    fn paper_exists(&self, id: &str) -> bool;
+    fn search_papers(&self, query: &str, limit: usize) -> Result<Vec<Paper>>;
+    fn search_papers_smart(&self, query: &str, limit: usize) -> Result<Vec<Paper>>;
+    fn stats(&self) -> Result<DbStats>;
+    fn list_gaps(&self, limit: usize, offset: usize) -> Result<Vec<ResearchGap>>;
+    fn insert_gap(&self, gap: &ResearchGap) -> Result<()>;
+    fn merge_papers(&self, primary_id: &str, duplicate_ids: &[&str]) -> Result<bool>;
+    fn update_paper_status(&self, id: &str, status: ParseStatus) -> Result<()>;
+}
+
+impl DatabaseProvider for Database {
+    fn insert_paper(&self, paper: &Paper) -> Result<()> { Database::insert_paper(self, paper) }
+    fn get_paper(&self, id: &str) -> Result<Paper> { Database::get_paper(self, id) }
+    fn get_paper_by_arxiv(&self, arxiv_id: &str) -> Result<Option<Paper>> { Database::get_paper_by_arxiv(self, arxiv_id) }
+    fn list_papers(&self, status: Option<ParseStatus>, limit: usize, offset: usize) -> Result<Vec<Paper>> { Database::list_papers(self, status, limit, offset) }
+    fn delete_paper(&self, id: &str) -> Result<()> { Database::delete_paper(self, id) }
+    fn paper_exists(&self, id: &str) -> bool { Database::paper_exists(self, id) }
+    fn search_papers(&self, query: &str, limit: usize) -> Result<Vec<Paper>> { Database::search_papers(self, query, limit) }
+    fn search_papers_smart(&self, query: &str, limit: usize) -> Result<Vec<Paper>> { Database::search_papers_smart(self, query, limit) }
+    fn stats(&self) -> Result<DbStats> { Database::stats(self) }
+    fn list_gaps(&self, limit: usize, offset: usize) -> Result<Vec<ResearchGap>> { Database::list_gaps(self, limit, offset) }
+    fn insert_gap(&self, gap: &ResearchGap) -> Result<()> { Database::insert_gap(self, gap) }
+    fn merge_papers(&self, primary_id: &str, duplicate_ids: &[&str]) -> Result<bool> { Database::merge_papers(self, primary_id, duplicate_ids) }
+    fn update_paper_status(&self, id: &str, status: ParseStatus) -> Result<()> { Database::update_paper_status(self, id, status) }
+}
+
 #[derive(Clone)]
 pub struct Database {
     pool: Arc<Mutex<SqlitePool>>,
