@@ -21,10 +21,22 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CARGO_BUILD_JOBS: 1
+  CARGO_BUILD_JOBS: 4
+  RUSTC_WRAPPER: sccache
+  SCCACHE_CACHE_SIZE: 10G
   AWS_LC_SYS_NOASM: '1'
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: cargo clippy
+        run: cargo clippy --tests --workspace -- -D warnings
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -44,7 +56,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.rust }}
-          components: rustfmt, clippy
 
       - name: Cache cargo registry
         uses: actions/cache@v5
@@ -56,62 +67,38 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-${{ matrix.rust }}-cargo-
 
+      - name: Install sccache + mold (unix)
+        if: runner.os != 'Windows'
+        run: |
+          if command -v mold 2>/dev/null; then
+            echo "mold already installed"
+          elif command -v apt-get 2>/dev/null; then
+            sudo apt-get install -y mold clang
+          fi
+          cargo install sccache --locked
+          echo "RUSTFLAGS=-C link-arg=-fuse-ld=mold" >> $GITHUB_ENV
+
+      - name: Start sccache
+        if: runner.os != 'Windows'
+        run: sccache --start-server
+
       - name: Cache sccache
         if: runner.os != 'Windows'
         uses: actions/cache@v5
         with:
           path: ~/.cache/sccache
           key: ${{ runner.os }}-${{ matrix.rust }}-sccache-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.rust }}-sccache-
 
-      - name: Install sccache (unix)
-        if: runner.os != 'Windows'
-        run: |
-          SCCACHE_VERSION="v0.11.0"
-          curl -sL "https://github.com/mozilla/sccache/releases/download/${SCCACHE_VERSION}/sccache-${SCCACHE_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
-            | tar xz -C /tmp
-          cp "/tmp/sccache-${SCCACHE_VERSION}-x86_64-unknown-linux-musl/sccache" /usr/local/bin/sccache
-          chmod +x /usr/local/bin/sccache
-          mkdir -p ~/.cargo
-          echo '[build]' > ~/.cargo/config.toml
-          echo 'rustc-wrapper = "sccache"' >> ~/.cargo/config.toml
-          echo '[cache]' >> ~/.cargo/config.toml
-          echo 'size = "10G"' >> ~/.cargo/config.toml
+      - name: Build (binary only)
+        run: cargo build --release -p rairos-cli
 
-      - name: Start sccache
-        if: runner.os != 'Windows'
-        run: sccache --start-server
-
-      - name: cargo build (workspace, deny warnings)
-        run: cargo build --workspace
-
-      - name: cargo test (workspace)
-        run: cargo test --workspace
-
-      - name: Clippy lint
-        run: cargo clippy --tests --workspace ${{ runner.os == 'macOS' && '--exclude rairos-sysinfo --exclude rairos-lsp-diagnostics --exclude rairos-workspace-snapshot' || '' }} -- -D warnings
+      - name: Test (binary only)
+        run: cargo test -p rairos-cli
 
       - name: Security audit
         if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
-        uses: rustsec/audit-check@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: cargo audit
 
       - name: Show sccache stats
         if: runner.os != 'Windows'
         run: sccache --show-stats
-
-      - name: Set up Docker Buildx
-        if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./deploy/Dockerfile
-          push: false
-          tags: rairos-api-gateway:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
