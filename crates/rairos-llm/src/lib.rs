@@ -3,9 +3,7 @@
 //! Provides unified interface to multiple LLM providers.
 //! Replaces: llm/client.py, llm/citation_chain.py, llm/gap_detector.py
 
-pub mod anthropic_stream;
 pub mod briefing;
-pub mod cache;
 pub mod citation_chain;
 pub mod client_async;
 pub mod gap_detector;
@@ -21,8 +19,8 @@ pub mod ollama;
 pub mod paper_analyzer;
 pub mod paper_comparison;
 pub mod reasoning;
-pub mod retry;
 pub mod insight;
+pub mod anthropic_stream;
 
 // Re-export key insight types so consumers can use rairos_llm::CredibilityScorer
 pub use insight::cards::InsightManager;

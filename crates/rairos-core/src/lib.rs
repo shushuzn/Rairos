@@ -29,15 +29,8 @@ pub use basics::safe_uid;
 pub mod retry;
 pub mod cache;
 pub mod core_utils;
-pub mod exceptions;
-pub mod config;
-pub mod perf;
-pub mod rate_limiter;
 pub mod observability;
-pub mod user_helpers;
 pub mod auth;
-pub mod notifications;
-pub mod notify;
 pub mod db_migrate;
 pub mod db_optimize;
 pub mod crossover;
@@ -46,7 +39,6 @@ pub mod crossover;
 pub use retry::{RetryConfig, retry_with_backoff, CircuitOpen};
 pub use cache::{CacheConfig, get_cached, set_cached};
 pub use auth::{AuthError, User, is_auth_enabled, verify_login};
-pub use rate_limiter::APIRateLimitManager;
 pub use crossover::{CodeCapsuleGene, CapsuleGene};
 
 // ============================================================================
