@@ -13,7 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     pkg-config \
     libssl3 \
+    clang \
+    mold \
     && rm -rf /var/lib/apt/lists/*
+
+# Install sccache for build caching
+RUN cargo install sccache --locked && rm -rf /usr/local/cargo/registry/
+
+# Enable sccache and mold for faster builds
+ENV RUSTC_WRAPPER=sccache \
+    SCCACHE_DIR=/sccache \
+    RUSTFLAGS="-C link-arg=-fuse-ld=mold"
 
 # Cache cargo registry and build dependencies
 COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
@@ -26,8 +36,9 @@ RUN mkdir -p crates && \
 # Copy source
 COPY . .
 
-# Build all binary targets
-RUN cargo build --release --bin rairos-cli --bin rairos-web --bin rairos-mcp
+# Build with sccache caching
+RUN --mount=type=cache,target=/sccache \
+    cargo build --release --bin rairos-cli --bin rairos-web --bin rairos-mcp
 
 # ==============================================================================
 # Stage 2: Runtime — rairos-cli
