@@ -6,7 +6,7 @@
 
 use rand::seq::SliceRandom;
 use rand::Rng;
-use rairos_core::constants::{GP_DIR_NAME, GENE_POOL_JSONL, CODE_GENE_POOL_JSONL};
+use crate::constants::{GP_DIR_NAME, GENE_POOL_JSONL, CODE_GENE_POOL_JSONL};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;

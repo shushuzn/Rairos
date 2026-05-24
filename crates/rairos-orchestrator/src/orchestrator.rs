@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use futures::future::join_all;
 use rairos_core::{Database, Paper, ResearchGap};
-use rairos_crossover::CrossoverEngine;
+use rairos_core::crossover::CrossoverEngine;
 use rairos_llm::insight::tracker::EvolutionTracker;
 use rairos_llm::RegretOptimalSelector;
 use rairos_observability::get_metrics;
@@ -2069,7 +2069,7 @@ impl AutonomousOrchestrator {
 
         let result = {
             let mut crossover = self.crossover_engine.lock().unwrap();
-            rairos_crossover::run_evolution_with_engine(
+            rairos_core::crossover::run_evolution_with_engine(
                 3,
                 10,
                 Some(&mut *crossover),

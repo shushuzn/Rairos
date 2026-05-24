@@ -3,7 +3,7 @@
 use anyhow::Result;
 
 pub fn handle_crossover_run() -> Result<()> {
-    use rairos_crossover::run_evolution;
+    use rairos_core::crossover::run_evolution;
 
     println!("🧬 Crossover Evolution");
     let result = run_evolution(5, 10);
@@ -20,7 +20,7 @@ pub fn handle_crossover_run() -> Result<()> {
 }
 
 pub fn handle_crossover_list() -> Result<()> {
-    use rairos_crossover::get_top_candidates;
+    use rairos_core::crossover::get_top_candidates;
 
     let candidates = get_top_candidates(10);
     println!("🧬 Top Crossover Candidates");

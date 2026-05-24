@@ -40,6 +40,7 @@ pub mod notifications;
 pub mod notify;
 pub mod db_migrate;
 pub mod db_optimize;
+pub mod crossover;
 
 // ============================================================================
 // Error Types

@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use rairos_core::constants::{LLM_BASE_URL, LLM_MODEL};
-use rairos_crossover::{CodeCapsuleGene, StatusChange, get_top_code_candidates, save_code_capsule, get_all_code_capsules};
+use rairos_core::crossover::{CodeCapsuleGene, StatusChange, get_top_code_candidates, save_code_capsule, get_all_code_capsules};
 use rairos_core::Database;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -1177,7 +1177,7 @@ pub fn handle_code_gene_clean(
         println!("🔍 Dry-run mode: no genes were deleted.");
         println!("  Run without --dry-run to actually delete.");
     } else {
-        let path = rairos_crossover::code_gene_pool_path();
+        let path = rairos_core::crossover::code_gene_pool_path();
         let mut file = std::fs::File::create(&path)?;
         for gene in &high_quality {
             let json = serde_json::to_string(gene)?;

@@ -72,7 +72,6 @@ rairos-briefing-generator = { path = "../rairos-briefing-generator" }
 rairos-paradigm = { path = "../rairos-paradigm" }
 rairos-cross-referencer = { path = "../rairos-cross-referencer" }
 rairos-scoring-momentum = { path = "../rairos-scoring-momentum" }
-rairos-crossover = { path = "../rairos-crossover" }
 rairos-gene-pool-decay = { path = "../rairos-gene-pool-decay" }
 rairos-at-risk-scanner = { path = "../rairos-at-risk-scanner" }
 rairos-credibility = { path = "../rairos-credibility" }

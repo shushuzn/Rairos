@@ -22,15 +22,7 @@ dirs.workspace = true
 regex.workspace = true
 parking_lot.workspace = true
 rand.workspace = true
-
-# Insight crates — direct dependencies on implementation crates
-rairos-crossover = { path = "../rairos-crossover" }
-rairos-insight-cards = { path = "../rairos-insight-cards" }
-rairos-insight-credibility = { path = "../rairos-insight-credibility" }
-rairos-insight-evolution = { path = "../rairos-insight-evolution" }
-rairos-insight-storage = { path = "../rairos-insight-storage" }
-rairos-insight-tracker = { path = "../rairos-insight-tracker" }
-rairos-insight-types = { path = "../rairos-insight-types" }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "sqlite"] }
 
 [dev-dependencies]
 tokio-test = "0.4"

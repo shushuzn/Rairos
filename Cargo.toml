@@ -130,14 +130,7 @@ members = [
     "crates/rairos-rankers-score",
     "crates/rairos-trend-analyzer",
     "crates/rairos-rankers-base",
-    # Insight crates — direct re-exports via insight module in rairos-llm
-    "crates/rairos-crossover",
-    "crates/rairos-insight-cards",
-    "crates/rairos-insight-credibility",
-    "crates/rairos-insight-evolution",
-    "crates/rairos-insight-storage",
-    "crates/rairos-insight-tracker",
-    "crates/rairos-insight-types",
+    # Insight crates — merged into rairos-llm
     # Restored CLI crate deps — original crates re-exported from rairos-cli modules
     "crates/rairos-at-risk-scanner",
     "crates/rairos-batch-optimizer",

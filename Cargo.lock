@@ -3993,7 +3993,6 @@ dependencies = [
  "rairos-core",
  "rairos-credibility",
  "rairos-cross-referencer",
- "rairos-crossover",
  "rairos-crossref",
  "rairos-daemon",
  "rairos-dashboard",
@@ -4222,6 +4221,7 @@ dependencies = [
  "rairos-rate-limiter",
  "rairos-retry",
  "rairos-user-helpers",
+ "rand 0.8.6",
  "regex",
  "reqwest",
  "rustc-hash",
@@ -4304,17 +4304,6 @@ name = "rairos-cross-referencer"
 version = "0.1.0"
 dependencies = [
  "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "rairos-crossover"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "rairos-core",
- "rand 0.8.6",
  "serde",
  "serde_json",
 ]
@@ -4657,85 +4646,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-insight-cards"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "regex",
- "serde",
- "serde_json",
- "tempfile",
-]
-
-[[package]]
-name = "rairos-insight-credibility"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "rairos-crossover",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "rairos-insight-evolution"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "rairos-insight-credibility",
- "rand 0.8.6",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
- "uuid",
-]
-
-[[package]]
-name = "rairos-insight-storage"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "parking_lot",
- "rairos-insight-credibility",
- "serde",
- "serde_json",
- "sqlx",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "uuid",
-]
-
-[[package]]
-name = "rairos-insight-tracker"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "rairos-insight-types",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
- "uuid",
-]
-
-[[package]]
-name = "rairos-insight-types"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-intelligence"
 version = "0.1.0"
 dependencies = [
@@ -4865,18 +4775,12 @@ dependencies = [
  "mockito",
  "parking_lot",
  "rairos-core",
- "rairos-crossover",
- "rairos-insight-cards",
- "rairos-insight-credibility",
- "rairos-insight-evolution",
- "rairos-insight-storage",
- "rairos-insight-tracker",
- "rairos-insight-types",
  "rand 0.8.6",
  "regex",
  "reqwest",
  "serde",
  "serde_json",
+ "sqlx",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
@@ -5041,7 +4945,6 @@ dependencies = [
  "futures",
  "rairos-core",
  "rairos-cortex-pro",
- "rairos-crossover",
  "rairos-llm",
  "rairos-observability",
  "rairos-parser",
