@@ -3805,22 +3805,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-auth"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "hex",
- "pbkdf2",
- "rand 0.8.6",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "thiserror 2.0.18",
- "tokio-test",
-]
-
-[[package]]
 name = "rairos-batch-optimizer"
 version = "0.1.0"
 dependencies = [
@@ -3883,18 +3867,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
-]
-
-[[package]]
-name = "rairos-cache"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "flate2",
- "parking_lot",
- "rustc-hash",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -4182,15 +4154,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-config"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tempfile",
-]
-
-[[package]]
 name = "rairos-contradiction"
 version = "0.1.0"
 dependencies = [
@@ -4206,46 +4169,29 @@ dependencies = [
  "anyhow",
  "chrono",
  "dirs",
+ "flate2",
+ "hex",
  "libsqlite3-sys",
+ "log",
  "parking_lot",
- "rairos-auth",
- "rairos-cache",
- "rairos-config",
- "rairos-core-utils",
- "rairos-db-migrate",
- "rairos-exceptions",
- "rairos-notifications",
- "rairos-notify",
+ "pbkdf2",
  "rairos-observability",
- "rairos-perf",
- "rairos-rate-limiter",
- "rairos-retry",
- "rairos-user-helpers",
  "rand 0.8.6",
  "regex",
  "reqwest",
  "rustc-hash",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "sqlx",
+ "sysinfo 0.34.2",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "url",
  "uuid",
-]
-
-[[package]]
-name = "rairos-core-utils"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "parking_lot",
- "serde",
- "serde_json",
- "sysinfo 0.34.2",
- "tempfile",
 ]
 
 [[package]]
@@ -4351,19 +4297,6 @@ dependencies = [
  "chrono",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "rairos-db-migrate"
-version = "0.1.0"
-dependencies = [
- "libsqlite3-sys",
- "log",
- "serde",
- "serde_json",
- "sqlx",
- "tokio",
- "tokio-test",
 ]
 
 [[package]]
@@ -4476,14 +4409,6 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "uuid",
-]
-
-[[package]]
-name = "rairos-exceptions"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -4891,30 +4816,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-notifications"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "rairos-notify"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tracing",
-]
-
-[[package]]
 name = "rairos-observability"
 version = "0.1.0"
 dependencies = [
@@ -5080,13 +4981,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-perf"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
-]
-
-[[package]]
 name = "rairos-policy-impact-tracer"
 version = "0.1.0"
 dependencies = [
@@ -5218,16 +5112,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-rate-limiter"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
- "rustc-hash",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-render"
 version = "0.1.0"
 dependencies = [
@@ -5331,14 +5215,6 @@ dependencies = [
  "serde_json",
  "sysinfo 0.34.2",
  "tempfile",
-]
-
-[[package]]
-name = "rairos-retry"
-version = "0.1.0"
-dependencies = [
- "parking_lot",
- "serde",
 ]
 
 [[package]]
@@ -5561,10 +5437,6 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
 ]
-
-[[package]]
-name = "rairos-user-helpers"
-version = "0.1.0"
 
 [[package]]
 name = "rairos-validator"

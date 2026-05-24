@@ -26,17 +26,12 @@ dirs.workspace = true
 tokio = { version = "1", features = ["rt", "rt-multi-thread"] }
 
 # Orphan rescues — re-exported through rairos_core:: module tree
-rairos-retry = { path = "../rairos-retry" }
-rairos-cache = { path = "../rairos-cache" }
-rairos-core-utils = { path = "../rairos-core-utils" }
-rairos-exceptions = { path = "../rairos-exceptions" }
-rairos-config = { path = "../rairos-config" }
-rairos-perf = { path = "../rairos-perf" }
-rairos-rate-limiter = { path = "../rairos-rate-limiter" }
 rairos-observability = { path = "../rairos-observability" }
-rairos-user-helpers = { path = "../rairos-user-helpers" }
-rairos-auth = { path = "../rairos-auth" }
-rairos-notifications = { path = "../rairos-notifications" }
-rairos-notify = { path = "../rairos-notify" }
-rairos-db-migrate = { path = "../rairos-db-migrate" }
 
+flate2 = "1"
+hex.workspace = true
+log = "0.4"
+pbkdf2 = "0.12"
+sha2.workspace = true
+sysinfo.workspace = true
+url = "2"
