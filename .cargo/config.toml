@@ -20,7 +20,6 @@ rustflags = [
 [profile.dev]
 opt-level = 0
 debug = false
-split-debuginfo = "unpacked"
 panic = "unwind"
 codegen-units = 256
 incremental = true
