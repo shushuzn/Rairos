@@ -20,6 +20,7 @@ pub mod paper_analyzer;
 pub mod paper_comparison;
 pub mod reasoning;
 pub mod insight;
+pub mod prelude;
 pub mod anthropic_stream;
 
 // Re-export key insight types so consumers can use rairos_llm::CredibilityScorer

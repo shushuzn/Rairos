@@ -34,6 +34,7 @@ pub mod auth;
 pub mod db_migrate;
 pub mod db_optimize;
 pub mod crossover;
+pub mod prelude;
 
 // Re-export key types from merged utility modules
 pub use retry::{RetryConfig, retry_with_backoff, CircuitOpen};
