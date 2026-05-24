@@ -149,7 +149,6 @@ members = [
     # Neo4j knowledge graph
     "crates/rairos-kg-neo4j",
     # GraphRAG pipeline
-    "crates/rairos-graphrag",
     # PDF advanced parsing
     # Multi-agent orchestration
     "crates/rairos-cortex-pro",

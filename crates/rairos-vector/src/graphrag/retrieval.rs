@@ -1,6 +1,6 @@
 //! Hybrid retrieval combining vector similarity with knowledge graph context.
 
-use crate::GraphRagConfig;
+use crate::graphrag::GraphRagConfig;
 
 /// A retrieval result combining vector and graph data
 #[derive(Debug, Clone)]

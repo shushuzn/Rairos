@@ -42,6 +42,7 @@ regex = "1"
 
 # LLM client from rairos-llm (optional, enabled by feature flag)
 rairos-llm = { path = "../rairos-llm", optional = true }
+rairos-kg-neo4j = { path = "../rairos-kg-neo4j" }
 
 [dev-dependencies]
 tokio-test = "0.4"

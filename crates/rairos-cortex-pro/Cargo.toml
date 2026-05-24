@@ -44,7 +44,6 @@ rairos-llm = { path = "../rairos-llm", optional = true }
 rairos-pdf = { path = "../rairos-pdf" }
 rairos-vector = { path = "../rairos-vector" }
 rairos-kg-neo4j = { path = "../rairos-kg-neo4j" }
-rairos-graphrag = { path = "../rairos-graphrag" }
 
 # Material science tools (for SparksMatter integration)
 rairos-tools = { path = "../rairos-tools", optional = true }

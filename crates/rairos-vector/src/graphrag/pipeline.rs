@@ -2,14 +2,14 @@
 
 use std::sync::Arc;
 
-use rairos_vector::embedding::Embedder;
-use rairos_vector::client::VectorStore;
+use crate::embedding::Embedder;
+use crate::client::VectorStore;
 use rairos_kg_neo4j::Neo4jKgClient;
 
-use crate::community::{CommunitySummarizer, CommunitySummary};
-use crate::error::GraphRagError;
-use crate::retrieval::{HybridRetriever, HybridSearchResult};
-use crate::reasoning::{PathFinder, ReasoningPath};
+use crate::graphrag::community::{CommunitySummarizer, CommunitySummary};
+use crate::graphrag::error::GraphRagError;
+use crate::graphrag::retrieval::{HybridRetriever, HybridSearchResult};
+use crate::graphrag::reasoning::{PathFinder, ReasoningPath};
 
 /// Configuration for GraphRAG pipeline
 #[derive(Debug, Clone)]
@@ -162,7 +162,7 @@ impl<E: Embedder, V: VectorStore> GraphRagPipeline<E, V> {
     /// Convert vector search results to hybrid results
     fn vector_to_hybrid_results(
         &self,
-        hits: Vec<rairos_vector::client::SearchHit>,
+        hits: Vec<crate::client::SearchHit>,
     ) -> Vec<HybridSearchResult> {
         hits
             .into_iter()
@@ -200,7 +200,7 @@ impl<E: Embedder, V: VectorStore> GraphRagPipeline<E, V> {
                 result.related_entities = related
                     .into_iter()
                     .take(5)
-                    .map(|node| crate::retrieval::RelatedEntity {
+                    .map(|node| crate::graphrag::retrieval::RelatedEntity {
                         entity_id: node.entity_id.clone(),
                         relation: "RELATED".to_string(),
                         label: node.label,
@@ -395,7 +395,7 @@ impl<E: Embedder, V: VectorStore> GraphRagPipeline<E, V> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::retrieval::RelatedEntity;
+    use crate::graphrag::retrieval::RelatedEntity;
 
     #[test]
     fn test_default_config() {

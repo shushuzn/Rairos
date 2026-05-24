@@ -30,6 +30,7 @@
 //! ```
 
 pub mod embedding;
+pub mod graphrag;
 pub mod client;
 pub mod chroma;
 pub mod milvus;

@@ -4178,7 +4178,6 @@ dependencies = [
  "futures",
  "lru",
  "parking_lot",
- "rairos-graphrag",
  "rairos-kg-neo4j",
  "rairos-llm",
  "rairos-pdf",
@@ -4506,22 +4505,6 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "rairos-graphrag"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "rairos-kg-neo4j",
- "rairos-vector",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "tokio-test",
- "tracing",
 ]
 
 [[package]]
@@ -5405,6 +5388,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "base64 0.22.1",
+ "rairos-kg-neo4j",
  "rairos-llm",
  "regex",
  "reqwest",
