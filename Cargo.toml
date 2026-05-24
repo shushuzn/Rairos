@@ -1,5 +1,15 @@
 [workspace]
 resolver = "2"
+default-members = [
+    "crates/rairos-cli",
+    "crates/rairos-core",
+    "crates/rairos-llm",
+    "crates/rairos-parser",
+    "crates/rairos-pdf",
+    "crates/rairos-kg",
+    "crates/rairos-mcp",
+    "crates/rairos-web",
+]
 members = [
     "crates/rairos-argument-builder",
     "crates/rairos-arxiv-alert-channels",

@@ -109,10 +109,14 @@ build-dist:
 	upx --best --lzma target/release/rairos-cli-musl -o target/release/rairos-cli-dist
 	@echo "Distribution binary: $$(du -h target/release/rairos-cli-dist | cut -f1)"
 
+# Quick check (only CLI and its deps)
+check:
+	cargo check -p rairos-cli
+
 # Dev workflow: watch files and auto-check on changes
 dev:
 	@echo "Watching for changes (Ctrl+C to stop)..."
-	cargo watch -x check -p rairos-cli
+	cargo watch -x "check -p rairos-cli"
 
 # Run with arguments: make run CMD='gap "transformer"'
 run:

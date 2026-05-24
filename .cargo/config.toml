@@ -23,6 +23,8 @@ debug = false
 split-debuginfo = "unpacked"
 panic = "unwind"
 codegen-units = 256
+incremental = true
+embed-bitcode = false
 
 # Dependencies in dev: moderate optimization without debug
 [profile.dev.package."*"]
