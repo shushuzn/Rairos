@@ -749,7 +749,10 @@ impl Database {
     pub fn insert_paper(&self, paper: &Paper) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
-        let paper = paper.clone();
+        let authors_json = serde_json::to_string(&paper.authors)?;
+        let categories_json = serde_json::to_string(&paper.categories)?;
+        let published = paper.published.to_rfc3339();
+        let status = paper.parse_status.to_string();
         rt.block_on(async move {
             sqlx::query(
                 r#"INSERT INTO papers
@@ -760,11 +763,11 @@ impl Database {
             .bind(&paper.id)
             .bind(&paper.arxiv_id)
             .bind(&paper.title)
-            .bind(serde_json::to_string(&paper.authors).unwrap())
-            .bind(paper.published.to_rfc3339())
+            .bind(&authors_json)
+            .bind(&published)
             .bind(&paper.abstract_text)
-            .bind(serde_json::to_string(&paper.categories).unwrap())
-            .bind(paper.parse_status.to_string())
+            .bind(&categories_json)
+            .bind(&status)
             .bind(paper.metadata.cited_by as i64)
             .bind(paper.metadata.references as i64)
             .bind(&paper.metadata.doi)
@@ -967,62 +970,40 @@ impl Database {
             let mut tx = pool.begin().await?;
 
             for dup_id in &valid_dup_ids {
-                // ── Text/string fields: copy if primary is empty and dup is not ──
-                let text_fields = [
-                    "title", "authors", "abstract_text", "doi", "pdf_url",
-                    "pdf_path", "pdf_hash", "categories", "plain_text",
-                ];
-                for field in &text_fields {
-                    let sql = format!(
-                        "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
-                         WHERE id = ?2 AND ({} IS NULL OR {} = '') \
-                         AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
-                         AND (SELECT {} FROM papers WHERE id = ?1) != ''",
-                        field, field, field, field, field, field
-                    );
-                    sqlx::query(&sql)
-                        .bind(dup_id)
-                        .bind(&primary_id)
-                        .execute(&mut *tx)
-                        .await?;
-                }
-
-                // ── Integer fields: copy if primary is 0 and dup > 0 ──
+                // ── Single combined UPDATE for all text fields ──
                 sqlx::query(
-                    "UPDATE papers SET cited_by = (SELECT cited_by FROM papers WHERE id = ?1) \
-                     WHERE id = ?2 AND cited_by = 0 \
-                     AND (SELECT cited_by FROM papers WHERE id = ?1) > 0",
+                    "UPDATE papers SET \
+                     title = COALESCE(NULLIF(title, ''), (SELECT title FROM papers WHERE id = ?1)), \
+                     authors = COALESCE(NULLIF(authors, ''), (SELECT authors FROM papers WHERE id = ?1)), \
+                     abstract_text = COALESCE(NULLIF(abstract_text, ''), (SELECT abstract_text FROM papers WHERE id = ?1)), \
+                     doi = COALESCE(NULLIF(doi, ''), (SELECT doi FROM papers WHERE id = ?1)), \
+                     pdf_url = COALESCE(NULLIF(pdf_url, ''), (SELECT pdf_url FROM papers WHERE id = ?1)), \
+                     pdf_path = COALESCE(NULLIF(pdf_path, ''), (SELECT pdf_path FROM papers WHERE id = ?1)), \
+                     pdf_hash = COALESCE(NULLIF(pdf_hash, ''), (SELECT pdf_hash FROM papers WHERE id = ?1)), \
+                     categories = COALESCE(NULLIF(categories, ''), (SELECT categories FROM papers WHERE id = ?1)), \
+                     plain_text = COALESCE(NULLIF(plain_text, ''), (SELECT plain_text FROM papers WHERE id = ?1)) \
+                     WHERE id = ?2",
                 )
                 .bind(dup_id)
                 .bind(&primary_id)
                 .execute(&mut *tx)
                 .await?;
 
+                // ── Single combined UPDATE for all integer fields ──
                 sqlx::query(
-                    "UPDATE papers SET references_cnt = (SELECT references_cnt FROM papers WHERE id = ?1) \
-                     WHERE id = ?2 AND references_cnt = 0 \
-                     AND (SELECT references_cnt FROM papers WHERE id = ?1) > 0",
+                    "UPDATE papers SET \
+                     cited_by = CASE WHEN cited_by = 0 THEN (SELECT cited_by FROM papers WHERE id = ?1) ELSE cited_by END, \
+                     references_cnt = CASE WHEN references_cnt = 0 THEN (SELECT references_cnt FROM papers WHERE id = ?1) ELSE references_cnt END, \
+                     table_count = CASE WHEN table_count IS NULL OR table_count = 0 THEN (SELECT table_count FROM papers WHERE id = ?1) ELSE table_count END, \
+                     figure_count = CASE WHEN figure_count IS NULL OR figure_count = 0 THEN (SELECT figure_count FROM papers WHERE id = ?1) ELSE figure_count END, \
+                     word_count = CASE WHEN word_count IS NULL OR word_count = 0 THEN (SELECT word_count FROM papers WHERE id = ?1) ELSE word_count END, \
+                     page_count = CASE WHEN page_count IS NULL OR page_count = 0 THEN (SELECT page_count FROM papers WHERE id = ?1) ELSE page_count END \
+                     WHERE id = ?2",
                 )
                 .bind(dup_id)
                 .bind(&primary_id)
                 .execute(&mut *tx)
                 .await?;
-
-                // ── Integer parse fields: copy if primary is 0/NULL and dup > 0 ──
-                for field in &["table_count", "figure_count", "word_count", "page_count"] {
-                    let sql = format!(
-                        "UPDATE papers SET {} = (SELECT {} FROM papers WHERE id = ?1) \
-                         WHERE id = ?2 AND ({} IS NULL OR {} = 0) \
-                         AND (SELECT {} FROM papers WHERE id = ?1) IS NOT NULL \
-                         AND (SELECT {} FROM papers WHERE id = ?1) > 0",
-                        field, field, field, field, field, field
-                    );
-                    sqlx::query(&sql)
-                        .bind(dup_id)
-                        .bind(&primary_id)
-                        .execute(&mut *tx)
-                        .await?;
-                }
 
                 // ── Parse status: copy if primary is 'pending' and dup is not ──
                 sqlx::query(
@@ -1201,7 +1182,7 @@ impl Database {
     pub fn insert_gap(&self, gap: &ResearchGap) -> Result<()> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
-        let gap = gap.clone();
+        let paper_ids_json = serde_json::to_string(&gap.paper_ids)?;
         rt.block_on(async move {
             sqlx::query(
                 "INSERT INTO research_gaps (id, topic, session_id, gap_type, gap_title, gap_title_hash, category, description, severity, novelty_score, priority, paper_ids, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
@@ -1217,7 +1198,7 @@ impl Database {
             .bind(&gap.severity)
             .bind(gap.novelty_score)
             .bind(&gap.priority)
-            .bind(serde_json::to_string(&gap.paper_ids)?)
+            .bind(&paper_ids_json)
             .bind(&gap.created_at)
             .execute(&pool)
             .await?;
@@ -1397,8 +1378,7 @@ impl Database {
 
         let word_count = query.split_whitespace().count();
         if word_count >= 2 {
-            let fts_query = query.split_whitespace().collect::<Vec<_>>().join(" ");
-            if let Ok(papers) = self.search_papers_fts(&fts_query, limit) {
+            if let Ok(papers) = self.search_papers_fts(query, limit) {
                 if !papers.is_empty() {
                     return Ok(papers);
                 }
@@ -1407,8 +1387,9 @@ impl Database {
 
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
-        let pattern = format!("%{}%", query);
+        let owned_query = query.to_string();
         rt.block_on(async move {
+            let pattern = format!("%{}%", owned_query);
             let rows = sqlx::query(
                 "SELECT id, arxiv_id, title, authors, published, abstract_text, categories,
                         parse_status, cited_by, references_cnt, doi, pdf_url
