@@ -3833,16 +3833,13 @@ dependencies = [
  "rairos-compare",
  "rairos-contradiction",
  "rairos-core",
- "rairos-credibility",
  "rairos-cross-referencer",
- "rairos-crossref",
  "rairos-daemon",
  "rairos-dashboard",
  "rairos-evolution",
  "rairos-evolution-report",
  "rairos-experiment-tracker",
  "rairos-friction",
- "rairos-game-mode",
  "rairos-gene-pool-decay",
  "rairos-impact",
  "rairos-intelligence",
@@ -3880,9 +3877,7 @@ dependencies = [
  "rairos-story",
  "rairos-testextractor",
  "rairos-trend-analyzer",
- "rairos-updaters",
  "rairos-validator",
- "rairos-vault",
  "rairos-viz",
  "rairos-watch-papers",
  "rairos-web",
@@ -3897,6 +3892,7 @@ dependencies = [
  "sha2 0.10.9",
  "sysinfo 0.34.2",
  "tempfile",
+ "thiserror 2.0.18",
  "tokio",
  "tracing",
  "uuid",
@@ -4060,36 +4056,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-credibility"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "rairos-core",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "rairos-cross-referencer"
 version = "0.1.0"
 dependencies = [
  "regex",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "rairos-crossref"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "rairos-core",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "url",
 ]
 
 [[package]]
@@ -4218,17 +4190,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
-]
-
-[[package]]
-name = "rairos-game-mode"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dirs",
- "rairos-core",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -4964,30 +4925,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "rairos-updaters"
-version = "0.1.0"
-dependencies = [
- "rairos-core",
- "tempfile",
- "thiserror 2.0.18",
-]
-
-[[package]]
 name = "rairos-validator"
 version = "0.1.0"
 dependencies = [
  "serde_json",
-]
-
-[[package]]
-name = "rairos-vault"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "rairos-core",
- "serde",
- "serde_json",
- "tempfile",
 ]
 
 [[package]]

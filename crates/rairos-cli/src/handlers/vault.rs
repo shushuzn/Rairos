@@ -48,7 +48,7 @@ pub fn handle_atrisk_keep(capsule_id: &str) -> Result<()> {
 }
 
 pub fn handle_credibility_score() -> Result<()> {
-    use rairos_credibility::CredibilityScorer;
+    use crate::credibility::CredibilityScorer;
 
     let mut scorer = CredibilityScorer::new();
     let results = scorer.compute_credibility(false);
@@ -60,7 +60,7 @@ pub fn handle_credibility_score() -> Result<()> {
 }
 
 pub fn handle_credibility_trendslop() -> Result<()> {
-    use rairos_credibility::CredibilityScorer;
+    use crate::credibility::CredibilityScorer;
 
     let mut scorer = CredibilityScorer::new();
     let capsules = scorer.get_trendslop_capsules();

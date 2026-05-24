@@ -42,6 +42,11 @@ pub mod value_quantifier;
 pub mod batch_optimizer;
 pub mod profiler;
 pub mod gap_detector;
+pub mod crossref;
+pub mod updaters;
+pub mod vault;
+pub mod game_mode;
+pub mod credibility;
 pub mod policy_impact_tracer;
 pub mod discover;
 pub mod scout;
@@ -647,7 +652,7 @@ fn main() -> Result<()> {
         Commands::Radar { action, tags, note_date, format: _format } => {
             let root = dirs::home_dir().map(|h| h.join(".ai_research_os")).unwrap_or_default();
             if action == "show" {
-                match rairos_updaters::read_radar(&root) {
+                match crate::updaters::read_radar(&root) {
                     Ok(state) => println!("{:#?}", state),
                     Err(e) => eprintln!("Failed to read radar: {}", e),
                 }
@@ -656,7 +661,7 @@ fn main() -> Result<()> {
                     .map(|t| t.split(',').map(|s| s.trim().to_string()).collect())
                     .unwrap_or_default();
                 let date = note_date.as_deref().unwrap_or("today");
-                match rairos_updaters::update_radar(&root, &tag_list, date) {
+                match crate::updaters::update_radar(&root, &tag_list, date) {
                     Ok(_) => println!("Radar updated"),
                     Err(e) => eprintln!("Failed to update radar: {}", e),
                 }
@@ -665,9 +670,9 @@ fn main() -> Result<()> {
         Commands::Timeline { action, year, pnote, title, format: _format } => {
             let root = dirs::home_dir().map(|h| h.join(".ai_research_os")).unwrap_or_default();
             if action == "show" {
-                match rairos_updaters::read_timeline(&root) {
+                match crate::updaters::read_timeline(&root) {
                     Ok(state) => {
-                        let rendered = rairos_updaters::render_timeline(&state);
+                        let rendered = crate::updaters::render_timeline(&state);
                         println!("{}", rendered);
                     }
                     Err(e) => eprintln!("Failed to read timeline: {}", e),
@@ -676,7 +681,7 @@ fn main() -> Result<()> {
                 let y = year.as_deref().unwrap_or("2026");
                 let p = pnote.as_deref().unwrap_or("");
                 let t = title.as_deref().unwrap_or("");
-                match rairos_updaters::update_timeline(&root, y, p, t) {
+                match crate::updaters::update_timeline(&root, y, p, t) {
                     Ok(_) => println!("Timeline updated"),
                     Err(e) => eprintln!("Failed to update timeline: {}", e),
                 }

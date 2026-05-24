@@ -44,16 +44,13 @@ rairos-benchmark-runner = { path = "../rairos-benchmark-runner" }
 rairos-code-indexer = { path = "../rairos-code-indexer" }
 rairos-code-trace = { path = "../rairos-code-trace" }
 rairos-snapstate = { path = "../rairos-snapstate" }
-rairos-updaters = { path = "../rairos-updaters" }
 rairos-review-queue = { path = "../rairos-review-queue" }
-rairos-vault = { path = "../rairos-vault" }
 rairos-arxiv-alert-channels = { path = "../rairos-arxiv-alert-channels" }
 rairos-channels = { path = "../rairos-channels" }
 rairos-citation-pathfinder-web = { path = "../rairos-citation-pathfinder-web" }
 rairos-skill-discovery = { path = "../rairos-skill-discovery" }
 rairos-testextractor = { path = "../rairos-testextractor" }
 rairos-watch-papers = { path = "../rairos-watch-papers" }
-rairos-crossref = { path = "../rairos-crossref" }
 rairos-daemon = { path = "../rairos-daemon" }
 rairos-setup = { path = "../rairos-setup" }
 rairos-cli-registry = { path = "../rairos-cli-registry" }
@@ -61,7 +58,6 @@ rairos-cli-shared = { path = "../rairos-cli-shared" }
 rairos-simple-cli = { path = "../rairos-simple-cli" }
 # Restored CLI crate deps — original crates re-exported via rairos-cli/src modules
 rairos-achievements = { path = "../rairos-achievements" }
-rairos-game-mode = { path = "../rairos-game-mode" }
 rairos-contradiction = { path = "../rairos-contradiction" }
 rairos-trend-analyzer = { path = "../rairos-trend-analyzer" }
 rairos-replication = { path = "../rairos-replication" }
@@ -72,7 +68,6 @@ rairos-paradigm = { path = "../rairos-paradigm" }
 rairos-cross-referencer = { path = "../rairos-cross-referencer" }
 rairos-scoring-momentum = { path = "../rairos-scoring-momentum" }
 rairos-gene-pool-decay = { path = "../rairos-gene-pool-decay" }
-rairos-credibility = { path = "../rairos-credibility" }
 rairos-claimgraph = { path = "../rairos-claimgraph" }
 rairos-codegraph = { path = "../rairos-codegraph" }
 rairos-compare = { path = "../rairos-compare" }
@@ -104,6 +99,7 @@ crossterm = "0.29"
 rayon = "1"
 human-panic = "2"
 parking_lot = { workspace = true }
+thiserror.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
