@@ -55,6 +55,28 @@ $(RELEASE_BIN):
 	RUSTFLAGS="$(RELEASE_RUSTFLAGS)" $(CARGO) build --release -p rairos-cli
 	@echo "Done ($(shell date +%T))"
 
+# PGO: Profile-Guided Optimization (requires llvm-tools component)
+# 1. make pgo-generate    — build with instrumentation
+# 2. run the binary with typical workloads
+# 3. make pgo-use         — rebuild with profile data
+PGO_DATA_DIR := /tmp/rairos-pgo
+pgo-generate:
+	@echo "Building instrumented binary for PGO..."
+	mkdir -p $(PGO_DATA_DIR)
+	RUSTC_WRAPPER= RUSTFLAGS="-Cprofile-generate=$(PGO_DATA_DIR)" \
+		cargo build --release -p rairos-cli
+	@echo "Run './target/release/rairos-cli <typical-commands>' to collect profiles"
+	@echo "Then run 'make pgo-use'"
+
+pgo-use:
+	@echo "Merging PGO profiles..."
+	LLVM_PROFDATA=$$(find ~/.rustup -name llvm-profdata -type f | head -1) && \
+	$$LLVM_PROFDATA merge -o $(PGO_DATA_DIR)/merged.profdata $(PGO_DATA_DIR)/*.profraw && \
+	echo "Building with PGO..." && \
+	RUSTC_WRAPPER= RUSTFLAGS="-Cprofile-use=$(PGO_DATA_DIR)/merged.profdata" \
+		cargo build --release -p rairos-cli
+	@echo "PGO build complete"
+
 build-dev:
 	@echo "Building debug ($(shell date +%T))..."
 	$(CARGO) build -p rairos-cli
