@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+mimalloc = { version = "0.1", default-features = false }
 rairos-core = { path = "../rairos-core" }
 rairos-pdf = { path = "../rairos-pdf" }
 rairos-llm = { path = "../rairos-llm" }

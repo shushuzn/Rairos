@@ -16,6 +16,11 @@
     clippy::manual_range_contains
 )]
 
+use mimalloc::MiMalloc;
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
+
 mod handlers;
 
 // Inlined CLI-only crates
