@@ -99,6 +99,10 @@ jobs:
         if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
         run: cargo audit
 
+      - name: License check
+        if: matrix.rust == 'stable' && runner.os == 'ubuntu-latest'
+        run: cargo deny check licenses
+
       - name: Show sccache stats
         if: runner.os != 'Windows'
         run: sccache --show-stats

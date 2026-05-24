@@ -28,13 +28,14 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
 
-  # Rust formatting
+  # Rust formatting (fast, only staged files)
   - repo: https://github.com/dkupreichik/rust-pre-commit
     rev: v0.1.2
     hooks:
       - id: rustfmt
-      - id: clippy
-        args: ['--', '-D', 'warnings']
+  # NOTE: clippy is NOT in pre-commit (too slow for workspace).
+  # Run manually: cargo clippy --workspace -- -D warnings
+  # CI runs it on every push.
 
   # Ensure .env.example is present when .env exists
   - repo: local

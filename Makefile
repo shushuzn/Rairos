@@ -95,6 +95,11 @@ clean:
 	cargo clean
 	rm -f rairos.sh
 
+# Dev workflow: watch files and auto-check on changes
+dev:
+	@echo "Watching for changes (Ctrl+C to stop)..."
+	cargo watch -x check -p rairos-cli
+
 # Run with arguments: make run CMD='gap "transformer"'
 run:
 	@if [ -f "$(RELEASE_BIN)" ]; then \
