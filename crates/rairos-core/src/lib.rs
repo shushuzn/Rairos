@@ -459,7 +459,12 @@ impl Database {
             .filename(&*path_str)
             .create_if_missing(true)
             .pragma("journal_mode", "WAL")
-            .pragma("foreign_keys", "ON");
+            .pragma("foreign_keys", "ON")
+            .pragma("synchronous", "NORMAL")
+            .pragma("cache_size", "-64000")
+            .pragma("temp_store", "MEMORY")
+            .pragma("busy_timeout", "5000")
+            .pragma("mmap_size", "268435456");
         
         // Create the pool synchronously using the runtime
         let pool = rt.block_on(Self::create_pool_async(options)).map_err(CoreError::Database)?;
