@@ -51,6 +51,7 @@ const MAX_PERSIST_INTERVAL_SECS: i64 = 60;
 
 /// Compute keyword overlap between two text strings (Jaccard similarity on words > 4 chars).
 #[inline(always)]
+#[allow(dead_code)]
 fn keyword_overlap(a: &str, b: &str) -> f64 {
     let a_words = compute_word_set(a);
     let b_words = compute_word_set(b);

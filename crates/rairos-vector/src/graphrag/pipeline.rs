@@ -80,7 +80,9 @@ pub struct GraphRagPipeline<E: Embedder, V: VectorStore> {
     vector_store: Arc<V>,
     kg_client: Arc<Neo4jKgClient>,
     retriever: HybridRetriever,
+    #[allow(dead_code)]
     community_summarizer: CommunitySummarizer,
+    #[allow(dead_code)]
     path_finder: PathFinder,
     config: GraphRagConfig,
 }

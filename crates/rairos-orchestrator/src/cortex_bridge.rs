@@ -14,8 +14,6 @@ use rairos_cortex_pro::{
 use rairos_core::ResearchGap;
 use rairos_observability::get_metrics;
 use async_trait::async_trait;
-use std::sync::Arc;
-use tokio::sync::RwLock;
 use tracing;
 
 /// Configuration for the cortex bridge

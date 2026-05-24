@@ -1,5 +1,4 @@
 use rairos_codegraph::Indexer;
-use tempfile::TempDir;
 
 #[test]
 fn test_indexer_new() {

@@ -443,7 +443,7 @@ async fn test_concurrent_list_tools() {
     let server = Arc::new(registered_server().await);
     
     let mut handles = Vec::new();
-    for i in 0..50 {
+    for _i in 0..50 {
         let srv = server.clone();
         let handle = tokio::spawn(async move {
             let tools = srv.list_tools().await;

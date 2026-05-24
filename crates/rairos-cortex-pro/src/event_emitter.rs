@@ -5,7 +5,6 @@
 //! - async-event-emitter - Async event processing
 //! - agentrs_multi InMemoryBus - Multi-agent event broadcasting
 
-use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, VecDeque};
 use std::sync::Arc;
 use tokio::sync::RwLock;

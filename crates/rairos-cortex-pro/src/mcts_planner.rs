@@ -387,7 +387,7 @@ let tree = self.tree.read();
     }
 
     /// Simulate reward for a tool sequence
-    fn simulate_reward(&self, query: &str, context: &str, path: &[usize]) -> f64 {
+    fn simulate_reward(&self, query: &str, _context: &str, path: &[usize]) -> f64 {
         let tree = self.tree.read();
         let effectiveness = self.tool_effectiveness.read();
 
@@ -437,6 +437,7 @@ let tree = self.tree.read();
 
     /// Calculate FORESIGHT score (pre-execution prediction) - ToolTree innovation
     /// This predicts how useful a tool will be before actually using it
+    #[allow(dead_code)]
     fn calculate_foresight(&self, tool: &Tool, query: &str, context: &str) -> f64 {
         let effectiveness = self.tool_effectiveness.read();
 
@@ -476,6 +477,7 @@ let tree = self.tree.read();
 
     /// Update HINDSIGHT score (post-execution evaluation) - ToolTree innovation
     /// This updates the node with actual observed performance
+    #[allow(dead_code)]
     fn update_hindsight(&self, node_idx: usize, actual_reward: f64) {
         let mut tree = self.tree.write();
         if let Some(node) = tree.get_mut(node_idx) {
@@ -486,6 +488,7 @@ let tree = self.tree.read();
 
     /// Calculate combined score using FORESIGHT + HINDSIGHT dual evaluation
     /// This is the ToolTree innovation: bidirectional pruning
+    #[allow(dead_code)]
     fn calculate_dual_score(&self, node_idx: usize) -> f64 {
         let tree = self.tree.read();
         if let Some(node) = tree.get(node_idx) {

@@ -8,8 +8,8 @@
 //! cargo run --bin rairos-api --features "tools,api"
 //! ```
 
+#[cfg(feature = "api")]
 use std::net::SocketAddr;
-
 #[cfg(feature = "api")]
 use clap::Parser;
 

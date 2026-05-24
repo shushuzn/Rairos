@@ -41,6 +41,7 @@ pub struct CommunitySummary {
 /// Community summarizer that generates summaries for detected communities
 pub struct CommunitySummarizer {
     /// Maximum summary length in tokens
+    #[allow(dead_code)]
     max_summary_len: usize,
 }
 

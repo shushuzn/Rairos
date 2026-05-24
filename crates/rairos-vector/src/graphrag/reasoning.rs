@@ -26,6 +26,7 @@ pub struct PathEntity {
 /// Path finder for multi-hop reasoning
 pub struct PathFinder {
     /// Maximum path length (hops)
+    #[allow(dead_code)]
     max_hops: usize,
     /// Maximum paths to return
     max_paths: usize,

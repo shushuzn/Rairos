@@ -284,8 +284,8 @@ impl Stream for SseEventStream {
             Err(TryRecvError::Lagged(_)) => std::task::Poll::Ready(None),
             Err(TryRecvError::Empty) => {
                 // Register waker to be notified when new events arrive
-                let waker = cx.waker().clone();
-                let receiver = &self.receiver;
+                let _waker = cx.waker().clone();
+                let _receiver = &self.receiver;
                 // We can't easily integrate with the broadcast channel's internal waker,
                 // so we'll use a simple approach: always return Pending for Empty
                 // This means the stream consumer needs to poll again

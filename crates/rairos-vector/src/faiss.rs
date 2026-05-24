@@ -82,6 +82,7 @@ impl<K: Eq + Hash + Clone, V> BoundedCache<K, V> {
         self.map.len()
     }
 
+    #[allow(dead_code)]
     fn is_empty(&self) -> bool {
         self.map.is_empty()
     }
