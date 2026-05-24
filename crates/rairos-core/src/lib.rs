@@ -77,7 +77,6 @@ pub enum DbValue {
 }
 
 impl DbValue {
-    #[deprecated(note = "unused, will be removed")]
     pub fn from_sqlx(row: &SqliteRow, index: usize) -> Option<Self> {
         // Try each type - sqlx Row doesn't have a unified get method like rusqlite
         if let Ok(v) = row.try_get::<i64, _>(index) {
@@ -1397,7 +1396,6 @@ impl Database {
         })
     }
 
-    #[deprecated(note = "unused, will be removed")]
     pub fn search_papers_fts(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
         let rt = self.rt.clone();
         let pool = self.pool.lock().clone();
@@ -1751,7 +1749,6 @@ impl Database {
         })
     }
 
-    #[deprecated(note = "unused, will be removed")]
     pub fn find_similar_by_vector(
         &self,
         embedding: &[f32],
