@@ -51,14 +51,23 @@ jobs:
           llvm-profdata merge -o /tmp/pgo/merged.profdata /tmp/pgo/*.profraw 2>/dev/null || true
           RUSTFLAGS="-Cprofile-use=/tmp/pgo/merged.profdata" cargo build --release -p rairos-cli
 
-      - name: Compress with UPX
-        run: upx --best --lzma target/release/rairos-cli -o rairos-cli-linux-amd64
+      - name: Build musl static binary
+        run: |
+          rustup target add x86_64-unknown-linux-musl
+          cargo build --release --target x86_64-unknown-linux-musl -p rairos-cli
 
-      - name: Upload binary
+      - name: Compress with UPX
+        run: |
+          upx --best --lzma target/release/rairos-cli -o rairos-cli-linux-gnu
+          upx --best --lzma target/x86_64-unknown-linux-musl/release/rairos-cli -o rairos-cli-linux-musl
+
+      - name: Upload binaries
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.version || github.ref_name }}
-          files: rairos-cli-linux-amd64
+          files: |
+            rairos-cli-linux-gnu
+            rairos-cli-linux-musl
 
   publish-python-sdk:
     needs: create-github-release

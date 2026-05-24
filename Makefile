@@ -95,6 +95,20 @@ clean:
 	cargo clean
 	rm -f rairos.sh
 
+# Build with musl for fully static binary (portable to any Linux)
+# Requires: rustup target add x86_64-unknown-linux-musl
+build-musl:
+	@echo "Building musl static binary ($(shell date +%T))..."
+	RUSTFLAGS="" cargo build --release --target x86_64-unknown-linux-musl -p rairos-cli
+	cp target/x86_64-unknown-linux-musl/release/rairos-cli target/release/rairos-cli-musl
+	@echo "Static binary: target/release/rairos-cli-musl"
+
+# Build musl + UPX compressed (smallest distribution)
+build-dist:
+	$(MAKE) build-musl
+	upx --best --lzma target/release/rairos-cli-musl -o target/release/rairos-cli-dist
+	@echo "Distribution binary: $$(du -h target/release/rairos-cli-dist | cut -f1)"
+
 # Dev workflow: watch files and auto-check on changes
 dev:
 	@echo "Watching for changes (Ctrl+C to stop)..."
