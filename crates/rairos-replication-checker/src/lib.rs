@@ -633,12 +633,12 @@ impl ReplicationChecker {
         let e = emoji_map.get(report.difficulty.as_str()).unwrap_or(&"⚪");
 
         let mut lines = vec![
-            format!("============================================================"),
+            "=".repeat(60),
             format!(
                 "🔬 Replication Report: {}",
                 &report.paper_id[..report.paper_id.len().min(8)]
             ),
-            format!("============================================================"),
+            "=".repeat(60),
             format!(
                 "Difficulty: {} {} ({}/10)",
                 e, report.difficulty, report.difficulty_score

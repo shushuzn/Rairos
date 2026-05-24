@@ -44,7 +44,7 @@ fn analyze_scenarios(question: &str, _context: &str) -> Vec<ScenarioBranch> {
         confidence: "MEDIUM".to_string(),
         narrative: format!("Everything aligns optimally. Key assumptions validate, favorable conditions emerge, and the research trajectory exceeds expectations. For {} domain, this means {} accelerates dramatically with strong evidence supporting the primary hypothesis.", domain, focus),
         key_assumptions: vec![
-            format!("All primary hypothesis assumptions hold under scrutiny"),
+            "All primary hypothesis assumptions hold under scrutiny".to_string(),
             format!("Supporting evidence from {} studies converges", domain),
             "Key stakeholders commit full resources".to_string(),
             "No major competing alternatives emerge".to_string(),

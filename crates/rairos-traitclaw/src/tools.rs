@@ -96,7 +96,7 @@ impl Tool for ArxivSearchTool {
                 id: "mock".to_string(),
                 title: format!("Paper about {}", input.query),
                 abstract_text: "Mock abstract".to_string(),
-                url: format!("https://arxiv.org/abs/mock"),
+                url: "https://arxiv.org/abs/mock".to_string(),
             }],
         })
     }
