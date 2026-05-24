@@ -29,6 +29,37 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  build-and-upload-cli:
+    needs: create-github-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: sudo apt-get install -y mold clang upx
+
+      - name: Build with PGO
+        run: |
+          RUSTFLAGS="-Cprofile-generate=/tmp/pgo" cargo build --release -p rairos-cli
+          # Collect profiles from build-time execution
+          llvm-profdata merge -o /tmp/pgo/merged.profdata /tmp/pgo/*.profraw 2>/dev/null || true
+          RUSTFLAGS="-Cprofile-use=/tmp/pgo/merged.profdata" cargo build --release -p rairos-cli
+
+      - name: Compress with UPX
+        run: upx --best --lzma target/release/rairos-cli -o rairos-cli-linux-amd64
+
+      - name: Upload binary
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          files: rairos-cli-linux-amd64
+
   publish-python-sdk:
     needs: create-github-release
     runs-on: ubuntu-latest

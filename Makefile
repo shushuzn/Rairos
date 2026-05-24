@@ -105,6 +105,14 @@ run:
 		echo "No binary found. Run 'make build' first."; \
 	fi
 
+# Compress the release binary with UPX for distribution
+# Reduces size from ~16MB to ~5MB (32% ratio)
+compress:
+	@echo "Compressing release binary with UPX..."
+	upx --best --lzma $(RELEASE_BIN) -o $(RELEASE_BIN).packed
+	@echo "Original: $$(du -h $(RELEASE_BIN) | cut -f1) → Compressed: $$(du -h $(RELEASE_BIN).packed | cut -f1)"
+	@echo "To use: cp $(RELEASE_BIN).packed $(RELEASE_BIN)"
+
 install-completions:
 	@echo "Installing shell completions..."
 	cp completions/bash ~/.config/opencode/completions/rairos 2>/dev/null || true
