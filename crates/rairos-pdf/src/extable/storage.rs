@@ -84,9 +84,10 @@ pub struct DbStats {
 }
 
 /// SQLite-backed experiment table storage.
+#[allow(dead_code)]
 pub struct ExperimentDB {
     pool: Pool<Sqlite>,
-    _db_path: PathBuf,
+    db_path: PathBuf,
     closed: bool,
 }
 
