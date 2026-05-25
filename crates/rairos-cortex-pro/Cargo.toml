@@ -36,7 +36,7 @@ chrono = { version = "0.4", features = ["serde"] }
 
 # Performance optimizations
 smallvec = { version = "1", features = ["serde"] }           # Stack-allocated small vectors
-lru = "0.16"            # LRU cache for regex and keyword caching
+lru = "0.18"            # LRU cache for regex and keyword caching
 parking_lot.workspace = true  # Fast synchronization primitives
 
 # Existing Rairos crates
