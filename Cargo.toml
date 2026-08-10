@@ -150,7 +150,7 @@ opentelemetry = "0.24"
 opentelemetry-otlp = "0.17"
 opentelemetry_sdk = { version = "0.24", features = ["rt-tokio"] }
 tracing-opentelemetry = "0.25"
-axum = "0.7"
+axum = "0.8"
 bcrypt = "0.16"
 redis = { version = "0.25", features = ["tokio-comp"] }
 tokio-postgres = { version = "0.7", features = ["with-uuid-1", "with-chrono-0_4"] }
