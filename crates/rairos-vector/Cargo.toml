@@ -29,7 +29,7 @@ anyhow = "1"
 tracing = "0.1"
 
 # Base64 encoding for embeddings
-base64 = "0.22"
+base64 = "0.23"
 
 # URL parsing
 url = "2"
