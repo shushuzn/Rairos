@@ -11,7 +11,7 @@ serde_json.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 futures.workspace = true
-lopdf = "0.40"
+lopdf = "0.42"
 chrono = { workspace = true, features = ["serde"] }
 regex.workspace = true
 
