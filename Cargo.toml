@@ -137,7 +137,7 @@ hex = "0.4"
 tokio = { version = "1", features = ["rt", "sync", "macros"] }
 clap = { version = "4", default-features = false, features = ["derive", "help", "usage", "error-context", "std"] }
 sysinfo = "0.34"
-parking_lot = "0.12"
+parking_lot = "0.13"
 dashmap = "5"
 rustc-hash = "2"
 futures-util = "0.3"
