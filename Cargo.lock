@@ -389,7 +389,7 @@ checksum = "d89aabfae550a5c44b43ab941844ffcd2e993cb6900b342debf59e9ea74acdb8"
 dependencies = [
  "async-trait",
  "futures-util",
- "parking_lot",
+ "parking_lot 0.12.5",
  "tokio",
 ]
 
@@ -999,7 +999,7 @@ dependencies = [
  "derive_more",
  "document-features",
  "mio",
- "parking_lot",
+ "parking_lot 0.12.5",
  "rustix",
  "signal-hook",
  "signal-hook-mio",
@@ -1122,9 +1122,9 @@ checksum = "978747c1d849a7d2ee5e8adc0159961c48fb7e5db2f06af6723b80123bb53856"
 dependencies = [
  "cfg-if",
  "hashbrown 0.14.5",
- "lock_api",
+ "lock_api 0.4.14",
  "once_cell",
- "parking_lot_core",
+ "parking_lot_core 0.9.12",
 ]
 
 [[package]]
@@ -1567,8 +1567,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d930c203dd0b6ff06e0201a4a2fe9149b43c684fd4420555b26d21b1a02956f"
 dependencies = [
  "futures-core",
- "lock_api",
- "parking_lot",
+ "lock_api 0.4.14",
+ "parking_lot 0.12.5",
 ]
 
 [[package]]
@@ -2416,9 +2416,9 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 
 [[package]]
 name = "libc"
-version = "0.2.186"
+version = "0.2.191"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
+checksum = "65cd87c9a6d60536580b316ad985726104730a5151c99845f2490428ef91240a"
 
 [[package]]
 name = "libm"
@@ -2490,6 +2490,15 @@ name = "lock_api"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "224399e74b87b5f3557511d98dff8b14089b3dadafcab6bb93eab67d3aace965"
+dependencies = [
+ "scopeguard",
+]
+
+[[package]]
+name = "lock_api"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "65d91b22da179613dcf4d6ec8349563f52a363f6849e03b00dd0a185ec4a59af"
 dependencies = [
  "scopeguard",
 ]
@@ -3146,8 +3155,18 @@ version = "0.12.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93857453250e3077bd71ff98b6a65ea6621a19bb0f559a85248955ac12c45a1a"
 dependencies = [
- "lock_api",
- "parking_lot_core",
+ "lock_api 0.4.14",
+ "parking_lot_core 0.9.12",
+]
+
+[[package]]
+name = "parking_lot"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9cf937ca4e1d0b7578784559063422fc39ae7c5a00f02471f2614d5486fd226"
+dependencies = [
+ "lock_api 0.5.0",
+ "parking_lot_core 0.10.0",
 ]
 
 [[package]]
@@ -3159,6 +3178,18 @@ dependencies = [
  "cfg-if",
  "libc",
  "redox_syscall 0.5.18",
+ "smallvec",
+ "windows-link",
+]
+
+[[package]]
+name = "parking_lot_core"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9cfff060068cc18aa7815010fcaf80c68c7fb9e85fc7f5c0f9bf142c21d19826"
+dependencies = [
+ "libc",
+ "redox_syscall 0.9.5",
  "smallvec",
  "windows-link",
 ]
@@ -3651,7 +3682,7 @@ name = "rairos-achievements"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "parking_lot",
+ "parking_lot 0.13.0",
  "serde",
 ]
 
@@ -3667,7 +3698,7 @@ dependencies = [
  "chrono",
  "hex",
  "hmac 0.12.1",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rand 0.8.6",
  "redis",
  "reqwest",
@@ -3803,7 +3834,7 @@ dependencies = [
  "human-panic",
  "indicatif",
  "mimalloc",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-achievements",
  "rairos-argument-builder",
  "rairos-arxiv-alert-channels",
@@ -3954,7 +3985,7 @@ version = "0.1.0"
 dependencies = [
  "libsqlite3-sys",
  "once_cell",
- "parking_lot",
+ "parking_lot 0.13.0",
  "serde",
  "serde_json",
  "sqlx",
@@ -3995,7 +4026,7 @@ dependencies = [
  "hex",
  "libsqlite3-sys",
  "log",
- "parking_lot",
+ "parking_lot 0.13.0",
  "pbkdf2",
  "rairos-observability",
  "rand 0.8.6",
@@ -4028,7 +4059,7 @@ dependencies = [
  "criterion",
  "futures",
  "lru",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-kg-neo4j",
  "rairos-llm",
  "rairos-pdf",
@@ -4090,7 +4121,7 @@ name = "rairos-deep-research"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-core",
  "regex",
  "reqwest",
@@ -4246,7 +4277,7 @@ dependencies = [
  "chrono",
  "dirs",
  "libsqlite3-sys",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-core",
  "rand 0.8.6",
  "rustc-hash",
@@ -4322,7 +4353,7 @@ dependencies = [
  "dirs",
  "futures-util",
  "mockito",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-core",
  "rand 0.8.6",
  "regex",
@@ -4441,7 +4472,7 @@ dependencies = [
  "opentelemetry",
  "opentelemetry-otlp",
  "opentelemetry_sdk",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rand 0.8.6",
  "rustc-hash",
  "serde",
@@ -4543,7 +4574,7 @@ dependencies = [
  "hex",
  "libsqlite3-sys",
  "lopdf",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-code-generator",
  "regex",
  "reqwest",
@@ -4605,7 +4636,7 @@ dependencies = [
  "chrono",
  "libsqlite3-sys",
  "ndarray",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-core",
  "rairos-llm",
  "serde",
@@ -4699,7 +4730,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dirs",
- "parking_lot",
+ "parking_lot 0.13.0",
  "rairos-core",
  "regex",
  "serde",
@@ -4766,7 +4797,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
- "parking_lot",
+ "parking_lot 0.13.0",
  "serde",
  "serde_json",
  "tempfile",
@@ -4778,7 +4809,7 @@ name = "rairos-scout"
 version = "0.1.0"
 dependencies = [
  "futures",
- "parking_lot",
+ "parking_lot 0.13.0",
  "reqwest",
  "serde",
  "serde-xml-rs",
@@ -4820,7 +4851,7 @@ dependencies = [
 name = "rairos-skill-discovery"
 version = "0.1.0"
 dependencies = [
- "parking_lot",
+ "parking_lot 0.13.0",
  "serde",
  "serde_json",
  "tempfile",
@@ -5222,6 +5253,15 @@ name = "redox_syscall"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4666a1a60d8412eab19d94f6d13dcc9cea0a5ef4fdf6a5db306537413c661b1b"
+dependencies = [
+ "bitflags 2.11.1",
+]
+
+[[package]]
+name = "redox_syscall"
+version = "0.9.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "580c875845b41ecb1564ad1ae4703044cef774145e3d7a94dc2b3fa7c97868fd"
 dependencies = [
  "bitflags 2.11.1",
 ]
@@ -5830,9 +5870,9 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
 name = "smallvec"
-version = "1.15.1"
+version = "1.16.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
+checksum = "d0d5d4b1981b8bbbb7aed204cae5726d683d5d6ac7e74ec54122ea28f315e7c8"
 dependencies = [
  "serde",
 ]
@@ -5863,7 +5903,7 @@ version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
 dependencies = [
- "lock_api",
+ "lock_api 0.4.14",
 ]
 
 [[package]]
@@ -6434,7 +6474,7 @@ dependencies = [
  "bytes",
  "libc",
  "mio",
- "parking_lot",
+ "parking_lot 0.12.5",
  "pin-project-lite",
  "socket2 0.6.3",
  "tokio-macros",
@@ -6475,7 +6515,7 @@ dependencies = [
  "futures-channel",
  "futures-util",
  "log",
- "parking_lot",
+ "parking_lot 0.12.5",
  "percent-encoding",
  "phf 0.13.1",
  "pin-project-lite",
